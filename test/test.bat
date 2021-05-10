@@ -1,1 +1,1 @@
-gcc ../src/spiel.c ../src/lex.c -I../include -o main.exe && main.exe
+clang ../src/grackle.c ../src/lex.c -I../include -o main.exe && main.exe

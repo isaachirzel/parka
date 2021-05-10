@@ -1,4 +1,8 @@
-#include <lex.h>
+// main header
+#include <grackle/lex.h>
+
+// standard libary
+#include <stdlib.h>
 
 char char_types[128];
 const char *tokens[] = {
@@ -12,7 +16,7 @@ void lex_init()
 
 TokenList *lex(const char *src)
 {
-
+	return NULL;
 }
 
 TokenList *token_list_create()
@@ -21,7 +25,10 @@ TokenList *token_list_create()
 	if (!out) return NULL;
 
 	out->toks = malloc(1);
-	if (!out->toks) {
+
+	// if malloc failed
+	if (!out->toks)
+	{
 		free(out);
 		return NULL;
 	}
@@ -34,7 +41,7 @@ TokenList *token_list_create()
 void token_list_push(TokenList *list, Token t)
 {
 	list->len += 1;
-	Token *tmp = realloc(list->len * sizeof(Token));
-	if (!tmp) abort();
+	Token *tmp = realloc(list->toks, list->len * sizeof(Token));
+	if (!tmp) return;
 	list->toks = tmp;
 }
