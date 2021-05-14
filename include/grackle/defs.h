@@ -19,5 +19,4 @@ typedef struct StringView
 	uint16_t len;
 } StringView;
 
-
 #endif

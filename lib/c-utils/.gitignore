@@ -1,0 +1,6 @@
+# executables
+test/main
+test/main.exe
+
+# ide files
+.vscode/
