@@ -6,16 +6,16 @@
 // Errors
 typedef const char* Error;
 
-Error MALLOC_ERROR	= "failed to allocate buffer";
-Error RESIZE_ERROR	= "failed to resize buffer";
-Error FOPEN_ERROR	= "failed to read file";
+#define MALLOC_ERROR	"failed to allocate buffer"
+#define RESIZE_ERROR	"failed to resize buffer"
+#define FOPEN_ERROR		"failed to read file"
 
 // String handling
-typedef char * String;
+typedef char* String;
 
 typedef struct StringView
 {
-	const String str;
+	const char *ptr;
 	uint16_t len;
 } StringView;
 
