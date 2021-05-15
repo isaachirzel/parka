@@ -14,27 +14,26 @@
 #define HXCONCAT(a, b) a##b
 #define HXSTRUCT_NAME(base) struct base
 #define HXTYPEDEF_NAME(base) HXCONCAT(base, _t)
-#define HXELEM_NAME(base) struct HXCONCAT(base, _element)
-#define HXFUNC_NAME(base, postfix) HXCONCAT(base, postfix)
+#define HXNODE_NAME(base) struct HXCONCAT(base, _node)
+#define HXSYM_NAME(base, postfix) HXCONCAT(base, postfix)
 
 // Convenient macro aliases
 #define HXSTRUCT 	HXSTRUCT_NAME(HIRZEL_CONTAINER_NAME)
 #define HXTYPEDEF 	HXTYPEDEF_NAME(HIRZEL_CONTAINER_NAME)
-#define HXELEM		HXELEM_NAME(HIRZEL_CONTAINER_NAME)
+#define HXNODE		HXNODE_NAME(HIRZEL_CONTAINER_NAME)
 #define HXITEM		HIRZEL_CONTAINER_ITEM
-#define HXFUNC(name) HXFUNC_NAME(HIRZEL_CONTAINER_NAME, _##name)
+#define HXSYM(name) HXSYM_NAME(HIRZEL_CONTAINER_NAME, _##name)
 
 
 #include <stddef.h>
 #include <stdio.h>
 
-#define HXT_HASH_P		(97)
-#define HXT_HASH_M		(1000000009)
-#define HXT_INIT_SIZE	(11)	// prime number
-#define HXT_PRIME_SIZES {11, 23, 47, 97, 197, 397, 797, 1597, 3203, 6421, 12853,\
+#define HXHASH_P		(97)
+#define HXHASH_M		(1000000009)
+#define HXTABLE_SIZES {11, 23, 47, 97, 197, 397, 797, 1597, 3203, 6421, 12853,\
  25717, 51437, 102877, 205759, 411527, 823117, 1646237, 3292489 }
  
-HXELEM
+HXNODE
 {
 	char *key;
 	HXITEM value;
@@ -42,82 +41,90 @@ HXELEM
 
 typedef HXSTRUCT
 {
-	size_t size;	// size of data
-	size_t count;	// amount of elements
-	HXELEM *data;
+	unsigned size_idx;	// size of data
+	size_t count;	// amount of stored keys
+	HXNODE *data;	// data buffer
 } HXTYPEDEF;
 
-extern long long unsigned hxhash(const char *str);
+extern const size_t HXSYM(sizes)[];
 
-extern HXSTRUCT *HXFUNC(create)();
-extern void HXFUNC(destroy)(HXSTRUCT *table);
-extern bool HXFUNC(set)(HXSTRUCT *table, const char* key, HXITEM value);
-extern HXITEM HXFUNC(get)(HXSTRUCT *table, const char *key);
-extern HXITEM *HXFUNC(getr)(HXSTRUCT *table, const char *key);
-extern bool HXFUNC(contains)(HXSTRUCT *table, const char *key);
-
+extern long long unsigned HXSYM(hash)(const char *str);
+extern HXSTRUCT *HXSYM(create)();
+extern void HXSYM(destroy)(HXSTRUCT *table);
+extern bool HXSYM(set)(HXSTRUCT *table, const char* key, HXITEM value);
+extern bool HXSYM(set_ref)(HXSTRUCT *table, const char* key, HXITEM *value);
+extern HXITEM HXSYM(get)(HXSTRUCT *table, const char *key);
+extern HXITEM *HXSYM(get_ref)(HXSTRUCT *table, const char *key);
+extern HXNODE *HXSYM(get_node)(HXSTRUCT *table, const char *key);
+extern bool HXSYM(contains)(HXSTRUCT *table, const char *key);
+extern bool HXSYM(empty)(HXSTRUCT *table);
+extern void HXSYM(clear)(HXSTRUCT *table);
+extern bool HXSYM(erase)(HXSTRUCT *table, const char *key);
+extern bool HXSYM(shrink)(HXSTRUCT *table);
+extern bool HXSYM(swap)(HXSTRUCT *table, const char *a, const char *b);
+extern size_t HXSYM(size)(HXSTRUCT *table);
+extern bool HXSYM(resize)(HXSTRUCT *table, unsigned new_size_idx);
 
 #ifdef HIRZEL_IMPLEMENT
 #undef HIRZEL_IMPLEMENT
 
-static size_t HXT_SIZES[] = HXT_PRIME_SIZES;
+const size_t HXSYM(sizes)[] = HXTABLE_SIZES;
 
-
-static HXELEM HXFUNC(element_create)(const char *key, HXITEM *value)
+static HXNODE HXSYM(node_create)(const char *key, HXITEM *value)
 {
-	HXELEM elem = {0};
-
+	HXNODE node = {0};
+	if (!key) return node;
 	size_t len = strlen(key);
-	elem.key = malloc(len + 1);
+	node.key = malloc(len + 1);
+	strcpy(node.key, key);
+	node.value = *value;
 
-	if (key)
-	{
-		strcpy(elem.key, key);
-		elem.value = *value;
-	}
-
-	return elem;
+	return node;
 }
 
-static void HXFUNC(element_destroy)(HXELEM *elem)
+static void HXSYM(node_destroy)(HXNODE *node)
 {
-	free(elem->key);
+	free(node->key);
 }
 
 // CREATE
-HXSTRUCT *HXFUNC(create)()
+HXSTRUCT *HXSYM(create)()
 {
 	HXSTRUCT *table = malloc(sizeof(HXSTRUCT));
 	if (!table) return NULL;
-	table->data = calloc(HXT_INIT_SIZE, sizeof(HXITEM));
+	table->data = calloc(HXSYM(sizes)[0], sizeof(HXNODE));
+
 	if (!table->data)
 	{
 		free(table);
 		return NULL;
 	}
-	table->size = HXT_SIZES[0];
+	table->size_idx = 0;
 	table->count = 0;
 	return table;
 }
 
 // DESTROY
-void HXFUNC(destroy)(HXSTRUCT *table)
+void HXSYM(destroy)(HXSTRUCT *table)
 {
-	for (size_t i = 0; i < table->size; ++i)
+	size_t size = HXSYM(sizes)[table->size_idx];
+	for (size_t i = 0; i < size; ++i)
 	{
 		if (!table->data[i].key) continue;
-		HXFUNC(element_destroy(table->data + i));
+		HXSYM(node_destroy(table->data + i));
 	}
 
 	free(table->data);
 	free(table);
 }
 
-// CURRENTLY USES LINEAR PROBING
-static void HXFUNC(insert)(HXSTRUCT *table, HXELEM* elem)
+// INSERT
+void HXSYM(set_node)(HXSTRUCT *table, HXNODE* node)
 {
+	size_t size = HXSYM(sizes)[table->size_idx];
 	// getting starting pos
-	size_t pos = hxhash(elem->key) % table->size;
+	size_t pos = HXSYM(hash)(node->key) % size;
+	
 	// while space is occupied, increment
 	size_t offs = 0;
 	size_t i = pos;
@@ -125,123 +132,204 @@ static void HXFUNC(insert)(HXSTRUCT *table, HXELEM* elem)
 	while (table->data[i].key != NULL)
 	{
 		offs += 1;
-		i = (pos + offs * offs) % table->size;
+		i = (pos + offs * offs) % size;
 	}
-	// copying in element
-	table->data[i] = *elem;
+	// copying in node
+	table->data[i] = *node;
 }
 
-// SET
-bool HXFUNC(set)(HXSTRUCT *table, const char* key, HXITEM value)
+bool HXSYM(resize)(HXSTRUCT *table, unsigned new_size_idx)
 {
-	HXELEM elem = HXFUNC(element_create)(key, &value);
+	// do nothing if new size is same as old
+	if (new_size_idx == table->size_idx) return true;
+	// storing old data
+	HXNODE *tmp = table->data;
+	size_t tmpc = HXSYM(sizes)[table->size_idx];
 
+	// pointing to new data
+	table->data = calloc(HXSYM(sizes)[new_size_idx], sizeof(HXNODE));
+
+	if (!table->data)
+	{
+		// clean up and exit
+		table->data = tmp;
+		return false;
+	}
+
+	table->size_idx = new_size_idx;
+
+	// copying over old data
+	for (size_t i = 0; i < tmpc; ++i)
+	{
+		if (tmp[i].key) HXSYM(set_node)(table, tmp + i);
+	}
+
+	free(tmp);
+	return true;
+}
+
+bool HXSYM(set_ref)(HXSTRUCT *table, const char* key, HXITEM *value)
+{
+	if (!key) return false;
+	HXNODE node = HXSYM(node_create)(key, value);
+	size_t size = HXSYM(sizes)[table->size_idx];
 	// resizing when table is about half way full
-	if ((table->size / (table->count + 1)) <= 1)
+	if ((size / (table->count + 1)) <= 1)
 	{
 		// getting new size of hash table
 		// this will never fail, but it will stop growing after the last item
 		// is reached but this will likeyly never happen
-		size_t new_size = table->size;
-		for (int i = 1; i < sizeof(HXT_SIZES) / sizeof(size_t); ++i)
+		char new_idx = table->size_idx;
+		// if there is room to grow
+		if (new_idx < (sizeof(HXSYM(sizes)) / sizeof(size_t)) - 1)
 		{
-			if (HXT_SIZES[i] > new_size)
-			{
-				new_size = HXT_SIZES[i];
-				break;
-			}
-		}
-	
-		// temporary storage for old buffer
-		HXELEM *tmp = table->data;
-		// allocating new buffer
-		table->data = (HXELEM*)calloc(new_size, sizeof(HXELEM));
-		// if data failed to allocate
-		if (!table->data)
-		{
-			// clean up and exit
-			table->data = tmp;
-			HXFUNC(element_destroy)(&elem);
-			return false;
+			new_idx += 1;
 		}
 
-		size_t old_size = table->size;
-		table->size = new_size;		
-
-		// copying over old data
-		for (size_t i = 0; i < old_size; ++i)
-		{
-			// skip to non-null items
-			if (!tmp[i].key) continue;
-			HXFUNC(insert)(table, tmp + i);
-		}
-
-		// freeing old data
-		free(tmp);
+		bool res = HXSYM(resize)(table, new_idx);
+		if (!res) return false;
 	}
-
-	HXFUNC(insert)(table, &elem);
+	
+	HXSYM(set_node)(table, &node);
 	table->count += 1;
 	return true;
 }
 
-HXITEM *HXFUNC(getr)(HXSTRUCT *table, const char *key)
+// SET
+bool HXSYM(set)(HXSTRUCT *table, const char* key, HXITEM value)
 {
-	// initialized to 0 in case key is never found
-	HXITEM *t = NULL;
+	return HXSYM(set_ref)(table, key, &value);
+}
 
+HXNODE *HXSYM(get_node)(HXSTRUCT *table, const char *key)
+{
+	HXNODE *node = NULL;
+	size_t size = HXSYM(sizes)[table->size_idx];
 	// starting position for search
-	size_t pos = hxhash(key) % table->size;
+	size_t pos = HXSYM(hash)(key) % size;
 	
 	size_t offs = 0;
 	size_t i = pos;
 
+	// break if we hit null key
 	while (table->data[i].key)
 	{
 		// if key matches
 		if (strcmp(key, table->data[i].key) == 0)
 		{
-			t = &table->data[i].value;
+			node = table->data + i;
 			break;
 		}
 
 		// quadratic probing
 		offs += 1;
 		// getting next position
-		i = (pos + offs * offs) % table->size;
+		i = (pos + offs * offs) % size;
 	}
 
-	return t;
+	return node;
+}
+
+HXITEM *HXSYM(get_ref)(HXSTRUCT *table, const char *key)
+{
+	HXNODE *node = HXSYM(get_node)(table, key);
+	return (node) ? &node->value : NULL;
 }
 
 // GET
-HXITEM HXFUNC(get)(HXSTRUCT *table, const char *key)
+HXITEM HXSYM(get)(HXSTRUCT *table, const char *key)
 {
 	// initialized to 0 in case key is never found
 	HXITEM t = {0};
-	HXITEM *ref = HXFUNC(getr)(table, key);
-	return (ref) ? *ref : t;
+	HXNODE *node = HXSYM(get_node)(table, key);
+	return (node) ? node->value : t;
 }
 
-bool HXFUNC(contains)(HXSTRUCT *table, const char *key)
+bool HXSYM(contains)(HXSTRUCT *table, const char *key)
 {
-	return (HXFUNC(getr)(table, key)) ? true : false;
+	return (HXSYM(get_node)(table, key)) ? true : false;
+}
+
+bool HXSYM(erase)(HXSTRUCT *table, const char *key)
+{
+	HXNODE *node = HXSYM(get_node)(table, key);
+	if (!node) return false;
+	node->key = NULL;
+	table->count -= 1;
+	return true;
 }
 
 // hashing function
-long long unsigned hxhash(const char *str)
+long long unsigned HXSYM(hash)(const char *str)
 {
 	long long unsigned hash = 0;
 	long long unsigned pop = 1;
 
 	while (*str)
 	{
-		hash = (hash + (*str - 'a' + 1) * pop) % HXT_HASH_M;
-		pop = (pop * HXT_HASH_P) % HXT_HASH_M;
+		hash = (hash + (*str - 'a' + 1) * pop) % HXHASH_M;
+		pop = (pop * HXHASH_P) % HXHASH_M;
 		str += 1;
 	}
 
 	return hash;
+}
+
+bool HXSYM(empty)(HXSTRUCT *table)
+{
+	return table->count == 0;
+}
+
+void HXSYM(clear)(HXSTRUCT *table)
+{
+
+	size_t size = HXSYM(sizes)[table->size_idx];
+	for (size_t i = 0; i < size; ++i)
+	{
+		table->data[i].key = NULL;
+	}
+	table->count = 0;
+}
+
+size_t HXSYM(size)(HXSTRUCT *table)
+{
+	return HXSYM(sizes)[table->size_idx];
+}
+
+bool HXSYM(shrink)(HXSTRUCT *table)
+{
+	unsigned new_idx = 0;
+	// find minimum size for current count
+	for (unsigned i = 0; i < table->size_idx; ++i)
+	{
+		// get size from array
+		size_t size = HXSYM(sizes)[i];
+		// check if size is double or more than the count
+		if ((size / table->count) > 1)
+		{
+			new_idx = i;
+			break;
+		}
+	}
+
+	return HXSYM(resize)(table, new_idx);
+}
+
+bool HXSYM(swap)(HXSTRUCT *table, const char *a, const char *b)
+{
+	// getting references to elements
+	HXITEM *aref = HXSYM(get_ref)(table, a);
+	if (!aref) return false;
+	HXITEM *bref = HXSYM(get_ref)(table, b);
+	if (!bref) return false;
+
+	// swapping elements
+	HXITEM i = *aref;
+	*aref = *bref;
+	*bref = i;
+
+	// success
+	return true;
 }
 
 #endif
@@ -252,10 +340,13 @@ long long unsigned hxhash(const char *str)
 #undef HXCONCAT
 #undef HXSTRUCT_NAME
 #undef HXTYPEDEF_NAME
-#undef HXELEM_NAME
-#undef HXFUNC_NAME
+#undef HXNODE_NAME
+#undef HXSYM_NAME
 #undef HXSTRUCT
 #undef HXTYPEDEF
-#undef HXELEM
+#undef HXNODE
 #undef HXITEM
-#undef HXFUNC
+#undef HXSYM
+#undef HXHASH_P
+#undef HXHASH_M
+#undef HXTABLE_SIZES
