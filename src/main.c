@@ -28,7 +28,9 @@ int main(void)
 	puts(src);
 
 	// lexing file
+	puts("INIT");
 	lex_init();
+	puts("INIT");
 	toklist_t *toks = lex(src);
 
 
@@ -42,6 +44,7 @@ int main(void)
 
 
 	toklist_destroy(toks);
+	lex_cleanup();
 	free(src);
 	return 0;
 }

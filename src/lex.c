@@ -1,13 +1,15 @@
 // main header
 #include <grackle/lex.h>
 
+// local includes
+#include <grackle/chartbl.h>
+
 // standard libary
 #include <stdlib.h>
 
+
 char char_types[128];
-const char *tokens[] = {
-	"int"
-};
+chartbl_t *tok_types = NULL;
 
 void lex_init()
 {
@@ -46,8 +48,8 @@ void lex_init()
 	char_types['>'] = CHAR_OPERATOR;
 
 	// setting literal types
-	char_types['\''] = CHAR_LITERAL;
-	char_types['\"'] = CHAR_LITERAL;
+	char_types['\''] = CHAR_QUOTE;
+	char_types['\"'] = CHAR_QUOTE;
 
 	// making the rest of visible characters invalid
 	for (int i = 33; i < sizeof(char_types); ++i)
@@ -55,6 +57,19 @@ void lex_init()
 		if (char_types[i] == CHAR_NO_TYPE) char_types[i] = CHAR_INVALID;
 	}
 
+	// initializing token types
+	tok_types = chartbl_create();
+	puts("RETURN");
+	chartbl_set(tok_types, "return", TOK_RETURN);
+	puts("=");
+	chartbl_set(tok_types, "=", TOK_ASSIGN);
+	puts("+=");
+	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
+}
+
+void lex_cleanup()
+{
+	chartbl_destroy(tok_types);
 }
 
 token_t lex_next_token(const char **src)
@@ -73,7 +88,7 @@ token_t lex_next_token(const char **src)
 	char type = char_types[*pos];
 
 	// string and char literals
-	if (type == CHAR_LITERAL)
+	if (type == CHAR_QUOTE)
 	{
 		// get end of string
 		char end = *pos;
@@ -81,6 +96,28 @@ token_t lex_next_token(const char **src)
 		// got till non-escaped end of string
 		while (pos[0] != end && pos[-1] != '\\') ++pos;
 		pos += 1;
+	}
+	// number literals
+	else if (type == CHAR_DIGIT)
+	{
+		bool decimal = false;
+		pos += 1;
+		while (*pos)
+		{
+			if (char_types[*pos] != CHAR_DIGIT)
+			{
+				if (*pos == '.')
+				{
+					if (decimal) break;
+					decimal = true;
+				}
+				else
+				{
+					break;
+				}
+			}
+			pos += 1;
+		}
 	}
 	// normal tokens
 	else
@@ -92,7 +129,59 @@ token_t lex_next_token(const char **src)
 	// initializing token
 	out.str.ptr = start;
 	out.str.len = pos - start;
-	out.type = TOK_IDENTIFIER;	// change later
+
+	// figuring out token type
+
+	// for storing token for comparisons
+	char tmp[MAX_KEYWORD_LENGTH + 1];
+
+	switch (type)
+	{
+	case CHAR_IDENTIFIER:
+		// slight optimization as most keywords and operators are short
+		if (out.str.len > MAX_KEYWORD_LENGTH)
+		{
+			out.type = TOK_IDENTIFIER;
+			break;
+		}
+		// inentional fall-through
+	case CHAR_SEPARATOR:
+	case CHAR_OPERATOR:
+		for (int i = 0; i < out.str.len; ++i)
+		{
+			tmp[i] = out.str.ptr[i];
+		}
+		tmp[out.str.len] = 0;
+		out.type = chartbl_get(tok_types, tmp);
+		// if it failed to find matching key
+		if (out.type == 0)
+		{
+			if (type == CHAR_IDENTIFIER)
+			{
+				out.type = TOK_IDENTIFIER;
+			}
+			else
+			{
+				out.type = TOK_ERROR;
+			}
+		}
+		// table lookup
+		break;
+
+	case CHAR_DIGIT:
+		out.type = TOK_NUM_LITERAL;
+		break;
+
+	case CHAR_QUOTE:
+		if (*start == '\'') out.type = TOK_CHAR_LITERAL;
+		else if (*start == '\"') out.type = TOK_STR_LITERAL;
+		break;
+
+	default:
+		out.type = TOK_ERROR;
+		break;
+	}
+
 
 	*src = pos;
 	return out;
