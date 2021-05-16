@@ -1,6 +1,8 @@
-//this is a comment
+// this is a comment
 int main()
 {
+	int j =/*this
+	is a comment*/2;
 	int i = 0;
 	i += 3;
 	return i;
