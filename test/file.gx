@@ -5,7 +5,11 @@ int main()
 		this is a block comment
 	*/
 	char *str = "hello";
-	int i = 0;
+	int i = .0 + 12.536;
+	int i2 = 0. - 00.00;
+	
+	2..3
+	//for (2..3);
 	i += 3;
 	return i;
 }

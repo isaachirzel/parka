@@ -1,5 +1,5 @@
 // local includes
-#include <grackle/lex.h>
+#include <grackle/lexer.h>
 #include <grackle/string.h>
 #include <grackle/preprocessor.h>
 
@@ -12,21 +12,13 @@
 #define HIRZEL_UTIL_FILE_I
 #include <hirzel/util/file.h>
 
-void print_stringview(String view)
-{
-	for (unsigned i = 0; i < view.len; ++i)
-	{
-		putchar(view.ptr[i]);
-	}
-}
-
 int main(void)
 {
 	// reading src
 	char *src = hxfile_read_text("./test/file.gx");
 	preprocess(src);
 	puts(src);
-	
+	puts("====================================");
 	// lexing file
 	lex_init();
 	toklist_t *toks = lex(src);
@@ -36,7 +28,7 @@ int main(void)
 	for (size_t i = 0; i < toks->len; ++i)
 	{
 		token_t *tok = toklist_get_ref(toks, i);
-		print_stringview(tok->str);
+		string_print(tok->str);
 		printf("\t%d\n", (int)tok->type);
 	}
 

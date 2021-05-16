@@ -6,7 +6,7 @@
 enum TokenType
 {
 	// Generic
-	TOK_NO_TYPE,
+	TOK_EOF,
 	TOK_ERROR,
 	TOK_IDENTIFIER,
 
@@ -21,6 +21,11 @@ enum TokenType
 	TOK_RANGBRACK,
 	TOK_SEMICOLON,
 	TOK_COLON,
+
+	// Dot based
+	TOK_DOT,		// 1 dot
+	TOK_RANGE,		// 2 dots
+	TOK_ELIPSIS,	// 3 dots
 
 	// Bitwise
 	TOK_AND_BIT,
@@ -52,7 +57,11 @@ enum TokenType
 	TOK_DECREMENT,
 
 	// Literals
-	TOK_NUM_LITERAL,
+	TOK_INT_LITERAL,
+	TOK_FLOAT_LITERAL,
+	TOK_HEX_LITERAL,	// todo
+	TOK_BIN_LITERAL,	// todo
+	TOK_OCT_LITERAL,	// todo
 	TOK_CHAR_LITERAL,
 	TOK_STR_LITERAL,
 
@@ -62,8 +71,10 @@ enum TokenType
 
 typedef struct token
 {
-	String str;
+	string_t str;
 	char type;
+	unsigned line;
+	unsigned short col;
 } token_t;
 
 extern token_t token_create();

@@ -1,5 +1,5 @@
 // main header
-#include <grackle/lex.h>
+#include <grackle/lexer.h>
 
 // local includes
 #include <grackle/chartbl.h>
@@ -7,8 +7,9 @@
 // standard libary
 #include <stdlib.h>
 
-
+// lookup-table for character-types
 char char_types[128];
+// lookup-table for single-character token-types
 char ctok_types[128];
 chartbl_t *tok_types = NULL;
 
@@ -31,7 +32,9 @@ void lex_init()
 	char_types['}'] = CHAR_SEPARATOR;
 	char_types[';'] = CHAR_SEPARATOR;
 	char_types[','] = CHAR_SEPARATOR;
-	char_types['.'] = CHAR_SEPARATOR;
+
+	// dot character
+	char_types['.'] = CHAR_DOT;
 
 	// setting up operator characters
 	char_types['!'] = CHAR_OPERATOR;
@@ -58,6 +61,8 @@ void lex_init()
 		if (char_types[i] == CHAR_NO_TYPE) char_types[i] = CHAR_INVALID;
 	}
 
+	// setting up single character token types
+
 	// Assignment
 	ctok_types['='] = TOK_ASSIGN;
 
@@ -68,8 +73,16 @@ void lex_init()
 	ctok_types[']'] = TOK_RBRACK;
 	ctok_types['{'] = TOK_LBRACE;
 	ctok_types['}'] = TOK_RBRACE;
+	ctok_types['.'] = TOK_DOT;
 	ctok_types[';'] = TOK_SEMICOLON;
+
+	// Operators
 	ctok_types['*'] = TOK_ASTERISK;
+	ctok_types['/'] = TOK_SLASH;
+	ctok_types['+'] = TOK_PLUS;
+	ctok_types['-'] = TOK_MINUS;
+	ctok_types['<'] = TOK_LANGBRACK;
+	ctok_types['>'] = TOK_RANGBRACK;
 
 	// initializing token types
 	tok_types = chartbl_create();
@@ -85,102 +98,129 @@ void lex_cleanup()
 token_t lex_next_token(char **src)
 {
 	token_t out;
-	out.type = TOK_NO_TYPE;
+	out.type = TOK_EOF;
 	char *pos = *src;
 
 	// skip to next visible character
 	while (*pos < 33)
 	{
-		if (*pos == 0) return out;
+		if (*pos == 0)
+		{
+			out.str.ptr = NULL;
+			out.str.len = 0;
+			return out;
+		}
 		++pos;
 	}
 
 	// storing position in token
 	out.str.ptr = pos;
-
 	char type = char_types[*pos];
+	pos += 1;
 
 	switch (type)
 	{
-	case CHAR_IDENTIFIER:
-		while (char_types[*pos] == CHAR_IDENTIFIER) ++pos;
-		*src = pos;
-		out.str.len = pos - out.str.ptr;
-		// slight optimization as most keywords and operators are short
-		if (out.str.len > MAX_KEYWORD_LENGTH)
-		{
-			out.type = TOK_IDENTIFIER;
-			return out;
-		}
-		// else table lookup
-		break;
-		
-	case CHAR_SEPARATOR:
-		*src = ++pos;
-		out.str.len = 1;
-		out.type = ctok_types[*out.str.ptr];
-		return out;
-
-	case CHAR_OPERATOR:
-		while (char_types[*pos] == CHAR_OPERATOR) ++pos;
-		*src = pos;
-		out.str.len = pos - out.str.ptr;
-		if (out.str.len == 1)
-		{
-			out.type = ctok_types[*out.str.ptr];
-			return out;
-		}
-
-		// else table lookup
-		break;
-
-	case CHAR_DIGIT:
-		out.type = TOK_NUM_LITERAL;
-		bool decimal;
-		decimal = false;
-		pos += 1;
-		while (*pos)
-		{
-			if (char_types[*pos] != CHAR_DIGIT)
+		case CHAR_IDENTIFIER:;
+			char curr_type = char_types[*pos];
+			while (curr_type == CHAR_IDENTIFIER || curr_type == CHAR_DIGIT)
 			{
-				if (*pos == '.')
-				{
-					if (decimal) break;
-					decimal = true;
-				}
-				else
-				{
-					break;
-				}
+				++pos;
+				curr_type = char_types[*pos];
 			}
+			out.str.len = pos - out.str.ptr;
+
+			// slight optimization as most keywords and operators are short
+			if (out.str.len > MAX_KEYWORD_LENGTH)
+			{
+				out.type = TOK_IDENTIFIER;
+				goto finish;
+			}
+
+			// else table lookup
+			goto table_lookup;
+			
+		case CHAR_SEPARATOR:
+			out.type = ctok_types[*out.str.ptr];
+			out.str.len = 1;
+			goto finish;
+
+		case CHAR_DOT:
+			if (char_types[*pos] == CHAR_DIGIT)
+			{
+				out.type = TOK_FLOAT_LITERAL;
+				goto float_literal;
+			}
+			while (char_types[*pos] == CHAR_DOT) ++pos;
+			out.str.len = pos - out.str.ptr;
+			out.type = TOK_DOT + out.str.len - 1;
+			if (out.str.len > 3) out.type = TOK_ERROR;
+			goto finish;
+
+		case CHAR_OPERATOR:
+
+			while (char_types[*pos] == CHAR_OPERATOR) ++pos;
+			out.str.len = pos - out.str.ptr;
+			if (out.str.len == 1)
+			{
+				out.type = ctok_types[*out.str.ptr];
+				goto finish;
+			}
+			goto table_lookup;
+
+
+		float_literal:
+		case CHAR_DIGIT:
+			while (*pos)
+			{
+				// if encounters a dot
+				if (pos[0] == '.')
+				{	
+					// range or elipsis
+					if (pos[1] == '.') break;
+
+					// if multiple dots, flag float or error
+					if (!out.type) out.type = TOK_FLOAT_LITERAL;
+					else out.type = TOK_ERROR;
+
+					pos += 1;
+					continue;
+				}
+				// if encountering non digit/dot
+				if (char_types[*pos] != CHAR_DIGIT) break;
+				pos += 1;
+			}
+			out.str.len = pos - out.str.ptr;
+			if (!out.type) out.type = TOK_INT_LITERAL;
+
+			goto finish;
+
+		case CHAR_QUOTE:
+			// got till non-escaped end of string
+			while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
+			out.str.ptr += 1;
+			out.str.len = pos - out.str.ptr;
 			pos += 1;
-		}
+			if (out.str.ptr[-1] == '\'')
+			{
+				out.type = TOK_CHAR_LITERAL;
+			}
+			else if (out.str.ptr[-1] == '\"')
+			{
+				out.type = TOK_STR_LITERAL;
+			}
+			goto finish;
 
-		*src = pos;
-
-		out.str.len = pos - out.str.ptr;
-		return out;
-
-	case CHAR_QUOTE:
-		printf("First character: %c\n", out.str.ptr[0]);
-		// get end of string
-		pos += 1;
-		// got till non-escaped end of string
-		while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
-		pos += 1;
-		*src = pos;
-		out.str.len = pos - out.str.ptr;
-
-		if (out.str.ptr[0] == '\'') out.type = TOK_CHAR_LITERAL;
-		else if (out.str.ptr[0] == '\"') out.type = TOK_STR_LITERAL;
-
-		return out;
-
-	default:
-		out.type = TOK_ERROR;
-		return out;
+		default:
+			out.type = TOK_ERROR;
+			goto finish;
 	}
 
+	
+finish:
+	*src = pos;
+	return out;
+
+table_lookup:;
 	char tmp[MAX_KEYWORD_LENGTH + 1];
 
 	// table lookup
@@ -205,7 +245,7 @@ token_t lex_next_token(char **src)
 		}
 	}
 
-	return out;
+	goto finish;
 }
 
 toklist_t *lex(char *src)
@@ -215,14 +255,15 @@ toklist_t *lex(char *src)
 	token_t tok = lex_next_token(&src);
 	while (1)
 	{
-		if (tok.type == TOK_NO_TYPE)
+		if (tok.type == TOK_EOF)
 		{
-			puts("Token has no type");
 			break;
 		}
 		else if (tok.type == TOK_ERROR)
 		{
-			puts("Token was error type");
+			fputs("Invalid token: '", stdout);
+			string_print(tok.str);
+			puts("'");
 			break;
 		}
 		toklist_push(out, tok);
