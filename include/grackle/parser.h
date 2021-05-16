@@ -6,10 +6,11 @@
 
 typedef struct node
 {
-	int a;
 	char type;
+	token_t *val;
+	struct node *children;
 } node_t;
 
-node_t parse(toklist_t *toks);
+extern node_t parse(toklist_t *toks);
 
 #endif

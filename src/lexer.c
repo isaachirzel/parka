@@ -110,6 +110,8 @@ token_t lex_next_token(char **src, unsigned line, unsigned short col)
 		}
 		if (*pos == 0)
 		{
+			out.line = line;
+			out.col = col;
 			out.str.ptr = NULL;
 			out.str.len = 0;
 			return out;
@@ -262,18 +264,19 @@ toklist_t *lex(char *src)
 	token_t tok = lex_next_token(&src, 1, 1);
 	while (1)
 	{
-		if (tok.type == TOK_EOF)
-		{
-			break;
-		}
-		else if (tok.type == TOK_ERROR)
+		if (tok.type == TOK_ERROR)
 		{
 			fputs("Invalid token: '", stdout);
 			string_print(tok.str);
 			puts("'");
 			break;
 		}
+
 		toklist_push(out, tok);
+
+		// adding on the eof for memory safety when peeking
+		if (tok.type == TOK_EOF) break;
+
 		tok = lex_next_token(&src, tok.line, tok.col + tok.str.len);
 	}
 
