@@ -45,5 +45,4 @@ void preprocess(char *src)
 		src[oi++] = *pos;
 	}
 	src[oi] = 0;
-	// stripping comments
 }

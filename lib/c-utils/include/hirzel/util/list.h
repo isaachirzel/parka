@@ -91,13 +91,13 @@ extern bool HXFUNC(erase)(HXSTRUCT *list, size_t pos);
 extern bool HXFUNC(popf)(HXSTRUCT *list);
 extern bool HXFUNC(resize)(HXSTRUCT *list, size_t new_size);
 extern bool HXFUNC(swap)(HXSTRUCT *list, size_t a, size_t b);
-extern HXITEM *HXFUNC(atr)(HXSTRUCT *list, size_t i);
+extern HXITEM *HXFUNC(at_ref)(HXSTRUCT *list, size_t i);
 extern bool HXFUNC(put)(HXSTRUCT *list, size_t i, HXITEM item);
-extern bool HXFUNC(putr)(HXSTRUCT *list, size_t i, HXITEM *ref);
-extern void HXFUNC(setr)(HXSTRUCT *list, size_t i, HXITEM *ref);
+extern bool HXFUNC(put_ref)(HXSTRUCT *list, size_t i, HXITEM *ref);
+extern void HXFUNC(set_ref)(HXSTRUCT *list, size_t i, HXITEM *ref);
 extern HXITEM HXFUNC(front)(HXSTRUCT *list);
 extern HXITEM HXFUNC(back)(HXSTRUCT *list);
-extern bool HXFUNC(is_empty)(HXSTRUCT *list);
+extern bool HXFUNC(empty)(HXSTRUCT *list);
 extern void HXFUNC(clear)(HXSTRUCT *list);
 
 /**
@@ -125,7 +125,7 @@ extern HXITEM HXFUNC(get)(HXSTRUCT *list, size_t i);
  * 
  * @return	Refence to item
  */
-extern HXITEM *HXFUNC(getr)(HXSTRUCT *list, size_t i);
+extern HXITEM *HXFUNC(get_ref)(HXSTRUCT *list, size_t i);
 
 /**
  * @brief	Sets item at given position.
@@ -331,7 +331,7 @@ HXITEM HXFUNC(get)(HXSTRUCT *list, size_t i)
 }
 
 // GETR
-HXITEM *HXFUNC(getr)(HXSTRUCT *list, size_t i)
+HXITEM *HXFUNC(get_ref)(HXSTRUCT *list, size_t i)
 {
 	return list->data + i;
 }
@@ -348,7 +348,7 @@ HXITEM HXFUNC(at)(HXSTRUCT *list, size_t i)
 }
 
 // ATR
-HXITEM *HXFUNC(atr)(HXSTRUCT *list, size_t i)
+HXITEM *HXFUNC(at_ref)(HXSTRUCT *list, size_t i)
 {
 	return (i >= list->len) ? NULL : (list->data + i);
 }
@@ -360,7 +360,7 @@ void HXFUNC(set)(HXSTRUCT *list, size_t i, HXITEM item)
 }
 
 // SETR
-void HXFUNC(setr)(HXSTRUCT *list, size_t i, HXITEM *ref)
+void HXFUNC(set_ref)(HXSTRUCT *list, size_t i, HXITEM *ref)
 {
 	list->data[i] = *ref;
 }
@@ -374,7 +374,7 @@ bool HXFUNC(put)(HXSTRUCT *list, size_t i, HXITEM val)
 }
 
 // PUTR
-bool HXFUNC(putr)(HXSTRUCT *list, size_t i, HXITEM *ref)
+bool HXFUNC(put_ref)(HXSTRUCT *list, size_t i, HXITEM *ref)
 {
 	if (i >= list->len) return false;
 	list->data[i] = *ref;
@@ -394,9 +394,9 @@ HXITEM HXFUNC(front)(HXSTRUCT *list)
 }
 
 // IS EMPTY
-bool HXFUNC(is_empty)(HXSTRUCT *list)
+bool HXFUNC(empty)(HXSTRUCT *list)
 {
-	return list->len > 0;
+	return list->len == 0;
 }
 
 // CLEAR

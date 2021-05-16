@@ -1,8 +1,10 @@
 // this is a comment
 int main()
 {
-	int j =/*this
-	is a comment*/2;
+	/*
+		this is a block comment
+	*/
+	char *str = "hello";
 	int i = 0;
 	i += 3;
 	return i;

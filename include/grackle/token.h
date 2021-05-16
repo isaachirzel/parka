@@ -1,27 +1,68 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include <grackle/defs.h>
+#include <grackle/string.h>
 
 enum TokenType
 {
+	// Generic
 	TOK_NO_TYPE,
 	TOK_ERROR,
 	TOK_IDENTIFIER,
-	TOK_INT_TYPE,
-	TOK_DOUBLE_TYPE,
+
+	// Separators
+	TOK_LPAREN,
+	TOK_RPAREN,
+	TOK_LBRACK,
+	TOK_RBRACK,
+	TOK_LBRACE,
+	TOK_RBRACE,
+	TOK_LANGBRACK,
+	TOK_RANGBRACK,
+	TOK_SEMICOLON,
+	TOK_COLON,
+
+	// Bitwise
+	TOK_AND_BIT,
+	TOK_OR_BIT,
+	TOK_XOR_BIT,
+
+	// Boolean
+	TOK_EXCLAMATION,
+	TOK_AND_COMP,
+	TOK_EQ_COMP,
+	TOK_OR_COMP,
+	TOK_NEQ_COMP,
+
+	// Assignment
+	TOK_ASSIGN,
+	TOK_ADD_ASSIGN,
+	TOK_MIN_ASSIGN,
+	TOK_MUL_ASSIGN,
+	TOK_DIV_ASSIGN,
+	TOK_MOD_ASSIGN,
+
+	// Arithmetic
+	TOK_MODULUS,
+	TOK_SLASH,
+	TOK_ASTERISK,
+	TOK_PLUS,
+	TOK_MINUS,
+	TOK_INCREMENT,
+	TOK_DECREMENT,
+
+	// Literals
 	TOK_NUM_LITERAL,
 	TOK_CHAR_LITERAL,
 	TOK_STR_LITERAL,
+
+	// Keywords
 	TOK_RETURN,
-	TOK_ASSIGN,
-	TOK_SEMICOLON,
-	TOK_ADD_ASSIGN,
 };
 
 typedef struct token
 {
-	StringView str;
+	String str;
 	char type;
 } token_t;
 

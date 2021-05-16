@@ -3,7 +3,7 @@
 
 // local includes
 #include <grackle/toklist.h>
-#include <grackle/defs.h> 
+#include <grackle/string.h> 
 
 #define MAX_KEYWORD_LENGTH 15
 
@@ -21,6 +21,6 @@ enum CHAR_TYPES
 // Lexer functions
 extern void lex_init();
 extern void lex_cleanup();
-extern toklist_t *lex(const char *src);
+extern toklist_t *lex(char *src);
 
 #endif

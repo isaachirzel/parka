@@ -1,6 +1,6 @@
 // local includes
 #include <grackle/lex.h>
-#include <grackle/defs.h>
+#include <grackle/string.h>
 #include <grackle/preprocessor.h>
 
 // standard library
@@ -12,43 +12,37 @@
 #define HIRZEL_UTIL_FILE_I
 #include <hirzel/util/file.h>
 
-void print_stringview(StringView view)
+void print_stringview(String view)
 {
-	for (uint16_t i = 0; i < view.len; ++i)
+	for (unsigned i = 0; i < view.len; ++i)
 	{
 		putchar(view.ptr[i]);
 	}
-	putchar('\n');
 }
 
 int main(void)
 {
 	// reading src
-	String src = hxfile_read_text("./test/file.gx");
-	puts("Raw:  ==================");
-	puts(src);
+	char *src = hxfile_read_text("./test/file.gx");
 	preprocess(src);
-	puts("Preprocessed:  =========");
 	puts(src);
 	
-	// // lexing file
-	// puts("INIT");
-	// lex_init();
-	// puts("INIT");
-	// toklist_t *toks = lex(src);
+	// lexing file
+	lex_init();
+	toklist_t *toks = lex(src);
+
+	printf("Size of toks: %zu\n\n", toks->len);
+
+	for (size_t i = 0; i < toks->len; ++i)
+	{
+		token_t *tok = toklist_get_ref(toks, i);
+		print_stringview(tok->str);
+		printf("\t%d\n", (int)tok->type);
+	}
 
 
-	// printf("Size of toks: %zu\n", toks->len);
-
-	// for (size_t i = 0; i < toks->len; ++i)
-	// {
-	// 	token_t *tok = toklist_getr(toks, i);
-	// 	print_stringview(tok->str);
-	// }
-
-
-	// toklist_destroy(toks);
-	// lex_cleanup();
+	toklist_destroy(toks);
+	lex_cleanup();
 	free(src);
 	return 0;
 }
