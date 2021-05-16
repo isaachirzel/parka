@@ -95,25 +95,32 @@ void lex_cleanup()
 	chartbl_destroy(tok_types);
 }
 
-token_t lex_next_token(char **src)
+token_t lex_next_token(char **src, unsigned line, unsigned short col)
 {
-	token_t out;
-	out.type = TOK_EOF;
+	token_t out = {0};
 	char *pos = *src;
 
 	// skip to next visible character
 	while (*pos < 33)
 	{
+		if (*pos == '\n')
+		{
+			line += 1;
+			col = 0;
+		}
 		if (*pos == 0)
 		{
 			out.str.ptr = NULL;
 			out.str.len = 0;
 			return out;
 		}
+		col += 1;
 		++pos;
 	}
 
 	// storing position in token
+	out.line = line;
+	out.col = col;
 	out.str.ptr = pos;
 	char type = char_types[*pos];
 	pos += 1;
@@ -252,7 +259,7 @@ toklist_t *lex(char *src)
 {
 	toklist_t *out = toklist_create();
 
-	token_t tok = lex_next_token(&src);
+	token_t tok = lex_next_token(&src, 1, 1);
 	while (1)
 	{
 		if (tok.type == TOK_EOF)
@@ -267,7 +274,7 @@ toklist_t *lex(char *src)
 			break;
 		}
 		toklist_push(out, tok);
-		tok = lex_next_token(&src);
+		tok = lex_next_token(&src, tok.line, tok.col + tok.str.len);
 	}
 
 	return out;

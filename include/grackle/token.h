@@ -67,6 +67,7 @@ enum TokenType
 
 	// Keywords
 	TOK_RETURN,
+	TOK_FOR
 };
 
 typedef struct token

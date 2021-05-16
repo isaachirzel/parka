@@ -9,7 +9,6 @@ int main()
 	int i2 = 0. - 00.00;
 	
 	2..3
-	//for (2..3);
 	i += 3;
 	return i;
 }

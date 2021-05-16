@@ -29,7 +29,7 @@ int main(void)
 	{
 		token_t *tok = toklist_get_ref(toks, i);
 		string_print(tok->str);
-		printf("\t%d\n", (int)tok->type);
+		printf("\ttype %d\tline: %u\tcol: %u\n", (int)tok->type, tok->line, tok->col);
 	}
 
 
