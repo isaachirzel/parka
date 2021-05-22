@@ -3,13 +3,7 @@
 
 // local includes
 #include <grackle/toklist.h>
-
-typedef struct node
-{
-	char type;
-	token_t *val;
-	struct node *children;
-} node_t;
+#include <grackle/node.h>
 
 extern node_t parse(toklist_t *toks);
 
