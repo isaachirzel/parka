@@ -9,6 +9,28 @@
 
 */
 
+node_t *parse_typename(toklist_t *toks, size_t *index)
+{
+	size_t i = *index;
+	token_t *t = toklist_get_ref(toks, i);
+
+	if (!t) return NULL;
+
+	switch (t->type)
+	{
+	case TOK_I32_TYPE:
+		break;
+
+	default:
+		return NULL;
+	}
+
+	node_t *out = node_create(NODE_TYPENAME);
+	out->val = t;
+	return out;
+}
+
+
 node_t *parse_identifier(toklist_t *toks, size_t *index)
 {
 	token_t *t = toklist_get_ref(toks, *index);
@@ -18,6 +40,7 @@ node_t *parse_identifier(toklist_t *toks, size_t *index)
 	*index += 1;
 	return identifier;
 }
+
 
 node_t *parse_arglist(toklist_t *toks, size_t *index)
 {
@@ -39,27 +62,52 @@ node_t *parse_arglist(toklist_t *toks, size_t *index)
 	return arglist;
 }
 
+
 node_t *parse_expression(toklist_t *toks, size_t *index)
 {
 	node_t *expression = node_create(NODE_EXPRESSION);
 	return expression;
 }
 
+
+#define fail(err) { error = err; goto exit_failure; }
+
 node_t *parse_statement(toklist_t *toks, size_t *index)
 {
-	node_t *statement = node_create(NODE_STATEMENT);
+	node_t *statement = NULL;
 	size_t i = *index;
 	token_t *t = toklist_get_ref(toks, i++);
 	
+	const char *error = NULL;
+
 	switch (t->type)
 	{
 	case TOK_LBRACE:
+		statement = node_create(NODE_COMPOUND_STMT);
 		t = toklist_get_ref(toks, i++);
-		if (t->type != TOK_RBRACE)
+		while (t->type != TOK_RBRACE)
 		{
-			puts("error: expected '}' at end of statement block");
-			goto exit_failure;
+			if (t->type == TOK_EOF) fail("expected '}' at end of statement block");
+			node_t *n = parse_statement(toks, index);
+			if (!n) goto exit_failure;
+			node_push_arg(statement, n);
 		}
+		break;
+
+	// declaration
+	case TOK_VAR:
+		statement = node_create(NODE_VAR_DECLARATION);
+		node_t *n = parse_identifier(toks, &i);
+		if (!n) goto exit_failure;
+		node_push_arg(statment, n);
+		// type specifier
+		t = toklist_get_ref(toks, i++);
+		if (t->type == TOK_COLON)
+		{
+			statement->type = NODE_TYPE_DECLARATION;
+			n = 
+		}
+
 		break;
 
 	default:
@@ -70,9 +118,12 @@ node_t *parse_statement(toklist_t *toks, size_t *index)
 	return statement;
 
 exit_failure:
+	if (!error) error = "failed to parse statement";
+	fprintf(stderr, "error: %s\n", error);
 	node_destroy(statement);
 	return NULL;
 }
+
 
 node_t *parse_function(toklist_t *toks, size_t *index)
 {
@@ -117,6 +168,7 @@ exit_failure:
 	return NULL;
 }
 
+
 node_t *parse_program(toklist_t *toks, size_t *index)
 {
 	node_t *program = node_create(NODE_PROGRAM);
@@ -135,6 +187,7 @@ exit_failure:
 	node_destroy(program);
 	return NULL;
 }
+
 
 node_t *parse(toklist_t *toks)
 {

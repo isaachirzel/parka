@@ -1,6 +1,8 @@
 // this is a comment
-int main()
+
+func main() -> int
 {
+	var i : i32 = 0;
 	/*
 		this is a block comment
 	*/

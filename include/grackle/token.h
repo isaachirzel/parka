@@ -65,6 +65,11 @@ enum TokenType
 	TOK_CHAR_LITERAL,
 	TOK_STR_LITERAL,
 
+	// Typenames
+	TOK_VAR,
+	TOK_TYPENAME,
+	TOK_I32_TYPE,
+
 	// Keywords
 	TOK_RETURN,
 	TOK_FOR

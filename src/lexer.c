@@ -88,6 +88,8 @@ void lex_init()
 	tok_types = chartbl_create();
 	chartbl_set(tok_types, "return", TOK_RETURN);
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
+	chartbl_set(tok_types, "var", TOK_VAR);
+	chartbl_set(tok_types, "i32", TOK_I32_TYPE);
 }
 
 void lex_cleanup()

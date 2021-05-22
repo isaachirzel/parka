@@ -25,6 +25,8 @@ void print_toks(toklist_t *toks)
 	}
 }
 
+#include <stdint.h>
+
 int main(void)
 {
 	// reading src

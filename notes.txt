@@ -1,0 +1,11 @@
+Primitive types:
+
+The main types will have their bitwidth in the same but these will likely have
+built in typedef aliases to their c/c++ counterparts. As in i8 can be called 
+char or long can be i64. word will be a platform dependent choice that is the
+size of the computer's register
+
+var								Generic type
+i8, i16, i32, i64, word:		Integer types
+f32, f64, dec					Float types
+str								Char array
