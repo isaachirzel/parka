@@ -1,7 +1,8 @@
 // local includes
-#include <grackle/lexer.h>
 #include <grackle/string.h>
 #include <grackle/preprocessor.h>
+#include <grackle/lexer.h>
+#include <grackle/parser.h>
 
 // standard library
 #include <stdlib.h>
@@ -12,17 +13,8 @@
 #define HIRZEL_UTIL_FILE_I
 #include <hirzel/util/file.h>
 
-int main(void)
+void print_toks(toklist_t *toks)
 {
-	// reading src
-	char *src = hxfile_read_text("./test/file.gx");
-	preprocess(src);
-	puts(src);
-	puts("====================================");
-	// lexing file
-	lex_init();
-	toklist_t *toks = lex(src);
-
 	printf("Size of toks: %zu\n\n", toks->len);
 
 	for (size_t i = 0; i < toks->len; ++i)
@@ -31,8 +23,30 @@ int main(void)
 		string_print(tok->str);
 		printf("\ttype %d\tline: %u\tcol: %u\n", (int)tok->type, tok->line, tok->col);
 	}
+}
 
+int main(void)
+{
+	// reading src
+	char *src = hxfile_read_text("./test/file.gx");
+	// preprocessing src
+	preprocess(src);
 
+	// printing src
+	// puts(src);
+
+	// lexing src
+	lex_init();
+	toklist_t *toks = lex(src);
+
+	// pritning toks
+	// print_toks(toks);
+
+	// parsing src
+	node_t *ast = parse(toks);
+
+	// memory cleanup
+	node_destroy(ast);
 	toklist_destroy(toks);
 	lex_cleanup();
 	free(src);

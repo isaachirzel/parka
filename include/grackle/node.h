@@ -3,23 +3,29 @@
 
 // local includes
 #include <grackle/token.h>
+#include <stdbool.h>
 
 enum NodeType
 {
 	NODE_NO_TYPE,
 	NODE_PROGRAM,
+	NODE_FUNCTION,
 	NODE_STATEMENT,
+	NODE_EXPRESSION,
+	NODE_IDENTIFIER,
+	NODE_ARGLIST,
 };
 
 typedef struct node
 {
 	char type;
-	token_t *vals;
-	unsigned valc;
-	struct node *args;
+	token_t *val;
+	struct node **args;
 	unsigned argc;
 } node_t;
 
-node_t *node_create(char type, 
+extern node_t *node_create(char type);
+extern void node_destroy(node_t *node);
+extern bool node_push_arg(node_t *node, node_t *arg);
 
 #endif
