@@ -29,8 +29,10 @@ void print_toks(toklist_t *toks)
 
 int main(void)
 {
+	const char *filepath = "./test/file.gx";
+	log_set_filepath(filepath);
 	// reading src
-	char *src = hxfile_read_text("./test/file.gx");
+	char *src = hxfile_read_text(filepath);
 	// preprocessing src
 	preprocess(src);
 
@@ -40,7 +42,7 @@ int main(void)
 	// lexing src
 	lex_init();
 	toklist_t *toks = lex(src);
-
+	if (!toks) return 1;
 	// pritning toks
 	// print_toks(toks);
 

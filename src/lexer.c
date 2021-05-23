@@ -3,6 +3,7 @@
 
 // local includes
 #include <grackle/chartbl.h>
+#include <grackle/log.h>
 
 // standard libary
 #include <stdlib.h>
@@ -50,6 +51,7 @@ void lex_init()
 	char_types['='] = CHAR_OPERATOR;
 	char_types['<'] = CHAR_OPERATOR;
 	char_types['>'] = CHAR_OPERATOR;
+	char_types[':'] = CHAR_OPERATOR;
 
 	// setting literal types
 	char_types['\''] = CHAR_QUOTE;
@@ -83,13 +85,15 @@ void lex_init()
 	ctok_types['-'] = TOK_MINUS;
 	ctok_types['<'] = TOK_LANGBRACK;
 	ctok_types['>'] = TOK_RANGBRACK;
+	ctok_types[':'] = TOK_COLON;
 
 	// initializing token types
 	tok_types = chartbl_create();
 	chartbl_set(tok_types, "return", TOK_RETURN);
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
+	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
-	chartbl_set(tok_types, "i32", TOK_I32_TYPE);
+	chartbl_set(tok_types, "->", TOK_SINGLE_ARROW);
 }
 
 void lex_cleanup()
@@ -222,6 +226,7 @@ token_t lex_next_token(char **src, unsigned line, unsigned short col)
 			goto finish;
 
 		default:
+			out.str.len = 1;
 			out.type = TOK_ERROR;
 			goto finish;
 	}
@@ -268,10 +273,16 @@ toklist_t *lex(char *src)
 	{
 		if (tok.type == TOK_ERROR)
 		{
-			fputs("Invalid token: '", stdout);
-			string_print(tok.str);
-			puts("'");
-			break;
+			char str[64] = "invalid token '";
+			for (unsigned i = 0; i < tok.str.len; ++i)
+			{
+				str[i + 15] = tok.str.ptr[i];
+			}
+			str[tok.str.len + 15] = '\'';
+			str[tok.str.len + 16] = 0;
+			log_error(&tok, str);
+			toklist_destroy(out);
+			return NULL;
 		}
 
 		toklist_push(out, tok);

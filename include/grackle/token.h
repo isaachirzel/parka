@@ -27,6 +27,10 @@ enum TokenType
 	TOK_RANGE,		// 2 dots
 	TOK_ELIPSIS,	// 3 dots
 
+	// Misc 
+	TOK_SINGLE_ARROW,
+	TOK_DOUBLE_ARROW,
+
 	// Bitwise
 	TOK_AND_BIT,
 	TOK_OR_BIT,
@@ -67,8 +71,7 @@ enum TokenType
 
 	// Typenames
 	TOK_VAR,
-	TOK_TYPENAME,
-	TOK_I32_TYPE,
+	TOK_FUNC,
 
 	// Keywords
 	TOK_RETURN,

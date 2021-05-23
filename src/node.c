@@ -20,6 +20,7 @@ node_t *node_create(char type)
 
 void node_destroy(node_t *node)
 {
+	if (!node) return;
 	// destroy all leaves
 	for (unsigned i = 0; i < node->argc; ++i)
 	{

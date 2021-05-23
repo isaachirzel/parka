@@ -1,4 +1,10 @@
+// header
 #include <grackle/parser.h>
+
+// local includes
+#include <grackle/log.h>
+
+// standard library
 #include <stdio.h>
 
 // ideas:
@@ -9,104 +15,128 @@
 
 */
 
-node_t *parse_typename(toklist_t *toks, size_t *index)
+typedef struct parse_result
 {
-	size_t i = *index;
-	token_t *t = toklist_get_ref(toks, i);
-
-	if (!t) return NULL;
-
-	switch (t->type)
+	bool ok;
+	union
 	{
-	case TOK_I32_TYPE:
-		break;
+		node_t *node;
+		const char* err;
+	};
+} result_t;
 
-	default:
-		return NULL;
+typedef result_t(*parse_func)(toklist_t*, size_t*);
+
+bool get_res(result_t *out, toklist_t* toks, size_t *index, parse_func func)
+{
+	result_t res = func(toks, index);
+
+	if (!res.ok)
+	{
+		node_destroy(out->node);
+		*out = res;
+		return false;
 	}
+	
+	node_push_arg(out->node, res.node);
+	return true;
+}
 
-	node_t *out = node_create(NODE_TYPENAME);
-	out->val = t;
+result_t parse_identifier(toklist_t *toks, size_t *index)
+{
+	node_t *identifier = node_create(NODE_IDENTIFIER);
+	result_t out = { true, NULL };
+	out.node = identifier;
+
+	token_t *t = toklist_get_ref(toks, *index);
+	if (t->type != TOK_IDENTIFIER)
+	{
+		out.ok = false;
+		out.err = "expected identifier";
+		return out;
+	}
+	identifier->val = t;
+	*index += 1;
 	return out;
 }
 
 
-node_t *parse_identifier(toklist_t *toks, size_t *index)
+result_t parse_arglist(toklist_t *toks, size_t *index)
 {
+	result_t out = { true, node_create(NODE_ARGLIST) };
 	token_t *t = toklist_get_ref(toks, *index);
-	if (t->type != TOK_IDENTIFIER) return NULL;
-	node_t *identifier = node_create(NODE_IDENTIFIER);
-	identifier->val = t;
-	*index += 1;
-	return identifier;
-}
 
-
-node_t *parse_arglist(toklist_t *toks, size_t *index)
-{
-	token_t *t = toklist_get_ref(toks, *index);
 	if (t->type != TOK_LPAREN)
 	{
-		puts("error: expected '(' for arglist");
-		return NULL;
+		out.err = "error: expected '(' for arglist";
+		goto exit_failure;
 	}
+
 	*index += 1;
 	t = toklist_get_ref(toks, *index);
 	if (t->type != TOK_RPAREN)
 	{
-		puts("error: expected ')' for arglist");
-		return NULL;
+		out.err = "error: expected ')' for arglist";
+		goto exit_failure;
 	}
+
 	*index += 1;
-	node_t *arglist = node_create(NODE_ARGLIST);
-	return arglist;
+
+	return out;
+
+exit_failure:
+
+	node_destroy(out.node);
+	out.ok = false;
+	return out;
 }
 
 
-node_t *parse_expression(toklist_t *toks, size_t *index)
+result_t parse_expression(toklist_t *toks, size_t *index)
 {
-	node_t *expression = node_create(NODE_EXPRESSION);
-	return expression;
+	result_t out = { true, node_create(NODE_EXPRESSION) };
+	return out;
 }
 
 
-#define fail(err) { error = err; goto exit_failure; }
-
-node_t *parse_statement(toklist_t *toks, size_t *index)
+result_t parse_statement(toklist_t *toks, size_t *index)
 {
-	node_t *statement = NULL;
+	result_t out = { true, node_create(NODE_NO_TYPE) };
 	size_t i = *index;
 	token_t *t = toklist_get_ref(toks, i++);
-	
 	const char *error = NULL;
-
 	switch (t->type)
 	{
 	case TOK_LBRACE:
-		statement = node_create(NODE_COMPOUND_STMT);
+		out.node->type = NODE_COMPOUND_STMT;
 		t = toklist_get_ref(toks, i++);
 		while (t->type != TOK_RBRACE)
 		{
-			if (t->type == TOK_EOF) fail("expected '}' at end of statement block");
-			node_t *n = parse_statement(toks, index);
-			if (!n) goto exit_failure;
-			node_push_arg(statement, n);
+			if (t->type == TOK_EOF)
+			{
+				error = "expected '}' at end of statement block";
+				goto exit_failure;
+			}
+
+			if (!get_res(&out, toks, &i, parse_statement)) return out;
 		}
 		break;
 
 	// declaration
 	case TOK_VAR:
-		statement = node_create(NODE_VAR_DECLARATION);
-		node_t *n = parse_identifier(toks, &i);
-		if (!n) goto exit_failure;
-		node_push_arg(statment, n);
+		out.node->type = NODE_VAR_DECLARATION;
+		if (!get_res(&out, toks, &i, parse_identifier)) return out;
 		// type specifier
-		t = toklist_get_ref(toks, i++);
+		puts("Colon");
+		t = toklist_get_ref(toks, i);
 		if (t->type == TOK_COLON)
 		{
-			statement->type = NODE_TYPE_DECLARATION;
-			n = 
+			i += 1;
+			if (!get_res(&out, toks, &i, parse_identifier)) return out;
 		}
+		puts("assign");
+		// peek for initialization
+		t = toklist_get_ref(toks, i);
 
 		break;
 
@@ -115,82 +145,75 @@ node_t *parse_statement(toklist_t *toks, size_t *index)
 	}
 
 	*index = i;
-	return statement;
+
+	return out;
 
 exit_failure:
-	if (!error) error = "failed to parse statement";
-	fprintf(stderr, "error: %s\n", error);
-	node_destroy(statement);
-	return NULL;
+	node_destroy(out.node);
+	out.ok = false;
+	out.err = error;
+	return out;
 }
 
 
-node_t *parse_function(toklist_t *toks, size_t *index)
+result_t parse_function(toklist_t *toks, size_t *index)
 {
-	node_t *function = node_create(NODE_FUNCTION);
-
-	node_t *n = parse_identifier(toks, index);
-	if (!n)
+	size_t i = *index;
+	token_t *t = toklist_get_ref(toks, i++);
+	const char *error = NULL;
+	if (t->type != TOK_FUNC)
 	{
-		puts("Failed to parse function return type");
+		error = "expected 'func' at function definition";
 		goto exit_failure;
 	}
-	node_push_arg(function, n);
 
-	printf("%s", "Parsed return type: ");
-	string_put(n->val->str);
+	result_t out = { true, node_create(NODE_FUNCTION) };
 
-	n = parse_identifier(toks, index);
-	if (!n)
+	if (!get_res(&out, toks, &i, parse_identifier)) return out;
+
+	if (!get_res(&out, toks, &i, parse_arglist)) return out;
+
+	t = toklist_get_ref(toks, i);
+	if (t->type == TOK_SINGLE_ARROW)
 	{
-		puts("Failed to parse func symbol");
-		goto exit_failure;
+		i += 1;
+		if (!get_res(&out, toks, &i, parse_identifier)) return out;
 	}
-	node_push_arg(function, n);
 
-	printf("%s", "Parsed symbol name: ");
-	string_put(n->val->str);
+	if (!get_res(&out, toks, &i, parse_statement)) return out;
 
-	n = parse_arglist(toks, index);
-	if (!n) goto exit_failure;
-	node_push_arg(function, n);
-	puts("Parsed arglist '()'");
-
-	n = parse_statement(toks, index);
-	if (!n) goto exit_failure;
-	node_push_arg(function, n);
-	puts("Parsed statement: '{}'");
-
-	return function;
-
+	*index = i;
+	return out;
+	
 exit_failure:
-	node_destroy(function);
-	return NULL;
+
+	node_destroy(out.node);
+	out.ok = false;
+	out.err = error;
+	return out;
 }
 
 
-node_t *parse_program(toklist_t *toks, size_t *index)
+result_t parse_program(toklist_t *toks, size_t *index)
 {
-	node_t *program = node_create(NODE_PROGRAM);
-	
+	result_t out = { true, node_create(NODE_PROGRAM) };
+	size_t i = *index;
 
-	node_t *func = parse_function(toks, index);
-	if (!func)
-	{
-		puts("Failed to parse function");
-	}
-	node_push_arg(program, func);
-	
-	return program;
+	get_res(&out, toks, &i, parse_function);
 
-exit_failure:
-	node_destroy(program);
-	return NULL;
+	*index = i;
+	return out;
 }
 
 
 node_t *parse(toklist_t *toks)
 {
 	size_t index = 0;
-	return parse_program(toks, &index);
+	result_t res = parse_program(toks, &index);
+	if (!res.ok)
+	{
+		log_error(toklist_get_ref(toks, index), res.err);
+		return NULL;
+	}
+	return res.node;
 }
