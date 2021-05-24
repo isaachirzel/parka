@@ -3,6 +3,7 @@
 
 // local includes
 #include <grackle/log.h>
+#include <grackle/assert.h>
 
 // standard library
 #include <stdio.h>
@@ -14,6 +15,8 @@
 	It will then parse this statement and memoize it.
 
 */
+
+
 
 typedef struct parse_result
 {
@@ -30,118 +33,108 @@ typedef struct parse_result
 typedef result_t(*parse_func)(toklist_t*, size_t);
 
 
-result_t result_init(char type)
-{
-	return (result_t){ true, node_create(type), 0 };
+#define parse_terminal(term_type) if (toklist_get_ref(toks, index + out.offs)->type != term_type) goto exit_failure; out.offs += 1
+#define is_terminal(term_type) (toklist_get_ref(toks, index + out.offs)->type == term_type)
+#define parse_non_terminal(func)\
+{\
+	result_t res = parse_##func(toks, index + out.offs);\
+	out.offs += res.offs;\
+	if (!res.ok) { node_destroy(out.node); out.ok = false; out.err = res.err; return out; }\
+	node_push_arg(out.node, res.node);\
 }
 
+#define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
+#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(toklist_get_ref(toks, index)->str)
 
-bool get_res(result_t *out, toklist_t* toks, parse_func func)
+#define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
+
+
+// forward declarations of functions
+parse_func(statement);
+parse_func(expression);
+
+
+parse_func(identifier)
 {
-	result_t res = func(toks, out->offs);
-	out->offs += res.offs;
-
-	if (!res.ok)
-	{
-		node_destroy(out->node);
-		out->ok = false;
-		out->err = res.err;
-		return false;
-	}
-
-	node_push_arg(out->node, res.node);
-	return true;
-}
-
-
-result_t parse_identifier(toklist_t *toks, size_t index)
-{
-	puts(__func__);
 	result_t out = result_init(NODE_IDENTIFIER);
-
-	token_t *t = toklist_get_ref(toks, index + out.offs);
-	if (t->type != TOK_IDENTIFIER)
+	out.node->val = toklist_get_ref(toks, index + out.offs);
+	if (out.node->val->type == TOK_IDENTIFIER)
 	{
-		out.ok = false;
-		out.err = "identifier";
+		out.offs += 1;
 		return out;
 	}
-	out.node->val = t;
-	out.offs += 1;
-	return out;
-
-exit_failure:
-	node_destroy(out.node);
-	out.ok = false;
-	out.err = "identifier";
-	return out;
+	parse_failure("identifier");
 }
 
 
-result_t parse_arglist(toklist_t *toks, size_t index)
+parse_func(arglist)
 {
-	puts(__func__);
-	result_t out = { true, node_create(NODE_ARGLIST), 0 };
-	token_t *t = toklist_get_ref(toks, index + out.offs);
+	result_t out = result_init(NODE_ARGLIST);
 
-	if (t->type != TOK_LPAREN)
-	{
-		out.err = "error: expected '(' for arglist";
-		goto exit_failure;
-	}
-
-	out.offs += 1;
-	t = toklist_get_ref(toks, index + out.offs);
-	if (t->type != TOK_RPAREN)
-	{
-		out.err = "error: expected ')' for arglist";
-		goto exit_failure;
-	}
-
-	out.offs += 1;
+	parse_terminal(TOK_LPAREN);
+	parse_terminal(TOK_RPAREN);
 
 	return out;
 
-exit_failure:
-
-	node_destroy(out.node);
-	out.ok = false;
-	return out;
+	parse_failure("argument-list");
 }
 
 
-result_t parse_expression(toklist_t *toks, size_t index)
+parse_func(compound_statement)
 {
-	puts(__func__);
-	result_t out = { true, node_create(NODE_EXPRESSION) };
-	return out;
-}
-
-
-result_t parse_compound_statement(toklist_t *toks, size_t index)
-{
-	puts(__func__);
 	result_t out = result_init(NODE_COMPOUND_STMT);
 	
+	// skip over opening brace
+	parse_terminal(TOK_LBRACE);
+
+	while (!is_terminal(TOK_RBRACE))
+	{
+		parse_non_terminal(statement);
+	}
+
+	// skip over closing brace
+	out.offs += 1;
+
 	return out;
+
+	parse_failure("compound-statement");
 }
 
 
-result_t parse_declaration(toklist_t *toks, size_t index)
+parse_func(declaration)
 {
-	puts(__func__);
 	result_t out = result_init(NODE_VAR_DECLARATION);
 
+	// check for 'var'
+	parse_terminal(TOK_VAR);
+
+	// get identifier
+	parse_non_terminal(identifier);
+
+	// checking for type annotation
+	if (is_terminal(TOK_COLON))
+	{
+		out.offs += 1;
+		parse_non_terminal(identifier);
+	}
+
+	// checking for equals sign
+	parse_terminal(TOK_ASSIGN);
+
+	// get assignment expression
+	parse_non_terminal(expression);
+
+	// semicolon
+	parse_terminal(TOK_SEMICOLON);
+
 	return out;
+
+	parse_failure("declaration");
 }
 
-
-result_t parse_statement(toklist_t *toks, size_t index)
+parse_func(statement)
 {
-	puts(__func__);
-	token_t *t = toklist_get_ref(toks, index);
-
-	switch (t->type)
+	switch (toklist_get_ref(toks, index)->type)
 	{
 	// compound statement
 	case TOK_LBRACE:
@@ -150,68 +143,112 @@ result_t parse_statement(toklist_t *toks, size_t index)
 	// declaration
 	case TOK_VAR:
 		return parse_declaration(toks, index);
-
-	default:;
-		result_t out;
-		out.ok = false;
-		out.err = "statement";
-		out.offs = 0;
-		return out;
 	}
+
+	result_t out;
+	out.ok = false;
+	out.err = "statement";
+	out.offs = 0;
+	return out;
 }
 
 
-result_t parse_function(toklist_t *toks, size_t index)
+parse_func(expression)
 {
-	puts(__func__);
+	result_t out = result_init(NODE_EXPRESSION);
+
+	token_t *t = toklist_get_ref(toks, index);
+
+	// checking first token type
+	switch (t->type)
+	{
+	// straight expressions
+	case TOK_INT_LITERAL:
+	case TOK_FLOAT_LITERAL:
+	case TOK_STR_LITERAL:
+	case TOK_IDENTIFIER:
+		// gotta check for binary expressions
+		out.node->val = t;
+		out.offs = 1;
+		return out;
+
+	// parenthesis expressions
+	case TOK_LPAREN:
+		break;
+
+	// unary operators before expression
+	case TOK_AMPERSAND:
+	case TOK_ASTERISK:
+	case TOK_MINUS:
+	case TOK_EXCLAMATION:
+	case TOK_INCREMENT:
+	case TOK_DECREMENT:
+		// add following expression
+		parse_non_terminal(expression);
+		break;
+
+	}
+
+check_for_binary_expr:
+	t = toklist_get_ref(toks, index + out.offs);
+	switch (t->type)
+	{
+	case TOK_AMPERSAND:
+	case TOK_PLUS:
+	case TOK_MINUS:
+	case TOK_SLASH:
+		break;
+	}
+
+	return out;
+
+	parse_failure("expression");
+}
+
+
+parse_func(function)
+{
 	result_t out = result_init(NODE_FUNCTION);
 	
 	// getting func token
-	token_t *t = toklist_get_ref(toks, index + out.offs);
-	if (t->type != TOK_FUNC) goto exit_failure;
-	out.offs += 1;
+	parse_terminal(TOK_FUNC);
 
 	// getting identifier
-	if (!get_res(&out, toks, parse_identifier)) return out;
+	parse_non_terminal(identifier);
 
 	// getting arg list
-	if (!get_res(&out, toks, parse_arglist)) return out;
+	parse_non_terminal(arglist);
 
 	// checking for return type
-	t = toklist_get_ref(toks, index + out.offs);
-	if (t->type == TOK_SINGLE_ARROW)
+	if (is_terminal(TOK_SINGLE_ARROW))
 	{
 		out.offs += 1;
 		// getting return type
-		if (!get_res(&out, toks, parse_identifier)) return out;
+		parse_non_terminal(identifier);
 	}
 
 	// getting statement
-	if (!get_res(&out, toks, parse_statement)) return out;
+	parse_non_terminal(statement);
 
 	return out;
-	
-exit_failure:
-	node_destroy(out.node);
-	out.ok = false;
-	out.err = "function";
-	return out;
+
+	parse_failure("function");
 }
 
 
-result_t parse_program(toklist_t *toks, size_t index)
+parse_func(program)
 {
 	result_t out = result_init(NODE_PROGRAM);
 
-	if (!get_res(&out, toks, parse_function)) return out;
+	parse_non_terminal(function);
+	// this is how it will work, but we are only doing one for now
+	// while (toklist_get_ref(toks, index + out.offs)->type != TOK_EOF)
+	// {
+	// }
 
 	return out;
 
-exit_failure:
-	node_destroy(out.node);
-	out.ok = false;
-	out.err = "program";
-	return out;
+	parse_failure("program");
 }
 
 

@@ -32,9 +32,9 @@ enum TokenType
 	TOK_DOUBLE_ARROW,
 
 	// Bitwise
-	TOK_AND_BIT,
-	TOK_OR_BIT,
-	TOK_XOR_BIT,
+	TOK_AMPERSAND,
+	TOK_PIPELINE,
+	TOK_CARROT,
 
 	// Boolean
 	TOK_EXCLAMATION,
@@ -75,13 +75,16 @@ enum TokenType
 
 	// Keywords
 	TOK_RETURN,
-	TOK_FOR
+	TOK_FOR,
+
+	// last
+	TOK_COUNT
 };
 
 typedef struct token
 {
 	string_t str;
-	char type;
+	short type;
 	unsigned line;
 	unsigned short col;
 } token_t;

@@ -86,6 +86,9 @@ void lex_init()
 	ctok_types['<'] = TOK_LANGBRACK;
 	ctok_types['>'] = TOK_RANGBRACK;
 	ctok_types[':'] = TOK_COLON;
+	ctok_types['&'] = TOK_AMPERSAND;
+	ctok_types['|'] = TOK_PIPELINE;
+	ctok_types['^'] = TOK_CARROT;
 
 	// initializing token types
 	tok_types = chartbl_create();

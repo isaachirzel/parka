@@ -7,7 +7,7 @@
 
 enum NodeType
 {
-	NODE_NO_TYPE,
+	NODE_NO_TYPE = TOK_COUNT,
 	NODE_PROGRAM,
 	NODE_FUNCTION,
 	NODE_COMPOUND_STMT,
@@ -18,11 +18,14 @@ enum NodeType
 	NODE_TYPENAME,
 	NODE_IDENTIFIER,
 	NODE_ARGLIST,
+
+	// Last
+	NODE_COUNT,
 };
 
 typedef struct node
 {
-	char type;
+	short type;
 	token_t *val;
 	struct node **args;
 	unsigned argc;
