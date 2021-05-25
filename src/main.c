@@ -3,6 +3,7 @@
 #include <grackle/preprocessor.h>
 #include <grackle/lexer.h>
 #include <grackle/parser.h>
+#include <grackle/log.h>
 
 // standard library
 #include <stdlib.h>
@@ -48,6 +49,9 @@ int main(void)
 
 	// parsing src
 	node_t *ast = parse(toks);
+
+	generate(ast);
+
 
 	// memory cleanup
 	node_destroy(ast);

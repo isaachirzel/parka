@@ -8,14 +8,21 @@
 // standard library
 #include <stdio.h>
 
-// ideas:
-/*
-	have a get statemnt function where it will go forward and grab
-	ids until it has found a semi colon.
-	It will then parse this statement and memoize it.
 
-*/
+// convenience defines for easier function definition
+#define parse_terminal(term_type) if (toklist_get_ref(toks, index + out.offs)->type != term_type) goto exit_failure; out.offs += 1
+#define is_terminal(term_type) (toklist_get_ref(toks, index + out.offs)->type == term_type)
+#define parse_non_terminal(func)\
+{\
+	result_t res = parse_##func(toks, index + out.offs);\
+	out.offs += res.offs;\
+	if (!res.ok) { node_destroy(out.node); out.ok = false; out.err = res.err; return out; }\
+	node_push_arg(out.node, res.node);\
+}
 
+#define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
+#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(toklist_get_ref(toks, index)->str)
+#define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
 
 
 typedef struct parse_result
@@ -33,20 +40,6 @@ typedef struct parse_result
 typedef result_t(*parse_func)(toklist_t*, size_t);
 
 
-#define parse_terminal(term_type) if (toklist_get_ref(toks, index + out.offs)->type != term_type) goto exit_failure; out.offs += 1
-#define is_terminal(term_type) (toklist_get_ref(toks, index + out.offs)->type == term_type)
-#define parse_non_terminal(func)\
-{\
-	result_t res = parse_##func(toks, index + out.offs);\
-	out.offs += res.offs;\
-	if (!res.ok) { node_destroy(out.node); out.ok = false; out.err = res.err; return out; }\
-	node_push_arg(out.node, res.node);\
-}
-
-#define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
-#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(toklist_get_ref(toks, index)->str)
-
-#define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
 
 
 // forward declarations of functions

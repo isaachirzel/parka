@@ -34,5 +34,6 @@ typedef struct node
 extern node_t *node_create(char type);
 extern void node_destroy(node_t *node);
 extern bool node_push_arg(node_t *node, node_t *arg);
+extern void node_print(node_t *node);
 
 #endif

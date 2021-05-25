@@ -41,3 +41,17 @@ bool node_push_arg(node_t *node, node_t *arg)
 	node->args[node->argc++] = arg;
 	return true;
 }
+
+void node_print(node_t *node)
+{
+	if (node->val)
+	{
+		string_put(node->val->str);
+		return;
+	}
+	
+	for (unsigned i = 0; i < node->argc; ++i)
+	{
+		node_print(node->args[i]);
+	}
+}
