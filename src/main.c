@@ -22,7 +22,7 @@ void print_toks(toklist_t *toks)
 
 	for (size_t i = 0; i < toks->len; ++i)
 	{
-		token_t *tok = toklist_get_ref(toks, i);
+		token_t *tok = toklist_getref(toks, i);
 		string_print(tok->str);
 		printf("\ttype %d\tline: %u\tcol: %u\n", (int)tok->type, tok->line, tok->col);
 	}

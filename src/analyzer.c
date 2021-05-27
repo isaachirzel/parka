@@ -2,7 +2,7 @@
 #include <grackle/analyzer.h>
 
 // local includes
-#include <grackle/container/symlist.h>
+#include <grackle/container/symtbl.h>
 
 // standard library
 #include <string.h>
@@ -23,17 +23,7 @@ symbol_t namespaces[128] = { { &global_namespace_str, SYM_GLOBAL } };
 // TYPE TABLE
 
 
-#define analyze_func(func) bool analyze_##func(node_t *node, unsigned char depth, symlist_t *syms)
-
-// lineart search to see if symbol exists
-bool symlist_contains(symlist_t *list, symbol_t *sym)
-{
-	for (size_t i = 0; i < list->len; ++i)
-	{
-		if (symlist_get_ref(list, i)->str == sym->str) return true;
-	}
-	return false;
-}
+#define analyze_func(func) bool analyze_##func(node_t *node, unsigned char depth, symtbl_t *syms)
 
 
 void duplicate_symbol_error(symbol_t *sym)
@@ -57,6 +47,7 @@ void duplicate_symbol_error(symbol_t *sym)
 	free(symbol_name);
 }
 
+
 analyze_func(statement)
 {
 	switch (node->type)
@@ -65,8 +56,8 @@ analyze_func(statement)
 		puts("BINGO");
 		// handling identifier
 		symbol_t sym = { &node->args[0]->val->str, SYM_VARIABLE };
-		if (symlist_contains(syms, &sym)) duplicate_symbol_error(&sym);
-		symlist_push(syms, sym);
+		if (symtbl_containsn(syms, sym.str->ptr, sym.str->len)) duplicate_symbol_error(&sym);
+		symtbl_setnref(syms, sym.str->ptr, sym.str->len, &sym);
 
 		// handling type
 
@@ -76,39 +67,49 @@ analyze_func(statement)
 	}
 }
 
+
 analyze_func(compound_statement)
 {
 	
 }
+
 
 analyze_func(function)
 {
 	puts(__func__);
 
 	// handling identifier
+	puts("A");
 	// creating symbol
 	symbol_t sym = { &node->args[0]->val->str, SYM_FUNCTION };
+	puts("A");
 	// error if symbol already exists in current scope
-	if (symlist_contains(syms, &sym)) duplicate_symbol_error(&sym);
+	if (symtbl_containsn(syms, sym.str->ptr, sym.str->len)) duplicate_symbol_error(&sym);
+	puts("A");
 	// adding symbol to list
-	symlist_push(syms, sym);
+	symtbl_setnref(syms, sym.str->ptr, sym.str->len, &sym);
+	puts("A");
 	namespaces[++depth] = sym;
-
+puts("A");
 	// handling type
 	if (node->args[2]->val->type == TOK_IDENTIFIER)
 	{
 		// TODO: check if type exists
 		// puts("IT's an IDENTIFIER");
 	}
-
+puts("A");
 	// handling body. This is done by analyzing each statement of compound body
 	// as analyze_compound_statement changes the scope
-	symlist_t *func_syms = symlist_create();
+	puts("G");
+	symtbl_t *func_syms = symtbl_create();
+	puts("B");
 	if (node->args[3]->type == NODE_COMPOUND_STMT)
 	{
+		puts("B");
 		for (size_t i = 0; i < node->args[3]->argc; ++i)
 		{
 			analyze_statement(node->args[3]->args[i], depth, func_syms);
+			puts("C");
 		}
 	}
 	else
@@ -116,19 +117,19 @@ analyze_func(function)
 		// single statement functions
 		analyze_statement(node->args[3], depth, func_syms);
 	}
-	symlist_destroy(func_syms);
+	symtbl_destroy(func_syms);
 }
 
 
 analyze_func(program)
 {
 	puts(__func__);
-	syms = symlist_create();
+	syms = symtbl_create();
 	for (unsigned i = 0; i < node->argc; ++i)
 	{
 		analyze_function(node->args[i], depth, syms);
 	}
-	symlist_destroy(syms);
+	symtbl_destroy(syms);
 }
 
 void analyze(node_t *node)

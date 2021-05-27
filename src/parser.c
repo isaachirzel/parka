@@ -10,8 +10,8 @@
 
 
 // convenience defines for easier function definition
-#define parse_terminal(term_type) if (toklist_get_ref(toks, index + out.offs)->type != term_type) goto exit_failure; out.offs += 1
-#define is_terminal(term_type) (toklist_get_ref(toks, index + out.offs)->type == term_type)
+#define parse_terminal(term_type) if (toklist_getref(toks, index + out.offs)->type != term_type) goto exit_failure; out.offs += 1
+#define is_terminal(term_type) (toklist_getref(toks, index + out.offs)->type == term_type)
 #define parse_non_terminal(func)\
 {\
 	result_t res = parse_##func(toks, index + out.offs);\
@@ -21,7 +21,7 @@
 }
 
 #define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
-#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(toklist_get_ref(toks, index)->str)
+#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(toklist_getref(toks, index)->str)
 #define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
 
 
@@ -48,7 +48,7 @@ parse_func(expression);
 parse_func(identifier)
 {
 	result_t out = result_init(NODE_IDENTIFIER);
-	out.node->val = toklist_get_ref(toks, index);
+	out.node->val = toklist_getref(toks, index);
 	if (out.node->val->type == TOK_IDENTIFIER)
 	{
 		out.offs += 1;
@@ -61,7 +61,7 @@ parse_func(identifier)
 parse_func(typename)
 {
 	result_t out = result_init(NODE_TYPENAME);
-	out.node->val = toklist_get_ref(toks, index);
+	out.node->val = toklist_getref(toks, index);
 	switch (out.node->val->type)
 	{
 	case TOK_IDENTIFIER:
@@ -155,7 +155,7 @@ parse_func(declaration)
 
 parse_func(statement)
 {
-	switch (toklist_get_ref(toks, index)->type)
+	switch (toklist_getref(toks, index)->type)
 	{
 	// compound statement
 	case TOK_LBRACE:
@@ -178,7 +178,7 @@ parse_func(expression)
 {
 	result_t out = result_init(NODE_EXPRESSION);
 
-	token_t *t = toklist_get_ref(toks, index);
+	token_t *t = toklist_getref(toks, index);
 
 	// checking first token type
 	switch (t->type)
@@ -211,7 +211,7 @@ parse_func(expression)
 	}
 
 check_for_binary_expr:
-	t = toklist_get_ref(toks, index + out.offs);
+	t = toklist_getref(toks, index + out.offs);
 	switch (t->type)
 	{
 	case TOK_AMPERSAND:
@@ -267,7 +267,7 @@ parse_func(program)
 	result_t out = result_init(NODE_PROGRAM);
 
 	// parse functions until end of file is reached
-	while (toklist_get_ref(toks, index + out.offs)->type != TOK_EOF)
+	while (toklist_getref(toks, index + out.offs)->type != TOK_EOF)
 	{
 		parse_non_terminal(function);
 	}
@@ -283,7 +283,7 @@ node_t *parse(toklist_t *toks)
 	result_t res = parse_program(toks, 0);
 	if (!res.ok)
 	{
-		log_parse_error(toklist_get_ref(toks, res.offs), res.err);
+		log_parse_error(toklist_getref(toks, res.offs), res.err);
 		return NULL;
 	}
 	return res.node;

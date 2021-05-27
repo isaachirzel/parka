@@ -11,13 +11,13 @@
 #define HXCONCAT(a, b) a##b
 #define HXTYPEDEF_NAME(base) HXCONCAT(base, _t)
 #define HXSTRUCT_NAME(base) struct base
-#define HXFUNC_NAME(base, postfix) HXCONCAT(base, postfix)
+#define HXSYM_NAME(base, postfix) HXCONCAT(base, postfix)
 
 // Conventent macro aliases 
 #define HXSTRUCT 	HXSTRUCT_NAME(HIRZEL_CONTAINER_NAME)
 #define HXTYPEDEF 	HXTYPEDEF_NAME(HIRZEL_CONTAINER_NAME)
 #define HXITEM		HIRZEL_CONTAINER_ITEM
-#define HXFUNC(name) HXFUNC_NAME(HIRZEL_CONTAINER_NAME, _##name)
+#define HXSYM(name) HXSYM_NAME(HIRZEL_CONTAINER_NAME, _##name)
 
 
 #include <stddef.h>
@@ -40,14 +40,14 @@ typedef HXSTRUCT
  * 
  * @return	pointer to list
  */
-extern HXSTRUCT *HXFUNC(create)();
+extern HXSTRUCT *HXSYM(create)();
 
 /**
  * @brief	Frees memory used by list instance
  * 
  * @param	list	hxlist pointer
  */
-extern void HXFUNC(destroy)(HXSTRUCT *list);
+extern void HXSYM(destroy)(HXSTRUCT *list);
 
 /**
  * @brief	Pushes item to end of list.
@@ -57,7 +57,9 @@ extern void HXFUNC(destroy)(HXSTRUCT *list);
  * 
  * @return	true on success, false on failure
  */
-extern bool HXFUNC(push)(HXSTRUCT *list, HXITEM item);
+extern bool HXSYM(push)(HXSTRUCT *list, HXITEM item);
+
+extern bool HXSYM(pushref)(HXSTRUCT *list, HXITEM *item);
 
 /**
  * @brief	Gets item at a given index.
@@ -70,7 +72,7 @@ extern bool HXFUNC(push)(HXSTRUCT *list, HXITEM item);
  * 
  * @return	Copy of item
  */
-extern HXITEM HXFUNC(at)(HXSTRUCT *list, size_t i);
+extern HXITEM HXSYM(at)(HXSTRUCT *list, size_t i);
 
 /**
  * @brief	Gets reference to item at given index.
@@ -84,21 +86,21 @@ extern HXITEM HXFUNC(at)(HXSTRUCT *list, size_t i);
  * @return	Reference to item or NULL
  */
 
-extern bool HXFUNC(pop)(HXSTRUCT* list);
-extern bool HXFUNC(insert)(HXSTRUCT *list, size_t pos, HXITEM item);
-extern bool HXFUNC(pushf)(HXSTRUCT *list, HXITEM item);
-extern bool HXFUNC(erase)(HXSTRUCT *list, size_t pos);
-extern bool HXFUNC(popf)(HXSTRUCT *list);
-extern bool HXFUNC(resize)(HXSTRUCT *list, size_t new_size);
-extern bool HXFUNC(swap)(HXSTRUCT *list, size_t a, size_t b);
-extern HXITEM *HXFUNC(at_ref)(HXSTRUCT *list, size_t i);
-extern bool HXFUNC(put)(HXSTRUCT *list, size_t i, HXITEM item);
-extern bool HXFUNC(put_ref)(HXSTRUCT *list, size_t i, HXITEM *ref);
-extern void HXFUNC(set_ref)(HXSTRUCT *list, size_t i, HXITEM *ref);
-extern HXITEM HXFUNC(front)(HXSTRUCT *list);
-extern HXITEM HXFUNC(back)(HXSTRUCT *list);
-extern bool HXFUNC(empty)(HXSTRUCT *list);
-extern void HXFUNC(clear)(HXSTRUCT *list);
+extern bool HXSYM(pop)(HXSTRUCT* list);
+extern bool HXSYM(insert)(HXSTRUCT *list, size_t pos, HXITEM item);
+extern bool HXSYM(pushf)(HXSTRUCT *list, HXITEM item);
+extern bool HXSYM(erase)(HXSTRUCT *list, size_t pos);
+extern bool HXSYM(popf)(HXSTRUCT *list);
+extern bool HXSYM(resize)(HXSTRUCT *list, size_t new_size);
+extern bool HXSYM(swap)(HXSTRUCT *list, size_t a, size_t b);
+extern HXITEM *HXSYM(atref)(HXSTRUCT *list, size_t i);
+extern bool HXSYM(put)(HXSTRUCT *list, size_t i, HXITEM item);
+extern bool HXSYM(putref)(HXSTRUCT *list, size_t i, HXITEM *ref);
+extern void HXSYM(setref)(HXSTRUCT *list, size_t i, HXITEM *ref);
+extern HXITEM HXSYM(front)(HXSTRUCT *list);
+extern HXITEM HXSYM(back)(HXSTRUCT *list);
+extern bool HXSYM(empty)(HXSTRUCT *list);
+extern void HXSYM(clear)(HXSTRUCT *list);
 
 /**
  * @brief	Gets item at given position.
@@ -111,7 +113,7 @@ extern void HXFUNC(clear)(HXSTRUCT *list);
  * 
  * @return	Copy of item
  */
-extern HXITEM HXFUNC(get)(HXSTRUCT *list, size_t i);
+extern HXITEM HXSYM(get)(HXSTRUCT *list, size_t i);
 
 
 /**
@@ -125,7 +127,7 @@ extern HXITEM HXFUNC(get)(HXSTRUCT *list, size_t i);
  * 
  * @return	Refence to item
  */
-extern HXITEM *HXFUNC(get_ref)(HXSTRUCT *list, size_t i);
+extern HXITEM *HXSYM(getref)(HXSTRUCT *list, size_t i);
 
 /**
  * @brief	Sets item at given position.
@@ -137,14 +139,15 @@ extern HXITEM *HXFUNC(get_ref)(HXSTRUCT *list, size_t i);
  * @param	i		index of element
  * @param	val		new value to assign
  */
-extern void HXFUNC(set)(HXSTRUCT *list, size_t i, HXITEM item);
+extern void HXSYM(set)(HXSTRUCT *list, size_t i, HXITEM item);
 
 
 #ifdef HIRZEL_IMPLEMENT
 #undef HIRZEL_IMPLEMENT
 
+
 // CREATE
-HXSTRUCT *HXFUNC(create)()
+HXSTRUCT *HXSYM(create)()
 {
 	// allocate buffer
 	HXSTRUCT *out = (HXSTRUCT*)malloc(sizeof(HXSTRUCT));
@@ -158,15 +161,17 @@ HXSTRUCT *HXFUNC(create)()
 	return out;
 }
 
+
 // DESTROY
-void HXFUNC(destroy)(HXSTRUCT *list)
+void HXSYM(destroy)(HXSTRUCT *list)
 {
 	free(list->data);
 	free(list);
 }
 
-// PUSH
-bool HXFUNC(push)(HXSTRUCT *list, HXITEM item)
+
+// PUSH REF
+bool HXSYM(pushref)(HXSTRUCT *list, HXITEM *item)
 {
 	// calculate current isze of buffer in bytes
 	size_t size = list->len * sizeof(HXITEM);
@@ -177,15 +182,23 @@ bool HXFUNC(push)(HXSTRUCT *list, HXITEM item)
 	// repoint buffer
 	list->data = tmp;
 	// put new item at end
-	list->data[list->len] = item;
+	list->data[list->len] = *item;
 	// increment size
 	list->len += 1;
 	// success
 	return true;
 }
 
+
+// PUSH
+bool HXSYM(push)(HXSTRUCT *list, HXITEM item)
+{
+	return HXSYM(pushref)(list, &item);
+}
+
+
 // POP
-bool HXFUNC(pop)(HXSTRUCT* list)
+bool HXSYM(pop)(HXSTRUCT* list)
 {
 	if (list->len == 0) return false;
 	HXITEM *tmp = realloc(list->data, (list->len - 1)	* sizeof(HXITEM));
@@ -195,8 +208,9 @@ bool HXFUNC(pop)(HXSTRUCT* list)
 	return true;
 }
 
+
 // INSERT
-bool HXFUNC(insert)(HXSTRUCT *list, size_t pos, HXITEM item)
+bool HXSYM(insert)(HXSTRUCT *list, size_t pos, HXITEM item)
 {
 	// bounds check
 	if (pos > list->len) return false;
@@ -232,8 +246,9 @@ bool HXFUNC(insert)(HXSTRUCT *list, size_t pos, HXITEM item)
 	return true;
 }
 
+
 // PUSHF
-bool HXFUNC(pushf)(HXSTRUCT *list, HXITEM item)
+bool HXSYM(pushf)(HXSTRUCT *list, HXITEM item)
 {
 	// allocating new buffer
 	HXITEM *tmp = (HXITEM*)malloc((list->len + 1) * sizeof(HXSTRUCT));
@@ -254,8 +269,9 @@ bool HXFUNC(pushf)(HXSTRUCT *list, HXITEM item)
 	return true;
 }
 
+
 // ERASE
-bool HXFUNC(erase)(HXSTRUCT *list, size_t pos)
+bool HXSYM(erase)(HXSTRUCT *list, size_t pos)
 {
 	// bounds check
 	if (pos > list->len) return false;
@@ -276,8 +292,9 @@ bool HXFUNC(erase)(HXSTRUCT *list, size_t pos)
 	return true;
 }
 
+
 // POPF
-bool HXFUNC(popf)(HXSTRUCT *list)
+bool HXSYM(popf)(HXSTRUCT *list)
 {
 	// bounds checking
 	if (list->len == 0) return false;
@@ -299,8 +316,9 @@ bool HXFUNC(popf)(HXSTRUCT *list)
 
 }
 
+
 // RESIZE
-bool HXFUNC(resize)(HXSTRUCT *list, size_t new_size)
+bool HXSYM(resize)(HXSTRUCT *list, size_t new_size)
 {
 	HXITEM *tmp = realloc(list->data, new_size * sizeof(HXITEM));
 	if (!tmp) return false;
@@ -309,8 +327,9 @@ bool HXFUNC(resize)(HXSTRUCT *list, size_t new_size)
 	return true;	
 }
 
+
 // SWAP
-bool HXFUNC(swap)(HXSTRUCT *list, size_t a, size_t b)
+bool HXSYM(swap)(HXSTRUCT *list, size_t a, size_t b)
 {
 	// bounds checking
 	if (a >= list->len || b >= list->len) return false;
@@ -324,20 +343,23 @@ bool HXFUNC(swap)(HXSTRUCT *list, size_t a, size_t b)
 	return true;
 }
 
+
 // GET
-HXITEM HXFUNC(get)(HXSTRUCT *list, size_t i)
+HXITEM HXSYM(get)(HXSTRUCT *list, size_t i)
 {
 	return list->data[i];
 }
 
+
 // GETR
-HXITEM *HXFUNC(get_ref)(HXSTRUCT *list, size_t i)
+HXITEM *HXSYM(getref)(HXSTRUCT *list, size_t i)
 {
 	return list->data + i;
 }
 
+
 // AT
-HXITEM HXFUNC(at)(HXSTRUCT *list, size_t i)
+HXITEM HXSYM(at)(HXSTRUCT *list, size_t i)
 {
 	if (i >= list->len)
 	{
@@ -347,60 +369,69 @@ HXITEM HXFUNC(at)(HXSTRUCT *list, size_t i)
 	return list->data[i];
 }
 
+
 // ATR
-HXITEM *HXFUNC(at_ref)(HXSTRUCT *list, size_t i)
+HXITEM *HXSYM(atref)(HXSTRUCT *list, size_t i)
 {
 	return (i >= list->len) ? NULL : (list->data + i);
 }
 
+
 // SET
-void HXFUNC(set)(HXSTRUCT *list, size_t i, HXITEM item)
+void HXSYM(set)(HXSTRUCT *list, size_t i, HXITEM item)
 {
 	list->data[i] = item;
 }
 
+
 // SETR
-void HXFUNC(set_ref)(HXSTRUCT *list, size_t i, HXITEM *ref)
+void HXSYM(setref)(HXSTRUCT *list, size_t i, HXITEM *ref)
 {
 	list->data[i] = *ref;
 }
 
+
 // PUT
-bool HXFUNC(put)(HXSTRUCT *list, size_t i, HXITEM val)
+bool HXSYM(put)(HXSTRUCT *list, size_t i, HXITEM val)
 {
 	if (i >= list->len) return false;
 	list->data[i] = val;
 	return true;
 }
 
+
 // PUTR
-bool HXFUNC(put_ref)(HXSTRUCT *list, size_t i, HXITEM *ref)
+bool HXSYM(putref)(HXSTRUCT *list, size_t i, HXITEM *ref)
 {
 	if (i >= list->len) return false;
 	list->data[i] = *ref;
 	return true;
 }
 
+
 // BACK
-HXITEM HXFUNC(back)(HXSTRUCT *list)
+HXITEM HXSYM(back)(HXSTRUCT *list)
 {
 	return list->data[list->len - 1];
 }
 
+
 // FRONT
-HXITEM HXFUNC(front)(HXSTRUCT *list)
+HXITEM HXSYM(front)(HXSTRUCT *list)
 {
 	return *(list->data);
 }
 
+
 // IS EMPTY
-bool HXFUNC(empty)(HXSTRUCT *list)
+bool HXSYM(empty)(HXSTRUCT *list)
 {
 	return list->len == 0;
 }
 
+
 // CLEAR
-void HXFUNC(clear)(HXSTRUCT *list)
+void HXSYM(clear)(HXSTRUCT *list)
 {
 	list->len = 0;
 	free(list->data);
@@ -416,8 +447,8 @@ void HXFUNC(clear)(HXSTRUCT *list)
 #undef HXCONCAT
 #undef HXTYPEDEF_NAME
 #undef HXSTRUCT_NAME
-#undef HXFUNC_NAME
+#undef HXSYM_NAME
 #undef HXSTRUCT
 #undef HXTYPEDEF
 #undef HXITEM
-#undef HXFUNC
+#undef HXSYM
