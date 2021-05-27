@@ -2,8 +2,8 @@
 #define LEX_H
 
 // local includes
-#include <grackle/toklist.h>
-#include <grackle/string.h> 
+#include <grackle/container/toklist.h>
+#include <grackle/data/string.h> 
 
 #define MAX_KEYWORD_LENGTH 15
 

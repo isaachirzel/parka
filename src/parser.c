@@ -40,8 +40,6 @@ typedef struct parse_result
 typedef result_t(*parse_func)(toklist_t*, size_t);
 
 
-
-
 // forward declarations of functions
 parse_func(statement);
 parse_func(expression);
@@ -50,13 +48,38 @@ parse_func(expression);
 parse_func(identifier)
 {
 	result_t out = result_init(NODE_IDENTIFIER);
-	out.node->val = toklist_get_ref(toks, index + out.offs);
+	out.node->val = toklist_get_ref(toks, index);
 	if (out.node->val->type == TOK_IDENTIFIER)
 	{
 		out.offs += 1;
 		return out;
 	}
 	parse_failure("identifier");
+}
+
+
+parse_func(typename)
+{
+	result_t out = result_init(NODE_TYPENAME);
+	out.node->val = toklist_get_ref(toks, index);
+	switch (out.node->val->type)
+	{
+	case TOK_IDENTIFIER:
+	case TOK_TYPE_I8:
+	case TOK_TYPE_I16:
+	case TOK_TYPE_I32:
+	case TOK_TYPE_I64:
+	case TOK_TYPE_U8:
+	case TOK_TYPE_U16:
+	case TOK_TYPE_U32:
+	case TOK_TYPE_U64:
+	case TOK_TYPE_F32:
+	case TOK_TYPE_F64:
+	case TOK_TYPE_STR:
+		out.offs += 1;
+		return out;
+	}
+	parse_failure("typename");
 }
 
 
@@ -108,7 +131,12 @@ parse_func(declaration)
 	if (is_terminal(TOK_COLON))
 	{
 		out.offs += 1;
-		parse_non_terminal(identifier);
+		parse_non_terminal(typename);
+	}
+	else
+	{
+		// push empty type if no type is annotated
+		node_push_arg(out.node, node_create(NODE_EMPTY_TYPE));
 	}
 
 	// checking for equals sign
@@ -217,7 +245,12 @@ parse_func(function)
 	{
 		out.offs += 1;
 		// getting return type
-		parse_non_terminal(identifier);
+		parse_non_terminal(typename);
+	}
+	else
+	{
+		// push empty type if no type is annotated
+		node_push_arg(out.node, node_create(NODE_EMPTY_TYPE));
 	}
 
 	// getting statement
@@ -233,11 +266,11 @@ parse_func(program)
 {
 	result_t out = result_init(NODE_PROGRAM);
 
-	parse_non_terminal(function);
-	// this is how it will work, but we are only doing one for now
-	// while (toklist_get_ref(toks, index + out.offs)->type != TOK_EOF)
-	// {
-	// }
+	// parse functions until end of file is reached
+	while (toklist_get_ref(toks, index + out.offs)->type != TOK_EOF)
+	{
+		parse_non_terminal(function);
+	}
 
 	return out;
 

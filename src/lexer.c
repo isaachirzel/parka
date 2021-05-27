@@ -2,7 +2,7 @@
 #include <grackle/lexer.h>
 
 // local includes
-#include <grackle/chartbl.h>
+#include <grackle/container/chartbl.h>
 #include <grackle/log.h>
 
 // standard libary

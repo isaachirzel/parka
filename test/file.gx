@@ -1,9 +1,10 @@
-// this is a comment
+func main() -> biggie
+{
+	var i : i32 = 0;
+	var i : i32 = 12;
+}
 
 func main() -> i32
 {
-	var i : i32 = 0;
-	/*
-		this is a block comment
-	*/
+	var i : i32 = 12;
 }

@@ -1,5 +1,5 @@
 // header
-#include <grackle/node.h>
+#include <grackle/data/node.h>
 
 // standard library
 #include <stdlib.h>

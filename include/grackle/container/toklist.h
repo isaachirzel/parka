@@ -2,7 +2,7 @@
 #define TOKLIST_H
 
 // local includes
-#include <grackle/token.h>
+#include <grackle/data/token.h>
 
 // include for generic list
 #define HIRZEL_CONTAINER_ITEM token_t

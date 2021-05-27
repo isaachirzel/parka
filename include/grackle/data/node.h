@@ -2,7 +2,7 @@
 #define NODE_H
 
 // local includes
-#include <grackle/token.h>
+#include <grackle/data/token.h>
 #include <stdbool.h>
 
 enum NodeType
@@ -15,9 +15,10 @@ enum NodeType
 	NODE_TYPE_DECLARATION,
 	NODE_INITIALIZATION_STMT,
 	NODE_EXPRESSION,
-	NODE_TYPENAME,
 	NODE_IDENTIFIER,
+	NODE_TYPENAME,
 	NODE_ARGLIST,
+	NODE_EMPTY_TYPE,
 
 	// Last
 	NODE_COUNT,

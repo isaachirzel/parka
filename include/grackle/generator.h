@@ -2,7 +2,7 @@
 #define GENERATOR_H
 
 // local includes
-#include <grackle/node.h>
+#include <grackle/data/node.h>
 
 // standard library
 #include <stdio.h>

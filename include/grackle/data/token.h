@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include <grackle/string.h>
+#include <grackle/data/string.h>
 
 enum TokenType
 {
@@ -72,6 +72,19 @@ enum TokenType
 	// Typenames
 	TOK_VAR,
 	TOK_FUNC,
+
+	// Integer types
+	TOK_TYPE_I8,
+	TOK_TYPE_I16,
+	TOK_TYPE_I32,
+	TOK_TYPE_I64,
+	TOK_TYPE_U8,
+	TOK_TYPE_U16,
+	TOK_TYPE_U32,
+	TOK_TYPE_U64,
+	TOK_TYPE_F32,
+	TOK_TYPE_F64,
+	TOK_TYPE_STR,
 
 	// Keywords
 	TOK_RETURN,

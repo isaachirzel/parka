@@ -1,7 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <grackle/token.h>
+#include <grackle/data/token.h>
 
 void log_error(token_t *tok, const char *msg);
 void log_parse_error(token_t *tok, const char *expected);

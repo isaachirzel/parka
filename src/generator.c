@@ -25,12 +25,6 @@ char *generate(node_t *node)
 	switch (node->type)
 	{
 	case NODE_FUNCTION:
-		generate(node->args
-
-		for (unsigned i = 0; i < node->argc; ++i)
-		{
-			generate(node->args[i]);
-		}
 		break;
 
 	case NODE_VAR_DECLARATION:
@@ -41,10 +35,5 @@ char *generate(node_t *node)
 
 		break;
 	}
+	return NULL;
 }
-
-finch
-warbler
-gull
-puffin
-raven
