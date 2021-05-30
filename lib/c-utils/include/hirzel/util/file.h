@@ -1,6 +1,7 @@
 #ifndef HIRZEL_UTIL_FILE_H
 #define HIRZEL_UTIL_FILE_H
 #include <stdio.h>
+#include <stdbool.h>
 
 /**
  * @brief Reads a file into a string
@@ -11,10 +12,14 @@
  * @param	options		options used in fopen: "r", "rb", etc..
  * @return	pointer to string
  */
-extern char* hxfile_read(const char* filepath, const char* options);
+extern char *hxfile_read(const char *filepath);
+extern char *hxfile_read_raw(const char *filepath);
 
-#define hxfile_read_text(filepath) hxfile_read(filepath, "r")
-#define hxfile_read_raw(filepath) hxfile_read(filepath, "rb")
+extern bool hxfile_write(const char *filepath, const char *text);
+extern bool hxfile_write_raw(const char *filepath, const char *text);
+
+extern bool hxfile_append(const char *filepath, const char *text);
+extern bool hxfile_append_raw(const char *filepath, const char *data);
 
 /**
  * @brief Reads line from file stream till newline
@@ -24,7 +29,7 @@ extern char* hxfile_read(const char* filepath, const char* options);
  * @param	stream	file stream
  * @return	pointer to string
  */
-extern char* hxfile_read_line(FILE* stream);
+extern char *hxfile_read_line(FILE* stream);
 
 /**
  * @brief Reads lines from file in text mode
@@ -34,7 +39,7 @@ extern char* hxfile_read_line(FILE* stream);
  * @param	filepath	path to file to read
  * @return	buffer of null terminated lines array
  */
-extern char** hxfile_read_lines(const char* filepath);
+extern char **hxfile_read_lines(const char* filepath);
 
 /**
  * @brief Frees lines gotten from hxfile_read_lines()
@@ -44,17 +49,19 @@ extern void hxfile_free_lines(char** lines);
 
 #endif
 
-#ifdef HIRZEL_UTIL_FILE_I
-#undef HIRZEL_UTIL_FILE_I
+#ifdef HIRZEL_IMPLEMENT
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-char* hxfile_read(const char* file, const char* options)
+
+static char* read(const char* filepath, const char* options)
 {
+	if (!filepath || !options) return NULL;
 	// open file stream
-	FILE* stream = fopen(file, options);
+	FILE *stream = fopen(filepath, options);
+	if (!stream) return NULL;
 	// going to end of stream
 	fseek(stream, 0, SEEK_END);
 	// getting size of stream
@@ -72,10 +79,60 @@ char* hxfile_read(const char* file, const char* options)
 	return str;
 }
 
-char **hxfile_read_lines(const char *file)
+
+char *hxfile_read(const char *filepath)
+{
+	return read(filepath, "r");
+}
+
+
+char *hxfile_read_raw(const char *filepath)
+{
+	return read(filepath, "rb");
+}
+
+
+static bool write(const char *filepath, const char *text, const char *options)
+{
+	if (!filepath || !text || !options) return false;
+	// open file stream
+	FILE *stream = fopen(filepath, options);
+	if (!stream) return false;
+	// writing data
+	fputs(text, stream);
+	// closing file stream
+	fclose(stream);
+	return true;
+}
+
+bool hxfile_write(const char *filepath, const char *text)
+{
+	return write(filepath, text, "w");
+}
+
+
+bool hxfile_write_raw(const char *filepath, const char *text)
+{
+	return write(filepath, text, "wb");
+}
+
+
+bool hxfile_append(const char *filepath, const char *text)
+{
+	return write(filepath, text, "a");
+}
+
+
+bool hxfile_append_raw(const char *filepath, const char *data)
+{
+	return write(filepath, data, "ab");
+}
+
+
+char **hxfile_read_lines(const char *filepath)
 {
 	// read file
-	char* text = hxfile_read_text(file);
+	char* text = hxfile_read(filepath);
 	if (!text) return NULL;
 
 	// iterator
@@ -161,7 +218,7 @@ char *hxfile_read_line(FILE *stream)
 
 void hxfile_free_lines(char **lines)
 {
-	free(lines[0]);
+	free(*lines);
 	free(lines);
 }
 

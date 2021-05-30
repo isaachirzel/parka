@@ -1,7 +1,7 @@
 func main() -> biggie
 {
 	var i : i32 = 0;
-	var i : i32 = 12;
+	var string = "hello";
 }
 
 func main() -> i32

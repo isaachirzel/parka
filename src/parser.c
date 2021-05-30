@@ -21,7 +21,7 @@
 }
 
 #define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
-#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(toklist_getref(toks, index)->str)
+#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(&toklist_getref(toks, index)->str)
 #define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
 
 

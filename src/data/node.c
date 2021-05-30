@@ -46,7 +46,7 @@ void node_print(node_t *node)
 {
 	if (node->val)
 	{
-		string_put(node->val->str);
+		string_put(&node->val->str);
 		return;
 	}
 	

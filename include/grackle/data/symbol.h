@@ -16,6 +16,7 @@ typedef struct symbol
 {
 	string_t *str;
 	char type;
+	
 } symbol_t;
 
 #endif

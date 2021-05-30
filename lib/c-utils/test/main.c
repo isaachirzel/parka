@@ -6,8 +6,57 @@
 
 #include <hirzel/util/file.h>
 
+#define DNE			"dne"
+#define FILE_NAME	"./file.txt"
+#define FILE "this\nis\na\nfile\n"
+#define APPEND "this\nis\nappended\n"
+#define APPENDED_FILE FILE APPEND
 void test_file()
 {
+	puts("Testing file");
+
+	// testing file writing
+	puts("\twriting...");
+	assert(!hxfile_write(NULL, NULL));
+	assert(!hxfile_write(FILE_NAME, NULL));
+	assert(!hxfile_write(NULL, FILE));
+	assert(hxfile_write(FILE_NAME, FILE));
+
+	// testing file appending
+	puts("\tappending...");
+	assert(!hxfile_append(NULL, NULL));
+	assert(!hxfile_append(FILE_NAME, NULL));
+	assert(!hxfile_append(NULL, APPEND));
+	assert(hxfile_append(FILE_NAME, APPEND));
+
+
+	// testing file reading
+	puts("\treading...");
+	char *file = NULL;
+	assert(!hxfile_read(DNE));
+	file = hxfile_read(FILE_NAME);
+	assert(file);
+	char ex[] = APPENDED_FILE;
+	for (size_t i = 0; i < sizeof(ex); ++i) assert(ex[i] == file[i]);
+	free(file);
+
+	// testing line reading
+	char **lines = NULL;
+	assert(!hxfile_read_lines(DNE));
+	lines = hxfile_read_lines(FILE_NAME);
+	
+	// asserting the lines are the same up until the end of the line
+	char **curr_line = lines;
+	const char *epos = ex;
+	while (*curr_line)
+	{
+		for (const char *pos = *curr_line; *pos; ++pos) assert(*pos == *epos++);
+		epos += 1;
+		curr_line += 1;
+	}
+	hxfile_free_lines(lines);
+
+	puts("All tests passed\n");
 }
 
 void test_list()
@@ -232,6 +281,7 @@ void test_table()
 
 int main(void)
 {
+	test_file();
 	test_list();
 	test_table();
 	return 0;

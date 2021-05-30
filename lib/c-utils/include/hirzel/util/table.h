@@ -77,7 +77,6 @@ extern size_t HXSYM(size)(HXSTRUCT *table);
 extern bool HXSYM(resize)(HXSTRUCT *table, unsigned new_size_idx);
 
 #ifdef HIRZEL_IMPLEMENT
-#undef HIRZEL_IMPLEMENT
 
 const size_t HXSYM(sizes)[] = HXTABLE_SIZES;
 

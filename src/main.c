@@ -13,8 +13,8 @@
 #include <assert.h>
 
 // external libraries
-#define HIRZEL_UTIL_FILE_I
 #include <hirzel/util/file.h>
+
 
 void print_toks(toklist_t *toks)
 {
@@ -23,19 +23,18 @@ void print_toks(toklist_t *toks)
 	for (size_t i = 0; i < toks->len; ++i)
 	{
 		token_t *tok = toklist_getref(toks, i);
-		string_print(tok->str);
+		string_print(&tok->str);
 		printf("\ttype %d\tline: %u\tcol: %u\n", (int)tok->type, tok->line, tok->col);
 	}
 }
 
-#include <stdint.h>
 
 int main(void)
 {
 	const char *filepath = "./test/file.gx";
 	log_set_filepath(filepath);
 	// reading src
-	char *src = hxfile_read_text(filepath);
+	char *src = hxfile_read(filepath);
 	// preprocessing src
 	preprocess(src);
 
@@ -52,8 +51,12 @@ int main(void)
 	// parsing src
 	node_t *ast = parse(toks);
 
+	puts("\n");
 	// semantic analysis
-	analyze(ast);
+	if (!analyze(ast))
+	{
+		puts("\033[31mAnalysis failed\033[0m");
+	}
 
 	// code generation
 	char *output = generate(ast);

@@ -143,7 +143,6 @@ extern void HXSYM(set)(HXSTRUCT *list, size_t i, HXITEM item);
 
 
 #ifdef HIRZEL_IMPLEMENT
-#undef HIRZEL_IMPLEMENT
 
 
 // CREATE

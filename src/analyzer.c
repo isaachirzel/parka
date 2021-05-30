@@ -9,24 +9,36 @@
 #include <stdlib.h>
 #include <assert.h>
 
+
 /*
-	Todo for error handling:
-		Type mismatch
-		Undeclared / out-of-scope symbols
-		Multiple declaration of symbols in same scope
-		Actual and formal parameter mismatch
+	Done:
+		- Multiple declaration of symbols in same scope
+	Todo:
+		- Type mismatch
+		- Undeclared / out-of-scope symbols
+		- Actual and formal parameter mismatch
 */
 
-string_t global_namespace_str = { "grac_", 5 };
-symbol_t namespaces[128] = { { &global_namespace_str, SYM_GLOBAL } };
+
+typedef struct scope
+{
+	symbol_t *sym;
+	symtbl_t *sym_table;
+} scope_t;
 
 // TYPE TABLE
 
+// Macro definitions
+#define analyze_func(func) bool analyze_##func(node_t *node, scope_t *scopes, const unsigned short depth)
+#define call(func, node, depth) if (!analyze_##func(node, scopes, depth)) goto exit_failure;
+#define failure(call) exit_failure: { call } return false
 
-#define analyze_func(func) bool analyze_##func(node_t *node, unsigned char depth, symtbl_t *syms)
+#define COLOR_RED		"\033[31m"
+#define COLOR_RESET		"\033[0m"
+#define ERROR_PROMPT	COLOR_RED "error:" COLOR_RESET 
 
 
-void duplicate_symbol_error(symbol_t *sym)
+bool duplicate_symbol_error(symbol_t *sym)
 {
 	char *symbol_name = string_duplicate(sym->str);
 	const char *type = NULL;
@@ -43,8 +55,20 @@ void duplicate_symbol_error(symbol_t *sym)
 		break;
 	}
 
-	printf("\033[91merror:\033[0m %s '%s' previously declared\n", type, symbol_name);
+	printf(ERROR_PROMPT " %s '", type);
+	string_put(sym->str);
+	puts("' was previously declared");
 	free(symbol_name);
+	return false;
+}
+
+
+#define CREATE_SYMTBL(name)\
+symtbl_t *name = symtbl_create();\
+if (!name)\
+{\
+	puts(ERROR_PROMPT "failed to allocate symbol table");\
+	return false;\
 }
 
 
@@ -53,11 +77,16 @@ analyze_func(statement)
 	switch (node->type)
 	{
 	case NODE_VAR_DECLARATION:;
-		puts("BINGO");
+		puts("analyze var declaration");
 		// handling identifier
-		symbol_t sym = { &node->args[0]->val->str, SYM_VARIABLE };
-		if (symtbl_containsn(syms, sym.str->ptr, sym.str->len)) duplicate_symbol_error(&sym);
-		symtbl_setnref(syms, sym.str->ptr, sym.str->len, &sym);
+		string_t *label = &node->args[0]->val->str;
+		symbol_t var_sym = { label, SYM_VARIABLE };
+		if (symtbl_containsn(scopes[depth - 1].sym_table, label->ptr, label->len))
+		{
+			return duplicate_symbol_error(&var_sym);
+		}
+
+		symtbl_setnref(scopes[depth - 1].sym_table, label->ptr, label->len, &var_sym);
 
 		// handling type
 
@@ -65,12 +94,15 @@ analyze_func(statement)
 
 		break;
 	}
+	return true;
+
+	failure();
 }
 
 
 analyze_func(compound_statement)
 {
-	
+	return false;
 }
 
 
@@ -78,64 +110,71 @@ analyze_func(function)
 {
 	puts(__func__);
 
+	// getting function name
+	string_t *label = &node->args[0]->val->str;
 	// handling identifier
-	puts("A");
+	CREATE_SYMTBL(syms);
+
 	// creating symbol
-	symbol_t sym = { &node->args[0]->val->str, SYM_FUNCTION };
-	puts("A");
+	symbol_t symbol = { label, SYM_FUNCTION };
+	scopes[depth] = (scope_t){ &symbol, syms };
+	
 	// error if symbol already exists in current scope
-	if (symtbl_containsn(syms, sym.str->ptr, sym.str->len)) duplicate_symbol_error(&sym);
-	puts("A");
+	if (symtbl_containsn(scopes[depth - 1].sym_table, label->ptr, label->len))
+	{
+		duplicate_symbol_error(&symbol);
+	}
 	// adding symbol to list
-	symtbl_setnref(syms, sym.str->ptr, sym.str->len, &sym);
-	puts("A");
-	namespaces[++depth] = sym;
-puts("A");
+	symtbl_setnref(syms, label->ptr, label->len, &symbol);
+
 	// handling type
 	if (node->args[2]->val->type == TOK_IDENTIFIER)
 	{
 		// TODO: check if type exists
 		// puts("IT's an IDENTIFIER");
 	}
-puts("A");
+
 	// handling body. This is done by analyzing each statement of compound body
 	// as analyze_compound_statement changes the scope
-	puts("G");
-	symtbl_t *func_syms = symtbl_create();
-	puts("B");
+	
 	if (node->args[3]->type == NODE_COMPOUND_STMT)
 	{
-		puts("B");
 		for (size_t i = 0; i < node->args[3]->argc; ++i)
 		{
-			analyze_statement(node->args[3]->args[i], depth, func_syms);
-			puts("C");
+			call(statement, node->args[3]->args[i], depth + 1);
 		}
 	}
 	else
 	{
 		// single statement functions
-		analyze_statement(node->args[3], depth, func_syms);
+		call(statement, node->args[3], depth);
 	}
-	symtbl_destroy(func_syms);
+
+	
+	symtbl_destroy(syms);
+	return true;
+
+	failure(symtbl_destroy(syms););
 }
 
 
-analyze_func(program)
+bool analyze(node_t *node)
 {
-	puts(__func__);
-	syms = symtbl_create();
+	string_t global_prefix = { "grac_", 5 };
+	symbol_t global_symbol = { &global_prefix, SYM_GLOBAL };
+	CREATE_SYMTBL(syms);
+	scope_t scopes[128];
+	scopes[0] = (scope_t){ &global_symbol, syms };
+
 	for (unsigned i = 0; i < node->argc; ++i)
 	{
-		analyze_function(node->args[i], depth, syms);
+		call(function, node->args[i], 1);
 	}
-	symtbl_destroy(syms);
-}
 
-void analyze(node_t *node)
-{
-	puts("\n\n");
-	analyze_program(node, 0, NULL);
+	symtbl_destroy(syms);
+	return true;
+
+	failure(symtbl_destroy(syms););
 }
 
 /*

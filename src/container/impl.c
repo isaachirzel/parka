@@ -1,10 +1,7 @@
 #define HIRZEL_IMPLEMENT
+#include <hirzel/util/file.h>
 #include <grackle/container/toklist.h>
-#define HIRZEL_IMPLEMENT
 #include <grackle/container/chartbl.h>
-#define HIRZEL_IMPLEMENT
 #include <grackle/container/strtbl.h>
-#define HIRZEL_IMPLEMENT
 #include <grackle/container/symtbl.h>
-#define HIRZEL_IMPLEMENT
 #include <grackle/container/typetbl.h>
