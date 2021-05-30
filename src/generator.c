@@ -24,15 +24,11 @@ char *generate(node_t *node)
 
 	switch (node->type)
 	{
-	case NODE_FUNCTION:
-		break;
 
-	case NODE_VAR_DECLARATION:
+	// case NODE_EXPRESSION:
 
-		break;
-
-	case NODE_EXPRESSION:
-
+	// 	break;
+	default:
 		break;
 	}
 	return NULL;

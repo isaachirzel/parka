@@ -16,7 +16,9 @@
 	Todo:
 		- Type mismatch
 		- Undeclared / out-of-scope symbols
+			this will be done in expressions when symbols are used
 		- Actual and formal parameter mismatch
+			this is something that will happen in 
 */
 
 
@@ -29,39 +31,13 @@ typedef struct scope
 // TYPE TABLE
 
 // Macro definitions
-#define analyze_func(func) bool analyze_##func(node_t *node, scope_t *scopes, const unsigned short depth)
-#define call(func, node, depth) if (!analyze_##func(node, scopes, depth)) goto exit_failure;
+#define analyze_func(func) bool analyze_##func(node_t *node, scope_t *scopes, const short depth)
+#define call(func, node, depth) if (!analyze_##func(node, scopes, depth)) goto exit_failure
 #define failure(call) exit_failure: { call } return false
 
 #define COLOR_RED		"\033[31m"
 #define COLOR_RESET		"\033[0m"
 #define ERROR_PROMPT	COLOR_RED "error:" COLOR_RESET 
-
-
-bool duplicate_symbol_error(symbol_t *sym)
-{
-	char *symbol_name = string_duplicate(sym->str);
-	const char *type = NULL;
-	switch (sym->type)
-	{
-	case SYM_FUNCTION:
-		type = "function";
-		break;
-	case SYM_VARIABLE:
-		type = "variable";
-		break;
-	default:
-		type = "symbol";
-		break;
-	}
-
-	printf(ERROR_PROMPT " %s '", type);
-	string_put(sym->str);
-	puts("' was previously declared");
-	free(symbol_name);
-	return false;
-}
-
 
 #define CREATE_SYMTBL(name)\
 symtbl_t *name = symtbl_create();\
@@ -71,13 +47,47 @@ if (!name)\
 	return false;\
 }
 
+//
+//	Error functions
+//
+
+bool duplicate_symbol_error(symbol_t *sym)
+{
+	const char *type = NULL;
+
+	switch (sym->type)
+	{
+	case SYM_FUNCTION:
+		type = "function";
+		break;
+
+	case SYM_VARIABLE:
+		type = "variable";
+		break;
+
+	default:
+		type = "symbol";
+		break;
+	}
+
+	printf(ERROR_PROMPT " %s '", type);
+	string_put(sym->str);
+	puts("' was previously declared");
+	return false;
+}
+
+
+//
+//	Analyze functions
+//
 
 analyze_func(statement)
 {
 	switch (node->type)
 	{
-	case NODE_VAR_DECLARATION:;
+	case NODE_DECL_STMT:;
 		puts("analyze var declaration");
+
 		// handling identifier
 		string_t *label = &node->args[0]->val->str;
 		symbol_t var_sym = { label, SYM_VARIABLE };
@@ -124,6 +134,7 @@ analyze_func(function)
 	{
 		duplicate_symbol_error(&symbol);
 	}
+
 	// adding symbol to list
 	symtbl_setnref(syms, label->ptr, label->len, &symbol);
 
@@ -163,7 +174,7 @@ bool analyze(node_t *node)
 	string_t global_prefix = { "grac_", 5 };
 	symbol_t global_symbol = { &global_prefix, SYM_GLOBAL };
 	CREATE_SYMTBL(syms);
-	scope_t scopes[128];
+	scope_t scopes[64];
 	scopes[0] = (scope_t){ &global_symbol, syms };
 
 	for (unsigned i = 0; i < node->argc; ++i)
@@ -176,37 +187,3 @@ bool analyze(node_t *node)
 
 	failure(symtbl_destroy(syms););
 }
-
-/*
-global 				: grackle_
-namespace and class	: <name>_
-variables in funcs	: var_<name>
-member variables	: m_<name>
-functions			: func_<name>
-
-ex:
-int gackle_val = 3;
-
-module mod
-{
-	export do_thing;
-
-
-	export func do_thing() -> i32
-	{
-
-	}
-}
-
-void grackle_func_greet()
-{
-	puts("Hello");
-}
-
-int main()
-{
-
-}
-
-*/
-

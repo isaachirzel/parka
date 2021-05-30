@@ -27,10 +27,6 @@ enum TokenType
 	TOK_RANGE,		// 2 dots
 	TOK_ELIPSIS,	// 3 dots
 
-	// Misc 
-	TOK_SINGLE_ARROW,
-	TOK_DOUBLE_ARROW,
-
 	// Bitwise
 	TOK_AMPERSAND,
 	TOK_PIPELINE,
@@ -42,6 +38,12 @@ enum TokenType
 	TOK_EQ_COMP,
 	TOK_OR_COMP,
 	TOK_NEQ_COMP,
+
+	// Operators	===========================
+
+	// Arrows
+	TOK_SINGLE_ARROW,
+	TOK_DOUBLE_ARROW,
 
 	// Assignment
 	TOK_ASSIGN,

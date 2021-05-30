@@ -50,17 +50,14 @@ int main(void)
 
 	// parsing src
 	node_t *ast = parse(toks);
-
+	if (!ast) goto cleanup;
 	puts("\n");
 	// semantic analysis
-	if (!analyze(ast))
-	{
-		puts("\033[31mAnalysis failed\033[0m");
-	}
+	if (!analyze(ast)) goto cleanup;
 
 	// code generation
 	char *output = generate(ast);
-
+cleanup:
 	// memory cleanup
 	free(output);
 	node_destroy(ast);

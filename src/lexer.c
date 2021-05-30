@@ -39,18 +39,20 @@ void lex_init()
 
 	// setting up operator characters
 	char_types['!'] = CHAR_OPERATOR;
+	char_types['@'] = CHAR_OPERATOR;
+	char_types['#'] = CHAR_OPERATOR;
 	char_types['$'] = CHAR_OPERATOR;
 	char_types['%'] = CHAR_OPERATOR;
-	char_types['?'] = CHAR_OPERATOR;
 	char_types['^'] = CHAR_OPERATOR;
 	char_types['&'] = CHAR_OPERATOR;
 	char_types['*'] = CHAR_OPERATOR;
-	char_types['/'] = CHAR_OPERATOR;
-	char_types['+'] = CHAR_OPERATOR;
 	char_types['-'] = CHAR_OPERATOR;
 	char_types['='] = CHAR_OPERATOR;
+	char_types['+'] = CHAR_OPERATOR;
 	char_types['<'] = CHAR_OPERATOR;
 	char_types['>'] = CHAR_OPERATOR;
+	char_types['?'] = CHAR_OPERATOR;
+	char_types['/'] = CHAR_OPERATOR;
 	char_types[':'] = CHAR_OPERATOR;
 
 	// setting literal types
@@ -97,6 +99,7 @@ void lex_init()
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
 	chartbl_set(tok_types, "->", TOK_SINGLE_ARROW);
+	chartbl_set(tok_types, "=>", TOK_DOUBLE_ARROW);
 }
 
 void lex_cleanup()

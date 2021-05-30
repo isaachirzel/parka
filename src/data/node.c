@@ -18,6 +18,7 @@ node_t *node_create(char type)
 	return out;
 }
 
+
 void node_destroy(node_t *node)
 {
 	if (!node) return;
@@ -31,6 +32,7 @@ void node_destroy(node_t *node)
 	free(node);
 }
 
+
 bool node_push_arg(node_t *node, node_t *arg)
 {
 	node_t **tmp = realloc(node->args, (node->argc + 1) * sizeof(node_t*));
@@ -41,6 +43,15 @@ bool node_push_arg(node_t *node, node_t *arg)
 	node->args[node->argc++] = arg;
 	return true;
 }
+
+
+void node_swap_parent(node_t **node, unsigned argi)
+{
+	node_t *parent = *node;
+	node_t *arg = parent->args[argi];
+	
+}
+
 
 void node_print(node_t *node)
 {
