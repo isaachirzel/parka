@@ -1,27 +1,48 @@
+// header
 #include <grackle/log.h>
 
+// standard library
 #include <stdio.h>
+#include <string.h>
 
-const char *curr_filepath;
+// macros
+#define FILEPATH_LEN  32
 
-void log_error(token_t *tok, const char *msg)
+
+char curr_filepath[FILEPATH_LEN + 1];
+
+#define COLOR_RED	"\033[31m"
+#define COLOR_RESET	"\033[0m"
+#define ERROR_PROMPT COLOR_RED "error:" COLOR_RESET
+
+void log_prompt(const char *prompt, unsigned line, unsigned col)
 {
-	fprintf(stderr, "%s:%u:%u:  error: %s\n", curr_filepath, tok->line, tok->col, msg);
+	fprintf(stderr, "%s:%u:%u: %s ", curr_filepath, line, col, prompt);
 }
 
-void log_parse_error(token_t *tok, const char *expected)
-{
-	fprintf(stderr, "%s:%u:%u:  error: expected %s before '", curr_filepath,
-		tok->line, tok->col, expected);
 
-	for (unsigned i = 0; i < tok->str.len; ++i)
-	{
-		putc(tok->str.ptr[i], stderr);
-	}
-	fputs("'\n", stderr);
-}	
+void log_error_prompt(unsigned line, unsigned col)
+{
+	log_prompt(ERROR_PROMPT, line, col);
+}
+
 
 void log_set_filepath(const char *filepath)
+{	
+	size_t len = strlen(filepath);
+	size_t oi = 0;
+	size_t start = len - FILEPATH_LEN;
+	if (start > len) start = 0;
+	for (size_t i = start; i < len; ++i)
+	{
+		curr_filepath[oi++] = filepath[i];
+	}
+	
+	curr_filepath[len - start] = 0;
+}
+
+
+const char *log_filepath()
 {
-	curr_filepath = filepath;
+	return curr_filepath;
 }

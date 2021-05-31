@@ -61,11 +61,9 @@ static void print_recurse(node_t *node, unsigned depth)
 	{
 		for (unsigned i = 0; i < depth - 1; ++i)
 		{
-			putchar('|');
-			putchar('\t');
+			fputs("|   ", stdout);
 		}
-		putchar('>');
-		putchar('\t');
+		fputs(" >  ", stdout);
 		string_put(&node->val->str);
 	}
 	for (unsigned i = 0; i < node->argc; ++i)

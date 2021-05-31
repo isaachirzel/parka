@@ -1,11 +1,10 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <grackle/data/token.h>
 
-void log_error(token_t *tok, const char *msg);
-void log_parse_error(token_t *tok, const char *expected);
+extern void log_error_prompt();
 
-void log_set_filepath(const char *filepath);
+extern const char *log_filepath();
+extern void log_set_filepath(const char *filepath);
 
 #endif

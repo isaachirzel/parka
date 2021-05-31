@@ -14,6 +14,16 @@ char char_types[128];
 char ctok_types[128];
 chartbl_t *tok_types = NULL;
 
+
+void lex_error(token_t *token)
+{
+	log_error_prompt(token->line, token->col);
+	fputs("invalid token '", stderr);
+	string_fputs(&token->str, stderr);
+	fputs("'\n", stderr);
+}
+
+
 void lex_init()
 {
 	// setting up identifier characters
@@ -98,6 +108,7 @@ void lex_init()
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
+	//chartbl_set(tok_types, "**", TOK_SQRT);
 	chartbl_set(tok_types, "&&", TOK_AND_LOGICAL);
 	chartbl_set(tok_types, "||", TOK_OR_LOGICAL);
 	chartbl_set(tok_types, "==", TOK_EQ_LOGICAL);
@@ -285,15 +296,7 @@ toklist_t *lex(char *src)
 	{
 		if (tok.type == TOK_ERROR)
 		{
-			char str[64] = "invalid token '";
-			for (unsigned i = 0; i < tok.str.len; ++i)
-			{
-				str[i + 15] = tok.str.ptr[i];
-			}
-			str[tok.str.len + 15] = '\'';
-			str[tok.str.len + 16] = 0;
-			log_error(&tok, str);
-			toklist_destroy(out);
+			lex_error(&tok);
 			return NULL;
 		}
 
