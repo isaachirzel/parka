@@ -26,9 +26,10 @@
 	out.node = res.node;\
 	out.node->args[arg_pos] = expr;\
 })
-
+#define print_parse() printf("%s: ", __func__); string_put(&toklist_getref(toks, index)->str)
 #define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
-#define result_init(type) (result_t){ true, node_create(type), 0 }; printf("%s: ", __func__); string_put(&toklist_getref(toks, index)->str)
+#define default_result(type) (result_t){ true, node_create(type), 0 };
+#define result_init(type) default_result(type); print_parse()
 #define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
 
 
@@ -148,7 +149,8 @@ parse_func(declaration)
 	parse_terminal(TOK_VAR);
 
 	// get identifier
-	push_non_terminal(identifier);
+	out.node->val = toklist_getref(toks, index + out.offs);
+	parse_terminal(TOK_IDENTIFIER);
 
 	// checking for type annotation
 	if (is_terminal(TOK_COLON))
@@ -177,92 +179,86 @@ parse_func(declaration)
 }
 
 
-parse_func(binary_expression)
+#define parse_binary(func, name) result_t name = parse_##func(toks, index + out.offs);\
+if (!name.ok) { node_destroy(name.node); out.ok = false; out.err = name.err; return out; }\
+out.offs += name.offs
+
+#define parse_binary_left(func) parse_binary(func, left);
+
+#define parse_binary_right(func) parse_binary(func, right);\
+out.node = node_create(NODE_BINARY_EXPR);\
+node_push_arg(out.node, left.node);\
+node_push_arg(out.node, right.node);
+
+
+parse_func(term)
 {
-	result_t out = result_init(NODE_NO_TYPE);
-
-	// making space for arg
-	node_push_arg(out.node, NULL);
-
-	switch (toklist_getref(toks, index)->type)
+	result_t out = result_init(NODE_TERM);
+	printf("index: %zu\n", index);
+	token_t *t = toklist_getref(toks, index);
+	switch (t->type)
 	{
-	// additive expression
-	case TOK_PLUS:
-	case TOK_MINUS:
-		out.node->type = NODE_ADD_EXPR;
-		break;
-
-	// multiplicitive expression
-	case TOK_MODULUS:
-	case TOK_ASTERISK:
-	case TOK_SLASH:
-		out.node->type = NODE_MUL_EXPR;
-		break;
+	case TOK_INT_LITERAL:
+	case TOK_STR_LITERAL:
+	case TOK_FLOAT_LITERAL:
+	case TOK_IDENTIFIER:
+		out.node->val = t;
+		out.offs = 1;
+		return out;
 	}
-	out.offs = 1;
 
-	push_non_terminal(expression);
+	parse_failure("expression");
+}
+
+
+parse_func(mul_expr)
+{
+	print_parse();
+	result_t out = (result_t){ true, NULL, 0 }; 
+
+	parse_binary_left(term);
+
+	token_t *t = toklist_getref(toks, index + out.offs);
+	if (t->type == TOK_ASTERISK)
+	{
+		out.offs += 1;
+		parse_binary_right(term);
+		out.node->val = t;
+	}
+	else
+	{
+		out = left;
+	}
 
 	return out;
+}
 
-	parse_failure("binary-expression");
+
+parse_func(add_expr)
+{
+	print_parse();
+	result_t out = (result_t){ true, NULL, 0 }; 
+
+	parse_binary_left(mul_expr);
+	token_t *t = toklist_getref(toks, index + out.offs);
+	if (t->type == TOK_PLUS)
+	{
+		out.offs += 1;
+		parse_binary_right(mul_expr);
+		out.node->val = t;
+	}
+	else
+	{
+		out = left;
+	}
+
+	return out;
 }
 
 
 parse_func(expression)
 {
-	result_t out = result_init(NODE_NO_TYPE);
-
-	token_t *t = toklist_getref(toks, index);
-
-	// checking first token type
-	switch (t->type)
-	{
-	// straight expressions
-	case TOK_INT_LITERAL:
-	case TOK_FLOAT_LITERAL:
-	case TOK_STR_LITERAL:
-	case TOK_IDENTIFIER:
-		// gotta check for binary expressions
-		out.node->val = t;
-		out.offs = 1;
-
-		break;
-
-	// parenthesis expressions
-	case TOK_LPAREN:
-		break;
-
-	// unary operators before expression
-	case TOK_AMPERSAND:
-	case TOK_ASTERISK:
-	case TOK_MINUS:
-	case TOK_EXCLAMATION:
-	case TOK_INCREMENT:
-	case TOK_DECREMENT:
-		// add following expression
-		//push_non_terminal(expression);
-		break;
-
-	}
-
-	// if binary expression
-	// this should be put in a while loop for expressions like (a ** 2 + b ** 2) ** .5
-	switch (toklist_getref(toks, index + out.offs)->type)
-	{
-	// any of these are binary expressions
-	case TOK_PLUS:
-	case TOK_MINUS:
-	case TOK_MODULUS:
-	case TOK_ASTERISK:
-	case TOK_SLASH:
-		swap_non_terminal(binary_expression, 0);
-		break;
-	}
-
-	return out;
-
-	parse_failure("expression");
+	return parse_add_expr(toks, index);
 }
 
 
@@ -296,10 +292,12 @@ parse_func(function)
 	result_t out = result_init(NODE_FUNCTION);
 	
 	// getting func token
+
 	parse_terminal(TOK_FUNC);
 
 	// getting identifier
-	push_non_terminal(identifier);
+	out.node->val = toklist_getref(toks, index + out.offs);
+	parse_terminal(TOK_IDENTIFIER);
 
 	// getting arg list
 	push_non_terminal(arglist);
@@ -333,7 +331,9 @@ parse_func(program)
 	// parse functions until end of file is reached
 	while (toklist_getref(toks, index + out.offs)->type != TOK_EOF)
 	{
+		puts("parsing non_terminal");
 		push_non_terminal(function);
+		puts("Success");
 	}
 
 	return out;

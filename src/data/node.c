@@ -11,8 +11,8 @@ node_t *node_create(char type)
 	if (!out) return NULL;
 
 	out->type = type;
-	out->args = NULL;
 	out->val = NULL;
+	out->args = NULL;
 	out->argc = 0;
 
 	return out;
@@ -23,11 +23,14 @@ void node_destroy(node_t *node)
 {
 	if (!node) return;
 	// destroy all leaves
-	for (unsigned i = 0; i < node->argc; ++i)
+	if (node->argc > 0) 
 	{
-		node_destroy(node->args[i]);
+		for (unsigned i = 0; i < node->argc; ++i)
+		{
+			node_destroy(node->args[i]);
+		}
+		free(node->args);
 	}
-	free(node->args);
 	// free object
 	free(node);
 }
@@ -49,20 +52,31 @@ void node_swap_parent(node_t **node, unsigned argi)
 {
 	node_t *parent = *node;
 	node_t *arg = parent->args[argi];
-	
+}
+
+static void print_recurse(node_t *node, unsigned depth)
+{
+	// value node
+	if (node->val)
+	{
+		for (unsigned i = 0; i < depth - 1; ++i)
+		{
+			putchar('|');
+			putchar('\t');
+		}
+		putchar('>');
+		putchar('\t');
+		string_put(&node->val->str);
+	}
+	for (unsigned i = 0; i < node->argc; ++i)
+	{
+		print_recurse(node->args[i], depth + 1);
+	}
+	// arg node
 }
 
 
 void node_print(node_t *node)
 {
-	if (node->val)
-	{
-		string_put(&node->val->str);
-		return;
-	}
-	
-	for (unsigned i = 0; i < node->argc; ++i)
-	{
-		node_print(node->args[i]);
-	}
+	return print_recurse(node, 0);
 }

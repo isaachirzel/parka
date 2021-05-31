@@ -51,12 +51,16 @@ int main(void)
 	// parsing src
 	node_t *ast = parse(toks);
 	if (!ast) goto cleanup;
+	node_print(ast);
 	puts("\n");
 	// semantic analysis
 	if (!analyze(ast)) goto cleanup;
 
 	// code generation
 	char *output = generate(ast);
+	if (!output) goto cleanup;
+	printf("Output:\n%s\n", output);
+
 cleanup:
 	// memory cleanup
 	free(output);

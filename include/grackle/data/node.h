@@ -16,6 +16,7 @@ enum NodeType
 
 	NODE_TYPE_DECLARATION,
 	NODE_TERM,
+	NODE_BINARY_EXPR,
 	NODE_MUL_EXPR,
 	NODE_ADD_EXPR,
 	NODE_UNARY_EXPR,
@@ -31,15 +32,9 @@ enum NodeType
 typedef struct node
 {
 	short type;
-	union
-	{
-		token_t *val;
-		struct
-		{
-			struct node **args;
-			unsigned argc;
-		};
-	};
+	token_t *val;
+	struct node **args;
+	unsigned argc;
 } node_t;
 
 extern node_t *node_create(char type);

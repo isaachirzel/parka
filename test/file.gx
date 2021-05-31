@@ -1,7 +1,8 @@
 func main() -> i32
 {
-	var radius = 7.5;
-	var pi = 3.1415;
-	var circum : i32 =  radius * radius * pi;
+	//var a = 2;
+	//var b = 3;
+	//var c = 4;
+	var val : i32 = a * b + c * 3;
 	var string = "hello";
 }

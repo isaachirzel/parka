@@ -98,14 +98,20 @@ void lex_init()
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
+	chartbl_set(tok_types, "&&", TOK_AND_LOGICAL);
+	chartbl_set(tok_types, "||", TOK_OR_LOGICAL);
+	chartbl_set(tok_types, "==", TOK_EQ_LOGICAL);
+	chartbl_set(tok_types, "!=", TOK_NEQ_LOGICAL);
 	chartbl_set(tok_types, "->", TOK_SINGLE_ARROW);
 	chartbl_set(tok_types, "=>", TOK_DOUBLE_ARROW);
 }
+
 
 void lex_cleanup()
 {
 	chartbl_destroy(tok_types);
 }
+
 
 token_t lex_next_token(char **src, unsigned line, unsigned short col)
 {

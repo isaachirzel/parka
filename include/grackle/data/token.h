@@ -34,10 +34,10 @@ enum TokenType
 
 	// Boolean
 	TOK_EXCLAMATION,
-	TOK_AND_COMP,
-	TOK_EQ_COMP,
-	TOK_OR_COMP,
-	TOK_NEQ_COMP,
+	TOK_AND_LOGICAL,
+	TOK_OR_LOGICAL,
+	TOK_EQ_LOGICAL,
+	TOK_NEQ_LOGICAL,
 
 	// Operators	===========================
 
