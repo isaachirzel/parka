@@ -101,12 +101,12 @@ node_t *parse_compound_statement(const token_t **tok)
 	node_t *out = node_create(NODE_COMPOUND_STMT);
 
 	const token_t *t = *tok;
-
+	out->val = t;
 	// skip over opening brace
 	if (t->type != TOK_LBRACE)
 	{
 		parse_error(t, "compound-statement");
-		return 0;
+		goto failure;
 	}
 	t += 1;
 
@@ -243,6 +243,64 @@ bool is_add_expr(const token_t *tok)
 }
 
 
+bool is_shift_expr(const token_t *tok)
+{
+	return tok->type == TOK_LSHIFT || tok->type == TOK_RSHIFT;
+}
+
+
+bool is_comp_expr(const token_t *tok)
+{
+	switch (tok->type)
+	{
+	case TOK_LANGBRACK:
+	case TOK_RANGBRACK:
+	case TOK_LTOET:
+	case TOK_GTOET:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
+
+bool is_equal_expr(const token_t *tok)
+{
+	return tok->type == TOK_EQUALS || tok->type == TOK_NEQUALS;
+}
+
+
+bool is_bitand_expr(const token_t *tok)
+{
+	return tok->type == TOK_AMPERSAND;
+}
+
+
+bool is_bitxor_expr(const token_t *tok)
+{
+	return tok->type == TOK_CARROT;
+}
+
+
+bool is_bitor_expr(const token_t *tok)
+{
+	return tok->type == TOK_PIPELINE;
+}
+
+bool is_and_expr(const token_t *tok)
+{
+	return tok->type == TOK_AND;
+}
+
+
+bool is_or_expr(const token_t *tok)
+{
+	return tok->type == TOK_OR;
+}
+
+
+
 typedef bool (*condition_func)(const token_t *);
 
 typedef struct binexpr
@@ -254,7 +312,15 @@ typedef struct binexpr
 binexpr_t binexprs[] =
 {
 	{ is_mul_expr, NODE_MUL_EXPR },
-	{ is_add_expr, NODE_ADD_EXPR }
+	{ is_add_expr, NODE_ADD_EXPR },
+	{ is_shift_expr, NODE_SHIFT_EXPR },
+	{ is_comp_expr, NODE_COMP_EXPR },
+	{ is_equal_expr, NODE_EQ_EXPR },
+	{ is_bitand_expr, NODE_BITAND_EXPR },
+	{ is_bitxor_expr, NODE_BITXOR_EXPR },
+	{ is_bitor_expr, NODE_BITOR_EXPR },
+	{ is_and_expr, NODE_AND_EXPR },
+	{ is_or_expr, NODE_OR_EXPR },
 };
 
 
@@ -347,7 +413,7 @@ node_t *parse_assignment(const token_t **tok)
 		return left;
 	}
 
-	node_t *out = node_create(NODE_ASSIGNMENT_EXPR);
+	node_t *out = node_create(NODE_ASSIGN_EXPR);
 	out->val = t;
 	t += 1;
 	node_push_arg(out, left);

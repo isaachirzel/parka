@@ -58,6 +58,7 @@ void lex_init()
 	char_types['*'] = CHAR_OPERATOR;
 	char_types['-'] = CHAR_OPERATOR;
 	char_types['='] = CHAR_OPERATOR;
+	char_types['|'] = CHAR_OPERATOR;
 	char_types['+'] = CHAR_OPERATOR;
 	char_types['<'] = CHAR_OPERATOR;
 	char_types['>'] = CHAR_OPERATOR;
@@ -109,10 +110,14 @@ void lex_init()
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
 	chartbl_set(tok_types, "**", TOK_SQRT);
-	chartbl_set(tok_types, "&&", TOK_AND_LOGICAL);
-	chartbl_set(tok_types, "||", TOK_OR_LOGICAL);
-	chartbl_set(tok_types, "==", TOK_EQ_LOGICAL);
-	chartbl_set(tok_types, "!=", TOK_NEQ_LOGICAL);
+	chartbl_set(tok_types, "&&", TOK_AND);
+	chartbl_set(tok_types, "||", TOK_OR);
+	chartbl_set(tok_types, "==", TOK_EQUALS);
+	chartbl_set(tok_types, "!=", TOK_NEQUALS);
+	chartbl_set(tok_types, ">=", TOK_GTOET);
+	chartbl_set(tok_types, "<=", TOK_LTOET);
+	chartbl_set(tok_types, ">>", TOK_RSHIFT);
+	chartbl_set(tok_types, "<<", TOK_LSHIFT);
 	chartbl_set(tok_types, "->", TOK_SINGLE_ARROW);
 	chartbl_set(tok_types, "=>", TOK_DOUBLE_ARROW);
 }
