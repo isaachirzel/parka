@@ -52,6 +52,7 @@ int main(void)
 	node_t *ast = parse(toks);
 	if (!ast) goto cleanup;
 	
+	puts("\nAbstract Syntax Tree:");
 	node_print(ast);
 
 	goto cleanup;

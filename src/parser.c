@@ -27,6 +27,7 @@ void parse_error(const token_t *tok, const char *expected)
 // forward declarations of functions
 parse_func(statement);
 parse_func(expression);
+node_t *parse_binary_expression(const token_t **tok);
 
 
 node_t *parse_typename(const token_t **tok)
@@ -169,13 +170,13 @@ node_t *parse_declaration(const token_t **tok)
 	// checking for equals sign
 	if (t->type != TOK_ASSIGN)
 	{
-		log_error(t->line, t->col, "declaration without initialization is not allowed");
+		log_error(t->line, t->col, "declaration of uninitialized variables is not allowed");
 		goto failure;
 	}
 	t += 1;
 
 	// get assignment expression
-	node_t *expr = parse_expression(&t);
+	node_t *expr = parse_binary_expression(&t);
 	if (!expr) goto failure;
 	node_push_arg(out, expr);
 
@@ -221,12 +222,57 @@ node_t *parse_term(const token_t **tok)
 }
 
 
-node_t *make_binary(node_t *a, node_t *b)
+node_t *parse_mul_expr(const token_t **tok)
 {
-	node_t * bin = node_create(NODE_BINARY_EXPR);
-	node_push_arg(bin, a);
-	node_push_arg(bin, b);
-	return bin;
+	print_parse();
+
+	const token_t *t = *tok;
+
+	node_t *term = parse_term(&t);
+	if (!term) return NULL;
+
+	switch (t->type)
+	{
+	case TOK_ASTERISK:
+	case TOK_SLASH:
+	case TOK_MODULUS:
+		t += 1;
+		break;
+
+	default:
+		*tok = t;
+		return term;
+	}
+
+	node_t *out = node_create(NODE_BINARY_EXPR);
+	out->val = t - 1;
+	node_push_arg(out, term);
+	
+	while (true)
+	{
+		term = parse_term(&t);
+		if (!term) goto failure;
+		node_push_arg(out, term);
+
+		switch (t->type)
+		{
+		case TOK_ASTERISK:
+		case TOK_SLASH:
+		case TOK_MODULUS:
+			continue;
+
+		default:
+			break;
+		}
+	}
+
+	*tok = t;
+	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
 }
 
 
@@ -236,7 +282,7 @@ node_t *parse_add_expr(const token_t **tok)
 
 	const token_t *t = *tok;
 
-	node_t *term = parse_term(&t);
+	node_t *term = parse_mul_expr(&t);
 	if (!term) return NULL;
 
 	// if not binary, just return first term
@@ -255,7 +301,7 @@ node_t *parse_add_expr(const token_t **tok)
 	do
 	{
 		// push
-		term = parse_term(&t);
+		term = parse_mul_expr(&t);
 		if (!term) goto failure;
 		node_push_arg(out, term);
 	}
@@ -271,10 +317,146 @@ failure:
 }
 
 
+bool is_mul_expr(const token_t *tok)
+{
+	switch (tok->type)
+	{
+	case TOK_ASTERISK:
+	case TOK_SLASH:
+	case TOK_MODULUS:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
+
+bool is_add_expr(const token_t *tok)
+{
+	return tok->type == TOK_PLUS || tok->type == TOK_MINUS;
+}
+
+
+typedef bool (*condition_func)(const token_t *);
+
+typedef struct binexpr
+{
+	condition_func condition;
+	short id;
+} binexpr_t;
+
+binexpr_t binexprs[] =
+{
+	{ is_mul_expr, NODE_MUL_EXPR },
+	{ is_add_expr, NODE_ADD_EXPR }
+};
+
+
+node_t *parse_binary_recurse(const token_t **tok, const unsigned precedence)
+{
+	printf("%s(%u): ", __func__, precedence);
+	string_put(&(*tok)->str);
+
+	const token_t *t = *tok;
+	binexpr_t *type = binexprs + precedence;
+
+	node_t *left = (!precedence) ? parse_term(&t) : parse_binary_recurse(&t, precedence - 1);
+	if (!left) return NULL;
+
+	// if not binary, just return first term
+	if (!type->condition(t))
+	{
+		*tok = t;
+		return left;
+	}
+	t += 1;
+
+	// make binary node
+	node_t *out = node_create(type->id);
+	out->val = t - 1;
+	node_t *right = (!precedence) ? parse_term(&t) : parse_binary_recurse(&t, precedence - 1);
+	if (!right) goto failure;
+	node_push_arg(out, left);
+	node_push_arg(out, right);
+
+	puts("the basic tree");
+	node_print(out);
+
+	// while there is still a chain of same-type expressions
+	while (type->condition(t))
+	{
+		// storing out as leaf
+		left = out;
+		// creating tree
+		out = node_create(type->id);
+		out->val = t;
+		t += 1;
+		// getting right side leaf
+		right = (!precedence) ? parse_term(&t) : parse_binary_recurse(&t, precedence - 1);
+		if (!right) goto failure;
+		// adding args to tree
+		node_push_arg(out, left);
+		node_push_arg(out, right);
+	}
+
+	*tok = t;
+	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
+}
+
+node_t *parse_binary_expression(const token_t **tok)
+{
+	node_t *out = parse_binary_recurse(tok, sizeof(binexprs) / sizeof(binexpr_t) - 1);
+	puts("\nExpression tree:");
+	node_print(out);
+	return out;
+}
+
+
+bool is_assignment(const token_t *tok)
+{
+	switch (tok->type)
+	{
+	case TOK_ASSIGN:
+	case TOK_ADD_ASSIGN:
+	case TOK_MIN_ASSIGN:
+	case TOK_MUL_ASSIGN:
+	case TOK_DIV_ASSIGN:
+	case TOK_MOD_ASSIGN:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
+node_t *parse_assignment(const token_t **tok)
+{
+	const token_t *t = *tok;
+
+	node_t *left = parse_binary_expression(&t);
+	if (!is_assignment(t)) return left;
+	t += 1;
+
+	node_t *out = node_create(NODE_ASSIGNMENT_EXPR);
+	node_push_arg(out, left);
+
+	node_t *right = parse_assignment(&t);
+	node_push_arg(out, right);
+
+	*tok = t;
+	return out;
+}
+
+
 node_t *parse_expression(const token_t **tok)
 {
-	print_parse();
-	return parse_add_expr(tok);
+	return parse_assignment(tok);
 }
 
 

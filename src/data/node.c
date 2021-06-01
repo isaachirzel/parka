@@ -70,5 +70,5 @@ static void print_recurse(const node_t *node, unsigned depth)
 
 void node_print(const node_t *node)
 {
-	return print_recurse(node, 0);
+	return print_recurse(node, 1);
 }
