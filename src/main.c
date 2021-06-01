@@ -51,8 +51,11 @@ int main(void)
 	// parsing src
 	node_t *ast = parse(toks);
 	if (!ast) goto cleanup;
+	
 	node_print(ast);
+
 	goto cleanup;
+
 	puts("\n");
 	// semantic analysis
 	if (!analyze(ast)) goto cleanup;

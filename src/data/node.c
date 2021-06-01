@@ -48,13 +48,7 @@ bool node_push_arg(node_t *node, node_t *arg)
 }
 
 
-void node_swap_parent(node_t **node, unsigned argi)
-{
-	node_t *parent = *node;
-	node_t *arg = parent->args[argi];
-}
-
-static void print_recurse(node_t *node, unsigned depth)
+static void print_recurse(const node_t *node, unsigned depth)
 {
 	// value node
 	if (node->val)
@@ -63,7 +57,7 @@ static void print_recurse(node_t *node, unsigned depth)
 		{
 			fputs("|   ", stdout);
 		}
-		fputs(" >  ", stdout);
+		fputs("  > ", stdout);
 		string_put(&node->val->str);
 	}
 	for (unsigned i = 0; i < node->argc; ++i)
@@ -74,7 +68,7 @@ static void print_recurse(node_t *node, unsigned depth)
 }
 
 
-void node_print(node_t *node)
+void node_print(const node_t *node)
 {
 	return print_recurse(node, 0);
 }

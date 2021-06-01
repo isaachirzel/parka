@@ -108,7 +108,7 @@ void lex_init()
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
-	//chartbl_set(tok_types, "**", TOK_SQRT);
+	chartbl_set(tok_types, "**", TOK_SQRT);
 	chartbl_set(tok_types, "&&", TOK_AND_LOGICAL);
 	chartbl_set(tok_types, "||", TOK_OR_LOGICAL);
 	chartbl_set(tok_types, "==", TOK_EQ_LOGICAL);

@@ -89,7 +89,7 @@ analyze_func(statement)
 		puts("analyze var declaration");
 
 		// handling identifier
-		string_t *label = &node->args[0]->val->str;
+		const string_t *label = &node->args[0]->val->str;
 		symbol_t var_sym = { label, SYM_VARIABLE };
 		if (symtbl_containsn(scopes[depth - 1].sym_table, label->ptr, label->len))
 		{
@@ -121,7 +121,7 @@ analyze_func(function)
 	puts(__func__);
 
 	// getting function name
-	string_t *label = &node->args[0]->val->str;
+	const string_t *label = &node->args[0]->val->str;
 	// handling identifier
 	CREATE_SYMTBL(syms);
 

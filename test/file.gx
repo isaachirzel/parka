@@ -3,6 +3,7 @@ func main() -> i32
 	//var a = 2;
 	//var b = 3;
 	//var c = 4;
-	var val : i32 = a ** 2 + b ** 2 * c ** 2;
-	var string = "hello";
+	//var val : i32 = a ** 2 + b ** 2 * c ** 2;
+	var val : i32 = a + b;
+	var string : i32 = "hello";
 }

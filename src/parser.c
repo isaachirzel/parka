@@ -9,59 +9,19 @@
 #include <stdio.h>
 
 
-// convenience defines for easier function definition
-#define parse_terminal(term_type) if (toklist_getref(toks, index + out.offs)->type != term_type) goto exit_failure; out.offs += 1
-#define is_terminal(term_type) (toklist_getref(toks, index + out.offs)->type == term_type)
-#define handle_non_terminal(func, action)\
-{\
-	result_t res = parse_##func(toks, index + out.offs);\
-	out.offs += res.offs;\
-	if (!res.ok) { node_destroy(out.node); out.ok = false; out.err = res.err; return out; }\
-	action;\
-}
-#define push_non_terminal(func) handle_non_terminal(func, node_push_arg(out.node, res.node))
-#define swap_non_terminal(func, arg_pos) handle_non_terminal(func,\
-{\
-	node_t *expr = out.node;\
-	out.node = res.node;\
-	out.node->args[arg_pos] = expr;\
-})
-#define print_parse() printf("%s: ", __func__); string_put(&toklist_getref(toks, index)->str)
-#define parse_failure(expected) exit_failure: node_destroy(out.node); out.ok = false; out.err = expected; return out;
-#define default_result(type) (result_t){ true, node_create(type), 0 };
-#define result_init(type) default_result(type); print_parse()
-#define parse_func(func) result_t parse_##func(toklist_t *toks, size_t index)
+// function type
+#define parse_func(func) node_t *parse_##func(const token_t **tok)
 
 
-typedef struct parse_result
+#define print_parse() printf("%s: ", __func__); string_put(&tok[0]->str)
+
+void parse_error(const token_t *tok, const char *expected)
 {
-	bool ok;
-	union
-	{
-		node_t *node;
-		const char* err;
-	};
-	size_t offs;
-} result_t;
-
-
-typedef result_t(*parse_func)(toklist_t*, size_t);
-
-
-#define ERROR_PROMPT "\033[31merror:\033[0m"
-
-
-void parse_error(token_t *tok, const char *expected)
-{
-	fprintf(stderr, "%u:%u:  " ERROR_PROMPT " expected %s before '",
-		tok->line, tok->col, expected);
-
-	for (unsigned i = 0; i < tok->str.len; ++i)
-	{
-		putc(tok->str.ptr[i], stderr);
-	}
+	log_error_prompt(tok->line, tok->col);
+	fprintf(stderr, "expected %s before '", expected);
+	string_fputs(&tok->str, stderr);
 	fputs("'\n", stderr);
-}	
+}
 
 
 // forward declarations of functions
@@ -69,24 +29,14 @@ parse_func(statement);
 parse_func(expression);
 
 
-parse_func(identifier)
+node_t *parse_typename(const token_t **tok)
 {
-	result_t out = result_init(NODE_IDENTIFIER);
-	out.node->val = toklist_getref(toks, index);
-	if (out.node->val->type == TOK_IDENTIFIER)
-	{
-		out.offs += 1;
-		return out;
-	}
-	parse_failure("identifier");
-}
+	print_parse();
+	node_t *out = node_create(NODE_TYPENAME);
 
+	const token_t *t = *tok;
 
-parse_func(typename)
-{
-	result_t out = result_init(NODE_TYPENAME);
-	out.node->val = toklist_getref(toks, index);
-	switch (out.node->val->type)
+	switch (t->type)
 	{
 	case TOK_IDENTIFIER:
 	case TOK_TYPE_I8:
@@ -100,255 +50,366 @@ parse_func(typename)
 	case TOK_TYPE_F32:
 	case TOK_TYPE_F64:
 	case TOK_TYPE_STR:
-		out.offs += 1;
+		out->val = t;
+		*tok = t + 1;
 		return out;
+
+	default:
+		parse_error(t, "typename");
+		node_destroy(out);
+		return NULL;
 	}
-	parse_failure("typename");
 }
 
 
-parse_func(arglist)
+node_t *parse_arglist(const token_t **tok)
 {
-	result_t out = result_init(NODE_ARGLIST);
+	print_parse();
+	node_t *out = node_create(NODE_ARGLIST);
 
-	parse_terminal(TOK_LPAREN);
-	parse_terminal(TOK_RPAREN);
+	const token_t *t = *tok;
 
-	return out;
-
-	parse_failure("argument-list");
-}
-
-
-parse_func(compound_statement)
-{
-	result_t out = result_init(NODE_COMPOUND_STMT);
-	
-	// skip over opening brace
-	parse_terminal(TOK_LBRACE);
-
-	while (!is_terminal(TOK_RBRACE))
+	if (t->type != TOK_LPAREN)
 	{
-		push_non_terminal(statement);
+		node_destroy(out);
+		parse_error(t, "argument-list");
+		return NULL;
 	}
+	t += 1;
 
-	// skip over closing brace
-	out.offs += 1;
+	if (t->type != TOK_RPAREN)
+	{
+		node_destroy(out);
+		return NULL;
+	}
+	t += 1;
 
+	*tok = t;
 	return out;
 
-	parse_failure("compound-statement");
+failure:
+
+	node_destroy(out);
+	return NULL;
 }
 
 
-parse_func(declaration)
+node_t *parse_compound_statement(const token_t **tok)
 {
-	result_t out = result_init(NODE_DECL_STMT);
+	print_parse();
+	node_t *out = node_create(NODE_COMPOUND_STMT);
+
+	const token_t *t = *tok;
+
+	// skip over opening brace
+	if (t->type != TOK_LBRACE)
+	{
+		parse_error(t, "compound-statement");
+		return 0;
+	}
+	t += 1;
+
+	while (t->type != TOK_RBRACE)
+	{
+		node_t *stmt = parse_statement(&t);
+		if (!stmt) goto failure;
+		node_push_arg(out, stmt);
+	}
+	t += 1;
+
+	*tok = t;
+	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_declaration(const token_t **tok)
+{
+	print_parse();
+	node_t *out = node_create(NODE_DECL_STMT);
+
+	const token_t *t = *tok;
 
 	// check for 'var'
-	parse_terminal(TOK_VAR);
+	if (t->type != TOK_VAR)
+	{
+		parse_error(t, "declaration");
+		goto failure;
+	}
+	t += 1;
 
 	// get identifier
-	out.node->val = toklist_getref(toks, index + out.offs);
-	parse_terminal(TOK_IDENTIFIER);
+	if (t->type != TOK_IDENTIFIER)
+	{
+		parse_error(t, "identifier");
+		goto failure;
+	}
+	out->val = t;
+	t += 1;
 
 	// checking for type annotation
-	if (is_terminal(TOK_COLON))
+	if (t->type == TOK_COLON)
 	{
-		out.offs += 1;
-		push_non_terminal(typename);
+		t += 1;
+		node_t *type = parse_typename(&t);
+		if (!type) goto failure;
+		node_push_arg(out, type);
 	}
 	else
 	{
+		
 		// push empty type if no type is annotated
-		node_push_arg(out.node, node_create(NODE_EMPTY_TYPE));
+		node_push_arg(out, node_create(NODE_EMPTY_TYPE));
 	}
-
+	
 	// checking for equals sign
-	parse_terminal(TOK_ASSIGN);
+	if (t->type != TOK_ASSIGN)
+	{
+		log_error(t->line, t->col, "declaration without initialization is not allowed");
+		goto failure;
+	}
+	t += 1;
 
 	// get assignment expression
-	push_non_terminal(expression);
+	node_t *expr = parse_expression(&t);
+	if (!expr) goto failure;
+	node_push_arg(out, expr);
 
 	// semicolon
-	parse_terminal(TOK_SEMICOLON);
+	if (t->type != TOK_SEMICOLON)
+	{
+		parse_error(t, "';'");
+		goto failure;
+	}
+	t += 1;
 
+	*tok = t;
 	return out;
 
-	parse_failure("declaration");
+failure:
+	node_destroy(out);
+	return NULL;
 }
 
 
-#define parse_binary(func, name) result_t name = parse_##func(toks, index + out.offs);\
-if (!name.ok) { node_destroy(name.node); out.ok = false; out.err = name.err; return out; }\
-out.offs += name.offs
-
-#define parse_binary_left(func) parse_binary(func, left);
-
-#define parse_binary_right(func) parse_binary(func, right);\
-out.node = node_create(NODE_BINARY_EXPR);\
-node_push_arg(out.node, left.node);\
-node_push_arg(out.node, right.node);
-
-
-parse_func(term)
+node_t *parse_term(const token_t **tok)
 {
-	result_t out = result_init(NODE_TERM);
-	printf("index: %zu\n", index);
-	token_t *t = toklist_getref(toks, index);
+	print_parse();
+	node_t *out = node_create(NODE_TERM);
+
+	const token_t *t = *tok;
+
 	switch (t->type)
 	{
 	case TOK_INT_LITERAL:
 	case TOK_STR_LITERAL:
 	case TOK_FLOAT_LITERAL:
 	case TOK_IDENTIFIER:
-		out.node->val = t;
-		out.offs = 1;
+		out->val = t++;
+		*tok = t;
 		return out;
-	}
 
-	parse_failure("expression");
+	default:
+		parse_error(t, "term");
+		node_destroy(out);
+		return NULL;
+	}
 }
 
 
-parse_func(mul_expr)
+node_t *make_binary(node_t *a, node_t *b)
+{
+	node_t * bin = node_create(NODE_BINARY_EXPR);
+	node_push_arg(bin, a);
+	node_push_arg(bin, b);
+	return bin;
+}
+
+
+node_t *parse_add_expr(const token_t **tok)
 {
 	print_parse();
-	result_t out = (result_t){ true, NULL, 0 }; 
 
-	parse_binary_left(term);
+	const token_t *t = *tok;
 
-	token_t *t = toklist_getref(toks, index + out.offs);
-	if (t->type == TOK_ASTERISK)
+	node_t *term = parse_term(&t);
+	if (!term) return NULL;
+
+	// if not binary, just return first term
+	if (t->type != TOK_PLUS && t->type != TOK_MINUS)
 	{
-		out.offs += 1;
-		parse_binary_right(term);
-		out.node->val = t;
+		*tok = t;
+		return term;
 	}
-	else
-	{
-		out = left;
-	}
+	t += 1;
 
+	// make binary node
+	node_t *out = node_create(NODE_BINARY_EXPR);
+	node_push_arg(out, term);
+	out->val = t - 1;
+
+	do
+	{
+		// push
+		term = parse_term(&t);
+		if (!term) goto failure;
+		node_push_arg(out, term);
+	}
+	while (t->type == TOK_PLUS || t->type == TOK_MINUS);
+
+	*tok = t;
 	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
 }
 
 
-parse_func(add_expr)
+node_t *parse_expression(const token_t **tok)
 {
 	print_parse();
-	result_t out = (result_t){ true, NULL, 0 }; 
-
-	parse_binary_left(mul_expr);
-	token_t *t = toklist_getref(toks, index + out.offs);
-	if (t->type == TOK_PLUS)
-	{
-		out.offs += 1;
-		parse_binary_right(mul_expr);
-		out.node->val = t;
-	}
-	else
-	{
-		out = left;
-	}
-
-	return out;
+	return parse_add_expr(tok);
 }
 
 
-parse_func(expression)
+node_t *parse_statement(const token_t **tok)
 {
-	return parse_add_expr(toks, index);
-}
-
-
-parse_func(statement)
-{
-	switch (toklist_getref(toks, index)->type)
+	print_parse();
+	switch ((*tok)->type)
 	{
 	// compound statement
 	case TOK_LBRACE:
-		return parse_compound_statement(toks, index);
+		return parse_compound_statement(tok);
 
 	// declaration
 	case TOK_VAR:
-		return parse_declaration(toks, index);
+		return parse_declaration(tok);
 	
 	// expression statement
-	default:
-		return parse_expression(toks, index);
+	default:;
+		node_t *expr = parse_expression(tok);
+		if (!expr) return NULL;
+		const token_t *t = *tok;
+		if (t->type != TOK_SEMICOLON)
+		{
+			parse_error(t, "';'");
+			return NULL;
+		}
+		*tok = t + 1;
+		return expr;
 	}
-
-	result_t out;
-	out.ok = false;
-	out.err = "statement";
-	out.offs = 0;
-	return out;
 }
 
 
-parse_func(function)
+node_t *parse_function(const token_t **tok)
 {
-	result_t out = result_init(NODE_FUNCTION);
+	print_parse();
+	node_t *out = node_create(NODE_FUNCTION);
 	
-	// getting func token
+	const token_t *t = *tok;
 
-	parse_terminal(TOK_FUNC);
+	// getting func token
+	if (t->type != TOK_FUNC)
+	{
+		parse_error(t, "function");
+		goto failure;
+	}
+	t += 1;
 
 	// getting identifier
-	out.node->val = toklist_getref(toks, index + out.offs);
-	parse_terminal(TOK_IDENTIFIER);
+	if (t->type != TOK_IDENTIFIER)
+	{
+		parse_error(t, "identifier");
+		goto failure;
+	}
+	out->val = t;
+	t += 1;
 
 	// getting arg list
-	push_non_terminal(arglist);
+	node_t *arglist = parse_arglist(&t);
+	if (!arglist) goto failure;
+	node_push_arg(out, arglist);
 
 	// checking for return type
-	if (is_terminal(TOK_SINGLE_ARROW))
+	if (t->type == TOK_SINGLE_ARROW)
 	{
-		out.offs += 1;
+		t += 1;
 		// getting return type
-		push_non_terminal(typename);
+		node_t *type = parse_typename(&t);
+		if (!type) goto failure;
+		node_push_arg(out, type);
 	}
 	else
 	{
 		// push empty type if no type is annotated
-		node_push_arg(out.node, node_create(NODE_EMPTY_TYPE));
+		node_push_arg(out, node_create(NODE_EMPTY_TYPE));
 	}
 
 	// getting statement
-	push_non_terminal(statement);
-
-	return out;
-
-	parse_failure("function");
-}
-
-
-parse_func(program)
-{
-	result_t out = result_init(NODE_PROGRAM);
-
-	// parse functions until end of file is reached
-	while (toklist_getref(toks, index + out.offs)->type != TOK_EOF)
+	switch (t->type)
 	{
-		puts("parsing non_terminal");
-		push_non_terminal(function);
-		puts("Success");
+	// compound statement
+	case TOK_LBRACE:;
+		node_t *compound = parse_compound_statement(&t);
+		if (!compound) goto failure;
+		node_push_arg(out, compound);
+		break;
+
+	// expression
+	case TOK_DOUBLE_ARROW:;
+		node_t *expr = parse_expression(&t);
+		if (!expr) goto failure;
+		node_push_arg(out, expr);
+
+		if (t->type != TOK_SEMICOLON)
+		{
+			parse_error(t, "';'");
+			goto failure;
+		}
+		t += 1;
+		break;
+	
+	// error
+	default:
+		parse_error(t, "function-body");
+		goto failure;
 	}
 
+	*tok = t;
 	return out;
 
-	parse_failure("program");
+
+failure:
+
+	node_destroy(out);
+	return NULL;
 }
 
 
 node_t *parse(toklist_t *toks)
 {
-	result_t res = parse_program(toks, 0);
-	if (!res.ok)
+	node_t *out = node_create(NODE_PROGRAM);
+
+	// parse functions until end of file is reached
+	const token_t *t = toks->data;
+	while (t->type != TOK_EOF)
 	{
-		parse_error(toklist_getref(toks, res.offs), res.err);
-		return NULL;
+		node_t *func = parse_function(&t);
+		// failed to parse function
+		if (!func)
+		{
+			// destroy node
+			node_destroy(out);
+			return NULL;
+		}
+		node_push_arg(out, func);
 	}
-	return res.node;
+
+	return out;
 }

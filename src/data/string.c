@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-void string_print(string_t *str)
+void string_print(const string_t *str)
 {
 	for (unsigned i = 0; i < str->len; ++i)
 	{
@@ -15,14 +15,14 @@ void string_print(string_t *str)
 }
 
 
-void string_put(string_t *str)
+void string_put(const string_t *str)
 {
 	string_print(str);
 	putchar('\n');
 }
 
 
-void string_fputs(string_t *str, FILE *stream)
+void string_fputs(const string_t *str, FILE *stream)
 {
 	for (size_t i = 0; i < str->len; ++i)
 	{
@@ -37,7 +37,7 @@ void string_fputs(string_t *str, FILE *stream)
  * 
  * @param	str	pointer to string struct
  */
-char *string_duplicate(string_t *str)
+char *string_duplicate(const string_t *str)
 {
 	char *buf = malloc(str->len + 1);
 	if (!buf) return NULL;

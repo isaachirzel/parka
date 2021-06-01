@@ -27,6 +27,13 @@ void log_error_prompt(unsigned line, unsigned col)
 }
 
 
+void log_error(unsigned line, unsigned col, const char *error)
+{
+	log_error_prompt(line, col);
+	if (error) fprintf(stderr, "%s\n", error);
+}
+
+
 void log_set_filepath(const char *filepath)
 {	
 	size_t len = strlen(filepath);

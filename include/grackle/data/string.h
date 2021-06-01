@@ -10,9 +10,9 @@ typedef struct string
 	unsigned len;
 } string_t;
 
-void string_print(string_t *str);
-void string_put(string_t *str);
-void string_fputs(string_t *str, FILE *stream);
-char *string_duplicate(string_t *str);
+void string_print(const string_t *str);
+void string_put(const string_t *str);
+void string_fputs(const string_t *str, FILE *stream);
+char *string_duplicate(const string_t *str);
 
 #endif
