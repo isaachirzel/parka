@@ -5,3 +5,4 @@
 #include <grackle/container/strtbl.h>
 #include <grackle/container/symtbl.h>
 #include <grackle/container/typetbl.h>
+#include <grackle/container/strlist.h>

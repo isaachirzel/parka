@@ -2,7 +2,8 @@
 #include <grackle/analyzer.h>
 
 // local includes
-#include <grackle/container/symtbl.h>
+#include <grackle/log.h>
+#include <grackle/data/scope.h>
 
 // standard library
 #include <string.h>
@@ -21,12 +22,6 @@
 			this is something that will happen in 
 */
 
-
-typedef struct scope
-{
-	symbol_t *sym;
-	symtbl_t *sym_table;
-} scope_t;
 
 // TYPE TABLE
 
@@ -70,9 +65,10 @@ bool duplicate_symbol_error(symbol_t *sym)
 		break;
 	}
 
-	printf(ERROR_PROMPT " %s '", type);
-	string_put(sym->str);
-	puts("' was previously declared");
+	log_error_prompt(0, 0);
+	fprintf(stderr, "%s '", type);
+	string_fputs(sym->str, stderr);
+	fputs("' was previously declared", stderr);
 	return false;
 }
 

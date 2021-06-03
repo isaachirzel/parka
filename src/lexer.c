@@ -89,6 +89,7 @@ void lex_init()
 	ctok_types['{'] = TOK_LBRACE;
 	ctok_types['}'] = TOK_RBRACE;
 	ctok_types['.'] = TOK_DOT;
+	ctok_types[','] = TOK_COMMA;
 	ctok_types[';'] = TOK_SEMICOLON;
 
 	// Operators
@@ -109,6 +110,24 @@ void lex_init()
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
+
+	// typenames
+	chartbl_set(tok_types, "i8", TOK_TYPE_I8);
+	chartbl_set(tok_types, "i16", TOK_TYPE_I16);
+	chartbl_set(tok_types, "i32", TOK_TYPE_I32);
+	chartbl_set(tok_types, "i64", TOK_TYPE_I64);
+
+	chartbl_set(tok_types, "u8", TOK_TYPE_U8);
+	chartbl_set(tok_types, "u16", TOK_TYPE_U16);
+	chartbl_set(tok_types, "u32", TOK_TYPE_U32);
+	chartbl_set(tok_types, "u64", TOK_TYPE_U64);
+
+	chartbl_set(tok_types, "f32", TOK_TYPE_F32);
+	chartbl_set(tok_types, "f64", TOK_TYPE_F64);
+	
+	chartbl_set(tok_types, "str", TOK_TYPE_STR);
+
+	// operators
 	chartbl_set(tok_types, "**", TOK_SQRT);
 	chartbl_set(tok_types, "&&", TOK_AND);
 	chartbl_set(tok_types, "||", TOK_OR);

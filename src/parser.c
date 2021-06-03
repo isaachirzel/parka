@@ -9,13 +9,19 @@
 #include <stdio.h>
 
 
-// function type
-#define parse_func(func) node_t *parse_##func(const token_t **tok)
-
-
+// macros
 #define print_parse() printf("%s: ", __func__); string_put(&tok[0]->str)
+#define parse_terminal(tok, expected_type, expected_tok, error_action) if (tok->type != expected_type) { syntax_error(tok, expected_tok); error_action; } tok += 1
+#define parse_non_terminal(out, tok, function, error_action) { node_t *arg = parse_##function(&tok); if (!arg) error_action; node_push_arg(out, arg); }
 
-void parse_error(const token_t *tok, const char *expected)
+
+/**
+ * @brief Prints syntax error
+ * 
+ * @param	tok			current token 
+ * @param	expected	the type of node expected
+ */
+void syntax_error(const token_t *tok, const char *expected)
 {
 	log_error_prompt(tok->line, tok->col);
 	fprintf(stderr, "expected %s before '", expected);
@@ -25,9 +31,26 @@ void parse_error(const token_t *tok, const char *expected)
 
 
 // forward declarations of functions
-parse_func(statement);
-parse_func(expression);
+node_t *parse_statement(const token_t **tok);
+node_t *parse_expression(const token_t **tok);
 node_t *parse_binary_expression(const token_t **tok);
+
+
+node_t *parse_identifier(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	if (t->type != TOK_IDENTIFIER)
+	{
+		syntax_error(t, "identifier");
+		return NULL;
+	}
+	node_t *out = node_create(NODE_IDENTIFIER);
+	out->val = t;
+	t += 1;
+	*tok = t;
+	return out;
+}
 
 
 node_t *parse_typename(const token_t **tok)
@@ -56,36 +79,71 @@ node_t *parse_typename(const token_t **tok)
 		return out;
 
 	default:
-		parse_error(t, "typename");
+		syntax_error(t, "typename");
 		node_destroy(out);
 		return NULL;
 	}
 }
 
 
-node_t *parse_arglist(const token_t **tok)
+
+
+node_t *parse_parameter(const token_t **tok)
+{
+	const token_t *t = *tok;
+
+	node_t *out = node_create(NODE_PARAMETER);
+
+	// getting identifier
+	parse_non_terminal(out, t, identifier, goto failure);
+
+	// checking for type annotation
+	parse_terminal(t, TOK_COLON, "type-annotation", goto failure);
+
+	// getting typename
+	parse_non_terminal(out, t, typename, goto failure);
+
+	// moving iterator forwards
+	*tok = t;
+
+	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_parameter_list(const token_t **tok)
 {
 	print_parse();
-	node_t *out = node_create(NODE_ARGLIST);
+	node_t *out = node_create(NODE_PARAM_LIST);
 
 	const token_t *t = *tok;
 
-	if (t->type != TOK_LPAREN)
-	{
-		node_destroy(out);
-		parse_error(t, "argument-list");
-		return NULL;
-	}
-	t += 1;
+	parse_terminal(t, TOK_LPAREN, "argument-list", goto failure);
 
-	if (t->type != TOK_RPAREN)
+	// empty list
+	if (t->type == TOK_RPAREN)
 	{
-		node_destroy(out);
-		return NULL;
+		t += 1;
 	}
-	t += 1;
+	// list of parameters
+	else
+	{
+		// parse parameters as long as there is a comma
+		while (true)
+		{
+			parse_non_terminal(out, t, parameter, goto failure);
+			if (t->type != TOK_COMMA) break;
+			t += 1;
+		}
+		parse_terminal(t, TOK_RPAREN, ")", goto failure);
+	}
 
 	*tok = t;
+
 	return out;
 
 failure:
@@ -105,7 +163,7 @@ node_t *parse_compound_statement(const token_t **tok)
 	// skip over opening brace
 	if (t->type != TOK_LBRACE)
 	{
-		parse_error(t, "compound-statement");
+		syntax_error(t, "compound-statement");
 		goto failure;
 	}
 	t += 1;
@@ -138,19 +196,16 @@ node_t *parse_declaration(const token_t **tok)
 	// check for 'var'
 	if (t->type != TOK_VAR)
 	{
-		parse_error(t, "declaration");
-		goto failure;
-	}
-	t += 1;
-
-	// get identifier
-	if (t->type != TOK_IDENTIFIER)
-	{
-		parse_error(t, "identifier");
+		syntax_error(t, "declaration");
 		goto failure;
 	}
 	out->val = t;
 	t += 1;
+
+	// get identifier
+	node_t *identifier = parse_identifier(&t);
+	if (!identifier) goto failure;
+	node_push_arg(out, identifier);
 
 	// checking for type annotation
 	if (t->type == TOK_COLON)
@@ -183,7 +238,7 @@ node_t *parse_declaration(const token_t **tok)
 	// semicolon
 	if (t->type != TOK_SEMICOLON)
 	{
-		parse_error(t, "';'");
+		syntax_error(t, "';'");
 		goto failure;
 	}
 	t += 1;
@@ -215,7 +270,7 @@ node_t *parse_term(const token_t **tok)
 		return out;
 
 	default:
-		parse_error(t, "term");
+		syntax_error(t, "term");
 		node_destroy(out);
 		return NULL;
 	}
@@ -455,7 +510,7 @@ node_t *parse_statement(const token_t **tok)
 		const token_t *t = *tok;
 		if (t->type != TOK_SEMICOLON)
 		{
-			parse_error(t, "';'");
+			syntax_error(t, "';'");
 			return NULL;
 		}
 		*tok = t + 1;
@@ -474,22 +529,19 @@ node_t *parse_function(const token_t **tok)
 	// getting func token
 	if (t->type != TOK_FUNC)
 	{
-		parse_error(t, "function");
-		goto failure;
-	}
-	t += 1;
-
-	// getting identifier
-	if (t->type != TOK_IDENTIFIER)
-	{
-		parse_error(t, "identifier");
+		syntax_error(t, "function");
 		goto failure;
 	}
 	out->val = t;
 	t += 1;
 
+	// getting identifier
+	node_t *identifier = parse_identifier(&t);
+	if (!identifier) goto failure;
+	node_push_arg(out, identifier);
+
 	// getting arg list
-	node_t *arglist = parse_arglist(&t);
+	node_t *arglist = parse_parameter_list(&t);
 	if (!arglist) goto failure;
 	node_push_arg(out, arglist);
 
@@ -505,7 +557,7 @@ node_t *parse_function(const token_t **tok)
 	else
 	{
 		// push empty type if no type is annotated
-		node_push_arg(out, node_create(NODE_EMPTY_TYPE));
+		node_push_arg(out, node_create(NODE_TYPENAME));
 	}
 
 	// getting statement
@@ -526,7 +578,7 @@ node_t *parse_function(const token_t **tok)
 
 		if (t->type != TOK_SEMICOLON)
 		{
-			parse_error(t, "';'");
+			syntax_error(t, "';'");
 			goto failure;
 		}
 		t += 1;
@@ -534,7 +586,7 @@ node_t *parse_function(const token_t **tok)
 	
 	// error
 	default:
-		parse_error(t, "function-body");
+		syntax_error(t, "function-body");
 		goto failure;
 	}
 

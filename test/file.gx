@@ -1,4 +1,8 @@
 func main() -> i32
 {
-	var val : i32 = 3 || a + b * c << 2;
+	var val : i32 = 3 * 2;
+}
+
+func add(a : i32, b : i32) -> i32
+{
 }

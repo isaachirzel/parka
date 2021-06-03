@@ -21,6 +21,7 @@ enum TokenType
 	TOK_RANGBRACK,
 	TOK_SEMICOLON,
 	TOK_COLON,
+	TOK_COMMA,
 
 	// Dot based
 	TOK_DOT,		// 1 dot

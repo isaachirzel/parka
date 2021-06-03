@@ -55,20 +55,19 @@ int main(void)
 	puts("\nAbstract Syntax Tree:");
 	node_print(ast);
 
-	goto cleanup;
-
 	puts("\n");
 	// semantic analysis
-	if (!analyze(ast)) goto cleanup;
+	//if (!analyze(ast)) goto cleanup;
 
 	// code generation
-	char *output = generate(ast);
-	if (!output) goto cleanup;
-	printf("Output:\n%s\n", output);
+	puts("G");
+	strlist_t *gen = generate(ast);
+	generate_print(gen);
+	puts("G");
+
 
 cleanup:
 	// memory cleanup
-	free(output);
 	node_destroy(ast);
 	toklist_destroy(toks);
 	lex_cleanup();
