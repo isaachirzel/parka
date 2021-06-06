@@ -905,16 +905,9 @@ node_t *parse_function(const token_t **tok)
 
 	// expression
 	case TOK_DOUBLE_ARROW:;
-		node_t *expr = parse_expression(&t);
-		if (!expr) goto failure;
-		node_push_arg(out, expr);
-
-		if (t->type != TOK_SEMICOLON)
-		{
-			syntax_error(t, "';'");
-			goto failure;
-		}
 		t += 1;
+		parse_non_terminal(out, t, expression, goto failure);
+		parse_semicolon(t, goto failure);
 		break;
 	
 	// error
@@ -1055,11 +1048,9 @@ node_t *parse_type(const token_t **tok)
 
 	default:
 		parse_non_terminal(out, t, typename, goto failure);
+		parse_semicolon(t, goto failure);
 		break;
 	}
-
-	
-	parse_semicolon(t, goto failure);
 
 	*tok = t;
 	return out;
@@ -1114,6 +1105,10 @@ node_t *parse_module(const token_t **tok)
 		case TOK_TYPE:
 			parse_non_terminal(out, t, type, goto failure);
 			break;
+
+		default:
+			syntax_error(t, "module-component");
+			goto failure;
 		}
 	}
 

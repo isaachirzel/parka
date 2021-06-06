@@ -116,6 +116,7 @@ enum TokenType
 	TOK_UNION,
 	TOK_IMPORT,
 	TOK_EXPORT,
+	TOK_SCOPE,
 
 	// last
 	TOK_COUNT

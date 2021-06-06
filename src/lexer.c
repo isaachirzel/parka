@@ -172,6 +172,7 @@ void lex_init()
 	// scope
 	chartbl_set(tok_types, "export", TOK_EXPORT);
 	chartbl_set(tok_types, "import", TOK_IMPORT);
+	chartbl_set(tok_types, "::", TOK_SCOPE);
 }
 
 
