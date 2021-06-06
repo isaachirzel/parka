@@ -169,88 +169,6 @@ failure:
 }
 
 
-node_t *parse_compound_statement(const token_t **tok)
-{
-	print_parse();
-	node_t *out = node_create(NODE_COMPOUND_STMT);
-
-	const token_t *t = *tok;
-	out->val = t;
-	// skip over opening brace
-	parse_terminal(t, TOK_LBRACE, "compound-statement", goto failure);
-
-	while (t->type != TOK_RBRACE)
-	{
-		node_t *stmt = parse_statement(&t);
-		if (!stmt) goto failure;
-		node_push_arg(out, stmt);
-	}
-	t += 1;
-
-	*tok = t;
-	return out;
-
-failure:
-
-	node_destroy(out);
-	return NULL;
-}
-
-
-node_t *parse_declaration(const token_t **tok)
-{
-	print_parse();
-	node_t *out = node_create(NODE_DECL_STMT);
-
-	const token_t *t = *tok;
-
-	// check for var keyword
-	parse_terminal(t, TOK_VAR, "declaration", goto failure);
-	// setting token value to var keyword (used in printing)
-	out->val = t - 1;
-
-
-	// get identifier
-	parse_non_terminal(out, t, identifier, goto failure);
-
-	// checking for type annotation
-	if (t->type == TOK_COLON)
-	{
-		t += 1;
-		node_t *type = parse_typename(&t);
-		if (!type) goto failure;
-		node_push_arg(out, type);
-	}
-	else
-	{
-		
-		// push empty type if no type is annotated
-		node_push_arg(out, node_create(NODE_TYPENAME));
-	}
-	
-	// checking for equals sign
-	if (t->type != TOK_ASSIGN)
-	{
-		log_error(t->line, t->col, "declaration of uninitialized variables is not allowed");
-		goto failure;
-	}
-	t += 1;
-
-	// get assignment expression
-	parse_non_terminal(out, t, expression, goto failure);
-
-	// semicolon
-	parse_terminal(t, TOK_SEMICOLON, "';'", goto failure);
-
-	*tok = t;
-	return out;
-
-failure:
-	node_destroy(out);
-	return NULL;
-}
-
-
 node_t *parse_member_access(const token_t **tok)
 {
 	print_parse();
@@ -338,6 +256,8 @@ node_t *parse_factor(const token_t **tok)
 	case TOK_INT_LITERAL:
 	case TOK_STR_LITERAL:
 	case TOK_FLOAT_LITERAL:
+	case TOK_TRUE:
+	case TOK_FALSE:
 	case TOK_IDENTIFIER:
 		out->val = t++;
 		*tok = t;
@@ -397,9 +317,6 @@ failure:
 	node_destroy(out);
 	return NULL;
 }
-
-
-
 
 
 node_t *parse_prefix_expression(const token_t **tok)
@@ -598,10 +515,12 @@ failure:
 	return NULL;
 }
 
+
 node_t *parse_binary_expression(const token_t **tok)
 {
 	return parse_binary_recurse(tok, sizeof(binexprs) / sizeof(binexpr_t) - 1);
 }
+
 
 node_t *parse_assignment(const token_t **tok)
 {
@@ -649,7 +568,25 @@ node_t *parse_expression(const token_t **tok)
 
 node_t *parse_if_statement(const token_t **tok)
 {
-	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_IF_STMT);
+	out->val = t;
+	parse_terminal(t, TOK_IF, "if-statement", goto failure);
+	parse_non_terminal(out, t, expression, goto failure);
+	parse_non_terminal(out, t, statement, goto failure);
+
+	if (t->type == TOK_ELSE)
+	{
+		t += 1;
+		parse_non_terminal(out, t, statement, goto failure);
+	}
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
 	return NULL;
 }
 
@@ -729,6 +666,86 @@ node_t *parse_return_statement(const token_t **tok)
 	{
 		t += 1;
 	}
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_compound_statement(const token_t **tok)
+{
+	print_parse();
+	node_t *out = node_create(NODE_COMPOUND_STMT);
+
+	const token_t *t = *tok;
+	out->val = t;
+	// skip over opening brace
+	parse_terminal(t, TOK_LBRACE, "compound-statement", goto failure);
+
+	while (t->type != TOK_RBRACE)
+	{
+		parse_non_terminal(out, t, statement, goto failure);
+	}
+	t += 1;
+
+	*tok = t;
+	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_declaration(const token_t **tok)
+{
+	print_parse();
+	node_t *out = node_create(NODE_DECL_STMT);
+
+	const token_t *t = *tok;
+
+	// check for var keyword
+	parse_terminal(t, TOK_VAR, "declaration", goto failure);
+	// setting token value to var keyword (used in printing)
+	out->val = t - 1;
+
+
+	// get identifier
+	parse_non_terminal(out, t, identifier, goto failure);
+
+	// checking for type annotation
+	if (t->type == TOK_COLON)
+	{
+		t += 1;
+		node_t *type = parse_typename(&t);
+		if (!type) goto failure;
+		node_push_arg(out, type);
+	}
+	else
+	{
+		
+		// push empty type if no type is annotated
+		node_push_arg(out, node_create(NODE_TYPENAME));
+	}
+	
+	// checking for equals sign
+	if (t->type != TOK_ASSIGN)
+	{
+		log_error(t->line, t->col, "declaration of uninitialized variables is not allowed");
+		goto failure;
+	}
+	t += 1;
+
+	// get assignment expression
+	parse_non_terminal(out, t, expression, goto failure);
+
+	// semicolon
+	parse_terminal(t, TOK_SEMICOLON, "';'", goto failure);
 
 	*tok = t;
 	return out;

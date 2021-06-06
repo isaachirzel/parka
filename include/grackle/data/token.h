@@ -78,6 +78,8 @@ enum TokenType
 	TOK_OCT_LITERAL,	// todo
 	TOK_CHAR_LITERAL,
 	TOK_STR_LITERAL,
+	TOK_TRUE,
+	TOK_FALSE,
 
 	// Typenames
 	TOK_VAR,
@@ -105,6 +107,7 @@ enum TokenType
 	TOK_CONTINUE,
 	TOK_BREAK,
 	TOK_IF,
+	TOK_ELSE,
 	TOK_TYPE,
 	TOK_STRUCT,
 	TOK_ENUM,

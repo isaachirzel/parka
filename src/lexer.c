@@ -122,6 +122,7 @@ void lex_init()
 	chartbl_set(tok_types, "continue", TOK_CONTINUE);
 	chartbl_set(tok_types, "break", TOK_BREAK);
 	chartbl_set(tok_types, "if", TOK_IF);
+	chartbl_set(tok_types, "else", TOK_ELSE);
 
 	// typenames
 	chartbl_set(tok_types, "i8", TOK_TYPE_I8);
@@ -138,6 +139,9 @@ void lex_init()
 	chartbl_set(tok_types, "f64", TOK_TYPE_F64);
 	
 	chartbl_set(tok_types, "str", TOK_TYPE_STR);
+
+	chartbl_set(tok_types, "true", TOK_TRUE);
+	chartbl_set(tok_types, "false", TOK_FALSE);
 
 	// operators
 	chartbl_set(tok_types, "++", TOK_INCREMENT);

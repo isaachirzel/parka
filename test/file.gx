@@ -2,6 +2,16 @@ func main() -> i32
 {
 	io.print("hello, world!");
 	var val : i32 = 3 * 2;
+	if true
+	{
+		var a = 3;
+		var b = 5;
+		io.print(a + b);
+	}
+	else
+	{
+		io.print("Failure");
+	}
 }
 
 func add(a : i32, b : i32) -> i32
