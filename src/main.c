@@ -27,10 +27,11 @@ void print_toks(toklist_t *toks)
 		printf("\ttype %d\tline: %u\tcol: %u\n", (int)tok->type, tok->line, tok->col);
 	}
 }
-
+#include <string.h>
 
 int main(void)
 {
+	assert(strncmp("b", "break", 2));
 	const char *filepath = "./test/file.gx";
 	log_set_filepath(filepath);
 	// reading src
@@ -60,10 +61,8 @@ int main(void)
 	//if (!analyze(ast)) goto cleanup;
 
 	// code generation
-	puts("G");
 	strlist_t *gen = generate(ast);
 	generate_print(gen);
-	puts("G");
 
 
 cleanup:

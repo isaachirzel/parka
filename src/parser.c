@@ -9,11 +9,28 @@
 #include <stdio.h>
 
 
+// TODO
+/*
+	Program:
+		- change to module
+		- make it parse "components" instead of functions
+		- allow for struct / enum / union / submodule definitions
+	
+	Expression:
+		- handle unary expressions and post expression operators
+		- ternary, match, if else, and switch expressions
+			- all of these will require the else block / default case 
+				as it is important to keep with the "no uninitialized data" paradaigm
+		
+*/
+
+
+
 // macros
 #define print_parse() printf("%s: ", __func__); string_put(&tok[0]->str)
 #define parse_terminal(tok, expected_type, expected_tok, error_action) if (tok->type != expected_type) { syntax_error(tok, expected_tok); error_action; } tok += 1
 #define parse_non_terminal(out, tok, function, error_action) { node_t *arg = parse_##function(&tok); if (!arg) error_action; node_push_arg(out, arg); }
-
+#define parse_semicolon(tok, error_action) parse_terminal(tok, TOK_SEMICOLON, "';'", error_action)
 
 /**
  * @brief Prints syntax error
@@ -42,6 +59,7 @@ node_t *parse_identifier(const token_t **tok)
 	const token_t *t = *tok;
 	if (t->type != TOK_IDENTIFIER)
 	{
+		printf("Type: %u\n", t->type);
 		syntax_error(t, "identifier");
 		return NULL;
 	}
@@ -193,19 +211,14 @@ node_t *parse_declaration(const token_t **tok)
 
 	const token_t *t = *tok;
 
-	// check for 'var'
-	if (t->type != TOK_VAR)
-	{
-		syntax_error(t, "declaration");
-		goto failure;
-	}
-	out->val = t;
-	t += 1;
+	// check for var keyword
+	parse_terminal(t, TOK_VAR, "declaration", goto failure);
+	// setting token value to var keyword (used in printing)
+	out->val = t - 1;
+
 
 	// get identifier
-	node_t *identifier = parse_identifier(&t);
-	if (!identifier) goto failure;
-	node_push_arg(out, identifier);
+	parse_non_terminal(out, t, identifier, goto failure);
 
 	// checking for type annotation
 	if (t->type == TOK_COLON)
@@ -219,7 +232,7 @@ node_t *parse_declaration(const token_t **tok)
 	{
 		
 		// push empty type if no type is annotated
-		node_push_arg(out, node_create(NODE_EMPTY_TYPE));
+		node_push_arg(out, node_create(NODE_TYPENAME));
 	}
 	
 	// checking for equals sign
@@ -231,17 +244,10 @@ node_t *parse_declaration(const token_t **tok)
 	t += 1;
 
 	// get assignment expression
-	node_t *expr = parse_expression(&t);
-	if (!expr) goto failure;
-	node_push_arg(out, expr);
+	parse_non_terminal(out, t, expression, goto failure);
 
 	// semicolon
-	if (t->type != TOK_SEMICOLON)
-	{
-		syntax_error(t, "';'");
-		goto failure;
-	}
-	t += 1;
+	parse_terminal(t, TOK_SEMICOLON, "';'", goto failure);
 
 	*tok = t;
 	return out;
@@ -490,6 +496,92 @@ node_t *parse_expression(const token_t **tok)
 }
 
 
+node_t *parse_if_statement(const token_t **tok)
+{
+	return NULL;
+}
+
+
+node_t *parse_switch_statement(const token_t **tok)
+{
+	return NULL;
+}
+
+
+node_t *parse_loop_statement(const token_t **tok)
+{
+	return NULL;
+}
+
+
+node_t *parse_while_statement(const token_t **tok)
+{
+	return NULL;
+}
+
+
+node_t *parse_for_statement(const token_t **tok)
+{
+	return NULL;
+}
+
+
+node_t *parse_jump_statement(const token_t **tok)
+{
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_NO_TYPE);
+	out->val = t;
+
+	switch (t->type)
+	{
+	case TOK_CONTINUE:
+		out->type = NODE_CONTINUE_STMT;
+		break;
+
+	case TOK_BREAK:
+		out->type = NODE_BREAK_STMT;
+		break;
+	}
+
+	t += 1;
+
+	parse_semicolon(t,
+	{
+		node_destroy(out);
+		return NULL;
+	});
+
+	*tok = t;
+	return out;
+}
+
+
+node_t *parse_return_statement(const token_t **tok)
+{
+	const token_t *t = *tok;
+	parse_terminal(t, TOK_RETURN, "return-statement", return NULL);
+	node_t *out = node_create(NODE_RETURN_STMT);
+	out->val = t - 1;
+	// if returning a value
+	if (t->type != TOK_SEMICOLON)
+	{
+		parse_non_terminal(out, t, expression, goto failure);
+		parse_terminal(t, TOK_SEMICOLON, "';'", goto failure);
+	}
+	else
+	{
+		t += 1;
+	}
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
 node_t *parse_statement(const token_t **tok)
 {
 	print_parse();
@@ -502,7 +594,35 @@ node_t *parse_statement(const token_t **tok)
 	// declaration
 	case TOK_VAR:
 		return parse_declaration(tok);
-	
+
+	case TOK_IF:
+		return parse_if_statement(tok);
+
+	case TOK_WHILE:
+		return parse_while_statement(tok);
+
+	case TOK_LOOP:
+		return parse_loop_statement(tok);
+
+	case TOK_FOR:
+		return parse_for_statement(tok);
+
+	case TOK_SWITCH:
+		return parse_switch_statement(tok);
+
+	case TOK_BREAK:
+	case TOK_CONTINUE:
+		return parse_jump_statement(tok);
+
+	case TOK_RETURN:
+		return parse_return_statement(tok);
+
+	// no-op
+	case TOK_SEMICOLON:;
+		node_t *noop = node_create(NODE_NOOP_STMT);
+		noop->val = *tok;
+		return noop;
+
 	// expression statement
 	default:;
 		node_t *expr = parse_expression(tok);
@@ -527,23 +647,14 @@ node_t *parse_function(const token_t **tok)
 	const token_t *t = *tok;
 
 	// getting func token
-	if (t->type != TOK_FUNC)
-	{
-		syntax_error(t, "function");
-		goto failure;
-	}
-	out->val = t;
-	t += 1;
+	parse_terminal(t, TOK_FUNC, "function", goto failure);
+	out->val = t - 1;
 
 	// getting identifier
-	node_t *identifier = parse_identifier(&t);
-	if (!identifier) goto failure;
-	node_push_arg(out, identifier);
+	parse_non_terminal(out, t, identifier, goto failure);
 
 	// getting arg list
-	node_t *arglist = parse_parameter_list(&t);
-	if (!arglist) goto failure;
-	node_push_arg(out, arglist);
+	parse_non_terminal(out, t, parameter_list, goto failure);
 
 	// checking for return type
 	if (t->type == TOK_SINGLE_ARROW)

@@ -24,7 +24,6 @@ void generate_identifier(const node_t *node, strlist_t *out)
 void generate_typename(const node_t *node, strlist_t *out)
 {
 	ASSERT(node->type == NODE_TYPENAME);
-	printf("Type: %u\n", node->val->type);
 	// check 
 	switch (node->val->type)
 	{

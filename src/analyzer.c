@@ -87,12 +87,18 @@ analyze_func(statement)
 		// handling identifier
 		const string_t *label = &node->args[0]->val->str;
 		symbol_t var_sym = { label, SYM_VARIABLE };
-		if (symtbl_containsn(scopes[depth - 1].sym_table, label->ptr, label->len))
+
+		// copying string_t into char buffer
+		char id_buffer[129];
+		strncpy(id_buffer, label->ptr, label->len);
+		id_buffer[label->len] = 0;
+
+		if (symtbl_contains(scopes[depth - 1].sym_table, id_buffer))
 		{
 			return duplicate_symbol_error(&var_sym);
 		}
 
-		symtbl_setnref(scopes[depth - 1].sym_table, label->ptr, label->len, &var_sym);
+		symtbl_setref(scopes[depth - 1].sym_table, id_buffer, &var_sym);
 
 		// handling type
 
@@ -125,14 +131,18 @@ analyze_func(function)
 	symbol_t symbol = { label, SYM_FUNCTION };
 	scopes[depth] = (scope_t){ &symbol, syms };
 	
+	char id_buffer[129];
+	strncpy(id_buffer, label->ptr, label->len);
+	id_buffer[label->len] = 0;
+
 	// error if symbol already exists in current scope
-	if (symtbl_containsn(scopes[depth - 1].sym_table, label->ptr, label->len))
+	if (symtbl_contains(scopes[depth - 1].sym_table, id_buffer))
 	{
 		duplicate_symbol_error(&symbol);
 	}
 
 	// adding symbol to list
-	symtbl_setnref(syms, label->ptr, label->len, &symbol);
+	symtbl_setref(syms, id_buffer, &symbol);
 
 	// handling type
 	if (node->args[2]->val->type == TOK_IDENTIFIER)

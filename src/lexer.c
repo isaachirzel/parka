@@ -106,10 +106,18 @@ void lex_init()
 
 	// initializing token types
 	tok_types = chartbl_create();
-	chartbl_set(tok_types, "return", TOK_RETURN);
-	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
+
+	// keywords
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
+	chartbl_set(tok_types, "return", TOK_RETURN);
+	chartbl_set(tok_types, "for", TOK_FOR);
+	chartbl_set(tok_types, "while", TOK_WHILE);
+	chartbl_set(tok_types, "loop", TOK_LOOP);
+	chartbl_set(tok_types, "switch", TOK_SWITCH);
+	chartbl_set(tok_types, "continue", TOK_CONTINUE);
+	chartbl_set(tok_types, "break", TOK_BREAK);
+	chartbl_set(tok_types, "if", TOK_IF);
 
 	// typenames
 	chartbl_set(tok_types, "i8", TOK_TYPE_I8);
@@ -139,6 +147,7 @@ void lex_init()
 	chartbl_set(tok_types, "<<", TOK_LSHIFT);
 	chartbl_set(tok_types, "->", TOK_SINGLE_ARROW);
 	chartbl_set(tok_types, "=>", TOK_DOUBLE_ARROW);
+	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
 }
 
 

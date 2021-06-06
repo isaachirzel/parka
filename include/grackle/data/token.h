@@ -99,6 +99,12 @@ enum TokenType
 	// Keywords
 	TOK_RETURN,
 	TOK_FOR,
+	TOK_WHILE,
+	TOK_LOOP,
+	TOK_SWITCH,
+	TOK_CONTINUE,
+	TOK_BREAK,
+	TOK_IF,
 
 	// last
 	TOK_COUNT

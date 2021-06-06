@@ -137,10 +137,15 @@ void test_table()
 
 	const char *keys[] =
 	{
-		"abc", "bce", "cde", "def", "efg", "fgh", "hij", "ijk", "jkl", "klm",
-		"lmn", "mno", "nop", "opq", "pqr", "qrs", "rst", "stu", "tuv", "uvw",
-		"vwx", "wxy", "xyz", "yza", "zab"
+		"a", "aa", "aaa", "abc", "abcd", "abcde", "bce", "cde", "def", "efg",
+		"fgh", "hij", "ijk", "jkl", "klm","lmn", "mno", "nop", "opq", "pqr",
+		"qrs", "rst", "stu", "tuv", "uvw", "vwx", "wxy", "xyz", "yza", "zab"
 	};
+
+	// const char *keys[] =
+	// {
+	// 	"a", "ab", "abc", "abcd",
+	// };
 
 	const char *non_keys[] =
 	{
@@ -159,10 +164,10 @@ void test_table()
 		assert(int_tbl_set(table, keys[i], i * 2));
 		assert(table->count == i + 1);
 	}
+	assert(table->count == key_count);
 
 	// storing table size after setting
 	size_t table_size_idx = table->size_idx;
-	size_t table_count = table->count;
 	// assuring that the size has gone up appropriately
 	assert(int_tbl_size(table) > key_count * 2);
 	assert(!int_tbl_empty(table));
@@ -187,7 +192,7 @@ void test_table()
 	}
 	
 	assert(table->size_idx == table_size_idx);
-	assert(table->count == table_count);
+	assert(table->count == key_count);
 
 	// CLEARING
 	puts("\tclearing...");
@@ -208,14 +213,19 @@ void test_table()
 	for (size_t i = 0; i < key_count; ++i)
 	{
 		assert(int_tbl_set(table, keys[i], (int)i * 2));
+		assert(int_tbl_set(table, keys[i], (int)i * 2));
 		assert(table->count == i + 1);
-		struct int_tbl_node *node = int_tbl_getnode(table, keys[i], strlen(keys[i]));
-		assert(node != NULL);
-		assert(!strcmp(node->key, keys[i]));
 	}
 
 	assert(table->size_idx == table_size_idx);
-	assert(table->count == table_count);
+	assert(table->count == key_count);
+
+	puts("\terasing...");
+
+	// for (size_t i = 0; i < key_count; ++i)
+	// {
+	// 	printf("%s: %d\n", keys[i], int_tbl_get(table, keys[i]));
+	// }
 
 	// ERASING
 	for (size_t i = 0; i < key_count; ++i)
@@ -271,6 +281,7 @@ void test_table()
 
 
 	// shrinking
+	puts("\tshrinking...");
 	assert(int_tbl_shrink(table));
 
 	// DESTRUCTION
@@ -284,5 +295,6 @@ int main(void)
 	test_file();
 	test_list();
 	test_table();
+
 	return 0;
 }
