@@ -27,7 +27,7 @@ void print_toks(toklist_t *toks)
 		printf("\ttype %d\tline: %u\tcol: %u\n", (int)tok->type, tok->line, tok->col);
 	}
 }
-#include <string.h>
+
 
 int main(void)
 {
@@ -60,8 +60,8 @@ int main(void)
 	//if (!analyze(ast)) goto cleanup;
 
 	// code generation
-	strlist_t *gen = generate(ast);
-	generate_print(gen);
+	// strlist_t *gen = generate(ast);
+	// generate_print(gen);
 
 
 cleanup:

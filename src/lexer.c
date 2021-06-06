@@ -111,8 +111,6 @@ void lex_init()
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
 	chartbl_set(tok_types, "type", TOK_TYPE);
-	chartbl_set(tok_types, "struct", TOK_STRUCT);
-	chartbl_set(tok_types, "enum", TOK_ENUM);
 
 	chartbl_set(tok_types, "return", TOK_RETURN);
 	chartbl_set(tok_types, "for", TOK_FOR);
@@ -126,6 +124,10 @@ void lex_init()
 	chartbl_set(tok_types, "case", TOK_ELSE);
 
 	// typenames
+	chartbl_set(tok_types, "struct", TOK_STRUCT);
+	chartbl_set(tok_types, "union", TOK_UNION);
+	chartbl_set(tok_types, "enum", TOK_ENUM);
+
 	chartbl_set(tok_types, "i8", TOK_TYPE_I8);
 	chartbl_set(tok_types, "i16", TOK_TYPE_I16);
 	chartbl_set(tok_types, "i32", TOK_TYPE_I32);
@@ -141,6 +143,7 @@ void lex_init()
 	
 	chartbl_set(tok_types, "str", TOK_TYPE_STR);
 
+	chartbl_set(tok_types, "bool", TOK_TYPE_BOOL);
 	chartbl_set(tok_types, "true", TOK_TRUE);
 	chartbl_set(tok_types, "false", TOK_FALSE);
 
@@ -158,7 +161,17 @@ void lex_init()
 	chartbl_set(tok_types, "<<", TOK_LSHIFT);
 	chartbl_set(tok_types, "->", TOK_SINGLE_ARROW);
 	chartbl_set(tok_types, "=>", TOK_DOUBLE_ARROW);
+
+	// assign operators
 	chartbl_set(tok_types, "+=", TOK_ADD_ASSIGN);
+	chartbl_set(tok_types, "-=", TOK_SUB_ASSIGN);
+	chartbl_set(tok_types, "*=", TOK_MUL_ASSIGN);
+	chartbl_set(tok_types, "/=", TOK_DIV_ASSIGN);
+	chartbl_set(tok_types, "%=", TOK_MOD_ASSIGN);
+
+	// scope
+	chartbl_set(tok_types, "export", TOK_EXPORT);
+	chartbl_set(tok_types, "import", TOK_IMPORT);
 }
 
 

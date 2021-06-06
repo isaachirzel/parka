@@ -53,7 +53,7 @@ enum TokenType
 	// Assignment
 	TOK_ASSIGN,
 	TOK_ADD_ASSIGN,
-	TOK_MIN_ASSIGN,
+	TOK_SUB_ASSIGN,
 	TOK_MUL_ASSIGN,
 	TOK_DIV_ASSIGN,
 	TOK_MOD_ASSIGN,
@@ -97,6 +97,7 @@ enum TokenType
 	TOK_TYPE_F32,
 	TOK_TYPE_F64,
 	TOK_TYPE_STR,
+	TOK_TYPE_BOOL,
 
 	// Keywords
 	TOK_RETURN,
@@ -112,6 +113,9 @@ enum TokenType
 	TOK_TYPE,
 	TOK_STRUCT,
 	TOK_ENUM,
+	TOK_UNION,
+	TOK_IMPORT,
+	TOK_EXPORT,
 
 	// last
 	TOK_COUNT

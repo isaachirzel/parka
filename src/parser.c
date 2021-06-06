@@ -104,6 +104,20 @@ node_t *parse_typename(const token_t **tok)
 }
 
 
+node_t *parse_label(const token_t **tok)
+{
+	const token_t *t = *tok;
+	node_t *out = parse_identifier(&t);
+	if (!out) return NULL;
+	parse_terminal(t, TOK_COLON, "':'", {
+		node_destroy(out);
+		return NULL;
+	});
+	*tok = t;
+	return out;
+}
+
+
 node_t *parse_parameter(const token_t **tok)
 {
 	const token_t *t = *tok;
@@ -111,7 +125,8 @@ node_t *parse_parameter(const token_t **tok)
 	node_t *out = node_create(NODE_PARAMETER);
 
 	// getting identifier
-	parse_non_terminal(out, t, identifier, goto failure);
+	out->val = t;
+	parse_terminal(t, TOK_IDENTIFIER, "identifier", goto failure);
 
 	// checking for type annotation
 	parse_terminal(t, TOK_COLON, "type-annotation", goto failure);
@@ -491,8 +506,7 @@ node_t *parse_binary_recurse(const token_t **tok, const unsigned precedence)
 	// while there is still a chain of same-type expressions
 	while (type->condition(t))
 	{
-		// storing out as leaf
-		left = out;
+		// storing out as lehing
 		// creating tree
 		out = node_create(type->id);
 		out->val = t;
@@ -534,7 +548,7 @@ node_t *parse_assignment(const token_t **tok)
 	{
 	case TOK_ASSIGN:
 	case TOK_ADD_ASSIGN:
-	case TOK_MIN_ASSIGN:
+	case TOK_SUB_ASSIGN:
 	case TOK_MUL_ASSIGN:
 	case TOK_DIV_ASSIGN:
 	case TOK_MOD_ASSIGN:
@@ -617,7 +631,7 @@ node_t *parse_loop_statement(const token_t **tok)
 	node_t *out = node_create(NODE_IF_STMT);
 	out->val = t;
 	parse_terminal(t, TOK_LOOP, "loop-statement", goto failure);
-
+	parse_non_terminal(out, t, statement, goto failure);
 	*tok = t;
 	return out;
 
@@ -920,24 +934,199 @@ failure:
 }
 
 
-node_t *parse(toklist_t *toks)
-{
-	node_t *out = node_create(NODE_PROGRAM);
+// node_t *parse_(const token_t **tok)
+// {
+// 	print_parse();
+// 	const token_t *t = *tok;
+// 	node_t *out = node_create(NODE_COMPONENT);
 
-	// parse functions until end of file is reached
-	const token_t *t = toks->data;
-	while (t->type != TOK_EOF)
+// 	*tok = t;
+// 	return out;
+
+// failure:
+// 	node_destroy(out);
+// 	return NULL;
+// }
+
+node_t *parse_union(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_UNION);
+	out->val = t;
+
+	parse_terminal(t, TOK_UNION, "union", goto failure);
+	parse_terminal(t, TOK_LBRACE, "union-definition", goto failure);
+	while (t->type != TOK_RBRACE)
 	{
-		node_t *func = parse_function(&t);
-		// failed to parse function
-		if (!func)
+		parse_non_terminal(out, t, parameter, goto failure);
+	}
+	t += 1;
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+node_t *parse_enum(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_ENUM);
+	out->val = t;
+
+	parse_terminal(t, TOK_ENUM, "enum", goto failure);
+	parse_terminal(t, TOK_LBRACE, "enum-definition", goto failure);
+	if (t->type == TOK_RBRACE)
+	{
+		t += 1;
+	}
+	else
+	{
+		while (true)
 		{
-			// destroy node
-			node_destroy(out);
-			return NULL;
+			parse_non_terminal(out, t, identifier, goto failure);
+			if (t->type != TOK_COMMA) break;
+			t += 1;
 		}
-		node_push_arg(out, func);
+
+		parse_terminal(t, TOK_RBRACE, "'}'", goto failure);
 	}
 
+	*tok = t;
 	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_struct(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_STRUCT);
+	out->val = t;
+
+	parse_terminal(t, TOK_STRUCT, "struct", goto failure);
+	parse_terminal(t, TOK_LBRACE, "struct-definition", goto failure);
+	while (t->type != TOK_RBRACE)
+	{
+		parse_non_terminal(out, t, parameter, goto failure);
+	}
+	t += 1;
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_type(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_TYPE);
+	out->val = t;
+
+	parse_terminal(t, TOK_TYPE, "type-definition", goto failure);
+	parse_non_terminal(out, t, label, goto failure);
+
+	switch (t->type)
+	{
+	case TOK_STRUCT:
+		parse_non_terminal(out, t, struct, goto failure);
+		break;
+
+	case TOK_ENUM:
+		parse_non_terminal(out, t, enum, goto failure);
+		break;
+
+	case TOK_UNION:
+		parse_non_terminal(out, t, union, goto failure);
+		break;
+
+	default:
+		parse_non_terminal(out, t, typename, goto failure);
+		break;
+	}
+
+	
+	parse_semicolon(t, goto failure);
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_import(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_COMPONENT);
+
+	out->val = t;
+	parse_terminal(t, TOK_IMPORT, "import-statement", goto failure);
+	parse_non_terminal(out, t, identifier, goto failure);
+	parse_semicolon(t, goto failure);
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_module(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_MODULE);
+
+	while (t->type != TOK_EOF)
+	{
+		switch (t->type)
+		{
+		// function definition
+		case TOK_FUNC:
+			parse_non_terminal(out, t, function, goto failure);
+			break;
+
+		// import statement
+		case TOK_IMPORT:
+			parse_non_terminal(out, t, import, goto failure);
+			break;
+
+		// type definition
+		case TOK_TYPE:
+			parse_non_terminal(out, t, type, goto failure);
+			break;
+		}
+	}
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse(toklist_t *toks)
+{
+	return parse_module((const token_t **)&toks->data);
 }

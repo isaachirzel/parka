@@ -124,6 +124,11 @@ void generate_function(const node_t *node, strlist_t *out)
 }
 
 
+void generate_module(const node_t *node, strlist_t *out)
+{
+}
+
+
 void generate_program(const node_t *node, strlist_t *out)
 {
 	ASSERT(node->type == NODE_PROGRAM);
@@ -137,7 +142,7 @@ void generate_program(const node_t *node, strlist_t *out)
 strlist_t *generate(const node_t *node)
 {
 	strlist_t *out = strlist_create();
-	generate_program(node, out);
+	generate_module(node, out);
 
 	return out;
 }
