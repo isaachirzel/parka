@@ -110,6 +110,10 @@ void lex_init()
 	// keywords
 	chartbl_set(tok_types, "func", TOK_FUNC);
 	chartbl_set(tok_types, "var", TOK_VAR);
+	chartbl_set(tok_types, "type", TOK_TYPE);
+	chartbl_set(tok_types, "struct", TOK_STRUCT);
+	chartbl_set(tok_types, "enum", TOK_ENUM);
+
 	chartbl_set(tok_types, "return", TOK_RETURN);
 	chartbl_set(tok_types, "for", TOK_FOR);
 	chartbl_set(tok_types, "while", TOK_WHILE);
@@ -136,7 +140,9 @@ void lex_init()
 	chartbl_set(tok_types, "str", TOK_TYPE_STR);
 
 	// operators
-	chartbl_set(tok_types, "**", TOK_SQRT);
+	chartbl_set(tok_types, "++", TOK_INCREMENT);
+	chartbl_set(tok_types, "++", TOK_DECREMENT);
+	chartbl_set(tok_types, "**", TOK_POW);
 	chartbl_set(tok_types, "&&", TOK_AND);
 	chartbl_set(tok_types, "||", TOK_OR);
 	chartbl_set(tok_types, "==", TOK_EQUALS);

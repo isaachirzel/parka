@@ -34,6 +34,16 @@ void log_error(unsigned line, unsigned col, const char *error)
 }
 
 
+void log_errorf(unsigned line, unsigned col, const char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	log_error_prompt(line, col);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+}
+
+
 void log_set_filepath(const char *filepath)
 {	
 	size_t len = strlen(filepath);

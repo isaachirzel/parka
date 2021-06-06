@@ -1,5 +1,6 @@
 func main() -> i32
 {
+	var p: str = funcs[0]("hello", "world");
 	var val : i32 = 3 * 2;
 }
 

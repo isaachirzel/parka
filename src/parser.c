@@ -179,12 +179,7 @@ node_t *parse_compound_statement(const token_t **tok)
 	const token_t *t = *tok;
 	out->val = t;
 	// skip over opening brace
-	if (t->type != TOK_LBRACE)
-	{
-		syntax_error(t, "compound-statement");
-		goto failure;
-	}
-	t += 1;
+	parse_terminal(t, TOK_LBRACE, "compound-statement", goto failure);
 
 	while (t->type != TOK_RBRACE)
 	{
@@ -258,10 +253,80 @@ failure:
 }
 
 
-node_t *parse_term(const token_t **tok)
+node_t *parse_pointer_access(const token_t **tok)
 {
 	print_parse();
-	node_t *out = node_create(NODE_TERM);
+	return NULL;
+}
+
+
+node_t *parse_member_access(const token_t **tok)
+{
+	print_parse();
+	return NULL;
+}
+
+
+node_t *parse_function_call(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_FUNCTION_CALL);
+	out->val = t;
+	parse_terminal(t, TOK_LPAREN, "function-call", goto failure);
+
+	// getting arguments
+	// empty list
+	if (t->type == TOK_RPAREN)
+	{
+		t += 1;
+	}
+	// list of parameters
+	else
+	{
+		// parse parameters as long as there is a comma
+		while (true)
+		{
+			parse_non_terminal(out, t, expression, goto failure);
+			if (t->type != TOK_COMMA) break;
+			t += 1;
+		}
+		parse_terminal(t, TOK_RPAREN, ")", goto failure);
+	}
+
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_index(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_INDEX);
+	out->val = t;
+	parse_terminal(t, TOK_LBRACK, "index-operation", goto failure);
+	parse_non_terminal(out, t, expression, goto failure);
+	parse_terminal(t, TOK_RBRACK, "']'", goto failure);
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+node_t *parse_factor(const token_t **tok)
+{
+	print_parse();
+	node_t *out = node_create(NODE_FACTOR);
 
 	const token_t *t = *tok;
 
@@ -273,13 +338,103 @@ node_t *parse_term(const token_t **tok)
 	case TOK_IDENTIFIER:
 		out->val = t++;
 		*tok = t;
-		return out;
+		break;
+
+	case TOK_LPAREN:
+		out->val = t++;
+		parse_non_terminal(out, t, expression, break);
+		*tok = t;
+		break;;
 
 	default:
-		syntax_error(t, "term");
-		node_destroy(out);
-		return NULL;
+		syntax_error(t, "factor");
+		goto failure;
 	}
+
+	// parsing suffix expressions
+	while (true)
+	{
+		node_t *arg;
+		switch (t->type)
+		{
+		case TOK_INCREMENT:
+			arg = node_create(NODE_INCREMENT);
+			break;
+
+		case TOK_DECREMENT:
+			arg = node_create(NODE_DECREMENT);
+			break;
+
+		// member access
+		case TOK_DOT:
+			arg = parse_member_access(&t);
+			break;
+
+		// pointer access
+		case TOK_SINGLE_ARROW:
+			arg = parse_pointer_access(&t);
+			break;
+		// indexing
+		case TOK_LBRACK:
+			arg = parse_index(&t);
+			break;
+
+		// function call
+		case TOK_LPAREN:
+			arg = parse_function_call(&t);
+			break;
+
+		default:
+			*tok = t;
+			return out;
+		}
+
+		// adding suffix to factor
+		if (!arg) return NULL;
+		node_push_arg(out, arg);
+	}
+
+failure:
+	node_destroy(out);
+	return NULL;
+}
+
+
+
+
+
+node_t *parse_prefix_expression(const token_t **tok)
+{
+	print_parse();
+	const token_t *t = *tok;
+
+	switch (t->type)
+	{
+	case TOK_INCREMENT:
+	case TOK_DECREMENT:
+	case TOK_PLUS:
+	case TOK_MINUS:
+	case TOK_EXCLAMATION:
+	case TOK_ASTERISK:
+	case TOK_AMPERSAND:
+		break;
+
+	default:
+		return parse_factor(tok);
+	}
+
+	node_t *out = node_create(NODE_PREFIX_EXPR);
+	out->val = t++;
+
+	// getting further prefixes
+	parse_non_terminal(out, t, prefix_expression, goto failure);
+	
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
+	return NULL;
 }
 
 
@@ -393,7 +548,9 @@ node_t *parse_binary_recurse(const token_t **tok, const unsigned precedence)
 	const token_t *t = *tok;
 	binexpr_t *type = binexprs + precedence;
 
-	node_t *left = (!precedence) ? parse_term(&t) : parse_binary_recurse(&t, precedence - 1);
+	node_t *left = (!precedence) ?
+		parse_prefix_expression(&t) :
+		parse_binary_recurse(&t, precedence - 1);
 	if (!left) return NULL;
 
 	// if not binary, just return first term
@@ -407,7 +564,9 @@ node_t *parse_binary_recurse(const token_t **tok, const unsigned precedence)
 	// make binary node
 	node_t *out = node_create(type->id);
 	out->val = t - 1;
-	node_t *right = (!precedence) ? parse_term(&t) : parse_binary_recurse(&t, precedence - 1);
+	node_t *right = (!precedence) ?
+		parse_prefix_expression(&t) :
+		parse_binary_recurse(&t, precedence - 1);
 	if (!right) goto failure;
 	node_push_arg(out, left);
 	node_push_arg(out, right);
@@ -422,7 +581,9 @@ node_t *parse_binary_recurse(const token_t **tok, const unsigned precedence)
 		out->val = t;
 		t += 1;
 		// getting right side leaf
-		right = (!precedence) ? parse_term(&t) : parse_binary_recurse(&t, precedence - 1);
+		right = (!precedence) ?
+			parse_prefix_expression(&t) :
+			parse_binary_recurse(&t, precedence - 1);
 		if (!right) goto failure;
 		// adding args to tree
 		node_push_arg(out, left);
@@ -443,10 +604,14 @@ node_t *parse_binary_expression(const token_t **tok)
 	return parse_binary_recurse(tok, sizeof(binexprs) / sizeof(binexpr_t) - 1);
 }
 
-
-bool is_assignment(const token_t *tok)
+node_t *parse_assignment(const token_t **tok)
 {
-	switch (tok->type)
+	print_parse();
+	const token_t *t = *tok;
+
+	node_t *left = parse_binary_expression(&t);
+
+	switch (t->type)
 	{
 	case TOK_ASSIGN:
 	case TOK_ADD_ASSIGN:
@@ -454,21 +619,8 @@ bool is_assignment(const token_t *tok)
 	case TOK_MUL_ASSIGN:
 	case TOK_DIV_ASSIGN:
 	case TOK_MOD_ASSIGN:
-		return true;
-
+		break;
 	default:
-		return false;
-	}
-}
-
-node_t *parse_assignment(const token_t **tok)
-{
-	print_parse();
-	const token_t *t = *tok;
-
-	node_t *left = parse_binary_expression(&t);
-	if (!is_assignment(t))
-	{
 		puts("Not an assignment");
 		*tok = t;
 		return left;
@@ -498,30 +650,36 @@ node_t *parse_expression(const token_t **tok)
 
 node_t *parse_if_statement(const token_t **tok)
 {
+	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
 	return NULL;
 }
 
 
 node_t *parse_switch_statement(const token_t **tok)
 {
+	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
 	return NULL;
 }
 
 
 node_t *parse_loop_statement(const token_t **tok)
 {
+	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
 	return NULL;
 }
 
 
 node_t *parse_while_statement(const token_t **tok)
 {
+	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
 	return NULL;
 }
 
 
 node_t *parse_for_statement(const token_t **tok)
 {
+
+	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
 	return NULL;
 }
 
