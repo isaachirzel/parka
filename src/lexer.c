@@ -141,7 +141,7 @@ void lex_init()
 
 	// operators
 	chartbl_set(tok_types, "++", TOK_INCREMENT);
-	chartbl_set(tok_types, "++", TOK_DECREMENT);
+	chartbl_set(tok_types, "--", TOK_DECREMENT);
 	chartbl_set(tok_types, "**", TOK_POW);
 	chartbl_set(tok_types, "&&", TOK_AND);
 	chartbl_set(tok_types, "||", TOK_OR);

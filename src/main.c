@@ -31,7 +31,6 @@ void print_toks(toklist_t *toks)
 
 int main(void)
 {
-	assert(strncmp("b", "break", 2));
 	const char *filepath = "./test/file.gx";
 	log_set_filepath(filepath);
 	// reading src

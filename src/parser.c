@@ -104,8 +104,6 @@ node_t *parse_typename(const token_t **tok)
 }
 
 
-
-
 node_t *parse_parameter(const token_t **tok)
 {
 	const token_t *t = *tok;
@@ -253,16 +251,21 @@ failure:
 }
 
 
-node_t *parse_pointer_access(const token_t **tok)
-{
-	print_parse();
-	return NULL;
-}
-
-
 node_t *parse_member_access(const token_t **tok)
 {
 	print_parse();
+	const token_t *t = *tok;
+	
+	node_t *out = node_create(NODE_MEMBER_ACCESS);
+	parse_terminal(t, TOK_DOT, "member-access operator", goto failure);
+	out->val = t;
+	parse_terminal(t, TOK_IDENTIFIER, "identifier", goto failure);
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
 	return NULL;
 }
 
@@ -370,10 +373,6 @@ node_t *parse_factor(const token_t **tok)
 			arg = parse_member_access(&t);
 			break;
 
-		// pointer access
-		case TOK_SINGLE_ARROW:
-			arg = parse_pointer_access(&t);
-			break;
 		// indexing
 		case TOK_LBRACK:
 			arg = parse_index(&t);
