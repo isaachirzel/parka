@@ -118,11 +118,12 @@ void lex_init()
 	chartbl_set(tok_types, "for", TOK_FOR);
 	chartbl_set(tok_types, "while", TOK_WHILE);
 	chartbl_set(tok_types, "loop", TOK_LOOP);
-	chartbl_set(tok_types, "switch", TOK_SWITCH);
 	chartbl_set(tok_types, "continue", TOK_CONTINUE);
 	chartbl_set(tok_types, "break", TOK_BREAK);
 	chartbl_set(tok_types, "if", TOK_IF);
 	chartbl_set(tok_types, "else", TOK_ELSE);
+	chartbl_set(tok_types, "switch", TOK_SWITCH);
+	chartbl_set(tok_types, "case", TOK_ELSE);
 
 	// typenames
 	chartbl_set(tok_types, "i8", TOK_TYPE_I8);

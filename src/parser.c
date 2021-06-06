@@ -266,6 +266,7 @@ node_t *parse_factor(const token_t **tok)
 	case TOK_LPAREN:
 		out->val = t++;
 		parse_non_terminal(out, t, expression, break);
+		parse_terminal(t, TOK_RPAREN, "')'", goto failure);
 		*tok = t;
 		break;;
 
@@ -593,21 +594,54 @@ failure:
 
 node_t *parse_switch_statement(const token_t **tok)
 {
-	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_IF_STMT);
+	out->val = t;
+	parse_terminal(t, TOK_SWITCH, "switch-statement", goto failure);
+
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
 	return NULL;
 }
 
 
 node_t *parse_loop_statement(const token_t **tok)
 {
-	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_IF_STMT);
+	out->val = t;
+	parse_terminal(t, TOK_LOOP, "loop-statement", goto failure);
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
 	return NULL;
 }
 
 
 node_t *parse_while_statement(const token_t **tok)
 {
-	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
+	print_parse();
+	const token_t *t = *tok;
+	node_t *out = node_create(NODE_WHILE_STMT);
+	out->val = t;
+	parse_terminal(t, TOK_WHILE, "while-statement", goto failure);
+	parse_non_terminal(out, t, expression, goto failure);
+	parse_non_terminal(out, t, statement, goto failure);
+
+	*tok = t;
+	return out;
+
+failure:
+	node_destroy(out);
 	return NULL;
 }
 
