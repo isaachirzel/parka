@@ -7,144 +7,75 @@
 // standard library
 #include <grackle/assert.h>
 
-#define generate_func(func) char *generate_##func(node_t *node)
-
-
-char *generate_mangled_symbol(const string_t * const ident,
-	const scope_t * const scope)
-{
-	return NULL;
-}
-
-void generate_identifier(const node_t *node, strlist_t *out)
-{
-	// string_fputs(&node->val->str, out);
-}
-
-void generate_typename(const node_t *node, strlist_t *out)
-{
-	ASSERT(node->type == NODE_TYPENAME);
-	// check 
-	switch (node->val->type)
-	{
-	case TOK_TYPE_I8:
-		// fputs("int8_t ", out);
-		break;
-
-	case TOK_TYPE_I16:
-		// fputs("int16_t ", out);
-		break;
-
-	case TOK_TYPE_I32:
-		// fputs("int32_t ", out);
-		break;
-
-	case TOK_TYPE_I64:
-		// fputs("int64_t ", out);
-		break;
-
-	case TOK_TYPE_U8:
-		// fputs("uint8_t ", out);
-		break;
-
-	case TOK_TYPE_U16:
-		// fputs("uint16_t ", out);
-		break;
-
-	case TOK_TYPE_U32:
-		// fputs("uint32_t ", out);
-		break;
-
-	case TOK_TYPE_U64:
-		// fputs("uint64_t ", out);
-		break;
-
-	case TOK_TYPE_F32:
-		// fputs("float ", out);
-		break;
-
-	case TOK_TYPE_F64:
-		// fputs("double ", out);
-		break;
-
-	case TOK_TYPE_STR:
-		// fputs("const char *", out);
-		break;
-
-	case TOK_IDENTIFIER:
-		// string_fputs(&node->val->str, out);
-		break;
-	}
-}
-
-void generate_declaration(const node_t *node, strlist_t *out)
-{
-	ASSERT(node->type == NODE_DECL_STMT);
-	generate_typename(node->args[1], out);
-	generate_identifier(node->args[0], out);
-}
-
-
-void generate_statement(const node_t *node, strlist_t *out)
-{
-	switch (node->type)
-	{
-	case NODE_DECL_STMT:
-		generate_declaration(node, out);
-		break;
-
-	case NODE_COMPOUND_STMT:
-		// fputs("{\n", out);
-		for (unsigned i = 0; i < node->argc; ++i)
-		{
-			generate_statement(node->args[i], out);
-		}
-		// fputs("}", out);
-		break;
-
-	default:;
-	}
-	// fputs("\n", out);
-}
-
-
-void generate_arglist(const node_t *node, strlist_t *out)
-{
-
-}
-
-
-void generate_function(const node_t *node, strlist_t *out)
+function_t generate_function(const node_t *node)
 {
 	ASSERT(node->type == NODE_FUNCTION);
-	generate_typename(node->args[2], out);
-	generate_identifier(node->args[0], out);
-	generate_arglist(node->args[1], out);
-	generate_statement(node->args[3], out);
+	// example mangling offunction
+	/*
+		// in util.gx
+		func add(a: i32, b: i32) -> i32
+
+		// in main.gx
+		util::add(4, 5);
+
+		gets mangled to:
+		func_util_add(4, 5);
+		
+	*/
+
+	size_t headerc = 0;
+	
 }
 
-
-void generate_module(const node_t *node, strlist_t *out)
+/*
+type string: struct
 {
+	data: char[]
+	len: uword
 }
 
-
-void generate_program(const node_t *node, strlist_t *out)
+implement for string
 {
-	ASSERT(node->type == NODE_PROGRAM);
-	for (unsigned i = 0; i < node->argc; ++i)
+	func push(c: char)
 	{
-		generate_function(node->args[i], out);
 	}
 }
+*/
 
-
-strlist_t *generate(const node_t *node)
+module_t generate_module(const node_t *node)
 {
-	strlist_t *out = strlist_create();
-	generate_module(node, out);
+	// creating return data
+	module_t out =
+	{
+		strlist_create(),
+		malloc(node->argc * sizeof(component_t)),
+		node->argc
+	};
+	// verifying data
+	if (!out.decl || !out.comps) return out;
+
+	for (size_t i = 0; i < out.compc; ++i)
+	{
+		const node_t *arg = node->args[i];
+		component_t *comp = out.comps + i;
+
+		switch (arg->type)
+		{
+		case NODE_FUNCTION:
+			comp->type = COMPONENT_FUNC;
+			comp->data.func = generate_function(arg);
+			break;
+
+		}
+	}
 
 	return out;
+}
+
+
+module_t generate(const node_t *node)
+{
+	return generate_module(node);
 }
 
 

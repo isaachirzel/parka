@@ -9,8 +9,49 @@
 // standard library
 #include <stdio.h>
 
-extern strlist_t *generate(const node_t * const node);
-extern char *generate_mangled_symbol(const string_t * const ident,
-	const scope_t * const scope);
-extern void generate_print(strlist_t * gen);
+
+typedef struct function
+{
+	char *decl;
+	strlist_t *def;
+} function_t;
+
+typedef struct import
+{
+	const string_t *id;
+	const string_t *alias;
+} import_t;
+
+typedef struct type
+{
+
+	char *def;
+
+} type_t;
+
+
+#define COMPONENT_FUNC 0
+#define COMPONENT_IMPORT 1
+#define COMPONENT_TYPE 2
+
+typedef struct component
+{
+	char type;
+	union
+	{
+		import_t import;
+		string_t type;
+		function_t func;
+	} data;
+} component_t;
+	
+
+typedef struct module
+{
+	strlist_t *decl; // to store needed
+	component_t *comps;
+	size_t compc;
+} module_t;
+
+extern module_t generate(const node_t * node);
 #endif

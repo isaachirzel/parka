@@ -1,37 +1,7 @@
-import io;
-
-type int: i32;
-
-type string: struct
-{
-	data	: str
-	len		: u32
-}
-
-type DaysOfWeek: enum
-{
-	Sunday,
-	Monday,
-	Tuesday,
-	Wednesday,
-	Thursday,
-	Friday,
-	Saturday
-}
-
-
-type data: union
-{
-	id: string
-	num: i32
-}
-
 func main() -> i32
 {
 	io.print("hello, world!", add_to_2(3) + 1);
 }
-
-func add_to_2(a: i32) -> i32 => a + 2;
 
 func add(a : i32, b : i32) -> i32
 {
