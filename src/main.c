@@ -34,7 +34,14 @@ int main(void)
 	const char *filepath = "./test/file.gx";
 	log_set_filepath(filepath);
 	// reading src
+	puts("Bingus");
+	printf("Opening : %s\n", filepath);
 	char *src = hxfile_read(filepath);
+	if (!src)
+	{
+		log_basic_error("file does not exist");
+	}
+
 	// preprocessing src
 	preprocess(src);
 

@@ -34,6 +34,12 @@ void log_error(unsigned line, unsigned col, const char *error)
 }
 
 
+void log_basic_error(const char *error)
+{
+	fprintf(stderr, "gull: %s %s\n", ERROR_PROMPT, error);
+}
+
+
 void log_errorf(unsigned line, unsigned col, const char *fmt, ...)
 {
 	va_list args;
