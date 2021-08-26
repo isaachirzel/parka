@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project("Grackle")
 
 # main executable
-file(GLOB_RECURSE SRCS "src/*.c")
+file(GLOB_RECURSE SRCS "src/*.cpp")
 add_executable(grackle ${SRCS})
 
 # setting c standard

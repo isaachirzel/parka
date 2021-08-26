@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include <grackle/data/string.h>
+#include <string_view>
 
 enum TokenType
 {
@@ -122,14 +122,13 @@ enum TokenType
 	TOK_COUNT
 };
 
-typedef struct token
+class Token
 {
-	string_t str;
-	short type;
+private:
+	std::string_view str;
+	TokenType type;
 	unsigned line;
 	unsigned short col;
-} token_t;
-
-extern token_t token_create();
+};
 
 #endif

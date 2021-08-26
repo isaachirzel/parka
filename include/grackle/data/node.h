@@ -65,13 +65,18 @@ enum NodeType
 	NODE_COUNT,
 };
 
-typedef struct node
+class node
 {
-	short type;
-	const token_t *val;
+private:
+
+	NodeType type;
+	const Token &val;
 	struct node **args;
 	unsigned argc;
-} node_t;
+
+public:
+
+};
 
 extern node_t *node_create(char type);
 extern void node_destroy(node_t *node);
