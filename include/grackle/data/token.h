@@ -3,132 +3,133 @@
 
 #include <string_view>
 
-enum TokenType
-{
-	// Generic
-	TOK_EOF,
-	TOK_ERROR,
-	TOK_IDENTIFIER,
-
-	// Separators
-	TOK_LPAREN,
-	TOK_RPAREN,
-	TOK_LBRACK,
-	TOK_RBRACK,
-	TOK_LBRACE,
-	TOK_RBRACE,
-	TOK_LANGBRACK,
-	TOK_RANGBRACK,
-	TOK_SEMICOLON,
-	TOK_COLON,
-	TOK_COMMA,
-
-	// Dot based
-	TOK_DOT,		// 1 dot
-	TOK_RANGE,		// 2 dots
-	TOK_ELIPSIS,	// 3 dots
-
-	// Bitwise
-	TOK_AMPERSAND,
-	TOK_PIPELINE,
-	TOK_CARROT,
-	TOK_LSHIFT,
-	TOK_RSHIFT,
-
-	// Boolean
-	TOK_EXCLAMATION,
-	TOK_AND,
-	TOK_OR,
-	TOK_EQUALS,
-	TOK_NEQUALS,
-	TOK_LTOET,
-	TOK_GTOET,
-
-	// Operators	===========================
-
-	// Arrows
-	TOK_SINGLE_ARROW,
-	TOK_DOUBLE_ARROW,
-
-	// Assignment
-	TOK_ASSIGN,
-	TOK_ADD_ASSIGN,
-	TOK_SUB_ASSIGN,
-	TOK_MUL_ASSIGN,
-	TOK_DIV_ASSIGN,
-	TOK_MOD_ASSIGN,
-	TOK_LSHIFT_ASSIGN,
-	TOK_RSHIFT_ASSIGN,
-
-	// Arithmetic
-	TOK_MODULUS,
-	TOK_SLASH,
-	TOK_ASTERISK,
-	TOK_PLUS,
-	TOK_POW,
-	TOK_MINUS,
-	TOK_INCREMENT,
-	TOK_DECREMENT,
-
-	// Literals
-	TOK_INT_LITERAL,
-	TOK_FLOAT_LITERAL,
-	TOK_HEX_LITERAL,	// todo
-	TOK_BIN_LITERAL,	// todo
-	TOK_OCT_LITERAL,	// todo
-	TOK_CHAR_LITERAL,
-	TOK_STR_LITERAL,
-	TOK_TRUE,
-	TOK_FALSE,
-
-	// Typenames
-	TOK_VAR,
-	TOK_FUNC,
-
-	// Integer types
-	TOK_TYPE_I8,
-	TOK_TYPE_I16,
-	TOK_TYPE_I32,
-	TOK_TYPE_I64,
-	TOK_TYPE_U8,
-	TOK_TYPE_U16,
-	TOK_TYPE_U32,
-	TOK_TYPE_U64,
-	TOK_TYPE_F32,
-	TOK_TYPE_F64,
-	TOK_TYPE_STR,
-	TOK_TYPE_BOOL,
-
-	// Keywords
-	TOK_RETURN,
-	TOK_FOR,
-	TOK_WHILE,
-	TOK_LOOP,
-	TOK_CONTINUE,
-	TOK_BREAK,
-	TOK_IF,
-	TOK_ELSE,
-	TOK_SWITCH,
-	TOK_CASE,
-	TOK_TYPE,
-	TOK_STRUCT,
-	TOK_ENUM,
-	TOK_UNION,
-	TOK_IMPORT,
-	TOK_EXPORT,
-	TOK_SCOPE,
-
-	// last
-	TOK_COUNT
-};
-
 class Token
 {
+public:
+	enum Type
+	{
+		// Generic
+		END_OF_FILE,
+		ERROR,
+		IDENTIFIER,
+
+		// Separators
+		LPAREN,
+		RPAREN,
+		LBRACK,
+		RBRACK,
+		LBRACE,
+		RBRACE,
+		LANGBRACK,
+		RANGBRACK,
+		SEMICOLON,
+		COLON,
+		COMMA,
+
+		// Dot based
+		DOT,		// 1 dot
+		RANGE,		// 2 dots
+		ELIPSIS,	// 3 dots
+
+		// Bitwise
+		AMPERSAND,
+		PIPELINE,
+		CARROT,
+		LSHIFT,
+		RSHIFT,
+
+		// Boolean
+		EXCLAMATION,
+		AND,
+		OR,
+		EQUALS,
+		NEQUALS,
+		LTOET,
+		GTOET,
+
+		// Operators	===========================
+
+		// Arrows
+		SINGLE_ARROW,
+		DOUBLE_ARROW,
+
+		// Assignment
+		ASSIGN,
+		ADD_ASSIGN,
+		SUB_ASSIGN,
+		MUL_ASSIGN,
+		DIV_ASSIGN,
+		MOD_ASSIGN,
+		LSHIFT_ASSIGN,
+		RSHIFT_ASSIGN,
+
+		// Arithmetic
+		MODULUS,
+		SLASH,
+		ASTERISK,
+		PLUS,
+		POW,
+		MINUS,
+		INCREMENT,
+		DECREMENT,
+
+		// Literals
+		INT_LITERAL,
+		FLOAT_LITERAL,
+		HEX_LITERAL,	// todo
+		BIN_LITERAL,	// todo
+		OCT_LITERAL,	// todo
+		CHAR_LITERAL,
+		STR_LITERAL,
+		TRUE,
+		FALSE,
+
+		// Typenames
+		VAR,
+		FUNC,
+
+		// Integer types
+		TYPE_I8,
+		TYPE_I16,
+		TYPE_I32,
+		TYPE_I64,
+		TYPE_U8,
+		TYPE_U16,
+		TYPE_U32,
+		TYPE_U64,
+		TYPE_F32,
+		TYPE_F64,
+		TYPE_STR,
+		TYPE_BOOL,
+
+		// Keywords
+		RETURN,
+		FOR,
+		WHILE,
+		LOOP,
+		CONTINUE,
+		BREAK,
+		IF,
+		ELSE,
+		SWITCH,
+		CASE,
+		TYPE,
+		STRUCT,
+		ENUM,
+		UNION,
+		IMPORT,
+		EXPORT,
+		SCOPE,
+
+		// last
+		COUNT
+	};
+
 private:
 	std::string_view str;
-	TokenType type;
+	Type type;
 	unsigned line;
-	unsigned short col;
+	unsigned col;
 };
 
 #endif
