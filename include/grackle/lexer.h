@@ -1,27 +1,44 @@
-#ifndef LEX_H
-#define LEX_H
+#ifndef GRACKLE_LEXER_H
+#define GRACKLE_LEXER_H
 
 // local includes
-#include <grackle/container/toklist.h>
-#include <grackle/data/string.h> 
+#include <grackle/data/token.h>
 
-#define MAX_KEYWORD_LENGTH 15
+// standard library
+#include <unordered_map>
 
-enum CHAR_TYPES
+namespace grackle
 {
-	CHAR_NO_TYPE,
-	CHAR_INVALID,
-	CHAR_IDENTIFIER,
-	CHAR_SEPARATOR,
-	CHAR_DOT,
-	CHAR_DIGIT,
-	CHAR_OPERATOR,
-	CHAR_QUOTE
-};
+	enum CharType
+	{
+		NONE,
+		INVALID,
+		IDENTIFIER,
+		SEPARATOR,
+		DOT,
+		DIGIT,
+		OPERATOR,
+		QUOTE
+	};
 
-// Lexer functions
-extern void lex_init();
-extern void lex_cleanup();
-extern toklist_t *lex(char *src);
+	class Lexer
+	{
+	private:
+
+		static bool _is_lexer_initialized;
+		static std::unordered_map<std::string_view, Token::Type> _token_types;
+		static char _char_types[128];
+
+	public:
+
+		static constexpr const unsigned max_keyword_length = 15;
+
+	public:
+
+		Lexer();
+
+		std::vector<Token> lex(const char *src);
+	};
+}
 
 #endif

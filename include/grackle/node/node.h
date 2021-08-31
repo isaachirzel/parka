@@ -9,9 +9,9 @@ class Node
 {
 public:
 	virtual ~Node() = 0;
-	virtual void verify() = 0;
-	virtual void print() = 0;
-	virtual std::string to_c() = 0;
+	virtual void verify() const = 0;
+	virtual void print_tree() const = 0;
+	virtual std::string to_c() const = 0;
 };
 
 #endif

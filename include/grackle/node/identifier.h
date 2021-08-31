@@ -5,20 +5,23 @@
 #include <grackle/node/node.h>
 #include <grackle/data/token.h>
 
-class Identifier : public Node
+namespace grackle
 {
-private:
+	class Identifier : public ParseNode
+	{
+	private:
 
-	std::string_view _value;
+		std::string_view _value;
 
-public:
+	public:
 
-	Identifier(const std::vector<Token>::iterator &iter);
-	~Identifier() {}
+		Identifier(const std::vector<Token>::iterator &iter);
+		~Identifier() {}
 
-	void verify();
-	void print_tree();
-	std::string to_c();
-};
+		void verify() const override;
+		void print_tree() const override;
+		std::string to_c() const override;
+	};
+}
 
 #endif
