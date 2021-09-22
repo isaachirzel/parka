@@ -94,6 +94,8 @@ namespace grackle
 		unsigned line;
 		unsigned col;
 	};
-}
 
+	using TokenList = std::vector<Token>;
+	using TokenIter = std::vector<Token>::iterator;
+}
 #endif

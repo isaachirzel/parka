@@ -2,22 +2,45 @@
 
 // standard library
 
+#include <stdexcept>
+#include <filesystem>
+#include <string>
+#include <fstream>
 
+void validate_cli_args(int argc, char *argv[])
+{
+	if (argc != 2)
+		throw std::runtime_error("invalid arguments given, expected: grackle <filename>");
+
+	if (!std::filesystem::exists(argv[1]))
+		throw std::runtime_error("file '" + std::string(argv[1]) + "' does not exist"); 
+}
+
+std::string read_file(const std::string& filepath)
+{
+	std::ifstream file(filepath);
+
+	if (!file.is_open())
+		throw std::runtime_error("file '" + filepath + "' failed to open");
+
+	file.seekg(0, std::ios::end);
+	auto size = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	std::string out(size, 0);
+
+	if (!file.read(&out[0], size))
+		throw std::runtime_error("failed to read data from file: " + filepath);
+	
+	return out;
+}
 
 int main(int argc, char *argv[])
 {
-	std::string src = 
+	validate_cli_args(argc, argv);
 
-// 	const char *filepath = "./test/file.gx";
-// 	log_set_filepath(filepath);
-// 	// reading src
-// 	puts("Bingus");
-// 	printf("Opening : %s\n", filepath);
-// 	char *src = hxfile_read(filepath);
-// 	if (!src)
-// 	{
-// 		log_basic_error("file does not exist");
-// 	}
+	std::string src = read_file(argv[1]);
+	preprocesor(src);
 
 // 	// preprocessing src
 // 	preprocess(src);
@@ -54,5 +77,5 @@ int main(int argc, char *argv[])
 // 	toklist_destroy(toks);
 // 	lex_cleanup();
 // 	free(src);
-// 	return 0;
+	return 0;
 }

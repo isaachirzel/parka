@@ -6,8 +6,9 @@
 
 namespace grackle
 {
-	Identifier::Identifier(const std::vector<Token>::iterator &iter)
+	Identifier::Identifier(TokenIter &iter)
 	{
+		const Token& tok = *iter;
 		throw NotImplementedError(__func__);
 	}
 	

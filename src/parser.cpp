@@ -24,8 +24,6 @@
 		
 */
 
-
-
 // macros
 #define print_parse() printf("%s: ", __func__); string_put(&tok[0]->str)
 #define parse_terminal(tok, expected_type, expected_tok, error_action) if (tok->type != expected_type) { syntax_error(tok, expected_tok); error_action; } tok += 1
@@ -80,18 +78,7 @@ node_t *parse_typename(const token_t **tok)
 
 	switch (t->type)
 	{
-	case TOK_IDENTIFIER:
-	case TOK_TYPE_I8:
-	case TOK_TYPE_I16:
-	case TOK_TYPE_I32:
-	case TOK_TYPE_I64:
-	case TOK_TYPE_U8:
-	case TOK_TYPE_U16:
-	case TOK_TYPE_U32:
-	case TOK_TYPE_U64:
-	case TOK_TYPE_F32:
-	case TOK_TYPE_F64:
-	case TOK_TYPE_STR:
+	case Token::Type::IDENTIFIER:
 		out->val = t;
 		*tok = t + 1;
 		return out;

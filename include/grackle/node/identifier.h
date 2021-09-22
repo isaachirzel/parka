@@ -7,7 +7,7 @@
 
 namespace grackle
 {
-	class Identifier : public ParseNode
+	class Identifier : public Node
 	{
 	private:
 
@@ -15,7 +15,7 @@ namespace grackle
 
 	public:
 
-		Identifier(const std::vector<Token>::iterator &iter);
+		Identifier(const TokenIter &iter);
 		~Identifier() {}
 
 		void verify() const override;

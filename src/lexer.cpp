@@ -112,27 +112,27 @@ namespace grackle
 		tok_types = chartbl_create();
 
 		// keywords
-		chartbl_set(tok_types, "func", TOK_FUNC);
-		chartbl_set(tok_types, "var", TOK_VAR);
-		chartbl_set(tok_types, "type", TOK_TYPE);
+		chartbl_set(tok_types, "func", Token::Type::FUNC);
+		chartbl_set(tok_types, "var", Token::Type::VAR);
+		chartbl_set(tok_types, "type", Token::Type::TYPE);
 
-		chartbl_set(tok_types, "return", TOK_RETURN);
-		chartbl_set(tok_types, "for", TOK_FOR);
-		chartbl_set(tok_types, "while", TOK_WHILE);
-		chartbl_set(tok_types, "loop", TOK_LOOP);
-		chartbl_set(tok_types, "continue", TOK_CONTINUE);
-		chartbl_set(tok_types, "break", TOK_BREAK);
-		chartbl_set(tok_types, "if", TOK_IF);
-		chartbl_set(tok_types, "else", TOK_ELSE);
-		chartbl_set(tok_types, "switch", TOK_SWITCH);
-		chartbl_set(tok_types, "case", TOK_ELSE);
+		chartbl_set(tok_types, "return", Token::Type::RETURN);
+		chartbl_set(tok_types, "for", Token::Type::FOR);
+		chartbl_set(tok_types, "while", Token::Type::WHILE);
+		chartbl_set(tok_types, "loop", Token::Type::LOOP);
+		chartbl_set(tok_types, "continue", Token::Type::CONTINUE);
+		chartbl_set(tok_types, "break", Token::Type::BREAK);
+		chartbl_set(tok_types, "if", Token::Type::IF);
+		chartbl_set(tok_types, "else", Token::Type::ELSE);
+		chartbl_set(tok_types, "switch", Token::Type::SWITCH);
+		chartbl_set(tok_types, "case", Token::Type::CASE);
 
 		// typenames
-		chartbl_set(tok_types, "struct", TOK_STRUCT);
-		chartbl_set(tok_types, "union", TOK_UNION);
-		chartbl_set(tok_types, "enum", TOK_ENUM);
-		chartbl_set(tok_types, "true", TOK_TRUE);
-		chartbl_set(tok_types, "false", TOK_FALSE);
+		chartbl_set(tok_types, "struct", Token::Type::STRUCT);
+		chartbl_set(tok_types, "union", Token::Type::UNION);
+		chartbl_set(tok_types, "enum", Token::Type::ENUM);
+		chartbl_set(tok_types, "true", Token::Type::TRUE);
+		chartbl_set(tok_types, "false", Token::Type::FALSE);
 
 		// operators
 		_token_types["++"] = Token::Type::INCREMENT;
