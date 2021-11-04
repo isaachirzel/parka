@@ -5,6 +5,9 @@
 #include <grackle/node/node.h>
 #include <grackle/data/token.h>
 
+// standard library
+#include <string_view>
+
 namespace grackle
 {
 	class Identifier : public Node

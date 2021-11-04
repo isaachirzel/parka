@@ -4,19 +4,33 @@
 // local includes
 #include <grackle/data/string.h>
 
-enum SymbolType
-{
-	SYM_GLOBAL,
-	SYM_FUNCTION,
-	SYM_VARIABLE,
-	SYM_ANONYMOUS,
-};
+// standard library
+#include <string_view>
 
-typedef struct symbol
+namespace grackle
 {
-	const string_t *str;
-	char type;
+	class Symbol
+	{
+	public: // sub-definitions
 
-} symbol_t;
+		enum Type
+		{
+			GLOBAL,
+			FUNCTION,
+			VARIABLE,
+			ANONYMOUS
+		};
+
+	private: // members
+
+		std::string_view _text;
+		Type type;
+
+	public:
+
+		Symbol() = default;
+
+	};
+}
 
 #endif

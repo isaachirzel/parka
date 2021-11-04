@@ -5,40 +5,30 @@
 #include <grackle/data/token.h>
 
 // standard library
+#include <vector>
+#include <string_view>
 #include <unordered_map>
 
 namespace grackle
 {
-	enum CharType
+	namespace lexer
 	{
-		NONE,
-		INVALID,
-		IDENTIFIER,
-		SEPARATOR,
-		DOT,
-		DIGIT,
-		OPERATOR,
-		QUOTE
-	};
+		enum CharType
+		{
+			INVALID,
+			IDENTIFIER,
+			SEPARATOR,
+			DOT,
+			DIGIT,
+			OPERATOR,
+			QUOTE
+		};	
 
-	class Lexer
-	{
-	private:
+		inline unsigned max_keyword_length = 15;
 
-		static bool _is_lexer_initialized;
-		static std::unordered_map<std::string_view, Token::Type> _token_types;
-		static char _char_types[128];
-
-	public:
-
-		static constexpr const unsigned max_keyword_length = 15;
-
-	public:
-
-		Lexer();
-
-		std::vector<Token> lex(const char *src);
-	};
+		extern void initialize();
+		extern std::vector<Token> tokenize(const char *src);
+	}
 }
 
 #endif

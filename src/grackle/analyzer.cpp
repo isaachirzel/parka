@@ -1,4 +1,3 @@
-// header
 #include <grackle/analyzer.h>
 
 // local includes
@@ -9,7 +8,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-
 
 /*
 	Done:
@@ -26,7 +24,7 @@
 // TYPE TABLE
 
 // Macro definitions
-#define analyze_func(func) bool analyze_##func(node_t *node, scope_t *scopes, const short depth)
+#define analyze_func(func) bool analyze_##func(Node *node, scope_t *scopes, const short depth)
 #define call(func, node, depth) if (!analyze_##func(node, scopes, depth)) goto exit_failure
 #define failure(call) exit_failure: { call } return false
 
@@ -46,7 +44,7 @@ if (!name)\
 //	Error functions
 //
 
-bool duplicate_symbol_error(symbol_t *sym)
+bool duplicate_symbol_error(Symbol *sym)
 {
 	const char *type = NULL;
 
@@ -85,8 +83,8 @@ analyze_func(statement)
 		puts("analyze var declaration");
 
 		// handling identifier
-		const string_t *label = &node->args[0]->val->str;
-		symbol_t var_sym = { label, SYM_VARIABLE };
+		const std::string_view& label = &node->args[0]->val->str;
+		Symbol var_sym = { label, SYM_VARIABLE };
 
 		// copying string_t into char buffer
 		char id_buffer[129];
@@ -123,12 +121,12 @@ analyze_func(function)
 	puts(__func__);
 
 	// getting function name
-	const string_t *label = &node->args[0]->val->str;
+	const std::string_view& label = &node->args[0]->val->str;
 	// handling identifier
 	CREATE_SYMTBL(syms);
 
 	// creating symbol
-	symbol_t symbol = { label, SYM_FUNCTION };
+	Symbol symbol = { label, SYM_FUNCTION };
 	scopes[depth] = (scope_t){ &symbol, syms };
 	
 	char id_buffer[129];
@@ -175,10 +173,10 @@ analyze_func(function)
 }
 
 
-bool analyze(node_t *node)
+bool analyze(Node *node)
 {
 	string_t global_prefix = { "grac_", 5 };
-	symbol_t global_symbol = { &global_prefix, SYM_GLOBAL };
+	Symbol global_symbol = { &global_prefix, SYM_GLOBAL };
 	CREATE_SYMTBL(syms);
 	scope_t scopes[64];
 	scopes[0] = (scope_t){ &global_symbol, syms };

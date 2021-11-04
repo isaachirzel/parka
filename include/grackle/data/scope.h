@@ -2,13 +2,34 @@
 #define SCOPE_H
 
 // local includes
-#include <grackle/container/symtbl.h>
+#include <grackle/data/symbol.h>
 
+// standard library
+#include <unordered_map>
 
-typedef struct scope
+namespace grackle
 {
-	symbol_t *sym;
-	symtbl_t *sym_table;
-} scope_t;
+	class Scope
+	{
+	private: // members
+
+		Symbol *_symbol;
+		std::unordered_map<std::string, Symbol*> _members;
+
+	public: // methods
+
+		Scope() :
+		_symbol(nullptr),
+		_members()
+		{}
+
+		Scope(Scope&&) = default;
+		Scope(const Scope&) = default;
+		~Scope() = default;
+
+		const auto& symbol() const { return *_symbol; }
+		const auto& members() const { return _members;
+	};
+}
 
 #endif

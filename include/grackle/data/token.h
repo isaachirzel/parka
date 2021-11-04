@@ -2,6 +2,7 @@
 #define GRACKLE_TOKEN_H
 
 #include <string_view>
+#include <vector>
 
 namespace grackle
 {
@@ -98,4 +99,5 @@ namespace grackle
 	using TokenList = std::vector<Token>;
 	using TokenIter = std::vector<Token>::iterator;
 }
+
 #endif

@@ -4,6 +4,6 @@
 // local includes
 #include <grackle/node/node.h>
 
-extern bool analyze(node_t *node);
+extern bool analyze(Node *node);
 
 #endif

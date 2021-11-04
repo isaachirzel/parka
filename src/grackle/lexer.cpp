@@ -4,112 +4,96 @@
 // local includes
 
 // standard libary
-#include <stdlib.h>
+#include <string.h>
 
-namespace grackle
+#define CHAR_TYPE_COUNT (128)
+
+namespace grackle::lexer
 {
 	// lookup-table for character-types
-	bool Lexer::_is_lexer_initialized = false;
-	std::unordered_map<std::string_view, Token::Type> Lexer::_token_types;
-	char Lexer::_char_types[128];
+	bool is_lexer_initialized = false;
+	std::unordered_map<std::string_view, Token::Type> token_types;
+	Token::Type char_token_types[CHAR_TYPE_COUNT];
+	CharType char_types[CHAR_TYPE_COUNT];
 
 
-	// void lex_error(token_t *token)
-	// {
-	// 	log_error_prompt(token->line, token->col);
-	// 	fputs("invalid token '", stderr);
-	// 	string_fputs(&token->str, stderr);
-	// 	fputs("'\n", stderr);
-	// }
-
-
-	Lexer::Lexer()
+	void initialize()
 	{
 		if (_is_lexer_initialized)
 			return;
 
 		// setting up identifier characters
-		-char_types['_'] = CharType::IDENTIFIER;
+		char_types['_'] = CharType::IDENTIFIER;
 		for (unsigned i = 'a'; i <= 'z'; ++i)
-			_char_types[i] = CharType::IDENTIFIER;
+			char_types[i] = CharType::IDENTIFIER;
 		for (unsigned i = 'A'; i <= 'Z'; ++i)
-			_char_types[i] = CharType::IDENTIFIER;
+			char_types[i] = CharType::IDENTIFIER;
 		for (unsigned i = '0'; i <= '9'; ++i)
-			_char_types[i] = CharType::DIGIT;
+			char_types[i] = CharType::DIGIT;
 
 		// setting up separator characters
-		_char_types['('] = CharType::SEPARATOR;
-		_char_types[')'] = CharType::SEPARATOR;
-		_char_types['['] = CharType::SEPARATOR;
-		_char_types[']'] = CharType::SEPARATOR;
-		_char_types['{'] = CharType::SEPARATOR;
-		_char_types['}'] = CharType::SEPARATOR;
-		_char_types[';'] = CharType::SEPARATOR;
-		_char_types[','] = CharType::SEPARATOR;
+		char_types['('] = CharType::SEPARATOR;
+		char_types[')'] = CharType::SEPARATOR;
+		char_types['['] = CharType::SEPARATOR;
+		char_types[']'] = CharType::SEPARATOR;
+		char_types['{'] = CharType::SEPARATOR;
+		char_types['}'] = CharType::SEPARATOR;
+		char_types[';'] = CharType::SEPARATOR;
+		char_types[','] = CharType::SEPARATOR;
 
 		// dot character
-		_char_types['.'] = CharType::DOT;
+		char_types['.'] = CharType::DOT;
 
 		// setting up operator characters
-		_char_types['!'] = CharType::OPERATOR;
-		_char_types['@'] = CharType::OPERATOR;
-		_char_types['#'] = CharType::OPERATOR;
-		_char_types['$'] = CharType::OPERATOR;
-		_char_types['%'] = CharType::OPERATOR;
-		_char_types['^'] = CharType::OPERATOR;
-		_char_types['&'] = CharType::OPERATOR;
-		_char_types['*'] = CharType::OPERATOR;
-		_char_types['-'] = CharType::OPERATOR;
-		_char_types['='] = CharType::OPERATOR;
-		_char_types['|'] = CharType::OPERATOR;
-		_char_types['+'] = CharType::OPERATOR;
-		_char_types['<'] = CharType::OPERATOR;
-		_char_types['>'] = CharType::OPERATOR;
-		_char_types['?'] = CharType::OPERATOR;
-		_char_types['/'] = CharType::OPERATOR;
-		_char_types[':'] = CharType::OPERATOR;
+		char_types['!'] = CharType::OPERATOR;
+		char_types['@'] = CharType::OPERATOR;
+		char_types['#'] = CharType::OPERATOR;
+		char_types['$'] = CharType::OPERATOR;
+		char_types['%'] = CharType::OPERATOR;
+		char_types['^'] = CharType::OPERATOR;
+		char_types['&'] = CharType::OPERATOR;
+		char_types['*'] = CharType::OPERATOR;
+		char_types['-'] = CharType::OPERATOR;
+		char_types['='] = CharType::OPERATOR;
+		char_types['|'] = CharType::OPERATOR;
+		char_types['+'] = CharType::OPERATOR;
+		char_types['<'] = CharType::OPERATOR;
+		char_types['>'] = CharType::OPERATOR;
+		char_types['?'] = CharType::OPERATOR;
+		char_types['/'] = CharType::OPERATOR;
+		char_types[':'] = CharType::OPERATOR;
 
 		// setting literal types
-		_char_types['\''] = CharType::QUOTE;
-		_char_types['\"'] = CharType::QUOTE;
-
-		// making the rest of visible characters invalid
-		for (unsigned i = ' ' + 1; i < sizeof(_char_types) / sizeof(char); ++i)
-		{
-			if (char_types[i] == CHAR_NO_TYPE)
-				char_types[i] = CHAR_INVALID;
-		}
+		char_types['\''] = CharType::QUOTE;
+		char_types['\"'] = CharType::QUOTE;
 
 		// setting up single character token types
 
 		// Assignment
-		ctok_types['='] = TOK_ASSIGN;
+		char_token_types['='] = Token::Type::ASSIGN;
 
 		// Separators
-		ctok_types['('] = TOK_LPAREN;
-		ctok_types[')'] = TOK_RPAREN;
-		ctok_types['['] = TOK_LBRACK;
-		ctok_types[']'] = TOK_RBRACK;
-		ctok_types['{'] = TOK_LBRACE;
-		ctok_types['}'] = TOK_RBRACE;
-		ctok_types['.'] = TOK_DOT;
-		ctok_types[','] = TOK_COMMA;
-		ctok_types[';'] = TOK_SEMICOLON;
+		char_token_types['('] = TOK_LPAREN;
+		char_token_types[')'] = TOK_RPAREN;
+		char_token_types['['] = TOK_LBRACK;
+		char_token_types[']'] = TOK_RBRACK;
+		char_token_types['{'] = TOK_LBRACE;
+		char_token_types['}'] = TOK_RBRACE;
+		char_token_types['.'] = TOK_DOT;
+		char_token_types[','] = TOK_COMMA;
+		char_token_types[';'] = TOK_SEMICOLON;
 
 		// Operators
-		ctok_types['*'] = TOK_ASTERISK;
-		ctok_types['/'] = TOK_SLASH;
-		ctok_types['+'] = TOK_PLUS;
-		ctok_types['-'] = TOK_MINUS;
-		ctok_types['<'] = TOK_LANGBRACK;
-		ctok_types['>'] = TOK_RANGBRACK;
-		ctok_types[':'] = TOK_COLON;
-		ctok_types['&'] = TOK_AMPERSAND;
-		ctok_types['|'] = TOK_PIPELINE;
-		ctok_types['^'] = TOK_CARROT;
-
-		// initializing token types
-		tok_types = chartbl_create();
+		char_token_types['*'] = TOK_ASTERISK;
+		char_token_types['/'] = TOK_SLASH;
+		char_token_types['+'] = TOK_PLUS;
+		char_token_types['-'] = TOK_MINUS;
+		char_token_types['<'] = TOK_LANGBRACK;
+		char_token_types['>'] = TOK_RANGBRACK;
+		char_token_types[':'] = TOK_COLON;
+		char_token_types['&'] = TOK_AMPERSAND;
+		char_token_types['|'] = TOK_PIPELINE;
+		char_token_types['^'] = TOK_CARROT;
 
 		// keywords
 		chartbl_set(tok_types, "func", Token::Type::FUNC);
@@ -220,7 +204,7 @@ namespace grackle
 				goto table_lookup;
 				
 			case CHAR_SEPARATOR:
-				out.type = ctok_types[*out.str.ptr];
+				out.type = char_token_types[*out.str.ptr];
 				out.str.len = 1;
 				goto finish;
 
@@ -242,7 +226,7 @@ namespace grackle
 				out.str.len = pos - out.str.ptr;
 				if (out.str.len == 1)
 				{
-					out.type = ctok_types[*out.str.ptr];
+					out.type = char_token_types[*out.str.ptr];
 					goto finish;
 				}
 				goto table_lookup;
