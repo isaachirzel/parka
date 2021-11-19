@@ -1,19 +1,19 @@
 // local includes
 
 // standard library
+#include <stdio.h>
+#include <string.h>
 
-#include <stdexcept>
-#include <filesystem>
-#include <string>
-#include <fstream>
 
-void validate_cli_args(int argc, char *argv[])
+bool validate_cli_args(int argc, char *argv[])
 {
-	if (argc != 2)
-		throw std::runtime_error("invalid arguments given, expected: grackle <filename>");
-
 	if (!std::filesystem::exists(argv[1]))
 		throw std::runtime_error("file '" + std::string(argv[1]) + "' does not exist"); 
+}
+
+char *read_file(const char *filepath)
+{
+	FILE *file;
 }
 
 std::string read_file(const std::string& filepath)
