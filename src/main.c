@@ -5,35 +5,6 @@
 #include <string.h>
 
 
-bool validate_cli_args(int argc, char *argv[])
-{
-	if (!std::filesystem::exists(argv[1]))
-		throw std::runtime_error("file '" + std::string(argv[1]) + "' does not exist"); 
-}
-
-char *read_file(const char *filepath)
-{
-	FILE *file;
-}
-
-std::string read_file(const std::string& filepath)
-{
-	std::ifstream file(filepath);
-
-	if (!file.is_open())
-		throw std::runtime_error("file '" + filepath + "' failed to open");
-
-	file.seekg(0, std::ios::end);
-	auto size = file.tellg();
-	file.seekg(0, std::ios::beg);
-
-	std::string out(size, 0);
-
-	if (!file.read(&out[0], size))
-		throw std::runtime_error("failed to read data from file: " + filepath);
-	
-	return out;
-}
 
 int main(int argc, char *argv[])
 {
