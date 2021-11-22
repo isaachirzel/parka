@@ -1,30 +1,14 @@
-#ifndef IDENTIFIER_H
-#define IDENTIFIER_H
+#ifndef WARBLER_IDENTIFIER_H
+#define WARBLER_IDENTIFIER_H
 
-// local includes
-#include <grackle/node/node.h>
-#include <grackle/data/token.h>
+#include <warbler/data/string.h>
 
-// standard library
-#include <string_view>
-
-namespace grackle
+typedef struct Identifier
 {
-	class Identifier : public Node
-	{
-	private:
-
-		std::string_view _value;
-
-	public:
-
-		Identifier(const TokenIter &iter);
-		~Identifier() {}
-
-		void verify() const override;
-		void print_tree() const override;
-		std::string to_c() const override;
-	};
+	const String *str;
 }
+Identifier;
+
+extern Identifier *parseIdentifier(const char* src);
 
 #endif

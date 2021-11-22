@@ -1,5 +1,5 @@
 // header
-#include <grackle/preprocessor.h>
+#include <warbler/preprocessor.h>
 
 // standard library
 #include <stddef.h>
@@ -22,8 +22,8 @@ const char *read_text_literal(const char *pos)
 
 struct BlockCommentResult
 {
-	const char *end_of_comment = nullptr;
-	unsigned new_line_count = 0;
+	const char *end_of_comment;
+	unsigned new_line_count;
 };
 
 const char *read_line_comment(const char *pos)

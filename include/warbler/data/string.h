@@ -1,18 +1,16 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef WARBLER_STRING_H
+#define WARBLER_STRING_H
 
-// standard library
 #include <stdio.h>
 
-typedef struct string
+typedef struct String
 {
-	const char *ptr;
-	unsigned len;
-} string_t;
+	const char *start;
+	const char *end;
+} String;
 
-void string_print(const string_t *str);
-void string_put(const string_t *str);
-void string_fputs(const string_t *str, FILE *stream);
-char *string_duplicate(const string_t *str);
+void printString(const String *str);
+void printlnString(const String *str);
+char *duplicateString(const String *str);
 
 #endif

@@ -1,7 +1,8 @@
-#ifndef GRACKLE_PREPROCESSOR_H
-#define GRACKLE_PREPROCESSOR_H
+#ifndef WARBLER_PREPROCESSOR_H
+#define WARBLER_PREPROCESSOR_H
 
-#include <string>
+
+extern void preprocessSource(char *src);
 
 namespace grackle
 {

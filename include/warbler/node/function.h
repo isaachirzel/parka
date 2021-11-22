@@ -1,10 +1,10 @@
-#ifndef FUNCTION_H
-#define FUNCTION_H
+#ifndef WARBLER_FUNCTION_H
+#define WARBLER_FUNCTION_H
 
-namespace grackle
+typedef struct Function
 {
-	class Function : public Node
-	{
-	};
-}
+	Typename *return_type;
+	
+};
+
 #endif

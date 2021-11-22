@@ -11,14 +11,13 @@ int main(int argc, char *argv[])
 	if (!validate_cli_args(argc, argv))
 		return 1;
 
-	char *file = read_file(argv[1]);
+	char *src = read_file(argv[1]);
 
+	preprocessSource(src);
 	printf("success:\n%s\n", file);
 
 	free(file);
 
-	// std::string src = read_file(argv[1]);
-	// preprocesor(src);
 
 // 	// preprocessing src
 // 	preprocess(src);
