@@ -1,5 +1,5 @@
 #ifndef WARBLER_ERROR_H
-#ifndef WARBLER_ERROR_H
+#define WARBLER_ERROR_H
 
 #include <stdbool.h>
 

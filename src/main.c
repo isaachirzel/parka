@@ -1,17 +1,24 @@
 // local includes
+#include <warbler/file.h>
+#include <warbler/cli.h>
 
 // standard library
 #include <stdio.h>
-#include <string.h>
-
-
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
-	validate_cli_args(argc, argv);
+	if (!validate_cli_args(argc, argv))
+		return 1;
 
-	std::string src = read_file(argv[1]);
-	preprocesor(src);
+	char *file = read_file(argv[1]);
+
+	printf("success:\n%s\n", file);
+
+	free(file);
+
+	// std::string src = read_file(argv[1]);
+	// preprocesor(src);
 
 // 	// preprocessing src
 // 	preprocess(src);

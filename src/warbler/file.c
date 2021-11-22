@@ -5,38 +5,45 @@
 
 // standard library
 #include <stdio.h>
+#include <stdlib.h>
 
-const char *failed_to_open_file_str = "failed to open file";
+char *file_error(const char *msg)
+{
+	print_error(msg);
+	return NULL;
+}
 
 char *read_file(const char *filepath)
 {
 	FILE *file = fopen(filepath, "r");
 	
 	if (!file)
-	{
-		print_error(failed_to_open_file_str);		
-		return NULL;
-	}
+		return file_error("failed to open file");
 
-	if (fseek(file, 0, SEEK_END);
+	if (fseek(file, 0, SEEK_END))
+		return file_error("failed to iterate to end of file");
 
-}
+	long size = ftell(file);
 
-std::string read_file(const std::string& filepath)
-{
-	std::ifstream file(filepath);
+	if (size == -1)
+		return file_error("failed to get file size");
+	else if (size == 0)
+		return file_error("file is empty");
 
-	if (!file.is_open())
-		throw std::runtime_error("file '" + filepath + "' failed to open");
+	if (fseek(file, 0, SEEK_SET))
+		return file_error("failed to iterate to beginning of file");	
 
-	file.seekg(0, std::ios::end);
-	auto size = file.tellg();
-	file.seekg(0, std::ios::beg);
+	char *out = malloc(sizeof(char) * (size + 1));
 
-	std::string out(size, 0);
+	if (!out)
+		return file_error("failed to allocate buffer for file");
 
-	if (!file.read(&out[0], size))
-		throw std::runtime_error("failed to read data from file: " + filepath);
+	out[size] = 0;
+
+	size_t bytes_read = fread(out, sizeof(char), size, file);
+
+	if (bytes_read == 0)
+		return file_error("failed to read file");
 	
 	return out;
 }
