@@ -2,8 +2,9 @@
 
 #include <warbler/error.h>
 
-Identifier *parseIdentifier(const char* src)
+Identifier *parseIdentifier(const Token *token)
 {
 	printNotImplementedError();
+
 	return NULL;
 }

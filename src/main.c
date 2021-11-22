@@ -13,17 +13,10 @@ int main(int argc, char *argv[])
 
 	char *src = read_file(argv[1]);
 
-	preprocessSource(src);
-	printf("success:\n%s\n", file);
+	preprocess(src);
+	printf("success:\n%s\n", src);
 
-	free(file);
-
-
-// 	// preprocessing src
-// 	preprocess(src);
-
-// 	// printing src
-// 	// puts(src);
+	free(src);
 
 // 	// lexing src
 // 	lex_init();

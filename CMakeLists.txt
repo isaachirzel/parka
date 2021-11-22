@@ -10,24 +10,26 @@ set(MAIN_PROGRAM
 	"warble"
 )
 
-file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.c")
-add_library(common_objects OBJECT ${COMMON_SOURCES})
-add_executable(warble "src/main.c" $<TARGET_OBJECTS:common_objects>)
-list(APPEND TARGETS ${MAIN_PROGRAM} common_objects)
-
-# adding definition for asserts
-add_compile_definitions(DEBUG_MODE)
+if (MSVC)
+	add_compile_options(/W4)
+else()
+	add_compile_options(-Wall -Wextra -pedantic)
+endif()
 
 if (WIN32)
 	# getting rid of deprecation warnings on windows
 	add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
-if (MSVC)
-	add_compile_options(/W4)
-else()
-	add_compile_options(-Wall -Wextra -pedantic)
-endif()
+# adding definition for asserts
+add_compile_definitions(DEBUG_MODE)
+
+file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.c")
+add_library(common_objects OBJECT ${COMMON_SOURCES})
+add_executable(warble "src/main.c" $<TARGET_OBJECTS:common_objects>)
+list(APPEND TARGETS ${MAIN_PROGRAM} common_objects)
+
+
 
 # creating targets for all test sources
 file(GLOB TEST_SOURCES "src/test/*.c")

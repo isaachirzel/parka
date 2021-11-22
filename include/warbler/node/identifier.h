@@ -9,6 +9,6 @@ typedef struct Identifier
 }
 Identifier;
 
-extern Identifier *parseIdentifier(const char* src);
+extern Identifier *parseIdentifier(const Token *token);
 
 #endif

@@ -25,9 +25,9 @@ void print_error(const char *msg)
 void print_errorf(const char *fmt, ...)
 {
 	const char *error_prompt = get_error_prompt();
-	
+
 	va_list arg_list;
 	va_start(arg_list, fmt);
-
+	fputs(error_prompt, stdout);
 	vprintf(fmt, arg_list);
 }
