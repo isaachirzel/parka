@@ -7,6 +7,6 @@ extern bool is_color_output;
 extern void print_error(const char *msg);
 extern void print_errorf(const char *fmt, ...);
 
-#define printNotImplementedError() print_errorf("%s is not implemented yet", __func__);
+#define notImplementedError() print_errorf("%s is not implemented yet", __func__)
 
 #endif

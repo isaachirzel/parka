@@ -1,6 +1,7 @@
 // local includes
 #include <warbler/file.h>
 #include <warbler/cli.h>
+#include <warbler/preprocessor.h>
 
 // standard library
 #include <stdio.h>
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
 
 	preprocess(src);
 	printf("success:\n%s\n", src);
+
+	initTokenizer();
 
 	free(src);
 
@@ -45,7 +48,7 @@ int main(int argc, char *argv[])
 // 	// memory cleanup
 // 	node_destroy(ast);
 // 	toklist_destroy(toks);
-// 	lex_cleanup();
-// 	free(src);
+	destroyTokenizer();
+	free(src);
 	return 0;
 }

@@ -4,9 +4,9 @@
 // standard library
 #include <stddef.h>
 
-char *read_text_literal(const char *pos)
+char *read_text_literal(char *pos)
 {
-	const auto terminal = *pos;
+	char terminal = *pos;
 	pos += 1;
 
 	while (*pos)
@@ -27,7 +27,7 @@ typedef struct BlockCommentResult
 }
 BlockCommentResult;
 
-char *read_line_comment(const char *pos)
+char *read_line_comment(char *pos)
 {
 	pos += 2;
 	
@@ -42,7 +42,7 @@ char *read_line_comment(const char *pos)
 	return pos;
 }
 
-BlockCommentResult read_block_comment(const char *pos)
+BlockCommentResult read_block_comment(char *pos)
 {
 	size_t new_line_count = 0u;
 	
@@ -99,14 +99,15 @@ void preprocess(char *src)
 
 			case '\'':
 			case '\"':
+			{
 				char *end_of_string = read_text_literal(pos);
 
-				for (size_t i = 0; i < end_of_string - pos; ++i)
+				for (long i = 0; i < end_of_string - pos; ++i)
 					src[oi++] = pos[i];
 
 				pos = end_of_string;
 				break;
-
+			}
 			default:
 				src[oi++] = *pos;
 				break;
