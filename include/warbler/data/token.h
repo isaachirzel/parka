@@ -86,11 +86,18 @@ TokenType;
 
 typedef struct Token
 {
-	const String *str;
+	String str;
+	size_t line;
+	size_t col;
 	TokenType type;
-	unsigned line;
-	unsigned col;
 }
 Token;
 
 #endif
+
+/*
+int main()
+{
+return 0;
+}
+*/

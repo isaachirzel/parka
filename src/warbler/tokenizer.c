@@ -9,6 +9,7 @@
 // external library
 #define HIRZEL_IMPLEMENT
 #include <hirzel/util/table.h>
+#include <hirzel/util/array.h>
 
 #define CHAR_TYPE_COUNT (128)
 
@@ -30,6 +31,14 @@ typedef struct TokenInfo
 	TokenType type;
 }
 TokenInfo;
+
+typedef struct SourceLocation
+{
+	const char *pos;
+	size_t line;
+	size_t col;
+}
+SourceLocation;
 
 HxTable *token_types = NULL;
 TokenType char_token_types[CHAR_TYPE_COUNT];
@@ -206,8 +215,6 @@ bool initialize()
 		return false;
 	}
 
-	
-
 	token_types = initialize_token_types();
 
 	if (!token_types)
@@ -216,38 +223,68 @@ bool initialize()
 	return true;	
 }
 
-
-token_t lex_next_token(char **src, unsigned line, unsigned short col)
+void get_next_token_pos(SourceLocation *location)
 {
-	token_t out = {0};
-	char *pos = *src;
-
-	// skip to next visible character
-	while (*pos < 33)
+	while (*location->pos)
 	{
-		if (*pos == '\n')
+		if (*location->pos > ' ')
+			break;
+		
+		if (*location->pos == '\n')
 		{
-			line += 1;
-			col = 0;
+			++location->line;
+			location->col = 0;
 		}
-		if (*pos == 0)
+
+		++location->col;
+		++location->pos;
+	}
+}
+
+void get_identifier_token(SourceLocation *location)
+{
+}
+
+Token get_next_token(SourceLocation *location)
+{
+	get_next_token_pos(location);
+
+	if (*location->pos == 0)
+	{
+		Token out =
 		{
-			out.line = line;
-			out.col = col;
-			out.str.ptr = NULL;
-			out.str.len = 0;
-			return out;
-		}
-		col += 1;
-		++pos;
+			.str = (String)
+			{
+				.ptr = NULL,
+				.len = 0
+			},
+			.line = location->line,
+			.col = location->col,
+			.type = TOK_EOF
+		};
+
+		return out;
 	}
 
-	// storing position in token
-	out.line = line;
-	out.col = col;
-	out.str.ptr = pos;
-	char type = char_types[*pos];
-	pos += 1;
+	Token out = {
+		.line = location.line,
+		.col = location.col,
+		.type = TOK_ERROR,
+		.out = (String)
+		{
+			.ptr = location.pos,
+			.len = 0
+		}
+	};
+	
+	char type = char_types[*location->pos];
+	++location->pos;
+
+	switch (type)
+	{
+		case CHAR_IDENTIFIER:
+
+	}
 
 	switch (type)
 	{
@@ -328,9 +365,9 @@ token_t lex_next_token(char **src, unsigned line, unsigned short col)
 		case CHAR_QUOTE:
 			// got till non-escaped end of string
 			while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
-			out.str.ptr += 1;
+			++out.str.ptr;
 			out.str.len = pos - out.str.ptr;
-			pos += 1;
+			++pos;
 			if (out.str.ptr[-1] == '\'')
 			{
 				out.type = TOK_CHAR_LITERAL;
@@ -380,25 +417,37 @@ table_lookup:;
 	goto finish;
 }
 
-std::vector<Token> lex(char *src)
+HxArray *tokenize(char *src)
 {
-	auto out = std::vector<Token>();
+	HxArray *out = createHxArrayOf(Token);
 
-	token_t tok = get_next_token((&src, 1, 1);
-	while (1)
+	if (!out)
 	{
+		print_error("failed to allocate token list");
+		return NULL;
+	}
+
+	SourceLocation location = {
+		.pos = src,
+		.line = 1,
+		.col = 1
+	};
+
+	while (true)
+	{
+		Token token = get_next_token(&location);
+
 		if (tok.type == TOK_ERROR)
 		{
-			lex_error(&tok);
+			print_error("token error");
+			destroyHxArray(out);
 			return NULL;
 		}
 
-		toklist_push(out, tok);
+		pushHxArray(out, &token);
 
-		// adding on the eof for memory safety when peeking
-		if (tok.type == TOK_EOF) break;
-
-		tok = lex_next_token(&src, tok.line, tok.col + tok.str.len);
+		if (token.type == TOK_EOF)
+			break;
 	}
 
 	return out;

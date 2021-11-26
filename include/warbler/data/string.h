@@ -6,7 +6,7 @@
 typedef struct String
 {
 	const char *start;
-	const char *end;
+	size_t len;
 } String;
 
 void printString(const String *str);
