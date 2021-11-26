@@ -1,9 +1,14 @@
 #include <warbler/tokenizer.h>
 
 // local includes
+#include <warbler/error.h>
 
 // standard libary
 #include <string.h>
+
+// external library
+#define HIRZEL_IMPLEMENT
+#include <hirzel/util/table.h>
 
 #define CHAR_TYPE_COUNT (128)
 
@@ -19,143 +24,196 @@ typedef enum CharType
 }
 CharType;
 
-bool is_lexer_initialized = false;
+typedef struct TokenInfo
+{
+	const char *str;
+	TokenType type;
+}
+TokenInfo;
 
-std::unordered_map<std::string_view, Token::Type> token_types;
-Token::Type char_token_types[CHAR_TYPE_COUNT];
+HxTable *token_types = NULL;
+TokenType char_token_types[CHAR_TYPE_COUNT];
 CharType char_types[CHAR_TYPE_COUNT];
 
-
-void initialize()
+const TokenInfo token_info[] =
 {
-	if (_is_lexer_initialized)
-		return;
-
-	// setting up identifier characters
-	char_types['_'] = CHAR_IDENTIFIER;
-	for (unsigned i = 'a'; i <= 'z'; ++i)
-		char_types[i] = CHAR_IDENTIFIER;
-	for (unsigned i = 'A'; i <= 'Z'; ++i)
-		char_types[i] = CHAR_IDENTIFIER;
-	for (unsigned i = '0'; i <= '9'; ++i)
-		char_types[i] = CHAR_DIGIT;
-
-	// setting up separator characters
-	char_types['('] = CHAR_SEPARATOR;
-	char_types[')'] = CHAR_SEPARATOR;
-	char_types['['] = CHAR_SEPARATOR;
-	char_types[']'] = CHAR_SEPARATOR;
-	char_types['{'] = CHAR_SEPARATOR;
-	char_types['}'] = CHAR_SEPARATOR;
-	char_types[';'] = CHAR_SEPARATOR;
-	char_types[','] = CHAR_SEPARATOR;
-
-	// dot character
-	char_types['.'] = CHAR_DOT;
-
-	// setting up operator characters
-	char_types['!'] = CHAR_OPERATOR;
-	char_types['@'] = CHAR_OPERATOR;
-	char_types['#'] = CHAR_OPERATOR;
-	char_types['$'] = CHAR_OPERATOR;
-	char_types['%'] = CHAR_OPERATOR;
-	char_types['^'] = CHAR_OPERATOR;
-	char_types['&'] = CHAR_OPERATOR;
-	char_types['*'] = CHAR_OPERATOR;
-	char_types['-'] = CHAR_OPERATOR;
-	char_types['='] = CHAR_OPERATOR;
-	char_types['|'] = CHAR_OPERATOR;
-	char_types['+'] = CHAR_OPERATOR;
-	char_types['<'] = CHAR_OPERATOR;
-	char_types['>'] = CHAR_OPERATOR;
-	char_types['?'] = CHAR_OPERATOR;
-	char_types['/'] = CHAR_OPERATOR;
-	char_types[':'] = CHAR_OPERATOR;
-
-	// setting literal types
-	char_types['\''] = CHAR_QUOTE;
-	char_types['\"'] = CHAR_QUOTE;
-
-	// setting up single character token types
-
-	// Assignment
-	char_token_types['='] = TOK_ASSIGN;
-
-	// Separators
-	char_token_types['('] = TOK_LPAREN;
-	char_token_types[')'] = TOK_RPAREN;
-	char_token_types['['] = TOK_LBRACK;
-	char_token_types[']'] = TOK_RBRACK;
-	char_token_types['{'] = TOK_LBRACE;
-	char_token_types['}'] = TOK_RBRACE;
-	char_token_types['.'] = TOK_DOT;
-	char_token_types[','] = TOK_COMMA;
-	char_token_types[';'] = TOK_SEMICOLON;
-
-	// Operators
-	char_token_types['*'] = TOK_ASTERISK;
-	char_token_types['/'] = TOK_SLASH;
-	char_token_types['+'] = TOK_PLUS;
-	char_token_types['-'] = TOK_MINUS;
-	char_token_types['<'] = TOK_LANGBRACK;
-	char_token_types['>'] = TOK_RANGBRACK;
-	char_token_types[':'] = TOK_COLON;
-	char_token_types['&'] = TOK_AMPERSAND;
-	char_token_types['|'] = TOK_PIPELINE;
-	char_token_types['^'] = TOK_CARROT;
-
-	// keywords
-	chartbl_set(tok_types, "func", TOK_FUNC);
-	chartbl_set(tok_types, "var", TOK_VAR);
-	chartbl_set(tok_types, "type", TOK_TYPE);
-
-	chartbl_set(tok_types, "return", TOK_RETURN);
-	chartbl_set(tok_types, "for", TOK_FOR);
-	chartbl_set(tok_types, "while", TOK_WHILE);
-	chartbl_set(tok_types, "loop", TOK_LOOP);
-	chartbl_set(tok_types, "continue", TOK_CONTINUE);
-	chartbl_set(tok_types, "break", TOK_BREAK);
-	chartbl_set(tok_types, "if", TOK_IF);
-	chartbl_set(tok_types, "else", TOK_ELSE);
-	chartbl_set(tok_types, "switch", TOK_SWITCH);
-	chartbl_set(tok_types, "case", TOK_CASE);
+	// misc keywords
+	{ "func", TOK_FUNC },
+	{ "var", TOK_VAR },
+	{ "type", TOK_TYPE },
+	{ "return", TOK_RETURN },
+	{ "for", TOK_FOR },
+	{ "while", TOK_WHILE },
+	{ "loop", TOK_LOOP },
+	{ "continue", TOK_CONTINUE },
+	{ "break", TOK_BREAK },
+	{ "if", TOK_IF },
+	{ "else", TOK_ELSE },
+	{ "switch", TOK_SWITCH },
+	{ "case", TOK_CASE },
 
 	// typenames
-	chartbl_set(tok_types, "struct", TOK_STRUCT);
-	chartbl_set(tok_types, "union", TOK_UNION);
-	chartbl_set(tok_types, "enum", TOK_ENUM);
-	chartbl_set(tok_types, "true", TOK_TRUE);
-	chartbl_set(tok_types, "false", TOK_FALSE);
+	{ "struct", TOK_STRUCT },
+	{ "union", TOK_UNION },
+	{ "enum", TOK_ENUM },
+	{ "true", TOK_TRUE },
+	{ "false", TOK_FALSE },
+	{ ":", TOK_COLON },
 
-	// operators
-	_token_types["++"] = TOK_INCREMENT;
-	_token_types["--"] = TOK_DECREMENT;
-	_token_types["**"] = TOK_POW;
-	_token_types["&&"] = TOK_AND;
-	_token_types["||"] = TOK_OR;
-	_token_types["=="] = TOK_EQUALS;
-	_token_types["!="] = TOK_NEQUALS;
-	_token_types[">="] = TOK_GTOET;
-	_token_types["<="] = TOK_LTOET;
-	_token_types[">>"] = TOK_RSHIFT;
-	_token_types["<<"] = TOK_LSHIFT;
-	_token_types["->"] = TOK_SINGLE_ARROW;
-	_token_types["=>"] = TOK_DOUBLE_ARROW;
+	// separators
+	{ "(", TOK_LPAREN },
+	{ ")", TOK_RPAREN },
+	{ "[", TOK_LBRACK },
+	{ "]", TOK_RBRACK },
+	{ "{", TOK_LBRACE },
+	{ "}", TOK_RBRACE },
+	{ ".", TOK_DOT },
+	{ ",", TOK_COMMA },
+	{ ";", TOK_SEMICOLON },
+
+	// unary operators
+	{ "++", TOK_INCREMENT },
+	{ "--", TOK_DECREMENT },
+
+	// binary operators
+	{ "*",  TOK_ASTERISK },
+	{ "/",  TOK_SLASH },
+	{ "+",  TOK_PLUS },
+	{ "-",  TOK_MINUS },
+	{ "<",  TOK_LANGBRACK },
+	{ ">",  TOK_RANGBRACK },
+	{ "&",  TOK_AMPERSAND },
+	{ "|",  TOK_PIPELINE },
+	{ "^",  TOK_CARROT },
+	{ "**", TOK_POW },
+	{ "&&", TOK_AND },
+	{ "||", TOK_OR },
+	{ "==", TOK_EQUALS },
+	{ "!=", TOK_NEQUALS },
+	{ ">=", TOK_GTOET },
+	{ "<=", TOK_LTOET },
+	{ ">>", TOK_RSHIFT },
+	{ "<<", TOK_LSHIFT },
+	{ "->", TOK_SINGLE_ARROW },
+	{ "=>", TOK_DOUBLE_ARROW },
 
 	// assign operators
-	_token_types["+="] = TOK_ADD_ASSIGN;
-	_token_types["+="] = TOK_ADD_ASSIGN;
-	_token_types["-="] = TOK_SUB_ASSIGN;
-	_token_types["*="] = TOK_MUL_ASSIGN;
-	_token_types["/="] = TOK_DIV_ASSIGN;
-	_token_types["%="] = TOK_MOD_ASSIGN;
+	{ "=",  TOK_ASSIGN },
+	{ "+=", TOK_ADD_ASSIGN },
+	{ "+=", TOK_ADD_ASSIGN },
+	{ "-=", TOK_SUB_ASSIGN },
+	{ "*=", TOK_MUL_ASSIGN },
+	{ "/=", TOK_DIV_ASSIGN },
+	{ "%=", TOK_MOD_ASSIGN },
 
-	// scope
-	_token_types["export"]= TOK_EXPORT;
-	_token_types["import"] = TOK_IMPORT;
-	_token_types["::"] = TOK_SCOPE;
+	// modules
+	{ "import", TOK_IMPORT },
+	{ "export", TOK_EXPORT },
+	{ "::", TOK_SCOPE }
+};
 
-	_is_lexer_initialized = true;
+const size_t token_info_count = sizeof(token_info) / sizeof(*token_info);
+
+static HxTable *initialize_token_types()
+{
+	HxTable *out = createHxTableOf(TokenType);
+
+	if (!out)
+	{
+		print_error("failed to initialize token type table");
+
+		return NULL;
+	}
+
+	if (reserveHxTable(out, token_info_count))
+	{
+		destroyHxTable(out);
+		print_error("failed to allocate token type table");
+
+		return NULL;
+	}
+
+	for (size_t i = 0; i < token_info_count; ++i)
+	{
+		const TokenInfo *info = token_info + i;
+
+		if (!setHxTable(token_types, info->str, &info->type))
+		{
+			destroyHxTable(out);
+			print_error("failed to assign token type table");
+
+			return NULL;
+		}
+	}
+
+	return out;
+}
+
+void initialize_char_types(CharType *types)
+{
+	// setting up identifier characters
+	types['_'] = CHAR_IDENTIFIER;
+	for (size_t i = 'a'; i <= 'z'; ++i)
+		types[i] = CHAR_IDENTIFIER;
+	for (size_t i = 'A'; i <= 'Z'; ++i)
+		types[i] = CHAR_IDENTIFIER;
+	for (size_t i = '0'; i <= '9'; ++i)
+		types[i] = CHAR_DIGIT;
+
+	// setting up separator characters
+	types['('] = CHAR_SEPARATOR;
+	types[')'] = CHAR_SEPARATOR;
+	types['['] = CHAR_SEPARATOR;
+	types[']'] = CHAR_SEPARATOR;
+	types['{'] = CHAR_SEPARATOR;
+	types['}'] = CHAR_SEPARATOR;
+	types[';'] = CHAR_SEPARATOR;
+	types[','] = CHAR_SEPARATOR;
+
+	// dot character
+	types['.'] = CHAR_DOT;
+
+	// setting up operator characters
+	types['!'] = CHAR_OPERATOR;
+	types['@'] = CHAR_OPERATOR;
+	types['#'] = CHAR_OPERATOR;
+	types['$'] = CHAR_OPERATOR;
+	types['%'] = CHAR_OPERATOR;
+	types['^'] = CHAR_OPERATOR;
+	types['&'] = CHAR_OPERATOR;
+	types['*'] = CHAR_OPERATOR;
+	types['-'] = CHAR_OPERATOR;
+	types['='] = CHAR_OPERATOR;
+	types['|'] = CHAR_OPERATOR;
+	types['+'] = CHAR_OPERATOR;
+	types['<'] = CHAR_OPERATOR;
+	types['>'] = CHAR_OPERATOR;
+	types['?'] = CHAR_OPERATOR;
+	types['/'] = CHAR_OPERATOR;
+	types[':'] = CHAR_OPERATOR;
+
+	// setting literal types
+	types['\''] = CHAR_QUOTE;
+	types['\"'] = CHAR_QUOTE;
+}
+
+bool initialize()
+{
+	if (token_types != NULL)
+	{
+		print_error("unnecessary double initialization of tokenizer");
+
+		return false;
+	}
+
+	
+
+	token_types = initialize_token_types();
+
+	if (!token_types)
+		return false;
+
+	return true;	
 }
 
 
@@ -304,7 +362,7 @@ table_lookup:;
 	}
 
 	tmp[out.str.len] = 0;
-	out.type = chartbl_get(tok_types, tmp);
+	out.type = chartbl_get(token_types, tmp);
 
 	// if it failed to find matching key
 	if (out.type == 0)

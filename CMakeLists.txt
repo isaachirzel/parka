@@ -1,13 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project("warbler")
 
-# common objects
+set(MAIN_PROGRAM "warble")
 set(INCLUDE_DIRS
 	"include"
-)
-
-set(MAIN_PROGRAM
-	"warble"
+	"lib/c-utils/include"
 )
 
 if (MSVC)
@@ -28,8 +25,6 @@ file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.c")
 add_library(common_objects OBJECT ${COMMON_SOURCES})
 add_executable(warble "src/main.c" $<TARGET_OBJECTS:common_objects>)
 list(APPEND TARGETS ${MAIN_PROGRAM} common_objects)
-
-
 
 # creating targets for all test sources
 file(GLOB TEST_SOURCES "src/test/*.c")
