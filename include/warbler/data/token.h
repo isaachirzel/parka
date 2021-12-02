@@ -4,100 +4,109 @@
 // local includes
 #include <warbler/data/string.h>
 
-typedef enum TokenType
+namespace warbler
 {
-	// Generic
-	TOK_EOF,
-	TOK_IDENTIFIER,
-	TOK_LPAREN,
-	TOK_RPAREN,
-	TOK_LBRACK,
-	TOK_RBRACK,
-	TOK_LBRACE,
-	TOK_RBRACE,
-	TOK_LANGBRACK,
-	TOK_RANGBRACK,
-	TOK_SEMICOLON,
-	TOK_COLON,
-	TOK_COMMA,
-	TOK_DOT,
-	TOK_ELIPSIS,
-	TOK_AMPERSAND,
-	TOK_PIPELINE,
-	TOK_CARROT,
-	TOK_LSHIFT,
-	TOK_RSHIFT,
-	TOK_EXCLAMATION,
-	TOK_AND,
-	TOK_OR,
-	TOK_EQUALS,
-	TOK_NEQUALS,
-	TOK_LTOET,
-	TOK_GTOET,
-	TOK_SINGLE_ARROW,
-	TOK_DOUBLE_ARROW,
-	TOK_ASSIGN,
-	TOK_ADD_ASSIGN,
-	TOK_SUB_ASSIGN,
-	TOK_MUL_ASSIGN,
-	TOK_DIV_ASSIGN,
-	TOK_MOD_ASSIGN,
-	TOK_LSHIFT_ASSIGN,
-	TOK_RSHIFT_ASSIGN,
-	TOK_MODULUS,
-	TOK_SLASH,
-	TOK_ASTERISK,
-	TOK_PLUS,
-	TOK_POW,
-	TOK_MINUS,
-	TOK_INCREMENT,
-	TOK_DECREMENT,
-	TOK_INT_LITERAL,
-	TOK_FLOAT_LITERAL,
-	TOK_HEX_LITERAL,
-	TOK_BIN_LITERAL,
-	TOK_OCT_LITERAL,
-	TOK_CHAR_LITERAL,
-	TOK_STR_LITERAL,
-	TOK_TRUE,
-	TOK_FALSE,
-	TOK_VAR,
-	TOK_FUNC,
-	TOK_RETURN,
-	TOK_FOR,
-	TOK_WHILE,
-	TOK_LOOP,
-	TOK_CONTINUE,
-	TOK_BREAK,
-	TOK_IF,
-	TOK_ELSE,
-	TOK_SWITCH,
-	TOK_CASE,
-	TOK_TYPE,
-	TOK_STRUCT,
-	TOK_ENUM,
-	TOK_UNION,
-	TOK_IMPORT,
-	TOK_EXPORT,
-	TOK_SCOPE,
-	TOK_COUNT
-}
-TokenType;
+	class Token
+	{
+	public: // types
 
-typedef struct Token
-{
-	String str;
-	size_t line;
-	size_t col;
-	TokenType type;
+		enum Type
+		{	
+			END_OF_FILE,
+			IDENTIFIER,
+			LPAREN,
+			RPAREN,
+			LBRACK,
+			RBRACK,
+			LBRACE,
+			RBRACE,
+			LANGBRACK,
+			RANGBRACK,
+			SEMICOLON,
+			COLON,
+			COMMA,
+			DOT,
+			ELIPSIS,
+			AMPERSAND,
+			PIPELINE,
+			CARROT,
+			LSHIFT,
+			RSHIFT,
+			EXCLAMATION,
+			AND,
+			OR,
+			EQUALS,
+			NEQUALS,
+			LTOET,
+			GTOET,
+			SINGLE_ARROW,
+			DOUBLE_ARROW,
+			ASSIGN,
+			ADD_ASSIGN,
+			SUB_ASSIGN,
+			MUL_ASSIGN,
+			DIV_ASSIGN,
+			MOD_ASSIGN,
+			LSHIFT_ASSIGN,
+			RSHIFT_ASSIGN,
+			MODULUS,
+			SLASH,
+			ASTERISK,
+			PLUS,
+			POW,
+			MINUS,
+			INCREMENT,
+			DECREMENT,
+			INT_LITERAL,
+			FLOAT_LITERAL,
+			HEX_LITERAL,
+			BIN_LITERAL,
+			OCT_LITERAL,
+			CHAR_LITERAL,
+			STR_LITERAL,
+			TRUE,
+			FALSE,
+			VAR,
+			FUNC,
+			RETURN,
+			FOR,
+			WHILE,
+			LOOP,
+			CONTINUE,
+			BREAK,
+			IF,
+			ELSE,
+			SWITCH,
+			CASE,
+			TYPE,
+			STRUCT,
+			ENUM,
+			UNION,
+			IMPORT,
+			EXPORT,
+			SCOPE,
+			COUNT
+		};
+
+	private: // members
+
+		String _str;
+		size_t _line;
+		size_t _col;
+		Type _type;
+	
+	public: // methods
+
+		Token();
+		Token(String&& str, size_t line, size_t col, Type type);
+		Token(Token&&) = default;
+		Token(const Token&) = default;
+
+		const String& str() const { return _str; }
+		size_t line() const { return _line; }
+		size_t col() const { return _col; }
+		Type type() const { return _type; }
+	};
 }
-Token;
 
 #endif
-
-/*
-int main()
-{
-return 0;
-}
-*/
