@@ -4,243 +4,376 @@
 #include <warbler/error.h>
 
 // standard library
-#include <stdexcept>
+#include <assert.h>
+#include <string.h>
 
+// external libraries
+#include <hirzel/table.h>
+#include <hirzel/array.h>
 
-namespace warbler
+typedef enum CharType
 {
-	using CharType = Tokenizer::CharType;
+	CHAR_INVALID,
+	CHAR_IDENTIFIER,
+	CHAR_SEPARATOR,
+	CHAR_DOT,
+	CHAR_DIGIT,
+	CHAR_OPERATOR,
+	CHAR_QUOTE
+} CharType;
 
-	struct SourceLocation
-	{
-		const char *pos;
-		size_t line;
-		size_t col;
+typedef struct SourceLocation
+{
+	const char *pos;
+	size_t line;
+	size_t col;
+} SourceLocation;
 
-		SourceLocation(const char *src) :
-		pos(src),
-		line(1),
-		col(1)
-		{}
+SourceLocation source_location_create(const char *pos)
+{
+	return (SourceLocation) {
+		.pos = pos,
+		.line = 1,
+		.col = 1
 	};
+}
 
-	Tokenizer::Tokenizer() :
-	_token_types({
-		// misc keywords
-		{ "func", Token::Type::FUNC },
-		{ "var", Token::Type::VAR },
-		{ "type", Token::Type::TYPE },
-		{ "return", Token::Type::RETURN },
-		{ "for", Token::Type::FOR },
-		{ "while", Token::Type::WHILE },
-		{ "loop", Token::Type::LOOP },
-		{ "continue", Token::Type::CONTINUE },
-		{ "break", Token::Type::BREAK },
-		{ "if", Token::Type::IF },
-		{ "else", Token::Type::ELSE },
-		{ "switch", Token::Type::SWITCH },
-		{ "case", Token::Type::CASE },
+typedef struct TokenInfo
+{
+	const char *key;
+	TokenType value;
+} TokenInfo;
 
-		// typenames
-		{ "struct", Token::Type::STRUCT },
-		{ "union", Token::Type::UNION },
-		{ "enum", Token::Type::ENUM },
-		{ "true", Token::Type::TRUE },
-		{ "false", Token::Type::FALSE },
-		{ ":", Token::Type::COLON },
+const TokenInfo token_info[] =
+{
+	// misc keywords
+	{ "func", TOKEN_FUNC },
+	{ "var", TOKEN_VAR },
+	{ "type", TOKEN_TYPE },
+	{ "return", TOKEN_RETURN },
+	{ "for", TOKEN_FOR },
+	{ "while", TOKEN_WHILE },
+	{ "loop", TOKEN_LOOP },
+	{ "continue", TOKEN_CONTINUE },
+	{ "break", TOKEN_BREAK },
+	{ "if", TOKEN_IF },
+	{ "else", TOKEN_ELSE },
+	{ "switch", TOKEN_SWITCH },
+	{ "case", TOKEN_CASE },
 
-		// separators
-		{ "(", Token::Type::LPAREN },
-		{ ")", Token::Type::RPAREN },
-		{ "[", Token::Type::LBRACK },
-		{ "]", Token::Type::RBRACK },
-		{ "{", Token::Type::LBRACE },
-		{ "}", Token::Type::RBRACE },
-		{ ".", Token::Type::DOT },
-		{ ",", Token::Type::COMMA },
-		{ ";", Token::Type::SEMICOLON },
+	// typenames
+	{ "struct", TOKEN_STRUCT },
+	{ "union", TOKEN_UNION },
+	{ "enum", TOKEN_ENUM },
+	{ "true", TOKEN_TRUE },
+	{ "false", TOKEN_FALSE },
+	{ ":", TOKEN_COLON },
 
-		// unary operators
-		{ "++", Token::Type::INCREMENT },
-		{ "--", Token::Type::DECREMENT },
+	// separators
+	{ "(", TOKEN_LPAREN },
+	{ ")", TOKEN_RPAREN },
+	{ "[", TOKEN_LBRACK },
+	{ "]", TOKEN_RBRACK },
+	{ "{", TOKEN_LBRACE },
+	{ "}", TOKEN_RBRACE },
+	{ ".", TOKEN_DOT },
+	{ ",", TOKEN_COMMA },
+	{ ";", TOKEN_SEMICOLON },
 
-		// binary operators
-		{ "*",  Token::Type::ASTERISK },
-		{ "/",  Token::Type::SLASH },
-		{ "+",  Token::Type::PLUS },
-		{ "-",  Token::Type::MINUS },
-		{ "<",  Token::Type::LANGBRACK },
-		{ ">",  Token::Type::RANGBRACK },
-		{ "&",  Token::Type::AMPERSAND },
-		{ "|",  Token::Type::PIPELINE },
-		{ "^",  Token::Type::CARROT },
-		{ "**", Token::Type::POW },
-		{ "&&", Token::Type::AND },
-		{ "||", Token::Type::OR },
-		{ "==", Token::Type::EQUALS },
-		{ "!=", Token::Type::NEQUALS },
-		{ ">=", Token::Type::GTOET },
-		{ "<=", Token::Type::LTOET },
-		{ ">>", Token::Type::RSHIFT },
-		{ "<<", Token::Type::LSHIFT },
-		{ "->", Token::Type::SINGLE_ARROW },
-		{ "=>", Token::Type::DOUBLE_ARROW },
+	// unary operators
+	{ "++", TOKEN_INCREMENT },
+	{ "--", TOKEN_DECREMENT },
 
-		// assign operators
-		{ "=",  Token::Type::ASSIGN },
-		{ "+=", Token::Type::ADD_ASSIGN },
-		{ "+=", Token::Type::ADD_ASSIGN },
-		{ "-=", Token::Type::SUB_ASSIGN },
-		{ "*=", Token::Type::MUL_ASSIGN },
-		{ "/=", Token::Type::DIV_ASSIGN },
-		{ "%=", Token::Type::MOD_ASSIGN },
+	// binary operators
+	{ "*",  TOKEN_ASTERISK },
+	{ "/",  TOKEN_SLASH },
+	{ "+",  TOKEN_PLUS },
+	{ "-",  TOKEN_MINUS },
+	{ "<",  TOKEN_LANGBRACK },
+	{ ">",  TOKEN_RANGBRACK },
+	{ "&",  TOKEN_AMPERSAND },
+	{ "|",  TOKEN_PIPELINE },
+	{ "^",  TOKEN_CARROT },
+	{ "**", TOKEN_POW },
+	{ "&&", TOKEN_AND },
+	{ "||", TOKEN_OR },
+	{ "==", TOKEN_EQUALS },
+	{ "!=", TOKEN_NEQUALS },
+	{ ">=", TOKEN_GTOET },
+	{ "<=", TOKEN_LTOET },
+	{ ">>", TOKEN_RSHIFT },
+	{ "<<", TOKEN_LSHIFT },
+	{ "->", TOKEN_SINGLE_ARROW },
+	{ "=>", TOKEN_DOUBLE_ARROW },
 
-		// modules
-		{ "import", Token::Type::IMPORT },
-		{ "export", Token::Type::EXPORT },
-		{ "::", Token::Type::SCOPE }
-	})
+	// assign operators
+	{ "=",  TOKEN_ASSIGN },
+	{ "+=", TOKEN_ADD_ASSIGN },
+	{ "+=", TOKEN_ADD_ASSIGN },
+	{ "-=", TOKEN_SUB_ASSIGN },
+	{ "*=", TOKEN_MUL_ASSIGN },
+	{ "/=", TOKEN_DIV_ASSIGN },
+	{ "%=", TOKEN_MOD_ASSIGN },
+
+	// modules
+	{ "import", TOKEN_IMPORT },
+	{ "export", TOKEN_EXPORT },
+	{ "::", TOKEN_SCOPE }
+};
+
+const size_t token_info_count = sizeof(token_info) / sizeof(*token_info);
+
+// data
+
+HxTable *token_types = NULL;
+CharType char_types[CHAR_TYPE_COUNT];
+
+
+// functions
+
+Error init_token_types()
+{
+	token_types = hxtable_create_of(TokenType);
+
+	if (!token_types || !hxtable_reserve(token_types, token_info_count))
+		return ERROR_MEMORY;
+
+	for (size_t i = 0; i < token_info_count; ++i)
 	{
-		// setting up identifier characters
-		_char_types['_'] = CharType::IDENTIFIER;
+		const TokenInfo *info = token_info + i;
+		hxtable_set(token_types, info->key, &info->value);
+	}
+}
+
+void init_char_types()
+{
+	// setting up identifier characters
+		char_types[(size_t)'_'] = CHAR_IDENTIFIER;
 		for (size_t i = 'a'; i <= 'z'; ++i)
-			_char_types[i] = CharType::IDENTIFIER;
+			char_types[i] = CHAR_IDENTIFIER;
 		for (size_t i = 'A'; i <= 'Z'; ++i)
-			_char_types[i] = CharType::IDENTIFIER;
+			char_types[i] = CHAR_IDENTIFIER;
 		for (size_t i = '0'; i <= '9'; ++i)
-			_char_types[i] = CharType::DIGIT;
+			char_types[i] = CHAR_DIGIT;
 
 		// setting up separator characters
-		_char_types['('] = CharType::SEPARATOR;
-		_char_types[')'] = CharType::SEPARATOR;
-		_char_types['['] = CharType::SEPARATOR;
-		_char_types[']'] = CharType::SEPARATOR;
-		_char_types['{'] = CharType::SEPARATOR;
-		_char_types['}'] = CharType::SEPARATOR;
-		_char_types[';'] = CharType::SEPARATOR;
-		_char_types[','] = CharType::SEPARATOR;
+		char_types[(size_t)'('] = CHAR_SEPARATOR;
+		char_types[(size_t)')'] = CHAR_SEPARATOR;
+		char_types[(size_t)'['] = CHAR_SEPARATOR;
+		char_types[(size_t)']'] = CHAR_SEPARATOR;
+		char_types[(size_t)'{'] = CHAR_SEPARATOR;
+		char_types[(size_t)'}'] = CHAR_SEPARATOR;
+		char_types[(size_t)';'] = CHAR_SEPARATOR;
+		char_types[(size_t)','] = CHAR_SEPARATOR;
 
 		// dot character
-		_char_types['.'] = CharType::DOT;
+		char_types[(size_t)'.'] = CHAR_DOT;
 
 		// setting up operator characters
-		_char_types['!'] = CharType::OPERATOR;
-		_char_types['@'] = CharType::OPERATOR;
-		_char_types['#'] = CharType::OPERATOR;
-		_char_types['$'] = CharType::OPERATOR;
-		_char_types['%'] = CharType::OPERATOR;
-		_char_types['^'] = CharType::OPERATOR;
-		_char_types['&'] = CharType::OPERATOR;
-		_char_types['*'] = CharType::OPERATOR;
-		_char_types['-'] = CharType::OPERATOR;
-		_char_types['='] = CharType::OPERATOR;
-		_char_types['|'] = CharType::OPERATOR;
-		_char_types['+'] = CharType::OPERATOR;
-		_char_types['<'] = CharType::OPERATOR;
-		_char_types['>'] = CharType::OPERATOR;
-		_char_types['?'] = CharType::OPERATOR;
-		_char_types['/'] = CharType::OPERATOR;
-		_char_types[':'] = CharType::OPERATOR;
+		char_types[(size_t)'!'] = CHAR_OPERATOR;
+		char_types[(size_t)'@'] = CHAR_OPERATOR;
+		char_types[(size_t)'#'] = CHAR_OPERATOR;
+		char_types[(size_t)'$'] = CHAR_OPERATOR;
+		char_types[(size_t)'%'] = CHAR_OPERATOR;
+		char_types[(size_t)'^'] = CHAR_OPERATOR;
+		char_types[(size_t)'&'] = CHAR_OPERATOR;
+		char_types[(size_t)'*'] = CHAR_OPERATOR;
+		char_types[(size_t)'-'] = CHAR_OPERATOR;
+		char_types[(size_t)'='] = CHAR_OPERATOR;
+		char_types[(size_t)'|'] = CHAR_OPERATOR;
+		char_types[(size_t)'+'] = CHAR_OPERATOR;
+		char_types[(size_t)'<'] = CHAR_OPERATOR;
+		char_types[(size_t)'>'] = CHAR_OPERATOR;
+		char_types[(size_t)'?'] = CHAR_OPERATOR;
+		char_types[(size_t)'/'] = CHAR_OPERATOR;
+		char_types[(size_t)':'] = CHAR_OPERATOR;
 
 		// setting literal types
-		_char_types['\''] = CharType::QUOTE;
-		_char_types['\"'] = CharType::QUOTE;
+		char_types[(size_t)'\''] = CHAR_QUOTE;
+		char_types[(size_t)'\"'] = CHAR_QUOTE;
+}
+
+Error tokenizer_init()
+{
+	try(init_token_types());
+	init_char_types();
+}
+
+#define TEMP_KEY_SIZE (1023)
+
+Error get_token_type(TokenType *out, const String* string)
+{
+	if (string->length > TEMP_KEY_SIZE)
+	{
+		char *key = string_duplicate(string);
+
+		if (!key)
+			return ERROR_MEMORY;
+
+		if (!hxtable_get(token_types, out, key))
+			*out = TOKEN_IDENTIFIER;
+
+		free(key);
+	}
+	else
+	{
+		static _Thread_local char temp_key[TEMP_KEY_SIZE + 1];
+
+		strncpy(temp_key, string->data, string->length + 1);
+
+		if (!hxtable_get(token_types, out, temp_key))
+			*out = TOKEN_IDENTIFIER;
 	}
 
-	void get_next_token_pos(SourceLocation& location)
+	return ERROR_NONE;
+}
+
+inline CharType get_char_type(unsigned char c)
+{
+	assert(c < CHAR_TYPE_COUNT);
+
+	return char_types[(size_t)c];
+}
+
+void tokenizer_free()
+{
+	hxtable_destroy(token_types);
+	token_types = NULL;
+}
+
+
+void get_next_token_pos(SourceLocation *location)
+{
+	while (*location->pos)
 	{
-		while (*location.pos)
-		{
-			if (*location.pos > ' ')
-				break;
-			
-			if (*location.pos == '\n')
-			{
-				++location.line;
-				location.col = 0;
-			}
-
-			++location.col;
-			++location.pos;
-		}
-	}
-
-	Token get_identifier_token(SourceLocation&)
-	{
-		throw not_implemented_error();
-	}
-
-	Token get_separator_token(SourceLocation&)
-	{
-		throw not_implemented_error();
-	}
-
-	Token get_dot_token(SourceLocation&)
-	{
-		throw not_implemented_error();
-	}
-
-	Token get_digit_token(SourceLocation&)
-	{
-		throw not_implemented_error();
-	}
-
-	Token get_operator_token(SourceLocation&)
-	{
-		throw not_implemented_error();
-	}
-
-	Token get_quote_token(SourceLocation&)
-	{
-		throw not_implemented_error();
-	}
-
-	Token get_next_token(SourceLocation& location, const Tokenizer& tokenizer)
-	{
-		get_next_token_pos(location);
-
-		char character = *location.pos;
-
-		if (character == 0)
-			return {};
+		if (*location->pos > ' ')
+			break;
 		
-		auto type = tokenizer.get_char_type(character);
-		switch (type)
+		if (*location->pos == '\n')
 		{
-			case CharType::INVALID:
-				break;
-			case CharType::IDENTIFIER:
-				break;
-			case CharType::SEPARATOR:
-				break;
-			case CharType::DOT:
-				break;
-			case CharType::DIGIT:
-				break;
-			case CharType::OPERATOR:
-				break;
-			case CharType::QUOTE:
-				break;
+			++location->line;
+			location->col = 0;
 		}
 
-		throw not_implemented_error();
+		++location->col;
+		++location->pos;
 	}
+}
+
+Error get_identifier_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+
+	CharType curr_type = get_char_type(*location->pos);
+
+	const char * const start_of_token = location->pos;
+
+	while (curr_type == CHAR_IDENTIFIER || curr_type == CHAR_DIGIT)
+	{
+		++location->pos;
+
+		curr_type = get_char_type(*location->pos);
+	}
+
+	out->line = location->line;
+	out->col = location->col;
+	out->string = (String)
+	{
+		.data = start_of_token,
+		.length = location->pos - start_of_token
+	};
+	try(get_token_type(&out->type, &out->string));
+
+	return ERROR_NONE;
+}
+
+Error get_separator_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+	not_implemented_error();
+}
+
+Error get_dot_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+	not_implemented_error();
+}
+
+Error get_digit_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+	not_implemented_error();
+}
+
+Error get_operator_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+	not_implemented_error();
+}
+
+Error get_quote_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+	not_implemented_error();
+}
+
+Error get_next_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+
+	get_next_token_pos(location);
+
+	size_t character = *location->pos;
+
+	if (!character)
+	{
+		*out = token_default();
+		return ERROR_NONE;
+	}
+	
+	CharType type = char_types[character];
+
+	switch (type)
+	{
+		case CHAR_INVALID:
+			return ERROR_ARGUMENT;
+		case CHAR_IDENTIFIER:
+			return get_identifier_token(out, location);
+		case CHAR_SEPARATOR:
+			return get_separator_token(out, location);
+		case CHAR_DOT:
+			return get_dot_token(out, location);
+		case CHAR_DIGIT:
+			return get_digit_token(out, location);
+		case CHAR_OPERATOR:
+			return get_operator_token(out, location);
+		case CHAR_QUOTE:
+			return get_quote_token(out, location);
+	}
+}
 
 /*
 	Token get_next_token(SourceLocation *location)
 	{
 		get_next_token_pos(location);
 
-		if (*location.pos == 0)
+		if (*location->pos == 0)
 			return {};
 
 		Token out = {
-			.line = location.line,
-			.col = location.col,
-			.type = Token::Type::ERROR,
+			.line = location->line,
+			.col = location->col,
+			.type = TOKEN_ERROR,
 			.out = (String)
 			{
-				.ptr = location.pos,
+				.ptr = location->pos,
 				.len = 0
 			}
 		};
@@ -248,17 +381,12 @@ namespace warbler
 		char type = char_types[*location->pos];
 		++location->pos;
 
-		switch (type)
-		{
-			case CharType::IDENTIFIER:
-
-		}
 
 		switch (type)
 		{
-			case CharType::IDENTIFIER:;
+			case CHAR_IDENTIFIER:;
 				char curr_type = char_types[*pos];
-				while (curr_type == CharType::IDENTIFIER || curr_type == CharType::DIGIT)
+				while (curr_type == CHAR_IDENTIFIER || curr_type == CHAR_DIGIT)
 				{
 					++pos;
 					curr_type = char_types[*pos];
@@ -268,33 +396,33 @@ namespace warbler
 				// slight optimization as most keywords and operators are short
 				if (out.str.len > MAX_KEYWORD_LENGTH)
 				{
-					out.type = Token::Type::IDENTIFIER;
+					out.type = TOKEN_IDENTIFIER;
 					goto finish;
 				}
 
 				// else table lookup
 				goto table_lookup;
 				
-			case CharType::SEPARATOR:
+			case CHAR_SEPARATOR:
 				out.type = char_token_types[*out.str.ptr];
 				out.str.len = 1;
 				goto finish;
 
-			case CharType::DOT:
-				if (char_types[*pos] == CharType::DIGIT)
+			case CHAR_DOT:
+				if (char_types[*pos] == CHAR_DIGIT)
 				{
-					out.type = Token::Type::FLOAT_LITERAL;
+					out.type = TOKEN_FLOAT_LITERAL;
 					goto float_literal;
 				}
-				while (char_types[*pos] == CharType::DOT) ++pos;
+				while (char_types[*pos] == CHAR_DOT) ++pos;
 				out.str.len = pos - out.str.ptr;
-				out.type = Token::Type::DOT + out.str.len - 1;
-				if (out.str.len > 3) out.type = Token::Type::ERROR;
+				out.type = TOKEN_DOT + out.str.len - 1;
+				if (out.str.len > 3) out.type = TOKEN_ERROR;
 				goto finish;
 
-			case CharType::OPERATOR:
+			case CHAR_OPERATOR:
 
-				while (char_types[*pos] == CharType::OPERATOR) ++pos;
+				while (char_types[*pos] == CHAR_OPERATOR) ++pos;
 				out.str.len = pos - out.str.ptr;
 				if (out.str.len == 1)
 				{
@@ -305,7 +433,7 @@ namespace warbler
 
 
 			float_literal:
-			case CharType::DIGIT:
+			case CHAR_DIGIT:
 				while (*pos)
 				{
 					// if encounters a dot
@@ -315,22 +443,22 @@ namespace warbler
 						if (pos[1] == '.') break;
 
 						// if multiple dots, flag float or error
-						if (!out.type) out.type = Token::Type::FLOAT_LITERAL;
-						else out.type = Token::Type::ERROR;
+						if (!out.type) out.type = TOKEN_FLOAT_LITERAL;
+						else out.type = TOKEN_ERROR;
 
 						pos += 1;
 						continue;
 					}
 					// if encountering non digit/dot
-					if (char_types[*pos] != CharType::DIGIT) break;
+					if (char_types[*pos] != CHAR_DIGIT) break;
 					pos += 1;
 				}
 				out.str.len = pos - out.str.ptr;
-				if (!out.type) out.type = Token::Type::INT_LITERAL;
+				if (!out.type) out.type = TOKEN_INT_LITERAL;
 
 				goto finish;
 
-			case CharType::QUOTE:
+			case CHAR_QUOTE:
 				// got till non-escaped end of string
 				while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
 				++out.str.ptr;
@@ -338,17 +466,17 @@ namespace warbler
 				++pos;
 				if (out.str.ptr[-1] == '\'')
 				{
-					out.type = Token::Type::CharType::LITERAL;
+					out.type = TOKEN_CHAR_LITERAL;
 				}
 				else if (out.str.ptr[-1] == '\"')
 				{
-					out.type = Token::Type::STR_LITERAL;
+					out.type = TOKEN_STR_LITERAL;
 				}
 				goto finish;
 
 			default:
 				out.str.len = 1;
-				out.type = Token::Type::ERROR;
+				out.type = TOKEN_ERROR;
 				goto finish;
 		}
 
@@ -372,13 +500,13 @@ namespace warbler
 		// if it failed to find matching key
 		if (out.type == 0)
 		{
-			if (type == CharType::IDENTIFIER)
+			if (type == CHAR_IDENTIFIER)
 			{
-				out.type = Token::Type::IDENTIFIER;
+				out.type = TOKEN_IDENTIFIER;
 			}
 			else
 			{
-				out.type = Token::Type::ERROR;
+				out.type = TOKEN_ERROR;
 			}
 		}
 
@@ -386,38 +514,40 @@ namespace warbler
 	}
 */
 
-	CharType Tokenizer::get_char_type(char c) const
+
+
+Error tokenize(HxArray **out, const char *src)
+{
+	HxArray *tokens = hxarray_create_of(Token);
+
+	if (!tokens)
+		return ERROR_MEMORY;
+
+	SourceLocation location(src);
+
+	while (true)
 	{
-		return _char_types[(size_t)c];
-	}
-
-	Token::Type Tokenizer::get_token_type(const std::string& token) const
-	{
-		const auto& iter = _token_types.find(token);
-
-		if (iter == _token_types.end())
-			return Token::Type::IDENTIFIER;
-
-		return iter->second;
-	}
-
-	std::vector<Token> Tokenizer::tokenize(const char *src) const
-	{
-		std::vector<Token> out;
-
-		SourceLocation location(src);
-
-		while (true)
 		{
-			if (out.size() == out.capacity())
-				out.reserve(out.size() * 2);
+			size_t current_size = hxarray_length(tokens);
+			
+			if (current_size == hxarray_capacity(tokens))
+			{
+				if (!hxarray_reserve(tokens, current_size * 2))
+				{
+					hxarray_destroy(tokens);
 
-			out.emplace_back(get_next_token(location, *this));
-
-			if (out.back().type() == Token::Type::END_OF_FILE)
-				break;
+					return ERROR_MEMORY;
+				}
+			}
 		}
 
-		return out;
+		out.emplace_back(get_next_token(location, *this));
+
+		if (out.back().type() == TOKEN_END_OF_FILE)
+			break;
 	}
+
+	*out = tokens;
+
+	return ERROR_NONE;
 }

@@ -3,8 +3,12 @@
 // local includes
 #include <warbler/error.h>
 
-Identifier *identifier_parse(const Token *)
+// standard library
+#include <assert.h>
+
+Identifier *identifier_parse(const Token *token)
 {
+	assert(token != NULL);
 	not_implemented_error();
 
 	return NULL;

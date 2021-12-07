@@ -6,7 +6,7 @@ Token token_default()
 		.string = string_default(),
 		.line = 0,
 		.col = 0,
-		.type = END_OF_FILE
+		.type = TOKEN_END_OF_FILE
 	};
 }
 

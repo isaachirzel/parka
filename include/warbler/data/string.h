@@ -4,12 +4,6 @@
 // standard library
 #include <stddef.h>
 
-enum StringError
-{
-	STRING_MEMORY_ERROR,
-	STRING_LENGTH_ERROR
-};
-
 typedef struct String
 {
 	const char *data;

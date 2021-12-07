@@ -36,6 +36,6 @@ endforeach()
 
 # adding common properties for all targets
 foreach(TARGET ${TARGETS})
-	set_target_properties(${TARGET} PROPERTIES C_STANDARD 99 CXX_STANDARD 17)
+	set_target_properties(${TARGET} PROPERTIES C_STANDARD 11 CXX_STANDARD 11)
 	target_include_directories(${TARGET} PRIVATE ${INCLUDE_DIRS})
 endforeach()
