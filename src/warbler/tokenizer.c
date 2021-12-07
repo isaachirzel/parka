@@ -252,6 +252,8 @@ const char *get_token_string(TokenType type)
 {
 	if (type == TOKEN_IDENTIFIER)
 		return "<identifier>";
+	else if (type == TOKEN_END_OF_FILE)
+		return "<end of file>";
 
 	for (size_t i = 0; i < token_info_count; ++i)
 	{
@@ -281,29 +283,26 @@ static void get_next_token_pos(SourceLocation *location)
 	}
 }
 
+static inline bool is_char_alphanumeric(char c)
+{
+	CharType type = get_char_type(c);
+
+	return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
+}
+
 static Error get_identifier_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
 
-	CharType curr_type = get_char_type(*location->pos);
-
 	const char * const start_of_token = location->pos;
 
-	while (curr_type == CHAR_IDENTIFIER || curr_type == CHAR_DIGIT)
-	{
+	++location->pos;
+
+	while (is_char_alphanumeric(*location->pos))
 		++location->pos;
 
-		curr_type = get_char_type(*location->pos);
-	}
-
-	out->line = location->line;
-	out->col = location->col;
-	out->string = (String)
-	{
-		.data = start_of_token,
-		.length = location->pos - start_of_token
-	};
+	out->string.length = location->pos - out->string.data;
 
 	try(get_token_type(out));
 
@@ -431,7 +430,7 @@ static Error get_next_token(Token *out, SourceLocation *location)
 		return ERROR_NONE;
 	}
 	
-	CharType type = char_types[character];
+	CharType type = get_char_type(character);
 
 	switch (type)
 	{
@@ -490,6 +489,7 @@ Error tokenize(HxArray **out, const char *src)
 	while (true)
 	{
 		Error error = assure_tokens_size(tokens);
+
 		if (error)
 		{
 			hxarray_destroy(tokens);
@@ -505,7 +505,13 @@ Error tokenize(HxArray **out, const char *src)
 
 		Token *back = hxarray_back(tokens);
 
-		printf("Parsed token: %s\n", get_token_string(back->type));
+		fputs("Parsed token: ", stdout);
+
+		if (back->type == TOKEN_IDENTIFIER)
+			string_println(&back->string);
+		else
+			puts(get_token_string(back->type));
+		
 
 		if (back->type == TOKEN_END_OF_FILE)
 			break;
