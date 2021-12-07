@@ -88,8 +88,7 @@ typedef struct Token
 	size_t line;
 	size_t col;
 	TokenType type;
-}
-Token;
+} Token;
 
 Token token_default();
 Token token_create(String* string, size_t line, size_t col, TokenType type);

@@ -5,6 +5,7 @@
 
 // standard library
 #include <string.h>
+#include <stdlib.h>
 
 // external libraries
 #include <hirzel/table.h>
@@ -203,17 +204,21 @@ Error tokenizer_init()
 
 #define TEMP_KEY_SIZE (1023)
 
-Error get_token_type(TokenType *out, const String* string)
+Error get_token_type(Token *token)
 {
-	if (string->length > TEMP_KEY_SIZE)
+	assert(token != NULL);
+	assert(token->string.data != NULL);
+	assert(token->string.length > 0);
+
+	if (token->string.length > TEMP_KEY_SIZE)
 	{
-		char *key = string_duplicate(string);
+		char *key = string_duplicate(&token->string);
 
 		if (!key)
 			return ERROR_MEMORY;
 
-		if (!hxtable_get(token_types, out, key))
-			*out = TOKEN_IDENTIFIER;
+		if (!hxtable_get(token_types, &token->type, key))
+			token->type = TOKEN_IDENTIFIER;
 
 		free(key);
 	}
@@ -221,10 +226,10 @@ Error get_token_type(TokenType *out, const String* string)
 	{
 		static _Thread_local char temp_key[TEMP_KEY_SIZE + 1];
 
-		strncpy(temp_key, string->data, string->length + 1);
+		strncpy(temp_key, token->string.data, token->string.length + 1);
 
-		if (!hxtable_get(token_types, out, temp_key))
-			*out = TOKEN_IDENTIFIER;
+		if (!hxtable_get(token_types, &token->type, temp_key))
+			token->type = TOKEN_IDENTIFIER;
 	}
 
 	return ERROR_NONE;
@@ -299,7 +304,8 @@ static Error get_identifier_token(Token *out, SourceLocation *location)
 		.data = start_of_token,
 		.length = location->pos - start_of_token
 	};
-	try(get_token_type(&out->type, &out->string));
+
+	try(get_token_type(out));
 
 	return ERROR_NONE;
 }
@@ -308,35 +314,102 @@ static Error get_separator_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
-	not_implemented_error();
+
+	out->string.length = 1;
+	try(get_token_type(out));
+
+	return ERROR_NONE;
 }
 
 static Error get_dot_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
-	not_implemented_error();
+
+	// if (char_types[*pos] == CHAR_DIGIT)
+	// {
+	// 	out.type = TOKEN_FLOAT_LITERAL;
+	// 	goto float_literal;
+	// }
+	// while (char_types[*pos] == CHAR_DOT) ++pos;
+	// out.str.len = pos - out.str.ptr;
+	// out.type = TOKEN_DOT + out.str.len - 1;
+	// if (out.str.len > 3) out.type = TOKEN_ERROR;
+	// goto finish;
+
+	return not_implemented_error();
 }
 
 static Error get_digit_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
-	not_implemented_error();
+
+	// while (*pos)
+	// {
+	// 	// if encounters a dot
+	// 	if (pos[0] == '.')
+	// 	{	
+	// 		// range or elipsis
+	// 		if (pos[1] == '.') break;
+
+	// 		// if multiple dots, flag float or error
+	// 		if (!out.type) out.type = TOKEN_FLOAT_LITERAL;
+	// 		else out.type = TOKEN_ERROR;
+
+	// 		pos += 1;
+	// 		continue;
+	// 	}
+	// 	// if encountering non digit/dot
+	// 	if (char_types[*pos] != CHAR_DIGIT) break;
+	// 	pos += 1;
+	// }
+	// out.str.len = pos - out.str.ptr;
+	// if (!out.type) out.type = TOKEN_INT_LITERAL;
+
+	// goto finish;
+
+	return not_implemented_error();
 }
 
 static Error get_operator_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
-	not_implemented_error();
+
+	// while (char_types[*pos] == CHAR_OPERATOR) ++pos;
+	// out.str.len = pos - out.str.ptr;
+	// if (out.str.len == 1)
+	// {
+	// 	out.type = char_token_types[*out.str.ptr];
+	// 	goto finish;
+	// }
+	// goto table_lookup;
+
+	return not_implemented_error();
 }
 
 static Error get_quote_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
-	not_implemented_error();
+
+	// // got till non-escaped end of string
+	// while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
+	// ++out.str.ptr;
+	// out.str.len = pos - out.str.ptr;
+	// ++pos;
+	// if (out.str.ptr[-1] == '\'')
+	// {
+	// 	out.type = TOKEN_CHAR_LITERAL;
+	// }
+	// else if (out.str.ptr[-1] == '\"')
+	// {
+	// 	out.type = TOKEN_STR_LITERAL;
+	// }
+	// goto finish;
+
+	return not_implemented_error();
 }
 
 static Error get_next_token(Token *out, SourceLocation *location)
@@ -345,6 +418,10 @@ static Error get_next_token(Token *out, SourceLocation *location)
 	assert(location != NULL);
 
 	get_next_token_pos(location);
+
+	out->string.data = location->pos;
+	out->line = location->line;
+	out->col = location->col;
 
 	size_t character = *location->pos;
 
@@ -376,161 +453,6 @@ static Error get_next_token(Token *out, SourceLocation *location)
 
 	return ERROR_ARGUMENT;
 }
-
-/*
-	Token get_next_token(SourceLocation *location)
-	{
-		get_next_token_pos(location);
-
-		if (*location->pos == 0)
-			return {};
-
-		Token out = {
-			.line = location->line,
-			.col = location->col,
-			.type = TOKEN_ERROR,
-			.out = (String)
-			{
-				.ptr = location->pos,
-				.len = 0
-			}
-		};
-		
-		char type = char_types[*location->pos];
-		++location->pos;
-
-
-		switch (type)
-		{
-			case CHAR_IDENTIFIER:;
-				char curr_type = char_types[*pos];
-				while (curr_type == CHAR_IDENTIFIER || curr_type == CHAR_DIGIT)
-				{
-					++pos;
-					curr_type = char_types[*pos];
-				}
-				out.str.len = pos - out.str.ptr;
-
-				// slight optimization as most keywords and operators are short
-				if (out.str.len > MAX_KEYWORD_LENGTH)
-				{
-					out.type = TOKEN_IDENTIFIER;
-					goto finish;
-				}
-
-				// else table lookup
-				goto table_lookup;
-				
-			case CHAR_SEPARATOR:
-				out.type = char_token_types[*out.str.ptr];
-				out.str.len = 1;
-				goto finish;
-
-			case CHAR_DOT:
-				if (char_types[*pos] == CHAR_DIGIT)
-				{
-					out.type = TOKEN_FLOAT_LITERAL;
-					goto float_literal;
-				}
-				while (char_types[*pos] == CHAR_DOT) ++pos;
-				out.str.len = pos - out.str.ptr;
-				out.type = TOKEN_DOT + out.str.len - 1;
-				if (out.str.len > 3) out.type = TOKEN_ERROR;
-				goto finish;
-
-			case CHAR_OPERATOR:
-
-				while (char_types[*pos] == CHAR_OPERATOR) ++pos;
-				out.str.len = pos - out.str.ptr;
-				if (out.str.len == 1)
-				{
-					out.type = char_token_types[*out.str.ptr];
-					goto finish;
-				}
-				goto table_lookup;
-
-
-			float_literal:
-			case CHAR_DIGIT:
-				while (*pos)
-				{
-					// if encounters a dot
-					if (pos[0] == '.')
-					{	
-						// range or elipsis
-						if (pos[1] == '.') break;
-
-						// if multiple dots, flag float or error
-						if (!out.type) out.type = TOKEN_FLOAT_LITERAL;
-						else out.type = TOKEN_ERROR;
-
-						pos += 1;
-						continue;
-					}
-					// if encountering non digit/dot
-					if (char_types[*pos] != CHAR_DIGIT) break;
-					pos += 1;
-				}
-				out.str.len = pos - out.str.ptr;
-				if (!out.type) out.type = TOKEN_INT_LITERAL;
-
-				goto finish;
-
-			case CHAR_QUOTE:
-				// got till non-escaped end of string
-				while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
-				++out.str.ptr;
-				out.str.len = pos - out.str.ptr;
-				++pos;
-				if (out.str.ptr[-1] == '\'')
-				{
-					out.type = TOKEN_CHAR_LITERAL;
-				}
-				else if (out.str.ptr[-1] == '\"')
-				{
-					out.type = TOKEN_STR_LITERAL;
-				}
-				goto finish;
-
-			default:
-				out.str.len = 1;
-				out.type = TOKEN_ERROR;
-				goto finish;
-		}
-
-		
-	finish:
-		*src = pos;
-		return out;
-
-	table_lookup:;
-		char tmp[MAX_KEYWORD_LENGTH + 1];
-
-		// table lookup
-		for (int i = 0; i < out.str.len; ++i)
-		{
-			tmp[i] = out.str.ptr[i];
-		}
-
-		tmp[out.str.len] = 0;
-		out.type = chartbl_get(token_types, tmp);
-
-		// if it failed to find matching key
-		if (out.type == 0)
-		{
-			if (type == CHAR_IDENTIFIER)
-			{
-				out.type = TOKEN_IDENTIFIER;
-			}
-			else
-			{
-				out.type = TOKEN_ERROR;
-			}
-		}
-
-		goto finish;
-	}
-*/
 
 static inline Error assure_tokens_size(HxArray *tokens)
 {

@@ -8,8 +8,7 @@
 typedef struct Identifier
 {
 	const String *str;
-}
-Identifier;
+} Identifier;
 
 extern Identifier *identifier_parse(const Token *token);
 
