@@ -15,14 +15,34 @@ int main(int argc, char *argv[])
 
 	char *src = read_file(argv[1]);
 
+	if (!src)
+		return ERROR_FILE;
+
 	preprocess(src);
 	printf("success:\n%s\n", src);
 
-	Tokenizer tokenizer;
+	Error error = tokenizer_init();
+	if (error)
+	{
+		print_error("failed to initialize tokenizer");
+		free(src);
+		return (int)error;
+	}
 
-	auto tokens = tokenizer.tokenize(src);
+	HxArray *tokens;
+	error = tokenize(&tokens, src);
+	if (error)
+	{
+		print_error("failed to tokenize source");
+		free(src);
+		tokenizer_free();
+
+		return (int)error;
+	}
+
 
 	free(src);
+	tokenizer_free();
 	return 0;
 }
 

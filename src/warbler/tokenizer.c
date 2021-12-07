@@ -4,7 +4,6 @@
 #include <warbler/error.h>
 
 // standard library
-#include <assert.h>
 #include <string.h>
 
 // external libraries
@@ -29,7 +28,7 @@ typedef struct SourceLocation
 	size_t col;
 } SourceLocation;
 
-SourceLocation source_location_create(const char *pos)
+static inline SourceLocation source_location_create(const char *pos)
 {
 	return (SourceLocation) {
 		.pos = pos,
@@ -128,7 +127,6 @@ const size_t token_info_count = sizeof(token_info) / sizeof(*token_info);
 HxTable *token_types = NULL;
 CharType char_types[CHAR_TYPE_COUNT];
 
-
 // functions
 
 Error init_token_types()
@@ -143,6 +141,8 @@ Error init_token_types()
 		const TokenInfo *info = token_info + i;
 		hxtable_set(token_types, info->key, &info->value);
 	}
+
+	return ERROR_NONE;
 }
 
 void init_char_types()
@@ -197,6 +197,8 @@ Error tokenizer_init()
 {
 	try(init_token_types());
 	init_char_types();
+
+	return ERROR_NONE;
 }
 
 #define TEMP_KEY_SIZE (1023)
@@ -228,7 +230,7 @@ Error get_token_type(TokenType *out, const String* string)
 	return ERROR_NONE;
 }
 
-inline CharType get_char_type(unsigned char c)
+static inline CharType get_char_type(unsigned char c)
 {
 	assert(c < CHAR_TYPE_COUNT);
 
@@ -241,8 +243,22 @@ void tokenizer_free()
 	token_types = NULL;
 }
 
+const char *get_token_string(TokenType type)
+{
+	if (type == TOKEN_IDENTIFIER)
+		return "<identifier>";
 
-void get_next_token_pos(SourceLocation *location)
+	for (size_t i = 0; i < token_info_count; ++i)
+	{
+		const TokenInfo *info = token_info + i;
+		if (info->value == type)
+			return info->key;
+	}
+
+	return "<unknown>";
+}
+
+static void get_next_token_pos(SourceLocation *location)
 {
 	while (*location->pos)
 	{
@@ -260,7 +276,7 @@ void get_next_token_pos(SourceLocation *location)
 	}
 }
 
-Error get_identifier_token(Token *out, SourceLocation *location)
+static Error get_identifier_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
@@ -288,42 +304,42 @@ Error get_identifier_token(Token *out, SourceLocation *location)
 	return ERROR_NONE;
 }
 
-Error get_separator_token(Token *out, SourceLocation *location)
+static Error get_separator_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
 	not_implemented_error();
 }
 
-Error get_dot_token(Token *out, SourceLocation *location)
+static Error get_dot_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
 	not_implemented_error();
 }
 
-Error get_digit_token(Token *out, SourceLocation *location)
+static Error get_digit_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
 	not_implemented_error();
 }
 
-Error get_operator_token(Token *out, SourceLocation *location)
+static Error get_operator_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
 	not_implemented_error();
 }
 
-Error get_quote_token(Token *out, SourceLocation *location)
+static Error get_quote_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
 	not_implemented_error();
 }
 
-Error get_next_token(Token *out, SourceLocation *location)
+static Error get_next_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
@@ -342,8 +358,6 @@ Error get_next_token(Token *out, SourceLocation *location)
 
 	switch (type)
 	{
-		case CHAR_INVALID:
-			return ERROR_ARGUMENT;
 		case CHAR_IDENTIFIER:
 			return get_identifier_token(out, location);
 		case CHAR_SEPARATOR:
@@ -356,7 +370,11 @@ Error get_next_token(Token *out, SourceLocation *location)
 			return get_operator_token(out, location);
 		case CHAR_QUOTE:
 			return get_quote_token(out, location);
+		default:
+			break;
 	}
+
+	return ERROR_ARGUMENT;
 }
 
 /*
@@ -514,7 +532,29 @@ Error get_next_token(Token *out, SourceLocation *location)
 	}
 */
 
+static inline Error assure_tokens_size(HxArray *tokens)
+{
+	size_t current_length = hxarray_length(tokens);
+			
+	if (current_length == hxarray_capacity(tokens))
+	{
+		if (!hxarray_reserve(tokens, current_length * 2))
+			return ERROR_MEMORY;
+	}
 
+	return ERROR_NONE;
+}
+
+static inline Error push_next_token(HxArray *tokens, SourceLocation *location)
+{
+	Token token;
+
+	try(get_next_token(&token, location));
+	if (!hxarray_push(tokens, &token))
+		return ERROR_MEMORY;
+	
+	return ERROR_NONE;
+}
 
 Error tokenize(HxArray **out, const char *src)
 {
@@ -523,27 +563,29 @@ Error tokenize(HxArray **out, const char *src)
 	if (!tokens)
 		return ERROR_MEMORY;
 
-	SourceLocation location(src);
+	SourceLocation location = source_location_create(src);
 
 	while (true)
 	{
+		Error error = assure_tokens_size(tokens);
+		if (error)
 		{
-			size_t current_size = hxarray_length(tokens);
-			
-			if (current_size == hxarray_capacity(tokens))
-			{
-				if (!hxarray_reserve(tokens, current_size * 2))
-				{
-					hxarray_destroy(tokens);
-
-					return ERROR_MEMORY;
-				}
-			}
+			hxarray_destroy(tokens);
+			return error;
+		}
+		
+		error = push_next_token(tokens, &location);
+		if (error)
+		{
+			hxarray_destroy(tokens);
+			return error;
 		}
 
-		out.emplace_back(get_next_token(location, *this));
+		Token *back = hxarray_back(tokens);
 
-		if (out.back().type() == TOKEN_END_OF_FILE)
+		printf("Parsed token: %s\n", get_token_string(back->type));
+
+		if (back->type == TOKEN_END_OF_FILE)
 			break;
 	}
 
