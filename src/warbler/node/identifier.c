@@ -3,9 +3,9 @@
 // local includes
 #include <warbler/error.h>
 
-Identifier *parseIdentifier(const Token *token)
+Identifier *identifier_parse(const Token *)
 {
-	notImplementedError();
+	not_implemented_error();
 
 	return NULL;
 }

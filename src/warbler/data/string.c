@@ -6,29 +6,38 @@
 // standard library
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
-void String_print(const String *str)
+String string_default()
 {
-	fwrite(str->start, sizeof(char), str->end - str->start, stdout);	
+	return (String) {
+		.data = NULL,
+		.length = 0
+	};
 }
 
-void String_println(const String *str)
+void string_print(const String * string)
 {
-	String_print(str);
+	assert(string != NULL);
+	assert(string->data != NULL);
+	assert(string->length > 0);
+
+	fwrite(string->data, sizeof(char), string->length, stdout);	
+}
+
+void string_println(const String *string)
+{
+	string_print(string);
 	putchar('\n');
 }
 
-char *String_duplicate(const String *str)
+char *string_duplicate(const String *string)
 {
-	size_t size = str->end - str->start;
+	assert(string != NULL);
+	assert(string->data != NULL);
+	assert(string->length > 0);
 
-	if (size == 0)
-	{
-		print_errorf("%s: attempted to duplicate string with length 0", __func__);
-		return NULL;
-	}
-	
-	char *out = malloc((size + 1) * sizeof(char));
+	char *out = malloc((string->length + 1) * sizeof(*string->data));
 
 	if (!out)
 	{
@@ -36,12 +45,12 @@ char *String_duplicate(const String *str)
 		return NULL;
 	}
 
-	for (size_t i = 0; i < size; ++i)
+	for (size_t i = 0; i < string->length; ++i)
 	{
-		out[i] = str->start[i];
+		out[i] = string->data[i];
 	}
 
-	out[size] = 0;
+	out[string->length] = 0;
 
 	return out;
 }

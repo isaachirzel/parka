@@ -1,5 +1,5 @@
-#ifndef WARBLER_IDENTIFIER_H
-#define WARBLER_IDENTIFIER_H
+#ifndef WARBLER_NODE_IDENTIFIER_H
+#define WARBLER_NODE_IDENTIFIER_H
 
 // local includes
 #include <warbler/data/string.h>
@@ -11,6 +11,6 @@ typedef struct Identifier
 }
 Identifier;
 
-extern Identifier *parseIdentifier(const Token *token);
+extern Identifier *identifier_parse(const Token *token);
 
 #endif

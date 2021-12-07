@@ -1,16 +1,25 @@
 #ifndef WARBLER_STRING_H
 #define WARBLER_STRING_H
 
-#include <stdio.h>
+// standard library
+#include <stddef.h>
+
+enum StringError
+{
+	STRING_MEMORY_ERROR,
+	STRING_LENGTH_ERROR
+};
 
 typedef struct String
 {
-	const char *start;
-	size_t len;
+	const char *data;
+	size_t length;
 } String;
 
-void printString(const String *str);
-void printlnString(const String *str);
-char *duplicateString(const String *str);
+String string_default();
+
+void string_print(const String *str);
+void string_println(const String *str);
+char *string_duplicate(const String *str);
 
 #endif

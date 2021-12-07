@@ -21,9 +21,9 @@ endif()
 # adding definition for asserts
 add_compile_definitions(DEBUG_MODE)
 
-file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.cpp")
+file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.c")
 add_library(common_objects OBJECT ${COMMON_SOURCES})
-add_executable(warble "src/main.cpp" $<TARGET_OBJECTS:common_objects>)
+add_executable(warble "src/main.c" $<TARGET_OBJECTS:common_objects>)
 list(APPEND TARGETS ${MAIN_PROGRAM} common_objects)
 
 # creating targets for all test sources
