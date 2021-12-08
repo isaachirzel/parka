@@ -295,10 +295,6 @@ static Error get_identifier_token(Token *out, SourceLocation *location)
 	assert(out != NULL);
 	assert(location != NULL);
 
-	const char * const start_of_token = location->pos;
-
-	++location->pos;
-
 	while (is_char_alphanumeric(*location->pos))
 		++location->pos;
 
@@ -315,7 +311,46 @@ static Error get_separator_token(Token *out, SourceLocation *location)
 	assert(location != NULL);
 
 	out->string.length = 1;
+
 	try(get_token_type(out));
+
+	return ERROR_NONE;
+}
+
+static Error get_digit_token(Token *out, SourceLocation *location)
+{
+	assert(out != NULL);
+	assert(location != NULL);
+
+	bool is_float = false;
+
+	while (true)
+	{
+		CharType type = get_char_type(*location->pos);
+
+		switch (type)
+		{
+			case CHAR_DOT:
+				if (is_float)
+					return ERROR_ARGUMENT;
+
+				is_float = true;
+
+			case CHAR_DIGIT:
+				++location->pos;
+				continue;
+
+			default:
+				break;
+		}
+
+		break;
+	}
+
+	out->string.length = location->pos - out->string.data;
+	out->type = is_float
+		? TOKEN_FLOAT
+		: TOKEN_INTEGER;
 
 	return ERROR_NONE;
 }
@@ -325,50 +360,33 @@ static Error get_dot_token(Token *out, SourceLocation *location)
 	assert(out != NULL);
 	assert(location != NULL);
 
-	// if (char_types[*pos] == CHAR_DIGIT)
-	// {
-	// 	out.type = TOKEN_FLOAT_LITERAL;
-	// 	goto float_literal;
-	// }
-	// while (char_types[*pos] == CHAR_DOT) ++pos;
-	// out.str.len = pos - out.str.ptr;
-	// out.type = TOKEN_DOT + out.str.len - 1;
-	// if (out.str.len > 3) out.type = TOKEN_ERROR;
-	// goto finish;
+	if (get_char_type(location->pos[1]) == CHAR_DIGIT)
+	{
+		--location->pos;
 
-	return not_implemented_error();
-}
+		return get_digit_token(out, location);
+	}
 
-static Error get_digit_token(Token *out, SourceLocation *location)
-{
-	assert(out != NULL);
-	assert(location != NULL);
+	while (get_char_type(*location->pos) == CHAR_DOT)
+		++location->pos;
 
-	// while (*pos)
-	// {
-	// 	// if encounters a dot
-	// 	if (pos[0] == '.')
-	// 	{	
-	// 		// range or elipsis
-	// 		if (pos[1] == '.') break;
+	out->string.length = location->pos - out->string.data;
 
-	// 		// if multiple dots, flag float or error
-	// 		if (!out.type) out.type = TOKEN_FLOAT_LITERAL;
-	// 		else out.type = TOKEN_ERROR;
+	switch (out->string.length)
+	{
+		case 1:
+			out->type = TOKEN_DOT;
+			break;
 
-	// 		pos += 1;
-	// 		continue;
-	// 	}
-	// 	// if encountering non digit/dot
-	// 	if (char_types[*pos] != CHAR_DIGIT) break;
-	// 	pos += 1;
-	// }
-	// out.str.len = pos - out.str.ptr;
-	// if (!out.type) out.type = TOKEN_INT_LITERAL;
+		case 3:
+			out->type = TOKEN_ELIPSIS;
+			break;
 
-	// goto finish;
+		default:
+			return ERROR_ARGUMENT;
+	}
 
-	return not_implemented_error();
+	return ERROR_NONE;
 }
 
 static Error get_operator_token(Token *out, SourceLocation *location)
@@ -376,39 +394,45 @@ static Error get_operator_token(Token *out, SourceLocation *location)
 	assert(out != NULL);
 	assert(location != NULL);
 
-	// while (char_types[*pos] == CHAR_OPERATOR) ++pos;
-	// out.str.len = pos - out.str.ptr;
-	// if (out.str.len == 1)
-	// {
-	// 	out.type = char_token_types[*out.str.ptr];
-	// 	goto finish;
-	// }
-	// goto table_lookup;
+	while (get_char_type(*location->pos) == CHAR_OPERATOR)
+		++location->pos;
+	
+	out->string.length = location->pos - out->string.data;
+	
+	try(get_token_type(out));
 
-	return not_implemented_error();
+	return ERROR_NONE;
 }
 
 static Error get_quote_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
 	assert(location != NULL);
+	
+	char terminal_char = out->string.data[0];
 
-	// // got till non-escaped end of string
-	// while (pos[0] != out.str.ptr[0] && pos[-1] != '\\') ++pos;
-	// ++out.str.ptr;
-	// out.str.len = pos - out.str.ptr;
-	// ++pos;
-	// if (out.str.ptr[-1] == '\'')
-	// {
-	// 	out.type = TOKEN_CHAR_LITERAL;
-	// }
-	// else if (out.str.ptr[-1] == '\"')
-	// {
-	// 	out.type = TOKEN_STR_LITERAL;
-	// }
-	// goto finish;
+	while (*location->pos)
+	{
+		bool is_end_of_text = location->pos[0] == terminal_char && location->pos[-1] != '\\';
 
-	return not_implemented_error();
+		++location->pos;
+
+		if (is_end_of_text)
+			break;
+	}
+
+	out->string.length = location->pos - out->string.data;
+
+	if (out->string.data[0] == '\'')
+	{
+		out->type = TOKEN_CHAR;
+	}
+	else if (out->string.data[0] == '\"')
+	{
+		out->type = TOKEN_STRING;
+	}
+		
+	return ERROR_NONE;
 }
 
 static Error get_next_token(Token *out, SourceLocation *location)
@@ -431,21 +455,28 @@ static Error get_next_token(Token *out, SourceLocation *location)
 	}
 	
 	CharType type = get_char_type(character);
+	++location->pos;
 
 	switch (type)
 	{
 		case CHAR_IDENTIFIER:
 			return get_identifier_token(out, location);
+
 		case CHAR_SEPARATOR:
 			return get_separator_token(out, location);
+
 		case CHAR_DOT:
 			return get_dot_token(out, location);
+
 		case CHAR_DIGIT:
 			return get_digit_token(out, location);
+
 		case CHAR_OPERATOR:
 			return get_operator_token(out, location);
+
 		case CHAR_QUOTE:
 			return get_quote_token(out, location);
+
 		default:
 			break;
 	}
@@ -475,6 +506,21 @@ static inline Error push_next_token(HxArray *tokens, SourceLocation *location)
 		return ERROR_MEMORY;
 	
 	return ERROR_NONE;
+}
+
+static inline bool is_dynamic_token(TokenType type)
+{
+	switch (type)
+	{
+		case TOKEN_INTEGER:
+		case TOKEN_FLOAT:
+		case TOKEN_STRING:
+		case TOKEN_CHAR:
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 Error tokenize(HxArray **out, const char *src)
@@ -507,10 +553,7 @@ Error tokenize(HxArray **out, const char *src)
 
 		fputs("Parsed token: ", stdout);
 
-		if (back->type == TOKEN_IDENTIFIER)
-			string_println(&back->string);
-		else
-			puts(get_token_string(back->type));
+		string_println(&back->string);
 		
 
 		if (back->type == TOKEN_END_OF_FILE)
