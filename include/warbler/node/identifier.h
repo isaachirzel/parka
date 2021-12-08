@@ -2,14 +2,15 @@
 #define WARBLER_NODE_IDENTIFIER_H
 
 // local includes
+#include <warbler/error.h>
 #include <warbler/data/string.h>
 #include <warbler/data/token.h>
 
 typedef struct Identifier
 {
-	const String *str;
+	String string;
 } Identifier;
 
-extern Identifier *identifier_parse(const Token *token);
+Error identifier_parse(Identifier **out, const Token **tokens);
 
 #endif

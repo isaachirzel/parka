@@ -1,15 +1,26 @@
 #include <warbler/node/identifier.h>
 
-// local includes
-#include <warbler/error.h>
-
 // standard library
 #include <assert.h>
+#include <stdlib.h>
 
-Identifier *identifier_parse(const Token *token)
+Error identifier_parse(Identifier **out, const Token **tokens)
 {
-	assert(token != NULL);
-	not_implemented_error();
+	assert(out != NULL);
+	assert(tokens != NULL);
+	
+	if (tokens[0]->type != TOKEN_IDENTIFIER)
+		return ERROR_ARGUMENT;
 
-	return NULL;
+	Identifier *identifier = malloc(sizeof(Identifier));
+
+	if (!identifier)
+		return ERROR_MEMORY;
+
+	identifier->string = tokens[0]->string;
+
+	*tokens += 1;
+	*out = identifier;
+
+	return ERROR_NONE;
 }

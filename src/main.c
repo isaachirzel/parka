@@ -3,6 +3,7 @@
 #include <warbler/cli.h>
 #include <warbler/preprocessor.h>
 #include <warbler/tokenizer.h>
+#include <warbler/node/identifier.h>
 
 // standard library
 #include <stdio.h>
@@ -40,6 +41,16 @@ int main(int argc, char *argv[])
 		return (int)error;
 	}
 
+	Identifier *identifier;
+	Token *iter = hxarray_front(tokens);
+	error = identifier_parse(&identifier, &iter);
+	if (error)
+	{
+		printf("failed to parse and got error: %d\n", error);
+	}
+
+	fputs("Parsed identifier: ", stdout);
+	string_println(&identifier->string);
 
 	free(src);
 	tokenizer_free();

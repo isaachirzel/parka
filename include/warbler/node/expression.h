@@ -1,16 +1,11 @@
-#ifndef GRACKLE_NODE_EXPRESSION_H
-#define GRACKLE_NODE_EXPRESSION_H
+#ifndef WARBLER_NODE_EXPRESSION_H
+#define WARBLER_NODE_EXPRESSION_H
 
-// local includes
-#include <grackle/node/node.h>
-
-namespace grackle
+typedef struct Expression
 {
-	class Expression : public Node
-	{
-	private:
-	public:
-	};
-}
+	String string;
+} Expression;
+
+extern Error expression_parse(Expression **out, const Token *token);
 
 #endif
