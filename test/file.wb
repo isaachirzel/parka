@@ -1,5 +1,7 @@
-impl Trait for Type {
-	module::function () {
+impl Trait for Type
+{
+	module::function ()
+	{
 		var num = .234;
 		var num2 = 1.2;
 		var str: String = "hello";

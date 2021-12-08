@@ -13,7 +13,8 @@
 
 typedef enum CharType
 {
-	CHAR_INVALID,
+	CHAR_INVALID = 0, // this is zero as invalid should be the default
+	CHAR_NULL,
 	CHAR_IDENTIFIER,
 	CHAR_SEPARATOR,
 	CHAR_DOT,
@@ -148,50 +149,52 @@ Error init_token_types()
 
 void init_char_types()
 {
+	char_types[0] = CHAR_NULL;
+
 	// setting up identifier characters
-		char_types[(size_t)'_'] = CHAR_IDENTIFIER;
-		for (size_t i = 'a'; i <= 'z'; ++i)
-			char_types[i] = CHAR_IDENTIFIER;
-		for (size_t i = 'A'; i <= 'Z'; ++i)
-			char_types[i] = CHAR_IDENTIFIER;
-		for (size_t i = '0'; i <= '9'; ++i)
-			char_types[i] = CHAR_DIGIT;
+	char_types[(size_t)'_'] = CHAR_IDENTIFIER;
+	for (size_t i = 'a'; i <= 'z'; ++i)
+		char_types[i] = CHAR_IDENTIFIER;
+	for (size_t i = 'A'; i <= 'Z'; ++i)
+		char_types[i] = CHAR_IDENTIFIER;
+	for (size_t i = '0'; i <= '9'; ++i)
+		char_types[i] = CHAR_DIGIT;
 
-		// setting up separator characters
-		char_types[(size_t)'('] = CHAR_SEPARATOR;
-		char_types[(size_t)')'] = CHAR_SEPARATOR;
-		char_types[(size_t)'['] = CHAR_SEPARATOR;
-		char_types[(size_t)']'] = CHAR_SEPARATOR;
-		char_types[(size_t)'{'] = CHAR_SEPARATOR;
-		char_types[(size_t)'}'] = CHAR_SEPARATOR;
-		char_types[(size_t)';'] = CHAR_SEPARATOR;
-		char_types[(size_t)','] = CHAR_SEPARATOR;
+	// setting up separator characters
+	char_types[(size_t)'('] = CHAR_SEPARATOR;
+	char_types[(size_t)')'] = CHAR_SEPARATOR;
+	char_types[(size_t)'['] = CHAR_SEPARATOR;
+	char_types[(size_t)']'] = CHAR_SEPARATOR;
+	char_types[(size_t)'{'] = CHAR_SEPARATOR;
+	char_types[(size_t)'}'] = CHAR_SEPARATOR;
+	char_types[(size_t)';'] = CHAR_SEPARATOR;
+	char_types[(size_t)','] = CHAR_SEPARATOR;
 
-		// dot character
-		char_types[(size_t)'.'] = CHAR_DOT;
+	// dot character
+	char_types[(size_t)'.'] = CHAR_DOT;
 
-		// setting up operator characters
-		char_types[(size_t)'!'] = CHAR_OPERATOR;
-		char_types[(size_t)'@'] = CHAR_OPERATOR;
-		char_types[(size_t)'#'] = CHAR_OPERATOR;
-		char_types[(size_t)'$'] = CHAR_OPERATOR;
-		char_types[(size_t)'%'] = CHAR_OPERATOR;
-		char_types[(size_t)'^'] = CHAR_OPERATOR;
-		char_types[(size_t)'&'] = CHAR_OPERATOR;
-		char_types[(size_t)'*'] = CHAR_OPERATOR;
-		char_types[(size_t)'-'] = CHAR_OPERATOR;
-		char_types[(size_t)'='] = CHAR_OPERATOR;
-		char_types[(size_t)'|'] = CHAR_OPERATOR;
-		char_types[(size_t)'+'] = CHAR_OPERATOR;
-		char_types[(size_t)'<'] = CHAR_OPERATOR;
-		char_types[(size_t)'>'] = CHAR_OPERATOR;
-		char_types[(size_t)'?'] = CHAR_OPERATOR;
-		char_types[(size_t)'/'] = CHAR_OPERATOR;
-		char_types[(size_t)':'] = CHAR_OPERATOR;
+	// setting up operator characters
+	char_types[(size_t)'!'] = CHAR_OPERATOR;
+	char_types[(size_t)'@'] = CHAR_OPERATOR;
+	char_types[(size_t)'#'] = CHAR_OPERATOR;
+	char_types[(size_t)'$'] = CHAR_OPERATOR;
+	char_types[(size_t)'%'] = CHAR_OPERATOR;
+	char_types[(size_t)'^'] = CHAR_OPERATOR;
+	char_types[(size_t)'&'] = CHAR_OPERATOR;
+	char_types[(size_t)'*'] = CHAR_OPERATOR;
+	char_types[(size_t)'-'] = CHAR_OPERATOR;
+	char_types[(size_t)'='] = CHAR_OPERATOR;
+	char_types[(size_t)'|'] = CHAR_OPERATOR;
+	char_types[(size_t)'+'] = CHAR_OPERATOR;
+	char_types[(size_t)'<'] = CHAR_OPERATOR;
+	char_types[(size_t)'>'] = CHAR_OPERATOR;
+	char_types[(size_t)'?'] = CHAR_OPERATOR;
+	char_types[(size_t)'/'] = CHAR_OPERATOR;
+	char_types[(size_t)':'] = CHAR_OPERATOR;
 
-		// setting literal types
-		char_types[(size_t)'\''] = CHAR_QUOTE;
-		char_types[(size_t)'\"'] = CHAR_QUOTE;
+	// setting literal types
+	char_types[(size_t)'\''] = CHAR_QUOTE;
+	char_types[(size_t)'\"'] = CHAR_QUOTE;
 }
 
 Error tokenizer_init()
@@ -404,6 +407,11 @@ static Error get_operator_token(Token *out, SourceLocation *location)
 	return ERROR_NONE;
 }
 
+static inline bool is_end_of_text_literal(SourceLocation *location, char terminal_char)
+{
+	return location->pos[0] == terminal_char && location->pos[-1] != '\\';
+}
+
 static Error get_quote_token(Token *out, SourceLocation *location)
 {
 	assert(out != NULL);
@@ -411,15 +419,10 @@ static Error get_quote_token(Token *out, SourceLocation *location)
 	
 	char terminal_char = out->string.data[0];
 
-	while (*location->pos)
-	{
-		bool is_end_of_text = location->pos[0] == terminal_char && location->pos[-1] != '\\';
-
+	while (*location->pos && !is_end_of_text_literal(location, terminal_char))
 		++location->pos;
 
-		if (is_end_of_text)
-			break;
-	}
+	++location->pos;
 
 	out->string.length = location->pos - out->string.data;
 
@@ -446,19 +449,19 @@ static Error get_next_token(Token *out, SourceLocation *location)
 	out->line = location->line;
 	out->col = location->col;
 
-	size_t character = *location->pos;
+	CharType type = get_char_type(*location->pos);
 
-	if (!character)
-	{
-		*out = token_default();
-		return ERROR_NONE;
-	}
-	
-	CharType type = get_char_type(character);
 	++location->pos;
 
 	switch (type)
 	{
+		case CHAR_INVALID:
+			return ERROR_ARGUMENT;
+
+		case CHAR_NULL:
+			*out = token_default();
+			return ERROR_NONE;
+
 		case CHAR_IDENTIFIER:
 			return get_identifier_token(out, location);
 
@@ -476,12 +479,7 @@ static Error get_next_token(Token *out, SourceLocation *location)
 
 		case CHAR_QUOTE:
 			return get_quote_token(out, location);
-
-		default:
-			break;
 	}
-
-	return ERROR_ARGUMENT;
 }
 
 static inline Error assure_tokens_size(HxArray *tokens)
@@ -552,9 +550,7 @@ Error tokenize(HxArray **out, const char *src)
 		Token *back = hxarray_back(tokens);
 
 		fputs("Parsed token: ", stdout);
-
 		string_println(&back->string);
-		
 
 		if (back->type == TOKEN_END_OF_FILE)
 			break;
