@@ -1,6 +1,7 @@
 #ifndef WARBLER_ERROR_H
 #define WARBLER_ERROR_H
 
+// standard
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
@@ -15,8 +16,6 @@ typedef enum Error
 	ERROR_INVALID_PTR,
 	ERROR_NOT_IMPLEMENTED
 } Error;
-
-
 
 extern bool is_color_output;
 extern void print_error(const char *msg);

@@ -2,7 +2,7 @@
 #define WARBLER_TOKEN_H
 
 // local includes
-#include <warbler/data/string.h>
+#include <warbler/string.h>
 
 typedef enum TokenType
 {

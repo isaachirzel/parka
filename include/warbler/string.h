@@ -1,7 +1,7 @@
-#ifndef WARBLER_STRING_H
-#define WARBLER_STRING_H
+#ifndef WARBLER_DATA_STRING_H
+#define WARBLER_DATA_STRING_H
 
-// standard library
+// standard
 #include <stddef.h>
 
 typedef struct String
@@ -15,5 +15,6 @@ String string_default();
 void string_print(const String *str);
 void string_println(const String *str);
 char *string_duplicate(const String *str);
+#define STRING_FROM(text) (String) { .data = text, .length = sizeof(text) - 1 }
 
 #endif

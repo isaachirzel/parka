@@ -6,7 +6,7 @@
 #define TEMP_KEY_SIZE (1023)
 
 // local includes
-#include <warbler/data/token.h>
+#include <warbler/token.h>
 #include <warbler/error.h>
 
 // external libraries

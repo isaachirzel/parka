@@ -1,4 +1,4 @@
-#include <warbler/data/string.h>
+#include <warbler/string.h>
 
 // local includes
 #include <warbler/error.h>

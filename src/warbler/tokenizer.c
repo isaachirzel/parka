@@ -338,6 +338,8 @@ static Error get_digit_token(Token *out, SourceLocation *location)
 					return ERROR_ARGUMENT;
 
 				is_float = true;
+				++location->pos;
+				continue;
 
 			case CHAR_DIGIT:
 				++location->pos;
@@ -455,9 +457,6 @@ static Error get_next_token(Token *out, SourceLocation *location)
 
 	switch (type)
 	{
-		case CHAR_INVALID:
-			return ERROR_ARGUMENT;
-
 		case CHAR_NULL:
 			*out = token_default();
 			return ERROR_NONE;
@@ -479,7 +478,12 @@ static Error get_next_token(Token *out, SourceLocation *location)
 
 		case CHAR_QUOTE:
 			return get_quote_token(out, location);
+
+		default:
+			break;
 	}
+
+	return ERROR_ARGUMENT;
 }
 
 static inline Error assure_tokens_size(HxArray *tokens)
