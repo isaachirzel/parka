@@ -6,11 +6,22 @@
 
 const char * const error_prompt_color	= "\033[31merror:\033[0m ";
 const char * const error_prompt_plain	= "error: ";
-bool is_color_output = true;
+bool is_color_enabled = true;
+bool is_printing_enabled = true;
+
+void set_color_enabled(bool enabled)
+{
+	is_color_enabled = enabled;
+}
+
+void set_printing_enabled(bool enabled)
+{
+	is_printing_enabled = enabled;
+}
 
 const char *get_error_prompt()
 {
-	return is_color_output
+	return is_color_enabled
 		? error_prompt_color
 		: error_prompt_plain;
 }

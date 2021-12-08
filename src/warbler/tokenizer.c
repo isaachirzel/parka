@@ -553,7 +553,7 @@ Error tokenize(HxArray **out, const char *src)
 
 		Token *back = hxarray_back(tokens);
 
-		fputs("Parsed token: ", stdout);
+		fputs("Got token: ", stdout);
 		string_println(&back->string);
 
 		if (back->type == TOKEN_END_OF_FILE)

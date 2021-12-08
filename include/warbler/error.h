@@ -8,7 +8,7 @@
 
 typedef enum Error
 {
-	ERROR_NONE,
+	ERROR_NONE = 0,
 	ERROR_MEMORY,
 	ERROR_FILE,
 	ERROR_ARGUMENT,
@@ -17,9 +17,13 @@ typedef enum Error
 	ERROR_NOT_IMPLEMENTED
 } Error;
 
-extern bool is_color_output;
-extern void print_error(const char *msg);
-extern void print_errorf(const char *fmt, ...);
+extern bool is_color_enabled;
+extern bool is_printing_enabled;
+
+void print_error(const char *msg);
+void print_errorf(const char *fmt, ...);
+void set_color_enabled(bool enabled);
+void set_printing_enabled(bool enabled);
 
 static inline Error _not_implemented_error(const char *func_name)
 {
@@ -27,7 +31,9 @@ static inline Error _not_implemented_error(const char *func_name)
 	return ERROR_NOT_IMPLEMENTED;
 }
 
-#define try(expression) { Error error = expression; if (error) return error; }
 #define not_implemented_error() _not_implemented_error(__func__);
+#define try(expression) { Error error = expression; if (error) return error; }
+#define try_allocate(var) { var = malloc(sizeof(*var)); if (!var) return ERROR_MEMORY; }
+#define try_cleanup(expression, catch_statement) { Error error = expression; if (error) { catch_statement return error; } }
 
 #endif

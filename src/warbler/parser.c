@@ -11,7 +11,7 @@
 #define print_parse() printf("%s: ", __func__); string_put(&tok[0]->str)
 #define parse_terminal(tok, expected_type, expected_tok, error_action) if (tok->type != expected_type) { syntax_error(tok, expected_tok); error_action; } tok += 1
 #define parse_non_terminal(out, tok, function, error_action) { node_t *arg = parse_##function(&tok); if (!arg) error_action; node_push_arg(out, arg); }
-#define parse_semicolon(tok, error_action) parse_terminal(tok, TOK_SEMICOLON, "';'", error_action)
+#define parse_semicolon(tok, error_action) parse_terminal(tok, TOKEN_SEMICOLON, "';'", error_action)
 
 void syntax_error(const Token *token, const char *expected)
 {
@@ -21,11 +21,11 @@ void syntax_error(const Token *token, const char *expected)
 	// fputs("'\n", stderr);
 }
 
-// node_t *parse_identifier(const token_t **tok)
+// node_t *parse_identifier(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
-// 	if (t->type != TOK_IDENTIFIER)
+// 	const Token *t = *tok;
+// 	if (t->type != TOKEN_IDENTIFIER)
 // 	{
 // 		printf("Type: %u\n", t->type);
 // 		syntax_error(t, "identifier");
@@ -38,7 +38,15 @@ void syntax_error(const Token *token, const char *expected)
 // 	return out;
 // }
 
-Error parse_identifier(Identifier **out, const Token **tokens)
+Error parse_program(Program **out, const Token *tokens[])
+{
+	assert(out != NULL);
+	assert(tokens != NULL);
+
+	return not_implemented_error();
+}
+
+Error parse_identifier(Identifier **out, const Token *tokens[])
 {
 	assert(out != NULL);
 	assert(tokens != NULL);
@@ -46,10 +54,8 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 	if (tokens[0]->type != TOKEN_IDENTIFIER)
 		return ERROR_ARGUMENT;
 
-	Identifier *identifier = malloc(sizeof(Identifier));
-
-	if (!identifier)
-		return ERROR_MEMORY;
+	Identifier *identifier;
+	try_allocate(identifier);
 
 	identifier->text = &tokens[0]->string;
 
@@ -59,81 +65,81 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 	return ERROR_NONE;
 }
 
-// node_t *parse_typename(const token_t **tok)
-// {
-// 	print_parse();
-// 	node_t *out = node_create(NODE_TYPENAME);
+Error parse_typename(Typename **out, const Token *tokens[])
+{
+	const Token *iterator = *tokens;
+	if (iterator[0].type != TOKEN_IDENTIFIER)
+		return ERROR_ARGUMENT;
 
-// 	const token_t *t = *tok;
+	Typename *typename;
+	try_alloate(typename);		
 
-// 	switch (t->type)
-// 	{
-// 	case Token::Type::IDENTIFIER:
-// 		out->val = t;
-// 		*tok = t + 1;
-// 		return out;
+	typename->text = &tokens[0]->string;
 
-// 	default:
-// 		syntax_error(t, "typename");
-// 		node_destroy(out);
-// 		return NULL;
-// 	}
-// }
+	*out = typename;
+	*tokens += 1;
 
+	return ERROR_NONE;
+}
 
-// node_t *parse_label(const token_t **tok)
-// {
-// 	const token_t *t = *tok;
-// 	node_t *out = parse_identifier(&t);
-// 	if (!out) return NULL;
-// 	parse_terminal(t, TOK_COLON, "':'", {
-// 		node_destroy(out);
-// 		return NULL;
-// 	});
-// 	*tok = t;
-// 	return out;
-// }
+Error parse_label(Label **out, const Token *tokens[])
+{
+	const Token *tokens = *iterator;
+	if (tokens[0].type != TOKEN_IDENTIFIER || tokens[1]->type != TOKEN_COLON)
+		return ERROR_ARGUMENT;
 
+	Label *label;
+	try_allocate(label);
 
-// node_t *parse_parameter(const token_t **tok)
-// {
-// 	const token_t *t = *tok;
+	label->text = &tokens[0]->string;
 
-// 	node_t *out = node_create(NODE_PARAMETER);
+	*out = label;
+	*tokens += 2;
 
-// 	// getting identifier
-// 	out->val = t;
-// 	parse_terminal(t, TOK_IDENTIFIER, "identifier", goto failure);
+	return ERROR_NONE;
+}
 
-// 	// checking for type annotation
-// 	parse_terminal(t, TOK_COLON, "type-annotation", goto failure);
+Parameter *parse_parameter(const Token **tokens)
+{
+	const Token
+	if (tokens[0]->type 
+	const Token *t = *tok;
 
-// 	// getting typename
-// 	parse_non_terminal(out, t, typename, goto failure);
+	node_t *out = node_create(NODE_PARAMETER);
 
-// 	// moving iterator forwards
-// 	*tok = t;
+	// getting identifier
+	out->val = t;
+	parse_terminal(t, TOKEN_IDENTIFIER, "identifier", goto failure);
 
-// 	return out;
+	// checking for type annotation
+	parse_terminal(t, TOKEN_COLON, "type-annotation", goto failure);
 
-// failure:
+	// getting typename
+	parse_non_terminal(out, t, typename, goto failure);
 
-// 	node_destroy(out);
-// 	return NULL;
-// }
+	// moving iterator forwards
+	*tok = t;
+
+	return out;
+
+failure:
+
+	node_destroy(out);
+	return NULL;
+}
 
 
-// node_t *parse_parameter_list(const token_t **tok)
+// node_t *parse_parameter_list(const Token **tokens)
 // {
 // 	print_parse();
 // 	node_t *out = node_create(NODE_PARAM_LIST);
 
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 
-// 	parse_terminal(t, TOK_LPAREN, "argument-list", goto failure);
+// 	parse_terminal(t, TOKEN_LPAREN, "argument-list", goto failure);
 
 // 	// empty list
-// 	if (t->type == TOK_RPAREN)
+// 	if (t->type == TOKEN_RPAREN)
 // 	{
 // 		t += 1;
 // 	}
@@ -144,10 +150,10 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 		while (true)
 // 		{
 // 			parse_non_terminal(out, t, parameter, goto failure);
-// 			if (t->type != TOK_COMMA) break;
+// 			if (t->type != TOKEN_COMMA) break;
 // 			t += 1;
 // 		}
-// 		parse_terminal(t, TOK_RPAREN, ")", goto failure);
+// 		parse_terminal(t, TOKEN_RPAREN, ")", goto failure);
 // 	}
 
 // 	*tok = t;
@@ -161,15 +167,15 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_member_access(const token_t **tok)
+// node_t *parse_member_access(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 	
 // 	node_t *out = node_create(NODE_MEMBER_ACCESS);
-// 	parse_terminal(t, TOK_DOT, "member-access operator", goto failure);
+// 	parse_terminal(t, TOKEN_DOT, "member-access operator", goto failure);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_IDENTIFIER, "identifier", goto failure);
+// 	parse_terminal(t, TOKEN_IDENTIFIER, "identifier", goto failure);
 
 // 	*tok = t;
 // 	return out;
@@ -180,17 +186,17 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_function_call(const token_t **tok)
+// node_t *parse_function_call(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_FUNCTION_CALL);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_LPAREN, "function-call", goto failure);
+// 	parse_terminal(t, TOKEN_LPAREN, "function-call", goto failure);
 
 // 	// getting arguments
 // 	// empty list
-// 	if (t->type == TOK_RPAREN)
+// 	if (t->type == TOKEN_RPAREN)
 // 	{
 // 		t += 1;
 // 	}
@@ -201,10 +207,10 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 		while (true)
 // 		{
 // 			parse_non_terminal(out, t, expression, goto failure);
-// 			if (t->type != TOK_COMMA) break;
+// 			if (t->type != TOKEN_COMMA) break;
 // 			t += 1;
 // 		}
-// 		parse_terminal(t, TOK_RPAREN, ")", goto failure);
+// 		parse_terminal(t, TOKEN_RPAREN, ")", goto failure);
 // 	}
 
 
@@ -217,15 +223,15 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_index(const token_t **tok)
+// node_t *parse_index(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_INDEX);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_LBRACK, "index-operation", goto failure);
+// 	parse_terminal(t, TOKEN_LBRACK, "index-operation", goto failure);
 // 	parse_non_terminal(out, t, expression, goto failure);
-// 	parse_terminal(t, TOK_RBRACK, "']'", goto failure);
+// 	parse_terminal(t, TOKEN_RBRACK, "']'", goto failure);
 
 // 	*tok = t;
 // 	return out;
@@ -236,29 +242,29 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_factor(const token_t **tok)
+// node_t *parse_factor(const Token **tokens)
 // {
 // 	print_parse();
 // 	node_t *out = node_create(NODE_FACTOR);
 
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 
 // 	switch (t->type)
 // 	{
-// 	case TOK_INT_LITERAL:
-// 	case TOK_STR_LITERAL:
-// 	case TOK_FLOAT_LITERAL:
-// 	case TOK_TRUE:
-// 	case TOK_FALSE:
-// 	case TOK_IDENTIFIER:
+// 	case TOKEN_INT_LITERAL:
+// 	case TOKEN_STR_LITERAL:
+// 	case TOKEN_FLOAT_LITERAL:
+// 	case TOKEN_TRUE:
+// 	case TOKEN_FALSE:
+// 	case TOKEN_IDENTIFIER:
 // 		out->val = t++;
 // 		*tok = t;
 // 		break;
 
-// 	case TOK_LPAREN:
+// 	case TOKEN_LPAREN:
 // 		out->val = t++;
 // 		parse_non_terminal(out, t, expression, break);
-// 		parse_terminal(t, TOK_RPAREN, "')'", goto failure);
+// 		parse_terminal(t, TOKEN_RPAREN, "')'", goto failure);
 // 		*tok = t;
 // 		break;;
 
@@ -273,26 +279,26 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 		node_t *arg;
 // 		switch (t->type)
 // 		{
-// 		case TOK_INCREMENT:
+// 		case TOKEN_INCREMENT:
 // 			arg = node_create(NODE_INCREMENT);
 // 			break;
 
-// 		case TOK_DECREMENT:
+// 		case TOKEN_DECREMENT:
 // 			arg = node_create(NODE_DECREMENT);
 // 			break;
 
 // 		// member access
-// 		case TOK_DOT:
+// 		case TOKEN_DOT:
 // 			arg = parse_member_access(&t);
 // 			break;
 
 // 		// indexing
-// 		case TOK_LBRACK:
+// 		case TOKEN_LBRACK:
 // 			arg = parse_index(&t);
 // 			break;
 
 // 		// function call
-// 		case TOK_LPAREN:
+// 		case TOKEN_LPAREN:
 // 			arg = parse_function_call(&t);
 // 			break;
 
@@ -312,20 +318,20 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_prefix_expression(const token_t **tok)
+// node_t *parse_prefix_expression(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 
 // 	switch (t->type)
 // 	{
-// 	case TOK_INCREMENT:
-// 	case TOK_DECREMENT:
-// 	case TOK_PLUS:
-// 	case TOK_MINUS:
-// 	case TOK_EXCLAMATION:
-// 	case TOK_ASTERISK:
-// 	case TOK_AMPERSAND:
+// 	case TOKEN_INCREMENT:
+// 	case TOKEN_DECREMENT:
+// 	case TOKEN_PLUS:
+// 	case TOKEN_MINUS:
+// 	case TOKEN_EXCLAMATION:
+// 	case TOKEN_ASTERISK:
+// 	case TOKEN_AMPERSAND:
 // 		break;
 
 // 	default:
@@ -347,13 +353,13 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// bool is_mul_expr(const token_t *tok)
+// bool is_mul_expr(const Token *tok)
 // {
 // 	switch (tok->type)
 // 	{
-// 	case TOK_ASTERISK:
-// 	case TOK_SLASH:
-// 	case TOK_MODULUS:
+// 	case TOKEN_ASTERISK:
+// 	case TOKEN_SLASH:
+// 	case TOKEN_MODULUS:
 // 		return true;
 
 // 	default:
@@ -362,26 +368,26 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// bool is_add_expr(const token_t *tok)
+// bool is_add_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_PLUS || tok->type == TOK_MINUS;
+// 	return tok->type == TOKEN_PLUS || tok->type == TOKEN_MINUS;
 // }
 
 
-// bool is_shift_expr(const token_t *tok)
+// bool is_shift_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_LSHIFT || tok->type == TOK_RSHIFT;
+// 	return tok->type == TOKEN_LSHIFT || tok->type == TOKEN_RSHIFT;
 // }
 
 
-// bool is_comp_expr(const token_t *tok)
+// bool is_comp_expr(const Token *tok)
 // {
 // 	switch (tok->type)
 // 	{
-// 	case TOK_LANGBRACK:
-// 	case TOK_RANGBRACK:
-// 	case TOK_LTOET:
-// 	case TOK_GTOET:
+// 	case TOKEN_LANGBRACK:
+// 	case TOKEN_RANGBRACK:
+// 	case TOKEN_LTOET:
+// 	case TOKEN_GTOET:
 // 		return true;
 
 // 	default:
@@ -390,43 +396,43 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// bool is_equal_expr(const token_t *tok)
+// bool is_equal_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_EQUALS || tok->type == TOK_NEQUALS;
+// 	return tok->type == TOKEN_EQUALS || tok->type == TOKEN_NEQUALS;
 // }
 
 
-// bool is_bitand_expr(const token_t *tok)
+// bool is_bitand_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_AMPERSAND;
+// 	return tok->type == TOKEN_AMPERSAND;
 // }
 
 
-// bool is_bitxor_expr(const token_t *tok)
+// bool is_bitxor_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_CARROT;
+// 	return tok->type == TOKEN_CARROT;
 // }
 
 
-// bool is_bitor_expr(const token_t *tok)
+// bool is_bitor_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_PIPELINE;
+// 	return tok->type == TOKEN_PIPELINE;
 // }
 
-// bool is_and_expr(const token_t *tok)
+// bool is_and_expr(const Token *tok)
 // {
-// 	return tok->type == TOK_AND;
-// }
-
-
-// bool is_or_expr(const token_t *tok)
-// {
-// 	return tok->type == TOK_OR;
+// 	return tok->type == TOKEN_AND;
 // }
 
 
+// bool is_or_expr(const Token *tok)
+// {
+// 	return tok->type == TOKEN_OR;
+// }
 
-// typedef bool (*condition_func)(const token_t *);
+
+
+// typedef bool (*condition_func)(const Token *);
 
 // typedef struct binexpr
 // {
@@ -449,12 +455,12 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // };
 
 
-// node_t *parse_binary_recurse(const token_t **tok, const unsigned precedence)
+// node_t *parse_binary_recurse(const Token **tokens, const unsigned precedence)
 // {
 // 	printf("%s(%u): ", __func__, precedence);
 // 	string_put(&(*tok)->str);
 
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	binexpr_t *type = binexprs + precedence;
 
 // 	node_t *left = (!precedence) ?
@@ -508,27 +514,27 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_binary_expression(const token_t **tok)
+// node_t *parse_binary_expression(const Token **tokens)
 // {
 // 	return parse_binary_recurse(tok, sizeof(binexprs) / sizeof(binexpr_t) - 1);
 // }
 
 
-// node_t *parse_assignment(const token_t **tok)
+// node_t *parse_assignment(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 
 // 	node_t *left = parse_binary_expression(&t);
 
 // 	switch (t->type)
 // 	{
-// 	case TOK_ASSIGN:
-// 	case TOK_ADD_ASSIGN:
-// 	case TOK_SUB_ASSIGN:
-// 	case TOK_MUL_ASSIGN:
-// 	case TOK_DIV_ASSIGN:
-// 	case TOK_MOD_ASSIGN:
+// 	case TOKEN_ASSIGN:
+// 	case TOKEN_ADD_ASSIGN:
+// 	case TOKEN_SUB_ASSIGN:
+// 	case TOKEN_MUL_ASSIGN:
+// 	case TOKEN_DIV_ASSIGN:
+// 	case TOKEN_MOD_ASSIGN:
 // 		break;
 // 	default:
 // 		puts("Not an assignment");
@@ -549,26 +555,70 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_expression(const token_t **tok)
-// {
-// 	node_t *out =  parse_assignment(tok);
-// 	puts("\nExpression tree:");
-// 	node_print(out);
-// 	return out;
-// }
+Error parse_expression(Expression **out, const Token *tokens[])
+{
+	Expression *expression;
+	try_allocate(expression);
+	
+	try_cleanup(parse_assignment_expression(&expression->assignment, tokens), {
+		free(expression);
+	});
 
+	*out = expression;
+	return ERROR_NONE;
+}
 
-// node_t *parse_if_statement(const token_t **tok)
+bool is_assignment_token(const Token* token)
+{
+	return token->type == TOKEN_ASSIGN;
+	// switch (token->type)
+	// {
+	// 	case TOKEN_ASSIGN:
+	// 	case TOKEN_BECOME_ASSIGN:
+	// 	case TOKEN_ADD_ASSIGN:
+	// 	case TOKEN_SUBTRACT_ASSIGN:
+	// 	case TOKEN_MULTIPLY_ASSIGN:
+	// 	case TOKEN_DIVIDE_ASSIGN:
+	// 	case TOKEN_MODULUS_ASSIGN:
+	// 	case TOKEN_LSHIFT_ASSIGN:
+	// 	case TOKEN_RSHIFT_ASSIGN:
+	// 		return true;
+	// 	default:
+	// 		return false;
+	// }
+}
+
+Error parse_assignment_expression(AssignmentExpression **out, const Token *tokens[])
+{
+	AssignmentExpression *assignment;
+	try_allocate(assignment);
+
+	try_cleanup(parse_unary_expression(&assignment->left, iterator), {
+		free(assignment);
+	});
+
+	const Token *tokens = *iterator;
+
+	if (is_assignment_token(tokens))
+	{
+
+	}
+
+	*out = assignment;
+	return ERROR_NONE;
+}
+
+// node_t *parse_if_statement(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_IF_STMT);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_IF, "if-statement", goto failure);
+// 	parse_terminal(t, TOKEN_IF, "if-statement", goto failure);
 // 	parse_non_terminal(out, t, expression, goto failure);
 // 	parse_non_terminal(out, t, statement, goto failure);
 
-// 	if (t->type == TOK_ELSE)
+// 	if (t->type == TOKEN_ELSE)
 // 	{
 // 		t += 1;
 // 		parse_non_terminal(out, t, statement, goto failure);
@@ -583,13 +633,13 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_switch_statement(const token_t **tok)
+// node_t *parse_switch_statement(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_IF_STMT);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_SWITCH, "switch-statement", goto failure);
+// 	parse_terminal(t, TOKEN_SWITCH, "switch-statement", goto failure);
 
 
 // 	*tok = t;
@@ -601,13 +651,13 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_loop_statement(const token_t **tok)
+// node_t *parse_loop_statement(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_IF_STMT);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_LOOP, "loop-statement", goto failure);
+// 	parse_terminal(t, TOKEN_LOOP, "loop-statement", goto failure);
 // 	parse_non_terminal(out, t, statement, goto failure);
 // 	*tok = t;
 // 	return out;
@@ -618,13 +668,13 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_while_statement(const token_t **tok)
+// node_t *parse_while_statement(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_WHILE_STMT);
 // 	out->val = t;
-// 	parse_terminal(t, TOK_WHILE, "while-statement", goto failure);
+// 	parse_terminal(t, TOKEN_WHILE, "while-statement", goto failure);
 // 	parse_non_terminal(out, t, expression, goto failure);
 // 	parse_non_terminal(out, t, statement, goto failure);
 
@@ -637,7 +687,7 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_for_statement(const token_t **tok)
+// node_t *parse_for_statement(const Token **tokens)
 // {
 
 // 	log_errorf((*tok)->line, (*tok)->col, "%s is not yet implemented\n", __func__);
@@ -645,19 +695,19 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_jump_statement(const token_t **tok)
+// node_t *parse_jump_statement(const Token **tokens)
 // {
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_NO_TYPE);
 // 	out->val = t;
 
 // 	switch (t->type)
 // 	{
-// 	case TOK_CONTINUE:
+// 	case TOKEN_CONTINUE:
 // 		out->type = NODE_CONTINUE_STMT;
 // 		break;
 
-// 	case TOK_BREAK:
+// 	case TOKEN_BREAK:
 // 		out->type = NODE_BREAK_STMT;
 // 		break;
 // 	}
@@ -675,17 +725,17 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_return_statement(const token_t **tok)
+// node_t *parse_return_statement(const Token **tokens)
 // {
-// 	const token_t *t = *tok;
-// 	parse_terminal(t, TOK_RETURN, "return-statement", return NULL);
+// 	const Token *t = *tok;
+// 	parse_terminal(t, TOKEN_RETURN, "return-statement", return NULL);
 // 	node_t *out = node_create(NODE_RETURN_STMT);
 // 	out->val = t - 1;
 // 	// if returning a value
-// 	if (t->type != TOK_SEMICOLON)
+// 	if (t->type != TOKEN_SEMICOLON)
 // 	{
 // 		parse_non_terminal(out, t, expression, goto failure);
-// 		parse_terminal(t, TOK_SEMICOLON, "';'", goto failure);
+// 		parse_terminal(t, TOKEN_SEMICOLON, "';'", goto failure);
 // 	}
 // 	else
 // 	{
@@ -701,17 +751,17 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_compound_statement(const token_t **tok)
+// node_t *parse_compound_statement(const Token **tokens)
 // {
 // 	print_parse();
 // 	node_t *out = node_create(NODE_COMPOUND_STMT);
 
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	out->val = t;
 // 	// skip over opening brace
-// 	parse_terminal(t, TOK_LBRACE, "compound-statement", goto failure);
+// 	parse_terminal(t, TOKEN_LBRACE, "compound-statement", goto failure);
 
-// 	while (t->type != TOK_RBRACE)
+// 	while (t->type != TOKEN_RBRACE)
 // 	{
 // 		parse_non_terminal(out, t, statement, goto failure);
 // 	}
@@ -727,15 +777,15 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_declaration(const token_t **tok)
+// node_t *parse_declaration(const Token **tokens)
 // {
 // 	print_parse();
 // 	node_t *out = node_create(NODE_DECL_STMT);
 
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 
 // 	// check for var keyword
-// 	parse_terminal(t, TOK_VAR, "declaration", goto failure);
+// 	parse_terminal(t, TOKEN_VAR, "declaration", goto failure);
 // 	// setting token value to var keyword (used in printing)
 // 	out->val = t - 1;
 
@@ -744,7 +794,7 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	parse_non_terminal(out, t, identifier, goto failure);
 
 // 	// checking for type annotation
-// 	if (t->type == TOK_COLON)
+// 	if (t->type == TOKEN_COLON)
 // 	{
 // 		t += 1;
 // 		node_t *type = parse_typename(&t);
@@ -759,7 +809,7 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	}
 	
 // 	// checking for equals sign
-// 	if (t->type != TOK_ASSIGN)
+// 	if (t->type != TOKEN_ASSIGN)
 // 	{
 // 		log_error(t->line, t->col, "declaration of uninitialized variables is not allowed");
 // 		goto failure;
@@ -770,7 +820,7 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	parse_non_terminal(out, t, expression, goto failure);
 
 // 	// semicolon
-// 	parse_terminal(t, TOK_SEMICOLON, "';'", goto failure);
+// 	parse_terminal(t, TOKEN_SEMICOLON, "';'", goto failure);
 
 // 	*tok = t;
 // 	return out;
@@ -781,43 +831,43 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_statement(const token_t **tok)
+// node_t *parse_statement(const Token **tokens)
 // {
 // 	print_parse();
 // 	switch ((*tok)->type)
 // 	{
 // 	// compound statement
-// 	case TOK_LBRACE:
+// 	case TOKEN_LBRACE:
 // 		return parse_compound_statement(tok);
 
 // 	// declaration
-// 	case TOK_VAR:
+// 	case TOKEN_VAR:
 // 		return parse_declaration(tok);
 
-// 	case TOK_IF:
+// 	case TOKEN_IF:
 // 		return parse_if_statement(tok);
 
-// 	case TOK_WHILE:
+// 	case TOKEN_WHILE:
 // 		return parse_while_statement(tok);
 
-// 	case TOK_LOOP:
+// 	case TOKEN_LOOP:
 // 		return parse_loop_statement(tok);
 
-// 	case TOK_FOR:
+// 	case TOKEN_FOR:
 // 		return parse_for_statement(tok);
 
-// 	case TOK_SWITCH:
+// 	case TOKEN_SWITCH:
 // 		return parse_switch_statement(tok);
 
-// 	case TOK_BREAK:
-// 	case TOK_CONTINUE:
+// 	case TOKEN_BREAK:
+// 	case TOKEN_CONTINUE:
 // 		return parse_jump_statement(tok);
 
-// 	case TOK_RETURN:
+// 	case TOKEN_RETURN:
 // 		return parse_return_statement(tok);
 
 // 	// no-op
-// 	case TOK_SEMICOLON:;
+// 	case TOKEN_SEMICOLON:;
 // 		node_t *noop = node_create(NODE_NOOP_STMT);
 // 		noop->val = *tok;
 // 		return noop;
@@ -826,8 +876,8 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	default:;
 // 		node_t *expr = parse_expression(tok);
 // 		if (!expr) return NULL;
-// 		const token_t *t = *tok;
-// 		if (t->type != TOK_SEMICOLON)
+// 		const Token *t = *tok;
+// 		if (t->type != TOKEN_SEMICOLON)
 // 		{
 // 			syntax_error(t, "';'");
 // 			return NULL;
@@ -838,15 +888,15 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_function(const token_t **tok)
+// node_t *parse_function(const Token **tokens)
 // {
 // 	print_parse();
 // 	node_t *out = node_create(NODE_FUNCTION);
 	
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 
 // 	// getting func token
-// 	parse_terminal(t, TOK_FUNC, "function", goto failure);
+// 	parse_terminal(t, TOKEN_FUNC, "function", goto failure);
 // 	out->val = t - 1;
 
 // 	// getting identifier
@@ -856,7 +906,7 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	parse_non_terminal(out, t, parameter_list, goto failure);
 
 // 	// checking for return type
-// 	if (t->type == TOK_SINGLE_ARROW)
+// 	if (t->type == TOKEN_SINGLE_ARROW)
 // 	{
 // 		t += 1;
 // 		// getting return type
@@ -874,14 +924,14 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	switch (t->type)
 // 	{
 // 	// compound statement
-// 	case TOK_LBRACE:;
+// 	case TOKEN_LBRACE:;
 // 		node_t *compound = parse_compound_statement(&t);
 // 		if (!compound) goto failure;
 // 		node_push_arg(out, compound);
 // 		break;
 
 // 	// expression
-// 	case TOK_DOUBLE_ARROW:;
+// 	case TOKEN_DOUBLE_ARROW:;
 // 		t += 1;
 // 		parse_non_terminal(out, t, expression, goto failure);
 // 		parse_semicolon(t, goto failure);
@@ -904,10 +954,10 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// // node_t *parse_(const token_t **tok)
+// // node_t *parse_(const Token **tokens)
 // // {
 // // 	print_parse();
-// // 	const token_t *t = *tok;
+// // 	const Token *t = *tok;
 // // 	node_t *out = node_create(NODE_COMPONENT);
 
 // // 	*tok = t;
@@ -918,16 +968,16 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // // 	return NULL;
 // // }
 
-// node_t *parse_union(const token_t **tok)
+// node_t *parse_union(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_UNION);
 // 	out->val = t;
 
-// 	parse_terminal(t, TOK_UNION, "union", goto failure);
-// 	parse_terminal(t, TOK_LBRACE, "union-definition", goto failure);
-// 	while (t->type != TOK_RBRACE)
+// 	parse_terminal(t, TOKEN_UNION, "union", goto failure);
+// 	parse_terminal(t, TOKEN_LBRACE, "union-definition", goto failure);
+// 	while (t->type != TOKEN_RBRACE)
 // 	{
 // 		parse_non_terminal(out, t, parameter, goto failure);
 // 	}
@@ -941,16 +991,16 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 	return NULL;
 // }
 
-// node_t *parse_enum(const token_t **tok)
+// node_t *parse_enum(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_ENUM);
 // 	out->val = t;
 
-// 	parse_terminal(t, TOK_ENUM, "enum", goto failure);
-// 	parse_terminal(t, TOK_LBRACE, "enum-definition", goto failure);
-// 	if (t->type == TOK_RBRACE)
+// 	parse_terminal(t, TOKEN_ENUM, "enum", goto failure);
+// 	parse_terminal(t, TOKEN_LBRACE, "enum-definition", goto failure);
+// 	if (t->type == TOKEN_RBRACE)
 // 	{
 // 		t += 1;
 // 	}
@@ -959,11 +1009,11 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // 		while (true)
 // 		{
 // 			parse_non_terminal(out, t, identifier, goto failure);
-// 			if (t->type != TOK_COMMA) break;
+// 			if (t->type != TOKEN_COMMA) break;
 // 			t += 1;
 // 		}
 
-// 		parse_terminal(t, TOK_RBRACE, "'}'", goto failure);
+// 		parse_terminal(t, TOKEN_RBRACE, "'}'", goto failure);
 // 	}
 
 // 	*tok = t;
@@ -975,16 +1025,16 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_struct(const token_t **tok)
+// node_t *parse_struct(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_STRUCT);
 // 	out->val = t;
 
-// 	parse_terminal(t, TOK_STRUCT, "struct", goto failure);
-// 	parse_terminal(t, TOK_LBRACE, "struct-definition", goto failure);
-// 	while (t->type != TOK_RBRACE)
+// 	parse_terminal(t, TOKEN_STRUCT, "struct", goto failure);
+// 	parse_terminal(t, TOKEN_LBRACE, "struct-definition", goto failure);
+// 	while (t->type != TOKEN_RBRACE)
 // 	{
 // 		parse_non_terminal(out, t, parameter, goto failure);
 // 	}
@@ -999,27 +1049,27 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_type(const token_t **tok)
+// node_t *parse_type(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_TYPE);
 // 	out->val = t;
 
-// 	parse_terminal(t, TOK_TYPE, "type-definition", goto failure);
+// 	parse_terminal(t, TOKEN_TYPE, "type-definition", goto failure);
 // 	parse_non_terminal(out, t, label, goto failure);
 
 // 	switch (t->type)
 // 	{
-// 	case TOK_STRUCT:
+// 	case TOKEN_STRUCT:
 // 		parse_non_terminal(out, t, struct, goto failure);
 // 		break;
 
-// 	case TOK_ENUM:
+// 	case TOKEN_ENUM:
 // 		parse_non_terminal(out, t, enum, goto failure);
 // 		break;
 
-// 	case TOK_UNION:
+// 	case TOKEN_UNION:
 // 		parse_non_terminal(out, t, union, goto failure);
 // 		break;
 
@@ -1038,14 +1088,14 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_import(const token_t **tok)
+// node_t *parse_import(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_COMPONENT);
 
 // 	out->val = t;
-// 	parse_terminal(t, TOK_IMPORT, "import-statement", goto failure);
+// 	parse_terminal(t, TOKEN_IMPORT, "import-statement", goto failure);
 // 	parse_non_terminal(out, t, identifier, goto failure);
 // 	parse_semicolon(t, goto failure);
 
@@ -1058,28 +1108,28 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 // }
 
 
-// node_t *parse_module(const token_t **tok)
+// node_t *parse_module(const Token **tokens)
 // {
 // 	print_parse();
-// 	const token_t *t = *tok;
+// 	const Token *t = *tok;
 // 	node_t *out = node_create(NODE_MODULE);
 
-// 	while (t->type != TOK_EOF)
+// 	while (t->type != TOKEN_EOF)
 // 	{
 // 		switch (t->type)
 // 		{
 // 		// function definition
-// 		case TOK_FUNC:
+// 		case TOKEN_FUNC:
 // 			parse_non_terminal(out, t, function, goto failure);
 // 			break;
 
 // 		// import statement
-// 		case TOK_IMPORT:
+// 		case TOKEN_IMPORT:
 // 			parse_non_terminal(out, t, import, goto failure);
 // 			break;
 
 // 		// type definition
-// 		case TOK_TYPE:
+// 		case TOKEN_TYPE:
 // 			parse_non_terminal(out, t, type, goto failure);
 // 			break;
 
@@ -1100,5 +1150,5 @@ Error parse_identifier(Identifier **out, const Token **tokens)
 
 // node_t *parse(toklist_t *toks)
 // {
-// 	return parse_module((const token_t **)&toks->data);
+// 	return parse_module((const Token **)&toks->data);
 // }

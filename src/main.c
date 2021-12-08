@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define BAR "\n###########################################################\n"
+
 int main(int argc, char *argv[])
 {
 	if (!validate_cli_args(argc, argv))
@@ -30,6 +32,9 @@ int main(int argc, char *argv[])
 		return (int)error;
 	}
 
+	puts(BAR "TOKENIZER" BAR "\n");
+
+
 	HxArray *tokens;
 	error = tokenize(&tokens, src);
 	if (error)
@@ -41,8 +46,10 @@ int main(int argc, char *argv[])
 		return (int)error;
 	}
 
-	Identifier *identifier;
+	puts(BAR "PARSER" BAR "\n");
+
 	const Token *iter = (const Token*)hxarray_front(tokens);
+	Identifier *identifier;
 	error = parse_identifier(&identifier, &iter);
 	if (error)
 	{
