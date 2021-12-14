@@ -3,6 +3,16 @@
 // standard headers
 #include <stdlib.h>
 
+void identifier_init(Identifier *identifier)
+{
+	identifier->text = NULL;
+}
+
+void identifier_free(Identifier *identifier)
+{
+	free(identifier->text);
+}
+
 Error identifier_parse(Identifier *out, TokenIterator *iter)
 {	
 	if (iter->token[0].type != TOKEN_IDENTIFIER)
@@ -16,9 +26,4 @@ Error identifier_parse(Identifier *out, TokenIterator *iter)
 	++iter->token;
 
 	return ERROR_NONE;
-}
-
-void identifier_free(Identifier *identifier)
-{
-	free(identifier->text);
 }

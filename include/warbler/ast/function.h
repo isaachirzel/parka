@@ -4,25 +4,29 @@
 // local headers
 #include <warbler/ast/typename.h>
 #include <warbler/ast/identifier.h>
+#include <warbler/ast/parameter.h>
 #include <warbler/ast/expression/expression.h>
 #include <warbler/ast/statement/compound.h>
 
 // standard headers
 #include <stdbool.h>
 
-typedef struct
+typedef struct Function
 {
-	Typename return_type;
 	Identifier name;
+	Typename return_type;
+	ParameterList *parameters;
+
 	bool is_inline;
 	union
 	{
-		Expression *expression;
 		CompoundStatement *compound;
-	};
+		Expression *expression;
+	} body;
 } Function;
 
-Error function_parse(Function *out, TokenIterator *iter);
+void function_init(Function *function);
 void function_free(Function *function);
+Error function_parse(Function *function, TokenIterator *iter);
 
 #endif

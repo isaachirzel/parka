@@ -9,7 +9,8 @@ typedef struct Identifier
 	char *text;
 } Identifier;
 
-Error identifier_parse(Identifier *out, TokenIterator *iter);
+void identifier_init(Identifier *identifier);
 void identifier_free(Identifier *identifier);
+Error identifier_parse(Identifier *out, TokenIterator *iter);
 
 #endif

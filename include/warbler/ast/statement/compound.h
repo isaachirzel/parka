@@ -13,7 +13,8 @@ typedef struct CompoundStatement
 	size_t statement_count;
 } CompoundStatement;
 
-Error Compound_statement_parse(CompoundStatement *compound, TokenIterator *iter);
+void compound_statement_init(CompoundStatement *compound);
 void compound_statement_free(CompoundStatement *compound);
+Error compound_statement_parse(CompoundStatement *compound, TokenIterator *iter);
 
 #endif

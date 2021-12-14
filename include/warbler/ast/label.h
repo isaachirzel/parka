@@ -7,10 +7,11 @@
 
 typedef struct Label
 {
-	Identifier *identifier;
+	Identifier identifier;
 } Label;
 
-Error label_parse(Label *out, TokenIterator *iter);
+void label_init(Label *label);
 void label_free(Label *label);
+Error label_parse(Label *label, TokenIterator *iter);
 
 #endif

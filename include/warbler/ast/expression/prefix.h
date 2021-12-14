@@ -13,17 +13,19 @@ typedef enum
 	PREFIX_DEREFERENCE
 } PrefixType;
 
-typedef struct
+typedef struct PrefixExpression
 {
 	// TODO make these have prefix operators intead of prefix type
 	PrefixType type;
 	union
 	{
 		PostfixExpression *postfix;
+		struct PrefixExpression *prefix;
 	};
 } PrefixExpression;
 
-Error prefix_expression_parse(PrefixExpression *out, TokenIterator *iter);
+void prefix_expression_init(PrefixExpression *prefix);
 void prefix_expression_free(PrefixExpression *prefix);
+Error prefix_expression_parse(PrefixExpression *prefix, TokenIterator *iter);
 
 #endif

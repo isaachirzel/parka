@@ -1,35 +1,34 @@
 #include <warbler/ast/label.h>
 
-Error label_parse(Label *out, TokenIterator *iter)
+void label_init(Label *label)
 {
-	if (iter->token[0].type != TOKEN_IDENTIFIER || iter->token[1].type != TOKEN_COLON)
-		return ERROR_ARGUMENT;
-	
-	Identifier identifier;
-	Error error = identifier_parse(&identifier, iter);
-
-	if (error)
-	{
-		identifier_free(&identifier);
-		return error;
-	}
-
-	++iter->token;
-
-	out->identifier = malloc(sizeof(Identifier));
-
-	if (!out->identifier)
-	{
-		identifier_free(&identifier);
-		return ERROR_MEMORY;
-	}
-
-	*out->identifier = identifier;
-	
-	return ERROR_NONE;
+	identifier_init(&label->identifier);
 }
 
 void label_free(Label *label)
 {
-	free(label->identifier);
+	identifier_free(&label->identifier);
+}
+
+Error label_parse(Label *label, TokenIterator *iter)
+{
+	if (iter->token[0].type != TOKEN_IDENTIFIER || iter->token[1].type != TOKEN_COLON)
+		return ERROR_ARGUMENT;
+	
+	Error error;
+
+	if ((error = identifier_parse(&label->identifier, iter)))
+		return error;
+
+	if (iter->token->type != TOKEN_COLON)
+	{
+		label_free(label);
+		print_error("expected ':' after label but got: ");
+		string_println(&iter->token->string);
+		return ERROR_ARGUMENT;
+	}
+
+	++iter->token;
+	
+	return ERROR_NONE;
 }

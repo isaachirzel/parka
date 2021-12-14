@@ -30,7 +30,8 @@ typedef struct Assignment
 	PrefixExpression *right;
 } Assignment;
 
-Error assignment_parse(Assignment *out, TokenIterator *iter);
+void assignment_init(Assignment *assignment);
 void assignment_free(Assignment *assignment);
+Error assignment_parse(Assignment *assignment, TokenIterator *iter);
 
 #endif

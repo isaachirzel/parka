@@ -6,6 +6,7 @@
 
 typedef enum PostfixType
 {
+	POSTFIX_NONE,
 	POSTFIX_INCREMENT,
 	POSTFIX_DECREMENT,
 	POSTFIX_ARRAY,
@@ -15,12 +16,17 @@ typedef enum PostfixType
 
 typedef struct PostfixExpression
 {
-	PostfixType type;
 	union
 	{
 		struct PostfixExpression *postifx;
 		PrimaryExpression *primary;
 	};
+	PostfixType type;
 } PostfixExpression;
+
+void postfix_expression_init(PostfixExpression *postfix);
+void postfix_expression_free(PostfixExpression *postfix);
+Error postfix_expression_parse(PostfixExpression *postfix, TokenIterator *iter);
+
 
 #endif

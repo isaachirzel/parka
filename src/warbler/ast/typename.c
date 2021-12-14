@@ -3,6 +3,11 @@
 // standard headers
 #include <stdlib.h>
 
+void typename_init(Typename *typename)
+{
+	typename->text = NULL;
+}
+
 Error typename_parse(Typename *out, TokenIterator *iter)
 {
 	if (iter->token->type != TOKEN_IDENTIFIER)

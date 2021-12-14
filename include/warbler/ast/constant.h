@@ -18,7 +18,8 @@ typedef struct Constant
 	char *text;
 } Constant;
 
-Error constant_parse(Constant *out, TokenIterator *iter);
+void constant_init(Constant *constant);
 void constant_free(Constant *constant);
+Error constant_parse(Constant *out, TokenIterator *iter);
 
 #endif

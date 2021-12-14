@@ -16,15 +16,17 @@ typedef enum PrimaryType
 
 typedef struct PrimaryExpression
 {
-	PrimaryType type;
-
 	union
 	{
 		Identifier *identifier;
 		Constant *constant;
 		struct Expression *expression;
 	};
-
+	PrimaryType type;
 } PrimaryExpression;
+
+void primary_expression_init(PrimaryExpression *primary);
+void primary_expression_free(PrimaryExpression *primary);
+Error primary_expression_parse(PrimaryExpression *primary, TokenIterator *iter);
 
 #endif
