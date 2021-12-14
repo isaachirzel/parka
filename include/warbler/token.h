@@ -93,6 +93,11 @@ typedef struct Token
 	TokenType type;
 } Token;
 
+typedef struct TokenIterator
+{
+	const Token *token;
+} TokenIterator;
+
 Token token_default();
 Token token_create(String* string, size_t line, size_t col, TokenType type);
 

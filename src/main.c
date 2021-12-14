@@ -3,7 +3,7 @@
 #include <warbler/cli.h>
 #include <warbler/preprocessor.h>
 #include <warbler/tokenizer.h>
-#include <warbler/parser.h>
+#include <warbler/ast/ast.h>
 
 // standard library
 #include <stdio.h>
@@ -48,16 +48,8 @@ int main(int argc, char *argv[])
 
 	puts(BAR "PARSER" BAR "\n");
 
-	const Token *iter = (const Token*)hxarray_front(tokens);
-	Identifier *identifier;
-	error = parse_identifier(&identifier, &iter);
-	if (error)
-	{
-		printf("failed to parse and got error: %d\n", error);
-	}
-
-	fputs("Parsed identifier: ", stdout);
-	string_println(identifier->text);
+	Ast ast;
+	ast_parse(&ast, tokens);
 
 	free(src);
 	tokenizer_free();

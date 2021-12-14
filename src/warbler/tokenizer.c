@@ -1,19 +1,19 @@
 #include <warbler/tokenizer.h>
 
-// local includes
+// local headers
 #include <warbler/error.h>
 
-// standard library
+// standard headers
 #include <string.h>
 #include <stdlib.h>
 
-// external libraries
+// external headers
 #include <hirzel/table.h>
 #include <hirzel/array.h>
 
 typedef enum CharType
 {
-	CHAR_INVALID = 0, // this is zero as invalid should be the default
+	CHAR_INVALID,
 	CHAR_NULL,
 	CHAR_IDENTIFIER,
 	CHAR_SEPARATOR,
@@ -110,11 +110,10 @@ const TokenInfo token_info[] =
 	// assign operators
 	{ "=",  TOKEN_ASSIGN },
 	{ "+=", TOKEN_ADD_ASSIGN },
-	{ "+=", TOKEN_ADD_ASSIGN },
-	{ "-=", TOKEN_SUB_ASSIGN },
-	{ "*=", TOKEN_MUL_ASSIGN },
-	{ "/=", TOKEN_DIV_ASSIGN },
-	{ "%=", TOKEN_MOD_ASSIGN },
+	{ "-=", TOKEN_SUBTRACT_ASSIGN },
+	{ "*=", TOKEN_MULTIPLY_ASSIGN },
+	{ "/=", TOKEN_DIVIDE_ASSIGN },
+	{ "%=", TOKEN_MODULUS_ASSIGN },
 
 	// modules
 	{ "import", TOKEN_IMPORT },

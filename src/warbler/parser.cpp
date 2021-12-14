@@ -8,35 +8,17 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define print_parse() printf("%s: ", __func__); string_put(&tok[0]->str)
-#define parse_terminal(tok, expected_type, expected_tok, error_action) if (tok->type != expected_type) { syntax_error(tok, expected_tok); error_action; } tok += 1
-#define parse_non_terminal(out, tok, function, error_action) { node_t *arg = parse_##function(&tok); if (!arg) error_action; node_push_arg(out, arg); }
-#define parse_semicolon(tok, error_action) parse_terminal(tok, TOKEN_SEMICOLON, "';'", error_action)
-
-void syntax_error(const Token *token, const char *expected)
+static inline Error parse_terminal(TokenType type, const Token *tokens[])
 {
-	// log_error_prompt(tok->line, tok->col);
-	// fprintf(stderr, "expected %s before '", expected);
-	// string_fputs(&tok->str, stderr);
-	// fputs("'\n", stderr);
-}
+	const Token *iterator = *tokens;
 
-// node_t *parse_identifier(const Token **tokens)
-// {
-// 	print_parse();
-// 	const Token *t = *tok;
-// 	if (t->type != TOKEN_IDENTIFIER)
-// 	{
-// 		printf("Type: %u\n", t->type);
-// 		syntax_error(t, "identifier");
-// 		return NULL;
-// 	}
-// 	node_t *out = node_create(NODE_IDENTIFIER);
-// 	out->val = t;
-// 	t += 1;
-// 	*tok = t;
-// 	return out;
-// }
+	if (iterator->type != type)
+		return ERROR_ARGUMENT;
+
+	*tokens = iterator + 1;
+
+	return ERROR_NONE;
+}
 
 Error parse_program(Program **out, const Token *tokens[])
 {
@@ -46,115 +28,42 @@ Error parse_program(Program **out, const Token *tokens[])
 	return not_implemented_error();
 }
 
-Error parse_identifier(Identifier **out, const Token *tokens[])
+Error parse_typename(Typename **out, const Token *iterator[])
 {
-	assert(out != NULL);
-	assert(tokens != NULL);
-	
-	if (tokens[0]->type != TOKEN_IDENTIFIER)
-		return ERROR_ARGUMENT;
+	const Token *tokens = *iterator;
 
-	Identifier *identifier;
-	try_allocate(identifier);
-
-	identifier->text = &tokens[0]->string;
-
-	*tokens += 1;
-	*out = identifier;
-
-	return ERROR_NONE;
-}
-
-Error parse_typename(Typename **out, const Token *tokens[])
-{
-	const Token *iterator = *tokens;
-	if (iterator[0].type != TOKEN_IDENTIFIER)
+	if (tokens[0].type != TOKEN_IDENTIFIER)
 		return ERROR_ARGUMENT;
 
 	Typename *typename;
-	try_alloate(typename);		
+	try_allocate(typename);		
 
-	typename->text = &tokens[0]->string;
-
+	typename->text = &tokens[0].string;
 	*out = typename;
-	*tokens += 1;
+	*iterator = tokens + 1;
 
 	return ERROR_NONE;
 }
 
-Error parse_label(Label **out, const Token *tokens[])
+Error parse_label(Label **out, const Token *iterator[])
 {
+	Error error = ERROR_NONE;
 	const Token *tokens = *iterator;
-	if (tokens[0].type != TOKEN_IDENTIFIER || tokens[1]->type != TOKEN_COLON)
+
+	if (tokens[0].type != TOKEN_IDENTIFIER || tokens[1].type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 
 	Label *label;
 	try_allocate(label);
 
-	label->text = &tokens[0]->string;
+	label->text = &tokens[0].string;
 
+	*iterator = tokens + 2;
 	*out = label;
-	*tokens += 2;
 
-	return ERROR_NONE;
+	return error;
 }
 
-Parameter *parse_parameter(const Token **tokens)
-{
-	const Token
-	if (tokens[0]->type 
-	const Token *t = *tok;
-
-	node_t *out = node_create(NODE_PARAMETER);
-
-	// getting identifier
-	out->val = t;
-	parse_terminal(t, TOKEN_IDENTIFIER, "identifier", goto failure);
-
-	// checking for type annotation
-	parse_terminal(t, TOKEN_COLON, "type-annotation", goto failure);
-
-	// getting typename
-	parse_non_terminal(out, t, typename, goto failure);
-
-	// moving iterator forwards
-	*tok = t;
-
-	return out;
-
-failure:
-
-	node_destroy(out);
-	return NULL;
-}
-
-
-// node_t *parse_parameter_list(const Token **tokens)
-// {
-// 	print_parse();
-// 	node_t *out = node_create(NODE_PARAM_LIST);
-
-// 	const Token *t = *tok;
-
-// 	parse_terminal(t, TOKEN_LPAREN, "argument-list", goto failure);
-
-// 	// empty list
-// 	if (t->type == TOKEN_RPAREN)
-// 	{
-// 		t += 1;
-// 	}
-// 	// list of parameters
-// 	else
-// 	{
-// 		// parse parameters as long as there is a comma
-// 		while (true)
-// 		{
-// 			parse_non_terminal(out, t, parameter, goto failure);
-// 			if (t->type != TOKEN_COMMA) break;
-// 			t += 1;
-// 		}
-// 		parse_terminal(t, TOKEN_RPAREN, ")", goto failure);
-// 	}
 
 // 	*tok = t;
 
@@ -588,25 +497,25 @@ bool is_assignment_token(const Token* token)
 	// }
 }
 
-Error parse_assignment_expression(AssignmentExpression **out, const Token *tokens[])
-{
-	AssignmentExpression *assignment;
-	try_allocate(assignment);
+// Error parse_assignment_expression(AssignmentExpression **out, const Token *tokens[])
+// {
+// 	AssignmentExpression *assignment;
+// 	try_allocate(assignment);
 
-	try_cleanup(parse_unary_expression(&assignment->left, iterator), {
-		free(assignment);
-	});
+// 	try_cleanup(parse_unary_expression(&assignment->left, iterator), {
+// 		free(assignment);
+// 	});
 
-	const Token *tokens = *iterator;
+// 	const Token *tokens = *iterator;
 
-	if (is_assignment_token(tokens))
-	{
+// 	if (is_assignment_token(tokens))
+// 	{
 
-	}
+// 	}
 
-	*out = assignment;
-	return ERROR_NONE;
-}
+// 	*out = assignment;
+// 	return ERROR_NONE;
+// }
 
 // node_t *parse_if_statement(const Token **tokens)
 // {
