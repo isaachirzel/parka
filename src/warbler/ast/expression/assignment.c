@@ -15,15 +15,10 @@ void assignment_free(Assignment *assignment)
 
 Error assignment_parse(Assignment *assignment, TokenIterator *iter)
 {
-	*assignment = (Assignment)
-	{
-		.type = ASSIGN_NONE,
-		.left = NULL,
-		.right = NULL
-	};
+	assignment_init(assignment);
 
-	Error error = prefix_expression_parse(assignment->left, iter);
-	if (error)
+	Error error;
+	if ((error = prefix_expression_parse(assignment->left, iter)))
 	{
 		assignment_free(assignment);
 		return error;
@@ -44,11 +39,11 @@ Error assignment_parse(Assignment *assignment, TokenIterator *iter)
 
 	++iter->token;
 
-	error = prefix_expression_parse(assignment->right, iter);
-	if (error)
+	if ((error = prefix_expression_parse(assignment->right, iter)))
 	{
 		assignment_free(assignment);
+		return error;
 	}
 
-		return error;
+	return ERROR_NONE;
 }

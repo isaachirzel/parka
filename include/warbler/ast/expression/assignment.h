@@ -27,7 +27,7 @@ typedef struct Assignment
 {
 	AssignmentType type;
 	PrefixExpression *left;
-	PrefixExpression *right;
+	ConditionalExpression *right;
 } Assignment;
 
 void assignment_init(Assignment *assignment);
