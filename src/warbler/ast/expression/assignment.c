@@ -1,49 +1,60 @@
 #include <warbler/ast/expression/assignment.h>
 
-void assignment_init(Assignment *assignment)
+void assignment_expression_init(AssignmentExpression *assignment)
 {
+	assert(assignment != NULL);
+
+	assignment->lhs = malloc(sizeof(*assignment->lhs));
+	assignment->rhs = malloc(sizeof(*assignment->rhs));
 	assignment->type = ASSIGN_NONE;
-	assignment->left = NULL;
-	assignment->right = NULL;
 }
 
-void assignment_free(Assignment *assignment)
+void assignment_expression_free(AssignmentExpression *assignment)
 {
-	prefix_expression_free(assignment->left);
-	prefix_expression_free(assignment->right);
+	assert(assignment != NULL);
+
+	if (assignment->lhs)
+		prefix_expression_free(assignment->lhs);
+
+	if (assignment->rhs)
+		conditional_expression_free(assignment->rhs);
+
+	free(assignment->lhs);
+	free(assignment->rhs);
 }
 
-Error assignment_parse(Assignment *assignment, TokenIterator *iter)
+static inline Error try_assignment_expression_parse(AssignmentExpression *assignment, TokenIterator *iter)
 {
-	assignment_init(assignment);
-
-	Error error;
-	if ((error = prefix_expression_parse(assignment->left, iter)))
-	{
-		assignment_free(assignment);
-		return error;
-	}
+	try(prefix_expression_parse(assignment->lhs, iter));
 
 	switch (iter->token->type)
 	{
-		case TOKEN_EQUALS:
+		case TOKEN_BECOME_ASSIGN:
 			assignment->type = ASSIGN_BECOME;
 			break;
 
 		default:
-			print_error("invalid assignment type: ");
-			string_println(&iter->token->string);
-			assignment_free(assignment);
-			return ERROR_ARGUMENT;
+			return ERROR_NONE;
 	}
 
 	++iter->token;
 
-	if ((error = prefix_expression_parse(assignment->right, iter)))
-	{
-		assignment_free(assignment);
-		return error;
-	}
+	try(conditional_expression_parse(assignment->rhs, iter));
 
 	return ERROR_NONE;
+}
+
+Error assignment_expression_parse(AssignmentExpression *assignment, TokenIterator *iter)
+{
+	assert(assignment != NULL);
+	assert(iter != NULL);
+
+	assignment_expression_init(assignment);
+
+	Error error = try_assignment_expression_parse(assignment, iter);
+
+	if (error)
+		assignment_expression_free(assignment);
+
+	return error;
 }

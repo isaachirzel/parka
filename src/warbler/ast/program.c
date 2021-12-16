@@ -3,34 +3,68 @@
 // standard headers
 #include <stdlib.h>
 
-Error program_parse(Program *out, TokenIterator *iter)
+void program_init(Program *program)
 {
-	*out = (Program)
-	{
-		.functions = NULL,
-		.function_count = 0
-	};
+	assert(program != NULL);
 
-	Function *tmp = realloc(out->functions, (out->function_count + 1) * sizeof(Function));
-	if (!tmp)
-	{
-		program_free(out);
-		return ERROR_MEMORY;
-	}
-
-	Function *function = out->functions + out->function_count++;
-	Error error = function_parse(function, iter);
-
-	if (error)
-		program_free(out);
-
-	return error;
+	program->functions = NULL;
+	program->function_count = 0;
 }
 
 void program_free(Program *program)
 {
+	assert(program != NULL);
+
 	for (size_t i = 0; i < program->function_count; ++i)
 	{
 		function_free(program->functions + i);
 	}
+
+	free(program->functions);
+}
+
+static inline Error increment_functions(Program *program)
+{
+	size_t new_size = (program->function_count + 1) * sizeof(Function);
+	Function *tmp = realloc(program->functions, new_size);
+
+	if (!tmp)
+		return ERROR_MEMORY;
+
+	program->functions = tmp;
+
+	Function *back = program->functions + program->function_count++;
+
+	function_init(back);
+
+	return ERROR_NONE;
+}
+
+static inline Error try_program_parse(Program *program, TokenIterator *iter)
+{
+	while (iter->token->type != TOKEN_END_OF_FILE)
+	{		
+		try(increment_functions(program));
+
+		Function *back = program->functions + (program->function_count - 1);
+
+		try(function_parse(back, iter));
+	}
+
+	return ERROR_NONE;
+}
+
+Error program_parse(Program *program, TokenIterator *iter)
+{
+	assert(program != NULL);
+	assert(iter != NULL);
+
+	program_init(program);
+
+	Error error = try_program_parse(program, iter);
+
+	if (error)
+		program_free(program);
+
+	return error;
 }

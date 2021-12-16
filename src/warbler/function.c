@@ -2,82 +2,101 @@
 
 void function_init(Function *function)
 {
-	typename_init(&function->return_type);
+	assert(function != NULL);
+
 	identifier_init(&function->name);
-	function->parameters = NULL;
+	parameter_list_init(&function->parameters);
+	typename_init(&function->return_type);
+
 	function->is_inline = false;
-	function->body.compound = NULL;
+	function->inline_body = NULL;
 }
 
 void function_free(Function *function)
 {
-	typename_free(&function->return_type);
+	assert(function != NULL);
+
 	identifier_free(&function->name);
-	parameter_list_free(function->parameters);
+	typename_free(&function->return_type);
+	parameter_list_free(&function->parameters);
 
 	if (function->is_inline)
 	{
-		expression_free(function->body.expression);
+		expression_free(function->inline_body);
+		free(function->inline_body);
 	}
 	else
 	{
-		compound_statement_free(function->body.compound);
+		compound_statement_free(function->compound_body);
+		free(function->compound_body);
 	}
 }
 
-Error function_parse(Function *function, TokenIterator *iter)
+static inline Error function_parse_body(Function *function, TokenIterator *iter)
+{
+	Error error;
+
+	switch (iter->token->type)
+	{
+		case TOKEN_DOUBLE_ARROW:
+			function->is_inline = true;
+			
+			if ((error = expression_parse(function->inline_body, iter)))
+				return error;
+
+			break;
+
+		case TOKEN_LBRACE:
+			function->is_inline = false;
+
+			if ((error = compound_statement_parse(function->compound_body, iter)))
+				return error;
+
+			break;
+
+		default:
+			print_error("invalid token given for function body: ");
+			string_println(&iter->token->string);
+
+			return ERROR_ARGUMENT;
+	}
+
+	return ERROR_NONE;
+}
+
+static inline Error try_function_parse(Function *function, TokenIterator *iter)
 {
 	if (iter->token->type != TOKEN_FUNC)
 		return ERROR_ARGUMENT;
 
 	++iter->token;
 
-	Error error;
-	if ((error = identifier_parse(&function->name, iter)))
-		return ERROR_ARGUMENT;
-
-	if ((error = parameter_list_parse(function->parameters, iter)))
-	{
-		function_free(function);
-		return ERROR_ARGUMENT;
-	}	
+	try(identifier_parse(&function->name, iter));
+	try(parameter_list_parse(&function->parameters, iter));
 
 	if (iter->token->type == TOKEN_SINGLE_ARROW)
 	{
 		++iter->token;
 
-		if ((error = typename_parse(&function->return_type, iter)))
-		{
-			function_free(function);
-			return ERROR_ARGUMENT;
-		}
+		try(typename_parse(&function->return_type, iter));
 	}
 
-	switch (iter->token->type)
-	{
-		case TOKEN_DOUBLE_ARROW:
-			function->is_inline = true;
-
-			if ((error = expression_parse(function->body.expression, iter)))
-			{
-				function_free(function);
-				return ERROR_ARGUMENT;
-			}
-			break;
-
-		case TOKEN_LBRACE:
-			if ((error = compound_statement_parse(function->body.compound, iter)))
-			{
-				function_free(function);
-				return ERROR_ARGUMENT;
-			}
-			break;
-
-		default:
-			print_error("invalid token given for function body");
-			function_free(function);
-			return ERROR_ARGUMENT;
-	}
+	try(function_parse_body(function, iter));
 
 	return ERROR_NONE;
+}
+
+Error function_parse(Function *function, TokenIterator *iter)
+{
+	assert(function != NULL);
+	assert(iter != NULL);
+
+	function_init(function);
+
+	Error error = try_function_parse(function, iter);
+
+	if (error)
+		function_free(function);
+		
+	return error;
 }

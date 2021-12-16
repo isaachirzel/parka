@@ -3,58 +3,81 @@
 // standard headers
 #include <stdlib.h>
 
-static Error parameter_allocate(Parameter *parameter)
+void parameter_init(Parameter *parameter)
 {
-	parameter->typename = malloc(sizeof(*parameter->typename));
-	parameter->identifier = malloc(sizeof(*parameter->identifier));
-
-	if (!parameter->typename || !parameter->identifier)
-	{
-		parameter_free(parameter);
-
-		return ERROR_MEMORY;
-	}
-
-	return ERROR_NONE;
+	identifier_init(&parameter->name);
+	typename_init(&parameter->type);
 }
 
-Error parameter_parse(Parameter *out, TokenIterator *iter)
+void parameter_free(Parameter *parameter)
 {
-	Identifier identifier;
-	Error error = identifier_parse(&identifier, iter);
+	identifier_free(&parameter->name);
+	typename_free(&parameter->type);
+}
 
-	if (error)
-		return error;
+static inline try_parameter_parse(Parameter *parameter, TokenIterator *iter)
+{
+	try(identifier_parse(&parameter->name, iter));
 
 	if (iter->token->type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 
 	++iter->token;
 
-	Typename typename;
-	error = typename_parse(&typename, iter);
-	
-	if (error)	
-		return error;
-
-	error = parameter_allocate(out);
-
-	if (error)
-		return error;
-
-	*out->typename = typename;
-	*out->identifier = identifier;
+	try(typename_parse(&parameter->type, iter));
 
 	return ERROR_NONE;
 }
 
-void parameter_free(Parameter *parameter)
+Error parameter_parse(Parameter *parameter, TokenIterator *iter)
 {
-	free(parameter->typename);
-	free(parameter->identifier);
+	assert(parameter != NULL);
+	assert(iter != NULL);
+
+	parameter_init(parameter);
+
+	Error error = try_parameter_parse(parameter, iter);
+
+	if (error)
+		parameter_free(parameter);
+
+	return error;
 }
 
-Error parameter_list_parse(ParameterList *out, TokenIterator *iter)
+void parameter_list_init(ParameterList *list)
+{
+	list->parameters = NULL;
+	list->parameter_count = 0;
+}
+
+void parameter_list_free(ParameterList *list)
+{
+	for (size_t i = 0; i < list->parameter_count; ++i)
+	{
+		parameter_free(list->parameters + i);
+	}
+
+	free(list->parameters);
+}
+
+static inline Error increment_parameters(ParameterList *list)
+{
+	size_t new_size = (list->parameter_count + 1) * sizeof(Parameter);
+	Parameter *tmp = realloc(list->parameters, new_size);
+
+	if (!tmp)
+		return ERROR_MEMORY;
+
+	list->parameters = tmp;
+
+	Parameter *back = list->parameters + list->parameter_count++;
+
+	parameter_init(back);
+
+	return ERROR_NONE;
+}
+
+Error try_parameter_list_parse(ParameterList *list, TokenIterator *iter)
 {
 	if (iter->token->type != TOKEN_LPAREN)
 		return ERROR_ARGUMENT;
@@ -65,26 +88,11 @@ Error parameter_list_parse(ParameterList *out, TokenIterator *iter)
 	{
 		while (true)
 		{
-			Parameter parameter;
-			Error error = parameter_parse(&parameter, iter);
+			try(increment_parameters(list));
 
-			if (error)
-			{
-				parameter_list_free(out);
-				return error;
-			}
+			Parameter *back = list->parameters + (list->parameter_count - 1);
 
-			++out->count;
-			Parameter *tmp = realloc(out->parameters, out->count * sizeof(Parameter));
-			if (!tmp)
-			{
-				parameter_free(&parameter);
-				parameter_list_free(out);
-				return ERROR_MEMORY;
-			}
-
-			out->parameters[out->count - 1] = parameter;
-			++out->count;
+			try(parameter_parse(back, iter));
 
 			if (iter->token->type != TOKEN_COMMA)
 				break;
@@ -94,11 +102,11 @@ Error parameter_list_parse(ParameterList *out, TokenIterator *iter)
 
 		if (iter->token->type != TOKEN_RPAREN)
 		{
-			// TODO: syntax error
-			parameter_list_free(out);
+			print_error("expected ',' or ')' after parameter but got: ");
+			string_println(&iter->token->string);
+
 			return ERROR_ARGUMENT;
 		}
-
 	}
 
 	++iter->token;
@@ -106,12 +114,17 @@ Error parameter_list_parse(ParameterList *out, TokenIterator *iter)
 	return ERROR_NONE;
 }
 
-void parameter_list_free(ParameterList* list)
+Error parameter_list_parse(ParameterList *list, TokenIterator *iter)
 {
-	for (size_t i = 0; i < list->count; ++i)
-	{
-		parameter_free(list->parameters + i);
-	}
+	assert(list != NULL);
+	assert(iter != NULL);
 
-	free(list->parameters);
+	parameter_list_init(list);
+
+	Error error = try_parameter_list_parse(list, iter);
+
+	if (error)
+		parameter_list_free(list);
+
+	return error;
 }

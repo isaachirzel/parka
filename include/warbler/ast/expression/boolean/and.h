@@ -1,13 +1,15 @@
-#ifndef WARBLER_AST_EXPRESSION_LOGICAL_AND_H
-#define WARBLER_AST_EXPRESSION_LOGICAL_AND_H
+#ifndef WARBLER_AST_EXPRESSION_BOOLEAN_AND_H
+#define WARBLER_AST_EXPRESSION_BOOLEAN_AND_H
 
 // local headers
-#include <warbler/ast/expression/bitwise_or.h>
+#include <warbler/ast/expression/bitwise/or.h>
 
 typedef struct BooleanAndExpression
 {
-	BitwiseOrExpression *conditions;
-	size_t condition_count;
+	BitwiseOrExpression *lhs;
+	BitwiseOrExpression *rhs;
+	size_t rhs_count;
 } BooleanAndExpression;
+
 
 #endif

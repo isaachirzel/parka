@@ -1,19 +1,33 @@
 #include <warbler/ast/expression/expression.h>
 
-Error expression_parse(Expression *out, TokenIterator *iter)
+void expression_init(Expression *expression)
 {
-	Assignment assignment;
-	Error error = assignment_parse(&assignment, iter);
-
-	if (error)
-		return error;
-	
-	*out->assignment = assignment;
-
-	return ERROR_NONE;
+	assignment_expression_init(&expression->assignment);
 }
 
 void expression_free(Expression *expression)
 {
-	assignment_free(expression->assignment);
+	assignment_expression_free(&expression->assignment);
+}
+
+static inline Error try_expression_parse(Expression *expression, TokenIterator *iter)
+{
+	try(assignment_expression_parse(&expression->assignment, iter));
+
+	return ERROR_NONE;
+}
+
+Error expression_parse(Expression *expression, TokenIterator *iter)
+{
+	assert(expression != NULL);
+	assert(iter != NULL);
+
+	expression_init(expression);
+
+	Error error = assignment_expression_parse(&expression->assignment, iter);
+
+	if (error)
+		expression_free(expression);
+
+	return error;
 }

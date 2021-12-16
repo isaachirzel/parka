@@ -2,11 +2,11 @@
 #define WARBLER_AST_EXPRESSION_BITWISE_AND_H
 
 // local headers
-#include <warbler/ast/expression/bitwise/or.h>
+#include <warbler/ast/expression/boolean/equality.h>
 
 typedef struct BitwiseAndExpression
 {
-	BitwiseOrExpression *conditions;
+	EqualityExpression *conditions;
 	size_t condition_count;
 } BitwiseAndExpression;
 

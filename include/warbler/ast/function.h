@@ -14,15 +14,16 @@
 typedef struct Function
 {
 	Identifier name;
+	ParameterList parameters;
 	Typename return_type;
-	ParameterList *parameters;
 
-	bool is_inline;
 	union
 	{
-		CompoundStatement *compound;
-		Expression *expression;
-	} body;
+		Expression *inline_body;
+		CompoundStatement *compound_body;
+	};
+	
+	bool is_inline;
 } Function;
 
 void function_init(Function *function);

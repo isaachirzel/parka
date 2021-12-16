@@ -6,8 +6,9 @@
 
 typedef struct BitwiseOrExpression
 {
-	BitwiseXorExpression *conditions;
-	size_t condition_count;
+	BitwiseXorExpression *lhs;
+	BitwiseXorExpression *rhs;	
+	size_t rhs_count;
 } BitwiseOrExpression;
 
 #endif

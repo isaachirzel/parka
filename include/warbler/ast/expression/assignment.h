@@ -1,7 +1,8 @@
-#ifndef WARBLER_AST_ASSIGNMENT_EXPRESSION_H
-#define WARBLER_AST_ASSIGNMENT_EXPRESSION_H
+#ifndef WARBLER_AST_EXPRESSION_ASSIGNMENT_H
+#define WARBLER_AST_EXPRESSION_ASSIGNMENT_H
 
 // local headers
+#include <warbler/ast/expression/conditional.h>
 #include <warbler/ast/expression/prefix.h>
 
 typedef enum AssignmentType
@@ -23,15 +24,15 @@ typedef enum AssignmentType
 	ASSIGN_BOOLEAN_OR
 } AssignmentType;
 
-typedef struct Assignment
+typedef struct AssignmentExpression
 {
+	PrefixExpression *lhs;
+	ConditionalExpression *rhs;
 	AssignmentType type;
-	PrefixExpression *left;
-	ConditionalExpression *right;
-} Assignment;
+} AssignmentExpression;
 
-void assignment_init(Assignment *assignment);
-void assignment_free(Assignment *assignment);
-Error assignment_parse(Assignment *assignment, TokenIterator *iter);
+void assignment_expression_init(AssignmentExpression *assignment);
+void assignment_expression_free(AssignmentExpression *assignment);
+Error assignment_expression_parse(AssignmentExpression *assignment, TokenIterator *iter);
 
 #endif

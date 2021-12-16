@@ -8,19 +8,22 @@
 
 typedef struct Parameter
 {
-	Typename *typename;
-	Identifier *identifier;
+	Identifier name;
+	Typename type;
 } Parameter;
 
 typedef struct ParameterList
 {
 	Parameter *parameters;
-	size_t count;
+	size_t parameter_count;
 } ParameterList;
 
-Error parameter_parse(Parameter *out, TokenIterator *iter);
+void parameter_init(Parameter *parameter);
 void parameter_free(Parameter *parameter);
+Error parameter_parse(Parameter *out, TokenIterator *iter);
 
+void parameter_list_init(ParameterList *list);
+void parameter_list_free(ParameterList *list);
 Error parameter_list_parse(ParameterList *out, TokenIterator *iter);
-void parameter_list_free(ParameterList* list);
+
 #endif

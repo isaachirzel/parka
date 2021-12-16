@@ -5,10 +5,11 @@
 
 typedef struct
 {
-	Assignment *assignment;
+	AssignmentExpression assignment;
 } Expression;
 
-Error expression_parse(Expression *out, TokenIterator *iter);
+void expression_init(Expression *expression);
 void expression_free(Expression *expression);
+Error expression_parse(Expression *out, TokenIterator *iter);
 
 #endif
