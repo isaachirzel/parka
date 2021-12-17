@@ -1,5 +1,8 @@
 #include <warbler/ast/expression/assignment.h>
 
+// standard headers
+#include <stdlib.h>
+
 void assignment_expression_init(AssignmentExpression *assignment)
 {
 	assert(assignment != NULL);
@@ -25,7 +28,9 @@ void assignment_expression_free(AssignmentExpression *assignment)
 
 static inline Error try_assignment_expression_parse(AssignmentExpression *assignment, TokenIterator *iter)
 {
-	try(prefix_expression_parse(assignment->lhs, iter));
+	Error error;
+	if ((error = prefix_expression_parse(assignment->lhs, iter)))
+		return error;
 
 	switch (iter->token->type)
 	{
@@ -39,9 +44,9 @@ static inline Error try_assignment_expression_parse(AssignmentExpression *assign
 
 	++iter->token;
 
-	try(conditional_expression_parse(assignment->rhs, iter));
+	error = conditional_expression_parse(assignment->rhs, iter);
 
-	return ERROR_NONE;
+	return error;
 }
 
 Error assignment_expression_parse(AssignmentExpression *assignment, TokenIterator *iter)

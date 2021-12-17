@@ -1,5 +1,8 @@
 #include <warbler/ast/function.h>
 
+// standard headers
+#include <stdlib.h>
+
 void function_init(Function *function)
 {
 	assert(function != NULL);

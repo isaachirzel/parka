@@ -19,19 +19,23 @@ void conditional_expression_free(ConditionalExpression *conditional)
 	free(conditional->lhs);
 }
 
-Error conditional_expression_parse(ConditionalExpression *out, TokenIterator *iter)
+static inline Error try_conditional_expression_parse(ConditionalExpression *out, TokenIterator *iter)
 {
-	assert(out != NULL);
+	
+	return ERROR_NONE;
+}
+
+Error conditional_expression_parse(ConditionalExpression *conditional, TokenIterator *iter)
+{
+	assert(conditional != NULL);
 	assert(iter != NULL);
 
-	conditional_expression_init(out);
+	conditional_expression_init(conditional);
 
-	Error error;
-	if ((error = boolean_or_expression_parse(out->lhs, iter)))
-	{
-		conditional_expression_free(out);
-		return ERROR_ARGUMENT;
-	}
+	Error error = try_conditional_expression_parse(conditional, iter);
 
-	return ERROR_NONE;
+	if (error)
+		conditional_expression_free(conditional);
+
+	return error;
 }

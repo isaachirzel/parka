@@ -32,7 +32,7 @@ Error typename_parse(Typename *typename, TokenIterator *iter)
 	assert(typename != NULL);
 	assert(iter != NULL);
 
-	typename_init(typname);
+	typename_init(typename);
 
 	Error error = try_typename_parse(typename, iter);
 

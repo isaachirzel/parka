@@ -18,9 +18,9 @@ static inline Error try_identifier_parse(Identifier *identifier, TokenIterator *
 	if (iter->token->type != TOKEN_IDENTIFIER)
 		return ERROR_ARGUMENT;
 
-	out->text = string_duplicate(&iter->token->string);
+	identifier->text = string_duplicate(&iter->token->string);
 
-	if (!out->text)
+	if (!identifier->text)
 		return ERROR_MEMORY;
 
 	return ERROR_NONE;

@@ -11,5 +11,8 @@ typedef struct BooleanAndExpression
 	size_t rhs_count;
 } BooleanAndExpression;
 
+void boolean_and_expression_init(BooleanAndExpression *and);
+void boolean_and_expression_free(BooleanAndExpression *and);
+Error boolean_and_expression_parse(BooleanAndExpression *and, TokenIterator *iter);
 
 #endif
