@@ -1,41 +1,50 @@
-# Grackle Programming Language
-> NOTICE: This project is pre-alpha-level software and is not in a useable state as of now.
+# Warbler Programming Language
+> NOTICE: This project is prealpha-level software and is not in a useable state as of now.
 # Brief
 
-Grackle is an easy to use language that compiles directly to readable C. The purpose for this is for direct binary compatibility with existing C libraries as well as being able to take advantage of the ubiquity of C compilers. It has mainly been made as a learning tool for myself to better understand compiler design.
+Warbler aims to an easy to use, fast, and safe language with native C inter-op. This is planned to
+be implemented by giving the option to compile to machine code through use of LLVM or JIT'd by use
+of an inbuilt VM. This would allow warbler to be used to develop applications as well as be used as
+a scripting language.
+
+This project has primary been made as a learning tool for myself to better understand
+compiler design, standard language principles, and application development in C.
 
 # Syntax
 
-The syntax is a mix between several langauges with the intention of making the code easy to read. Below is an example hello world program.
+The syntax is a mix between several langauges such as GO, Rust, and C with the intention of making
+the code easy to read for this familiar with C like languages, but allow for a more modern syntax.
+
+Below is the syntax of a hello world program.
 ```
-func main() -> i32
+import std::io;
+
+func main()
 {
 	print_greeting();
-	return 0;
 }
 
 func print_greeting()
 {
-	var msg : str = "Hello, world!";
-	print(msg);
+	var msg = "Hello, world!";
+	std::io::print(msg);
 }
 ```
 # Current Status
 
-* Lexer is functional although not all token types are implemented
-* Parser is functional although not all non-terminals are implemented
-* C code generation has been started
+* Lexer is functional although not all token types are implemented. An overhaul is planned for
+	greater efficiency
+* Parser is currently being implemented
 
 # To-Do
 
-* Symbol mangling to allow for namespaces
-* Implementation of more complex statements such as pattern matching
-* Implementation of tuples
-* Code generation
+* Finish parser
+* Update parser to not use hash table for operators
+* AST semantic verification
 
 # Dependencies
 
-* c-utils: https://github.com/ikehirzel/c-utils
+* [C-Utils](https://github.com/ikehirzel/c-utils)
 
 # License
 

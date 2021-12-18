@@ -1,2 +1,4 @@
 # ide files
 .vscode/
+*.sublime-project
+*.sublime-workspace
