@@ -6,13 +6,13 @@
 
 typedef struct BooleanOrExpression
 {
-	BooleanAndExpression *lhs;
+	BooleanAndExpression lhs;
 	BooleanAndExpression *rhs;
 	size_t rhs_count;
 } BooleanOrExpression;
 
-void boolean_or_expression_init(BooleanOrExpression *or);
-void boolean_or_expression_free(BooleanOrExpression *or);
+void boolean_or_expression_init(BooleanOrExpression *out);
+void boolean_or_expression_free(BooleanOrExpression *out);
 Error boolean_or_expression_parse(BooleanOrExpression *out, TokenIterator *iter);
 
 #endif

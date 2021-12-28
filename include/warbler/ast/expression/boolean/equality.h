@@ -6,8 +6,13 @@
 
 typedef struct EqualityExpression
 {
-	ComparisonExpression conditions;
-	size_t condition_count;
+	ComparisonExpression lhs;
+	ComparisonExpression *rhs;
+	size_t rhs_count;
 } EqualityExpression;
+
+void equality_expression_init(EqualityExpression *out);
+void equality_expression_free(EqualityExpression *out);
+Error equality_expression_parse(EqualityExpression *out, TokenIterator *iter);
 
 #endif

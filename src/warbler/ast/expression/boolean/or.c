@@ -2,50 +2,79 @@
 
 // standard headers
 #include <stdlib.h>
+#include <assert.h>
 
-void boolean_or_expression_init(BooleanOrExpression *or)
+void boolean_or_expression_init(BooleanOrExpression *out)
 {
-	assert(or != NULL);
+	assert(out != NULL);
 
-	or->lhs = NULL;
-	or->rhs = NULL;
+	boolean_and_expression_init(&out->lhs);
+	out->rhs = NULL;
+	out->rhs_count = 0;
 }
 
-void boolean_or_expression_free(BooleanOrExpression *or)
+void boolean_or_expression_free(BooleanOrExpression *out)
 {
-	assert(or != NULL);
+	assert(out != NULL);
 
-	if (or->lhs)
-	{
-		boolean_and_expression_free(or->lhs);
-		free(or->lhs);
-	}
+	boolean_and_expression_free(&out->lhs);
 	
-	if (or->rhs_count > 0)
-	{
-		for (size_t i = 0; i < or->rhs_count; ++i)
-			boolean_and_expression_free(or->rhs + i);
+	for (size_t i = 0; i < out->rhs_count; ++i)
+		boolean_and_expression_free(out->rhs + i);
 
-		free(or->rhs);
-	}
+	free(out->rhs);
 }
 
-static inline Error try_boolean_or_expression_parse(BooleanOrExpression *or, TokenIterator *iter)
+static inline BooleanAndExpression *push_boolean_and_expresion(BooleanOrExpression *out)
 {
+	size_t new_size = (out->rhs_count + 1) * sizeof(BooleanAndExpression);
+	BooleanAndExpression *tmp = realloc(out->rhs, new_size);
+
+	if (!tmp)
+		return NULL;
+
+	out->rhs = tmp;
+	BooleanAndExpression *back = out->rhs + out->rhs_count;
+	++out->rhs_count;
+
+	boolean_and_expression_init(back);
+
+	return back;
+}
+
+static inline Error try_boolean_or_expression_parse(BooleanOrExpression *out, TokenIterator *iter)
+{
+	Error error;
+
+	if ((error = boolean_and_expression_parse(&out->lhs, iter)))
+		return error;
+
+	while (iter->token->type == TOKEN_OR)
+	{
+		++iter->token;
+		BooleanAndExpression *back = push_boolean_and_expression(out);
+
+		if (!back)
+			return ERROR_MEMORY;
+
+		if ((error = boolean_and_expression_parse(back, iter)))
+			return error;
+	}
+
 	return ERROR_NONE;
 }
 
-Error boolean_or_expression_parse(BooleanOrExpression *or, TokenIterator *iter)
+Error boolean_or_expression_parse(BooleanOrExpression *out, TokenIterator *iter)
 {
-	assert(or != NULL);
+	assert(out != NULL);
 	assert(iter != NULL);
 
-	boolean_or_expression_init(or);
+	boolean_or_expression_init(out);
 
-	Error error = try_boolean_or_expression_parse(or, iter);
+	Error error = try_boolean_or_expression_parse(out, iter);
 
 	if (error)
-		boolean_or_expression_free(or);
+		boolean_or_expression_free(out);
 
 	return error;
 }

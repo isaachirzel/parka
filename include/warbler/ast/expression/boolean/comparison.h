@@ -4,10 +4,29 @@
 // local headers
 #include <warbler/ast/expression/bitwise/shift.h>
 
+typedef enum ComparisonType
+{
+	COMPARISON_GREATER,
+	COMPARISON_LESS,
+	COMPARISON_GREATER_EQUAL,
+	COMPARISON_LESS_EQUAL
+} ComparisonType;
+
+typedef struct ComparsionRhs
+{
+	ShiftExpression expr;
+	ComparisonType type;
+} ComparisonRhs;
+
 typedef struct ComparisonExpression
 {
-	ShiftExpression *conditions;
-	size_t condition_count;
+	ShiftExpression lhs;
+	ShiftExpression *rhs;
+	size_t rhs_count;
 } ComparisonExpression;
+
+void comparison_expression_init(ComparisonExpression *out);
+void comparison_expression_free(ComparisonExpression *out);
+Error comparison_expression_parse(ComparisonExpression *out, TokenIterator *iter);
 
 #endif

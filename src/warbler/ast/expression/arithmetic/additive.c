@@ -7,25 +7,25 @@
 #include <stdlib.h>
 #include <assert.h>
 
-void additive_expression_init(AdditiveExpression *additive)
+void additive_expression_init(AdditiveExpression *out)
 {
-	multiplicative_expression_init(&additive->lhs);
+	multiplicative_expression_init(&out->lhs);
 
-	additive->rhs = NULL;
-	additive->rhs_count = 0;
+	out->rhs = NULL;
+	out->rhs_count = 0;
 }
 
-void additive_expression_free(AdditiveExpression *additive)
+void additive_expression_free(AdditiveExpression *out)
 {
-	multiplicative_expression_free(&additive->lhs);
+	multiplicative_expression_free(&out->lhs);
 
-	for (size_t i = 0; i < additive->rhs_count; ++i)
-		multiplicative_expression_free(&additive->rhs[i].expr);
+	for (size_t i = 0; i < out->rhs_count; ++i)
+		multiplicative_expression_free(&out->rhs[i].expr);
 
-	free(additive->rhs);
+	free(out->rhs);
 }
 
-static inline AdditiveRhs *additive_expression_rhs_push(AdditiveExpression *expr, AdditiveType type)
+static inline AdditiveRhs *push_additive_rhs(AdditiveExpression *expr, AdditiveType type)
 {
 	size_t new_size = (expr->rhs_count + 1) * sizeof(AdditiveRhs);
 	AdditiveRhs *tmp = realloc(expr->rhs, new_size);
@@ -56,7 +56,7 @@ Error try_additive_expression_parse(AdditiveExpression *out, TokenIterator *iter
 			? ADDITIVE_ADD
 			: ADDITIVE_SUBTRACT;
 
-		AdditiveRhs *back = additive_expression_rhs_push(out, type);
+		AdditiveRhs *back = push_additive_rhs(out, type);
 
 		if (!back)
 			return ERROR_MEMORY;
@@ -70,17 +70,17 @@ Error try_additive_expression_parse(AdditiveExpression *out, TokenIterator *iter
 	return ERROR_NONE;
 }
 
-Error additive_expression_parse(AdditiveExpression *additive, TokenIterator *iter)
+Error additive_expression_parse(AdditiveExpression *out, TokenIterator *iter)
 {
-	assert(additive != NULL);
+	assert(out != NULL);
 	assert(iter != NULL);
 
-	additive_expression_init(additive);
+	additive_expression_init(out);
 
-	Error error = try_additive_expression_parse(additive, iter);
+	Error error = try_additive_expression_parse(out, iter);
 
 	if (error)
-		additive_expression_free(additive);
+		additive_expression_free(out);
 
 	return error;
 }

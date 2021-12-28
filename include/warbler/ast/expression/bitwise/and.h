@@ -6,8 +6,13 @@
 
 typedef struct BitwiseAndExpression
 {
-	EqualityExpression *conditions;
-	size_t condition_count;
+	EqualityExpression lhs;
+	EqualityExpression *rhs;
+	size_t rhs_count;
 } BitwiseAndExpression;
+
+void bitwise_and_expression_init(BitwiseAndExpression *out);
+void bitwise_and_expression_free(BitwiseAndExpression *out);
+Error bitwise_and_expression_parse(BitwiseAndExpression *out, TokenIterator *iter);
 
 #endif
