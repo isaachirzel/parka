@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/expression/postfix.h>
 
-typedef enum
+typedef enum PrefixType
 {
 	PREFIX_NONE,
 	PREFIX_INCREMENT,
@@ -16,12 +16,12 @@ typedef enum
 typedef struct PrefixExpression
 {
 	// TODO make these have prefix operators intead of prefix type
-	PrefixType type;
 	union
 	{
 		PostfixExpression *postfix;
 		struct PrefixExpression *prefix;
 	};
+	PrefixType type;
 } PrefixExpression;
 
 void prefix_expression_init(PrefixExpression *prefix);

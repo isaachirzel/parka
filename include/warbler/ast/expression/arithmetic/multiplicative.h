@@ -27,5 +27,6 @@ typedef struct MultiplicativeExpression
 void multiplicative_expression_init(MultiplicativeExpression *expr);
 void multiplicative_expression_free(MultiplicativeExpression *expr);
 Error multiplicative_expression_parse(MultiplicativeExpression *out, TokenIterator *iter);
+void multiplicative_expression_print(MultiplicativeExpression *self, unsigned depth);
 
 #endif

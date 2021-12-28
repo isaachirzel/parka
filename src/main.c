@@ -48,8 +48,14 @@ int main(int argc, char *argv[])
 
 	puts(BAR "PARSER" BAR "\n");
 
-	Ast ast;
-	ast_parse(&ast, tokens);
+	AdditiveExpression expr;
+	TokenIterator iter = { hxarray_front(tokens) };
+	additive_expression_parse(&expr, &iter);
+
+	additive_expression_free(&expr);
+
+	// Ast ast;
+	// ast_parse(&ast, tokens);
 
 	free(src);
 	tokenizer_free();

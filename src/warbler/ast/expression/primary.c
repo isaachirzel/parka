@@ -1,37 +1,107 @@
 #include <warbler/ast/expression/primary.h>
 
+// local headers
+#include <warbler/ast/expression/expression.h>
+
+// standard headers
+#include <assert.h>
+#include <stdlib.h>
+
 void expression_free(struct Expression *expression);
 
-void primary_expression_init(PrimaryExpression *primary)
+void primary_expression_init(PrimaryExpression *self)
 {
-	primary->type = PRIMARY_IDENTIFIER;
-	primary->identifier = NULL;
+	assert(self != NULL);
+
+	self->type = PRIMARY_IDENTIFIER;
+	self->identifier = NULL;
 }
 
-void primary_expression_free(PrimaryExpression *primary)
+void primary_expression_free(PrimaryExpression *self)
 {
-	assert(primary != NULL);
+	assert(self != NULL);
 
-	switch (primary->type)
+	switch (self->type)
 	{
 		case PRIMARY_IDENTIFIER:
-			identifier_free(primary->identifier);
+			if (self->identifier)
+				identifier_free(self->identifier);
+
+			free(self->identifier);
 			break;
 
 		case PRIMARY_CONSTANT:
-			constant_free(primary->constant);
+			if (self->constant)
+				constant_free(self->constant);
+
+			free(self->constant);
 			break;
 
 		case PRIMARY_EXPRESSION:
-			expression_free(primary->expression);			
+			if (self->expression)
+				expression_free(self->expression);			
+			
+			free(self->expression);
 			break;
 	}
 }
 
-Error primary_expression_parse(PrimaryExpression *primary, TokenIterator *iter)
+static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
-	assert(primary != NULL);
+	Error error;
+
+	switch (iter->token->type)
+	{
+		case TOKEN_IDENTIFIER:
+			self->type = PRIMARY_IDENTIFIER;
+			self->identifier = malloc(sizeof(Identifier));
+
+			if (!self->identifier)
+				return ERROR_MEMORY;
+
+			if ((error = identifier_parse(self->identifier, iter)))
+				return error;
+			break;
+
+		case TOKEN_LPAREN:
+			self->type = PRIMARY_EXPRESSION;
+			++iter->token;
+			self->expression = malloc(sizeof(Expression));
+
+			if (!self->expression)
+				return ERROR_MEMORY;
+
+			if ((error = expression_parse(self->expression, iter)))
+				return error;
+			break;
+
+		default:
+			puts("constant parse");
+			self->type = PRIMARY_CONSTANT;
+			self->constant = malloc(sizeof(Constant));
+
+			if (!self->constant)
+				return ERROR_MEMORY;
+
+			if ((error = constant_parse(self->constant, iter)))
+				return error;
+			break;
+	}
+
+	return ERROR_NONE;
+}
+
+Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
+{
+	assert(self != NULL);
 	assert(iter != NULL);
 
-	return not_implemented_error();
+	primary_expression_init(self);
+
+	Error error = try_primary_expression_parse(self, iter);
+
+	if (error)
+		primary_expression_free(self);
+
+	return error;
 }

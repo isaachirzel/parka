@@ -1,8 +1,10 @@
 #include <warbler/ast/expression/arithmetic/multiplicative.h>
 
+// local includes
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
 
 void multiplicative_expression_init(MultiplicativeExpression *expr)
@@ -100,4 +102,29 @@ Error multiplicative_expression_parse(MultiplicativeExpression *out, TokenIterat
 		multiplicative_expression_free(out);
 
 	return error;
+}
+
+void multiplicative_expression_print(MultiplicativeExpression *self, unsigned depth)
+{
+	// prefix_expression_print(&self->lhs);
+	print_tabs(depth);
+
+	for (size_t i = 0; i < self->rhs_count; ++i)
+	{
+		switch (self->rhs[i].type)
+		{
+			case MULTIPLICATIVE_MULTIPLY:
+				puts("*");
+				break;
+
+			case MULTIPLICATIVE_DIVIDE:
+				puts("/");
+				break;
+
+			case MULTIPLICATIVE_MODULUS:
+				puts("%");
+				break;
+		}
+	}
+
 }

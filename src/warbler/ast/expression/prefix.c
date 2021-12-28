@@ -3,36 +3,44 @@
 // standard headers
 #include <stdlib.h>
 
-void prefix_expression_init(PrefixExpression *prefix)
+void prefix_expression_init(PrefixExpression *self)
 {
-	prefix->type = PREFIX_NONE;
-	prefix->postfix = NULL;
+	self->type = PREFIX_NONE;
+	self->postfix = NULL;
 }
 
-void prefix_expression_free(PrefixExpression *prefix)
+void prefix_expression_free(PrefixExpression *self)
 {
-
-	if (prefix->type == PREFIX_NONE)
+	if (self->type == PREFIX_NONE)
 	{
-		if (prefix->postfix)
-			postfix_expression_free(prefix->postfix);
+		if (self->postfix)
+			postfix_expression_free(self->postfix);
+
+		free(self->postfix);
 	}
 	else
 	{
-		if (prefix->prefix)
-			prefix_expression_free(prefix->prefix);
+		if (self->prefix)
+			prefix_expression_free(self->prefix);
+
+		free(self->prefix);
 	}
 }
 
-static inline Error try_prefix_expression_parse(PrefixExpression *prefix, TokenIterator *iter)
+static inline Error try_prefix_expression_parse(PrefixExpression *self, TokenIterator *iter)
 {
 	Error error;
 
 	switch (iter->token->type)
 	{
 		default:
-			prefix->type = PREFIX_NONE;
-			if ((error = postfix_expression_parse(prefix->postfix, iter)))
+			self->type = PREFIX_NONE;
+			self->postfix = malloc(sizeof(PostfixExpression));
+
+			if (!self->postfix)
+				return ERROR_MEMORY;
+
+			if ((error = postfix_expression_parse(self->postfix, iter)))
 				return error;
 			break;
 	}
@@ -40,17 +48,17 @@ static inline Error try_prefix_expression_parse(PrefixExpression *prefix, TokenI
 	return ERROR_NONE;
 }
 
-Error prefix_expression_parse(PrefixExpression *prefix, TokenIterator *iter)
+Error prefix_expression_parse(PrefixExpression *self, TokenIterator *iter)
 {
-	assert(prefix != NULL);
+	assert(self != NULL);
 	assert(iter != NULL);
 
-	prefix_expression_init(prefix);
+	prefix_expression_init(self);
 
-	Error error = try_prefix_expression_parse(prefix, iter);
+	Error error = try_prefix_expression_parse(self, iter);
 
 	if (error)
-		prefix_expression_free(prefix);
+		prefix_expression_free(self);
 
 	return error;
 }

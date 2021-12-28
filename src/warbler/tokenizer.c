@@ -363,8 +363,8 @@ static Error get_digit_token(Token *out, SourceLocation *location)
 
 	out->string.length = location->pos - out->string.data;
 	out->type = is_float
-		? TOKEN_FLOAT
-		: TOKEN_INTEGER;
+		? TOKEN_FLOAT_LITERAL
+		: TOKEN_INTEGER_LITERAL;
 
 	return ERROR_NONE;
 }
@@ -442,11 +442,11 @@ static Error get_quote_token(Token *out, SourceLocation *location)
 
 	if (out->string.data[0] == '\'')
 	{
-		out->type = TOKEN_CHAR;
+		out->type = TOKEN_CHAR_LITERAL;
 	}
 	else if (out->string.data[0] == '\"')
 	{
-		out->type = TOKEN_STRING;
+		out->type = TOKEN_STRING_LITERAL;
 	}
 		
 	return ERROR_NONE;
@@ -514,7 +514,6 @@ static inline Error assure_tokens_size(HxArray *tokens)
 static inline Error push_next_token(HxArray *tokens, SourceLocation *location)
 {
 	Token token;
-
 	Error error;
 
 	if ((error = get_next_token(&token, location)))
@@ -530,10 +529,10 @@ static inline bool is_dynamic_token(TokenType type)
 {
 	switch (type)
 	{
-		case TOKEN_INTEGER:
-		case TOKEN_FLOAT:
-		case TOKEN_STRING:
-		case TOKEN_CHAR:
+		case TOKEN_INTEGER_LITERAL:
+		case TOKEN_FLOAT_LITERAL:
+		case TOKEN_STRING_LITERAL:
+		case TOKEN_CHAR_LITERAL:
 			return true;
 
 		default:

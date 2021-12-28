@@ -18,7 +18,7 @@ typedef struct PostfixExpression
 {
 	union
 	{
-		struct PostfixExpression *postifx;
+		struct PostfixExpression *postfix;
 		PrimaryExpression *primary;
 	};
 	PostfixType type;

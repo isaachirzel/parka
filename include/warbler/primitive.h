@@ -24,13 +24,4 @@ typedef int64_t		i64;
 typedef float		f32;
 typedef double		f64;
 
-#if sizeof(float) != 4
-#error "Warbler is not compatible on this system, 32 bit floats are requred"
-#endif
-
-#if sizeof(double) != 8
-#error "Warbler is not compatible on this system, 64 bit double are required"
-#endif
-
-
 #endif

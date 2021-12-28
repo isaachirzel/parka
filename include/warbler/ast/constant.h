@@ -1,21 +1,31 @@
 #ifndef WARBLER_AST_CONSTANT_H
 #define WARBLER_AST_CONSTANT_H
 
+// local headers
 #include <warbler/error.h>
 #include <warbler/token.h>
+#include <warbler/primitive.h>
 
 typedef enum ConstantType
 {
-	CONSTANT_INTEGER,
 	CONSTANT_CHAR,
 	CONSTANT_STRING,
+	CONSTANT_INTEGER,
 	CONSTANT_FLOAT
 } ConstantType;
 
 typedef struct Constant
 {
+	union
+	{
+		u32 character;
+		char *string;
+		i64 integer;
+		u64 uinteger;
+		f32 float32;
+		f64 float64;
+	};
 	ConstantType type;
-	char *text;
 } Constant;
 
 void constant_init(Constant *constant);

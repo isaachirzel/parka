@@ -24,6 +24,7 @@ typedef struct AdditiveExpression
 
 void additive_expression_init(AdditiveExpression *additive);
 void additive_expression_free(AdditiveExpression *additive);
-Error additive_expression_parse(AdditiveExpression *additive, TokenIterator *iter);
+Error additive_expression_parse(AdditiveExpression *out, TokenIterator *iter);
+void additive_expression_print(AdditiveExpression *self, unsigned depth);
 
 #endif
