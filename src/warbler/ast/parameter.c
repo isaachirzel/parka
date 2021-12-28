@@ -15,16 +15,20 @@ void parameter_free(Parameter *parameter)
 	typename_free(&parameter->type);
 }
 
-static inline try_parameter_parse(Parameter *parameter, TokenIterator *iter)
+static inline Error try_parameter_parse(Parameter *parameter, TokenIterator *iter)
 {
-	try(identifier_parse(&parameter->name, iter));
+	Error error;
+
+	if ((error = identifier_parse(&parameter->name, iter)))
+		return error;
 
 	if (iter->token->type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 
 	++iter->token;
 
-	try(typename_parse(&parameter->type, iter));
+	if ((error = typename_parse(&parameter->type, iter)))
+		return error;
 
 	return ERROR_NONE;
 }
@@ -79,6 +83,8 @@ static inline Error increment_parameters(ParameterList *list)
 
 Error try_parameter_list_parse(ParameterList *list, TokenIterator *iter)
 {
+	Error error;
+
 	if (iter->token->type != TOKEN_LPAREN)
 		return ERROR_ARGUMENT;
 
@@ -88,11 +94,13 @@ Error try_parameter_list_parse(ParameterList *list, TokenIterator *iter)
 	{
 		while (true)
 		{
-			try(increment_parameters(list));
+			if ((error = increment_parameters(list)))
+				return error;
 
 			Parameter *back = list->parameters + (list->parameter_count - 1);
 
-			try(parameter_parse(back, iter));
+			if ((error = parameter_parse(back, iter)))
+				return error;
 
 			if (iter->token->type != TOKEN_COMMA)
 				break;

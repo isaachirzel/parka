@@ -12,7 +12,7 @@ typedef enum ComparisonType
 	COMPARISON_LESS_EQUAL
 } ComparisonType;
 
-typedef struct ComparsionRhs
+typedef struct ComparisonRhs
 {
 	ShiftExpression expr;
 	ComparisonType type;
@@ -21,7 +21,7 @@ typedef struct ComparsionRhs
 typedef struct ComparisonExpression
 {
 	ShiftExpression lhs;
-	ShiftExpression *rhs;
+	ComparisonRhs *rhs;
 	size_t rhs_count;
 } ComparisonExpression;
 

@@ -25,7 +25,7 @@ void boolean_or_expression_free(BooleanOrExpression *out)
 	free(out->rhs);
 }
 
-static inline BooleanAndExpression *push_boolean_and_expresion(BooleanOrExpression *out)
+static inline BooleanAndExpression *push_boolean_and_expression(BooleanOrExpression *out)
 {
 	size_t new_size = (out->rhs_count + 1) * sizeof(BooleanAndExpression);
 	BooleanAndExpression *tmp = realloc(out->rhs, new_size);

@@ -7,7 +7,7 @@ void conditional_expression_init(ConditionalExpression *conditional)
 {
 	assert(conditional != NULL);
 
-	conditional->lhs = malloc(sizeof(BooleanOrExpression));
+	boolean_or_expression_init(&conditional->lhs);
 	conditional->type = CONDITIONAL_BINARY;
 }
 
@@ -15,13 +15,16 @@ void conditional_expression_free(ConditionalExpression *conditional)
 {
 	assert(conditional != NULL);
 
-	boolean_or_expression_free(conditional->lhs);
-	free(conditional->lhs);
+	boolean_or_expression_free(&conditional->lhs);
 }
 
 static inline Error try_conditional_expression_parse(ConditionalExpression *out, TokenIterator *iter)
 {
-	
+	Error error;
+
+	if ((error = boolean_or_expression_parse(&out->lhs, iter)))
+		return error;
+
 	return ERROR_NONE;
 }
 

@@ -100,8 +100,8 @@ const TokenInfo token_info[] =
 	{ "||", TOKEN_OR },
 	{ "==", TOKEN_EQUALS },
 	{ "!=", TOKEN_NEQUALS },
-	{ ">=", TOKEN_GTOET },
-	{ "<=", TOKEN_LTOET },
+	{ ">=", TOKEN_GREATER_EQUALS },
+	{ "<=", TOKEN_LESS_EQUALS },
 	{ ">>", TOKEN_RSHIFT },
 	{ "<<", TOKEN_LSHIFT },
 	{ "->", TOKEN_SINGLE_ARROW },
@@ -198,7 +198,11 @@ void init_char_types()
 
 Error tokenizer_init()
 {
-	try(init_token_types());
+	Error error;
+
+	if ((error = init_token_types()))
+		return error;
+
 	init_char_types();
 
 	return ERROR_NONE;
@@ -297,12 +301,15 @@ static Error get_identifier_token(Token *out, SourceLocation *location)
 	assert(out != NULL);
 	assert(location != NULL);
 
+	Error error;
+
 	while (is_char_alphanumeric(*location->pos))
 		++location->pos;
 
 	out->string.length = location->pos - out->string.data;
 
-	try(get_token_type(out));
+	if ((error = get_token_type(out)))
+		return error;
 
 	return ERROR_NONE;
 }
@@ -312,9 +319,12 @@ static Error get_separator_token(Token *out, SourceLocation *location)
 	assert(out != NULL);
 	assert(location != NULL);
 
+	Error error;
+
 	out->string.length = 1;
 
-	try(get_token_type(out));
+	if ((error = get_token_type(out)))
+		return error;
 
 	return ERROR_NONE;
 }
@@ -398,12 +408,15 @@ static Error get_operator_token(Token *out, SourceLocation *location)
 	assert(out != NULL);
 	assert(location != NULL);
 
+	Error error;
+
 	while (get_char_type(*location->pos) == CHAR_OPERATOR)
 		++location->pos;
 	
 	out->string.length = location->pos - out->string.data;
 	
-	try(get_token_type(out));
+	if ((error = get_token_type(out)))
+		return error;
 
 	return ERROR_NONE;
 }
@@ -502,7 +515,11 @@ static inline Error push_next_token(HxArray *tokens, SourceLocation *location)
 {
 	Token token;
 
-	try(get_next_token(&token, location));
+	Error error;
+
+	if ((error = get_next_token(&token, location)))
+		return error;
+
 	if (!hxarray_push(tokens, &token))
 		return ERROR_MEMORY;
 	

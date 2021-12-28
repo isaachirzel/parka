@@ -14,7 +14,7 @@ typedef enum ConditionalType
 
 typedef struct ConditionalExpression
 {
-	BooleanOrExpression *lhs;
+	BooleanOrExpression lhs;
 	ConditionalType type;
 } ConditionalExpression;
 

@@ -69,22 +69,29 @@ static inline Error function_parse_body(Function *function, TokenIterator *iter)
 
 static inline Error try_function_parse(Function *function, TokenIterator *iter)
 {
+	Error error;
+
 	if (iter->token->type != TOKEN_FUNC)
 		return ERROR_ARGUMENT;
 
 	++iter->token;
 
-	try(identifier_parse(&function->name, iter));
-	try(parameter_list_parse(&function->parameters, iter));
+	if ((error = identifier_parse(&function->name, iter)))
+		return error;
 
+	if ((error = parameter_list_parse(&function->parameters, iter)))
+		return error;
+		
 	if (iter->token->type == TOKEN_SINGLE_ARROW)
 	{
 		++iter->token;
 
-		try(typename_parse(&function->return_type, iter));
+		if ((error = typename_parse(&function->return_type, iter)))
+			return error;
 	}
 
-	try(function_parse_body(function, iter));
+	if ((error = function_parse_body(function, iter)))
+		return error;
 
 	return ERROR_NONE;
 }

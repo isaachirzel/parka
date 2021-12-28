@@ -20,24 +20,25 @@ void equality_expression_free(EqualityExpression *out)
 	comparison_expression_free(&out->lhs);
 	
 	for (size_t i = 0; i < out->rhs_count; ++i)
-		comparison_expression_free(out->rhs + i);
+		comparison_expression_free(&out->rhs[i].expr);
 
 	free(out->rhs);
 }
 
-static inline ComparisonExpression *push_bitwise_and_expresion(EqualityExpression *out)
+static inline EqualityRhs *push_equality_rhs(EqualityExpression *out, EqualityType type)
 {
-	size_t new_size = (out->rhs_count + 1) * sizeof(ComparisonExpression);
-	ComparisonExpression *tmp = realloc(out->rhs, new_size);
+	size_t new_size = (out->rhs_count + 1) * sizeof(EqualityRhs);
+	EqualityRhs *tmp = realloc(out->rhs, new_size);
 
 	if (!tmp)
 		return NULL;
 
 	out->rhs = tmp;
-	ComparisonExpression *back = out->rhs + out->rhs_count;
+	EqualityRhs *back = out->rhs + out->rhs_count;
 	++out->rhs_count;
 
-	comparison_expression_init(back);
+	comparison_expression_init(&back->expr);
+	back->type = type;
 
 	return back;
 }
@@ -49,15 +50,36 @@ static inline Error try_equality_expression_parse(EqualityExpression *out, Token
 	if ((error = comparison_expression_parse(&out->lhs, iter)))
 		return error;
 
-	while (iter->token->type == TOKEN_OR)
+	while (true)
 	{
+		bool should_break = false;
+		EqualityType type;
+
+		switch (iter->token->type)
+		{
+			case TOKEN_EQUALS:
+				type = EQUALITY_EQUALS;
+				break;
+
+			case TOKEN_NEQUALS:
+				type = EQUALITY_NOT_EQUALS;
+				break;
+
+			default:
+				should_break = true;
+				break;
+		}
+
+		if (should_break)
+			break;
+
 		++iter->token;
-		ComparisonExpression *back = push_comparison_expression(out);
+		EqualityRhs *back = push_equality_rhs(out, type);
 
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = comparison_expression_parse(back, iter)))
+		if ((error = comparison_expression_parse(&back->expr, iter)))
 			return error;
 	}
 

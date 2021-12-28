@@ -20,14 +20,14 @@ void comparison_expression_free(ComparisonExpression *out)
 	shift_expression_free(&out->lhs);
 	
 	for (size_t i = 0; i < out->rhs_count; ++i)
-		shift_expression_free(out->rhs + i);
+		shift_expression_free(&out->rhs[i].expr);
 
 	free(out->rhs);
 }
 
 static inline ComparisonRhs *push_comparison_rhs(ComparisonExpression *out, ComparisonType type)
 {
-	size_t new_size = (out->rhs_count + 1) * sizeof(ComparsionRhs);
+	size_t new_size = (out->rhs_count + 1) * sizeof(ComparisonRhs);
 	ComparisonRhs *tmp = realloc(out->rhs, new_size);
 
 	if (!tmp)
@@ -53,23 +53,23 @@ static inline Error try_comparison_expression_parse(ComparisonExpression *out, T
 	while (true)
 	{
 		bool should_break = false;
-		MultiplicativeType type;
+		ComparisonType type;
 
 		switch (iter->token->type)
 		{
 			case TOKEN_GREATER:
-				type = COMPARISON_GREATER
+				type = COMPARISON_GREATER;
 				break;
 
 			case TOKEN_LESS:
 				type = COMPARISON_LESS;
 				break;
 
-			case TOKEN_GREATER_EQUAL:
+			case TOKEN_GREATER_EQUALS:
 				type = COMPARISON_GREATER_EQUAL;
 				break;
 
-			case TOKEN_LESS_EQUAL:
+			case TOKEN_LESS_EQUALS:
 				type = COMPARISON_LESS_EQUAL;
 				break;
 

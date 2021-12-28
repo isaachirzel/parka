@@ -4,10 +4,22 @@
 // local headers
 #include <warbler/ast/expression/boolean/comparison.h>
 
+typedef enum EqualityType
+{
+	EQUALITY_EQUALS,
+	EQUALITY_NOT_EQUALS
+} EqualityType;
+
+typedef struct EqualityRhs
+{
+	ComparisonExpression expr;
+	EqualityType type;
+} EqualityRhs;
+
 typedef struct EqualityExpression
 {
 	ComparisonExpression lhs;
-	ComparisonExpression *rhs;
+	EqualityRhs *rhs;
 	size_t rhs_count;
 } EqualityExpression;
 

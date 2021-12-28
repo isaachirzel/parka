@@ -1,6 +1,7 @@
 #ifndef WARBLER_AST_EXPRESSION_BITWISE_SHIFT_H
 #define WARBLER_AST_EXPRESSION_BITWISE_SHIFT_H
 
+// local headers
 #include <warbler/ast/expression/arithmetic/additive.h>
 
 typedef enum ShiftType
@@ -9,17 +10,21 @@ typedef enum ShiftType
 	SHIFT_RIGHT
 } ShiftType;
 
-typedef struct ShiftExpressionRight
+typedef struct ShiftRhs
 {
-	AdditiveExpression *expression;
+	AdditiveExpression expr;
 	ShiftType type;
-} ShiftExpressionRight;
+} ShiftRhs;
 
 typedef struct ShiftExpression
 {
-	AdditiveExpression *expression;
-	ShiftExpressionRight *shifts;
-	size_t shift_count;
+	AdditiveExpression lhs;
+	ShiftRhs *rhs;
+	size_t rhs_count;
 } ShiftExpression;
+
+void shift_expression_init(ShiftExpression *out);
+void shift_expression_free(ShiftExpression *out);
+Error shift_expression_parse(ShiftExpression *out, TokenIterator *iter);
 
 #endif

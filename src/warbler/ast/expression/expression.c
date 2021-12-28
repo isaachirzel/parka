@@ -12,7 +12,10 @@ void expression_free(Expression *expression)
 
 static inline Error try_expression_parse(Expression *expression, TokenIterator *iter)
 {
-	try(assignment_expression_parse(&expression->assignment, iter));
+	Error error;
+	
+	if ((error = assignment_expression_parse(&expression->assignment, iter)))
+		return error;
 
 	return ERROR_NONE;
 }

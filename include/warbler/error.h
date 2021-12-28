@@ -32,8 +32,5 @@ static inline Error _not_implemented_error(const char *func_name)
 }
 
 #define not_implemented_error() _not_implemented_error(__func__);
-#define try(expression) { Error error = expression; if (error) return error; }
-#define try_allocate(var) { var = malloc(sizeof(*var)); if (!var) return ERROR_MEMORY; }
-#define try_cleanup(expression, catch_statement) { Error error = expression; if (error) { catch_statement return error; } }
 
 #endif
