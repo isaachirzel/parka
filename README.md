@@ -1,11 +1,13 @@
 # Warbler Programming Language
-> NOTICE: This project is prealpha-level software and is not in a useable state as of now.
+> NOTICE: This project is prealpha-level and under active development. It is not currently in a useable state.
 # Brief
 
 Warbler aims to an easy to use, fast, and safe language with native C inter-op. This is planned to
-be implemented by giving the option to compile to machine code through use of LLVM or JIT'd by use
+be implemented by giving the option to compile to machine code through use of LLVM or interpreted by use
 of an inbuilt VM. This would allow warbler to be used to develop applications as well as be used as
 a scripting language.
+
+# Purpose
 
 This project has primary been made as a learning tool for myself to better understand
 compiler design, standard language principles, and application development in C.
@@ -17,20 +19,20 @@ the code easy to read for this familiar with C like languages, but allow for a m
 
 Below is the syntax of a hello world program.
 ```
-import std::io;
+import std::io
 
-func main()
+func main(args: String[])
 {
-	print_greeting();
+	var message = get_greeting()
+	std::io::print(message)
 }
 
-func print_greeting()
+func get_greeting() -> char[]
 {
-	var msg = "Hello, world!";
-	std::io::print(msg);
+	return "Hello, world!"
 }
 ```
-# Current Status
+# Status
 
 * Lexer is functional although not all token types are implemented. An overhaul is planned for
 	greater efficiency
@@ -44,7 +46,7 @@ func print_greeting()
 
 # Dependencies
 
-* [C-Utils](https://github.com/ikehirzel/c-utils)
+* [c-utils](https://github.com/ikehirzel/c-utils)
 
 # License
 
