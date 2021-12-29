@@ -7,35 +7,35 @@
 #include <stdlib.h>
 #include <assert.h>
 
-void multiplicative_expression_init(MultiplicativeExpression *expr)
+void multiplicative_expression_init(MultiplicativeExpression *self)
 {
-	prefix_expression_init(&expr->lhs);
+	prefix_expression_init(&self->lhs);
 	
-	expr->rhs = NULL;
-	expr->rhs_count = 0;
+	self->rhs = NULL;
+	self->rhs_count = 0;
 }
 
-void multiplicative_expression_free(MultiplicativeExpression *expr)
+void multiplicative_expression_free(MultiplicativeExpression *self)
 {
-	prefix_expression_free(&expr->lhs);
+	prefix_expression_free(&self->lhs);
 
-	for (size_t i = 0; i < expr->rhs_count; ++i)
-		prefix_expression_free(&expr->rhs[i].expr);
+	for (size_t i = 0; i < self->rhs_count; ++i)
+		prefix_expression_free(&self->rhs[i].expr);
 
-	free(expr->rhs);
+	free(self->rhs);
 }
 
-static inline MultiplicativeRhs *multiplicative_expression_rhs_push(MultiplicativeExpression *expr, MultiplicativeType type)
+static inline MultiplicativeRhs *multiplicative_expression_rhs_push(MultiplicativeExpression *self, MultiplicativeType type)
 {
-	size_t new_size = (expr->rhs_count + 1) * sizeof(MultiplicativeRhs);
-	MultiplicativeRhs *tmp = realloc(expr->rhs, new_size);
+	size_t new_size = (self->rhs_count + 1) * sizeof(MultiplicativeRhs);
+	MultiplicativeRhs *tmp = realloc(self->rhs, new_size);
 
 	if (!tmp)
 		return NULL;
 
-	expr->rhs = tmp;
-	MultiplicativeRhs *back = expr->rhs + expr->rhs_count;
-	++expr->rhs_count;
+	self->rhs = tmp;
+	MultiplicativeRhs *back = self->rhs + self->rhs_count;
+	++self->rhs_count;
 
 	prefix_expression_init(&back->expr);
 	back->type = type;
@@ -43,11 +43,11 @@ static inline MultiplicativeRhs *multiplicative_expression_rhs_push(Multiplicati
 	return back;
 }
 
-Error try_multiplicative_expression_parse(MultiplicativeExpression *out, TokenIterator *iter)
+Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
 {
 	Error error;
 
-	if ((error = prefix_expression_parse(&out->lhs, iter)))
+	if ((error = prefix_expression_parse(&self->lhs, iter)))
 		return error;
 
 	while (true)
@@ -77,7 +77,7 @@ Error try_multiplicative_expression_parse(MultiplicativeExpression *out, TokenIt
 		if (should_break)
 			break;
 
-		MultiplicativeRhs *back = multiplicative_expression_rhs_push(out, type);
+		MultiplicativeRhs *back = multiplicative_expression_rhs_push(self, type);
 
 		if (!back)
 			return ERROR_MEMORY;
@@ -91,15 +91,15 @@ Error try_multiplicative_expression_parse(MultiplicativeExpression *out, TokenIt
 	return ERROR_NONE;
 }
 
-Error multiplicative_expression_parse(MultiplicativeExpression *out, TokenIterator *iter)
+Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(iter != NULL);
 
-	Error error = try_multiplicative_expression_parse(out, iter);
+	Error error = try_multiplicative_expression_parse(self, iter);
 
 	if (error)
-		multiplicative_expression_free(out);
+		multiplicative_expression_free(self);
 
 	return error;
 }

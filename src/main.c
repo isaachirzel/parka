@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 		return ERROR_FILE;
 
 	preprocess(src);
-	printf("success:\n%s\n", src);
+	printf("Source:\n%s\n", src);
 
 	Error error = tokenizer_init();
 	if (error)
@@ -34,7 +34,6 @@ int main(int argc, char *argv[])
 
 	puts(BAR "TOKENIZER" BAR "\n");
 
-
 	HxArray *tokens;
 	error = tokenize(&tokens, src);
 	if (error)
@@ -44,6 +43,13 @@ int main(int argc, char *argv[])
 		tokenizer_free();
 
 		return (int)error;
+	}
+
+	for (size_t i = 0; i < hxarray_length(tokens); ++i)
+	{
+		Token *token = (Token*)hxarray_at(tokens, i);
+		printf("Token\t%d\t:\t", (int)token->type);
+		string_println(&token->string);
 	}
 
 	puts(BAR "PARSER" BAR "\n");

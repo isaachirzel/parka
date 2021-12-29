@@ -45,9 +45,8 @@ typedef struct TokenInfo
 	TokenType value;
 } TokenInfo;
 
-const TokenInfo token_info[] =
+const TokenInfo keywords[] =
 {
-	// misc keywords
 	{ "func", TOKEN_FUNC },
 	{ "var", TOKEN_VAR },
 	{ "type", TOKEN_TYPE },
@@ -61,31 +60,20 @@ const TokenInfo token_info[] =
 	{ "else", TOKEN_ELSE },
 	{ "switch", TOKEN_SWITCH },
 	{ "case", TOKEN_CASE },
-
-	// typenames
 	{ "struct", TOKEN_STRUCT },
 	{ "union", TOKEN_UNION },
 	{ "enum", TOKEN_ENUM },
 	{ "true", TOKEN_TRUE },
 	{ "false", TOKEN_FALSE },
-	{ ":", TOKEN_COLON },
+	{ "import", TOKEN_IMPORT },
+	{ "export", TOKEN_EXPORT },
+	{ "and", TOKEN_AND },
+	{ "or", TOKEN_OR },
+	{ "xor", TOKEN_XOR },
+	{ "not", TOKEN_NOT },
 
-	// separators
-	{ "(", TOKEN_LPAREN },
-	{ ")", TOKEN_RPAREN },
-	{ "[", TOKEN_LBRACK },
-	{ "]", TOKEN_RBRACK },
-	{ "{", TOKEN_LBRACE },
-	{ "}", TOKEN_RBRACE },
-	{ ".", TOKEN_DOT },
-	{ ",", TOKEN_COMMA },
-	{ ";", TOKEN_SEMICOLON },
-
-	// unary operators
 	{ "++", TOKEN_INCREMENT },
 	{ "--", TOKEN_DECREMENT },
-
-	// binary operators
 	{ "*",  TOKEN_ASTERISK },
 	{ "/",  TOKEN_SLASH },
 	{ "+",  TOKEN_PLUS },
@@ -96,8 +84,6 @@ const TokenInfo token_info[] =
 	{ "|",  TOKEN_PIPELINE },
 	{ "^",  TOKEN_CARROT },
 	{ "**", TOKEN_POW },
-	{ "&&", TOKEN_AND },
-	{ "||", TOKEN_OR },
 	{ "==", TOKEN_EQUALS },
 	{ "!=", TOKEN_NEQUALS },
 	{ ">=", TOKEN_GREATER_EQUALS },
@@ -106,22 +92,18 @@ const TokenInfo token_info[] =
 	{ "<<", TOKEN_LSHIFT },
 	{ "->", TOKEN_SINGLE_ARROW },
 	{ "=>", TOKEN_DOUBLE_ARROW },
-
-	// assign operators
 	{ "=",  TOKEN_ASSIGN },
 	{ "+=", TOKEN_ADD_ASSIGN },
 	{ "-=", TOKEN_SUBTRACT_ASSIGN },
 	{ "*=", TOKEN_MULTIPLY_ASSIGN },
 	{ "/=", TOKEN_DIVIDE_ASSIGN },
 	{ "%=", TOKEN_MODULUS_ASSIGN },
-
-	// modules
-	{ "import", TOKEN_IMPORT },
-	{ "export", TOKEN_EXPORT },
+	{ ":=", TOKEN_BECOME_ASSIGN },
+	{ ":", TOKEN_COLON },
 	{ "::", TOKEN_SCOPE }
 };
 
-const size_t token_info_count = sizeof(token_info) / sizeof(*token_info);
+const size_t keyword_count = sizeof(keywords) / sizeof(*keywords);
 
 // data
 
@@ -134,12 +116,12 @@ Error init_token_types()
 {
 	token_types = hxtable_create_of(TokenType);
 
-	if (!token_types || !hxtable_reserve(token_types, token_info_count))
+	if (!token_types || !hxtable_reserve(token_types, keyword_count))
 		return ERROR_MEMORY;
 
-	for (size_t i = 0; i < token_info_count; ++i)
+	for (size_t i = 0; i < keyword_count; ++i)
 	{
-		const TokenInfo *info = token_info + i;
+		const TokenInfo *info = keywords + i;
 		hxtable_set(token_types, info->key, &info->value);
 	}
 
@@ -261,9 +243,9 @@ const char *get_token_string(TokenType type)
 	else if (type == TOKEN_END_OF_FILE)
 		return "<end of file>";
 
-	for (size_t i = 0; i < token_info_count; ++i)
+	for (size_t i = 0; i < keyword_count; ++i)
 	{
-		const TokenInfo *info = token_info + i;
+		const TokenInfo *info = keywords + i;
 		if (info->value == type)
 			return info->key;
 	}
@@ -314,17 +296,51 @@ static Error get_identifier_token(Token *out, SourceLocation *location)
 	return ERROR_NONE;
 }
 
-static Error get_separator_token(Token *out, SourceLocation *location)
+static Error get_separator_token(Token *self, SourceLocation *location)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(location != NULL);
 
-	Error error;
+	self->string.length = 1;
 
-	out->string.length = 1;
+	switch (self->string.data[0])
+	{
+		case '(':
+			self->type = TOKEN_LPAREN;
+			break;
 
-	if ((error = get_token_type(out)))
-		return error;
+		case ')':
+			self->type = TOKEN_RPAREN;
+			break;
+
+		case '[':
+			self->type = TOKEN_LBRACK;
+			break;
+
+		case ']':
+			self->type = TOKEN_RBRACK;
+			break;
+
+		case '{':
+			self->type = TOKEN_LBRACE;
+			break;
+
+		case '}':
+			self->type = TOKEN_RBRACE;
+			break;
+
+		case ',':
+			self->type = TOKEN_COMMA;
+			break;
+
+		case ';':
+			self->type = TOKEN_SEMICOLON;
+			break;
+		
+		default:
+			print_errorf("invalid character given for seprarator token: '%c'\n", self->string.data[0]);
+			return ERROR_ARGUMENT;
+	}
 
 	return ERROR_NONE;
 }
@@ -403,20 +419,124 @@ static Error get_dot_token(Token *out, SourceLocation *location)
 	return ERROR_NONE;
 }
 
-static Error get_operator_token(Token *out, SourceLocation *location)
+static inline void get_plus_operator(Token *self)
 {
-	assert(out != NULL);
+	switch (self->string.data[1])
+	{
+		case '+':
+			self->type = TOKEN_INCREMENT;
+			self->string.length = 2;
+			break;
+
+		case '=':
+			self->type = TOKEN_ADD_ASSIGN;
+			self->string.length = 2;
+			break;
+
+		default:
+			self->type = TOKEN_PLUS;
+			self->string.length = 1;
+			break;
+	}
+}
+
+static inline Error get_hyphen_operator(Token *self)
+{
+	switch (self->string.data[1])
+	{
+		case '-':
+			self->type = TOKEN_DECREMENT;
+			self->string.length = 2;
+			break;
+
+		case '=':
+			self->type = TOKEN_SUBTRACT_ASSIGN;
+			self->string.length = 2;
+			break;
+
+		case '>':
+			self->type = TOKEN_SINGLE_ARROW;
+			self->string.length = 2;
+			break;
+
+		default:
+			self->type = TOKEN_MINUS;
+			self->string.length = 1;
+			break;
+	}
+}
+
+static Error get_operator_token(Token *self, SourceLocation *location)
+{
+	assert(self != NULL);
 	assert(location != NULL);
 
-	Error error;
+	char character = self->string.data[0];
 
-	while (get_char_type(*location->pos) == CHAR_OPERATOR)
-		++location->pos;
-	
-	out->string.length = location->pos - out->string.data;
-	
-	if ((error = get_token_type(out)))
-		return error;
+	switch (character)
+	{
+		case '+': // +, ++, +=
+			get_plus_operator(self);
+			break;
+
+		case '-': // -, --, -=, ->
+			get_hyphen_operator(self);
+			break;
+
+		case '*': // *, **, *=
+			get_asterisk_operator(self);
+			break;
+
+		case '/': // /, /=
+			get_slash_operator(self);
+			break;
+
+		case '<': // <, <<, <=
+			get_langbrack_operator(self);
+			break;
+
+		case '>': // >, >>, >=
+			get_rangbrack_operator(self);
+			break;
+
+		case '&': // &, &=
+			get_ampersand_operator(self);
+			break;
+
+		case '|': // |, |=
+			get_pipeline_operator(self);
+			break;
+
+		case '^': // ^, ^=
+			get_carrot_operator(self);
+			break;
+
+		case '=': // =, ==, =>
+			get_equals_operator(self);
+			break;
+
+		case '!': // !, !=
+			get_exclamation_operator(self);
+			break;
+
+		case '?': // ?, ??
+			get_question_operator(self);
+			break;
+
+		case '%=': // %, %=
+			get_modulus_operator(self);
+			break;
+
+		case ':': // :, ::, :=
+			get_colon_operator(self);
+			break;
+
+		default:
+			print_errorf("invalid operator token character: %c", character);
+			return ERROR_ARGUMENT;
+	}
+
+	location->pos += self->string.length;
 
 	return ERROR_NONE;
 }
@@ -567,9 +687,6 @@ Error tokenize(HxArray **out, const char *src)
 		}
 
 		Token *back = hxarray_back(tokens);
-
-		fputs("Got token: ", stdout);
-		string_println(&back->string);
 
 		if (back->type == TOKEN_END_OF_FILE)
 			break;

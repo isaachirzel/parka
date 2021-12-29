@@ -7,22 +7,22 @@
 #include <stdlib.h>
 #include <assert.h>
 
-void additive_expression_init(AdditiveExpression *out)
+void additive_expression_init(AdditiveExpression *self)
 {
-	multiplicative_expression_init(&out->lhs);
+	multiplicative_expression_init(&self->lhs);
 
-	out->rhs = NULL;
-	out->rhs_count = 0;
+	self->rhs = NULL;
+	self->rhs_count = 0;
 }
 
-void additive_expression_free(AdditiveExpression *out)
+void additive_expression_free(AdditiveExpression *self)
 {
-	multiplicative_expression_free(&out->lhs);
+	multiplicative_expression_free(&self->lhs);
 
-	for (size_t i = 0; i < out->rhs_count; ++i)
-		multiplicative_expression_free(&out->rhs[i].expr);
+	for (size_t i = 0; i < self->rhs_count; ++i)
+		multiplicative_expression_free(&self->rhs[i].expr);
 
-	free(out->rhs);
+	free(self->rhs);
 }
 
 static inline AdditiveRhs *push_additive_rhs(AdditiveExpression *expr, AdditiveType type)
@@ -43,11 +43,11 @@ static inline AdditiveRhs *push_additive_rhs(AdditiveExpression *expr, AdditiveT
 	return back;
 }
 
-Error try_additive_expression_parse(AdditiveExpression *out, TokenIterator *iter)
+Error try_additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 {
 	Error error;
 
-	if ((error = multiplicative_expression_parse(&out->lhs, iter)))
+	if ((error = multiplicative_expression_parse(&self->lhs, iter)))
 		return error;
 
 	while (iter->token->type == TOKEN_PLUS || iter->token->type == TOKEN_MINUS)
@@ -56,7 +56,7 @@ Error try_additive_expression_parse(AdditiveExpression *out, TokenIterator *iter
 			? ADDITIVE_ADD
 			: ADDITIVE_SUBTRACT;
 
-		AdditiveRhs *back = push_additive_rhs(out, type);
+		AdditiveRhs *back = push_additive_rhs(self, type);
 
 		if (!back)
 			return ERROR_MEMORY;
@@ -70,17 +70,17 @@ Error try_additive_expression_parse(AdditiveExpression *out, TokenIterator *iter
 	return ERROR_NONE;
 }
 
-Error additive_expression_parse(AdditiveExpression *out, TokenIterator *iter)
+Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(iter != NULL);
 
-	additive_expression_init(out);
+	additive_expression_init(self);
 
-	Error error = try_additive_expression_parse(out, iter);
+	Error error = try_additive_expression_parse(self, iter);
 
 	if (error)
-		additive_expression_free(out);
+		additive_expression_free(self);
 
 	return error;
 }

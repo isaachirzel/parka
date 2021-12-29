@@ -18,12 +18,10 @@ typedef struct Constant
 {
 	union
 	{
+		i64 integer;
+		f64 float64;
 		u32 character;
 		char *string;
-		i64 integer;
-		u64 uinteger;
-		f32 float32;
-		f64 float64;
 	};
 	ConstantType type;
 } Constant;

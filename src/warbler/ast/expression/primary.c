@@ -39,7 +39,7 @@ void primary_expression_free(PrimaryExpression *self)
 
 		case PRIMARY_EXPRESSION:
 			if (self->expression)
-				expression_free(self->expression);			
+				expression_free(self->expression);
 			
 			free(self->expression);
 			break;
@@ -49,6 +49,8 @@ void primary_expression_free(PrimaryExpression *self)
 static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
 	Error error;
+
+	printf("Type: %d\n", (int)iter->token->type);
 
 	switch (iter->token->type)
 	{
@@ -77,6 +79,7 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 
 		default:
 			puts("constant parse");
+			return ERROR_NONE;
 			self->type = PRIMARY_CONSTANT;
 			self->constant = malloc(sizeof(Constant));
 
@@ -95,6 +98,8 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
 	assert(self != NULL);
 	assert(iter != NULL);
+
+	puts("primary expression parse");
 
 	primary_expression_init(self);
 
