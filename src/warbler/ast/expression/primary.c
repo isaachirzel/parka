@@ -79,7 +79,6 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 
 		default:
 			puts("constant parse");
-			return ERROR_NONE;
 			self->type = PRIMARY_CONSTANT;
 			self->constant = malloc(sizeof(Constant));
 

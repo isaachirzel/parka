@@ -109,13 +109,13 @@ static inline Error try_constant_parse(Constant *self, TokenIterator *iter)
 	{
 		case TOKEN_MINUS:
 			++iter->token;
-			if ((error = parse_number(self, iter, false)))
+			if ((error = parse_number(self, iter, true)))
 				return error;
 			break;
 
 		case TOKEN_PLUS:
 			++iter->token;
-			if ((error = parse_number(self, iter, true)))
+			if ((error = parse_number(self, iter, false)))
 				return error;
 			break;
 

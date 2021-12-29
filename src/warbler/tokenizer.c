@@ -70,37 +70,7 @@ const TokenInfo keywords[] =
 	{ "and", TOKEN_AND },
 	{ "or", TOKEN_OR },
 	{ "xor", TOKEN_XOR },
-	{ "not", TOKEN_NOT },
-
-	{ "++", TOKEN_INCREMENT },
-	{ "--", TOKEN_DECREMENT },
-	{ "*",  TOKEN_ASTERISK },
-	{ "/",  TOKEN_SLASH },
-	{ "+",  TOKEN_PLUS },
-	{ "-",  TOKEN_MINUS },
-	{ "<",  TOKEN_LANGBRACK },
-	{ ">",  TOKEN_RANGBRACK },
-	{ "&",  TOKEN_AMPERSAND },
-	{ "|",  TOKEN_PIPELINE },
-	{ "^",  TOKEN_CARROT },
-	{ "**", TOKEN_POW },
-	{ "==", TOKEN_EQUALS },
-	{ "!=", TOKEN_NEQUALS },
-	{ ">=", TOKEN_GREATER_EQUALS },
-	{ "<=", TOKEN_LESS_EQUALS },
-	{ ">>", TOKEN_RSHIFT },
-	{ "<<", TOKEN_LSHIFT },
-	{ "->", TOKEN_SINGLE_ARROW },
-	{ "=>", TOKEN_DOUBLE_ARROW },
-	{ "=",  TOKEN_ASSIGN },
-	{ "+=", TOKEN_ADD_ASSIGN },
-	{ "-=", TOKEN_SUBTRACT_ASSIGN },
-	{ "*=", TOKEN_MULTIPLY_ASSIGN },
-	{ "/=", TOKEN_DIVIDE_ASSIGN },
-	{ "%=", TOKEN_MODULUS_ASSIGN },
-	{ ":=", TOKEN_BECOME_ASSIGN },
-	{ ":", TOKEN_COLON },
-	{ "::", TOKEN_SCOPE }
+	{ "not", TOKEN_NOT }
 };
 
 const size_t keyword_count = sizeof(keywords) / sizeof(*keywords);
@@ -377,6 +347,7 @@ static Error get_digit_token(Token *out, SourceLocation *location)
 		break;
 	}
 
+
 	out->string.length = location->pos - out->string.data;
 	out->type = is_float
 		? TOKEN_FLOAT_LITERAL
@@ -440,29 +411,225 @@ static inline void get_plus_operator(Token *self)
 	}
 }
 
-static inline Error get_hyphen_operator(Token *self)
+static inline void get_hyphen_operator(Token *self)
 {
 	switch (self->string.data[1])
 	{
-		case '-':
+		case '-': // --
 			self->type = TOKEN_DECREMENT;
 			self->string.length = 2;
 			break;
 
-		case '=':
+		case '=': // -=
 			self->type = TOKEN_SUBTRACT_ASSIGN;
 			self->string.length = 2;
 			break;
 
-		case '>':
+		case '>': // ->
 			self->type = TOKEN_SINGLE_ARROW;
 			self->string.length = 2;
 			break;
 
-		default:
+		default: // -
 			self->type = TOKEN_MINUS;
 			self->string.length = 1;
 			break;
+	}
+}
+
+static inline void get_asterisk_operator(Token *self)
+{
+	switch (self->string.data[1])
+	{
+		case '*': // **
+			self->type = TOKEN_POW;
+			self->string.length = 2;
+			break;
+
+		case '=': // *=
+			self->type = TOKEN_MULTIPLY_ASSIGN;
+			self->string.length = 2;
+			break;
+
+		default: // *
+			self->type = TOKEN_ASTERISK;
+			self->string.length = 1;
+			break;
+	}
+}
+
+static inline void get_slash_operator(Token *self)
+{
+	if (self->string.data[1] == '=')
+	{
+		self->type = TOKEN_DIVIDE_ASSIGN;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_SLASH;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_langbrack_operator(Token *self)
+{
+	switch (self->string.data[1])
+	{
+		case '<': // <<
+			self->type = TOKEN_LSHIFT;
+			self->string.length = 2;
+			break;
+
+		case '=': // <=
+			self->type = TOKEN_LESS_EQUALS;
+			self->string.length = 2;
+			break;
+
+		default: // <
+			self->type = TOKEN_LANGBRACK;
+			self->string.length = 1;
+			break;
+	}
+}
+
+static inline void get_rangbrack_operator(Token *self)
+{
+	switch (self->string.data[1])
+	{
+		case '>': // >>
+			self->type = TOKEN_RSHIFT;
+			self->string.length = 2;
+			break;
+
+		case '=': // <=
+			self->type = TOKEN_GREATER_EQUALS;
+			self->string.length = 2;
+			break;
+
+		default: // >
+			self->type = TOKEN_RANGBRACK;
+			self->string.length = 1;
+			break;
+	}
+}
+
+static inline void get_ampersand_operator(Token *self)
+{
+	if (self->string.data[1] == '=')
+	{
+		self->type = TOKEN_BITAND_ASSIGN;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_AMPERSAND;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_pipeline_operator(Token *self)
+{
+	if (self->string.data[1] == '=')
+	{
+		self->type = TOKEN_BITOR_ASSIGN;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_PIPELINE;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_carrot_operator(Token *self)
+{
+	if (self->string.data[1] == '=')
+	{
+		self->type = TOKEN_BITXOR_ASSIGN;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_CARROT;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_equals_operator(Token *self)
+{
+	switch (self->string.data[1])
+	{
+		case '=':
+			self->type = TOKEN_EQUALS;
+			self->string.length = 2;
+			break;
+
+		case '>':
+			self->type = TOKEN_DOUBLE_ARROW;
+			self->string.length = 2;
+			break;
+
+		default:
+			self->type = TOKEN_ASSIGN;
+			self->string.length = 1;
+			break;
+	}
+}
+
+static inline void get_exclamation_operator(Token *self)
+{
+	if (self->string.data[1] == '=')
+	{
+		self->type = TOKEN_NOT_EQUALS;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_EXCLAMATION;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_question_operator(Token *self)
+{
+	if (self->string.data[1] == '?')
+	{
+		self->type = TOKEN_OPTION;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_QUESTION;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_modulus_operator(Token *self)
+{
+	if (self->string.data[1] == '=')
+	{
+		self->type = TOKEN_MODULUS_ASSIGN;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_MODULUS;
+		self->string.length = 1;
+	}
+}
+
+static inline void get_colon_operator(Token *self)
+{
+	if (self->string.data[1] == ':')
+	{
+		self->type = TOKEN_SCOPE;
+		self->string.length = 2;
+	}
+	else
+	{
+		self->type = TOKEN_COLON;
+		self->string.length = 1;
 	}
 }
 
@@ -523,11 +690,11 @@ static Error get_operator_token(Token *self, SourceLocation *location)
 			get_question_operator(self);
 			break;
 
-		case '%=': // %, %=
+		case '%': // %, %=
 			get_modulus_operator(self);
 			break;
 
-		case ':': // :, ::, :=
+		case ':': // :, ::
 			get_colon_operator(self);
 			break;
 
@@ -535,8 +702,6 @@ static Error get_operator_token(Token *self, SourceLocation *location)
 			print_errorf("invalid operator token character: %c", character);
 			return ERROR_ARGUMENT;
 	}
-
-	location->pos += self->string.length;
 
 	return ERROR_NONE;
 }

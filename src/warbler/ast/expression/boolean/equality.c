@@ -61,7 +61,7 @@ static inline Error try_equality_expression_parse(EqualityExpression *out, Token
 				type = EQUALITY_EQUALS;
 				break;
 
-			case TOKEN_NEQUALS:
+			case TOKEN_NOT_EQUALS:
 				type = EQUALITY_NOT_EQUALS;
 				break;
 
