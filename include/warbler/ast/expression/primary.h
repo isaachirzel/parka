@@ -4,6 +4,8 @@
 // local headers
 #include <warbler/ast/identifier.h>
 #include <warbler/ast/constant.h>
+#include <warbler/ast/expression/prefix.h>
+#include <warbler/ast/expression/postfix.h>
 
 struct Expression;
 
@@ -16,6 +18,11 @@ typedef enum PrimaryType
 
 typedef struct PrimaryExpression
 {
+	Prefix *prefixes;
+	size_t prefix_count;
+	Postfix *postfixes;
+	size_t postfix_count;
+
 	union
 	{
 		Identifier identifier;

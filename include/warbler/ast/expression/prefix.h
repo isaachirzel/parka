@@ -2,31 +2,23 @@
 #define WARBLER_AST_EXPRESSION_PREFIX_H
 
 // local headers
-#include <warbler/ast/expression/postfix.h>
+#include <warbler/token.h>
+#include <warbler/error.h>
 
 typedef enum PrefixType
 {
-	PREFIX_NONE,
 	PREFIX_INCREMENT,
 	PREFIX_DECREMENT,
 	PREFIX_REFERENCE,
 	PREFIX_DEREFERENCE
 } PrefixType;
 
-typedef struct PrefixExpression
+typedef struct Prefix
 {
-	// TODO make these have prefix operators intead of prefix type
-	union
-	{
-		PostfixExpression *postfix;
-		struct PrefixExpression *prefix;
-	};
 	PrefixType type;
-} PrefixExpression;
+} Prefix;
 
-void prefix_expression_init(PrefixExpression *prefix);
-void prefix_expression_free(PrefixExpression *prefix);
-Error prefix_expression_parse(PrefixExpression *prefix, TokenIterator *iter);
-void prefix_expression_print_tree(PrefixExpression *prefix, unsigned depth);
+Error prefix_parse(Prefix *self, TokenIterator *iter);
+void prefix_print(Prefix *self, unsigned depth);
 
 #endif

@@ -2,109 +2,123 @@
 
 // local headers
 #include <warbler/print.h>
+#include <warbler/ast/expression/expression.h>
 
 // standard headers
 #include <assert.h>
 #include <stdlib.h>
 
-void postfix_expression_init(PostfixExpression *self)
+
+void postfix_init(Postfix *self)
 {
-	self->type = POSTFIX_NONE;
-	self->primary = NULL;
+	assert(self != NULL);
+
+	*self = (Postfix)
+	{
+		.expression = NULL,
+		.type = POSTFIX_INDEX
+	};
 }
 
-void postfix_expression_free(PostfixExpression *self)
+void postfix_free(Postfix *self)
 {
-	if (self->type == POSTFIX_NONE)
-	{
-		if (self->primary)
-			primary_expression_free(self->primary);
+	assert(self != NULL);
 
-		free(self->primary);
-	}
-	else
+	switch (self->type)
 	{
-		if (self->postfix)
-			postfix_expression_free(self->postfix);
+		case POSTFIX_INDEX:
+			if (self->expression)
+				expression_free(self->expression);
+			
+			free(self->expression);
+			break;
 
-		free(self->postfix);
+		case POSTFIX_CALL:
+			parameter_list_free(&self->parameters);
+			break;
+
+		case POSTFIX_MEMBER:
+			identifier_free(&self->identifier);
+			break;
 	}
 }
 
-static inline Error try_postfix_expression_parse(PostfixExpression *self, TokenIterator *iter)
+static inline Error try_postfix_parse(Postfix *self, TokenIterator *iter)
 {
 	Error error;
 
 	switch (iter->token->type)
 	{
-		default:
-			self->type = POSTFIX_NONE;
-			self->primary = malloc(sizeof(PrimaryExpression));
+		case TOKEN_LBRACK:
+			++iter->token;
+			self->expression = malloc(sizeof(Expression));
 
-			if (!self->primary)
+			if (!self->expression)
 				return ERROR_MEMORY;
 
-			if ((error = primary_expression_parse(self->primary, iter)))
+			if ((error = expression_parse(self->expression, iter)))
 				return error;
 			break;
+
+		case TOKEN_LPAREN:
+			++iter->token;
+
+			if ((error = parameter_list_parse(&self->parameters, iter)))
+				return error;
+			break;
+
+		case TOKEN_DOT:
+			++iter->token;
+
+			if ((error = identifier_parse(&self->identifier, iter)))
+				return error;
+			break;
+
+		default:
+			print_error("expected postfix but got: ");
+			token_println(iter->token);
+			return ERROR_ARGUMENT;
 	}
 
 	return ERROR_NONE;
 }
 
-Error postfix_expression_parse(PostfixExpression *self, TokenIterator *iter)
+Error postfix_parse(Postfix *self, TokenIterator *iter)
 {
 	assert(self != NULL);
 	assert(iter != NULL);
 
-	postfix_expression_init(self);
+	postfix_init(self);
 
-	Error error = try_postfix_expression_parse(self, iter);
+	Error error = try_postfix_parse(self, iter);
 
 	if (error)
-		postfix_expression_free(self);
+		postfix_free(self);
 
 	return error;
 }
 
-void postfix_expression_print_tree(PostfixExpression *self, unsigned depth)
+void postfix_print_tree(Postfix *self, unsigned depth)
 {
 	assert(self != NULL);
 
-	if (self->type == POSTFIX_NONE)
+	print_branch(depth);
+
+	switch (self->type)
 	{
-		primary_expression_print_tree(self->primary, depth);
-	}
-	else
-	{
-		print_branch(depth + 1);
+		case POSTFIX_INDEX:
+			puts("[]");
+			expression_print_tree(self->expression, depth + 1);
+			break;
 
-		switch (self->type)
-		{
-			case POSTFIX_NONE:
-				break;
-				
-			case POSTFIX_INCREMENT:
-				puts("++");
-				break;
+		case POSTFIX_CALL:
+			puts("()");
+			parameter_list_print_tree(&self->parameters, depth + 1);
+			break;
 
-			case POSTFIX_DECREMENT:
-				puts("--");
-				break;
-
-			case POSTFIX_ARRAY:
-				puts("[]");
-				break;
-
-			case POSTFIX_FUNCTION:
-				puts("()");
-				break;
-
-			case POSTFIX_DOT:
-				puts(".");
-				break;
-		}
-
-		postfix_expression_print_tree(self->postfix, depth + 1);
+		case POSTFIX_MEMBER:
+			puts(".");
+			identifier_print_tree(&self->identifier, depth + 1);
+			break;
 	}
 }

@@ -14,13 +14,27 @@ void primary_expression_init(PrimaryExpression *self)
 {
 	assert(self != NULL);
 
-	self->type = PRIMARY_EXPRESSION;
-	self->expression = NULL;
+	*self = (PrimaryExpression)
+	{
+		.prefixes = NULL,
+		.prefix_count = 0,
+		.postfixes = NULL,
+		.postfix_count = 0,
+		.expression = NULL,
+		.type = PRIMARY_EXPRESSION
+	};
 }
 
 void primary_expression_free(PrimaryExpression *self)
 {
 	assert(self != NULL);
+
+	free(self->prefixes);
+
+	for (size_t i = 0; i < self->postfix_count; ++i)
+		postfix_free(self->postfixes + i);
+
+	free(self->postfixes);
 
 	switch (self->type)
 	{
@@ -43,6 +57,9 @@ void primary_expression_free(PrimaryExpression *self)
 
 static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
+	assert(self != NULL);
+	assert(iter != NULL);
+
 	Error error;
 
 	switch (iter->token->type)
@@ -98,6 +115,8 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 
 void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 {
+	assert(self != NULL);
+
 	switch (self->type)
 	{
 		case PRIMARY_IDENTIFIER:

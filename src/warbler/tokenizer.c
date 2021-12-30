@@ -477,8 +477,16 @@ static inline void get_langbrack_operator(Token *self)
 	switch (self->text.data[1])
 	{
 		case '<': // <<
-			self->type = TOKEN_LSHIFT;
-			self->text.length = 2;
+			if (self->text.data[2] == '=') // <<=
+			{
+				self->type = TOKEN_LSHIFT_ASSIGN;
+				self->text.length = 3;
+			}
+			else
+			{
+				self->type = TOKEN_LSHIFT;
+				self->text.length = 2;
+			}
 			break;
 
 		case '=': // <=
@@ -498,8 +506,16 @@ static inline void get_rangbrack_operator(Token *self)
 	switch (self->text.data[1])
 	{
 		case '>': // >>
-			self->type = TOKEN_RSHIFT;
-			self->text.length = 2;
+			if (self->text.data[2] == '=') // >>=
+			{
+				self->type = TOKEN_RSHIFT_ASSIGN;
+				self->text.length = 3;
+			}
+			else
+			{
+				self->type = TOKEN_RSHIFT;
+				self->text.length = 2;
+			}
 			break;
 
 		case '=': // <=

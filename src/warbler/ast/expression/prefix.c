@@ -3,102 +3,58 @@
 // local headers
 #include <warbler/print.h>
 
-// standard headers
-#include <stdlib.h>
-
-void prefix_expression_init(PrefixExpression *self)
+Error prefix_parse(Prefix *self, TokenIterator *iter)
 {
-	self->type = PREFIX_NONE;
-	self->postfix = NULL;
-}
-
-void prefix_expression_free(PrefixExpression *self)
-{
-	if (self->type == PREFIX_NONE)
-	{
-		if (self->postfix)
-			postfix_expression_free(self->postfix);
-
-		free(self->postfix);
-	}
-	else
-	{
-		if (self->prefix)
-			prefix_expression_free(self->prefix);
-
-		free(self->prefix);
-	}
-}
-
-static inline Error try_prefix_expression_parse(PrefixExpression *self, TokenIterator *iter)
-{
-	Error error;
+	assert(self != NULL);
+	assert(iter != NULL);
 
 	switch (iter->token->type)
 	{
-		default:
-			self->type = PREFIX_NONE;
-			self->postfix = malloc(sizeof(PostfixExpression));
-
-			if (!self->postfix)
-				return ERROR_MEMORY;
-
-			if ((error = postfix_expression_parse(self->postfix, iter)))
-				return error;
+		case TOKEN_INCREMENT:
+			self->type = PREFIX_INCREMENT;
 			break;
+
+		case TOKEN_DECREMENT:
+			self->type = PREFIX_DECREMENT;
+			break;
+
+		case TOKEN_AMPERSAND:
+			self->type = PREFIX_REFERENCE;
+			break;
+
+		case TOKEN_ASTERISK:
+			self->type = PREFIX_DEREFERENCE;
+			break;
+
+		default:
+			print_error("expected prefix but got: ");
+			token_println(iter->token);
+			return ERROR_ARGUMENT;
 	}
 
 	return ERROR_NONE;
 }
 
-Error prefix_expression_parse(PrefixExpression *self, TokenIterator *iter)
+void prefix_print_tree(Prefix *self, unsigned depth)
 {
-	assert(self != NULL);
-	assert(iter != NULL);
+	print_branch(depth);
 
-	prefix_expression_init(self);
-
-	Error error = try_prefix_expression_parse(self, iter);
-
-	if (error)
-		prefix_expression_free(self);
-
-	return error;
-}
-
-void prefix_expression_print_tree(PrefixExpression *self, unsigned depth)
-{
-	if (self->type == PREFIX_NONE)
+	switch (self->type)
 	{
-		postfix_expression_print_tree(self->postfix, depth);
-	}
-	else
-	{
-		print_branch(depth);
+		case PREFIX_INCREMENT:
+			puts("++");
+			break;
 
-		switch (self->type)
-		{
-			case PREFIX_INCREMENT:
-				puts("++");
-				break;
+		case PREFIX_DECREMENT:
+			puts("--");
+			break;
 
-			case PREFIX_DECREMENT:
-				puts("--");
-				break;
+		case PREFIX_REFERENCE:
+			puts("&");
+			break;
 
-			case PREFIX_REFERENCE:
-				puts("&");
-				break;
-
-			case PREFIX_DEREFERENCE:
-				puts("*");
-				break;
-
-			default:
-				puts("UNKNOWN");
-				break;
-		}
-
-		prefix_expression_print_tree(self->prefix, depth + 1);
+		case PREFIX_DEREFERENCE:
+			puts("*");
+			break;
 	}
 }

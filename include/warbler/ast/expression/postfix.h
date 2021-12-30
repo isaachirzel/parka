@@ -2,31 +2,31 @@
 #define WARBLER_AST_POSTFIX_EXPRESSION_H
 
 // local headers
-#include <warbler/ast/expression/primary.h>
+#include <warbler/ast/parameter.h>
+
+struct Expression;
 
 typedef enum PostfixType
 {
-	POSTFIX_NONE,
-	POSTFIX_INCREMENT,
-	POSTFIX_DECREMENT,
-	POSTFIX_ARRAY,
-	POSTFIX_FUNCTION,
-	POSTFIX_DOT
+	POSTFIX_INDEX,
+	POSTFIX_CALL,
+	POSTFIX_MEMBER
 } PostfixType;
 
-typedef struct PostfixExpression
+typedef struct Postfix
 {
 	union
 	{
-		struct PostfixExpression *postfix;
-		PrimaryExpression *primary;
+		struct Expression *expression;
+		ParameterList parameters;
+		Identifier identifier;
 	};
 	PostfixType type;
-} PostfixExpression;
+} Postfix;
 
-void postfix_expression_init(PostfixExpression *self);
-void postfix_expression_free(PostfixExpression *self);
-Error postfix_expression_parse(PostfixExpression *self, TokenIterator *iter);
-void postfix_expression_print_tree(PostfixExpression *self, unsigned depth);
+void postfix_init(Postfix *self);
+void postfix_free(Postfix *self);
+Error postfix_parse(Postfix *self, TokenIterator *iter);
+void postfix_print_tree(Postfix *self, unsigned depth);
 
 #endif

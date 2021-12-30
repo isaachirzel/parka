@@ -2,7 +2,7 @@
 #define WARBLER_AST_EXPRESSION_MULTIPLICATIVE_H
 
 // local headers
-#include <warbler/ast/expression/prefix.h>
+#include <warbler/ast/expression/primary.h>
 
 typedef enum MultiplicativeType
 {
@@ -13,13 +13,13 @@ typedef enum MultiplicativeType
 
 typedef struct MultiplicativeRhs
 {
-	PrefixExpression expr;
+	PrimaryExpression expr;
 	MultiplicativeType type;
 } MultiplicativeRhs;
 
 typedef struct MultiplicativeExpression
 {
-	PrefixExpression lhs;
+	PrimaryExpression lhs;
 	MultiplicativeRhs *rhs;
 	size_t rhs_count;
 } MultiplicativeExpression;

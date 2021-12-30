@@ -194,11 +194,6 @@ Error constant_parse(Constant *self, TokenIterator *iter)
 
 	Error error = try_constant_parse(self, iter);
 
-	if (self->type == CONSTANT_INTEGER)
-	{
-		printf("Got integer: %ld\n", self->integer);
-	}
-
 	if (error)
 		constant_free(self);
 

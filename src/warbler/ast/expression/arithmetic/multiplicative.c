@@ -9,7 +9,7 @@
 
 void multiplicative_expression_init(MultiplicativeExpression *self)
 {
-	prefix_expression_init(&self->lhs);
+	primary_expression_init(&self->lhs);
 	
 	self->rhs = NULL;
 	self->rhs_count = 0;
@@ -17,10 +17,10 @@ void multiplicative_expression_init(MultiplicativeExpression *self)
 
 void multiplicative_expression_free(MultiplicativeExpression *self)
 {
-	prefix_expression_free(&self->lhs);
+	primary_expression_free(&self->lhs);
 
 	for (size_t i = 0; i < self->rhs_count; ++i)
-		prefix_expression_free(&self->rhs[i].expr);
+		primary_expression_free(&self->rhs[i].expr);
 
 	free(self->rhs);
 }
@@ -37,7 +37,7 @@ static inline MultiplicativeRhs *multiplicative_expression_rhs_push(Multiplicati
 	MultiplicativeRhs *back = self->rhs + self->rhs_count;
 	++self->rhs_count;
 
-	prefix_expression_init(&back->expr);
+	primary_expression_init(&back->expr);
 	back->type = type;
 
 	return back;
@@ -47,7 +47,7 @@ Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenI
 {
 	Error error;
 
-	if ((error = prefix_expression_parse(&self->lhs, iter)))
+	if ((error = primary_expression_parse(&self->lhs, iter)))
 		return error;
 
 	while (true)
@@ -84,7 +84,7 @@ Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenI
 
 		++iter->token;
 
-		if ((error = prefix_expression_parse(&back->expr, iter)))
+		if ((error = primary_expression_parse(&back->expr, iter)))
 			return error;
 	}
 
@@ -108,7 +108,7 @@ void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsign
 {
 	assert(self != NULL);
 
-	prefix_expression_print_tree(&self->lhs, depth + 1);
+	primary_expression_print_tree(&self->lhs, depth + 1);
 
 	for (size_t i = 0; i < self->rhs_count; ++i)
 	{
@@ -129,7 +129,7 @@ void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsign
 				break;
 		}
 
-		prefix_expression_print_tree(&self->rhs[i].expr, depth + 1);
+		primary_expression_print_tree(&self->rhs[i].expr, depth + 1);
 	}
 
 }
