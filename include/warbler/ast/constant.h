@@ -26,8 +26,9 @@ typedef struct Constant
 	ConstantType type;
 } Constant;
 
-void constant_init(Constant *constant);
-void constant_free(Constant *constant);
-Error constant_parse(Constant *out, TokenIterator *iter);
+void constant_init(Constant *self);
+void constant_free(Constant *self);
+Error constant_parse(Constant *self, TokenIterator *iter);
+void constant_print_tree(Constant *self, unsigned depth);
 
 #endif

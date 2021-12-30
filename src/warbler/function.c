@@ -59,7 +59,7 @@ static inline Error function_parse_body(Function *function, TokenIterator *iter)
 
 		default:
 			print_error("invalid token given for function body: ");
-			string_println(&iter->token->string);
+			token_println(iter->token);
 
 			return ERROR_ARGUMENT;
 	}

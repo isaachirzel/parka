@@ -97,7 +97,7 @@ typedef enum TokenType
 
 typedef struct Token
 {
-	String string;
+	String text;
 	size_t line;
 	size_t col;
 	TokenType type;
@@ -109,6 +109,7 @@ typedef struct TokenIterator
 } TokenIterator;
 
 Token token_default();
-Token token_create(String* string, size_t line, size_t col, TokenType type);
+void token_print(const Token *token);
+void token_println(const Token *token);
 
 #endif

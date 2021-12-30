@@ -50,6 +50,8 @@ Error try_additive_expression_parse(AdditiveExpression *self, TokenIterator *ite
 	if ((error = multiplicative_expression_parse(&self->lhs, iter)))
 		return error;
 
+	debugf("Is plus: %d\n", iter->token->type == TOKEN_PLUS);
+
 	while (iter->token->type == TOKEN_PLUS || iter->token->type == TOKEN_MINUS)
 	{
 		AdditiveType type = iter->token->type == TOKEN_PLUS
@@ -85,17 +87,16 @@ Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 	return error;
 }
 
-void additive_expression_print(AdditiveExpression *self, unsigned depth)
+void additive_expression_print_tree(AdditiveExpression *self, unsigned depth)
 {
 	assert(self != NULL);
-	
-	//multiplicative_expression_print(&self->lhs, depth);
-	print_tabs(depth);
-	puts("MULT");
+
+	multiplicative_expression_print_tree(&self->lhs, depth + 1);
 	
 	for (size_t i = 0; i < self->rhs_count; ++i)
 	{
-		print_tabs(depth + 1);
+
+		print_branch(depth);
 
 		switch (self->rhs[i].type)
 		{
@@ -108,7 +109,6 @@ void additive_expression_print(AdditiveExpression *self, unsigned depth)
 				break;		
 		}
 
-		print_tabs(depth + 1);
-		puts("MULT");
+		multiplicative_expression_print_tree(&self->rhs[i].expr, depth + 1);
 	}
 }

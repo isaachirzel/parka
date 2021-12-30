@@ -1,5 +1,8 @@
 #include <warbler/ast/expression/prefix.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
 
@@ -61,4 +64,41 @@ Error prefix_expression_parse(PrefixExpression *self, TokenIterator *iter)
 		prefix_expression_free(self);
 
 	return error;
+}
+
+void prefix_expression_print_tree(PrefixExpression *self, unsigned depth)
+{
+	if (self->type == PREFIX_NONE)
+	{
+		postfix_expression_print_tree(self->postfix, depth);
+	}
+	else
+	{
+		print_branch(depth);
+
+		switch (self->type)
+		{
+			case PREFIX_INCREMENT:
+				puts("++");
+				break;
+
+			case PREFIX_DECREMENT:
+				puts("--");
+				break;
+
+			case PREFIX_REFERENCE:
+				puts("&");
+				break;
+
+			case PREFIX_DEREFERENCE:
+				puts("*");
+				break;
+
+			default:
+				puts("UNKNOWN");
+				break;
+		}
+
+		prefix_expression_print_tree(self->prefix, depth + 1);
+	}
 }

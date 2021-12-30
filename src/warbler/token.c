@@ -4,10 +4,19 @@
 Token token_default()
 {
 	return (Token) {
-		.string = STRING_FROM("<end of file>"),
+		.text = STRING_FROM("<end of file>"),
 		.line = 0,
 		.col = 0,
 		.type = TOKEN_END_OF_FILE
 	};
 }
 
+void token_print(const Token *self)
+{
+	string_print(&self->text);
+}
+
+void token_println(const Token *self)
+{
+	string_println(&self->text);
+}

@@ -1,5 +1,8 @@
 #include <warbler/ast/expression/postfix.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <assert.h>
 #include <stdlib.h>
@@ -62,4 +65,46 @@ Error postfix_expression_parse(PostfixExpression *self, TokenIterator *iter)
 		postfix_expression_free(self);
 
 	return error;
+}
+
+void postfix_expression_print_tree(PostfixExpression *self, unsigned depth)
+{
+	assert(self != NULL);
+
+	if (self->type == POSTFIX_NONE)
+	{
+		primary_expression_print_tree(self->primary, depth);
+	}
+	else
+	{
+		print_branch(depth + 1);
+
+		switch (self->type)
+		{
+			case POSTFIX_NONE:
+				break;
+				
+			case POSTFIX_INCREMENT:
+				puts("++");
+				break;
+
+			case POSTFIX_DECREMENT:
+				puts("--");
+				break;
+
+			case POSTFIX_ARRAY:
+				puts("[]");
+				break;
+
+			case POSTFIX_FUNCTION:
+				puts("()");
+				break;
+
+			case POSTFIX_DOT:
+				puts(".");
+				break;
+		}
+
+		postfix_expression_print_tree(self->postfix, depth + 1);
+	}
 }

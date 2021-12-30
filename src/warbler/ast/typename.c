@@ -19,7 +19,7 @@ static inline Error try_typename_parse(Typename *typename, TokenIterator *iter)
 	if (iter->token->type != TOKEN_IDENTIFIER)
 		return ERROR_ARGUMENT;
 
-	typename->text = string_duplicate(&iter->token->string);
+	typename->text = string_duplicate(&iter->token->text);
 
 	if (!typename->text)
 		return ERROR_MEMORY;

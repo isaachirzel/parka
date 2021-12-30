@@ -111,7 +111,7 @@ Error try_parameter_list_parse(ParameterList *list, TokenIterator *iter)
 		if (iter->token->type != TOKEN_RPAREN)
 		{
 			print_error("expected ',' or ')' after parameter but got: ");
-			string_println(&iter->token->string);
+			token_print(iter->token);
 
 			return ERROR_ARGUMENT;
 		}

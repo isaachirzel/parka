@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	{
 		Token *token = (Token*)hxarray_at(tokens, i);
 		printf("Token\t%d\t:\t", (int)token->type);
-		string_println(&token->string);
+		token_println(token);
 	}
 
 	puts(BAR "PARSER" BAR "\n");
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	AdditiveExpression expr;
 	TokenIterator iter = { hxarray_front(tokens) };
 	additive_expression_parse(&expr, &iter);
-
+	additive_expression_print_tree(&expr, 1);
 	additive_expression_free(&expr);
 
 	// Ast ast;

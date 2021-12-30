@@ -1,6 +1,7 @@
 #include <warbler/ast/expression/primary.h>
 
 // local headers
+#include <warbler/print.h>
 #include <warbler/ast/expression/expression.h>
 
 // standard headers
@@ -13,8 +14,8 @@ void primary_expression_init(PrimaryExpression *self)
 {
 	assert(self != NULL);
 
-	self->type = PRIMARY_IDENTIFIER;
-	self->identifier = NULL;
+	self->type = PRIMARY_EXPRESSION;
+	self->expression = NULL;
 }
 
 void primary_expression_free(PrimaryExpression *self)
@@ -24,17 +25,11 @@ void primary_expression_free(PrimaryExpression *self)
 	switch (self->type)
 	{
 		case PRIMARY_IDENTIFIER:
-			if (self->identifier)
-				identifier_free(self->identifier);
-
-			free(self->identifier);
+			identifier_free(&self->identifier);
 			break;
 
 		case PRIMARY_CONSTANT:
-			if (self->constant)
-				constant_free(self->constant);
-
-			free(self->constant);
+			constant_free(&self->constant);
 			break;
 
 		case PRIMARY_EXPRESSION:
@@ -50,19 +45,17 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 {
 	Error error;
 
-	printf("Type: %d\n", (int)iter->token->type);
-
 	switch (iter->token->type)
 	{
 		case TOKEN_IDENTIFIER:
 			self->type = PRIMARY_IDENTIFIER;
-			self->identifier = malloc(sizeof(Identifier));
 
-			if (!self->identifier)
-				return ERROR_MEMORY;
-
-			if ((error = identifier_parse(self->identifier, iter)))
+			if ((error = identifier_parse(&self->identifier, iter)))
 				return error;
+			debugf("identifier: %s\n", self->identifier.text);
+			debug("current token: ");
+			token_println(iter->token);
+
 			break;
 
 		case TOKEN_LPAREN:
@@ -78,14 +71,9 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 			break;
 
 		default:
-			puts("constant parse");
 			self->type = PRIMARY_CONSTANT;
-			self->constant = malloc(sizeof(Constant));
 
-			if (!self->constant)
-				return ERROR_MEMORY;
-
-			if ((error = constant_parse(self->constant, iter)))
+			if ((error = constant_parse(&self->constant, iter)))
 				return error;
 			break;
 	}
@@ -98,8 +86,6 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 	assert(self != NULL);
 	assert(iter != NULL);
 
-	puts("primary expression parse");
-
 	primary_expression_init(self);
 
 	Error error = try_primary_expression_parse(self, iter);
@@ -108,4 +94,22 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 		primary_expression_free(self);
 
 	return error;
+}
+
+void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
+{
+	switch (self->type)
+	{
+		case PRIMARY_IDENTIFIER:
+			identifier_print_tree(&self->identifier, depth);
+			break;
+
+		case PRIMARY_CONSTANT:
+			constant_print_tree(&self->constant, depth);
+			break;
+
+		case PRIMARY_EXPRESSION:
+			assert(false && " expression_print_tree() not implemented");
+			break;
+	}
 }

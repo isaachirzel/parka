@@ -27,5 +27,6 @@ typedef struct PrefixExpression
 void prefix_expression_init(PrefixExpression *prefix);
 void prefix_expression_free(PrefixExpression *prefix);
 Error prefix_expression_parse(PrefixExpression *prefix, TokenIterator *iter);
+void prefix_expression_print_tree(PrefixExpression *prefix, unsigned depth);
 
 #endif

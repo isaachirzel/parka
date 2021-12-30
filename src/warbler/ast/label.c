@@ -24,7 +24,7 @@ Error label_parse(Label *label, TokenIterator *iter)
 	{
 		label_free(label);
 		print_error("expected ':' after label but got: ");
-		string_println(&iter->token->string);
+		token_print(iter->token);
 		return ERROR_ARGUMENT;
 	}
 

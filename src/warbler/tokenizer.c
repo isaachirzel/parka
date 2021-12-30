@@ -165,12 +165,12 @@ Error tokenizer_init()
 Error get_token_type(Token *token)
 {
 	assert(token != NULL);
-	assert(token->string.data != NULL);
-	assert(token->string.length > 0);
+	assert(token->text.data != NULL);
+	assert(token->text.length > 0);
 
-	if (token->string.length > TEMP_KEY_SIZE)
+	if (token->text.length > TEMP_KEY_SIZE)
 	{
-		char *key = string_duplicate(&token->string);
+		char *key = string_duplicate(&token->text);
 
 		if (!key)
 			return ERROR_MEMORY;
@@ -184,7 +184,7 @@ Error get_token_type(Token *token)
 	{
 		static _Thread_local char temp_key[TEMP_KEY_SIZE + 1];
 
-		strncpy(temp_key, token->string.data, token->string.length + 1);
+		strncpy(temp_key, token->text.data, token->text.length + 1);
 
 		if (!hxtable_get(token_types, &token->type, temp_key))
 			token->type = TOKEN_IDENTIFIER;
@@ -248,9 +248,9 @@ static inline bool is_char_alphanumeric(char c)
 	return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
 }
 
-static Error get_identifier_token(Token *out, SourceLocation *location)
+static Error get_identifier_token(Token *self, SourceLocation *location)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(location != NULL);
 
 	Error error;
@@ -258,9 +258,9 @@ static Error get_identifier_token(Token *out, SourceLocation *location)
 	while (is_char_alphanumeric(*location->pos))
 		++location->pos;
 
-	out->string.length = location->pos - out->string.data;
+	self->text.length = location->pos - self->text.data;
 
-	if ((error = get_token_type(out)))
+	if ((error = get_token_type(self)))
 		return error;
 
 	return ERROR_NONE;
@@ -271,9 +271,9 @@ static Error get_separator_token(Token *self, SourceLocation *location)
 	assert(self != NULL);
 	assert(location != NULL);
 
-	self->string.length = 1;
+	self->text.length = 1;
 
-	switch (self->string.data[0])
+	switch (self->text.data[0])
 	{
 		case '(':
 			self->type = TOKEN_LPAREN;
@@ -308,16 +308,16 @@ static Error get_separator_token(Token *self, SourceLocation *location)
 			break;
 		
 		default:
-			print_errorf("invalid character given for seprarator token: '%c'\n", self->string.data[0]);
+			print_errorf("invalid character given for seprarator token: '%c'\n", self->text.data[0]);
 			return ERROR_ARGUMENT;
 	}
 
 	return ERROR_NONE;
 }
 
-static Error get_digit_token(Token *out, SourceLocation *location)
+static Error get_digit_token(Token *self, SourceLocation *location)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(location != NULL);
 
 	bool is_float = false;
@@ -348,39 +348,39 @@ static Error get_digit_token(Token *out, SourceLocation *location)
 	}
 
 
-	out->string.length = location->pos - out->string.data;
-	out->type = is_float
+	self->text.length = location->pos - self->text.data;
+	self->type = is_float
 		? TOKEN_FLOAT_LITERAL
 		: TOKEN_INTEGER_LITERAL;
 
 	return ERROR_NONE;
 }
 
-static Error get_dot_token(Token *out, SourceLocation *location)
+static Error get_dot_token(Token *self, SourceLocation *location)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(location != NULL);
 
 	if (get_char_type(location->pos[1]) == CHAR_DIGIT)
 	{
 		--location->pos;
 
-		return get_digit_token(out, location);
+		return get_digit_token(self, location);
 	}
 
 	while (get_char_type(*location->pos) == CHAR_DOT)
 		++location->pos;
 
-	out->string.length = location->pos - out->string.data;
+	self->text.length = location->pos - self->text.data;
 
-	switch (out->string.length)
+	switch (self->text.length)
 	{
 		case 1:
-			out->type = TOKEN_DOT;
+			self->type = TOKEN_DOT;
 			break;
 
 		case 3:
-			out->type = TOKEN_ELIPSIS;
+			self->type = TOKEN_ELIPSIS;
 			break;
 
 		default:
@@ -392,244 +392,244 @@ static Error get_dot_token(Token *out, SourceLocation *location)
 
 static inline void get_plus_operator(Token *self)
 {
-	switch (self->string.data[1])
+	switch (self->text.data[1])
 	{
 		case '+':
 			self->type = TOKEN_INCREMENT;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '=':
 			self->type = TOKEN_ADD_ASSIGN;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		default:
 			self->type = TOKEN_PLUS;
-			self->string.length = 1;
+			self->text.length = 1;
 			break;
 	}
 }
 
 static inline void get_hyphen_operator(Token *self)
 {
-	switch (self->string.data[1])
+	switch (self->text.data[1])
 	{
 		case '-': // --
 			self->type = TOKEN_DECREMENT;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '=': // -=
 			self->type = TOKEN_SUBTRACT_ASSIGN;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '>': // ->
 			self->type = TOKEN_SINGLE_ARROW;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		default: // -
 			self->type = TOKEN_MINUS;
-			self->string.length = 1;
+			self->text.length = 1;
 			break;
 	}
 }
 
 static inline void get_asterisk_operator(Token *self)
 {
-	switch (self->string.data[1])
+	switch (self->text.data[1])
 	{
 		case '*': // **
 			self->type = TOKEN_POW;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '=': // *=
 			self->type = TOKEN_MULTIPLY_ASSIGN;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		default: // *
 			self->type = TOKEN_ASTERISK;
-			self->string.length = 1;
+			self->text.length = 1;
 			break;
 	}
 }
 
 static inline void get_slash_operator(Token *self)
 {
-	if (self->string.data[1] == '=')
+	if (self->text.data[1] == '=')
 	{
 		self->type = TOKEN_DIVIDE_ASSIGN;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_SLASH;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_langbrack_operator(Token *self)
 {
-	switch (self->string.data[1])
+	switch (self->text.data[1])
 	{
 		case '<': // <<
 			self->type = TOKEN_LSHIFT;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '=': // <=
 			self->type = TOKEN_LESS_EQUALS;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		default: // <
 			self->type = TOKEN_LANGBRACK;
-			self->string.length = 1;
+			self->text.length = 1;
 			break;
 	}
 }
 
 static inline void get_rangbrack_operator(Token *self)
 {
-	switch (self->string.data[1])
+	switch (self->text.data[1])
 	{
 		case '>': // >>
 			self->type = TOKEN_RSHIFT;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '=': // <=
 			self->type = TOKEN_GREATER_EQUALS;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		default: // >
 			self->type = TOKEN_RANGBRACK;
-			self->string.length = 1;
+			self->text.length = 1;
 			break;
 	}
 }
 
 static inline void get_ampersand_operator(Token *self)
 {
-	if (self->string.data[1] == '=')
+	if (self->text.data[1] == '=')
 	{
 		self->type = TOKEN_BITAND_ASSIGN;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_AMPERSAND;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_pipeline_operator(Token *self)
 {
-	if (self->string.data[1] == '=')
+	if (self->text.data[1] == '=')
 	{
 		self->type = TOKEN_BITOR_ASSIGN;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_PIPELINE;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_carrot_operator(Token *self)
 {
-	if (self->string.data[1] == '=')
+	if (self->text.data[1] == '=')
 	{
 		self->type = TOKEN_BITXOR_ASSIGN;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_CARROT;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_equals_operator(Token *self)
 {
-	switch (self->string.data[1])
+	switch (self->text.data[1])
 	{
 		case '=':
 			self->type = TOKEN_EQUALS;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		case '>':
 			self->type = TOKEN_DOUBLE_ARROW;
-			self->string.length = 2;
+			self->text.length = 2;
 			break;
 
 		default:
 			self->type = TOKEN_ASSIGN;
-			self->string.length = 1;
+			self->text.length = 1;
 			break;
 	}
 }
 
 static inline void get_exclamation_operator(Token *self)
 {
-	if (self->string.data[1] == '=')
+	if (self->text.data[1] == '=')
 	{
 		self->type = TOKEN_NOT_EQUALS;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_EXCLAMATION;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_question_operator(Token *self)
 {
-	if (self->string.data[1] == '?')
+	if (self->text.data[1] == '?')
 	{
 		self->type = TOKEN_OPTION;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_QUESTION;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_modulus_operator(Token *self)
 {
-	if (self->string.data[1] == '=')
+	if (self->text.data[1] == '=')
 	{
 		self->type = TOKEN_MODULUS_ASSIGN;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_MODULUS;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
 static inline void get_colon_operator(Token *self)
 {
-	if (self->string.data[1] == ':')
+	if (self->text.data[1] == ':')
 	{
 		self->type = TOKEN_SCOPE;
-		self->string.length = 2;
+		self->text.length = 2;
 	}
 	else
 	{
 		self->type = TOKEN_COLON;
-		self->string.length = 1;
+		self->text.length = 1;
 	}
 }
 
@@ -638,7 +638,7 @@ static Error get_operator_token(Token *self, SourceLocation *location)
 	assert(self != NULL);
 	assert(location != NULL);
 
-	char character = self->string.data[0];
+	char character = self->text.data[0];
 
 	switch (character)
 	{
@@ -711,42 +711,42 @@ static inline bool is_end_of_text_literal(SourceLocation *location, char termina
 	return location->pos[0] == terminal_char && location->pos[-1] != '\\';
 }
 
-static Error get_quote_token(Token *out, SourceLocation *location)
+static Error get_quote_token(Token *self, SourceLocation *location)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(location != NULL);
 	
-	char terminal_char = out->string.data[0];
+	char terminal_char = self->text.data[0];
 
 	while (*location->pos && !is_end_of_text_literal(location, terminal_char))
 		++location->pos;
 
 	++location->pos;
 
-	out->string.length = location->pos - out->string.data;
+	self->text.length = location->pos - self->text.data;
 
-	if (out->string.data[0] == '\'')
+	if (self->text.data[0] == '\'')
 	{
-		out->type = TOKEN_CHAR_LITERAL;
+		self->type = TOKEN_CHAR_LITERAL;
 	}
-	else if (out->string.data[0] == '\"')
+	else if (self->text.data[0] == '\"')
 	{
-		out->type = TOKEN_STRING_LITERAL;
+		self->type = TOKEN_STRING_LITERAL;
 	}
 		
 	return ERROR_NONE;
 }
 
-static Error get_next_token(Token *out, SourceLocation *location)
+static Error get_next_token(Token *self, SourceLocation *location)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(location != NULL);
 
 	get_next_token_pos(location);
 
-	out->string.data = location->pos;
-	out->line = location->line;
-	out->col = location->col;
+	self->text.data = location->pos;
+	self->line = location->line;
+	self->col = location->col;
 
 	CharType type = get_char_type(*location->pos);
 
@@ -755,26 +755,26 @@ static Error get_next_token(Token *out, SourceLocation *location)
 	switch (type)
 	{
 		case CHAR_NULL:
-			*out = token_default();
+			*self = token_default();
 			return ERROR_NONE;
 
 		case CHAR_IDENTIFIER:
-			return get_identifier_token(out, location);
+			return get_identifier_token(self, location);
 
 		case CHAR_SEPARATOR:
-			return get_separator_token(out, location);
+			return get_separator_token(self, location);
 
 		case CHAR_DOT:
-			return get_dot_token(out, location);
+			return get_dot_token(self, location);
 
 		case CHAR_DIGIT:
-			return get_digit_token(out, location);
+			return get_digit_token(self, location);
 
 		case CHAR_OPERATOR:
-			return get_operator_token(out, location);
+			return get_operator_token(self, location);
 
 		case CHAR_QUOTE:
-			return get_quote_token(out, location);
+			return get_quote_token(self, location);
 
 		default:
 			break;
@@ -825,7 +825,7 @@ static inline bool is_dynamic_token(TokenType type)
 	}
 }
 
-Error tokenize(HxArray **out, const char *src)
+Error tokenize(HxArray **self, const char *src)
 {
 	HxArray *tokens = hxarray_create_of(Token);
 
@@ -857,7 +857,7 @@ Error tokenize(HxArray **out, const char *src)
 			break;
 	}
 
-	*out = tokens;
+	*self = tokens;
 
 	return ERROR_NONE;
 }

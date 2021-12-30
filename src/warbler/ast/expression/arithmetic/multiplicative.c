@@ -104,13 +104,16 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 	return error;
 }
 
-void multiplicative_expression_print(MultiplicativeExpression *self, unsigned depth)
+void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsigned depth)
 {
-	// prefix_expression_print(&self->lhs);
-	print_tabs(depth);
+	assert(self != NULL);
+
+	prefix_expression_print_tree(&self->lhs, depth + 1);
 
 	for (size_t i = 0; i < self->rhs_count; ++i)
 	{
+		print_branch(depth);
+
 		switch (self->rhs[i].type)
 		{
 			case MULTIPLICATIVE_MULTIPLY:
@@ -125,6 +128,8 @@ void multiplicative_expression_print(MultiplicativeExpression *self, unsigned de
 				puts("%");
 				break;
 		}
+
+		prefix_expression_print_tree(&self->rhs[i].expr, depth + 1);
 	}
 
 }

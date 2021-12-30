@@ -18,15 +18,16 @@ typedef struct PrimaryExpression
 {
 	union
 	{
-		Identifier *identifier;
-		Constant *constant;
+		Identifier identifier;
+		Constant constant;
 		struct Expression *expression;
 	};
 	PrimaryType type;
 } PrimaryExpression;
 
-void primary_expression_init(PrimaryExpression *primary);
-void primary_expression_free(PrimaryExpression *primary);
-Error primary_expression_parse(PrimaryExpression *primary, TokenIterator *iter);
+void primary_expression_init(PrimaryExpression *self);
+void primary_expression_free(PrimaryExpression *self);
+Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter);
+void primary_expression_print_tree(PrimaryExpression *self, unsigned depth);
 
 #endif
