@@ -11,8 +11,9 @@ typedef struct BitwiseXorExpression
 	size_t rhs_count;
 } BitwiseXorExpression;
 
-void bitwise_xor_expression_init(BitwiseXorExpression *out);
-void bitwise_xor_expression_free(BitwiseXorExpression *out);
-Error bitwise_xor_expression_parse(BitwiseXorExpression *out, TokenIterator *iter);
+void bitwise_xor_expression_init(BitwiseXorExpression *self);
+void bitwise_xor_expression_free(BitwiseXorExpression *self);
+Error bitwise_xor_expression_parse(BitwiseXorExpression *self, TokenIterator *iter);
+void bitwise_xor_expression_print_tree(BitwiseXorExpression *self, unsigned depth);
 
 #endif

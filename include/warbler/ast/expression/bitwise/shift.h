@@ -23,8 +23,9 @@ typedef struct ShiftExpression
 	size_t rhs_count;
 } ShiftExpression;
 
-void shift_expression_init(ShiftExpression *out);
-void shift_expression_free(ShiftExpression *out);
-Error shift_expression_parse(ShiftExpression *out, TokenIterator *iter);
+void shift_expression_init(ShiftExpression *self);
+void shift_expression_free(ShiftExpression *self);
+Error shift_expression_parse(ShiftExpression *self, TokenIterator *iter);
+void shift_expression_print_tree(ShiftExpression *self, unsigned depth);
 
 #endif

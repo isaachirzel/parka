@@ -14,5 +14,6 @@ typedef struct BitwiseAndExpression
 void bitwise_and_expression_init(BitwiseAndExpression *out);
 void bitwise_and_expression_free(BitwiseAndExpression *out);
 Error bitwise_and_expression_parse(BitwiseAndExpression *out, TokenIterator *iter);
+void bitwise_and_expression_print_tree(BitwiseAndExpression *self, unsigned depth);
 
 #endif

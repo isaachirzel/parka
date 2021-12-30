@@ -23,8 +23,9 @@ typedef struct EqualityExpression
 	size_t rhs_count;
 } EqualityExpression;
 
-void equality_expression_init(EqualityExpression *out);
-void equality_expression_free(EqualityExpression *out);
-Error equality_expression_parse(EqualityExpression *out, TokenIterator *iter);
+void equality_expression_init(EqualityExpression *self);
+void equality_expression_free(EqualityExpression *self);
+Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter);
+void equality_expression_print_tree(EqualityExpression *self, unsigned depth);
 
 #endif

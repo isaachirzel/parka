@@ -25,8 +25,9 @@ typedef struct ComparisonExpression
 	size_t rhs_count;
 } ComparisonExpression;
 
-void comparison_expression_init(ComparisonExpression *out);
-void comparison_expression_free(ComparisonExpression *out);
-Error comparison_expression_parse(ComparisonExpression *out, TokenIterator *iter);
+void comparison_expression_init(ComparisonExpression *self);
+void comparison_expression_free(ComparisonExpression *self);
+Error comparison_expression_parse(ComparisonExpression *self, TokenIterator *iter);
+void comparison_expression_print_tree(ComparisonExpression *self, unsigned depth);
 
 #endif

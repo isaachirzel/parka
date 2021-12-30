@@ -1,41 +1,44 @@
 #include <warbler/ast/expression/boolean/equality.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
 #include <assert.h>
 
-void equality_expression_init(EqualityExpression *out)
+void equality_expression_init(EqualityExpression *self)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 
-	comparison_expression_init(&out->lhs);
-	out->rhs = NULL;
-	out->rhs_count = 0;
+	comparison_expression_init(&self->lhs);
+	self->rhs = NULL;
+	self->rhs_count = 0;
 }
 
-void equality_expression_free(EqualityExpression *out)
+void equality_expression_free(EqualityExpression *self)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 
-	comparison_expression_free(&out->lhs);
+	comparison_expression_free(&self->lhs);
 	
-	for (size_t i = 0; i < out->rhs_count; ++i)
-		comparison_expression_free(&out->rhs[i].expr);
+	for (size_t i = 0; i < self->rhs_count; ++i)
+		comparison_expression_free(&self->rhs[i].expr);
 
-	free(out->rhs);
+	free(self->rhs);
 }
 
-static inline EqualityRhs *push_equality_rhs(EqualityExpression *out, EqualityType type)
+static inline EqualityRhs *push_equality_rhs(EqualityExpression *self, EqualityType type)
 {
-	size_t new_size = (out->rhs_count + 1) * sizeof(EqualityRhs);
-	EqualityRhs *tmp = realloc(out->rhs, new_size);
+	size_t new_size = (self->rhs_count + 1) * sizeof(EqualityRhs);
+	EqualityRhs *tmp = realloc(self->rhs, new_size);
 
 	if (!tmp)
 		return NULL;
 
-	out->rhs = tmp;
-	EqualityRhs *back = out->rhs + out->rhs_count;
-	++out->rhs_count;
+	self->rhs = tmp;
+	EqualityRhs *back = self->rhs + self->rhs_count;
+	++self->rhs_count;
 
 	comparison_expression_init(&back->expr);
 	back->type = type;
@@ -43,11 +46,11 @@ static inline EqualityRhs *push_equality_rhs(EqualityExpression *out, EqualityTy
 	return back;
 }
 
-static inline Error try_equality_expression_parse(EqualityExpression *out, TokenIterator *iter)
+static inline Error try_equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 {
 	Error error;
 
-	if ((error = comparison_expression_parse(&out->lhs, iter)))
+	if ((error = comparison_expression_parse(&self->lhs, iter)))
 		return error;
 
 	while (true)
@@ -74,7 +77,7 @@ static inline Error try_equality_expression_parse(EqualityExpression *out, Token
 			break;
 
 		++iter->token;
-		EqualityRhs *back = push_equality_rhs(out, type);
+		EqualityRhs *back = push_equality_rhs(self, type);
 
 		if (!back)
 			return ERROR_MEMORY;
@@ -86,17 +89,39 @@ static inline Error try_equality_expression_parse(EqualityExpression *out, Token
 	return ERROR_NONE;
 }
 
-Error equality_expression_parse(EqualityExpression *out, TokenIterator *iter)
+Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(iter != NULL);
 
-	equality_expression_init(out);
+	equality_expression_init(self);
 
-	Error error = try_equality_expression_parse(out, iter);
+	Error error = try_equality_expression_parse(self, iter);
 
 	if (error)
-		equality_expression_free(out);
+		equality_expression_free(self);
 
 	return error;
+}
+
+void equality_expression_print_tree(EqualityExpression *self, unsigned depth)
+{
+	assert(self != NULL);
+
+	if (self->rhs_count > 0)
+		depth += 1;
+
+	comparison_expression_print_tree(&self->lhs, depth);
+
+	for (size_t i = 0; i < self->rhs_count; ++i)
+	{
+		print_branch(depth - 1);
+
+		if (self->rhs[i].type == EQUALITY_EQUALS)
+			puts("==");
+		else
+			puts("!=");
+
+		comparison_expression_print_tree(&self->rhs[i].expr, depth);
+	}
 }

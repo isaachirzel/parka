@@ -1,5 +1,8 @@
 #include <warbler/ast/parameter.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
 
@@ -135,4 +138,22 @@ Error parameter_list_parse(ParameterList *list, TokenIterator *iter)
 		parameter_list_free(list);
 
 	return error;
+}
+
+void parameter_print_tree(Parameter *self, unsigned depth)
+{
+	assert(self != NULL);
+
+	print_branch(depth);
+	printf("%s: %s\n", self->name.text, self->type.text);
+}
+
+void parameter_list_print_tree(ParameterList *self, unsigned depth)
+{
+	assert(self != NULL);
+
+	for (size_t i = 0; i < self->parameter_count; ++i)
+	{
+		parameter_print_tree(self->parameters + i, depth + 1);
+	}
 }

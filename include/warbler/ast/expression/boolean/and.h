@@ -14,5 +14,6 @@ typedef struct BooleanAndExpression
 void boolean_and_expression_init(BooleanAndExpression *out);
 void boolean_and_expression_free(BooleanAndExpression *out);
 Error boolean_and_expression_parse(BooleanAndExpression *out, TokenIterator *iter);
+void boolean_and_expression_print_tree(BooleanAndExpression *self, unsigned depth);
 
 #endif

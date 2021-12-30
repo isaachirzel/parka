@@ -91,12 +91,15 @@ void additive_expression_print_tree(AdditiveExpression *self, unsigned depth)
 {
 	assert(self != NULL);
 
-	multiplicative_expression_print_tree(&self->lhs, depth + 1);
+	if (self->rhs_count > 0)
+		depth += 1;
+
+	multiplicative_expression_print_tree(&self->lhs, depth);
 	
 	for (size_t i = 0; i < self->rhs_count; ++i)
 	{
 
-		print_branch(depth);
+		print_branch(depth - 1);
 
 		switch (self->rhs[i].type)
 		{
@@ -109,6 +112,6 @@ void additive_expression_print_tree(AdditiveExpression *self, unsigned depth)
 				break;		
 		}
 
-		multiplicative_expression_print_tree(&self->rhs[i].expr, depth + 1);
+		multiplicative_expression_print_tree(&self->rhs[i].expr, depth);
 	}
 }

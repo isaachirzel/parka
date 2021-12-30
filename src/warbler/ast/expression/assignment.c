@@ -1,5 +1,8 @@
 #include <warbler/ast/expression/assignment.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
 
@@ -109,5 +112,65 @@ Error assignment_expression_parse(AssignmentExpression *self, TokenIterator *ite
 
 void assignment_expression_print_tree(AssignmentExpression *self, unsigned depth)
 {
-	assert(false && __func__);
+	assert(self != NULL);
+
+	primary_expression_print_tree(&self->lhs, depth);
+
+	print_branch(depth + 1);
+
+	const char *symbol;
+	switch (self->type)
+	{
+		case ASSIGN_NONE:
+			return;
+
+		case ASSIGN_BECOME:
+			symbol = "=";
+			break;
+
+		case ASSIGN_MULTIPLY:
+			symbol = "*=";
+			break;
+
+		case ASSIGN_DIVIDE:
+			symbol = "/=";
+			break;
+
+		case ASSIGN_MODULUS:
+			symbol = "%=";
+			break;
+
+		case ASSIGN_ADD:
+			symbol = "+=";
+			break;
+
+		case ASSIGN_SUBTRACT:
+			symbol = "-=";
+			break;
+
+		case ASSIGN_LSHIFT:
+			symbol = "<<=";
+			break;
+
+		case ASSIGN_RSHIFT:
+			symbol = ">>=";
+			break;
+
+		case ASSIGN_BITWISE_AND:
+			symbol = "&=";
+			break;
+
+		case ASSIGN_BITWISE_OR:
+			symbol = "|=";
+			break;
+
+		case ASSIGN_BITWISE_XOR:
+			symbol = "^=";
+			break;
+	}
+
+	print_branch(depth + 1);
+	puts(symbol);
+
+	conditional_expression_print_tree(self->rhs, depth + 1);
 }

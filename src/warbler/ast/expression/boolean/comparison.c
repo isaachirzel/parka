@@ -1,41 +1,44 @@
 #include <warbler/ast/expression/boolean/comparison.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
 #include <assert.h>
 
-void comparison_expression_init(ComparisonExpression *out)
+void comparison_expression_init(ComparisonExpression *self)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 
-	shift_expression_init(&out->lhs);
-	out->rhs = NULL;
-	out->rhs_count = 0;
+	shift_expression_init(&self->lhs);
+	self->rhs = NULL;
+	self->rhs_count = 0;
 }
 
-void comparison_expression_free(ComparisonExpression *out)
+void comparison_expression_free(ComparisonExpression *self)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 
-	shift_expression_free(&out->lhs);
+	shift_expression_free(&self->lhs);
 	
-	for (size_t i = 0; i < out->rhs_count; ++i)
-		shift_expression_free(&out->rhs[i].expr);
+	for (size_t i = 0; i < self->rhs_count; ++i)
+		shift_expression_free(&self->rhs[i].expr);
 
-	free(out->rhs);
+	free(self->rhs);
 }
 
-static inline ComparisonRhs *push_comparison_rhs(ComparisonExpression *out, ComparisonType type)
+static inline ComparisonRhs *push_comparison_rhs(ComparisonExpression *self, ComparisonType type)
 {
-	size_t new_size = (out->rhs_count + 1) * sizeof(ComparisonRhs);
-	ComparisonRhs *tmp = realloc(out->rhs, new_size);
+	size_t new_size = (self->rhs_count + 1) * sizeof(ComparisonRhs);
+	ComparisonRhs *tmp = realloc(self->rhs, new_size);
 
 	if (!tmp)
 		return NULL;
 
-	out->rhs = tmp;
-	ComparisonRhs *back = out->rhs + out->rhs_count;
-	++out->rhs_count;
+	self->rhs = tmp;
+	ComparisonRhs *back = self->rhs + self->rhs_count;
+	++self->rhs_count;
 
 	shift_expression_init(&back->expr);
 	back->type = type;
@@ -43,11 +46,11 @@ static inline ComparisonRhs *push_comparison_rhs(ComparisonExpression *out, Comp
 	return back;
 }
 
-static inline Error try_comparison_expression_parse(ComparisonExpression *out, TokenIterator *iter)
+static inline Error try_comparison_expression_parse(ComparisonExpression *self, TokenIterator *iter)
 {
 	Error error;
 
-	if ((error = shift_expression_parse(&out->lhs, iter)))
+	if ((error = shift_expression_parse(&self->lhs, iter)))
 		return error;
 
 	while (true)
@@ -81,7 +84,7 @@ static inline Error try_comparison_expression_parse(ComparisonExpression *out, T
 		if (should_break)
 			break;
 
-		ComparisonRhs *back = push_comparison_rhs(out, type);
+		ComparisonRhs *back = push_comparison_rhs(self, type);
 
 		if (!back)
 			return ERROR_MEMORY;
@@ -95,17 +98,54 @@ static inline Error try_comparison_expression_parse(ComparisonExpression *out, T
 	return ERROR_NONE;
 }
 
-Error comparison_expression_parse(ComparisonExpression *out, TokenIterator *iter)
+Error comparison_expression_parse(ComparisonExpression *self, TokenIterator *iter)
 {
-	assert(out != NULL);
+	assert(self != NULL);
 	assert(iter != NULL);
 
-	comparison_expression_init(out);
+	comparison_expression_init(self);
 
-	Error error = try_comparison_expression_parse(out, iter);
+	Error error = try_comparison_expression_parse(self, iter);
 
 	if (error)
-		comparison_expression_free(out);
+		comparison_expression_free(self);
 
 	return error;
+}
+
+void comparison_expression_print_tree(ComparisonExpression *self, unsigned depth)
+{
+	assert(self != NULL);
+
+	if (self->rhs_count > 0)
+		depth += 1;
+
+	shift_expression_print_tree(&self->lhs, depth);
+
+	for (size_t i = 0; i < self->rhs_count; ++i)
+	{
+		print_branch(depth - 1);
+
+		switch (self->rhs[i].type)
+		{
+			case COMPARISON_GREATER:
+				puts(">");
+				break;
+
+			case COMPARISON_LESS:
+				puts("<");
+				break;
+
+			case COMPARISON_GREATER_EQUAL:
+				puts(">=");
+				break;
+
+			case COMPARISON_LESS_EQUAL:
+				puts("<=");
+				break;
+
+		}
+
+		shift_expression_print_tree(&self->rhs[i].expr, depth);
+	}
 }

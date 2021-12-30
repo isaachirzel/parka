@@ -8,7 +8,7 @@ struct Expression;
 
 typedef enum ConditionalType
 {
-	CONDITIONAL_BINARY,
+	CONDITIONAL_NONE,
 	CONDITIONAL_TERNARY
 } ConditionalType;
 
@@ -18,8 +18,9 @@ typedef struct ConditionalExpression
 	ConditionalType type;
 } ConditionalExpression;
 
-void conditional_expression_init(ConditionalExpression *expr);
-void conditional_expression_free(ConditionalExpression *exor);
-Error conditional_expression_parse(ConditionalExpression *out, TokenIterator *iter);
+void conditional_expression_init(ConditionalExpression *self);
+void conditional_expression_free(ConditionalExpression *self);
+Error conditional_expression_parse(ConditionalExpression *self, TokenIterator *iter);
+void conditional_expression_print_tree(ConditionalExpression *self, unsigned depth);
 
 #endif
