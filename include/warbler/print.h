@@ -2,6 +2,7 @@
 #define WARBLER_PRINT_H
 
 void print_branch(unsigned count);
+void print_tree_branch_symbol(const char *symbol, unsigned depth);
 void print_spaces(unsigned count);
 
 void _debugf(const char *file, unsigned line, const char *func, const char *fmt, ...);

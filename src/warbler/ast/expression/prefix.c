@@ -126,10 +126,7 @@ void prefix_print_tree(Prefix *self, unsigned depth)
 void prefix_list_print_tree(PrefixList *self, unsigned depth)
 {
 	assert(self);
-	debugf("prefix count: %zu\n", self->count);
-
-	return;
 
 	for (size_t i = 0; i < self->count; ++i)
-		prefix_print_tree(self->data + i, depth + 1);
+		prefix_print_tree(self->data + i, depth);
 }

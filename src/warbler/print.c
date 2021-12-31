@@ -17,6 +17,12 @@ void print_branch(unsigned count)
 	fputs("| > ", stdout);
 }
 
+void print_tree_branch_symbol(const char *symbol, unsigned depth)
+{
+	print_branch(depth);
+	puts(symbol);
+}
+
 void print_spaces(unsigned count)
 {
 	for (unsigned i = 0; i < count; ++i)

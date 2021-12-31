@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
 		additive_expression_print_tree(&expr, 1);
 	}
 
+	debug("freeing data");
 	additive_expression_free(&expr);
 	free(src);
 	tokenizer_free();

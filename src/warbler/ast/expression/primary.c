@@ -40,8 +40,7 @@ void primary_expression_free(PrimaryExpression *self)
 			break;
 
 		case PRIMARY_EXPRESSION:
-			if (self->expression)
-				expression_free(self->expression);
+			expression_free(self->expression);
 			
 			free(self->expression);
 			break;
@@ -54,7 +53,6 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 	assert(iter);
 
 	primary_expression_init(self);
-
 
 	_try(prefix_list_parse(&self->prefixes, iter));
 
@@ -91,10 +89,10 @@ void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 {
 	assert(self);
 
-	if (self->prefixes.count > 0)
-		depth += 1;
+	// if (self->prefixes.count > 0)
+	// 	depth += 1;
 
-	prefix_list_print_tree(&self->prefixes, depth - 1);
+	// prefix_list_print_tree(&self->prefixes, depth - 1);
 
 	switch (self->type)
 	{
@@ -107,7 +105,7 @@ void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 			break;
 
 		case PRIMARY_EXPRESSION:
-			assert(false && " expression_print_tree() not implemented");
+			expression_print_tree(self->expression, depth);
 			break;
 	}
 

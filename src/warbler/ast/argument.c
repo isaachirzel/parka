@@ -137,8 +137,8 @@ void argument_list_print_tree(ArgumentList *self, unsigned depth)
 	print_branch(depth);
 	puts("()");
 
+	//return;
+
 	for (size_t i = 0; i < self->argument_count; ++i)
-	{
 		argument_print_tree(self->arguments + i, depth + 1);
-	}
 }

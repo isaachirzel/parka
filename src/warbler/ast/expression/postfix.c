@@ -19,6 +19,17 @@ void postfix_init(Postfix *self)
 	};
 }
 
+void postfix_list_init(PostfixList *self)
+{
+	assert(self);
+
+	*self = (PostfixList)
+	{
+		.data = NULL,
+		.count = 0
+	};
+}
+
 void postfix_free(Postfix *self)
 {
 	if (!self)
@@ -27,9 +38,7 @@ void postfix_free(Postfix *self)
 	switch (self->type)
 	{
 		case POSTFIX_INDEX:
-			if (self->expression)
-				expression_free(self->expression);
-			
+			expression_free(self->expression);
 			free(self->expression);
 			break;
 
@@ -43,6 +52,17 @@ void postfix_free(Postfix *self)
 	}
 }
 
+void postfix_list_free(PostfixList *self)
+{
+	if (!self)
+		return;
+
+	for (size_t i = 0; i < self->count; ++i)
+		postfix_free(self->data + i);
+
+	free(self->data);
+}
+
 Error postfix_parse(Postfix *self, TokenIterator *iter)
 {
 	assert(self);
@@ -54,6 +74,8 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 	{
 		case TOKEN_LBRACK:
 			++iter->token;
+
+			self->type + POSTFIX_MEMBER;
 			self->expression = malloc(sizeof(Expression));
 
 			if (!self->expression)
@@ -69,12 +91,13 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 			break;
 
 		case TOKEN_LPAREN:
+			self->type = POSTFIX_CALL;
 			_try(argument_list_parse(&self->arguments, iter));
 			break;
 
 		case TOKEN_DOT:
 			++iter->token;
-
+			self->type + POSTFIX_MEMBER;
 			_try(identifier_parse(&self->identifier, iter));
 			break;
 
@@ -85,52 +108,6 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 	}
 
 	return ERROR_NONE;
-}
-
-void postfix_print_tree(Postfix *self, unsigned depth)
-{
-	assert(self);
-
-	print_branch(depth);
-
-	switch (self->type)
-	{
-		case POSTFIX_INDEX:
-			puts("[]");
-			expression_print_tree(self->expression, depth + 1);
-			break;
-
-		case POSTFIX_CALL:
-			argument_list_print_tree(&self->arguments, depth + 1);
-			break;
-
-		case POSTFIX_MEMBER:
-			puts(".");
-			identifier_print_tree(&self->identifier, depth + 1);
-			break;
-	}
-}
-
-void postfix_list_init(PostfixList *self)
-{
-	assert(self);
-
-	*self = (PostfixList)
-	{
-		.data = NULL,
-		.count = 0
-	};
-}
-
-void postfix_list_free(PostfixList *self)
-{
-	if (!self)
-		return;
-
-	for (size_t i = 0; i < self->count; ++i)
-		postfix_free(self->data + i);
-
-	free(self->data);
 }
 
 static Postfix *postfix_list_push(PostfixList *self)
@@ -172,12 +149,34 @@ Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 	return ERROR_NONE;
 }
 
+void postfix_print_tree(Postfix *self, unsigned depth)
+{
+	assert(self);
+
+	switch (self->type)
+	{
+		case POSTFIX_INDEX:
+			print_branch(depth);
+			puts("[]");
+			expression_print_tree(self->expression, depth);
+			break;
+
+		case POSTFIX_CALL:
+			argument_list_print_tree(&self->arguments, depth);
+			break;
+
+		case POSTFIX_MEMBER:
+			print_branch(depth);
+			puts(".");
+			identifier_print_tree(&self->identifier, depth);
+			break;
+	}
+}
+
 void postfix_list_print_tree(PostfixList *self, unsigned depth)
 {
 	assert(self);
 
 	for (size_t i = 0; i < self->count; ++i)
-	{
-		postfix_print_tree(self->data + i, depth + 1);
-	}
+		postfix_print_tree(self->data + i, depth);
 }
