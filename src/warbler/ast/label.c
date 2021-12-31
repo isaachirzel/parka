@@ -20,10 +20,7 @@ Error label_parse(Label *self, TokenIterator *iter)
 	if (iter->token[0].type != TOKEN_IDENTIFIER || iter->token[1].type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 	
-	Error error;
-
-	if ((error = identifier_parse(&self->identifier, iter)))
-		return error;
+	_try(identifier_parse(&self->identifier, iter));
 
 	if (iter->token->type != TOKEN_COLON)
 	{

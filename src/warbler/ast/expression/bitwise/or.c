@@ -53,11 +53,7 @@ Error bitwise_or_expression_parse(BitwiseOrExpression *self, TokenIterator *iter
 	assert(iter != NULL);
 
 	bitwise_or_expression_init(self);
-
-	Error error;
-
-	if ((error = bitwise_xor_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(bitwise_xor_expression_parse(&self->lhs, iter));
 
 	while (iter->token->type == TOKEN_PIPELINE)
 	{
@@ -67,8 +63,7 @@ Error bitwise_or_expression_parse(BitwiseOrExpression *self, TokenIterator *iter
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = bitwise_xor_expression_parse(back, iter)))
-			return error;
+		_try(bitwise_xor_expression_parse(back, iter));
 	}
 
 	return ERROR_NONE;

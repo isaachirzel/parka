@@ -55,19 +55,14 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 
 	primary_expression_init(self);
 
-	Error error;
 
-	debug("parse prefixes");
-	prefix_list_parse(&self->prefixes, iter);
+	_try(prefix_list_parse(&self->prefixes, iter));
 
-	debug("parse primary");
 	switch (iter->token->type)
 	{
 		case TOKEN_IDENTIFIER:
 			self->type = PRIMARY_IDENTIFIER;
-
-			if ((error = identifier_parse(&self->identifier, iter)))
-				return error;
+			_try(identifier_parse(&self->identifier, iter));
 			break;
 
 		case TOKEN_LPAREN:
@@ -78,20 +73,16 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 			if (!self->expression)
 				return ERROR_MEMORY;
 
-			if ((error = expression_parse(self->expression, iter)))
-				return error;
+			_try(expression_parse(self->expression, iter));
 			break;
 
 		default:
 			self->type = PRIMARY_CONSTANT;
-
-			if ((error = constant_parse(&self->constant, iter)))
-				return error;
+			_try(constant_parse(&self->constant, iter));
 			break;
 	}
 
-	debug("parse postfixes");
-	postfix_list_parse(&self->postfixes, iter);
+	_try(postfix_list_parse(&self->postfixes, iter));
 
 	return ERROR_NONE;
 }
@@ -99,6 +90,11 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 {
 	assert(self);
+
+	if (self->prefixes.count > 0)
+		depth += 1;
+
+	prefix_list_print_tree(&self->prefixes, depth - 1);
 
 	switch (self->type)
 	{
@@ -114,4 +110,6 @@ void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 			assert(false && " expression_print_tree() not implemented");
 			break;
 	}
+
+	postfix_list_print_tree(&self->postfixes, depth + 1);
 }

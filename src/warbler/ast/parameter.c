@@ -29,21 +29,14 @@ Error parameter_parse(Parameter *self, TokenIterator *iter)
 	assert(iter);
 
 	parameter_init(self);
-
-	Error error;
-	
-	if ((error = identifier_parse(&self->name, iter)))
-		return error;
-
-	debug("parsed parameter");
+	_try(identifier_parse(&self->name, iter));
 
 	if (iter->token->type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 
 	++iter->token;
 
-	if ((error = typename_parse(&self->type, iter)))
-		return error;
+	_try(typename_parse(&self->type, iter));
 
 	return ERROR_NONE;
 }
@@ -88,12 +81,8 @@ Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
 
 	parameter_list_init(self);
 
-	Error error;
-
 	if (iter->token->type != TOKEN_LPAREN)
 		return ERROR_ARGUMENT;
-
-	debugf("token type: %d\n", iter->token->type);
 
 	if (iter->token[1].type != TOKEN_RPAREN)
 	{
@@ -102,11 +91,9 @@ Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
 			++iter->token;
 
 			Parameter parameter;
-			if ((error = parameter_parse(&parameter, iter)))
-				return error;
 
-			if ((error = push_parameter(self, &parameter)))
-				return error;			
+			_try(parameter_parse(&parameter, iter));
+			_try(push_parameter(self, &parameter));
 		}
 		while (iter->token->type == TOKEN_COMMA);
 

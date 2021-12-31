@@ -52,11 +52,7 @@ Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 	assert(iter);
 
 	equality_expression_init(self);
-
-	Error error;
-
-	if ((error = comparison_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(comparison_expression_parse(&self->lhs, iter));
 
 	while (true)
 	{
@@ -87,8 +83,7 @@ Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = comparison_expression_parse(&back->expr, iter)))
-			return error;
+		_try(comparison_expression_parse(&back->expr, iter));
 	}
 
 	return ERROR_NONE;
@@ -96,7 +91,7 @@ Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 
 void equality_expression_print_tree(EqualityExpression *self, unsigned depth)
 {
-	assert(self != NULL);
+	assert(self);
 
 	if (self->rhs_count > 0)
 		depth += 1;

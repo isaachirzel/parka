@@ -2,7 +2,8 @@
 #define WARBLER_AST_POSTFIX_EXPRESSION_H
 
 // local headers
-#include <warbler/ast/parameter.h>
+#include <warbler/ast/argument.h>
+#include <warbler/ast/identifier.h>
 
 struct Expression;
 
@@ -18,7 +19,7 @@ typedef struct Postfix
 	union
 	{
 		struct Expression *expression;
-		ParameterList parameters;
+		ArgumentList arguments;
 		Identifier identifier;
 	};
 	PostfixType type;

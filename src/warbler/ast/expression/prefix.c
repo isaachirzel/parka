@@ -64,7 +64,7 @@ static inline Prefix *prefix_list_push(PrefixList *self)
 	Prefix *tmp = realloc(self->data, new_size);
 
 	if (!tmp)
-		return ERROR_MEMORY;
+		return NULL;
 
 	Prefix *back = tmp + self->count;
 
@@ -81,13 +81,11 @@ Error prefix_list_parse(PrefixList *self, TokenIterator *iter)
 
 	prefix_list_init(self);
 
-	Error error;
-
 	while (true)
 	{
 		Prefix prefix;
 
-		if ((error = prefix_parse(&prefix, iter)))
+		if (prefix_parse(&prefix, iter) != ERROR_NONE)
 			break;
 
 		Prefix *back = prefix_list_push(self);
@@ -128,9 +126,10 @@ void prefix_print_tree(Prefix *self, unsigned depth)
 void prefix_list_print_tree(PrefixList *self, unsigned depth)
 {
 	assert(self);
+	debugf("prefix count: %zu\n", self->count);
+
+	return;
 
 	for (size_t i = 0; i < self->count; ++i)
-	{
 		prefix_print_tree(self->data + i, depth + 1);
-	}
 }

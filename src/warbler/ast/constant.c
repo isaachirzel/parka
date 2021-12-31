@@ -127,21 +127,17 @@ Error constant_parse(Constant *self, TokenIterator *iter)
 	assert(iter);
 
 	constant_init(self);
-
-	Error error;
-
+	
 	switch (iter->token->type)
 	{
 		case TOKEN_MINUS:
 			++iter->token;
-			if ((error = parse_number(self, iter, true)))
-				return error;
+			_try(parse_number(self, iter, true));
 			break;
 
 		case TOKEN_PLUS:
 			++iter->token;
-			if ((error = parse_number(self, iter, false)))
-				return error;
+			_try(parse_number(self, iter, false));
 			break;
 
 		case TOKEN_INTEGER_LITERAL:

@@ -53,11 +53,7 @@ Error comparison_expression_parse(ComparisonExpression *self, TokenIterator *ite
 	assert(iter);
 
 	comparison_expression_init(self);
-	
-	Error error;
-
-	if ((error = shift_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(shift_expression_parse(&self->lhs, iter));
 
 	while (true)
 	{
@@ -97,8 +93,7 @@ Error comparison_expression_parse(ComparisonExpression *self, TokenIterator *ite
 		
 		++iter->token;
 
-		if ((error = shift_expression_parse(&back->expr, iter)))
-			return error;
+		_try(shift_expression_parse(&back->expr, iter));
 	}
 	
 	return ERROR_NONE;

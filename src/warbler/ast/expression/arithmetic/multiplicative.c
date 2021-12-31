@@ -30,7 +30,7 @@ void multiplicative_expression_free(MultiplicativeExpression *self)
 	free(self->rhs);
 }
 
-static inline MultiplicativeRhs *multiplicative_expression_rhs_push(MultiplicativeExpression *self, MultiplicativeType type)
+static inline MultiplicativeRhs *multiplicative_expression_push(MultiplicativeExpression *self)
 {
 	size_t new_size = (self->rhs_count + 1) * sizeof(MultiplicativeRhs);
 	MultiplicativeRhs *tmp = realloc(self->rhs, new_size);
@@ -42,9 +42,6 @@ static inline MultiplicativeRhs *multiplicative_expression_rhs_push(Multiplicati
 	MultiplicativeRhs *back = self->rhs + self->rhs_count;
 	++self->rhs_count;
 
-	primary_expression_init(&back->expr);
-	back->type = type;
-
 	return back;
 }
 
@@ -54,11 +51,7 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 	assert(iter);
 
 	multiplicative_expression_init(self);
-
-	Error error;
-
-	if ((error = primary_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(primary_expression_parse(&self->lhs, iter));
 
 	while (true)
 	{
@@ -87,15 +80,16 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 		if (should_break)
 			break;
 
-		MultiplicativeRhs *back = multiplicative_expression_rhs_push(self, type);
+		MultiplicativeRhs *back = multiplicative_expression_push(self);
 
 		if (!back)
 			return ERROR_MEMORY;
 
 		++iter->token;
 
-		if ((error = primary_expression_parse(&back->expr, iter)))
-			return error;
+		back->type = type;
+
+		_try(primary_expression_parse(&back->expr, iter));
 	}
 
 	return ERROR_NONE;
@@ -104,8 +98,6 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsigned depth)
 {
 	assert(self);
-
-	debugf("primary rhs count: %u\n", self->rhs_count);
 
 	if (self->rhs_count > 0)
 		depth += 1;

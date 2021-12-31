@@ -53,11 +53,7 @@ Error shift_expression_parse(ShiftExpression *self, TokenIterator *iter)
 	assert(iter != NULL);
 
 	shift_expression_init(self);
-	
-	Error error;
-
-	if ((error = additive_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(additive_expression_parse(&self->lhs, iter));
 
 	while (true)
 	{
@@ -89,8 +85,7 @@ Error shift_expression_parse(ShiftExpression *self, TokenIterator *iter)
 		
 		++iter->token;
 
-		if ((error = additive_expression_parse(&back->expr, iter)))
-			return error;
+		_try(additive_expression_parse(&back->expr, iter));
 	}
 	
 	return ERROR_NONE;

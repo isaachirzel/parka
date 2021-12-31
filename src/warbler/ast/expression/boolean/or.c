@@ -52,11 +52,7 @@ Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator *iter
 	assert(iter);
 
 	boolean_or_expression_init(self);
-	
-	Error error;
-
-	if ((error = boolean_and_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(boolean_and_expression_parse(&self->lhs, iter));
 
 	while (iter->token->type == TOKEN_OR)
 	{
@@ -66,8 +62,7 @@ Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator *iter
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = boolean_and_expression_parse(back, iter)))
-			return error;
+		_try(boolean_and_expression_parse(back, iter));
 	}
 
 	return ERROR_NONE;

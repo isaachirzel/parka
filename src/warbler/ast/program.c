@@ -24,21 +24,20 @@ void program_free(Program *self)
 	free(self->functions);
 }
 
-static inline Error increment_functions(Program *self)
+static inline Function *program_push(Program *self)
 {
 	size_t new_size = (self->function_count + 1) * sizeof(Function);
 	Function *tmp = realloc(self->functions, new_size);
 
 	if (!tmp)
-		return ERROR_MEMORY;
+		return NULL;
+
+	Function *back = tmp + self->function_count++;
 
 	self->functions = tmp;
+	++self->function_count;
 
-	Function *back = self->functions + self->function_count++;
-
-	function_init(back);
-
-	return ERROR_NONE;
+	return back;
 }
 
 Error program_parse(Program *self, TokenIterator *iter)
@@ -48,17 +47,14 @@ Error program_parse(Program *self, TokenIterator *iter)
 
 	program_init(self);
 
-	Error error;
-
 	while (iter->token->type != TOKEN_END_OF_FILE)
 	{		
-		if ((error = increment_functions(self)))
-			return error;
+		Function *back = program_push(self);
 
-		Function *back = self->functions + (self->function_count - 1);
+		if (!back)
+			return ERROR_MEMORY;
 
-		if ((error = function_parse(back, iter)))
-			return error;
+		_try(function_parse(back, iter));
 	}
 
 	return ERROR_NONE;

@@ -34,7 +34,7 @@ void postfix_free(Postfix *self)
 			break;
 
 		case POSTFIX_CALL:
-			parameter_list_free(&self->parameters);
+			argument_list_free(&self->arguments);
 			break;
 
 		case POSTFIX_MEMBER:
@@ -50,8 +50,6 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 
 	postfix_init(self);
 
-	Error error;
-
 	switch (iter->token->type)
 	{
 		case TOKEN_LBRACK:
@@ -61,8 +59,7 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 			if (!self->expression)
 				return ERROR_MEMORY;
 
-			if ((error = expression_parse(self->expression, iter)))
-				return error;
+			_try(expression_parse(self->expression, iter));
 
 			if (iter->token->type != TOKEN_RBRACK)
 			{
@@ -72,15 +69,13 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 			break;
 
 		case TOKEN_LPAREN:
-			if ((error = parameter_list_parse(&self->parameters, iter)))
-				return error;
+			_try(argument_list_parse(&self->arguments, iter));
 			break;
 
 		case TOKEN_DOT:
 			++iter->token;
 
-			if ((error = identifier_parse(&self->identifier, iter)))
-				return error;
+			_try(identifier_parse(&self->identifier, iter));
 			break;
 
 		default:
@@ -106,8 +101,7 @@ void postfix_print_tree(Postfix *self, unsigned depth)
 			break;
 
 		case POSTFIX_CALL:
-			puts("()");
-			parameter_list_print_tree(&self->parameters, depth + 1);
+			argument_list_print_tree(&self->arguments, depth + 1);
 			break;
 
 		case POSTFIX_MEMBER:
@@ -161,8 +155,6 @@ Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 	assert(iter);
 
 	postfix_list_init(self);
-
-	Error error;
 	TokenType type = iter->token->type;
 
 	while (type == TOKEN_DOT || type == TOKEN_LPAREN || type == TOKEN_LBRACK)
@@ -172,8 +164,7 @@ Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = postfix_parse(back, iter)))
-			return error;
+		_try(postfix_parse(back, iter));
 
 		type = iter->token->type;
 	}

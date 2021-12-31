@@ -12,7 +12,7 @@ void argument_init(Argument *self)
 {
 	assert(self);
 
-	expression_init(&self->expr);
+	expression_init(self->expr);
 }
 
 void argument_list_init(ArgumentList *self)
@@ -31,7 +31,8 @@ void argument_free(Argument *self)
 	if (!self)
 		return;
 
-	expression_free(&self->expr);
+	expression_free(self->expr);
+	free(self->expr);
 }
 
 void argument_list_free(ArgumentList *self)
@@ -40,9 +41,7 @@ void argument_list_free(ArgumentList *self)
 		return;
 
 	for (size_t i = 0; i < self->argument_count; ++i)
-	{
 		argument_free(self->arguments + i);
-	}
 
 	free(self->arguments);
 }
@@ -52,18 +51,17 @@ Error argument_parse(Argument *self, TokenIterator *iter)
 	assert(self);
 	assert(iter);
 
-	Error error;
+	self->expr = malloc(sizeof(Expression));
 
-	if ((error = expression_parse(&self->expr, iter)))
-	{
-		expression_free(&self->expr);
-		return error;
-	}
+	if (!self->expr)
+		return ERROR_MEMORY;
+
+	_try(expression_parse(self->expr, iter));
 
 	return ERROR_NONE;
 }
 
-static Argument *push_argument(ArgumentList * self)
+static Argument *push_argument(ArgumentList *self)
 {
 	size_t new_size = (self->argument_count + 1) * sizeof(Argument);
 	Argument *tmp = realloc(self->arguments, new_size);
@@ -98,10 +96,7 @@ static Error try_argument_list_parse(ArgumentList *self, TokenIterator *iter)
 			if (!back)
 				return ERROR_MEMORY;
 
-			Error error;
-
-			if ((error = argument_parse(back, iter)))
-				return error;
+			_try(argument_parse(back, iter));
 		}
 		while (iter->token->type == TOKEN_COMMA);
 
@@ -134,7 +129,7 @@ void argument_print_tree(Argument *self, unsigned depth)
 {
 	assert(self);
 
-	expression_print_tree(&self->expr, depth);
+	expression_print_tree(self->expr, depth);
 }
 
 void argument_list_print_tree(ArgumentList *self, unsigned depth)

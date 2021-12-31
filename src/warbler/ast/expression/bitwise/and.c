@@ -52,11 +52,7 @@ Error bitwise_and_expression_parse(BitwiseAndExpression *self, TokenIterator *it
 	assert(iter != NULL);
 
 	bitwise_and_expression_init(self);
-
-	Error error;
-
-	if ((error = equality_expression_parse(&self->lhs, iter)))
-		return error;
+	_try(equality_expression_parse(&self->lhs, iter));
 
 	while (iter->token->type == TOKEN_AMPERSAND)
 	{
@@ -66,8 +62,7 @@ Error bitwise_and_expression_parse(BitwiseAndExpression *self, TokenIterator *it
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = equality_expression_parse(back, iter)))
-			return error;
+		_try(equality_expression_parse(back, iter));
 	}
 
 	return ERROR_NONE;

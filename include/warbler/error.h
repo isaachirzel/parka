@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 
 typedef enum Error
 {
@@ -36,6 +37,7 @@ static inline Error _not_implemented_error(const char *func_name)
 	return ERROR_NOT_IMPLEMENTED;
 }
 
+#define _try(expr) { Error error = expr; if (error) return error; }
 #define not_implemented_error() _not_implemented_error(__func__);
 
 #endif

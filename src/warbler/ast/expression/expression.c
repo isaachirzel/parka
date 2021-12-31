@@ -17,6 +17,11 @@ void expression_free(Expression *self)
 
 Error expression_parse(Expression *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	expression_init(self);
+
 	return assignment_expression_parse(&self->assignment, iter);
 }
 

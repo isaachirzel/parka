@@ -8,7 +8,7 @@ struct Expression;
 
 typedef struct Argument
 {
-	struct Expression expr;
+	struct Expression *expr;
 } Argument;
 
 typedef struct ArgumentList
