@@ -18,10 +18,8 @@ typedef enum PrimaryType
 
 typedef struct PrimaryExpression
 {
-	Prefix *prefixes;
-	size_t prefix_count;
-	Postfix *postfixes;
-	size_t postfix_count;
+	PrefixList prefixes;
+	PostfixList postfixes;
 
 	union
 	{

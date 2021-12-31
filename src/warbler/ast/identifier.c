@@ -18,8 +18,13 @@ void identifier_free(Identifier *self)
 
 static inline Error try_identifier_parse(Identifier *self, TokenIterator *iter)
 {
+	debugf("trying parameter parse of token type: %d\n", iter->token->type);
+
 	if (iter->token->type != TOKEN_IDENTIFIER)
+	{
+		print_token_error("expected identifier but got", iter->token);
 		return ERROR_ARGUMENT;
+	}
 
 	self->text = string_duplicate(&iter->token->text);
 
@@ -42,8 +47,6 @@ Error identifier_parse(Identifier *self, TokenIterator *iter)
 
 	if (error)
 		identifier_free(self);
-
-	debugf("parsed identifier: %s\n", self->text);
 
 	return error;
 }

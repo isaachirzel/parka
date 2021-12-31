@@ -43,3 +43,11 @@ void print_errorf(const char *fmt, ...)
 	vprintf(fmt, arg_list);
 	putchar('\n');
 }
+
+void print_token_error(const char *msg, const Token *token)
+{
+	const char *error_prompt = get_error_prompt();
+
+	printf("%sFILE:%zu:%zu: %s: ", error_prompt, token->line, token->col, msg);
+	token_println(token);
+}

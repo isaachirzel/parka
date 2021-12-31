@@ -21,9 +21,11 @@ void parameter_free(Parameter *parameter)
 static inline Error try_parameter_parse(Parameter *parameter, TokenIterator *iter)
 {
 	Error error;
-
+	
 	if ((error = identifier_parse(&parameter->name, iter)))
 		return error;
+
+	debug("parsed parameter");
 
 	if (iter->token->type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
@@ -38,8 +40,8 @@ static inline Error try_parameter_parse(Parameter *parameter, TokenIterator *ite
 
 Error parameter_parse(Parameter *parameter, TokenIterator *iter)
 {
-	assert(parameter != NULL);
-	assert(iter != NULL);
+	assert(parameter);
+	assert(iter);
 
 	parameter_init(parameter);
 
@@ -51,65 +53,62 @@ Error parameter_parse(Parameter *parameter, TokenIterator *iter)
 	return error;
 }
 
-void parameter_list_init(ParameterList *list)
+void parameter_list_init(ParameterList *self)
 {
-	list->parameters = NULL;
-	list->parameter_count = 0;
-}
-
-void parameter_list_free(ParameterList *list)
-{
-	for (size_t i = 0; i < list->parameter_count; ++i)
+	*self = (ParameterList)
 	{
-		parameter_free(list->parameters + i);
-	}
-
-	free(list->parameters);
+		.data = NULL,
+		.count = 0
+	};
 }
 
-static inline Error increment_parameters(ParameterList *list)
+void parameter_list_free(ParameterList *self)
 {
-	size_t new_size = (list->parameter_count + 1) * sizeof(Parameter);
-	Parameter *tmp = realloc(list->parameters, new_size);
+	for (size_t i = 0; i < self->count; ++i)
+		parameter_free(self->data + i);
+
+	free(self->data);
+}
+
+static inline Error push_parameter(ParameterList *self, Parameter *parameter)
+{
+	size_t new_size = (self->count + 1) * sizeof(Parameter);
+	Parameter *tmp = realloc(self->data, new_size);
 
 	if (!tmp)
 		return ERROR_MEMORY;
 
-	list->parameters = tmp;
+	tmp[self->count] = *parameter;
 
-	Parameter *back = list->parameters + list->parameter_count++;
-
-	parameter_init(back);
+	self->data = tmp;
+	++self->count;
 
 	return ERROR_NONE;
 }
 
-Error try_parameter_list_parse(ParameterList *list, TokenIterator *iter)
+Error try_parameter_list_parse(ParameterList *self, TokenIterator *iter)
 {
 	Error error;
 
 	if (iter->token->type != TOKEN_LPAREN)
 		return ERROR_ARGUMENT;
 
-	++iter->token;
+	debugf("token type: %d\n", iter->token->type);
 
-	if (iter->token->type != TOKEN_RPAREN)
+	if (iter->token[1].type != TOKEN_RPAREN)
 	{
-		while (true)
+		do
 		{
-			if ((error = increment_parameters(list)))
-				return error;
-
-			Parameter *back = list->parameters + (list->parameter_count - 1);
-
-			if ((error = parameter_parse(back, iter)))
-				return error;
-
-			if (iter->token->type != TOKEN_COMMA)
-				break;
-			
 			++iter->token;
+
+			Parameter parameter;
+			if ((error = parameter_parse(&parameter, iter)))
+				return error;
+
+			if ((error = push_parameter(self, &parameter)))
+				return error;			
 		}
+		while (iter->token->type == TOKEN_COMMA);
 
 		if (iter->token->type != TOKEN_RPAREN)
 		{
@@ -125,17 +124,17 @@ Error try_parameter_list_parse(ParameterList *list, TokenIterator *iter)
 	return ERROR_NONE;
 }
 
-Error parameter_list_parse(ParameterList *list, TokenIterator *iter)
+Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
 {
-	assert(list != NULL);
-	assert(iter != NULL);
+	assert(self);
+	assert(iter);
 
-	parameter_list_init(list);
+	parameter_list_init(self);
 
-	Error error = try_parameter_list_parse(list, iter);
+	Error error = try_parameter_list_parse(self, iter);
 
 	if (error)
-		parameter_list_free(list);
+		parameter_list_free(self);
 
 	return error;
 }
@@ -152,8 +151,8 @@ void parameter_list_print_tree(ParameterList *self, unsigned depth)
 {
 	assert(self != NULL);
 
-	for (size_t i = 0; i < self->parameter_count; ++i)
+	for (size_t i = 0; i < self->count; ++i)
 	{
-		parameter_print_tree(self->parameters + i, depth + 1);
+		parameter_print_tree(self->data + i, depth + 1);
 	}
 }

@@ -24,9 +24,20 @@ typedef struct Postfix
 	PostfixType type;
 } Postfix;
 
+typedef struct PostfixList
+{
+	Postfix *data;
+	size_t count;
+} PostfixList;
+
 void postfix_init(Postfix *self);
 void postfix_free(Postfix *self);
 Error postfix_parse(Postfix *self, TokenIterator *iter);
 void postfix_print_tree(Postfix *self, unsigned depth);
+
+void postfix_list_init(PostfixList *self);
+void postfix_list_free(PostfixList *self);
+Error postfix_list_parse(PostfixList *self, TokenIterator *iter);
+void postfix_list_print_tree(PostfixList *self, unsigned depth);
 
 #endif

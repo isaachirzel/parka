@@ -8,10 +8,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-
 void postfix_init(Postfix *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	*self = (Postfix)
 	{
@@ -22,7 +21,7 @@ void postfix_init(Postfix *self)
 
 void postfix_free(Postfix *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	switch (self->type)
 	{
@@ -43,8 +42,10 @@ void postfix_free(Postfix *self)
 	}
 }
 
-static inline Error try_postfix_parse(Postfix *self, TokenIterator *iter)
+static Error try_postfix_parse(Postfix *self, TokenIterator *iter)
 {
+	postfix_init(self);
+
 	Error error;
 
 	switch (iter->token->type)
@@ -58,11 +59,15 @@ static inline Error try_postfix_parse(Postfix *self, TokenIterator *iter)
 
 			if ((error = expression_parse(self->expression, iter)))
 				return error;
+
+			if (iter->token->type != TOKEN_RBRACK)
+			{
+				print_token_error("expected ']' after index operation but got: ", iter->token);
+				return ERROR_ARGUMENT;
+			}
 			break;
 
 		case TOKEN_LPAREN:
-			++iter->token;
-
 			if ((error = parameter_list_parse(&self->parameters, iter)))
 				return error;
 			break;
@@ -85,10 +90,8 @@ static inline Error try_postfix_parse(Postfix *self, TokenIterator *iter)
 
 Error postfix_parse(Postfix *self, TokenIterator *iter)
 {
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	postfix_init(self);
+	assert(self);
+	assert(iter);
 
 	Error error = try_postfix_parse(self, iter);
 
@@ -100,7 +103,7 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 
 void postfix_print_tree(Postfix *self, unsigned depth)
 {
-	assert(self != NULL);
+	assert(self);
 
 	print_branch(depth);
 
@@ -120,5 +123,88 @@ void postfix_print_tree(Postfix *self, unsigned depth)
 			puts(".");
 			identifier_print_tree(&self->identifier, depth + 1);
 			break;
+	}
+}
+
+void postfix_list_init(PostfixList *self)
+{
+	assert(self);
+
+	*self = (PostfixList)
+	{
+		.data = NULL,
+		.count = 0
+	};
+}
+
+void postfix_list_free(PostfixList *self)
+{
+	assert(self);
+
+	for (size_t i = 0; i < self->count; ++i)
+		postfix_free(self->data + i);
+
+	free(self->data);
+}
+
+static Postfix *postfix_list_push(PostfixList *self)
+{
+	size_t new_size = (self->count + 1) * sizeof(Postfix);
+	Postfix *tmp = realloc(self->data, new_size);
+
+	if (!tmp)
+		return NULL;
+
+	Postfix *back = tmp + self->count;
+
+	self->data = tmp;
+	++self->count;
+
+	return back;
+}
+
+static Error try_postfix_list_parse(PostfixList *self, TokenIterator *iter)
+{
+	Error error;
+	TokenType type = iter->token->type;
+
+	while (type == TOKEN_DOT || type == TOKEN_LPAREN || type == TOKEN_LBRACK)
+	{
+		Postfix *back = postfix_list_push(self);
+
+		if (!tmp)
+			return ERROR_MEMORY;
+
+		if ((error = try_postfix_parse(back, iter)))
+			return error;
+
+		type = iter->token->type;
+	}
+
+	return ERROR_NONE;
+}
+
+Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
+{
+	assert(self);
+	assert(iter);
+
+	postfix_list_init(self);
+
+	Error error = try_postfix_list_parse(self, iter);
+
+	if (error)
+		postfix_list_free(self);
+
+	return error;
+}
+
+void postfix_list_print_tree(PostfixList *self, unsigned depth)
+{
+	assert(self);
+
+	for (size_t i = 0; i < self->count; ++i)
+	{
+		postfix_print_tree(self->data + i, depth + 1);
 	}
 }

@@ -3,10 +3,33 @@
 // local headers
 #include <warbler/print.h>
 
+// standard headers
+#include <stdlib.h>
+#include <assert.h>
+
+void prefix_list_init(PrefixList *self)
+{
+	assert(self);
+
+	*self = (PrefixList)
+	{
+		.data = NULL,
+		.count = 0
+	};
+}
+
+void prefix_list_free(PrefixList *self)
+{
+	if (!self)
+		return;
+
+	free(self->data);
+}
+
 Error prefix_parse(Prefix *self, TokenIterator *iter)
 {
-	assert(self != NULL);
-	assert(iter != NULL);
+	assert(self);
+	assert(iter);
 
 	switch (iter->token->type)
 	{
@@ -27,9 +50,51 @@ Error prefix_parse(Prefix *self, TokenIterator *iter)
 			break;
 
 		default:
-			print_error("expected prefix but got: ");
-			token_println(iter->token);
 			return ERROR_ARGUMENT;
+	}
+
+	++iter->token;
+
+	return ERROR_NONE;
+}
+
+static inline Prefix *prefix_list_push(PrefixList *self)
+{
+	size_t new_size = (self->count + 1) * sizeof(Prefix);
+	Prefix *tmp = realloc(self->data, new_size);
+
+	if (!tmp)
+		return ERROR_MEMORY;
+
+	Prefix *back = tmp + self->count;
+
+	self->data = tmp;
+	++self->count;
+
+	return back;
+}
+
+Error prefix_list_parse(PrefixList *self, TokenIterator *iter)
+{
+	assert(self);
+	assert(iter);
+
+	prefix_list_init(self);
+
+	Error error;
+
+	while (true)
+	{
+		Prefix *back = prefix_list_push(self);
+
+		if (!back)
+			return ERROR_MEMORY;
+
+		if ((error = prefix_parse(back, iter)))
+			break;
+
+		if ((error = prefix_list_push(self, &prefix)))
+			return error;
 	}
 
 	return ERROR_NONE;
@@ -56,5 +121,15 @@ void prefix_print_tree(Prefix *self, unsigned depth)
 		case PREFIX_DEREFERENCE:
 			puts("*");
 			break;
+	}
+}
+
+void prefix_list_print_tree(PrefixList *self, unsigned depth)
+{
+	assert(self);
+
+	for (size_t i = 0; i < self->count; ++i)
+	{
+		prefix_print_tree(self->data + i, depth + 1);
 	}
 }

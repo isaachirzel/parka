@@ -15,8 +15,8 @@ typedef struct Parameter
 
 typedef struct ParameterList
 {
-	Parameter *parameters;
-	size_t parameter_count;
+	Parameter *data;
+	size_t count;
 } ParameterList;
 
 void parameter_init(Parameter *self);

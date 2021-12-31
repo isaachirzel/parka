@@ -12,29 +12,21 @@ void expression_free(struct Expression *expression);
 
 void primary_expression_init(PrimaryExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
-	*self = (PrimaryExpression)
-	{
-		.prefixes = NULL,
-		.prefix_count = 0,
-		.postfixes = NULL,
-		.postfix_count = 0,
-		.expression = NULL,
-		.type = PRIMARY_EXPRESSION
-	};
+	prefix_list_init(&self->prefixes);
+	postfix_list_init(&self->postfixes);
+
+	self->expression = NULL;
+	self->type = PRIMARY_EXPRESSION;
 }
 
 void primary_expression_free(PrimaryExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
-	free(self->prefixes);
-
-	for (size_t i = 0; i < self->postfix_count; ++i)
-		postfix_free(self->postfixes + i);
-
-	free(self->postfixes);
+	prefix_list_free(&self->prefixes);
+	postfix_list_free(&self->postfixes);
 
 	switch (self->type)
 	{
@@ -57,11 +49,15 @@ void primary_expression_free(PrimaryExpression *self)
 
 static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
-	assert(self != NULL);
-	assert(iter != NULL);
+	assert(self);
+	assert(iter);
 
 	Error error;
 
+	debug("parse prefixes");
+	prefix_list_parse(&self->prefixes, iter);
+
+	debug("parse primary");
 	switch (iter->token->type)
 	{
 		case TOKEN_IDENTIFIER:
@@ -69,10 +65,6 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 
 			if ((error = identifier_parse(&self->identifier, iter)))
 				return error;
-			debugf("identifier: %s\n", self->identifier.text);
-			debug("current token: ");
-			token_println(iter->token);
-
 			break;
 
 		case TOKEN_LPAREN:
@@ -95,13 +87,16 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 			break;
 	}
 
+	debug("parse postfixes");
+	postfix_list_parse(&self->postfixes, iter);
+
 	return ERROR_NONE;
 }
 
 Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
-	assert(self != NULL);
-	assert(iter != NULL);
+	assert(self);
+	assert(iter);
 
 	primary_expression_init(self);
 
@@ -115,7 +110,7 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 
 void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 {
-	assert(self != NULL);
+	assert(self);
 
 	switch (self->type)
 	{

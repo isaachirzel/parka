@@ -9,6 +9,8 @@
 
 void multiplicative_expression_init(MultiplicativeExpression *self)
 {
+	assert(self);
+
 	primary_expression_init(&self->lhs);
 	
 	self->rhs = NULL;
@@ -17,6 +19,8 @@ void multiplicative_expression_init(MultiplicativeExpression *self)
 
 void multiplicative_expression_free(MultiplicativeExpression *self)
 {
+	assert(self);
+
 	primary_expression_free(&self->lhs);
 
 	for (size_t i = 0; i < self->rhs_count; ++i)
@@ -43,7 +47,7 @@ static inline MultiplicativeRhs *multiplicative_expression_rhs_push(Multiplicati
 	return back;
 }
 
-Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
+static Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
 {
 	Error error;
 
@@ -93,7 +97,7 @@ Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenI
 
 Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
 {
-	assert(self != NULL);
+	assert(self);
 	assert(iter != NULL);
 
 	Error error = try_multiplicative_expression_parse(self, iter);
@@ -106,13 +110,18 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 
 void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsigned depth)
 {
-	assert(self != NULL);
+	assert(self);
 
-	primary_expression_print_tree(&self->lhs, depth + 1);
+	debugf("primary rhs count: %u\n", self->rhs_count);
+
+	if (self->rhs_count > 0)
+		depth += 1;
+
+	primary_expression_print_tree(&self->lhs, depth);
 
 	for (size_t i = 0; i < self->rhs_count; ++i)
 	{
-		print_branch(depth);
+		print_branch(depth - 1);
 
 		switch (self->rhs[i].type)
 		{
@@ -129,7 +138,6 @@ void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsign
 				break;
 		}
 
-		primary_expression_print_tree(&self->rhs[i].expr, depth + 1);
+		primary_expression_print_tree(&self->rhs[i].expr, depth);
 	}
-
 }

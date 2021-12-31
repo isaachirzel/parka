@@ -4,6 +4,7 @@
 #include <warbler/preprocessor.h>
 #include <warbler/tokenizer.h>
 #include <warbler/ast/ast.h>
+#include <warbler/print.h>
 
 // standard library
 #include <stdio.h>
@@ -56,15 +57,19 @@ int main(int argc, char *argv[])
 
 	AdditiveExpression expr;
 	TokenIterator iter = { hxarray_front(tokens) };
-	additive_expression_parse(&expr, &iter);
-	additive_expression_print_tree(&expr, 1);
-	additive_expression_free(&expr);
+	
+	if ((error = additive_expression_parse(&expr, &iter)) == ERROR_NONE)
+	{
+		debug("Parsed additive expression :)");
+		additive_expression_print_tree(&expr, 1);
+		additive_expression_free(&expr);
+	}
 
 	// Ast ast;
 	// ast_parse(&ast, tokens);
 
 	free(src);
 	tokenizer_free();
-	return 0;
+	return error;
 }
 
