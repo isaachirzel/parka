@@ -6,23 +6,33 @@
 // standard headers
 #include <stdlib.h>
 
-void parameter_init(Parameter *parameter)
+void parameter_init(Parameter *self)
 {
-	identifier_init(&parameter->name);
-	typename_init(&parameter->type);
+	assert(self);
+
+	identifier_init(&self->name);
+	typename_init(&self->type);
 }
 
-void parameter_free(Parameter *parameter)
+void parameter_free(Parameter *self)
 {
-	identifier_free(&parameter->name);
-	typename_free(&parameter->type);
+	if (!self)
+		return;
+
+	identifier_free(&self->name);
+	typename_free(&self->type);
 }
 
-static inline Error try_parameter_parse(Parameter *parameter, TokenIterator *iter)
+Error parameter_parse(Parameter *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	parameter_init(self);
+
 	Error error;
 	
-	if ((error = identifier_parse(&parameter->name, iter)))
+	if ((error = identifier_parse(&self->name, iter)))
 		return error;
 
 	debug("parsed parameter");
@@ -32,25 +42,10 @@ static inline Error try_parameter_parse(Parameter *parameter, TokenIterator *ite
 
 	++iter->token;
 
-	if ((error = typename_parse(&parameter->type, iter)))
+	if ((error = typename_parse(&self->type, iter)))
 		return error;
 
 	return ERROR_NONE;
-}
-
-Error parameter_parse(Parameter *parameter, TokenIterator *iter)
-{
-	assert(parameter);
-	assert(iter);
-
-	parameter_init(parameter);
-
-	Error error = try_parameter_parse(parameter, iter);
-
-	if (error)
-		parameter_free(parameter);
-
-	return error;
 }
 
 void parameter_list_init(ParameterList *self)
@@ -86,8 +81,13 @@ static inline Error push_parameter(ParameterList *self, Parameter *parameter)
 	return ERROR_NONE;
 }
 
-Error try_parameter_list_parse(ParameterList *self, TokenIterator *iter)
+Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	parameter_list_init(self);
+
 	Error error;
 
 	if (iter->token->type != TOKEN_LPAREN)
@@ -122,21 +122,6 @@ Error try_parameter_list_parse(ParameterList *self, TokenIterator *iter)
 	++iter->token;
 
 	return ERROR_NONE;
-}
-
-Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
-{
-	assert(self);
-	assert(iter);
-
-	parameter_list_init(self);
-
-	Error error = try_parameter_list_parse(self, iter);
-
-	if (error)
-		parameter_list_free(self);
-
-	return error;
 }
 
 void parameter_print_tree(Parameter *self, unsigned depth)

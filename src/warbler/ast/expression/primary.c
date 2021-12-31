@@ -23,7 +23,8 @@ void primary_expression_init(PrimaryExpression *self)
 
 void primary_expression_free(PrimaryExpression *self)
 {
-	assert(self);
+	if (!self)
+		return;
 
 	prefix_list_free(&self->prefixes);
 	postfix_list_free(&self->postfixes);
@@ -47,10 +48,12 @@ void primary_expression_free(PrimaryExpression *self)
 	}
 }
 
-static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
+Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 {
 	assert(self);
 	assert(iter);
+
+	primary_expression_init(self);
 
 	Error error;
 
@@ -91,21 +94,6 @@ static inline Error try_primary_expression_parse(PrimaryExpression *self, TokenI
 	postfix_list_parse(&self->postfixes, iter);
 
 	return ERROR_NONE;
-}
-
-Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
-{
-	assert(self);
-	assert(iter);
-
-	primary_expression_init(self);
-
-	Error error = try_primary_expression_parse(self, iter);
-
-	if (error)
-		primary_expression_free(self);
-
-	return error;
 }
 
 void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)

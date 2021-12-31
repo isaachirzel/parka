@@ -8,7 +8,7 @@
 
 void assignment_expression_init(AssignmentExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	primary_expression_init(&self->lhs);
 	self->rhs = NULL;
@@ -17,7 +17,8 @@ void assignment_expression_init(AssignmentExpression *self)
 
 void assignment_expression_free(AssignmentExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	primary_expression_free(&self->lhs);
 
@@ -27,8 +28,13 @@ void assignment_expression_free(AssignmentExpression *self)
 	free(self->rhs);
 }
 
-static inline Error try_assignment_expression_parse(AssignmentExpression *self, TokenIterator *iter)
+Error assignment_expression_parse(AssignmentExpression *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	assignment_expression_init(self);
+	
 	Error error;
 
 	if ((error = primary_expression_parse(&self->lhs, iter)))
@@ -93,21 +99,6 @@ static inline Error try_assignment_expression_parse(AssignmentExpression *self, 
 		return error;
 
 	return ERROR_NONE;
-}
-
-Error assignment_expression_parse(AssignmentExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	assignment_expression_init(self);
-
-	Error error = try_assignment_expression_parse(self, iter);
-
-	if (error)
-		assignment_expression_free(self);
-
-	return error;
 }
 
 void assignment_expression_print_tree(AssignmentExpression *self, unsigned depth)

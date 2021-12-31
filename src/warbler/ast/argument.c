@@ -28,14 +28,16 @@ void argument_list_init(ArgumentList *self)
 
 void argument_free(Argument *self)
 {
-	assert(self);
+	if (!self)
+		return;
 
 	expression_free(&self->expr);
 }
 
 void argument_list_free(ArgumentList *self)
 {
-	assert(self);
+	if (!self)
+		return;
 
 	for (size_t i = 0; i < self->argument_count; ++i)
 	{

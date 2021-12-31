@@ -9,16 +9,16 @@
 
 void equality_expression_init(EqualityExpression *self)
 {
-	assert(self != NULL);
-
 	comparison_expression_init(&self->lhs);
+	
 	self->rhs = NULL;
 	self->rhs_count = 0;
 }
 
 void equality_expression_free(EqualityExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	comparison_expression_free(&self->lhs);
 	
@@ -46,8 +46,13 @@ static inline EqualityRhs *push_equality_rhs(EqualityExpression *self, EqualityT
 	return back;
 }
 
-static inline Error try_equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
+Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	equality_expression_init(self);
+
 	Error error;
 
 	if ((error = comparison_expression_parse(&self->lhs, iter)))
@@ -87,21 +92,6 @@ static inline Error try_equality_expression_parse(EqualityExpression *self, Toke
 	}
 
 	return ERROR_NONE;
-}
-
-Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	equality_expression_init(self);
-
-	Error error = try_equality_expression_parse(self, iter);
-
-	if (error)
-		equality_expression_free(self);
-
-	return error;
 }
 
 void equality_expression_print_tree(EqualityExpression *self, unsigned depth)

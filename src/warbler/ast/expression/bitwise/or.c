@@ -9,16 +9,18 @@
 
 void bitwise_or_expression_init(BitwiseOrExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	bitwise_xor_expression_init(&self->lhs);
+	
 	self->rhs = NULL;
 	self->rhs_count = 0;
 }
 
 void bitwise_or_expression_free(BitwiseOrExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	bitwise_xor_expression_free(&self->lhs);
 	
@@ -45,8 +47,13 @@ static inline BitwiseXorExpression *push_bitwise_xor_expression(BitwiseOrExpress
 	return back;
 }
 
-static inline Error try_bitwise_or_expression_parse(BitwiseOrExpression *self, TokenIterator *iter)
+Error bitwise_or_expression_parse(BitwiseOrExpression *self, TokenIterator *iter)
 {
+	assert(self != NULL);
+	assert(iter != NULL);
+
+	bitwise_or_expression_init(self);
+
 	Error error;
 
 	if ((error = bitwise_xor_expression_parse(&self->lhs, iter)))
@@ -65,21 +72,6 @@ static inline Error try_bitwise_or_expression_parse(BitwiseOrExpression *self, T
 	}
 
 	return ERROR_NONE;
-}
-
-Error bitwise_or_expression_parse(BitwiseOrExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	bitwise_or_expression_init(self);
-
-	Error error = try_bitwise_or_expression_parse(self, iter);
-
-	if (error)
-		bitwise_or_expression_free(self);
-
-	return error;
 }
 
 void bitwise_or_expression_print_tree(BitwiseOrExpression *self, unsigned depth)

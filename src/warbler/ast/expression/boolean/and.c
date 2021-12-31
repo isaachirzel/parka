@@ -18,7 +18,8 @@ void boolean_and_expression_init(BooleanAndExpression *self)
 
 void boolean_and_expression_free(BooleanAndExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	bitwise_or_expression_free(&self->lhs);
 	
@@ -45,8 +46,13 @@ static inline BitwiseOrExpression *push_bitwise_or_expression(BooleanAndExpressi
 	return back;
 }
 
-static inline Error try_boolean_and_expression_parse(BooleanAndExpression *self, TokenIterator *iter)
+Error boolean_and_expression_parse(BooleanAndExpression *self, TokenIterator *iter)
 {
+	assert(self != NULL);
+	assert(iter != NULL);
+
+	boolean_and_expression_init(self);
+
 	Error error;
 
 	if ((error = bitwise_or_expression_parse(&self->lhs, iter)))
@@ -65,21 +71,6 @@ static inline Error try_boolean_and_expression_parse(BooleanAndExpression *self,
 	}
 
 	return ERROR_NONE;
-}
-
-Error boolean_and_expression_parse(BooleanAndExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	boolean_and_expression_init(self);
-
-	Error error = try_boolean_and_expression_parse(self, iter);
-
-	if (error)
-		boolean_and_expression_free(self);
-
-	return error;
 }
 
 void boolean_and_expression_print_tree(BooleanAndExpression *self, unsigned depth)

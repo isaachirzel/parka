@@ -9,7 +9,7 @@
 
 void comparison_expression_init(ComparisonExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	shift_expression_init(&self->lhs);
 	self->rhs = NULL;
@@ -18,7 +18,8 @@ void comparison_expression_init(ComparisonExpression *self)
 
 void comparison_expression_free(ComparisonExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	shift_expression_free(&self->lhs);
 	
@@ -46,8 +47,13 @@ static inline ComparisonRhs *push_comparison_rhs(ComparisonExpression *self, Com
 	return back;
 }
 
-static inline Error try_comparison_expression_parse(ComparisonExpression *self, TokenIterator *iter)
+Error comparison_expression_parse(ComparisonExpression *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	comparison_expression_init(self);
+	
 	Error error;
 
 	if ((error = shift_expression_parse(&self->lhs, iter)))
@@ -96,21 +102,6 @@ static inline Error try_comparison_expression_parse(ComparisonExpression *self, 
 	}
 	
 	return ERROR_NONE;
-}
-
-Error comparison_expression_parse(ComparisonExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	comparison_expression_init(self);
-
-	Error error = try_comparison_expression_parse(self, iter);
-
-	if (error)
-		comparison_expression_free(self);
-
-	return error;
 }
 
 void comparison_expression_print_tree(ComparisonExpression *self, unsigned depth)

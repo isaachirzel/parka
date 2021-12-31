@@ -62,12 +62,9 @@ int main(int argc, char *argv[])
 	{
 		debug("Parsed additive expression :)");
 		additive_expression_print_tree(&expr, 1);
-		additive_expression_free(&expr);
 	}
 
-	// Ast ast;
-	// ast_parse(&ast, tokens);
-
+	additive_expression_free(&expr);
 	free(src);
 	tokenizer_free();
 	return error;

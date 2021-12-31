@@ -8,7 +8,7 @@
 
 void conditional_expression_init(ConditionalExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	boolean_or_expression_init(&self->lhs);
 	self->type = CONDITIONAL_NONE;
@@ -16,19 +16,10 @@ void conditional_expression_init(ConditionalExpression *self)
 
 void conditional_expression_free(ConditionalExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	boolean_or_expression_free(&self->lhs);
-}
-
-static inline Error try_conditional_expression_parse(ConditionalExpression *self, TokenIterator *iter)
-{
-	Error error;
-
-	if ((error = boolean_or_expression_parse(&self->lhs, iter)))
-		return error;
-
-	return ERROR_NONE;
 }
 
 Error conditional_expression_parse(ConditionalExpression *self, TokenIterator *iter)
@@ -38,12 +29,12 @@ Error conditional_expression_parse(ConditionalExpression *self, TokenIterator *i
 
 	conditional_expression_init(self);
 
-	Error error = try_conditional_expression_parse(self, iter);
+	Error error;
 
-	if (error)
-		conditional_expression_free(self);
+	if ((error = boolean_or_expression_parse(&self->lhs, iter)))
+		return error;
 
-	return error;
+	return ERROR_NONE;
 }
 
 void conditional_expression_print_tree(ConditionalExpression *self, unsigned depth)

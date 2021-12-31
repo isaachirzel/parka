@@ -8,16 +8,26 @@
 
 void identifier_init(Identifier *self)
 {
+	assert(self);
+	
 	self->text = NULL;
 }
 
 void identifier_free(Identifier *self)
 {
+	if (!self)
+		return;
+
 	free(self->text);
 }
 
-static inline Error try_identifier_parse(Identifier *self, TokenIterator *iter)
+Error identifier_parse(Identifier *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	identifier_init(self);
+
 	debugf("trying parameter parse of token type: %d\n", iter->token->type);
 
 	if (iter->token->type != TOKEN_IDENTIFIER)
@@ -36,23 +46,10 @@ static inline Error try_identifier_parse(Identifier *self, TokenIterator *iter)
 	return ERROR_NONE;
 }
 
-Error identifier_parse(Identifier *self, TokenIterator *iter)
-{	
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	identifier_init(self);
-
-	Error error = try_identifier_parse(self, iter);
-
-	if (error)
-		identifier_free(self);
-
-	return error;
-}
-
 void identifier_print_tree(Identifier *self, unsigned depth)
 {
+	assert(self);
+
 	print_branch(depth);
 	puts(self->text);
 }

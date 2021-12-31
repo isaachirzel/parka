@@ -10,8 +10,9 @@ typedef struct Label
 	Identifier identifier;
 } Label;
 
-void label_init(Label *label);
-void label_free(Label *label);
-Error label_parse(Label *label, TokenIterator *iter);
+void label_init(Label *self);
+void label_free(Label *self);
+Error label_parse(Label *self, TokenIterator *iter);
+void label_print_tree(Label *self, unsigned depth);
 
 #endif

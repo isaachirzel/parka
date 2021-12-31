@@ -9,7 +9,7 @@
 
 void bitwise_and_expression_init(BitwiseAndExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	equality_expression_init(&self->lhs);
 	self->rhs = NULL;
@@ -18,7 +18,8 @@ void bitwise_and_expression_init(BitwiseAndExpression *self)
 
 void bitwise_and_expression_free(BitwiseAndExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	equality_expression_free(&self->lhs);
 	
@@ -28,7 +29,7 @@ void bitwise_and_expression_free(BitwiseAndExpression *self)
 	free(self->rhs);
 }
 
-static inline EqualityExpression *push_equality_expression(BitwiseAndExpression *self)
+static inline EqualityExpression *equality_expression_push(BitwiseAndExpression *self)
 {
 	size_t new_size = (self->rhs_count + 1) * sizeof(EqualityExpression);
 	EqualityExpression *tmp = realloc(self->rhs, new_size);
@@ -45,8 +46,13 @@ static inline EqualityExpression *push_equality_expression(BitwiseAndExpression 
 	return back;
 }
 
-static inline Error try_bitwise_and_expression_parse(BitwiseAndExpression *self, TokenIterator *iter)
+Error bitwise_and_expression_parse(BitwiseAndExpression *self, TokenIterator *iter)
 {
+	assert(self != NULL);
+	assert(iter != NULL);
+
+	bitwise_and_expression_init(self);
+
 	Error error;
 
 	if ((error = equality_expression_parse(&self->lhs, iter)))
@@ -55,7 +61,7 @@ static inline Error try_bitwise_and_expression_parse(BitwiseAndExpression *self,
 	while (iter->token->type == TOKEN_AMPERSAND)
 	{
 		++iter->token;
-		EqualityExpression *back = push_equality_expression(self);
+		EqualityExpression *back = equality_expression_push(self);
 
 		if (!back)
 			return ERROR_MEMORY;
@@ -65,21 +71,6 @@ static inline Error try_bitwise_and_expression_parse(BitwiseAndExpression *self,
 	}
 
 	return ERROR_NONE;
-}
-
-Error bitwise_and_expression_parse(BitwiseAndExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	bitwise_and_expression_init(self);
-
-	Error error = try_bitwise_and_expression_parse(self, iter);
-
-	if (error)
-		bitwise_and_expression_free(self);
-
-	return error;
 }
 
 void bitwise_and_expression_print_tree(BitwiseAndExpression *self, unsigned depth)

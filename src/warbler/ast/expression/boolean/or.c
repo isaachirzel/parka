@@ -9,7 +9,7 @@
 
 void boolean_or_expression_init(BooleanOrExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	boolean_and_expression_init(&self->lhs);
 	self->rhs = NULL;
@@ -18,7 +18,8 @@ void boolean_or_expression_init(BooleanOrExpression *self)
 
 void boolean_or_expression_free(BooleanOrExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	boolean_and_expression_free(&self->lhs);
 	
@@ -45,8 +46,13 @@ static inline BooleanAndExpression *push_boolean_and_expression(BooleanOrExpress
 	return back;
 }
 
-static inline Error try_boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator *iter)
+Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	boolean_or_expression_init(self);
+	
 	Error error;
 
 	if ((error = boolean_and_expression_parse(&self->lhs, iter)))
@@ -65,21 +71,6 @@ static inline Error try_boolean_or_expression_parse(BooleanOrExpression *self, T
 	}
 
 	return ERROR_NONE;
-}
-
-Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	boolean_or_expression_init(self);
-
-	Error error = try_boolean_or_expression_parse(self, iter);
-
-	if (error)
-		boolean_or_expression_free(self);
-
-	return error;
 }
 
 void boolean_or_expression_print_tree(BooleanOrExpression *self, unsigned depth)

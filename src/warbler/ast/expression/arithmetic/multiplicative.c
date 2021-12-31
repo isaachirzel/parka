@@ -19,7 +19,8 @@ void multiplicative_expression_init(MultiplicativeExpression *self)
 
 void multiplicative_expression_free(MultiplicativeExpression *self)
 {
-	assert(self);
+	if (!self)
+		return;
 
 	primary_expression_free(&self->lhs);
 
@@ -47,8 +48,13 @@ static inline MultiplicativeRhs *multiplicative_expression_rhs_push(Multiplicati
 	return back;
 }
 
-static Error try_multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
+Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	multiplicative_expression_init(self);
+
 	Error error;
 
 	if ((error = primary_expression_parse(&self->lhs, iter)))
@@ -93,19 +99,6 @@ static Error try_multiplicative_expression_parse(MultiplicativeExpression *self,
 	}
 
 	return ERROR_NONE;
-}
-
-Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator *iter)
-{
-	assert(self);
-	assert(iter != NULL);
-
-	Error error = try_multiplicative_expression_parse(self, iter);
-
-	if (error)
-		multiplicative_expression_free(self);
-
-	return error;
 }
 
 void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsigned depth)

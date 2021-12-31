@@ -4,41 +4,35 @@
 #include <stdlib.h>
 #include <assert.h>
 
-void typename_init(Typename *typename)
+void typename_init(Typename *self)
 {
-	typename->text = NULL;
+	assert(self);
+
+	self->text = NULL;
 }
 
-void typename_free(Typename *typename)
+void typename_free(Typename *self)
 {
-	free(typename->text);
+	if (!self)
+		return;
+
+	free(self->text);
 }
 
-static inline Error try_typename_parse(Typename *typename, TokenIterator *iter)
+Error typename_parse(Typename *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	typename_init(self);
+	
 	if (iter->token->type != TOKEN_IDENTIFIER)
 		return ERROR_ARGUMENT;
 
-	typename->text = string_duplicate(&iter->token->text);
+	self->text = string_duplicate(&iter->token->text);
 
-	if (!typename->text)
+	if (!self->text)
 		return ERROR_MEMORY;
 
 	return ERROR_NONE;
 }
-
-Error typename_parse(Typename *typename, TokenIterator *iter)
-{
-	assert(typename != NULL);
-	assert(iter != NULL);
-
-	typename_init(typename);
-
-	Error error = try_typename_parse(typename, iter);
-
-	if (error)
-		typename_free(typename);
-		
-	return error;
-}
-

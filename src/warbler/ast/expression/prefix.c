@@ -85,16 +85,17 @@ Error prefix_list_parse(PrefixList *self, TokenIterator *iter)
 
 	while (true)
 	{
+		Prefix prefix;
+
+		if ((error = prefix_parse(&prefix, iter)))
+			break;
+
 		Prefix *back = prefix_list_push(self);
 
 		if (!back)
 			return ERROR_MEMORY;
 
-		if ((error = prefix_parse(back, iter)))
-			break;
-
-		if ((error = prefix_list_push(self, &prefix)))
-			return error;
+		*back = prefix;
 	}
 
 	return ERROR_NONE;

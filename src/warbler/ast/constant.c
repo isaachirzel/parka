@@ -7,20 +7,21 @@
 #include <assert.h>
 #include <stdlib.h>
 
-void constant_init(Constant *constant)
+void constant_init(Constant *self)
 {
-	assert(constant != NULL);
+	assert(self);
 
-	constant->type = CONSTANT_INTEGER;
-	constant->integer = 0;
+	self->type = CONSTANT_INTEGER;
+	self->integer = 0;
 }
 
-void constant_free(Constant *constant)
+void constant_free(Constant *self)
 {
-	assert(constant != NULL);
+	if (!self)
+		return;
 
-	if (constant->type == CONSTANT_STRING)
-		free(constant->string);
+	if (self->type == CONSTANT_STRING)
+		free(self->string);
 }
 
 static inline u32 parse_character(const char *text)
@@ -120,8 +121,13 @@ static inline Error parse_number(Constant *self, TokenIterator *iter, bool is_ne
 	return ERROR_NONE;
 }
 
-static inline Error try_constant_parse(Constant *self, TokenIterator *iter)
+Error constant_parse(Constant *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
+	constant_init(self);
+
 	Error error;
 
 	switch (iter->token->type)
@@ -185,24 +191,9 @@ static inline Error try_constant_parse(Constant *self, TokenIterator *iter)
 	return ERROR_NONE;
 }
 
-Error constant_parse(Constant *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	constant_init(self);
-
-	Error error = try_constant_parse(self, iter);
-
-	if (error)
-		constant_free(self);
-
-	return error;
-}
-
 void constant_print_tree(Constant *self, unsigned depth)
 {
-	assert(self != NULL);
+	assert(self);
 
 	print_branch(depth);
 

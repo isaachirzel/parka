@@ -21,7 +21,8 @@ void postfix_init(Postfix *self)
 
 void postfix_free(Postfix *self)
 {
-	assert(self);
+	if (!self)
+		return;
 
 	switch (self->type)
 	{
@@ -42,8 +43,11 @@ void postfix_free(Postfix *self)
 	}
 }
 
-static Error try_postfix_parse(Postfix *self, TokenIterator *iter)
+Error postfix_parse(Postfix *self, TokenIterator *iter)
 {
+	assert(self);
+	assert(iter);
+
 	postfix_init(self);
 
 	Error error;
@@ -88,19 +92,6 @@ static Error try_postfix_parse(Postfix *self, TokenIterator *iter)
 	return ERROR_NONE;
 }
 
-Error postfix_parse(Postfix *self, TokenIterator *iter)
-{
-	assert(self);
-	assert(iter);
-
-	Error error = try_postfix_parse(self, iter);
-
-	if (error)
-		postfix_free(self);
-
-	return error;
-}
-
 void postfix_print_tree(Postfix *self, unsigned depth)
 {
 	assert(self);
@@ -139,7 +130,8 @@ void postfix_list_init(PostfixList *self)
 
 void postfix_list_free(PostfixList *self)
 {
-	assert(self);
+	if (!self)
+		return;
 
 	for (size_t i = 0; i < self->count; ++i)
 		postfix_free(self->data + i);
@@ -163,27 +155,6 @@ static Postfix *postfix_list_push(PostfixList *self)
 	return back;
 }
 
-static Error try_postfix_list_parse(PostfixList *self, TokenIterator *iter)
-{
-	Error error;
-	TokenType type = iter->token->type;
-
-	while (type == TOKEN_DOT || type == TOKEN_LPAREN || type == TOKEN_LBRACK)
-	{
-		Postfix *back = postfix_list_push(self);
-
-		if (!tmp)
-			return ERROR_MEMORY;
-
-		if ((error = try_postfix_parse(back, iter)))
-			return error;
-
-		type = iter->token->type;
-	}
-
-	return ERROR_NONE;
-}
-
 Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 {
 	assert(self);
@@ -191,12 +162,23 @@ Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 
 	postfix_list_init(self);
 
-	Error error = try_postfix_list_parse(self, iter);
+	Error error;
+	TokenType type = iter->token->type;
 
-	if (error)
-		postfix_list_free(self);
+	while (type == TOKEN_DOT || type == TOKEN_LPAREN || type == TOKEN_LBRACK)
+	{
+		Postfix *back = postfix_list_push(self);
 
-	return error;
+		if (!back)
+			return ERROR_MEMORY;
+
+		if ((error = postfix_parse(back, iter)))
+			return error;
+
+		type = iter->token->type;
+	}
+
+	return ERROR_NONE;
 }
 
 void postfix_list_print_tree(PostfixList *self, unsigned depth)

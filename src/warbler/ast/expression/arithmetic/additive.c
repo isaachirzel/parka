@@ -9,6 +9,8 @@
 
 void additive_expression_init(AdditiveExpression *self)
 {
+	assert(self);
+
 	multiplicative_expression_init(&self->lhs);
 
 	self->rhs = NULL;
@@ -17,6 +19,9 @@ void additive_expression_init(AdditiveExpression *self)
 
 void additive_expression_free(AdditiveExpression *self)
 {
+	if (!self)
+		return;
+
 	multiplicative_expression_free(&self->lhs);
 
 	for (size_t i = 0; i < self->rhs_count; ++i)
@@ -25,51 +30,20 @@ void additive_expression_free(AdditiveExpression *self)
 	free(self->rhs);
 }
 
-static inline AdditiveRhs *push_additive_rhs(AdditiveExpression *expr, AdditiveType type)
+static inline AdditiveRhs *additive_expression_push(AdditiveExpression *self)
 {
-	size_t new_size = (expr->rhs_count + 1) * sizeof(AdditiveRhs);
-	AdditiveRhs *tmp = realloc(expr->rhs, new_size);
+	size_t new_size = (self->rhs_count + 1) * sizeof(AdditiveRhs);
+	AdditiveRhs *tmp = realloc(self->rhs, new_size);
 
 	if (!tmp)
 		return NULL;
 
-	expr->rhs = tmp;
-	AdditiveRhs *back = expr->rhs + expr->rhs_count;
-	++expr->rhs_count;
+	AdditiveRhs *back = tmp + self->rhs_count;
 
-	multiplicative_expression_init(&back->expr);
-	back->type = type;
+	self->rhs = tmp;
+	++self->rhs_count;
 
 	return back;
-}
-
-Error try_additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
-{
-	Error error;
-
-	if ((error = multiplicative_expression_parse(&self->lhs, iter)))
-		return error;
-
-	debugf("Is plus: %d\n", iter->token->type == TOKEN_PLUS);
-
-	while (iter->token->type == TOKEN_PLUS || iter->token->type == TOKEN_MINUS)
-	{
-		AdditiveType type = iter->token->type == TOKEN_PLUS
-			? ADDITIVE_ADD
-			: ADDITIVE_SUBTRACT;
-
-		AdditiveRhs *back = push_additive_rhs(self, type);
-
-		if (!back)
-			return ERROR_MEMORY;
-
-		++iter->token;
-
-		if ((error = multiplicative_expression_parse(&back->expr, iter)))
-			return error;
-	}
-
-	return ERROR_NONE;
 }
 
 Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
@@ -79,12 +53,31 @@ Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 
 	additive_expression_init(self);
 
-	Error error = try_additive_expression_parse(self, iter);
+	Error error;
 
-	if (error)
-		additive_expression_free(self);
+	if ((error = multiplicative_expression_parse(&self->lhs, iter)))
+		return error;
 
-	return error;
+	debugf("Is plus: %d\n", iter->token->type == TOKEN_PLUS);
+
+	while (iter->token->type == TOKEN_PLUS || iter->token->type == TOKEN_MINUS)
+	{
+		AdditiveRhs *back = additive_expression_push(self);
+
+		if (!back)
+			return ERROR_MEMORY;
+
+		back->type = iter->token->type == TOKEN_PLUS
+			? ADDITIVE_ADD
+			: ADDITIVE_SUBTRACT;
+
+		++iter->token;
+
+		if ((error = multiplicative_expression_parse(&back->expr, iter)))
+			return error;
+	}
+
+	return ERROR_NONE;
 }
 
 void additive_expression_print_tree(AdditiveExpression *self, unsigned depth)

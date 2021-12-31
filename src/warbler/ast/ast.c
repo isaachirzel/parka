@@ -2,6 +2,9 @@
 
 Error ast_parse(Ast *ast, HxArray *tokens)
 {
+	assert(ast);
+	assert(tokens);
+	
 	Token *first_token = hxarray_front(tokens);
 
 	TokenIterator iter = 
@@ -14,7 +17,10 @@ Error ast_parse(Ast *ast, HxArray *tokens)
 	return error;
 }
 
-void ast_free(Ast *ast)
+void ast_free(Ast *self)
 {
-	program_free(&ast->program);
+	if (!self)
+		return;
+
+	program_free(&self->program);
 }

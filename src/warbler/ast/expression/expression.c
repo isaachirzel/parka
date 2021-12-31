@@ -2,11 +2,16 @@
 
 void expression_init(Expression *self)
 {
+	assert(self);
+
 	assignment_expression_init(&self->assignment);
 }
 
 void expression_free(Expression *self)
 {
+	if (!self)
+		return;
+		
 	assignment_expression_free(&self->assignment);
 }
 

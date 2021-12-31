@@ -9,7 +9,7 @@
 
 void shift_expression_init(ShiftExpression *self)
 {
-	assert(self != NULL);
+	assert(self);
 
 	additive_expression_init(&self->lhs);
 	self->rhs = NULL;
@@ -18,7 +18,8 @@ void shift_expression_init(ShiftExpression *self)
 
 void shift_expression_free(ShiftExpression *self)
 {
-	assert(self != NULL);
+	if (!self)
+		return;
 
 	additive_expression_free(&self->lhs);
 	
@@ -46,8 +47,13 @@ static inline ShiftRhs *push_shift_rhs(ShiftExpression *self, ShiftType type)
 	return back;
 }
 
-static inline Error try_shift_expression_parse(ShiftExpression *self, TokenIterator *iter)
+Error shift_expression_parse(ShiftExpression *self, TokenIterator *iter)
 {
+	assert(self != NULL);
+	assert(iter != NULL);
+
+	shift_expression_init(self);
+	
 	Error error;
 
 	if ((error = additive_expression_parse(&self->lhs, iter)))
@@ -88,21 +94,6 @@ static inline Error try_shift_expression_parse(ShiftExpression *self, TokenItera
 	}
 	
 	return ERROR_NONE;
-}
-
-Error shift_expression_parse(ShiftExpression *self, TokenIterator *iter)
-{
-	assert(self != NULL);
-	assert(iter != NULL);
-
-	shift_expression_init(self);
-
-	Error error = try_shift_expression_parse(self, iter);
-
-	if (error)
-		shift_expression_free(self);
-
-	return error;
 }
 
 void shift_expression_print_tree(ShiftExpression *self, unsigned depth)
