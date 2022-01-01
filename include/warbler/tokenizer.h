@@ -15,6 +15,6 @@
  Error tokenizer_init();
  void tokenizer_free();
 
- Error tokenize(HxArray **out, const char *src);
+ Error tokenize(HxArray **self, const char *filename, const char *src);
 
 #endif

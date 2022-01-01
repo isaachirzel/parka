@@ -54,13 +54,13 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 
 	primary_expression_init(self);
 
-	_try(prefix_list_parse(&self->prefixes, iter));
+	try(prefix_list_parse(&self->prefixes, iter));
 
 	switch (iter->token->type)
 	{
 		case TOKEN_IDENTIFIER:
 			self->type = PRIMARY_IDENTIFIER;
-			_try(identifier_parse(&self->identifier, iter));
+			try(identifier_parse(&self->identifier, iter));
 			break;
 
 		case TOKEN_LPAREN:
@@ -71,16 +71,16 @@ Error primary_expression_parse(PrimaryExpression *self, TokenIterator *iter)
 			if (!self->expression)
 				return ERROR_MEMORY;
 
-			_try(expression_parse(self->expression, iter));
+			try(expression_parse(self->expression, iter));
 			break;
 
 		default:
 			self->type = PRIMARY_CONSTANT;
-			_try(constant_parse(&self->constant, iter));
+			try(constant_parse(&self->constant, iter));
 			break;
 	}
 
-	_try(postfix_list_parse(&self->postfixes, iter));
+	try(postfix_list_parse(&self->postfixes, iter));
 
 	return ERROR_NONE;
 }

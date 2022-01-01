@@ -113,8 +113,7 @@ static inline Error parse_number(Constant *self, TokenIterator *iter, bool is_ne
 			break;
 
 		default:
-			print_error("expected number literal but got: ");
-			string_println(&iter->token->text);
+			errort("expected number literal but got: ", iter->token);
 			return ERROR_ARGUMENT;
 	}
 
@@ -127,17 +126,17 @@ Error constant_parse(Constant *self, TokenIterator *iter)
 	assert(iter);
 
 	constant_init(self);
-	
+
 	switch (iter->token->type)
 	{
 		case TOKEN_MINUS:
 			++iter->token;
-			_try(parse_number(self, iter, true));
+			try(parse_number(self, iter, true));
 			break;
 
 		case TOKEN_PLUS:
 			++iter->token;
-			_try(parse_number(self, iter, false));
+			try(parse_number(self, iter, false));
 			break;
 
 		case TOKEN_INTEGER_LITERAL:
@@ -179,8 +178,7 @@ Error constant_parse(Constant *self, TokenIterator *iter)
 			break;
 
 		default:
-			print_error("expected constant but got: ");
-			string_println(&iter->token->text);
+			errort("expected constant but got: ", iter->token);
 			return ERROR_ARGUMENT;
 	}
 

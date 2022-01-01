@@ -1,7 +1,7 @@
 #include <warbler/tokenizer.h>
 
 // local headers
-#include <warbler/error.h>
+#include <warbler/print.h>
 
 // standard headers
 #include <string.h>
@@ -22,22 +22,6 @@ typedef enum CharType
 	CHAR_OPERATOR,
 	CHAR_QUOTE
 } CharType;
-
-typedef struct SourceLocation
-{
-	const char *pos;
-	size_t line;
-	size_t col;
-} SourceLocation;
-
-static inline SourceLocation source_location_create(const char *pos)
-{
-	return (SourceLocation) {
-		.pos = pos,
-		.line = 1,
-		.col = 1
-	};
-}
 
 typedef struct TokenInfo
 {
@@ -87,7 +71,10 @@ Error init_token_types()
 	token_types = hxtable_create_of(TokenType);
 
 	if (!token_types || !hxtable_reserve(token_types, keyword_count))
+	{
+		error("failed to reserve memory for token table");
 		return ERROR_MEMORY;
+	}
 
 	for (size_t i = 0; i < keyword_count; ++i)
 	{
@@ -162,9 +149,8 @@ Error tokenizer_init()
 
 #define TEMP_KEY_SIZE (1023)
 
-Error get_token_type(Token *token)
+static Error get_token_type(Token *token)
 {
-	assert(token != NULL);
 	assert(token->text.data != NULL);
 	assert(token->text.length > 0);
 
@@ -182,9 +168,10 @@ Error get_token_type(Token *token)
 	}
 	else
 	{
-		static _Thread_local char temp_key[TEMP_KEY_SIZE + 1];
+		static char temp_key[TEMP_KEY_SIZE + 1];
 
-		strncpy(temp_key, token->text.data, token->text.length + 1);
+		strncpy(temp_key, token->text.data, token->text.length);
+		temp_key[token->text.length] = '\0';
 
 		if (!hxtable_get(token_types, &token->type, temp_key))
 			token->type = TOKEN_IDENTIFIER;
@@ -223,22 +210,44 @@ const char *get_token_string(TokenType type)
 	return "<unknown>";
 }
 
-static void get_next_token_pos(SourceLocation *location)
+static Token find_next_token(const Token *last_token)
 {
-	while (*location->pos)
+	Token out = (Token)
 	{
-		if (*location->pos > ' ')
+		.filename = last_token->filename,
+		.line = last_token->line,
+		.col = last_token->col,
+		.text = (String)
+		{
+			.data = last_token->text.data + last_token->text.length,
+			.length = 0
+		},
+		.type = TOKEN_END_OF_FILE
+	};
+
+	register const char * pos = out.text.data;
+
+	while (true)
+	{
+		if (*pos == '\0')
+			break;
+
+		if (*pos > ' ')
 			break;
 		
-		if (*location->pos == '\n')
+		if (*pos == '\n')
 		{
-			++location->line;
-			location->col = 0;
+			++out.line;
+			out.col = 0;
 		}
 
-		++location->col;
-		++location->pos;
+		++out.col;
+		++pos;
 	}
+
+	out.text.data = pos;
+
+	return out;
 }
 
 static inline bool is_char_alphanumeric(char c)
@@ -248,17 +257,16 @@ static inline bool is_char_alphanumeric(char c)
 	return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
 }
 
-static Error get_identifier_token(Token *self, SourceLocation *location)
+static Error get_identifier_token(Token *self)
 {
-	assert(self != NULL);
-	assert(location != NULL);
-
 	Error error;
 
-	while (is_char_alphanumeric(*location->pos))
-		++location->pos;
+	const char *pos = self->text.data + 1;
 
-	self->text.length = location->pos - self->text.data;
+	while (is_char_alphanumeric(*pos))
+		++pos;
+
+	self->text.length = pos - self->text.data;
 
 	if ((error = get_token_type(self)))
 		return error;
@@ -266,11 +274,8 @@ static Error get_identifier_token(Token *self, SourceLocation *location)
 	return ERROR_NONE;
 }
 
-static Error get_separator_token(Token *self, SourceLocation *location)
+static Error get_separator_token(Token *self)
 {
-	assert(self != NULL);
-	assert(location != NULL);
-
 	self->text.length = 1;
 
 	switch (self->text.data[0])
@@ -308,36 +313,39 @@ static Error get_separator_token(Token *self, SourceLocation *location)
 			break;
 		
 		default:
-			print_errorf("invalid character given for seprarator token: '%c'\n", self->text.data[0]);
+			errorf("invalid character given for seprarator token: '%c'\n", self->text.data[0]);
 			return ERROR_ARGUMENT;
 	}
 
 	return ERROR_NONE;
 }
 
-static Error get_digit_token(Token *self, SourceLocation *location)
+static Error get_digit_token(Token *self)
 {
 	assert(self != NULL);
-	assert(location != NULL);
 
+	const char *pos = self->text.data;
 	bool is_float = false;
 
 	while (true)
 	{
-		CharType type = get_char_type(*location->pos);
+		CharType type = get_char_type(*pos);
 
 		switch (type)
 		{
 			case CHAR_DOT:
 				if (is_float)
+				{
+					errort("extra decimal in float literal", self);
 					return ERROR_ARGUMENT;
+				}
 
 				is_float = true;
-				++location->pos;
+				++pos;
 				continue;
 
 			case CHAR_DIGIT:
-				++location->pos;
+				++pos;
 				continue;
 
 			default:
@@ -348,7 +356,7 @@ static Error get_digit_token(Token *self, SourceLocation *location)
 	}
 
 
-	self->text.length = location->pos - self->text.data;
+	self->text.length = pos - self->text.data;
 	self->type = is_float
 		? TOKEN_FLOAT_LITERAL
 		: TOKEN_INTEGER_LITERAL;
@@ -356,22 +364,21 @@ static Error get_digit_token(Token *self, SourceLocation *location)
 	return ERROR_NONE;
 }
 
-static Error get_dot_token(Token *self, SourceLocation *location)
+static Error get_dot_token(Token *self)
 {
 	assert(self != NULL);
-	assert(location != NULL);
 
-	if (get_char_type(location->pos[1]) == CHAR_DIGIT)
-	{
-		--location->pos;
+	const char *pos = self->text.data;
 
-		return get_digit_token(self, location);
-	}
+	if (get_char_type(pos[1]) == CHAR_DIGIT)
+		return get_digit_token(self);
 
-	while (get_char_type(*location->pos) == CHAR_DOT)
-		++location->pos;
+	++pos;
 
-	self->text.length = location->pos - self->text.data;
+	while (get_char_type(*pos) == CHAR_DOT)
+		++pos;
+
+	self->text.length = pos - self->text.data;
 
 	switch (self->text.length)
 	{
@@ -384,6 +391,7 @@ static Error get_dot_token(Token *self, SourceLocation *location)
 			break;
 
 		default:
+			errort("invalid dot token", self);
 			return ERROR_ARGUMENT;
 	}
 
@@ -649,11 +657,8 @@ static inline void get_colon_operator(Token *self)
 	}
 }
 
-static Error get_operator_token(Token *self, SourceLocation *location)
+static Error get_operator_token(Token *self)
 {
-	assert(self != NULL);
-	assert(location != NULL);
-
 	char character = self->text.data[0];
 
 	switch (character)
@@ -715,31 +720,35 @@ static Error get_operator_token(Token *self, SourceLocation *location)
 			break;
 
 		default:
-			print_errorf("invalid operator token character: %c", character);
+			errorf("invalid operator token character: %c", character);
 			return ERROR_ARGUMENT;
 	}
 
 	return ERROR_NONE;
 }
 
-static inline bool is_end_of_text_literal(SourceLocation *location, char terminal_char)
+static inline bool is_end_of_text_literal(const char *pos, char terminal_char)
 {
-	return location->pos[0] == terminal_char && location->pos[-1] != '\\';
+	return pos[0] == terminal_char && pos[-1] != '\\';
 }
 
-static Error get_quote_token(Token *self, SourceLocation *location)
-{
-	assert(self != NULL);
-	assert(location != NULL);
-	
+static Error get_quote_token(Token *self)
+{	
 	char terminal_char = self->text.data[0];
 
-	while (*location->pos && !is_end_of_text_literal(location, terminal_char))
-		++location->pos;
+	const char *pos = self->text.data + 1;
+	while (*pos && !is_end_of_text_literal(pos, terminal_char))
+		++pos;
 
-	++location->pos;
+	if (*pos == '\0')
+	{
+		error("unterminated string literal");
+		return ERROR_ARGUMENT;
+	}
 
-	self->text.length = location->pos - self->text.data;
+	++pos;
+
+	self->text.length = pos - self->text.data;
 
 	if (self->text.data[0] == '\'')
 	{
@@ -753,20 +762,11 @@ static Error get_quote_token(Token *self, SourceLocation *location)
 	return ERROR_NONE;
 }
 
-static Error get_next_token(Token *self, SourceLocation *location)
+static Error get_next_token(Token *self)
 {
 	assert(self != NULL);
-	assert(location != NULL);
 
-	get_next_token_pos(location);
-
-	self->text.data = location->pos;
-	self->line = location->line;
-	self->col = location->col;
-
-	CharType type = get_char_type(*location->pos);
-
-	++location->pos;
+	CharType type = get_char_type(self->text.data[0]);
 
 	switch (type)
 	{
@@ -775,27 +775,31 @@ static Error get_next_token(Token *self, SourceLocation *location)
 			return ERROR_NONE;
 
 		case CHAR_IDENTIFIER:
-			return get_identifier_token(self, location);
+			return get_identifier_token(self);
 
 		case CHAR_SEPARATOR:
-			return get_separator_token(self, location);
+			return get_separator_token(self);
 
 		case CHAR_DOT:
-			return get_dot_token(self, location);
+			return get_dot_token(self);
 
 		case CHAR_DIGIT:
-			return get_digit_token(self, location);
+			return get_digit_token(self);
 
 		case CHAR_OPERATOR:
-			return get_operator_token(self, location);
+			return get_operator_token(self);
 
 		case CHAR_QUOTE:
-			return get_quote_token(self, location);
+			return get_quote_token(self);
 
 		default:
 			break;
 	}
 
+	printf("text: %p\n", self->text.data);
+	printf("value: %d\n", self->text.data[0]);
+
+	errorf("invalid character in source file: %c\n", self->text.data[0]);
 	return ERROR_ARGUMENT;
 }
 
@@ -812,66 +816,33 @@ static inline Error assure_tokens_size(HxArray *tokens)
 	return ERROR_NONE;
 }
 
-static inline Error push_next_token(HxArray *tokens, SourceLocation *location)
-{
-	Token token;
-	Error error;
-
-	if ((error = get_next_token(&token, location)))
-		return error;
-
-	if (!hxarray_push(tokens, &token))
-		return ERROR_MEMORY;
-	
-	return ERROR_NONE;
-}
-
-static inline bool is_dynamic_token(TokenType type)
-{
-	switch (type)
-	{
-		case TOKEN_INTEGER_LITERAL:
-		case TOKEN_FLOAT_LITERAL:
-		case TOKEN_STRING_LITERAL:
-		case TOKEN_CHAR_LITERAL:
-			return true;
-
-		default:
-			return false;
-	}
-}
-
-Error tokenize(HxArray **self, const char *src)
+Error tokenize(HxArray **self, const char *filename, const char *src)
 {
 	HxArray *tokens = hxarray_create_of(Token);
 
 	if (!tokens)
 		return ERROR_MEMORY;
 
-	SourceLocation location = source_location_create(src);
-
-	while (true)
+	if (!hxarray_reserve(tokens, 1))
 	{
-		Error error = assure_tokens_size(tokens);
-
-		if (error)
-		{
-			hxarray_destroy(tokens);
-			return error;
-		}
-		
-		error = push_next_token(tokens, &location);
-		if (error)
-		{
-			hxarray_destroy(tokens);
-			return error;
-		}
-
-		Token *back = hxarray_back(tokens);
-
-		if (back->type == TOKEN_END_OF_FILE)
-			break;
+		error("failed to allocate memory for initial token");
+		return ERROR_MEMORY;
 	}
+
+	Token initial = token_initial(filename, src);
+	Token *previous = &initial;
+
+	do
+	{
+		Token token = find_next_token(previous);
+		try(get_next_token(&token));		
+		try(assure_tokens_size(tokens));
+		if (!hxarray_push(tokens, &token))
+			return ERROR_MEMORY;
+
+		previous = hxarray_back(tokens);
+	}
+	while (previous->type != TOKEN_END_OF_FILE);
 
 	*self = tokens;
 

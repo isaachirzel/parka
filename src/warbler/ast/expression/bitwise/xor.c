@@ -52,7 +52,7 @@ Error bitwise_xor_expression_parse(BitwiseXorExpression *self, TokenIterator *it
 	assert(iter);
 
 	bitwise_xor_expression_init(self);
-	_try(bitwise_and_expression_parse(&self->lhs, iter))
+	try(bitwise_and_expression_parse(&self->lhs, iter))
 
 	while (iter->token->type == TOKEN_CARROT)
 	{
@@ -62,7 +62,7 @@ Error bitwise_xor_expression_parse(BitwiseXorExpression *self, TokenIterator *it
 		if (!back)
 			return ERROR_MEMORY;
 
-		_try(bitwise_and_expression_parse(back, iter));
+		try(bitwise_and_expression_parse(back, iter));
 	}
 
 	return ERROR_NONE;

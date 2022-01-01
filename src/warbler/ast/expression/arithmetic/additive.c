@@ -52,7 +52,7 @@ Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 	assert(iter != NULL);
 
 	additive_expression_init(self);
-	_try(multiplicative_expression_parse(&self->lhs, iter));
+	try(multiplicative_expression_parse(&self->lhs, iter));
 
 	debugf("Is plus: %d\n", iter->token->type == TOKEN_PLUS);
 
@@ -69,7 +69,7 @@ Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 
 		++iter->token;
 
-		_try(multiplicative_expression_parse(&back->expr, iter));
+		try(multiplicative_expression_parse(&back->expr, iter));
 	}
 
 	return ERROR_NONE;

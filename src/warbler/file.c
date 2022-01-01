@@ -1,7 +1,7 @@
 #include <warbler/file.h>
 
 // local includes
-#include <warbler/error.h>
+#include <warbler/print.h>
 
 // standard library
 #include <stdio.h>
@@ -9,7 +9,7 @@
 
 char *file_error(const char *msg)
 {
-	print_error(msg);
+	error(msg);
 	return NULL;
 }
 

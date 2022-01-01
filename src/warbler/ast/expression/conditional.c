@@ -28,7 +28,7 @@ Error conditional_expression_parse(ConditionalExpression *self, TokenIterator *i
 	assert(iter != NULL);
 
 	conditional_expression_init(self);
-	_try(boolean_or_expression_parse(&self->lhs, iter));
+	try(boolean_or_expression_parse(&self->lhs, iter));
 
 	return ERROR_NONE;
 }

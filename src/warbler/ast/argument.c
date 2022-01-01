@@ -56,7 +56,7 @@ Error argument_parse(Argument *self, TokenIterator *iter)
 	if (!self->expr)
 		return ERROR_MEMORY;
 
-	_try(expression_parse(self->expr, iter));
+	try(expression_parse(self->expr, iter));
 
 	return ERROR_NONE;
 }
@@ -81,7 +81,7 @@ static Error try_argument_list_parse(ArgumentList *self, TokenIterator *iter)
 {
 	if (iter->token->type != TOKEN_LPAREN)
 	{
-		print_token_error("expected '(' at start of argument list but got", iter->token);
+		errort("expected '(' at start of argument list but got", iter->token);
 		return ERROR_ARGUMENT;
 	}
 
@@ -96,13 +96,13 @@ static Error try_argument_list_parse(ArgumentList *self, TokenIterator *iter)
 			if (!back)
 				return ERROR_MEMORY;
 
-			_try(argument_parse(back, iter));
+			try(argument_parse(back, iter));
 		}
 		while (iter->token->type == TOKEN_COMMA);
 
 		if (iter->token->type != TOKEN_RPAREN)
 		{
-			print_token_error("expected ')' or ',' but got", iter->token);
+			errort("expected ')' or ',' but got", iter->token);
 			return ERROR_ARGUMENT;
 		}
 	}

@@ -34,7 +34,7 @@ Error assignment_expression_parse(AssignmentExpression *self, TokenIterator *ite
 	assert(iter);
 
 	assignment_expression_init(self);
-	_try(primary_expression_parse(&self->lhs, iter));
+	try(primary_expression_parse(&self->lhs, iter));
 
 	switch (iter->token->type)
 	{
@@ -91,7 +91,7 @@ Error assignment_expression_parse(AssignmentExpression *self, TokenIterator *ite
 
 	self->rhs = malloc(sizeof(*self->rhs));
 
-	_try(conditional_expression_parse(self->rhs, iter));
+	try(conditional_expression_parse(self->rhs, iter));
 
 	return ERROR_NONE;
 }

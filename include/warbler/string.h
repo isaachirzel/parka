@@ -11,6 +11,7 @@ typedef struct String
 } String;
 
 String string_default();
+String string_from(const char *text);
 
 void string_print(const String *str);
 void string_println(const String *str);

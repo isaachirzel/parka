@@ -1,11 +1,12 @@
 #include <warbler/string.h>
 
 // local includes
-#include <warbler/error.h>
+#include <warbler/print.h>
 
 // standard library
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 String string_default()
@@ -13,6 +14,14 @@ String string_default()
 	return (String) {
 		.data = NULL,
 		.length = 0
+	};
+}
+
+String string_from(const char *text)
+{
+	return (String) {
+		.data = text,
+		.length = strlen(text)
 	};
 }
 
@@ -41,7 +50,7 @@ char *string_duplicate(const String *string)
 
 	if (!out)
 	{
-		print_errorf("%s: failed to allocate string buffer", __func__);
+		error("failed to allocate string buffer for duplication");
 		return NULL;
 	}
 

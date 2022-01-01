@@ -32,7 +32,7 @@ Error identifier_parse(Identifier *self, TokenIterator *iter)
 
 	if (iter->token->type != TOKEN_IDENTIFIER)
 	{
-		print_token_error("expected identifier but got", iter->token);
+		errort("expected identifier but got", iter->token);
 		return ERROR_ARGUMENT;
 	}
 

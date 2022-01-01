@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	Error error = tokenizer_init();
 	if (error)
 	{
-		print_error("failed to initialize tokenizer");
+		error("failed to initialize tokenizer");
 		free(src);
 		return (int)error;
 	}
@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
 	puts(BAR "TOKENIZER" BAR "\n");
 
 	HxArray *tokens;
-	error = tokenize(&tokens, src);
+	error = tokenize(&tokens, argv[1], src);
 	if (error)
 	{
-		print_error("failed to tokenize source");
+		error("failed to tokenize source");
 		free(src);
 		tokenizer_free();
 

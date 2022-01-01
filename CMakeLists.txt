@@ -27,7 +27,7 @@ add_executable(warble "src/main.c" $<TARGET_OBJECTS:common_objects>)
 list(APPEND TARGETS ${MAIN_PROGRAM} common_objects)
 
 # creating targets for all test sources
-file(GLOB TEST_SOURCES "src/test/*.cpp")
+file(GLOB TEST_SOURCES "src/test/*.c")
 foreach(TEST ${TEST_SOURCES})
 	get_filename_component(TEST_TARGET_NAME ${TEST} NAME_WE)
 	add_executable(${TEST_TARGET_NAME} ${TEST} $<TARGET_OBJECTS:common_objects>)

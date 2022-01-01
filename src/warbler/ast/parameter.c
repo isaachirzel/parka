@@ -29,14 +29,14 @@ Error parameter_parse(Parameter *self, TokenIterator *iter)
 	assert(iter);
 
 	parameter_init(self);
-	_try(identifier_parse(&self->name, iter));
+	try(identifier_parse(&self->name, iter));
 
 	if (iter->token->type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 
 	++iter->token;
 
-	_try(typename_parse(&self->type, iter));
+	try(typename_parse(&self->type, iter));
 
 	return ERROR_NONE;
 }
@@ -92,16 +92,14 @@ Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
 
 			Parameter parameter;
 
-			_try(parameter_parse(&parameter, iter));
-			_try(push_parameter(self, &parameter));
+			try(parameter_parse(&parameter, iter));
+			try(push_parameter(self, &parameter));
 		}
 		while (iter->token->type == TOKEN_COMMA);
 
 		if (iter->token->type != TOKEN_RPAREN)
 		{
-			print_error("expected ',' or ')' after parameter but got: ");
-			token_print(iter->token);
-
+			errort("expected ',' or ')' after parameter but got", iter->token);
 			return ERROR_ARGUMENT;
 		}
 	}

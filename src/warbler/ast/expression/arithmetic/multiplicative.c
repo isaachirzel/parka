@@ -51,7 +51,7 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 	assert(iter);
 
 	multiplicative_expression_init(self);
-	_try(primary_expression_parse(&self->lhs, iter));
+	try(primary_expression_parse(&self->lhs, iter));
 
 	while (true)
 	{
@@ -89,7 +89,7 @@ Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenItera
 
 		back->type = type;
 
-		_try(primary_expression_parse(&back->expr, iter));
+		try(primary_expression_parse(&back->expr, iter));
 	}
 
 	return ERROR_NONE;

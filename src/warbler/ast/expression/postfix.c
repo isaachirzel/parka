@@ -74,37 +74,34 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 	{
 		case TOKEN_LBRACK:
 			++iter->token;
-
-			self->type + POSTFIX_MEMBER;
+			self->type = POSTFIX_MEMBER;
 			self->expression = malloc(sizeof(Expression));
 
 			if (!self->expression)
 				return ERROR_MEMORY;
 
-			_try(expression_parse(self->expression, iter));
+			try(expression_parse(self->expression, iter));
 
 			if (iter->token->type != TOKEN_RBRACK)
 			{
-				print_token_error("expected ']' after index operation but got: ", iter->token);
+				errort("expected ']' after index operation but got: ", iter->token);
 				return ERROR_ARGUMENT;
 			}
 			break;
 
 		case TOKEN_LPAREN:
 			self->type = POSTFIX_CALL;
-			_try(argument_list_parse(&self->arguments, iter));
+			try(argument_list_parse(&self->arguments, iter));
 			break;
 
 		case TOKEN_DOT:
 			++iter->token;
-			self->type + POSTFIX_MEMBER;
-			_try(identifier_parse(&self->identifier, iter));
+			self->type = POSTFIX_MEMBER;
+			try(identifier_parse(&self->identifier, iter));
 			break;
 
 		default:
-			print_error("expected postfix but got: ");
-			token_println(iter->token);
-			return ERROR_ARGUMENT;
+			return ERROR_NOT_FOUND;
 	}
 
 	return ERROR_NONE;
@@ -132,18 +129,24 @@ Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 	assert(iter);
 
 	postfix_list_init(self);
-	TokenType type = iter->token->type;
 
-	while (type == TOKEN_DOT || type == TOKEN_LPAREN || type == TOKEN_LBRACK)
+	Error error;
+	while (true)
 	{
+		Postfix tmp;
+		error = postfix_parse(&tmp, iter);
+
+		if (error == ERROR_NOT_FOUND)
+			break;
+		else
+			return error;
+			
 		Postfix *back = postfix_list_push(self);
 
 		if (!back)
 			return ERROR_MEMORY;
 
-		_try(postfix_parse(back, iter));
-
-		type = iter->token->type;
+		*back = tmp;
 	}
 
 	return ERROR_NONE;

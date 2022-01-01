@@ -54,7 +54,7 @@ Error program_parse(Program *self, TokenIterator *iter)
 		if (!back)
 			return ERROR_MEMORY;
 
-		_try(function_parse(back, iter));
+		try(function_parse(back, iter));
 	}
 
 	return ERROR_NONE;

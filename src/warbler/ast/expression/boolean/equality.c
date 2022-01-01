@@ -52,7 +52,7 @@ Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 	assert(iter);
 
 	equality_expression_init(self);
-	_try(comparison_expression_parse(&self->lhs, iter));
+	try(comparison_expression_parse(&self->lhs, iter));
 
 	while (true)
 	{
@@ -83,7 +83,7 @@ Error equality_expression_parse(EqualityExpression *self, TokenIterator *iter)
 		if (!back)
 			return ERROR_MEMORY;
 
-		_try(comparison_expression_parse(&back->expr, iter));
+		try(comparison_expression_parse(&back->expr, iter));
 	}
 
 	return ERROR_NONE;

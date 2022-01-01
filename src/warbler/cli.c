@@ -1,7 +1,7 @@
 #include <warbler/cli.h>
 
 // local includes
-#include <warbler/error.h>
+#include <warbler/print.h>
 
 // standard library
 #include <stdio.h>
@@ -17,7 +17,7 @@ bool validate_cli_args(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		print_error("invalid arguments given");
+		error("invalid arguments given");
 		print_help();
 
 		return false;

@@ -1,5 +1,8 @@
 #include <warbler/ast/function.h>
 
+// local headers
+#include <warbler/print.h>
+
 // standard headers
 #include <stdlib.h>
 
@@ -54,13 +57,10 @@ static inline Error function_parse_body(Function *function, TokenIterator *iter)
 
 			if ((error = compound_statement_parse(function->compound_body, iter)))
 				return error;
-
 			break;
 
 		default:
-			print_error("invalid token given for function body: ");
-			token_println(iter->token);
-
+			errort("expected function body but got", iter->token);
 			return ERROR_ARGUMENT;
 	}
 

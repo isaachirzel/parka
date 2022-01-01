@@ -1,5 +1,8 @@
 #include <warbler/ast/label.h>
 
+// local headers
+#include <warbler/print.h>
+
 void label_init(Label *self)
 {
 	assert(self);
@@ -20,13 +23,11 @@ Error label_parse(Label *self, TokenIterator *iter)
 	if (iter->token[0].type != TOKEN_IDENTIFIER || iter->token[1].type != TOKEN_COLON)
 		return ERROR_ARGUMENT;
 	
-	_try(identifier_parse(&self->identifier, iter));
+	try(identifier_parse(&self->identifier, iter));
 
 	if (iter->token->type != TOKEN_COLON)
 	{
-		label_free(self);
-		print_error("expected ':' after label but got: ");
-		token_print(iter->token);
+		errort("expected ':' after label but got", iter->token);
 		return ERROR_ARGUMENT;
 	}
 
