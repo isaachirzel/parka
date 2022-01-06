@@ -15,6 +15,12 @@
  Error tokenizer_init();
  void tokenizer_free();
 
- Error tokenize(HxArray **self, const char *filename, const char *src);
+typedef struct TokenArray
+{
+	size_t length;
+	Token *data;
+} TokenArray;
+
+Error tokenize(TokenArray *out, const char *filename, const char *src);
 
 #endif

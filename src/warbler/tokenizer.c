@@ -9,7 +9,6 @@
 
 // external headers
 #include <hirzel/table.h>
-#include <hirzel/array.h>
 
 typedef enum CharType
 {
@@ -816,7 +815,7 @@ static inline Error assure_tokens_size(HxArray *tokens)
 	return ERROR_NONE;
 }
 
-Error tokenize(HxArray **self, const char *filename, const char *src)
+Error tokenize(TokenArray *out, const char *filename, const char *src)
 {
 	HxArray *tokens = hxarray_create_of(Token);
 
@@ -844,7 +843,13 @@ Error tokenize(HxArray **self, const char *filename, const char *src)
 	}
 	while (previous->type != TOKEN_END_OF_FILE);
 
-	*self = tokens;
+	*out = (TokenArray)
+	{
+		.length = hxarray_length(tokens),
+		.data = hxarray_front(tokens)
+	};
+
+	free(tokens);
 
 	return ERROR_NONE;
 }

@@ -1,7 +1,7 @@
 #ifndef WARBLER_AST_EXPRESSION_H
 #define WARBLER_AST_EXPRESSION_H
 
-#include <warbler/ast/expression/assignment.h>
+#include <warbler/ast/expression/assignment_expression.h>
 
 typedef struct Expression
 {

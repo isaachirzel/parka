@@ -90,7 +90,7 @@ void _errort(const char *file, unsigned line, const char *func, const char *msg,
 
 void _debugf(const char *file, unsigned line, const char *func, const char *fmt, ...)
 {	
-	fprintf(stderr, "%s[%u] %s(): ", get_shortened_file(file), line, func);
+	fprintf(stderr, "%s:%u %s(): ", get_shortened_file(file), line, func);
 	va_list args;
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
@@ -100,6 +100,6 @@ void _debugf(const char *file, unsigned line, const char *func, const char *fmt,
 
 void _debug(const char *file, unsigned line, const char *func, const char *msg)
 {
-	fprintf(stderr, "%s[%u] %s(): %s\n", get_shortened_file(file), line, func, msg);
+	fprintf(stderr, "%s:%u %s(): %s\n", get_shortened_file(file), line, func, msg);
 }
 

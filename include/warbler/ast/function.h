@@ -6,7 +6,7 @@
 #include <warbler/ast/identifier.h>
 #include <warbler/ast/parameter.h>
 #include <warbler/ast/expression/expression.h>
-#include <warbler/ast/statement/compound.h>
+#include <warbler/ast/statement/compound_statement.h>
 
 // standard headers
 #include <stdbool.h>
