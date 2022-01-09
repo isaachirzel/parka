@@ -6,18 +6,15 @@
 #include <string.h>
 #include <stdbool.h>
 
-static const char *error_prompt = NULL;
+#define ERROR_PROMPT_COLOR	"\033[31merror:\033[0m "
+#define ERROR_PROMPT_MONO	"error: "
+static const char *error_prompt = ERROR_PROMPT_COLOR;
 
 void print_enable_color(bool enabled)
 {
-	if (enabled)
-	{
-		error_prompt = "\033[31merror:\033[0m ";
-	}
-	else
-	{
-		error_prompt = "\033[0merror: ";
-	}
+	error_prompt = enabled
+		? ERROR_PROMPT_COLOR
+		: ERROR_PROMPT_MONO;
 }
 
 void print_branch(unsigned count)
@@ -61,7 +58,7 @@ static const char *get_shortened_file(const char *file)
 
 void _errorf(const char *file, unsigned line, const char *func, const char *fmt, ...)
 {
-	fprintf(stderr, "%s:%u:%s() %s", file, line, func, error_prompt);
+	fprintf(stderr, "%s%s:%u:%s() ", error_prompt, file, line, func);
 	va_list args;
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
@@ -71,12 +68,12 @@ void _errorf(const char *file, unsigned line, const char *func, const char *fmt,
 
 void _error(const char *file, unsigned line, const char *func, const char *msg)
 {
-	fprintf(stderr, "%s:%u:%s() %s%s\n", file, line, func, error_prompt, msg);
+	fprintf(stderr, "%s%s:%u:%s() %s\n", error_prompt, file, line, func, msg);
 }
 
 void _errort(const char *file, unsigned line, const char *func, const char *msg, const Token *token)
 {
-	fprintf(stderr, "%s:%u:%s() %s%s: ", file, line, func, error_prompt, msg);
+	fprintf(stderr, "%s%s:%u:%s() %s: ", error_prompt, file, line, func, msg);
 
 	const String *str = &token->text;
 

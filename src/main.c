@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
 	puts(BAR "TOKENIZER" BAR "\n");
 
-	HxArray *tokens;
+	TokenArray tokens;
 	error = tokenize(&tokens, argv[1], src);
 	if (error)
 	{
@@ -46,9 +46,9 @@ int main(int argc, char *argv[])
 		return (int)error;
 	}
 
-	for (size_t i = 0; i < hxarray_length(tokens); ++i)
+	for (size_t i = 0; i < tokens.length; ++i)
 	{
-		Token *token = (Token*)hxarray_at(tokens, i);
+		Token *token = TokenArray_get_ptr(&tokens, i);
 		printf("Token\t%d\t:\t", (int)token->type);
 		token_println(token);
 	}
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	puts(BAR "PARSER" BAR "\n");
 
 	AdditiveExpression expr;
-	TokenIterator iter = { hxarray_front(tokens) };
+	TokenIterator iter = { tokens.buffer };
 	
 	if ((error = additive_expression_parse(&expr, &iter)) == ERROR_NONE)
 	{

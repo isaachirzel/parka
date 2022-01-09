@@ -76,8 +76,8 @@ static inline Prefix *prefix_list_push(PrefixList *self)
 
 Error prefix_list_parse(PrefixList *self, TokenIterator *iter)
 {
-	assert(self);
-	assert(iter);
+	assert(self != NULL);
+	assert(iter != NULL);
 
 	prefix_list_init(self);
 

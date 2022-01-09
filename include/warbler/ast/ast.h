@@ -3,16 +3,14 @@
 
 // local headers
 #include <warbler/ast/program.h>
-
-// external headers
-#include <hirzel/array.h>
+#include <warbler/token_array.h>
 
 typedef struct Ast
 {
 	Program program;
 } Ast;
 
-Error ast_parse(Ast *out, HxArray *tokens);
+Error ast_parse(Ast *out, TokenArray *tokens);
 void ast_free(Ast *ast);
 
 #endif

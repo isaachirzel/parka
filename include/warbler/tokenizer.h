@@ -8,18 +8,10 @@
 // local includes
 #include <warbler/token.h>
 #include <warbler/error.h>
+#include <warbler/token_array.h>
 
-// external libraries
-#include <hirzel/array.h>
-
- Error tokenizer_init();
- void tokenizer_free();
-
-typedef struct TokenArray
-{
-	size_t length;
-	Token *data;
-} TokenArray;
+Error tokenizer_init();
+void tokenizer_free();
 
 Error tokenize(TokenArray *out, const char *filename, const char *src);
 

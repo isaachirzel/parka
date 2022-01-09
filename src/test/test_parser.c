@@ -12,13 +12,13 @@ int main()
 
 	Error error;
 
-	HxArray *tokens;
+	TokenArray tokens;
 
 	error = tokenize(&tokens, "in-memory", src);
 
 	if (!error)
 	{
-		TokenIterator iter = { hxarray_front(tokens) };
+		TokenIterator iter = { tokens.buffer };
 
 		AdditiveExpression expr;
 		error = additive_expression_parse(&expr, &iter);

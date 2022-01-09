@@ -1,17 +1,19 @@
 #include <warbler/ast/ast.h>
 
-Error ast_parse(Ast *ast, HxArray *tokens)
+void ast_init(Ast* ast)
+{
+	program_init(&ast->program);
+}
+
+Error ast_parse(Ast *ast, TokenArray *tokens)
 {
 	assert(ast);
 	assert(tokens);
-	
-	Token *first_token = hxarray_front(tokens);
 
-	TokenIterator iter = 
-	{
-		.token = first_token
-	};
-	
+	ast_init(ast);
+
+	Token *first_token = TokenArray_front_ptr(tokens);
+	TokenIterator iter = { first_token };
 	Error error = program_parse(&ast->program, &iter);
 
 	return error;

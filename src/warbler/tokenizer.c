@@ -10,6 +10,10 @@
 // external headers
 #include <hirzel/table.h>
 
+
+HIRZEL_TABLE_DECLARE(TokenType, TokenTypeTable)
+HIRZEL_TABLE_DEFINE(TokenType, TokenTypeTable)
+
 typedef enum CharType
 {
 	CHAR_INVALID,
@@ -60,16 +64,16 @@ const size_t keyword_count = sizeof(keywords) / sizeof(*keywords);
 
 // data
 
-HxTable *token_types = NULL;
+TokenTypeTable token_types;
 CharType char_types[CHAR_TYPE_COUNT];
 
 // functions
 
 Error init_token_types()
 {
-	token_types = hxtable_create_of(TokenType);
+	TokenTypeTable_init(&token_types);
 
-	if (!token_types || !hxtable_reserve(token_types, keyword_count))
+	if (!TokenTypeTable_reserve(&token_types, keyword_count))
 	{
 		error("failed to reserve memory for token table");
 		return ERROR_MEMORY;
@@ -78,7 +82,7 @@ Error init_token_types()
 	for (size_t i = 0; i < keyword_count; ++i)
 	{
 		const TokenInfo *info = keywords + i;
-		hxtable_set(token_types, info->key, &info->value);
+		TokenTypeTable_set(&token_types, info->key, info->value);
 	}
 
 	return ERROR_NONE;
@@ -160,7 +164,7 @@ static Error get_token_type(Token *token)
 		if (!key)
 			return ERROR_MEMORY;
 
-		if (!hxtable_get(token_types, &token->type, key))
+		if (!TokenTypeTable_get(&token_types, &token->type, key))
 			token->type = TOKEN_IDENTIFIER;
 
 		free(key);
@@ -172,7 +176,7 @@ static Error get_token_type(Token *token)
 		strncpy(temp_key, token->text.data, token->text.length);
 		temp_key[token->text.length] = '\0';
 
-		if (!hxtable_get(token_types, &token->type, temp_key))
+		if (!TokenTypeTable_get(&token_types, &token->type, temp_key))
 			token->type = TOKEN_IDENTIFIER;
 	}
 
@@ -188,8 +192,7 @@ static inline CharType get_char_type(unsigned char c)
 
 void tokenizer_free()
 {
-	hxtable_destroy(token_types);
-	token_types = NULL;
+	TokenTypeTable_free(&token_types);
 }
 
 const char *get_token_string(TokenType type)
@@ -802,13 +805,11 @@ static Error get_next_token(Token *self)
 	return ERROR_ARGUMENT;
 }
 
-static inline Error assure_tokens_size(HxArray *tokens)
+static inline Error assure_tokens_size(TokenArray *tokens)
 {
-	size_t current_length = hxarray_length(tokens);
-			
-	if (current_length == hxarray_capacity(tokens))
+	if (tokens->length == tokens->capacity)
 	{
-		if (!hxarray_reserve(tokens, current_length * 2))
+		if (!TokenArray_reserve(tokens, tokens->length * 2))
 			return ERROR_MEMORY;
 	}
 
@@ -816,13 +817,10 @@ static inline Error assure_tokens_size(HxArray *tokens)
 }
 
 Error tokenize(TokenArray *out, const char *filename, const char *src)
-{
-	HxArray *tokens = hxarray_create_of(Token);
+{	
+	*out = TokenArray_init();
 
-	if (!tokens)
-		return ERROR_MEMORY;
-
-	if (!hxarray_reserve(tokens, 1))
+	if (!TokenArray_reserve(out, 1))
 	{
 		error("failed to allocate memory for initial token");
 		return ERROR_MEMORY;
@@ -834,22 +832,14 @@ Error tokenize(TokenArray *out, const char *filename, const char *src)
 	do
 	{
 		Token token = find_next_token(previous);
-		try(get_next_token(&token));		
-		try(assure_tokens_size(tokens));
-		if (!hxarray_push(tokens, &token))
+		try(get_next_token(&token));
+		try(assure_tokens_size(out));
+		if (!TokenArray_push_ptr(out, &token))
 			return ERROR_MEMORY;
 
-		previous = hxarray_back(tokens);
+		previous = TokenArray_back_ptr(out);
 	}
 	while (previous->type != TOKEN_END_OF_FILE);
-
-	*out = (TokenArray)
-	{
-		.length = hxarray_length(tokens),
-		.data = hxarray_front(tokens)
-	};
-
-	free(tokens);
 
 	return ERROR_NONE;
 }

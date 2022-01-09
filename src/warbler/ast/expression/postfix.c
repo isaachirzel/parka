@@ -65,8 +65,8 @@ void postfix_list_free(PostfixList *self)
 
 Error postfix_parse(Postfix *self, TokenIterator *iter)
 {
-	assert(self);
-	assert(iter);
+	assert(self != NULL);
+	assert(iter != NULL);
 
 	postfix_init(self);
 
@@ -118,28 +118,34 @@ static Postfix *postfix_list_push(PostfixList *self)
 	Postfix *back = tmp + self->count;
 
 	self->data = tmp;
-	++self->count;
+	self->count += 1;
 
 	return back;
 }
 
 Error postfix_list_parse(PostfixList *self, TokenIterator *iter)
 {
-	assert(self);
-	assert(iter);
+	assert(self != NULL);
+	assert(iter != NULL);
 
 	postfix_list_init(self);
 
-	Error error;
 	while (true)
 	{
 		Postfix tmp;
-		error = postfix_parse(&tmp, iter);
+		Error error = postfix_parse(&tmp, iter);
 
-		if (error == ERROR_NOT_FOUND)
-			break;
-		else
-			return error;
+		if (error != ERROR_NONE)
+		{
+			if (error == ERROR_NOT_FOUND)
+			{
+				break;
+			}
+			else
+			{
+				return error;
+			}
+		}
 			
 		Postfix *back = postfix_list_push(self);
 
