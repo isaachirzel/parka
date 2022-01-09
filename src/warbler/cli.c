@@ -17,7 +17,7 @@ bool validate_cli_args(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		error("invalid arguments given");
+		errorm("invalid arguments given");
 		print_help();
 
 		return false;

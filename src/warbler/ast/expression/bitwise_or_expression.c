@@ -60,9 +60,9 @@ Error bitwise_or_expression_parse(BitwiseOrExpression *self, TokenIterator *iter
 		++iter->token;
 		BitwiseXorExpression *back = push_bitwise_xor_expression(self);
 
-		if (!back)
+		if (back == NULL)
 			return ERROR_MEMORY;
-
+			
 		try(bitwise_xor_expression_parse(back, iter));
 	}
 

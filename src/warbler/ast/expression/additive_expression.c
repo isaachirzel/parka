@@ -54,8 +54,6 @@ Error additive_expression_parse(AdditiveExpression *self, TokenIterator *iter)
 	additive_expression_init(self);
 	try(multiplicative_expression_parse(&self->lhs, iter));
 
-	debugf("Is plus: %d\n", iter->token->type == TOKEN_PLUS);
-
 	while (iter->token->type == TOKEN_PLUS || iter->token->type == TOKEN_MINUS)
 	{
 		AdditiveRhs *back = additive_expression_push(self);

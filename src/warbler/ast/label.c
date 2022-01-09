@@ -27,7 +27,7 @@ Error label_parse(Label *self, TokenIterator *iter)
 
 	if (iter->token->type != TOKEN_COLON)
 	{
-		errort("expected ':' after label but got", iter->token);
+		errortf(iter->token, "expected ':' after label but got: %t", iter->token);
 		return ERROR_ARGUMENT;
 	}
 

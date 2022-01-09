@@ -99,7 +99,7 @@ Error parameter_list_parse(ParameterList *self, TokenIterator *iter)
 
 		if (iter->token->type != TOKEN_RPAREN)
 		{
-			errort("expected ',' or ')' after parameter but got", iter->token);
+			errortf(iter->token, "expected ',' or ')' after parameter but got: %t", iter->token);
 			return ERROR_ARGUMENT;
 		}
 	}

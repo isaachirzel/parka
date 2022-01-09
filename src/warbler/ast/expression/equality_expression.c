@@ -33,7 +33,7 @@ static inline EqualityRhs *push_equality_rhs(EqualityExpression *self, EqualityT
 	size_t new_size = (self->rhs_count + 1) * sizeof(EqualityRhs);
 	EqualityRhs *tmp = realloc(self->rhs, new_size);
 
-	if (!tmp)
+	if (tmp == NULL)
 		return NULL;
 
 	self->rhs = tmp;

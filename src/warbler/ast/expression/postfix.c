@@ -84,7 +84,7 @@ Error postfix_parse(Postfix *self, TokenIterator *iter)
 
 			if (iter->token->type != TOKEN_RBRACK)
 			{
-				errort("expected ']' after index operation but got: ", iter->token);
+				errortf(iter->token, "expected ']' after index operation but got: %t", iter->token);
 				return ERROR_ARGUMENT;
 			}
 			break;

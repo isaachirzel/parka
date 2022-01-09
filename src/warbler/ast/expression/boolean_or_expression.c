@@ -18,7 +18,7 @@ void boolean_or_expression_init(BooleanOrExpression *self)
 
 void boolean_or_expression_free(BooleanOrExpression *self)
 {
-	if (!self)
+	if (self == NULL)
 		return;
 
 	boolean_and_expression_free(&self->lhs);
@@ -48,8 +48,8 @@ static inline BooleanAndExpression *push_boolean_and_expression(BooleanOrExpress
 
 Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator *iter)
 {
-	assert(self);
-	assert(iter);
+	assert(self != NULL);
+	assert(iter != NULL);
 
 	boolean_or_expression_init(self);
 	try(boolean_and_expression_parse(&self->lhs, iter));

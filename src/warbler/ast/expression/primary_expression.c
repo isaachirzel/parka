@@ -89,10 +89,10 @@ void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
 {
 	assert(self);
 
-	//if (self->prefixes.count > 0)
-	// 	depth += 1;
+	if (self->prefixes.count > 0)
+	 	depth += 1;
 
-	// prefix_list_print_tree(&self->prefixes, depth - 1);
+	prefix_list_print_tree(&self->prefixes, depth - 1);
 
 	switch (self->type)
 	{

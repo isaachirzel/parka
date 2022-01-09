@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	Error error = tokenizer_init();
 	if (error)
 	{
-		error("failed to initialize tokenizer");
+		errorm("failed to initialize tokenizer");
 		free(src);
 		return (int)error;
 	}
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	error = tokenize(&tokens, argv[1], src);
 	if (error)
 	{
-		error("failed to tokenize source");
+		errorm("failed to tokenize source");
 		free(src);
 		tokenizer_free();
 

@@ -28,11 +28,9 @@ Error identifier_parse(Identifier *self, TokenIterator *iter)
 
 	identifier_init(self);
 
-	debugf("trying parameter parse of token type: %d\n", iter->token->type);
-
 	if (iter->token->type != TOKEN_IDENTIFIER)
 	{
-		errort("expected identifier but got", iter->token);
+		errortf(iter->token, "expected identifier but got: %t", iter->token);
 		return ERROR_ARGUMENT;
 	}
 

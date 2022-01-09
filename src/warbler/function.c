@@ -60,7 +60,7 @@ static inline Error function_parse_body(Function *function, TokenIterator *iter)
 			break;
 
 		default:
-			errort("expected function body but got", iter->token);
+			errortf(iter->token, "expected function body but got: %t", iter->token);
 			return ERROR_ARGUMENT;
 	}
 

@@ -4,7 +4,6 @@
 #include <warbler/print.h>
 
 // standard library
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -25,18 +24,25 @@ String string_from(const char *text)
 	};
 }
 
-void string_print(const String * string)
+void string_fprint(const String *string, FILE *stream)
 {
+	assert(stream != NULL);
 	assert(string != NULL);
 	assert(string->data != NULL);
 	assert(string->length > 0);
 
-	fwrite(string->data, sizeof(char), string->length, stdout);	
+	fwrite(string->data, sizeof(char), string->length, stream);
 }
+
+void string_print(const String * string)
+{
+	string_fprint(string, stdout);
+}
+
 
 void string_println(const String *string)
 {
-	string_print(string);
+	string_fprint(string, stdout);
 	putchar('\n');
 }
 
@@ -50,7 +56,7 @@ char *string_duplicate(const String *string)
 
 	if (!out)
 	{
-		error("failed to allocate string buffer for duplication");
+		errorm("failed to allocate string buffer for duplication");
 		return NULL;
 	}
 

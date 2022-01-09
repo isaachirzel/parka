@@ -45,6 +45,8 @@ static f64 string_to_f64(const String *text)
 		}
 		else
 		{
+			i += 1;
+
 			f64 decimal = 0.0;
 			f64 place = 1.0;
 
@@ -113,7 +115,7 @@ static inline Error parse_number(Constant *self, TokenIterator *iter, bool is_ne
 			break;
 
 		default:
-			errort("expected number literal but got: ", iter->token);
+			errortf(iter->token, "expected number literal but got: %t", iter->token);
 			return ERROR_ARGUMENT;
 	}
 
@@ -178,7 +180,7 @@ Error constant_parse(Constant *self, TokenIterator *iter)
 			break;
 
 		default:
-			errort("expected constant but got: ", iter->token);
+			errortf(iter->token, "expected constant but got: %t", iter->token);
 			return ERROR_ARGUMENT;
 	}
 

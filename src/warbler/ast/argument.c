@@ -77,11 +77,14 @@ static Argument *push_argument(ArgumentList *self)
 	return out;
 }
 
-static Error try_argument_list_parse(ArgumentList *self, TokenIterator *iter)
+Error argument_list_parse(ArgumentList *self, TokenIterator *iter)
 {
+	assert(self != NULL);
+	assert(iter != NULL);
+
 	if (iter->token->type != TOKEN_LPAREN)
 	{
-		errort("expected '(' at start of argument list but got", iter->token);
+		errortf(iter->token, "expected '(' at start of argument list but got: %t", iter->token);
 		return ERROR_ARGUMENT;
 	}
 
@@ -102,7 +105,7 @@ static Error try_argument_list_parse(ArgumentList *self, TokenIterator *iter)
 
 		if (iter->token->type != TOKEN_RPAREN)
 		{
-			errort("expected ')' or ',' but got", iter->token);
+			errortf(iter->token, "expected ')' or ',' but got", iter->token);
 			return ERROR_ARGUMENT;
 		}
 	}
@@ -110,19 +113,6 @@ static Error try_argument_list_parse(ArgumentList *self, TokenIterator *iter)
 	++iter->token;
 
 	return ERROR_NONE;
-}
-
-Error argument_list_parse(ArgumentList *self, TokenIterator *iter)
-{
-	assert(self);
-	assert(iter);
-
-	Error error = try_argument_list_parse(self, iter);
-
-	if (error)
-		argument_list_free(self);
-	
-	return error;
 }
 
 void argument_print_tree(Argument *self, unsigned depth)

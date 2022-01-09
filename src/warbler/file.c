@@ -7,10 +7,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *file_error(const char *msg)
+
+static char *read_from_file(FILE *file, const char *filepath)
 {
-	error(msg);
-	return NULL;
+	if (fseek(file, 0, SEEK_END))
+	{
+		errorf("failed to iterate to end of file: ", filepath);
+		return NULL;
+	}
+
+	long size = ftell(file);
+
+	if (size == -1)
+	{
+		errorf("failed to get file size: %s", filepath);
+		return NULL;
+	}
+	else if (size == 0)
+	{
+		errorf("file is empty: %s", filepath);
+		return NULL;
+	}
+
+	if (fseek(file, 0, SEEK_SET))
+	{
+		errorf("failed to iterate to beginning of file: %s", filepath);
+		return NULL;
+	}
+
+	char *buffer = malloc(size + 1);
+
+	if (buffer == NULL)
+	{
+		errorf("failed to allocate buffer for file: %s", filepath);
+		return NULL;
+	}
+
+	size_t bytes_read = fread(buffer, sizeof(char), size, file);
+
+	if (bytes_read == 0)
+	{
+		free(buffer);
+		errorf("failed to read data from file: %s", filepath);
+		return NULL;
+	}
+
+	buffer[bytes_read] = '\0';
+
+	return buffer;
 }
 
 char *read_file(const char *filepath)
@@ -18,32 +62,14 @@ char *read_file(const char *filepath)
 	FILE *file = fopen(filepath, "r");
 	
 	if (!file)
-		return file_error("failed to open file");
+	{
+		errorf("failed to open file: %s", filepath);
+		return NULL;
+	}
 
-	if (fseek(file, 0, SEEK_END))
-		return file_error("failed to iterate to end of file");
+	char *out = read_from_file(file, filepath);
 
-	long size = ftell(file);
+	fclose(file);
 
-	if (size == -1)
-		return file_error("failed to get file size");
-	else if (size == 0)
-		return file_error("file is empty");
-
-	if (fseek(file, 0, SEEK_SET))
-		return file_error("failed to iterate to beginning of file");	
-
-	char *out = malloc(sizeof(char) * (size + 1));
-
-	if (!out)
-		return file_error("failed to allocate buffer for file");
-
-	out[size] = 0;
-
-	size_t bytes_read = fread(out, sizeof(char), size, file);
-
-	if (bytes_read == 0)
-		return file_error("failed to read file");
-	
 	return out;
 }

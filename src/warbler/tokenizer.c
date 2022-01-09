@@ -75,7 +75,7 @@ Error init_token_types()
 
 	if (!TokenTypeTable_reserve(&token_types, keyword_count))
 	{
-		error("failed to reserve memory for token table");
+		errorm("failed to reserve memory for token table");
 		return ERROR_MEMORY;
 	}
 
@@ -218,7 +218,7 @@ static Token find_next_token(const Token *last_token)
 	{
 		.filename = last_token->filename,
 		.line = last_token->line,
-		.col = last_token->col,
+		.col = last_token->col + last_token->text.length,
 		.text = (String)
 		{
 			.data = last_token->text.data + last_token->text.length,
@@ -315,7 +315,7 @@ static Error get_separator_token(Token *self)
 			break;
 		
 		default:
-			errorf("invalid character given for seprarator token: '%c'\n", self->text.data[0]);
+			errortf(self, "invalid chracter given for separator: '%c'", self->text.data[0]);
 			return ERROR_ARGUMENT;
 	}
 
@@ -338,7 +338,7 @@ static Error get_digit_token(Token *self)
 			case CHAR_DOT:
 				if (is_float)
 				{
-					errort("extra decimal in float literal", self);
+					errortf(self, "extra decimal in float literal: %t", self);
 					return ERROR_ARGUMENT;
 				}
 
@@ -393,7 +393,7 @@ static Error get_dot_token(Token *self)
 			break;
 
 		default:
-			errort("invalid dot token", self);
+			errortf(self, "invalid dot token: %t", self);
 			return ERROR_ARGUMENT;
 	}
 
@@ -722,7 +722,7 @@ static Error get_operator_token(Token *self)
 			break;
 
 		default:
-			errorf("invalid operator token character: %c", character);
+			errortf(self, "invalid character given in operator: %c", character);
 			return ERROR_ARGUMENT;
 	}
 
@@ -744,7 +744,7 @@ static Error get_quote_token(Token *self)
 
 	if (*pos == '\0')
 	{
-		error("unterminated string literal");
+		errorm("unterminated string literal");
 		return ERROR_ARGUMENT;
 	}
 
@@ -798,10 +798,7 @@ static Error get_next_token(Token *self)
 			break;
 	}
 
-	printf("text: %p\n", self->text.data);
-	printf("value: %d\n", self->text.data[0]);
-
-	errorf("invalid character in source file: %c\n", self->text.data[0]);
+	errortf(self, "invalid character in source file: %c", self->text.data[0]);
 	return ERROR_ARGUMENT;
 }
 
@@ -822,7 +819,7 @@ Error tokenize(TokenArray *out, const char *filename, const char *src)
 
 	if (!TokenArray_reserve(out, 1))
 	{
-		error("failed to allocate memory for initial token");
+		errorm("failed to allocate memory for initial token");
 		return ERROR_MEMORY;
 	}
 
