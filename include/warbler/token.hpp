@@ -2,7 +2,7 @@
 #define WARBLER_TOKEN_HPP
 
 // local includes
-#include <warbler/string.hpp>
+#include <warbler/primitive.hpp>
 
 // standard headers
 #include <vector>
@@ -102,11 +102,24 @@ namespace warbler
 
 	struct Token
 	{
-		const char *filename;
-		size_t line;
-		size_t col;
-		String text;
-		TokenType type;
+	private:
+
+		StringView _text;
+		const String& _filename;
+		usize _line;
+		usize _col;
+		TokenType _type;
+	
+	public:
+
+		Token();
+		Token(const StringView& text, const String& filename, usize line, usize col, TokenType type);
+
+		const String& text() const { return _text; }
+		const String& filename() const { return _filename; }
+		usize line() const { return _line; }
+		usize col() const { return _col; }
+		TokenType type() const { return _type; }
 	};
 
 	typedef std::vector<Token>::const_iterator TokenIterator;

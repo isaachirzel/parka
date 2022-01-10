@@ -3,27 +3,35 @@
 
 // standard headers
 #include <cstdint>
+#include <cstddef>
+#include <string>
+#include <string_view>
 
 namespace warbler
 {
 	// unsigned integers
 
-	typedef uint8_t		byte;
-	typedef uint8_t		u8;
-	typedef uint16_t	u16;
-	typedef uint32_t	u32;
-	typedef uint64_t	u64;
+	using byte = uint8_t;
+	using u8 = uint8_t;
+	using u16 = uint16_t;
+	using u32 = uint32_t;
+	using u64 = uint64_t;
+	using usize = size_t;
 
 	// signed integers
 
-	typedef int8_t		i8;
-	typedef int16_t		i16;
-	typedef int32_t		i32;
-	typedef int64_t		i64;
+	using i8 = int8_t;
+	using i16 = int16_t;
+	using i32 = int32_t;
+	using i64 = int64_t;
 
 	// floating point
 
-	typedef float		f32;
-	typedef double		f64;
+	using f32 = float;
+	using f64 = double;
+
+	using String = std::string;
+	using StringView = std::string_view;
 }
+
 #endif

@@ -8,49 +8,28 @@
 
 namespace warbler
 {
-void identifier_init(Identifier *self)
-{
-	assert(self);
-	
-	self->text = NULL;
-}
+	Identifier::Identifier(String&& text) :
+	_text(text)
+	{}
 
-void identifier_free(Identifier *self)
-{
-	if (!self)
-		return;
-
-	free(self->text);
-}
-
-Error identifier_parse(Identifier *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	identifier_init(self);
-
-	if (iter->type != TOKEN_IDENTIFIER)
+	Result<Identifier> Identifier::parse(TokenIterator& iter)
 	{
-		errortf(*iter, "expected identifier but got: %t", iter);
-		return ERROR_ARGUMENT;
+		if (iter->type != TOKEN_IDENTIFIER)
+		{
+			errortf(*iter, "expected identifier but got: %t", iter);
+			return ERROR_ARGUMENT;
+		}
+
+		String text = iter->text;
+			
+		iter += 1;
+
+		return Identifier(std::move(text));
 	}
 
-	self->text = string_duplicate(&iter->text);
-
-	if (!self->text)
-		return ERROR_MEMORY;
-		
-	++iter;
-
-	return ERROR_NONE;
-}
-
-void identifier_print_tree(Identifier *self, unsigned depth)
-{
-	assert(self);
-
-	print_branch(depth);
-	puts(self->text);
-}
+	void Identifier::print_tree(u32 depth)
+	{
+		print_branch(depth);
+		puts(_text.c_str());
+	}
 }

@@ -1,18 +1,32 @@
 #ifndef WARBLER_AST_IDENTIFIER_HPP
 #define WARBLER_AST_IDENTIFIER_HPP
 
+// local headers
 #include <warbler/result.hpp>
 #include <warbler/token.hpp>
+#include <warbler/primitive.hpp>
+
+// standard headers
+#include <string>
+
 namespace warbler
 {
-typedef struct Identifier
-{
-	char *text;
-} Identifier;
+	class Identifier
+	{
+	private:
 
-void identifier_init(Identifier *self);
-void identifier_free(Identifier *self);
-Error identifier_parse(Identifier *self, TokenIterator& iter);
-void identifier_print_tree(Identifier *self, unsigned depth);
+		String _text;
+
+	public:
+
+		Identifier(std::string&& text);
+
+		Result<Identifier> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0);
+
+		const String& text() const { return _text; }
+	};
+
 }
 #endif

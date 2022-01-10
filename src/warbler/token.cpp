@@ -6,16 +6,21 @@
 
 namespace warbler
 {
-	Token token_default()
-	{
-		return (Token) {
-			NULL,
-			0,
-			0,
-			string_default(),
-			TOKEN_END_OF_FILE
-		};
-	}
+	Token::Token(const StringView& text, const String& filename, usize line, usize col, TokenType type) :
+	_text(text),
+	_filename(filename),
+	_line(line),
+	_col(col),
+	_type(type)
+	{}
+
+	Token::Token() :
+	_text(""),
+	_filename(""),
+	_line(0),
+	_col(0),
+	_type(TOKEN_END_OF_FILE)
+	{}
 
 	Token token_initial(const char *filename, const char *src)
 	{
