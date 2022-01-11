@@ -3,25 +3,32 @@
 
 // local headers
 #include <warbler/ast/expression/boolean_or_expression.hpp>
+
 namespace warbler
 {
-struct Expression;
+	struct Expression;
 
-typedef enum ConditionalType
-{
-	CONDITIONAL_NONE,
-	CONDITIONAL_TERNARY
-} ConditionalType;
+	enum ConditionalType
+	{
+		CONDITIONAL_NONE,
+		CONDITIONAL_TERNARY
+	};
 
-typedef struct ConditionalExpression
-{
-	BooleanOrExpression lhs;
-	ConditionalType type;
-} ConditionalExpression;
+	class ConditionalExpression
+	{
+	private:
 
-void conditional_expression_init(ConditionalExpression *self);
-void conditional_expression_free(ConditionalExpression *self);
-Error conditional_expression_parse(ConditionalExpression *self, TokenIterator& iter);
-void conditional_expression_print_tree(ConditionalExpression *self, unsigned depth);
+		BooleanOrExpression _lhs;
+		ConditionalType _type;
+
+	public:
+
+		ConditionalExpression(BooleanOrExpression&& lhs);
+
+		static Result<ConditionalExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0);
+	};
 }
+
 #endif

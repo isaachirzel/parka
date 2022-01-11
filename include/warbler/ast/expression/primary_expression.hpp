@@ -6,34 +6,44 @@
 #include <warbler/ast/expression/constant.hpp>
 #include <warbler/ast/expression/prefix.hpp>
 #include <warbler/ast/expression/postfix.hpp>
+
 namespace warbler
 {
-struct Expression;
+	struct Expression;
 
-typedef enum PrimaryType
-{
-	PRIMARY_IDENTIFIER,
-	PRIMARY_CONSTANT,
-	PRIMARY_EXPRESSION
-} PrimaryType;
-
-typedef struct PrimaryExpression
-{
-	PrefixList prefixes;
-	PostfixList postfixes;
-
-	union
+	enum PrimaryType
 	{
-		Identifier identifier;
-		Constant constant;
-		struct Expression *expression;
+		PRIMARY_IDENTIFIER,
+		PRIMARY_CONSTANT,
+		PRIMARY_EXPRESSION
 	};
-	PrimaryType type;
-} PrimaryExpression;
 
-void primary_expression_init(PrimaryExpression *self);
-void primary_expression_free(PrimaryExpression *self);
-Error primary_expression_parse(PrimaryExpression *self, TokenIterator& iter);
-void primary_expression_print_tree(PrimaryExpression *self, unsigned depth);
+	class PrimaryExpression
+	{
+	private:
+
+		std::vector<Prefix> _prefixes;
+		std::vector<Postfix> _postfixes;
+
+		union
+		{
+			Identifier _identifier;
+			Constant _constant;
+			struct Expression *_expression;
+		};
+
+		PrimaryType _type;
+	
+	public:
+
+		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Identifier&& identifier);
+		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Constant&& constant);
+		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Expression *expression);
+		~PrimaryExpression();
+
+		static Result<PrimaryExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0);
+	};
 }
 #endif

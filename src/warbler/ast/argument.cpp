@@ -10,126 +10,65 @@
 
 namespace warbler
 {
-	void argument_init(Argument *self)
-	{
-		assert(self);
+	Argument::Argument(Expression *expr) :
+	_expr(expr)
+	{}
 
-		expression_init(self->expr);
+	Argument::~Argument()
+	{
+		delete _expr;
 	}
 
-	void argument_list_init(ArgumentList *self)
+	Result<Argument> Argument::parse(TokenIterator& iter)
 	{
-		assert(self);
+		auto expr = Expression::parse(iter);
 
-		*self = (ArgumentList)
+		if (expr.has_error())
+			return expr.error();
+	}
+
+	Result<std::vector<Argument>> Argument::parse_list(TokenIterator& iter)
+	{
+		if (iter->type() != TOKEN_LPAREN)
 		{
-			.arguments = NULL,
-			.argument_count = 0
-		};
-	}
-
-	void argument_free(Argument *self)
-	{
-		if (!self)
-			return;
-
-		expression_free(self->expr);
-		free(self->expr);
-	}
-
-	void argument_list_free(ArgumentList *self)
-	{
-		if (!self)
-			return;
-
-		for (size_t i = 0; i < self->argument_count; ++i)
-			argument_free(self->arguments + i);
-
-		free(self->arguments);
-	}
-
-	Error argument_parse(Argument *self, TokenIterator& iter)
-	{
-		assert(self);
-
-		self->expr = new Expression();
-
-		if (!self->expr)
-			return ERROR_MEMORY;
-
-		try(expression_parse(self->expr, iter));
-
-		return ERROR_NONE;
-	}
-
-	static Argument *push_argument(ArgumentList *self)
-	{
-		size_t new_size = (self->argument_count + 1) * sizeof(Argument);
-		Argument *tmp = (Argument*)realloc(self->arguments, new_size);
-
-		if (!tmp)
-			return NULL;
-
-		Argument *out = tmp + self->argument_count;
-
-		self->arguments = tmp;
-		++self->argument_count;
-
-		return out;
-	}
-
-	Error argument_list_parse(ArgumentList *self, TokenIterator& iter)
-	{
-		assert(self != NULL);
-
-		if (iter->type != TOKEN_LPAREN)
-		{
-			errortf(*iter, "expected '(' at start of argument list but got: %t", &iter);
+			errortf(*iter, "expected '(' at start of argument list but got: %t", &(*iter));
 			return ERROR_ARGUMENT;
 		}
 
-		if (iter[1].type != TOKEN_RPAREN)
+		std::vector<Argument> args;
+		iter += 1;
+
+		if (iter->type() != TOKEN_RPAREN)
 		{
-			do
+			while (true)
 			{
-				++iter;
+				auto res = Argument::parse(iter);
 
-				Argument *back = push_argument(self);
+				if (res.has_error())
+					return res.error();
 
-				if (!back)
-					return ERROR_MEMORY;
+				args.emplace_back(res.unwrap());
 
-				try(argument_parse(back, iter));
+				if (iter->type() == TOKEN_COMMA)
+				{
+					iter += 1;
+					continue;
+				}
+
+				break;
 			}
-			while (iter->type == TOKEN_COMMA);
-
-			if (iter->type != TOKEN_RPAREN)
+			
+			if (iter->type() != TOKEN_RPAREN)
 			{
-				errortf(*iter, "expected ')' or ',' but got", &iter);
-				return ERROR_ARGUMENT;
+				errortf(*iter, "expected ')' at end of argument list but got: %t", &(*iter));
 			}
 		}
 
-		++iter;
-
-		return ERROR_NONE;
+		return args;
 	}
-
-	void argument_print_tree(Argument *self, unsigned depth)
+	
+	void Argument::print_tree(u32 depth)
 	{
-		assert(self);
-
-		expression_print_tree(self->expr, depth);
-	}
-
-	void argument_list_print_tree(ArgumentList *self, unsigned depth)
-	{
-		print_branch(depth);
-		puts("()");
-
-		//return;
-
-		for (size_t i = 0; i < self->argument_count; ++i)
-			argument_print_tree(self->arguments + i, depth + 1);
+		_expr->print_tree(depth);
 	}
 }

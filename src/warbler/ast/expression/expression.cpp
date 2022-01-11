@@ -1,36 +1,26 @@
 #include <warbler/ast/expression/expression.hpp>
 
+// standard headers
 #include <cassert>
 
 namespace warbler
 {
-	void expression_init(Expression *self)
-	{
-		assert(self);
+	Expression::Expression(AssignmentExpression&& assignment) :
+	_assignment(assignment)
+	{}
 
-		assignment_expression_init(&self->assignment);
+	Result<Expression> Expression::parse(TokenIterator& iter)
+	{
+		auto res = AssignmentExpression::parse(iter);
+
+		if (res.has_error())
+			return res.error();
+
+		return Expression(res.unwrap());
 	}
 
-	void expression_free(Expression *self)
+	void Expression::print_tree(u32 depth)
 	{
-		if (!self)
-			return;
-			
-		assignment_expression_free(&self->assignment);
-	}
-
-	Error expression_parse(Expression *self, TokenIterator& iter)
-	{
-		assert(self);
-		
-
-		expression_init(self);
-
-		return assignment_expression_parse(&self->assignment, iter);
-	}
-
-	void expression_print_tree(Expression *self, unsigned depth)
-	{
-		assignment_expression_print_tree(&self->assignment, depth);
+		_assignment.print_tree(depth);
 	}
 }

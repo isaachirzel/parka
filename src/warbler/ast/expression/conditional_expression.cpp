@@ -8,40 +8,27 @@
 
 namespace warbler
 {
-void conditional_expression_init(ConditionalExpression *self)
-{
-	assert(self);
+	ConditionalExpression::ConditionalExpression(BooleanOrExpression&& lhs) :
+	_lhs(lhs)
+	{}
 
-	boolean_or_expression_init(&self->lhs);
-	self->type = CONDITIONAL_NONE;
-}
-
-void conditional_expression_free(ConditionalExpression *self)
-{
-	if (!self)
-		return;
-
-	boolean_or_expression_free(&self->lhs);
-}
-
-Error conditional_expression_parse(ConditionalExpression *self, TokenIterator& iter)
-{
-	assert(self != NULL);
-	
-
-	conditional_expression_init(self);
-	try(boolean_or_expression_parse(&self->lhs, iter));
-
-	return ERROR_NONE;
-}
-
-void conditional_expression_print_tree(ConditionalExpression *self, unsigned depth)
-{
-	boolean_or_expression_print_tree(&self->lhs, depth);
-
-	if (self->type == CONDITIONAL_TERNARY)
+	Result<ConditionalExpression> ConditionalExpression::parse(TokenIterator& iter)
 	{
-		debug("not implemented");
+		auto lhs = BooleanOrExpression::parse(iter);
+
+		if (lhs.has_error())
+			return lhs.error();
+
+		return ConditionalExpression(lhs.unwrap());
 	}
-}
+
+	void ConditionalExpression::print_tree(u32 depth)
+	{
+		_lhs.print_tree(depth);
+
+		if (_type == CONDITIONAL_TERNARY)
+		{
+			throw std::runtime_error("ternary printing is not implemented yet");
+		}
+	}
 }

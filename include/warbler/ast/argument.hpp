@@ -1,31 +1,29 @@
 #ifndef WARBLER_AST_ARGUMENT_HPP
 #define WARBLER_AST_ARGUMENT_HPP
 
+// standard headers
 #include <warbler/result.hpp>
 #include <warbler/token.hpp>
+#include <warbler/ast/expression/expression.hpp>
+
 namespace warbler
 {
-struct Expression;
+	class Argument
+	{
+	private:
 
-typedef struct Argument
-{
-	struct Expression *expr;
-} Argument;
+		Expression *_expr;
 
-typedef struct ArgumentList
-{
-	Argument *arguments;
-	size_t argument_count;
-} ArgumentList;
+	public:
 
-void argument_init(Argument *self);
-void argument_free(Argument *self);
-Error argument_parse(Argument *self, TokenIterator& iter);
-void argument_print_tree(Argument *self, unsigned depth);
+		Argument(Expression *expr);
+		~Argument();
 
-void argument_list_init(ArgumentList *self);
-void argument_list_free(ArgumentList *self);
-Error argument_list_parse(ArgumentList *self, TokenIterator& iter);
-void argument_list_print_tree(ArgumentList *self, unsigned depth);
+		static Result<Argument> parse(TokenIterator& iter);
+		static Result<std::vector<Argument>> parse_list(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0);
+	};
 }
+
 #endif

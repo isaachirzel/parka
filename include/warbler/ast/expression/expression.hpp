@@ -5,15 +5,20 @@
 
 namespace warbler
 {
-	typedef struct Expression
+	class Expression
 	{
-		AssignmentExpression assignment;
-	} Expression;
+	private:
 
-	void expression_init(Expression *self);
-	void expression_free(Expression *self);
-	Error expression_parse(Expression *self, TokenIterator& iter);
-	void expression_print_tree(Expression *self, unsigned depth);
+		AssignmentExpression _assignment;
+
+	public:
+
+		Expression(AssignmentExpression&& assignment);
+
+		static Result<Expression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0);
+	};
 }
 
 #endif

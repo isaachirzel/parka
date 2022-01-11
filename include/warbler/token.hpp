@@ -115,7 +115,7 @@ namespace warbler
 		Token();
 		Token(const StringView& text, const String& filename, usize line, usize col, TokenType type);
 
-		const String& text() const { return _text; }
+		const StringView& text() const { return _text; }
 		const String& filename() const { return _filename; }
 		usize line() const { return _line; }
 		usize col() const { return _col; }

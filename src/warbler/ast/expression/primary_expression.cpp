@@ -10,107 +10,128 @@
 
 namespace warbler
 {
-void expression_free(struct Expression *expression);
+	PrimaryExpression::PrimaryExpression(std::vector<Prefix>&& prefixes,
+		std::vector<Postfix>&& postfixes, Identifier&& identifier) :
+	_prefixes(prefixes),
+	_postfixes(postfixes),
+	_identifier(identifier),
+	_type(PRIMARY_IDENTIFIER)
+	{}
 
-void primary_expression_init(PrimaryExpression *self)
-{
-	assert(self);
+	PrimaryExpression::PrimaryExpression(std::vector<Prefix>&& prefixes,
+		std::vector<Postfix>&& postfixes, Constant&& constant) :
+	_prefixes(prefixes),
+	_postfixes(postfixes),
+	_constant(constant),
+	_type(PRIMARY_CONSTANT)
+	{}
 
-	prefix_list_init(&self->prefixes);
-	postfix_list_init(&self->postfixes);
-
-	self->expression = NULL;
-	self->type = PRIMARY_EXPRESSION;
-}
-
-void primary_expression_free(PrimaryExpression *self)
-{
-	if (!self)
-		return;
-
-	prefix_list_free(&self->prefixes);
-	postfix_list_free(&self->postfixes);
-
-	switch (self->type)
-	{
-		case PRIMARY_IDENTIFIER:
-			identifier_free(&self->identifier);
-			break;
-
-		case PRIMARY_CONSTANT:
-			constant_free(&self->constant);
-			break;
-
-		case PRIMARY_EXPRESSION:
-			expression_free(self->expression);
-			
-			free(self->expression);
-			break;
-	}
-}
-
-Error primary_expression_parse(PrimaryExpression *self, TokenIterator& iter)
-{
-	assert(self != NULL);
+	PrimaryExpression::PrimaryExpression(std::vector<Prefix>&& prefixes,
+		std::vector<Postfix>&& postfixes, Expression *expression) :
+	_prefixes(prefixes),
+	_postfixes(postfixes),
+	_expression(expression),
+	_type(PRIMARY_EXPRESSION)
+	{}
 	
-
-	primary_expression_init(self);
-
-	try(prefix_list_parse(&self->prefixes, iter));
-
-	switch (iter->type)
+	PrimaryExpression::~PrimaryExpression()
 	{
-		case TOKEN_IDENTIFIER:
-			self->type = PRIMARY_IDENTIFIER;
-			try(identifier_parse(&self->identifier, iter));
-			break;
-
-		case TOKEN_LPAREN:
-			self->type = PRIMARY_EXPRESSION;
-			++iter;
-			self->expression = new Expression();
-
-			if (!self->expression)
-				return ERROR_MEMORY;
-
-			try(expression_parse(self->expression, iter));
-			break;
-
-		default:
-			self->type = PRIMARY_CONSTANT;
-			try(constant_parse(&self->constant, iter));
-			break;
+		if (_type == PRIMARY_IDENTIFIER)
+		{
+			_identifier.~Identifier();
+		}
+		else if (_type == PRIMARY_CONSTANT)
+		{
+			_constant.~Constant();
+		}
+		else // PRIMARY_EXPRESSION
+		{
+			delete _expression;
+		}
 	}
 
-	try(postfix_list_parse(&self->postfixes, iter));
-
-	return ERROR_NONE;
-}
-
-void primary_expression_print_tree(PrimaryExpression *self, unsigned depth)
-{
-	assert(self);
-
-	if (self->prefixes.count > 0)
-	 	depth += 1;
-
-	prefix_list_print_tree(&self->prefixes, depth - 1);
-
-	switch (self->type)
+	Result<PrimaryExpression> PrimaryExpression::parse(TokenIterator& iter)
 	{
-		case PRIMARY_IDENTIFIER:
-			identifier_print_tree(&self->identifier, depth);
-			break;
+		auto prefixes = PrimaryExpression::parse_list(iter);
 
-		case PRIMARY_CONSTANT:
-			constant_print_tree(&self->constant, depth);
-			break;
+		if (prefixes.has_error())
+			return prefixes.error();
 
-		case PRIMARY_EXPRESSION:
-			expression_print_tree(self->expression, depth);
-			break;
+		if (iter->type() == TOKEN_IDENTIFIER)
+		{
+			auto identifier = Identifier::parse(iter);
+
+			if (identifier.has_error())
+				return identifier.error();
+
+			auto postfixes = Postfix::parse_list(iter);
+
+			if (postfixes.has_error())
+				return postfixes.error();
+
+			return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), identifier.unwrap());
+		}
+		else if (iter->type() == TOKEN_LPAREN)
+		{
+			iter += 1;
+
+			auto expression = Expression::parse(iter);
+
+			if (expression.has_error())
+				return expression.error();
+
+			if (iter->type() != TOKEN_RPAREN)
+			{
+				errortf(*iter, "expected ')' after expression but got: %t", &(*iter));
+				return ERROR_ARGUMENT;
+			}
+
+			iter += 1;
+			auto postfixes = Postfix::parse_list(iter);
+
+			if (postfixes.has_error())
+				return postfixes.error();
+
+			return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), new Expression(expression.unwrap()));
+		}
+		
+		auto constant = Constant::parse(iter);
+
+		if (constant.has_error())
+			return constant.error();
+
+		auto postfixes = Postfix::parse_list(iter);
+
+		if (postfixes.has_error())
+			return postfixes.error();
+
+		return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), constant.unwrap());
 	}
 
-	postfix_list_print_tree(&self->postfixes, depth + 1);
-}
+	void PrimaryExpression::print_tree(u32 depth)
+	{
+		if (_prefixes.size() > 0)
+			depth += 1;
+
+		for (const auto& prefix : _prefixes)
+			prefix.print_tree(depth - 1);
+
+		switch (_type)
+		{
+			case PRIMARY_IDENTIFIER:
+				_identifier.print_tree(depth);
+				break;
+
+			case PRIMARY_CONSTANT:
+				_constant.print_tree(depth);
+				break;
+
+			case PRIMARY_EXPRESSION:
+				_expression->print_tree(depth);
+				break;
+		}
+
+		for (const auto& postfix : _postfixes)
+			postfix.print_tree(depth + 1);
+	}
 }
