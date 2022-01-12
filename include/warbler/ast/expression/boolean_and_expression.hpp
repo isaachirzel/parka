@@ -3,18 +3,24 @@
 
 // local headers
 #include <warbler/ast/expression/bitwise_or_expression.hpp>
+
 namespace warbler
 {
-typedef struct BooleanAndExpression
-{
-	BitwiseOrExpression lhs;
-	BitwiseOrExpression *rhs;
-	size_t rhs_count;
-} BooleanAndExpression;
+	class BooleanAndExpression
+	{
+	private:
 
-void boolean_and_expression_init(BooleanAndExpression *out);
-void boolean_and_expression_free(BooleanAndExpression *out);
-Error boolean_and_expression_parse(BooleanAndExpression *out, TokenIterator& iter);
-void boolean_and_expression_print_tree(BooleanAndExpression *self, unsigned depth);
+		BitwiseOrExpression _lhs;
+		std::vector<BitwiseOrExpression> _rhs;
+
+	public:
+
+		BooleanAndExpression(BitwiseOrExpression&& lhs, std::vector<BitwiseOrExpression>&& rhs);
+
+		static Result<BooleanAndExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

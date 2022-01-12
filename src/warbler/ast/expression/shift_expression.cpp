@@ -9,109 +9,72 @@
 
 namespace warbler
 {
-void shift_expression_init(ShiftExpression *self)
-{
-	assert(self);
+	ShiftExpression::ShiftExpression(AdditiveExpression&& lhs, std::vector<ShiftRhs>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	additive_expression_init(&self->lhs);
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void shift_expression_free(ShiftExpression *self)
-{
-	if (!self)
-		return;
-
-	additive_expression_free(&self->lhs);
-	
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		additive_expression_free(&self->rhs[i].expr);
-
-	free(self->rhs);
-}
-
-static inline ShiftRhs *push_shift_rhs(ShiftExpression *self, ShiftType type)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(ShiftRhs);
-	ShiftRhs *tmp = (ShiftRhs*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	ShiftRhs *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	additive_expression_init(&back->expr);
-	back->type = type;
-
-	return back;
-}
-
-Error shift_expression_parse(ShiftExpression *self, TokenIterator& iter)
-{
-	assert(self != NULL);
-	
-
-	shift_expression_init(self);
-	try(additive_expression_parse(&self->lhs, iter));
-
-	while (true)
+	Result<ShiftExpression> ShiftExpression::parse(TokenIterator& iter)
 	{
-		bool should_break = false;
-		ShiftType type;
+		auto lhs = AdditiveExpression::parse(iter);
 
-		switch (iter->type)
+		if (lhs.has_error())
+			return lhs.error();
+
+		std::vector<ShiftRhs> rhs;
+
+		while (true)
 		{
-			case TOKEN_LSHIFT:
-				type = SHIFT_LEFT;
-				break;
+			bool should_break = false;
+			ShiftType type;
 
-			case TOKEN_RSHIFT:
-				type = SHIFT_RIGHT;
-				break;
+			switch (iter->type())
+			{
+				case TOKEN_LSHIFT:
+					type = SHIFT_LEFT;
+					break;
 
-			default:
-				should_break = true;
+				case TOKEN_RSHIFT:
+					type = SHIFT_RIGHT;
+					break;
+
+				default:
+					should_break = true;
+					break;
+			}
+
+			if (should_break)
 				break;
+			
+			iter += 1;
+
+			auto res = AdditiveExpression::parse(iter);
+
+			if (res.has_error())
+				return res.error();
+
+			rhs.emplace_back(ShiftRhs { res.unwrap(), type });
 		}
-
-		if (should_break)
-			break;
-
-		ShiftRhs *back = push_shift_rhs(self, type);
-
-		if (!back)
-			return ERROR_MEMORY;
 		
-		++iter;
-
-		try(additive_expression_parse(&back->expr, iter));
+		return ShiftExpression(lhs.unwrap(), std::move(rhs));
 	}
-	
-	return ERROR_NONE;
-}
 
-void shift_expression_print_tree(ShiftExpression *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	additive_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void ShiftExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		if (self->rhs[i].type == SHIFT_LEFT)
-			puts("<<");
-		else
-			puts(">>");
+		_lhs.print_tree(depth);
 
-		additive_expression_print_tree(&self->rhs[i].expr, depth);
+		for (const auto& rhs : _rhs)
+		{
+			const char *symbol = rhs.type == SHIFT_LEFT
+				? "<<"
+				: ">>";
+
+			print_tree_branch_symbol(symbol, depth - 1);
+
+			rhs.expr.print_tree(depth);
+		}
 	}
-}
 }

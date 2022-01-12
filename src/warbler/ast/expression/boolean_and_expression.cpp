@@ -3,88 +3,48 @@
 // local headers
 #include <warbler/print.hpp>
 
-// standard headers
-#include <cstdlib>
-#include <cassert>
-
 namespace warbler
 {
-void boolean_and_expression_init(BooleanAndExpression *self)
-{
-	assert(self != NULL);
+	BooleanAndExpression::BooleanAndExpression(BitwiseOrExpression&& lhs, std::vector<BitwiseOrExpression>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	bitwise_or_expression_init(&self->lhs);
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void boolean_and_expression_free(BooleanAndExpression *self)
-{
-	if (!self)
-		return;
-
-	bitwise_or_expression_free(&self->lhs);
-	
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		bitwise_or_expression_free(self->rhs + i);
-
-	free(self->rhs);
-}
-
-static inline BitwiseOrExpression *push_bitwise_or_expression(BooleanAndExpression *self)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(BitwiseOrExpression);
-	BitwiseOrExpression *tmp = (BitwiseOrExpression*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	BitwiseOrExpression *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	bitwise_or_expression_init(back);
-
-	return back;
-}
-
-Error boolean_and_expression_parse(BooleanAndExpression *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	boolean_and_expression_init(self);
-	try(bitwise_or_expression_parse(&self->lhs, iter));
-
-	while (iter->type == TOKEN_BOOLEAN_AND)
+	Result<BooleanAndExpression> BooleanAndExpression::parse(TokenIterator& iter)
 	{
-		++iter;
-		BitwiseOrExpression *back = push_bitwise_or_expression(self);
+		auto lhs = BitwiseOrExpression::parse(iter);
 
-		if (!back)
-			return ERROR_MEMORY;
+		if (lhs.has_error())
+			return lhs.error();
 
-		try(bitwise_or_expression_parse(back, iter));
+		std::vector<BitwiseOrExpression> rhs;
+
+		while (iter->type() == TOKEN_BOOLEAN_AND)
+		{
+			iter += 1;
+
+			auto res = BitwiseOrExpression::parse(iter);
+
+			if (res.has_error())
+				return res.error();
+
+			rhs.emplace_back(res.unwrap());
+		}
+
+		return BooleanAndExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	return ERROR_NONE;
-}
-
-void boolean_and_expression_print_tree(BooleanAndExpression *self, unsigned depth)
-{
-	assert(self);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	bitwise_or_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void BooleanAndExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
-		puts("&&");
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		bitwise_or_expression_print_tree(self->rhs + i, depth);
+		_lhs.print_tree(depth);
+
+		for (const auto& rhs : _rhs)
+		{
+			print_tree_branch_symbol("&&", depth - 1);
+			rhs.print_tree(depth);
+		}
 	}
-}
 }

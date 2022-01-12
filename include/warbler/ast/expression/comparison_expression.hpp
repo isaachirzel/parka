@@ -3,32 +3,39 @@
 
 // local headers
 #include <warbler/ast/expression/shift_expression.hpp>
+
 namespace warbler
 {
-typedef enum ComparisonType
-{
-	COMPARISON_GREATER,
-	COMPARISON_LESS,
-	COMPARISON_GREATER_EQUAL,
-	COMPARISON_LESS_EQUAL
-} ComparisonType;
+	enum ComparisonType
+	{
+		COMPARISON_GREATER,
+		COMPARISON_LESS,
+		COMPARISON_GREATER_EQUAL,
+		COMPARISON_LESS_EQUAL
+	};
 
-typedef struct ComparisonRhs
-{
-	ShiftExpression expr;
-	ComparisonType type;
-} ComparisonRhs;
+	struct ComparisonRhs
+	{
+		ShiftExpression expr;
+		ComparisonType type;
+	};
 
-typedef struct ComparisonExpression
-{
-	ShiftExpression lhs;
-	ComparisonRhs *rhs;
-	size_t rhs_count;
-} ComparisonExpression;
+	class ComparisonExpression
+	{
+	private:
 
-void comparison_expression_init(ComparisonExpression *self);
-void comparison_expression_free(ComparisonExpression *self);
-Error comparison_expression_parse(ComparisonExpression *self, TokenIterator& iter);
-void comparison_expression_print_tree(ComparisonExpression *self, unsigned depth);
+		ShiftExpression _lhs;
+		std::vector<ComparisonRhs> _rhs;
+
+	public:
+
+		ComparisonExpression(ShiftExpression&& lhs, std::vector<ComparisonRhs>&& rhs);
+
+		static Result<ComparisonExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
+
 }
+
 #endif

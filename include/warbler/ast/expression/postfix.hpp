@@ -4,42 +4,45 @@
 // local headers
 #include <warbler/ast/argument.hpp>
 #include <warbler/ast/identifier.hpp>
+
 namespace warbler
 {
-struct Expression;
+	class Expression;
 
-typedef enum PostfixType
-{
-	POSTFIX_INDEX,
-	POSTFIX_CALL,
-	POSTFIX_MEMBER
-} PostfixType;
-
-typedef struct Postfix
-{
-	union
+	enum PostfixType
 	{
-		struct Expression *expression;
-		ArgumentList arguments;
-		Identifier identifier;
+		POSTFIX_INDEX,
+		POSTFIX_FUNCTION_CALL,
+		POSTFIX_MEMBER
 	};
-	PostfixType type;
-} Postfix;
 
-typedef struct PostfixList
-{
-	Postfix *data;
-	size_t count;
-} PostfixList;
+	class Postfix
+	{
+	private:
 
-void postfix_init(Postfix *self);
-void postfix_free(Postfix *self);
-Error postfix_parse(Postfix *self, TokenIterator& iter);
-void postfix_print_tree(Postfix *self, unsigned depth);
+		union
+		{
+			Expression *_index;
+			std::vector<Argument> _arguments;
+			Identifier _member;
+		};
 
-void postfix_list_init(PostfixList *self);
-void postfix_list_free(PostfixList *self);
-Error postfix_list_parse(PostfixList *self, TokenIterator& iter);
-void postfix_list_print_tree(PostfixList *self, unsigned depth);
+		PostfixType _type;
+
+	public:
+
+		Postfix(Expression *index);
+		Postfix(std::vector<Argument>&& arguments);
+		Postfix(Identifier&& member);
+		Postfix(Postfix&& other);
+		Postfix(const Postfix& other);
+		~Postfix();
+
+		static Result<Postfix> parse(TokenIterator& iter);
+		static Result<std::vector<Postfix>> parse_list(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

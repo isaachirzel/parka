@@ -7,29 +7,46 @@
 #include <warbler/primitive.hpp>
 namespace warbler
 {
-typedef enum ConstantType
-{
-	CONSTANT_CHAR,
-	CONSTANT_STRING,
-	CONSTANT_INTEGER,
-	CONSTANT_FLOAT
-} ConstantType;
-
-typedef struct Constant
-{
-	union
+	enum ConstantType
 	{
-		i64 integer;
-		f64 float64;
-		u32 character;
-		char *string;
+		CONSTANT_CHARACTER,
+		CONSTANT_STRING,
+		CONSTANT_INTEGER,
+		CONSTANT_FLOAT, 
+		CONSTANT_BOOLEAN
 	};
-	ConstantType type;
-} Constant;
 
-void constant_init(Constant *self);
-void constant_free(Constant *self);
-Error constant_parse(Constant *self, TokenIterator& iter);
-void constant_print_tree(Constant *self, unsigned depth);
+	class Constant
+	{
+	private:
+
+		union
+		{
+			String _string;
+			i64 _integer;
+			f64 _floating;
+			u32 _character;
+			bool _boolean;
+		};
+
+		ConstantType _type;
+
+	public:
+
+		Constant(String&& string);
+		Constant(i64 integer);
+		Constant(f64 floatingpt);
+		Constant(u32 character);
+		Constant(bool boolean);
+		Constant(Constant&& other);
+		Constant(const Constant& other);
+		~Constant();
+
+		static Result<Constant> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+
+		Constant& operator=(Constant&& other);
+	};
 }
 #endif

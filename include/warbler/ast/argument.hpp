@@ -4,10 +4,11 @@
 // standard headers
 #include <warbler/result.hpp>
 #include <warbler/token.hpp>
-#include <warbler/ast/expression/expression.hpp>
 
 namespace warbler
 {
+	class Expression;
+	
 	class Argument
 	{
 	private:
@@ -22,7 +23,7 @@ namespace warbler
 		static Result<Argument> parse(TokenIterator& iter);
 		static Result<std::vector<Argument>> parse_list(TokenIterator& iter);
 
-		void print_tree(u32 depth = 0);
+		void print_tree(u32 depth = 0) const;
 	};
 }
 

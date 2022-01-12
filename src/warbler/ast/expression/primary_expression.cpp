@@ -33,6 +33,36 @@ namespace warbler
 	_expression(expression),
 	_type(PRIMARY_EXPRESSION)
 	{}
+
+	PrimaryExpression::PrimaryExpression(PrimaryExpression&& other) :
+	_prefixes(std::move(other._prefixes)),
+	_postfixes(std::move(other._postfixes)),
+	_type(other._type)
+	{
+		switch (_type)
+		{
+			case PRIMARY_IDENTIFIER:
+				_identifier = std::move(other._identifier);
+				break;
+
+			case PRIMARY_CONSTANT:
+				_constant = std::move(other._constant);
+				break;
+
+			case PRIMARY_EXPRESSION:
+				_expression = other._expression;
+				break;
+		}
+
+		other._expression = nullptr;
+		other._type = PRIMARY_EXPRESSION;
+	}
+
+	PrimaryExpression::PrimaryExpression(const PrimaryExpression& other) :
+	_prefixes(other._prefixes),
+	_postfixes(other._postfixes),
+	_type(other._type)
+	{}
 	
 	PrimaryExpression::~PrimaryExpression()
 	{
@@ -52,7 +82,7 @@ namespace warbler
 
 	Result<PrimaryExpression> PrimaryExpression::parse(TokenIterator& iter)
 	{
-		auto prefixes = PrimaryExpression::parse_list(iter);
+		auto prefixes = Prefix::parse_list(iter);
 
 		if (prefixes.has_error())
 			return prefixes.error();
@@ -108,7 +138,7 @@ namespace warbler
 		return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), constant.unwrap());
 	}
 
-	void PrimaryExpression::print_tree(u32 depth)
+	void PrimaryExpression::print_tree(u32 depth) const
 	{
 		if (_prefixes.size() > 0)
 			depth += 1;

@@ -1,19 +1,27 @@
 #ifndef WARBLER_AST_LABEL_HPP
 #define WARBLER_AST_LABEL_HPP
 
+// local headers
 #include <warbler/result.hpp>
 #include <warbler/token.hpp>
-#include <warbler/ast/identifier.hpp>
+#include <warbler/primitive.hpp>
+
 namespace warbler
 {
-typedef struct Label
-{
-	Identifier identifier;
-} Label;
+	class Label
+	{
+	private:
 
-void label_init(Label *self);
-void label_free(Label *self);
-Error label_parse(Label *self, TokenIterator& iter);
-void label_print_tree(Label *self, unsigned depth);
+		String _identifier;
+
+	public:
+
+		Label(String&& identifier);
+
+		static Result<Label> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

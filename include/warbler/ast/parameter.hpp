@@ -6,28 +6,25 @@
 #include <warbler/token.hpp>
 #include <warbler/ast/typename.hpp>
 #include <warbler/ast/identifier.hpp>
+
 namespace warbler
 {
-typedef struct Parameter
-{
-	Identifier name;
-	Typename type;
-} Parameter;
+	class Parameter
+	{
+	private:
 
-typedef struct ParameterList
-{
-	Parameter *data;
-	size_t count;
-} ParameterList;
+		Identifier _name;
+		Typename _type;
 
-void parameter_init(Parameter *self);
-void parameter_free(Parameter *self);
-Error parameter_parse(Parameter *self, TokenIterator& iter);
-void parameter_print_tree(Parameter *self, unsigned depth);
+	public:
 
-void parameter_list_init(ParameterList *self);
-void parameter_list_free(ParameterList *self);
-Error parameter_list_parse(ParameterList *self, TokenIterator& iter);
-void parameter_list_print_tree(ParameterList *self, unsigned depth);
+		Parameter(Identifier&& name, Typename&& type);
+
+		static Result<Parameter> parse(TokenIterator& iter);
+		static Result<std::vector<Parameter>> parse_list(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

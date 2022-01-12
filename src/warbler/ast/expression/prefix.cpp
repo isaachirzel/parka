@@ -9,127 +9,74 @@
 
 namespace warbler
 {
-void prefix_list_init(PrefixList *self)
-{
-	assert(self);
 
-	*self = (PrefixList)
+	Prefix::Prefix(PrefixType type) :
+	_type(type)
+	{}
+
+	static Result<Prefix> parse(TokenIterator& iter)
 	{
-		.data = NULL,
-		.count = 0
-	};
-}
+		switch (iter->type())
+		{
+			case TOKEN_INCREMENT:
+				iter += 1;
+				return Prefix(PREFIX_INCREMENT);
 
-void prefix_list_free(PrefixList *self)
-{
-	if (!self)
-		return;
+			case TOKEN_DECREMENT:
+				iter += 1;
+				return Prefix(PREFIX_DECREMENT);
 
-	free(self->data);
-}
+			case TOKEN_AMPERSAND:
+				iter += 1;
+				return Prefix(PREFIX_REFERENCE);
 
-Error prefix_parse(Prefix *self, TokenIterator& iter)
-{
-	assert(self);
-	
+			case TOKEN_ASTERISK:
+				iter += 1;
+				return Prefix(PREFIX_DEREFERENCE);
 
-	switch (iter->type)
-	{
-		case TOKEN_INCREMENT:
-			self->type = PREFIX_INCREMENT;
-			break;
-
-		case TOKEN_DECREMENT:
-			self->type = PREFIX_DECREMENT;
-			break;
-
-		case TOKEN_AMPERSAND:
-			self->type = PREFIX_REFERENCE;
-			break;
-
-		case TOKEN_ASTERISK:
-			self->type = PREFIX_DEREFERENCE;
-			break;
-
-		default:
-			return ERROR_ARGUMENT;
+			default:
+				return ERROR_NOT_FOUND;
+		}
 	}
 
-	++iter;
-
-	return ERROR_NONE;
-}
-
-static inline Prefix *prefix_list_push(PrefixList *self)
-{
-	size_t new_size = (self->count + 1) * sizeof(Prefix);
-	Prefix *tmp = (Prefix*)realloc(self->data, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	Prefix *back = tmp + self->count;
-
-	self->data = tmp;
-	++self->count;
-
-	return back;
-}
-
-Error prefix_list_parse(PrefixList *self, TokenIterator& iter)
-{
-	assert(self != NULL);
-	
-
-	prefix_list_init(self);
-
-	while (true)
+	static Result<std::vector<Prefix>> parse_list(TokenIterator& iter)
 	{
-		Prefix prefix;
+		std::vector<Prefix> out;
 
-		if (prefix_parse(&prefix, iter) != ERROR_NONE)
-			break;
+		while (true)
+		{
+			auto res = Prefix::parse(iter);
 
-		Prefix *back = prefix_list_push(self);
+			if (res.has_error())
+				break;
+			
+			out.emplace_back(res.unwrap());
+		}
 
-		if (!back)
-			return ERROR_MEMORY;
-
-		*back = prefix;
+		return out;
 	}
 
-	return ERROR_NONE;
-}
-
-void prefix_print_tree(Prefix *self, unsigned depth)
-{
-	print_branch(depth);
-
-	switch (self->type)
+	void Prefix::print_tree(u32 depth) const
 	{
-		case PREFIX_INCREMENT:
-			puts("++");
-			break;
+		print_branch(depth);
 
-		case PREFIX_DECREMENT:
-			puts("--");
-			break;
+		switch (_type)
+		{
+			case PREFIX_INCREMENT:
+				puts("++");
+				break;
 
-		case PREFIX_REFERENCE:
-			puts("&");
-			break;
+			case PREFIX_DECREMENT:
+				puts("--");
+				break;
 
-		case PREFIX_DEREFERENCE:
-			puts("*");
-			break;
+			case PREFIX_REFERENCE:
+				puts("&");
+				break;
+
+			case PREFIX_DEREFERENCE:
+				puts("*");
+				break;
+		}
 	}
-}
-
-void prefix_list_print_tree(PrefixList *self, unsigned depth)
-{
-	assert(self);
-
-	for (size_t i = 0; i < self->count; ++i)
-		prefix_print_tree(self->data + i, depth);
-}
 }

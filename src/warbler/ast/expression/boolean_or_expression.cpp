@@ -3,88 +3,48 @@
 // local headers
 #include <warbler/print.hpp>
 
-// standard headers
-#include <cstdlib>
-#include <cassert>
-
 namespace warbler
 {
-void boolean_or_expression_init(BooleanOrExpression *self)
-{
-	assert(self);
+	BooleanOrExpression::BooleanOrExpression(BooleanAndExpression&& lhs, std::vector<BooleanAndExpression>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	boolean_and_expression_init(&self->lhs);
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void boolean_or_expression_free(BooleanOrExpression *self)
-{
-	if (self == NULL)
-		return;
-
-	boolean_and_expression_free(&self->lhs);
-	
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		boolean_and_expression_free(self->rhs + i);
-
-	free(self->rhs);
-}
-
-static inline BooleanAndExpression *push_boolean_and_expression(BooleanOrExpression *self)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(BooleanAndExpression);
-	BooleanAndExpression *tmp = (BooleanAndExpression*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	BooleanAndExpression *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	boolean_and_expression_init(back);
-
-	return back;
-}
-
-Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator& iter)
-{
-	assert(self != NULL);
-	
-
-	boolean_or_expression_init(self);
-	try(boolean_and_expression_parse(&self->lhs, iter));
-
-	while (iter->type == TOKEN_BOOLEAN_OR)
+	static Result<BooleanOrExpression> parse(TokenIterator& iter)
 	{
-		++iter;
-		BooleanAndExpression *back = push_boolean_and_expression(self);
+		auto lhs = BooleanAndExpression::parse(iter);
 
-		if (!back)
-			return ERROR_MEMORY;
+		if (lhs.has_error())
+			return lhs.error();
 
-		try(boolean_and_expression_parse(back, iter));
+		std::vector<BooleanAndExpression> rhs;
+
+		while (iter->type() == TOKEN_BOOLEAN_OR)
+		{
+			iter += 1;
+
+			auto res = BooleanAndExpression::parse(iter);
+
+			if (res.has_error())
+				return res.error();
+
+			rhs.emplace_back(res.unwrap());
+		}
+
+		return ERROR_NONE;
 	}
 
-	return ERROR_NONE;
-}
-
-void boolean_or_expression_print_tree(BooleanOrExpression *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	boolean_and_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void BooleanOrExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
-		puts("||");
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		boolean_and_expression_print_tree(self->rhs + i, depth);
+		_lhs.print_tree(depth);
+
+		for (const auto& rhs : _rhs)
+		{
+			print_tree_branch_symbol("||", depth - 1);
+			rhs.print_tree(depth);
+		}
 	}
-}
 }

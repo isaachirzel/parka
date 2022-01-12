@@ -3,129 +3,89 @@
 // local includes
 #include <warbler/print.hpp>
 
-// standard headers
-#include <cstdlib>
-#include <cassert>
-
 namespace warbler
 {
-void multiplicative_expression_init(MultiplicativeExpression *self)
-{
-	assert(self);
+	MultiplicativeExpression::MultiplicativeExpression(PrimaryExpression&& lhs, std::vector<MultiplicativeRhs>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	primary_expression_init(&self->lhs);
-	
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void multiplicative_expression_free(MultiplicativeExpression *self)
-{
-	if (!self)
-		return;
-
-	primary_expression_free(&self->lhs);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		primary_expression_free(&self->rhs[i].expr);
-
-	free(self->rhs);
-}
-
-static inline MultiplicativeRhs *multiplicative_expression_push(MultiplicativeExpression *self)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(MultiplicativeRhs);
-	MultiplicativeRhs *tmp = (MultiplicativeRhs*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	MultiplicativeRhs *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	return back;
-}
-
-Error multiplicative_expression_parse(MultiplicativeExpression *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	multiplicative_expression_init(self);
-	try(primary_expression_parse(&self->lhs, iter));
-
-	while (true)
+	Result<MultiplicativeExpression> MultiplicativeExpression::parse(TokenIterator& iter)
 	{
-		bool should_break = false;
-		MultiplicativeType type;
+		auto lhs = PrimaryExpression::parse(iter);
 
-		switch (iter->type)
+		if (lhs.has_error())
+			return lhs.error();
+
+		std::vector<MultiplicativeRhs> rhs;
+
+		while (true)
 		{
-			case TOKEN_MODULUS:
-				type = MULTIPLICATIVE_MODULUS;
+			bool should_break = false;
+			MultiplicativeType type;
+
+			switch (iter->type())
+			{
+				case TOKEN_MODULUS:
+					type = MULTIPLICATIVE_MODULUS;
+					break;
+
+				case TOKEN_ASTERISK:
+					type = MULTIPLICATIVE_MULTIPLY;
+					break;
+
+				case TOKEN_SLASH:
+					type = MULTIPLICATIVE_DIVIDE;
+					break;
+
+				default:
+					should_break = true;
+					break;
+			}
+
+			if (should_break)
 				break;
 
-			case TOKEN_ASTERISK:
-				type = MULTIPLICATIVE_MULTIPLY;
-				break;
+			iter += 1;
 
-			case TOKEN_SLASH:
-				type = MULTIPLICATIVE_DIVIDE;
-				break;
+			auto res = PrimaryExpression::parse(iter);
 
-			default:
-				should_break = true;
-				break;
+			if (res.has_error())
+				return res.error();
+
+			rhs.emplace_back(MultiplicativeRhs { res.unwrap(), type });
 		}
 
-		if (should_break)
-			break;
-
-		MultiplicativeRhs *back = multiplicative_expression_push(self);
-
-		if (!back)
-			return ERROR_MEMORY;
-
-		++iter;
-
-		back->type = type;
-
-		try(primary_expression_parse(&back->expr, iter));
+		return MultiplicativeExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	return ERROR_NONE;
-}
-
-void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsigned depth)
-{
-	assert(self);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	primary_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void MultiplicativeExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		switch (self->rhs[i].type)
+		_lhs.print_tree(depth);
+
+		for (const auto& rhs : _rhs)
 		{
-			case MULTIPLICATIVE_MULTIPLY:
-				puts("*");
-				break;
+			print_branch(depth - 1);
 
-			case MULTIPLICATIVE_DIVIDE:
-				puts("/");
-				break;
+			switch (rhs.type)
+			{
+				case MULTIPLICATIVE_MULTIPLY:
+					puts("*");
+					break;
 
-			case MULTIPLICATIVE_MODULUS:
-				puts("%");
-				break;
+				case MULTIPLICATIVE_DIVIDE:
+					puts("/");
+					break;
+
+				case MULTIPLICATIVE_MODULUS:
+					puts("%");
+					break;
+			}
+
+			rhs.expr.print_tree(depth);
 		}
-
-		primary_expression_print_tree(&self->rhs[i].expr, depth);
 	}
-}
 }

@@ -19,7 +19,7 @@ namespace warbler
 		return Expression(res.unwrap());
 	}
 
-	void Expression::print_tree(u32 depth)
+	void Expression::print_tree(u32 depth) const
 	{
 		_assignment.print_tree(depth);
 	}

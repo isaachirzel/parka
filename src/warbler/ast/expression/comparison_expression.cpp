@@ -9,132 +9,94 @@
 
 namespace warbler
 {
-void comparison_expression_init(ComparisonExpression *self)
-{
-	assert(self);
+	ComparisonExpression::ComparisonExpression(ShiftExpression&& lhs, std::vector<ComparisonRhs>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	shift_expression_init(&self->lhs);
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void comparison_expression_free(ComparisonExpression *self)
-{
-	if (!self)
-		return;
-
-	shift_expression_free(&self->lhs);
-	
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		shift_expression_free(&self->rhs[i].expr);
-
-	free(self->rhs);
-}
-
-static inline ComparisonRhs *push_comparison_rhs(ComparisonExpression *self, ComparisonType type)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(ComparisonRhs);
-	ComparisonRhs *tmp = (ComparisonRhs*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	ComparisonRhs *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	shift_expression_init(&back->expr);
-	back->type = type;
-
-	return back;
-}
-
-Error comparison_expression_parse(ComparisonExpression *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	comparison_expression_init(self);
-	try(shift_expression_parse(&self->lhs, iter));
-
-	while (true)
+	Result<ComparisonExpression> ComparisonExpression::parse(TokenIterator& iter)
 	{
-		bool should_break = false;
-		ComparisonType type;
+		auto lhs = ShiftExpression::parse(iter);
 
-		switch (iter->type)
+		if (lhs.has_error())
+			return lhs.error();
+
+		std::vector<ComparisonRhs> rhs;
+
+		while (true)
 		{
-			case TOKEN_GREATER:
-				type = COMPARISON_GREATER;
+			bool should_break = false;
+
+			ComparisonType type;
+			switch (iter->type())
+			{
+				case TOKEN_GREATER:
+					type = COMPARISON_GREATER;
+					break;
+
+				case TOKEN_LESS:
+					type = COMPARISON_LESS;
+					break;
+
+				case TOKEN_GREATER_EQUALS:
+					type = COMPARISON_GREATER_EQUAL;
+					break;
+
+				case TOKEN_LESS_EQUALS:
+					type = COMPARISON_LESS_EQUAL;
+					break;
+
+				default:
+					should_break = true;
+					break;
+			}
+
+			if (should_break)
 				break;
 
-			case TOKEN_LESS:
-				type = COMPARISON_LESS;
-				break;
+			auto res = ShiftExpression::parse(iter);
 
-			case TOKEN_GREATER_EQUALS:
-				type = COMPARISON_GREATER_EQUAL;
-				break;
+			if (res.has_error())
+				return res.error();
 
-			case TOKEN_LESS_EQUALS:
-				type = COMPARISON_LESS_EQUAL;
-				break;
-
-			default:
-				should_break = true;
-				break;
+			rhs.emplace_back(ComparisonRhs { res.unwrap(), type });
 		}
 
-		if (should_break)
-			break;
-
-		ComparisonRhs *back = push_comparison_rhs(self, type);
-
-		if (!back)
-			return ERROR_MEMORY;
-		
-		++iter;
-
-		try(shift_expression_parse(&back->expr, iter));
+		return ComparisonExpression(lhs.unwrap(), std::move(rhs));
 	}
-	
-	return ERROR_NONE;
-}
 
-void comparison_expression_print_tree(ComparisonExpression *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	shift_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void ComparisonExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		switch (self->rhs[i].type)
+		_lhs.print_tree(depth);
+
+		for (const auto& rhs : _rhs)
 		{
-			case COMPARISON_GREATER:
-				puts(">");
-				break;
+			print_branch(depth - 1);
 
-			case COMPARISON_LESS:
-				puts("<");
-				break;
+			switch (rhs.type)
+			{
+				case COMPARISON_GREATER:
+					puts(">");
+					break;
 
-			case COMPARISON_GREATER_EQUAL:
-				puts(">=");
-				break;
+				case COMPARISON_LESS:
+					puts("<");
+					break;
 
-			case COMPARISON_LESS_EQUAL:
-				puts("<=");
-				break;
+				case COMPARISON_GREATER_EQUAL:
+					puts(">=");
+					break;
 
+				case COMPARISON_LESS_EQUAL:
+					puts("<=");
+					break;
+
+			}
+
+			rhs.expr.print_tree(depth);
 		}
-
-		shift_expression_print_tree(&self->rhs[i].expr, depth);
 	}
-}
 }

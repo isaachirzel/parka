@@ -8,124 +8,81 @@
 
 namespace warbler
 {
-void parameter_init(Parameter *self)
-{
-	assert(self);
+	Parameter::Parameter(Identifier&& name, Typename&& type) :
+	_name(name),
+	_type(type)
+	{}
 
-	identifier_init(&self->name);
-	typename_init(&self->type);
-}
-
-void parameter_free(Parameter *self)
-{
-	if (!self)
-		return;
-
-	identifier_free(&self->name);
-	typename_free(&self->type);
-}
-
-Error parameter_parse(Parameter *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	parameter_init(self);
-	try(identifier_parse(&self->name, iter));
-
-	if (iter->type != TOKEN_COLON)
-		return ERROR_ARGUMENT;
-
-	++iter;
-
-	try(typename_parse(&self->type, iter));
-
-	return ERROR_NONE;
-}
-
-void parameter_list_init(ParameterList *self)
-{
-	*self = (ParameterList)
+	static Result<Parameter> parse(TokenIterator& iter)
 	{
-		.data = NULL,
-		.count = 0
-	};
-}
+		auto name = Identifier::parse(iter);
 
-void parameter_list_free(ParameterList *self)
-{
-	for (size_t i = 0; i < self->count; ++i)
-		parameter_free(self->data + i);
+		if (name.has_error())
+			return name.error();
 
-	free(self->data);
-}
-
-static inline Error push_parameter(ParameterList *self, Parameter *parameter)
-{
-	size_t new_size = (self->count + 1) * sizeof(Parameter);
-	Parameter *tmp = (Parameter*)realloc(self->data, new_size);
-
-	if (!tmp)
-		return ERROR_MEMORY;
-
-	tmp[self->count] = *parameter;
-
-	self->data = tmp;
-	++self->count;
-
-	return ERROR_NONE;
-}
-
-Error parameter_list_parse(ParameterList *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	parameter_list_init(self);
-
-	if (iter->type != TOKEN_LPAREN)
-		return ERROR_ARGUMENT;
-
-	if (iter[1].type != TOKEN_RPAREN)
-	{
-		do
+		if (iter->type() != TOKEN_COLON)
 		{
-			++iter;
-
-			Parameter parameter;
-
-			try(parameter_parse(&parameter, iter));
-			try(push_parameter(self, &parameter));
-		}
-		while (iter->type == TOKEN_COMMA);
-
-		if (iter->type != TOKEN_RPAREN)
-		{
-			errortf(*iter, "expected ',' or ')' after parameter but got: %t", iter);
+			errortf(*iter, "type specification is necessary for function parameters: %t", &(*iter));
 			return ERROR_ARGUMENT;
 		}
+
+		iter += 1;
+
+		auto type = Typename::parse(iter);
+
+		if (type.has_error())
+			return type.error();
+
+		return Parameter(name.unwrap(), type.unwrap());
 	}
 
-	++iter;
-
-	return ERROR_NONE;
-}
-
-void parameter_print_tree(Parameter *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	print_branch(depth);
-	printf("%s: %s\n", self->name.text, self->type.text);
-}
-
-void parameter_list_print_tree(ParameterList *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	for (size_t i = 0; i < self->count; ++i)
+	static Result<std::vector<Parameter>> parse_list(TokenIterator& iter)
 	{
-		parameter_print_tree(self->data + i, depth + 1);
+		if (iter->type() != TOKEN_LPAREN)
+		{
+			errortf(*iter, "expected '(' at start of parameter list but got: %t", &(*iter));
+			return ERROR_ARGUMENT;
+		}
+
+		iter += 1;
+
+		std::vector<Parameter> out;
+
+		if (iter->type() != TOKEN_RPAREN)
+		{
+			while(true)
+			{
+				auto res = Parameter::parse(iter);
+
+				if (res.has_error())
+					return res.error();
+
+				out.emplace_back(res.unwrap());
+
+				if (iter->type() == TOKEN_COMMA)
+				{
+					iter += 1;
+					continue;
+				}
+
+				break;
+			}
+
+			if (iter->type() != TOKEN_RPAREN)
+			{
+				errortf(*iter, "expected ',' or ')' after parameter but got: %t", iter);
+				return ERROR_ARGUMENT;
+			}
+		}
+
+		iter += 1;
+
+		return out;
 	}
-}
+
+	void Parameter::print_tree(u32 depth) const
+	{
+		_name.print_tree(depth);
+		_type.print_tree(depth + 1);
+	}
 }

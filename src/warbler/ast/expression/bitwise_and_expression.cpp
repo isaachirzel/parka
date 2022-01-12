@@ -9,82 +9,43 @@
 
 namespace warbler
 {
-void bitwise_and_expression_init(BitwiseAndExpression *self)
-{
-	assert(self);
+	BitwiseAndExpression::BitwiseAndExpression(EqualityExpression&& lhs, std::vector<EqualityExpression>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	equality_expression_init(&self->lhs);
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void bitwise_and_expression_free(BitwiseAndExpression *self)
-{
-	if (!self)
-		return;
-
-	equality_expression_free(&self->lhs);
-	
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		equality_expression_free(self->rhs + i);
-
-	free(self->rhs);
-}
-
-static inline EqualityExpression *equality_expression_push(BitwiseAndExpression *self)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(EqualityExpression);
-	EqualityExpression *tmp = (EqualityExpression*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	EqualityExpression *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	equality_expression_init(back);
-
-	return back;
-}
-
-Error bitwise_and_expression_parse(BitwiseAndExpression *self, TokenIterator& iter)
-{
-	assert(self != NULL);
-	
-
-	bitwise_and_expression_init(self);
-	try(equality_expression_parse(&self->lhs, iter));
-
-	while (iter->type == TOKEN_AMPERSAND)
+	Result<BitwiseAndExpression> BitwiseAndExpression::parse(TokenIterator& iter)
 	{
-		++iter;
-		EqualityExpression *back = equality_expression_push(self);
+		auto lhs = EqualityExpression::parse(iter);
 
-		if (!back)
-			return ERROR_MEMORY;
+		std::vector<EqualityExpression> rhs;
 
-		try(equality_expression_parse(back, iter));
+		while (iter->type() == TOKEN_AMPERSAND)
+		{
+			iter += 1;
+
+			auto res = EqualityExpression::parse(iter);
+			
+			if (res.has_error())
+				return res.error();
+
+			rhs.emplace_back(res.unwrap());
+		}
+
+		return BitwiseAndExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	return ERROR_NONE;
-}
-
-void bitwise_and_expression_print_tree(BitwiseAndExpression *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	equality_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void BitwiseAndExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
-		puts("&");
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		equality_expression_print_tree(self->rhs + i, depth);
+		_lhs.print_tree(depth);
+
+		for (const auto& rhs : _rhs)
+		{
+			print_tree_branch_symbol("|", depth - 1);
+			rhs.print_tree(depth);
+		}
 	}
-}
 }

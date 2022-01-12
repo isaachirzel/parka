@@ -3,18 +3,23 @@
 
 // local headers
 #include <warbler/ast/expression/bitwise_and_expression.hpp>
+
 namespace warbler
 {
-typedef struct BitwiseXorExpression
-{
-	BitwiseAndExpression lhs;
-	BitwiseAndExpression *rhs;
-	size_t rhs_count;
-} BitwiseXorExpression;
+	class BitwiseXorExpression
+	{
+	private:
 
-void bitwise_xor_expression_init(BitwiseXorExpression *self);
-void bitwise_xor_expression_free(BitwiseXorExpression *self);
-Error bitwise_xor_expression_parse(BitwiseXorExpression *self, TokenIterator& iter);
-void bitwise_xor_expression_print_tree(BitwiseXorExpression *self, unsigned depth);
+		BitwiseAndExpression _lhs;
+		std::vector<BitwiseAndExpression> _rhs;
+
+	public:
+
+		BitwiseXorExpression(BitwiseAndExpression&& lhs, std::vector<BitwiseAndExpression>&& rhs);
+
+		static Result<BitwiseXorExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
 #endif

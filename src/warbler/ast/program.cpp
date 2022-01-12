@@ -6,60 +6,30 @@
 
 namespace warbler
 {
-void program_init(Program *self)
-{
-	assert(self != NULL);
+	Program::Program(std::vector<Function>&& functions) :
+	_functions(functions)
+	{}
 
-	self->functions = NULL;
-	self->function_count = 0;
-}
-
-void program_free(Program *self)
-{
-	if (!self)
-		return;
-
-	for (size_t i = 0; i < self->function_count; ++i)
+	Result<Program> Program::parse(TokenIterator& iter)
 	{
-		function_free(self->functions + i);
+		std::vector<Function> functions;
+
+		while (iter->type() == TOKEN_FUNC)
+		{
+			auto function = Function::parse(iter);
+
+			if (function.has_error())
+				return function.error();
+
+			functions.emplace_back(function.unwrap());
+		}
+
+		return Program(std::move(functions));
 	}
 
-	free(self->functions);
-}
-
-static inline Function *program_push(Program *self)
-{
-	size_t new_size = (self->function_count + 1) * sizeof(Function);
-	Function *tmp = (Function*)realloc(self->functions, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	Function *back = tmp + self->function_count++;
-
-	self->functions = tmp;
-	++self->function_count;
-
-	return back;
-}
-
-Error program_parse(Program *self, TokenIterator& iter)
-{
-	assert(self != NULL);
-	
-
-	program_init(self);
-
-	while (iter->type != TOKEN_END_OF_FILE)
-	{		
-		Function *back = program_push(self);
-
-		if (!back)
-			return ERROR_MEMORY;
-
-		try(function_parse(back, iter));
+	void Program::print_tree(u32 depth = 0) const
+	{
+		for (const auto& function : _functions)
+			function.print_tree(depth);
 	}
-
-	return ERROR_NONE;
-}
 }

@@ -5,14 +5,19 @@
 #include <warbler/ast/function.hpp>
 namespace warbler
 {
-typedef struct Program
-{
-	Function *functions;
-	size_t function_count;
-} Program;
+	class Program
+	{
+	private:
 
-void program_init(Program *program);
-void program_free(Program *program);
-Error program_parse(Program *program, TokenIterator& iter);
+		std::vector<Function> _functions;
+
+	public:
+
+		Program(std::vector<Function>&& functions);
+
+		static Result<Program> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
 #endif

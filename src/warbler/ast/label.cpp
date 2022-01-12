@@ -5,43 +5,37 @@
 
 namespace warbler
 {
-void label_init(Label *self)
-{
-	assert(self);
+	Label::Label(String&& identifier) :
+	_identifier(identifier)
+	{}
 
-	identifier_init(&self->identifier);
-}
-
-void label_free(Label *self)
-{
-	if (!self)
-		return;
-		
-	identifier_free(&self->identifier);
-}
-
-Error label_parse(Label *self, TokenIterator& iter)
-{
-	if (iter[0].type != TOKEN_IDENTIFIER || iter[1].type != TOKEN_COLON)
-		return ERROR_ARGUMENT;
-	
-	try(identifier_parse(&self->identifier, iter));
-
-	if (iter->type != TOKEN_COLON)
+	Result<Label> Label::parse(TokenIterator& iter)
 	{
-		errortf(*iter, "expected ':' after label but got: %t", iter);
-		return ERROR_ARGUMENT;
+
+		if (iter->type() != TOKEN_IDENTIFIER)
+		{
+			errortf(*iter, "expected identifier for label but got: %t", &(*iter));
+			return ERROR_ARGUMENT;
+		}
+
+		String identifier = String(iter->text());
+
+		iter += 1;
+
+		if (iter->type() != TOKEN_COLON)
+		{
+			errortf(*iter, "expected ':' after label but got: %t", &(*iter));
+			return ERROR_ARGUMENT;
+		}
+
+		iter += 1;
+
+		return Label(std::move(identifier));
 	}
 
-	++iter;
-	
-	return ERROR_NONE;
-}
-
-void label_print_tree(Label *self, unsigned depth)
-{
-	assert(self);
-
-	identifier_print_tree(&self->identifier, depth);
-}
+	void Label::print_tree(u32 depth) const
+	{
+		print_branch(depth);
+		puts(_identifier.c_str());
+	}
 }

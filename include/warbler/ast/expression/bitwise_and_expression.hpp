@@ -5,16 +5,20 @@
 #include <warbler/ast/expression/equality_expression.hpp>
 namespace warbler
 {
-typedef struct BitwiseAndExpression
-{
-	EqualityExpression lhs;
-	EqualityExpression *rhs;
-	size_t rhs_count;
-} BitwiseAndExpression;
+	class BitwiseAndExpression
+	{
+	private:
 
-void bitwise_and_expression_init(BitwiseAndExpression *out);
-void bitwise_and_expression_free(BitwiseAndExpression *out);
-Error bitwise_and_expression_parse(BitwiseAndExpression *out, TokenIterator& iter);
-void bitwise_and_expression_print_tree(BitwiseAndExpression *self, unsigned depth);
+		EqualityExpression _lhs;
+		std::vector<EqualityExpression> _rhs;
+
+	public:
+
+		BitwiseAndExpression(EqualityExpression&& lhs, std::vector<EqualityExpression>&& rhs);
+
+		static Result<BitwiseAndExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
 #endif

@@ -9,7 +9,7 @@
 
 namespace warbler
 {
-	struct Expression;
+	class Expression;
 
 	enum PrimaryType
 	{
@@ -29,7 +29,7 @@ namespace warbler
 		{
 			Identifier _identifier;
 			Constant _constant;
-			struct Expression *_expression;
+			Expression *_expression;
 		};
 
 		PrimaryType _type;
@@ -39,11 +39,13 @@ namespace warbler
 		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Identifier&& identifier);
 		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Constant&& constant);
 		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Expression *expression);
+		PrimaryExpression(PrimaryExpression&& other);
+		PrimaryExpression(const PrimaryExpression& other);
 		~PrimaryExpression();
 
 		static Result<PrimaryExpression> parse(TokenIterator& iter);
 
-		void print_tree(u32 depth = 0);
+		void print_tree(u32 depth = 0) const;
 	};
 }
 #endif

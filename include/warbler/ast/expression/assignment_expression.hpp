@@ -37,7 +37,7 @@ namespace warbler
 
 		static Result<AssignmentExpression> parse(TokenIterator& iter);
 
-		void print_tree(u32 depth = 0);
+		void print_tree(u32 depth = 0) const;
 	};
 }
 #endif

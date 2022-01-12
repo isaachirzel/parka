@@ -4,7 +4,7 @@
 #include <warbler/print.hpp>
 
 // standard headers
-#include <cstdlib>
+#include <stdexcept>
 
 namespace warbler
 {
@@ -22,7 +22,7 @@ namespace warbler
 		return ConditionalExpression(lhs.unwrap());
 	}
 
-	void ConditionalExpression::print_tree(u32 depth)
+	void ConditionalExpression::print_tree(u32 depth) const
 	{
 		_lhs.print_tree(depth);
 

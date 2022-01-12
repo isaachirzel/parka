@@ -1,32 +1,37 @@
-#ifndef WARBLER_AST_EXPRESSION_BOOLEAN_EQUALITY_HPP
-#define WARBLER_AST_EXPRESSION_BOOLEAN_EQUALITY_HPP
+#ifndef WARBLER_AST_EXPRESSION_EQUALITY_EXPRESSION_HPP
+#define WARBLER_AST_EXPRESSION_EQUALITY_EXPRESSION_HPP
 
 // local headers
 #include <warbler/ast/expression/comparison_expression.hpp>
+
 namespace warbler
 {
-typedef enum EqualityType
-{
-	EQUALITY_EQUALS,
-	EQUALITY_NOT_EQUALS
-} EqualityType;
+	enum EqualityType
+	{
+		EQUALITY_EQUALS,
+		EQUALITY_NOT_EQUALS
+	};
 
-typedef struct EqualityRhs
-{
-	ComparisonExpression expr;
-	EqualityType type;
-} EqualityRhs;
+	struct EqualityRhs
+	{
+		ComparisonExpression expr;
+		EqualityType type;
+	};
 
-typedef struct EqualityExpression
-{
-	ComparisonExpression lhs;
-	EqualityRhs *rhs;
-	size_t rhs_count;
-} EqualityExpression;
+	class EqualityExpression
+	{
+	private:
 
-void equality_expression_init(EqualityExpression *self);
-void equality_expression_free(EqualityExpression *self);
-Error equality_expression_parse(EqualityExpression *self, TokenIterator& iter);
-void equality_expression_print_tree(EqualityExpression *self, unsigned depth);
+		ComparisonExpression _lhs;
+		std::vector<EqualityRhs> _rhs;
+
+	public:
+
+		EqualityExpression(ComparisonExpression&& lhs, std::vector<EqualityRhs>&& rhs);
+
+		static Result<EqualityExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
 #endif

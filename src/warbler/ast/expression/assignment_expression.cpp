@@ -83,7 +83,7 @@ namespace warbler
 		return AssignmentExpression(res.unwrap(), new ConditionalExpression(rhs_res.unwrap()), type);
 	}
 
-	void AssignmentExpression::print_tree(u32 depth)
+	void AssignmentExpression::print_tree(u32 depth) const
 	{
 		_lhs.print_tree(depth);
 

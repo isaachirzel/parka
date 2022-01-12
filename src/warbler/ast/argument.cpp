@@ -1,8 +1,8 @@
-#include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/argument.hpp>
 
 // local headers
 #include <warbler/print.hpp>
+#include <warbler/ast/expression/expression.hpp>
 
 // standard headers
 #include <stdlib.h>
@@ -25,6 +25,8 @@ namespace warbler
 
 		if (expr.has_error())
 			return expr.error();
+
+		return Argument(new Expression(expr.unwrap()));
 	}
 
 	Result<std::vector<Argument>> Argument::parse_list(TokenIterator& iter)
@@ -35,8 +37,9 @@ namespace warbler
 			return ERROR_ARGUMENT;
 		}
 
-		std::vector<Argument> args;
 		iter += 1;
+
+		std::vector<Argument> args;
 
 		if (iter->type() != TOKEN_RPAREN)
 		{
@@ -60,14 +63,14 @@ namespace warbler
 			
 			if (iter->type() != TOKEN_RPAREN)
 			{
-				errortf(*iter, "expected ')' at end of argument list but got: %t", &(*iter));
+				errortf(*iter, "expected ',' or ')' but got: %t", &(*iter));
 			}
 		}
 
 		return args;
 	}
 	
-	void Argument::print_tree(u32 depth)
+	void Argument::print_tree(u32 depth) const
 	{
 		_expr->print_tree(depth);
 	}

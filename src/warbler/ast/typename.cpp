@@ -1,41 +1,32 @@
 #include <warbler/ast/typename.hpp>
 
 // standard headers
-#include <cstdlib>
-#include <cassert>
+#include <warbler/print.hpp>
 
 namespace warbler
 {
-	void typename_init(Typename *self)
+	Typename::Typename(String&& name) :
+	_name(name)
+	{}
+
+	Result<Typename> Typename::parse(TokenIterator& iter)
 	{
-		assert(self);
-
-		self->text = NULL;
-	}
-
-	void typename_free(Typename *self)
-	{
-		if (!self)
-			return;
-
-		free(self->text);
-	}
-
-	Error typename_parse(Typename *self, TokenIterator& iter)
-	{
-		assert(self);
-		
-
-		typename_init(self);
-		
-		if (iter->type != TOKEN_IDENTIFIER)
+		if (iter->type() != TOKEN_IDENTIFIER)
+		{
+			errortf(*iter, "expected typename but got: %t", &(*iter));
 			return ERROR_ARGUMENT;
+		}
+		
+		String name = String(iter->text());
 
-		self->text = string_duplicate(&iter->text);
+		iter += 1;
 
-		if (!self->text)
-			return ERROR_MEMORY;
+		return Typename(std::move(name));
+	}
 
-		return ERROR_NONE;
+	void Typename::print_tree(u32 depth) const
+	{
+		print_branch(depth);
+		puts(_name.c_str());
 	}
 }

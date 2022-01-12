@@ -3,18 +3,23 @@
 
 // local headers
 #include <warbler/ast/expression/boolean_and_expression.hpp>
+
 namespace warbler
 {
-typedef struct BooleanOrExpression
-{
-	BooleanAndExpression lhs;
-	BooleanAndExpression *rhs;
-	size_t rhs_count;
-} BooleanOrExpression;
+	class BooleanOrExpression
+	{
+	private:
 
-void boolean_or_expression_init(BooleanOrExpression *self);
-void boolean_or_expression_free(BooleanOrExpression *self);
-Error boolean_or_expression_parse(BooleanOrExpression *self, TokenIterator& iter);
-void boolean_or_expression_print_tree(BooleanOrExpression *self, unsigned depth);
+		BooleanAndExpression _lhs;
+		std::vector<BooleanAndExpression> _rhs;
+
+	public:
+
+		BooleanOrExpression(BooleanAndExpression&& lhs, std::vector<BooleanAndExpression>&& rhs);
+
+		static Result<BooleanOrExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
 #endif

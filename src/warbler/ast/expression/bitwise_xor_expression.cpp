@@ -9,82 +9,43 @@
 
 namespace warbler
 {
-void bitwise_xor_expression_init(BitwiseXorExpression *self)
-{
-	assert(self);
+	BitwiseXorExpression::BitwiseXorExpression(BitwiseAndExpression&& lhs, std::vector<BitwiseAndExpression>&& rhs) :
+	_lhs(lhs),
+	_rhs(rhs)
+	{}
 
-	bitwise_and_expression_init(&self->lhs);
-	self->rhs = NULL;
-	self->rhs_count = 0;
-}
-
-void bitwise_xor_expression_free(BitwiseXorExpression *self)
-{
-	if (!self)
-		return;
-
-	bitwise_and_expression_free(&self->lhs);
-	
-	for (size_t i = 0; i < self->rhs_count; ++i)
-		bitwise_and_expression_free(self->rhs + i);
-
-	free(self->rhs);
-}
-
-static inline BitwiseAndExpression *push_bitwise_and_expression(BitwiseXorExpression *self)
-{
-	size_t new_size = (self->rhs_count + 1) * sizeof(BitwiseAndExpression);
-	BitwiseAndExpression *tmp = (BitwiseAndExpression*)realloc(self->rhs, new_size);
-
-	if (!tmp)
-		return NULL;
-
-	self->rhs = tmp;
-	BitwiseAndExpression *back = self->rhs + self->rhs_count;
-	++self->rhs_count;
-
-	bitwise_and_expression_init(back);
-
-	return back;
-}
-
-Error bitwise_xor_expression_parse(BitwiseXorExpression *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	bitwise_xor_expression_init(self);
-	try(bitwise_and_expression_parse(&self->lhs, iter))
-
-	while (iter->type == TOKEN_CARROT)
+	Result<BitwiseXorExpression> BitwiseXorExpression::parse(TokenIterator& iter)
 	{
-		++iter;
-		BitwiseAndExpression *back = push_bitwise_and_expression(self);
+		auto lhs = BitwiseAndExpression::parse(iter);
 
-		if (!back)
-			return ERROR_MEMORY;
+		std::vector<BitwiseAndExpression> rhs;
 
-		try(bitwise_and_expression_parse(back, iter));
+		while (iter->type() == TOKEN_CARROT)
+		{
+			iter += 1;
+
+			auto res = BitwiseAndExpression::parse(iter);
+			
+			if (res.has_error())
+				return res.error();
+
+			rhs.emplace_back(res.unwrap());
+		}
+
+		return BitwiseXorExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	return ERROR_NONE;
-}
-
-void bitwise_xor_expression_print_tree(BitwiseXorExpression *self, unsigned depth)
-{
-	assert(self != NULL);
-
-	if (self->rhs_count > 0)
-		depth += 1;
-
-	bitwise_and_expression_print_tree(&self->lhs, depth);
-
-	for (size_t i = 0; i < self->rhs_count; ++i)
+	void BitwiseXorExpression::print_tree(u32 depth) const
 	{
-		print_branch(depth - 1);
-		puts("^");
+		if (_rhs.size() > 0)
+			depth += 1;
 
-		bitwise_and_expression_print_tree(self->rhs + i, depth);
+		_lhs.print_tree(depth);
+
+		for (const auto& rhs : _rhs)
+		{
+			print_tree_branch_symbol("|", depth - 1);
+			rhs.print_tree(depth);
+		}
 	}
-}
 }

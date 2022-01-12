@@ -3,30 +3,36 @@
 
 // local headers
 #include <warbler/ast/expression/additive_expression.hpp>
+
 namespace warbler
 {
-typedef enum ShiftType
-{
-	SHIFT_LEFT,
-	SHIFT_RIGHT
-} ShiftType;
+	enum ShiftType
+	{
+		SHIFT_LEFT,
+		SHIFT_RIGHT
+	};
 
-typedef struct ShiftRhs
-{
-	AdditiveExpression expr;
-	ShiftType type;
-} ShiftRhs;
+	struct ShiftRhs
+	{
+		AdditiveExpression expr;
+		ShiftType type;
+	};
 
-typedef struct ShiftExpression
-{
-	AdditiveExpression lhs;
-	ShiftRhs *rhs;
-	size_t rhs_count;
-} ShiftExpression;
+	class ShiftExpression
+	{
+	private:
 
-void shift_expression_init(ShiftExpression *self);
-void shift_expression_free(ShiftExpression *self);
-Error shift_expression_parse(ShiftExpression *self, TokenIterator& iter);
-void shift_expression_print_tree(ShiftExpression *self, unsigned depth);
+		AdditiveExpression _lhs;
+		std::vector<ShiftRhs> _rhs;
+
+	public:
+
+		ShiftExpression(AdditiveExpression&& lhs, std::vector<ShiftRhs>&& rhs);
+
+		static Result<ShiftExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

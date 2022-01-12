@@ -4,214 +4,302 @@
 #include <warbler/print.hpp>
 
 // standard headers
-#include <cassert>
-#include <cstdlib>
+#include <cstring>
 
 namespace warbler
 {
-void constant_init(Constant *self)
-{
-	assert(self);
+	Constant::Constant(String&& string) :
+	_string(string),
+	_type(CONSTANT_STRING)
+	{}
 
-	self->type = CONSTANT_INTEGER;
-	self->integer = 0;
-}
+	Constant::Constant(i64 integer) :
+	_integer(integer),
+	_type(CONSTANT_INTEGER)
+	{}
 
-void constant_free(Constant *self)
-{
-	if (!self)
-		return;
+	Constant::Constant(f64 floating) :
+	_floating(floating),
+	_type(CONSTANT_FLOAT)
+	{}
 
-	if (self->type == CONSTANT_STRING)
-		free(self->string);
-}
+	Constant::Constant(u32 character) :
+	_character(character),
+	_type(CONSTANT_CHARACTER)
+	{}
 
-static inline u32 parse_character(const char *text)
-{
-	#pragma message "Make sure character literals are only 1 long"
-	return 0;
-}
+	Constant::Constant(bool boolean) :
+	_boolean(boolean),
+	_type(CONSTANT_BOOLEAN)
+	{}
 
-static f64 string_to_f64(const String *text)
-{
-	f64 out = 0.0;
-
-	const char * data = text->data;
-	size_t length = text->length;
-
-	for (size_t i = 0; i < length; ++i)
+	Constant::Constant(Constant&& other) :
+	_type(other._type)
 	{
-		if (data[i] != '.')
+		switch (_type)
 		{
-			out = out * 10.0 + (data[i] - '0');
+			case CONSTANT_CHARACTER:
+				_character = other._character;
+				break;
+
+			case CONSTANT_STRING:
+				_string = other._string;
+				break;
+
+			case CONSTANT_INTEGER:
+				_integer = other._integer;
+				break;
+
+			case CONSTANT_FLOAT:
+				_floating = other._floating;
+				break;
+
+			case CONSTANT_BOOLEAN:
+				_boolean = other._boolean;
+				break;
 		}
-		else
+
+		other._type = CONSTANT_INTEGER;
+	}
+
+	Constant::Constant(const Constant& other) :
+	_type(other._type)
+	{
+		switch (_type)
 		{
-			i += 1;
+			case CONSTANT_CHARACTER:
+				_character = other._character;
+				break;
 
-			f64 decimal = 0.0;
-			f64 place = 1.0;
+			case CONSTANT_STRING:
+				_string = std::move(other._string);
+				break;
 
-			while (i < length)
+			case CONSTANT_INTEGER:
+				_integer = other._integer;
+				break;
+
+			case CONSTANT_FLOAT:
+				_floating = other._floating;
+				break;
+
+			case CONSTANT_BOOLEAN:
+				_boolean = other._boolean;
+				break;
+		}
+	}
+
+	Constant::~Constant()
+	{
+		if (_type == CONSTANT_STRING)
+			_string.~basic_string();
+	}
+
+	static inline u32 parse_character(const char *text)
+	{
+		#pragma message "Make sure character literals are only 1 long"
+		return 0;
+	}
+
+	static f64 string_to_f64(const StringView& text)
+	{
+		f64 out = 0.0;
+
+		for (size_t i = 0; i < text.size(); ++i)
+		{
+			if (text[i] != '.')
 			{
-				decimal = decimal * 10.0 + (data[i] - '0');
-				place *= 10.0;
-				++i;
+				out = out * 10.0 + (text[i] - '0');
 			}
-			
-			out += (decimal / place);
-			break;
+			else
+			{
+				i += 1;
+
+				f64 decimal = 0.0;
+				f64 place = 1.0;
+
+				while (i < text.length())
+				{
+					decimal = decimal * 10.0 + (text[i] - '0');
+					place *= 10.0;
+					++i;
+				}
+				
+				out += (decimal / place);
+				break;
+			}
+		}
+		
+		return out;
+	}
+
+	static i64 string_to_i64(const StringView& text)
+	{
+		i64 out = 0;
+
+		for (size_t i = 0; i < text.size(); ++i)
+			out = out * 10 + (text[i] - '0');
+
+		return out;
+	}
+
+	static Constant parse_integer_literal(TokenIterator& iter, bool is_negative)
+	{
+		i64 value = string_to_i64(iter->text());
+
+		if (is_negative)
+			value = -value;
+
+		iter += 1;
+
+		return Constant(value);
+	}
+
+	static Constant parse_float_literal(TokenIterator& iter, bool is_negative)
+	{
+		f64 value = string_to_f64(iter->text());
+
+		if (is_negative)
+			value = -value;
+
+		iter += 1;
+
+		return Constant(value);
+	}
+
+	static Result<Constant> parse_number(TokenIterator& iter, bool is_negative)
+	{
+		switch (iter->type())
+		{
+			case TOKEN_INTEGER_LITERAL:
+				return parse_integer_literal(iter, is_negative);				
+
+			case TOKEN_FLOAT_LITERAL:
+				return parse_float_literal(iter, is_negative);
+
+			default:
+				errortf(*iter, "expected number literal but got: %t", iter);
+				return ERROR_ARGUMENT;
 		}
 	}
-	
-	return out;
-}
 
-static i64 string_to_i64(const String *text)
-{
-	i64 out = 0;
-
-	const char * data = text->data;
-	size_t length = text->length;
-
-	for (size_t i = 0; i < length; ++i)
-		out = out * 10 + (data[i] - '0');
-
-	return out;
-}
-
-static inline void parse_integer_literal(Constant *self, TokenIterator& iter, bool is_negative)
-{
-	i64 value = string_to_i64(&iter->text);
-
-	self->type = CONSTANT_INTEGER;
-	self->integer = is_negative
-		? -value
-		: value;
-
-	++iter;
-}
-
-static inline void parse_float_literal(Constant *self, TokenIterator& iter, bool is_negative)
-{
-	f64 value = string_to_f64(&iter->text);
-
-	self->type = CONSTANT_FLOAT;
-	self->float64 = is_negative
-		? -value
-		: value;
-
-	++iter;
-}
-
-static inline Error parse_number(Constant *self, TokenIterator& iter, bool is_negative)
-{
-	switch (iter->type)
+	Result<Constant> Constant::parse(TokenIterator& iter)
 	{
-		case TOKEN_INTEGER_LITERAL:
-			parse_integer_literal(self, iter, is_negative);
-			break;
+		switch (iter->type())
+		{
+			case TOKEN_MINUS:
+				iter += 1;
+				return parse_number(iter, true);
+		
+			case TOKEN_PLUS:
+				iter += 1;
+				return parse_number(iter, false);
+				break;
 
-		case TOKEN_FLOAT_LITERAL:
-			parse_float_literal(self, iter, is_negative);
-			break;
+			case TOKEN_INTEGER_LITERAL:
+				return parse_integer_literal(iter, false);
+				break;
 
-		default:
-			errortf(*iter, "expected number literal but got: %t", iter);
-			return ERROR_ARGUMENT;
+			case TOKEN_FLOAT_LITERAL:
+				return parse_float_literal(iter, false);
+				break;
+
+			case TOKEN_HEXADECIMAL_LITERAL:
+				return not_implemented_error();
+				break;
+
+			case TOKEN_BINARY_LITERAL:
+				return not_implemented_error();
+				break;
+
+			case TOKEN_OCTAL_LITERAL:
+				return not_implemented_error();
+				break;
+
+			case TOKEN_CHAR_LITERAL:
+				return not_implemented_error();
+				break;
+
+			case TOKEN_STRING_LITERAL:
+			{
+				String string = String(iter->text());
+				iter += 1;
+				return Constant(std::move(string));
+			}
+
+			case TOKEN_TRUE:
+				iter += 1;
+				return Constant(true);
+
+			case TOKEN_FALSE:
+				iter += 1;
+				return Constant(false);
+
+			default:
+				errortf(*iter, "expected constant but got: %t", iter);
+				return ERROR_ARGUMENT;
+		}
+
+		return ERROR_NONE;
 	}
 
-	return ERROR_NONE;
-}
-
-Error constant_parse(Constant *self, TokenIterator& iter)
-{
-	assert(self);
-	
-
-	constant_init(self);
-
-	switch (iter->type)
+	void Constant::print_tree(u32 depth) const
 	{
-		case TOKEN_MINUS:
-			++iter;
-			try(parse_number(self, iter, true));
-			break;
+		print_branch(depth);
 
-		case TOKEN_PLUS:
-			++iter;
-			try(parse_number(self, iter, false));
-			break;
+		switch (_type)
+		{
+			case CONSTANT_CHARACTER:
+				assert(false && "character print is not implemented");
+				break;
 
-		case TOKEN_INTEGER_LITERAL:
-			parse_integer_literal(self, iter, false);
-			break;
+			case CONSTANT_STRING:	
+				puts(_string.c_str());
+				break;
 
-		case TOKEN_FLOAT_LITERAL:
-			parse_float_literal(self, iter, false);
-			break;
+			case CONSTANT_INTEGER:
+				printf("%ld\n", _integer);
+				break;
 
-		case TOKEN_HEXADECIMAL_LITERAL:
-			return not_implemented_error();
-			break;
+			case CONSTANT_FLOAT:
+				printf("%f\n", _floating);
+				break;
 
-		case TOKEN_BINARY_LITERAL:
-			return not_implemented_error();
-			break;
-
-		case TOKEN_OCTAL_LITERAL:
-			return not_implemented_error();
-			break;
-
-		case TOKEN_CHAR_LITERAL:
-			return not_implemented_error();
-			break;
-
-		case TOKEN_STRING_LITERAL:
-			self->type = CONSTANT_STRING;
-			self->string = string_duplicate(&iter->text);
-
-			if (!self->string)
-				return ERROR_MEMORY;
-			break;
-
-		case TOKEN_TRUE:
-			break;
-
-		case TOKEN_FALSE:
-			break;
-
-		default:
-			errortf(*iter, "expected constant but got: %t", iter);
-			return ERROR_ARGUMENT;
+			case CONSTANT_BOOLEAN:
+				printf("%s\n", _boolean ? "true" : "false");
+				break;
+		}
 	}
 
-	return ERROR_NONE;
-}
-
-void constant_print_tree(Constant *self, unsigned depth)
-{
-	assert(self);
-
-	print_branch(depth);
-
-	switch (self->type)
+	Constant& Constant::operator=(Constant&& other)
 	{
-		case CONSTANT_CHAR:
-			assert(false && "character print is not implemented");
-			break;
+		_type = other._type;
 
-		case CONSTANT_STRING:	
-			puts(self->string);
-			break;
+		switch (_type)
+		{
+			case CONSTANT_CHARACTER:
+				_character = other._character;
+				break;
 
-		case CONSTANT_INTEGER:
-			printf("%ld\n", self->integer);
-			break;
+			case CONSTANT_STRING:
+				_string = other._string;
+				break;
 
-		case CONSTANT_FLOAT:
-			printf("%f\n", self->float64);
-			break;
+			case CONSTANT_INTEGER:
+				_integer = other._integer;
+				break;
+
+			case CONSTANT_FLOAT:
+				_floating = other._floating;
+				break;
+
+			case CONSTANT_BOOLEAN:
+				_boolean = other._boolean;
+				break;
+		}
+
+		other._type = CONSTANT_INTEGER;
+
+		return *this;
 	}
-}
 }

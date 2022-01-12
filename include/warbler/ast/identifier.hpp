@@ -21,9 +21,9 @@ namespace warbler
 
 		Identifier(std::string&& text);
 
-		Result<Identifier> parse(TokenIterator& iter);
+		static Result<Identifier> parse(TokenIterator& iter);
 
-		void print_tree(u32 depth = 0);
+		void print_tree(u32 depth = 0) const;
 
 		const String& text() const { return _text; }
 	};

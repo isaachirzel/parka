@@ -3,31 +3,37 @@
 
 // local headers
 #include <warbler/ast/expression/primary_expression.hpp>
+
 namespace warbler
 {
-typedef enum MultiplicativeType
-{
-	MULTIPLICATIVE_MULTIPLY,
-	MULTIPLICATIVE_DIVIDE,
-	MULTIPLICATIVE_MODULUS
-} MultiplicativeType;
+	enum MultiplicativeType
+	{
+		MULTIPLICATIVE_MULTIPLY,
+		MULTIPLICATIVE_DIVIDE,
+		MULTIPLICATIVE_MODULUS
+	};
 
-typedef struct MultiplicativeRhs
-{
-	PrimaryExpression expr;
-	MultiplicativeType type;
-} MultiplicativeRhs;
+	struct MultiplicativeRhs
+	{
+		PrimaryExpression expr;
+		MultiplicativeType type;
+	};
 
-typedef struct MultiplicativeExpression
-{
-	PrimaryExpression lhs;
-	MultiplicativeRhs *rhs;
-	size_t rhs_count;
-} MultiplicativeExpression;
+	class MultiplicativeExpression
+	{
+	private:
 
-void multiplicative_expression_init(MultiplicativeExpression *expr);
-void multiplicative_expression_free(MultiplicativeExpression *expr);
-Error multiplicative_expression_parse(MultiplicativeExpression *out, TokenIterator& iter);
-void multiplicative_expression_print_tree(MultiplicativeExpression *self, unsigned depth);
+		PrimaryExpression _lhs;
+		std::vector<MultiplicativeRhs> _rhs;
+	
+	public:
+
+		MultiplicativeExpression(PrimaryExpression&& lhs, std::vector<MultiplicativeRhs>&& rhs);
+
+		static Result<MultiplicativeExpression> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif
