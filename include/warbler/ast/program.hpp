@@ -3,6 +3,7 @@
 
 // local headers
 #include <warbler/ast/function.hpp>
+
 namespace warbler
 {
 	class Program
@@ -20,4 +21,5 @@ namespace warbler
 		void print_tree(u32 depth = 0) const;
 	};
 }
+
 #endif

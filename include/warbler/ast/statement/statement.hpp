@@ -3,39 +3,55 @@
 
 #include <warbler/ast/statement/expression_statement.hpp>
 #include <warbler/ast/statement/declaration_statement.hpp>
-#include <warbler/ast/statement/compound_statement.hpp>
 #include <warbler/ast/statement/selection_statement.hpp>
 #include <warbler/ast/statement/loop_statement.hpp>
 #include <warbler/ast/statement/jump_statement.hpp>
+
 namespace warbler
 {
-typedef enum StatementType
-{
-	STATEMENT_EXPRESSION,
-	STATEMENT_DECLARATION,
-	STATEMENT_COMPOUND,
-	STATEMENT_SELECTION,
-	STATEMENT_LOOP,
-	STATEMENT_JUMP
-} StatementType;
-
-typedef struct Statement
-{
-
-	union
+	enum StatementType
 	{
-		ExpressionStatement expression;
-		DeclarationStatement declaration;
-		CompoundStatement compound;
-		//SelectionStatment selection;
-		LoopStatement loop;
-		JumpStatement jump;
+		STATEMENT_EXPRESSION,
+		STATEMENT_DECLARATION,		
+		STATEMENT_SELECTION,
+		STATEMENT_LOOP,
+		STATEMENT_JUMP
 	};
-	StatementType type;
-} Statement;
 
-void statement_init(Statement *self);
-void statement_parse(Statement *self, TokenIterator& iter);
-void statement_print_tree(Statement *self);
+	class Statement
+	{
+	private:
+
+		union
+		{
+			ExpressionStatement _expression;
+			DeclarationStatement _declaration;
+			SelectionStatement _selection;
+			LoopStatement _loop;
+			JumpStatement _jump;
+		};
+
+		StatementType _type;
+
+	public:
+
+		Statement(ExpressionStatement&& expression);
+		Statement(DeclarationStatement&& declaration);
+		Statement(SelectionStatement&& selection);
+		Statement(LoopStatement&& loop);
+		Statement(JumpStatement&& jump);
+		Statement(Statement&& other);
+		Statement(const Statement& other);
+		~Statement();
+
+		static Result<Statement> parse(TokenIterator& iter);
+		static Result<std::vector<Statement>> parse_compound(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+
+		Statement& operator=(Statement&& other);
+		Statement& operator=(const Statement& other);
+	};
 }
+
 #endif

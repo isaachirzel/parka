@@ -46,6 +46,8 @@ namespace warbler
 		static Result<PrimaryExpression> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
+		PrimaryExpression& operator=(PrimaryExpression&& other);
+		PrimaryExpression& operator=(const PrimaryExpression& other);
 	};
 }
 #endif

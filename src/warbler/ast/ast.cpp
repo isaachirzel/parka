@@ -2,28 +2,23 @@
 
 namespace warbler
 {
-	void ast_init(Ast* ast)
+	Ast::Ast(Program&& program) :
+	_program(program)
+	{}
+
+	Result<Ast> Ast::parse(const std::vector<Token>& tokens)
 	{
-		program_init(&ast->program);
+		auto iter = tokens.begin();
+		auto res = Program::parse(iter);
+
+		if (res.has_error())
+			return res.error();
+
+		return Ast(res.unwrap());
 	}
 
-	Error ast_parse(Ast *ast, const std::vector<Token>& tokens)
+	void Ast::print_tree(u32 depth) const
 	{
-		assert(ast != NULL);
-
-		ast_init(ast);
-
-		TokenIterator iter = tokens.begin();
-		Error error = program_parse(&ast->program, iter);
-
-		return error;
-	}
-
-	void ast_free(Ast *self)
-	{
-		if (!self)
-			return;
-
-		program_free(&self->program);
+		_program.print_tree(depth);
 	}
 }

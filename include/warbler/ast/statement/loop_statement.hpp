@@ -5,24 +5,34 @@
 #include <warbler/token.hpp>
 #include <warbler/result.hpp>
 #include <warbler/ast/loop_condition.hpp>
-#include <warbler/ast/statement/statement.hpp>
+
 namespace warbler
 {
-typedef enum LoopType
-{
-	LOOP_FOR,
-	LOOP_WHILE,
-	LOOP_LOOP
-} LoopType;
+	class Statement;
+	
+	enum LoopType
+	{
+		LOOP_FOR,
+		LOOP_WHILE,
+		LOOP_LOOP
+	};
 
-typedef struct LoopStatement
-{
-	LoopType type;
-	LoopCondition *condition;
-	Statement *statement;
-} LoopStatement;
+	class LoopStatement
+	{
+	private:
 
-Error loop_statement_parse(LoopStatement *loop, TokenIterator& iter);
-void loop_statement_free(LoopStatement *loop);
+		std::vector<Statement> _body;
+		LoopCondition _condition;
+		LoopType _type;
+
+	public:
+
+		LoopStatement(std::vector<Statement>&& body, LoopCondition&& condition, LoopType type);
+
+		static Result<LoopStatement> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

@@ -177,4 +177,51 @@ namespace warbler
 				break;
 		}
 	}
+
+	Postfix& Postfix::operator=(Postfix&& other)
+	{
+		_type = other._type;
+		
+		switch (_type)
+		{
+			case POSTFIX_INDEX:
+				_index = other._index;
+				break;
+
+			case POSTFIX_FUNCTION_CALL:
+				_arguments = std::move(other._arguments);
+				break;
+
+			case POSTFIX_MEMBER:
+				_member = std::move(other._member);
+				break;
+		}
+
+		other._type = POSTFIX_INDEX;
+		other._index = nullptr;
+
+		return *this;
+	}
+
+	Postfix& Postfix::operator=(const Postfix& other)
+	{
+		_type = other._type;
+
+		switch (_type)
+		{
+			case POSTFIX_INDEX:
+				_index = new Expression(*other._index);
+				break;
+
+			case POSTFIX_FUNCTION_CALL:
+				_arguments = other._arguments;
+				break;
+
+			case POSTFIX_MEMBER:
+				_member = other._member;
+				break;
+		}
+
+		return *this;
+	}
 }

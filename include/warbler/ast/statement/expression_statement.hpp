@@ -4,14 +4,24 @@
 // local headers
 #include <warbler/token.hpp>
 #include <warbler/result.hpp>
+#include <warbler/ast/expression/expression.hpp>
+
 namespace warbler
 {
-typedef struct ExpressionStatement
-{
-	
-} ExpressionStatement;
+	class ExpressionStatement
+	{
+	private:
 
-Error Expression_statement_parse(ExpressionStatement *Expression, TokenIterator& iter);
-void Expression_statement_free(ExpressionStatement *Expression);
+		Expression _expression;
+
+	public:
+
+		ExpressionStatement(Expression&& expression);
+
+		static Result<ExpressionStatement> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

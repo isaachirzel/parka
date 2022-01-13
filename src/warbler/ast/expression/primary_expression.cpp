@@ -164,4 +164,55 @@ namespace warbler
 		for (const auto& postfix : _postfixes)
 			postfix.print_tree(depth + 1);
 	}
+
+	PrimaryExpression& PrimaryExpression::operator=(PrimaryExpression&& other)
+	{
+		_prefixes = std::move(other._prefixes);
+		_postfixes = std::move(other._postfixes);
+		_type = other._type;
+
+		switch (_type)
+		{
+			case PRIMARY_IDENTIFIER:
+				_identifier = std::move(other._identifier);
+				break;
+
+			case PRIMARY_CONSTANT:
+				_constant = std::move(other._constant);
+				break;
+
+			case PRIMARY_EXPRESSION:
+				_expression = other._expression;
+				break;
+		}
+
+		other._type = PRIMARY_EXPRESSION;
+		other._expression = nullptr;
+
+		return *this;
+	}
+
+	PrimaryExpression& PrimaryExpression::operator=(const PrimaryExpression& other)
+	{
+		_prefixes = other._prefixes;
+		_postfixes = other._postfixes;
+		_type = other._type;
+
+		switch (_type)
+		{
+			case PRIMARY_IDENTIFIER:
+				_identifier = other._identifier;
+				break;
+
+			case PRIMARY_CONSTANT:
+				_constant = other._constant;
+				break;
+
+			case PRIMARY_EXPRESSION:
+				_expression = new Expression(*other._expression);
+				break;
+		}
+
+		return *this;
+	}
 }

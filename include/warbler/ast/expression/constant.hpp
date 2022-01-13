@@ -47,6 +47,7 @@ namespace warbler
 		void print_tree(u32 depth = 0) const;
 
 		Constant& operator=(Constant&& other);
+		Constant& operator=(const Constant& other);
 	};
 }
 #endif

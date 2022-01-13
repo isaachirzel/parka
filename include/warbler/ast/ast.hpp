@@ -3,16 +3,23 @@
 
 // local headers
 #include <warbler/ast/program.hpp>
-#include <warbler/token.hpp>
 
 namespace warbler
 {
-typedef struct Ast
-{
-	Program program;
-} Ast;
+	class Ast
+	{
+	private:
 
-Error ast_parse(Ast *out, const std::vector<Token>& tokens);
-void ast_free(Ast *ast);
+		Program _program;
+
+	public:
+
+		Ast(Program&& program);
+
+		static Result<Ast> parse(const std::vector<Token>& tokens);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

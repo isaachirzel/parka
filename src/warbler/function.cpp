@@ -23,6 +23,47 @@ namespace warbler
 	_compound_body(compound_body)
 	{}
 	
+	Function::Function(Function&& other) :
+	_name(std::move(other._name)),
+	_parameters(std::move(other._parameters)),
+	_return_type(std::move(other._return_type)),
+	_is_inline(other._is_inline)
+	{
+		if (_is_inline)
+		{
+			_inline_body = other._inline_body;
+		}
+		else
+		{
+			_compound_body = std::move(other._compound_body);
+		}
+
+		other._is_inline = true;
+		other._inline_body = nullptr;
+	}
+
+	Function::Function(const Function& other) :
+	_name(other._name),
+	_parameters(other._parameters),
+	_return_type(other._return_type),
+	_is_inline(other._is_inline)
+	{
+		if (_is_inline)
+		{
+			_inline_body = new Expression(*other._inline_body);
+		}
+		else
+		{
+			_compound_body = other._compound_body;
+		}
+	}
+
+	Function::~Function()
+	{
+		if (_is_inline)
+			delete _inline_body;
+	}
+
 	Result<Function> Function::parse(TokenIterator& iter)
 	{
 		if (iter->type() != TOKEN_FUNC)
@@ -74,58 +115,36 @@ namespace warbler
 			if (body.has_error())
 				return body.error();
 
-			return Function(name.unwrap(), parameters.unwrap(), std::move(type), new Expression(body));
+			auto *expression = new Expression(body.unwrap());
+			return Function(name.unwrap(), parameters.unwrap(), std::move(type), expression);
 		}
 		else
 		{
 			errortf(*iter, "expected function body but got: %t", &(*iter));
 			return ERROR_ARGUMENT;
 		}
-
-		if ((error = function_parse_body(function, iter)))
-			return error;
 	}
 
-	void Function::print_tree(u32 depth) const
+	void Function::print_tree(u32 depth) const 
 	{
+		_name.print_tree(depth);
+		print_tree_branch_symbol("()", depth + 1);
 
-	}
+		for (const auto& parameter : _parameters)
+			parameter.print_tree(depth + 2);
 
-	static inline Error function_parse_body(Function *function, TokenIterator& iter)
-	{
-		Error error;
+		_return_type.print_tree(depth + 1);
 
-		switch (iter->type)
+		if (_is_inline)
 		{
-			case TOKEN_DOUBLE_ARROW:
-				function->is_inline = true;
-				
-				if ((error = expression_parse(function->inline_body, iter)))
-					return error;
-
-				break;
-
-			case TOKEN_LBRACE:
-				function->is_inline = false;
-
-				if ((error = compound_statement_parse(function->compound_body, iter)))
-					return error;
-				break;
-
-			default:
-				errortf(*iter, "expected function body but got: %t", iter);
-				return ERROR_ARGUMENT;
+			_inline_body->print_tree(depth + 1);
 		}
+		else
+		{
+			print_tree_branch_symbol("{}", depth + 1);
 
-		return ERROR_NONE;
-	}
-
-	static inline Error try_function_parse(Function *function, TokenIterator& iter)
-	{
-		Error error;
-
-		
-
-		return ERROR_NONE;
+			for (const auto& statement : _compound_body)
+				statement.print_tree(depth + 2);
+		}
 	}
 }

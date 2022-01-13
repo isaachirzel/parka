@@ -1,6 +1,7 @@
 #include <warbler/print.hpp>
 
 // standard headers
+#include <iostream>
 #include <cstdio>
 #include <cstdarg>
 #include <cstring>
@@ -123,7 +124,7 @@ namespace warbler
 			{
 				assert(size_of_switch == 2);
 				Token *token = va_arg(args, Token *);
-				string_fprint(&token->text, stream);
+				std::cerr << token->text();				
 			}
 			else
 			{
@@ -156,7 +157,7 @@ namespace warbler
 
 	inline static void print_error_header(const Token& token)
 	{
-		fprintf(stderr, "%s:%zu:%zu ", token.filename, token.line, token.col + 1);
+		fprintf(stderr, "%s:%zu:%zu ", token.filename().c_str(), token.line(), token.col() + 1);
 		fputs(error_prompt, stderr);
 	}
 
@@ -175,15 +176,15 @@ namespace warbler
 
 	void print_token_highlight(const Token& token)
 	{
-		size_t spaces_for_line_number = get_spaces_for_num(token.line);
-		const char * const start_of_line = token.text.data - token.col;
-		fprintf(stderr, "  %zu | ", token.line);
-		fwrite(start_of_line, sizeof(char), token.col, stderr);	
+		size_t spaces_for_line_number = get_spaces_for_num(token.line());
+		const char * const start_of_line = token.text().data() - token.col();
+		fprintf(stderr, "  %zu | ", token.line());
+		fwrite(start_of_line, sizeof(char), token.col(), stderr);	
 		fputs(COLOR_RED, stderr);
-		fwrite(token.text.data, sizeof(char), token.text.length, stderr);
+		fwrite(token.text().data(), sizeof(char), token.text().size(), stderr);
 		fputs(COLOR_RESET, stderr);
 
-		const char *text_after_token = token.text.data + token.text.length;
+		const char *text_after_token = token.text().data() + token.text().size();
 		const char *end = text_after_token;
 		while (*end != '\0' && *end != '\n')
 			++end;
@@ -197,14 +198,14 @@ namespace warbler
 		for (size_t i = 0; i < spaces_for_line_number; ++i)
 			fputc(' ', stderr);
 		fputs(" | ", stderr);
-		for (size_t i = 0; i < token.col; ++i)
+		for (size_t i = 0; i < token.col(); ++i)
 			fputc(' ', stderr);
 		
 		if (is_color_enabled)
 			fputs(COLOR_RED, stderr);
 
 		fputc('^', stderr);
-		for (size_t i = 1; i < token.text.length; ++i)
+		for (size_t i = 1; i < token.text().size(); ++i)
 			fputc('~', stderr);
 
 		if (is_color_enabled)

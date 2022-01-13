@@ -27,7 +27,7 @@ namespace warbler
 		return Program(std::move(functions));
 	}
 
-	void Program::print_tree(u32 depth = 0) const
+	void Program::print_tree(u32 depth) const
 	{
 		for (const auto& function : _functions)
 			function.print_tree(depth);

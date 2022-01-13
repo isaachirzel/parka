@@ -5,23 +5,32 @@
 #include <warbler/token.hpp>
 #include <warbler/result.hpp>
 #include <warbler/ast/expression/expression.hpp>
+
 namespace warbler
 {
-typedef enum JumpType
-{
-	JUMP_CONTINUE,
-	JUMP_BREAK,
-	JUMP_RETURN,
-	JUMP_EMIT
-} JumpType;
+	enum JumpType
+	{
+		JUMP_CONTINUE,
+		JUMP_BREAK,
+		JUMP_RETURN,
+		JUMP_EMIT
+	};
 
-typedef struct JumpStatement
-{
-	JumpType type;
-	Expression *value;
-} JumpStatement;
+	class JumpStatement
+	{
+	private:
+		
+		Expression *_value;
+		JumpType _type;
 
-Error jump_statement_parse(JumpStatement *jump, TokenIterator& iter);
-void jump_statement_free(JumpStatement *jump);
+	public:
+
+		JumpStatement(Expression *value, JumpType type);
+
+		static Result<JumpStatement> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

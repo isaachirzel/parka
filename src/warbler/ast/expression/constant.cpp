@@ -302,4 +302,35 @@ namespace warbler
 
 		return *this;
 	}
+
+	Constant& Constant::operator=(const Constant& other)
+	{
+		_type = other._type;
+
+		switch (_type)
+		{
+			case CONSTANT_CHARACTER:
+				_character = other._character;
+				break;
+
+			case CONSTANT_STRING:
+				_string = other._string;
+
+				break;
+
+			case CONSTANT_INTEGER:
+				_integer = other._integer;
+				break;
+
+			case CONSTANT_FLOAT:
+				_floating = other._floating;
+				break;
+
+			case CONSTANT_BOOLEAN:
+				_boolean = other._boolean;
+				break;
+		}
+
+		return *this;
+	}
 }

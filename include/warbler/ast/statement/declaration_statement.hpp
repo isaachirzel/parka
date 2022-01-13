@@ -1,20 +1,29 @@
-#ifndef WARBLER_AST_DECLARATION_STATEMENT_HPP
-#define WARBLER_AST_DECLARATION_STATEMENT_HPP
+#ifndef WARBLER_AST_STATEMENT_DECLARATION_STATEMENT_HPP
+#define WARBLER_AST_STATEMENT_DECLARATION_STATEMENT_HPP
 
 // local headers
-#include <warbler/ast/typename.hpp>
 #include <warbler/ast/identifier.hpp>
+#include <warbler/ast/typename.hpp>
 #include <warbler/ast/expression/expression.hpp>
+
 namespace warbler
 {
-typedef struct DeclarationStatement
-{
-	Typename *type;
-	Identifier *identifier;
-	Expression *expression;
-} DeclarationStatement;
+	class DeclarationStatement
+	{
+	private:
 
-Error declaration_statement_parse(DeclarationStatement *declaration, TokenIterator& iter);
-void declaration_statement_free(DeclarationStatement *declaration);
+		Identifier _name;
+		Typename _type;
+		Expression _value;
+
+	public:
+
+		DeclarationStatement(Identifier&& name, Typename&& type, Expression&& value);
+
+		static Result<DeclarationStatement> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

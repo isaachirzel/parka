@@ -1,5 +1,5 @@
-#ifndef WARBLER_AST_$_STATEMENT_HPP
-#define WARBLER_AST_$_STATEMENT_HPP
+#ifndef WARBLER_AST_STATEMENT_SELECTION_STATEMENT_HPP
+#define WARBLER_AST_STATEMENT_SELECTION_STATEMENT_HPP
 
 // local headers
 #include <warbler/token.hpp>
@@ -8,12 +8,20 @@
 
 namespace warbler
 {
-typedef struct SelectionStatement
-{
-	ConditionalExpression expr;
-} SelectionStatement;
+	class SelectionStatement
+	{
+	private:
 
-Error selection_statement_statement_parse(SelectionStatement *self, TokenIterator& iter);
-void selection_statement_statement_free(SelectionStatement *self);
+		ConditionalExpression _expr;
+
+	public:
+
+		SelectionStatement(ConditionalExpression&& expr);
+
+		static Result<SelectionStatement> parse(TokenIterator& iter);
+
+		void print_tree(u32 depth = 0) const;
+	};
 }
+
 #endif

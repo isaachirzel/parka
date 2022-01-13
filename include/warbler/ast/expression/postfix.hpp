@@ -42,6 +42,9 @@ namespace warbler
 		static Result<std::vector<Postfix>> parse_list(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
+
+		Postfix& operator=(Postfix&& other);
+		Postfix& operator=(const Postfix& other);
 	};
 }
 
