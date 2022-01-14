@@ -33,7 +33,7 @@ namespace warbler
 	{
 		if (iter->type() != TOKEN_LPAREN)
 		{
-			errortf(*iter, "expected '(' at start of argument list but got: %t", &(*iter));
+			error_out(iter) << "expected '(' at start of argument list but got: " << *iter;
 			return ERROR_ARGUMENT;
 		}
 
@@ -63,7 +63,7 @@ namespace warbler
 			
 			if (iter->type() != TOKEN_RPAREN)
 			{
-				errortf(*iter, "expected ',' or ')' but got: %t", &(*iter));
+				error_out(iter) << "expected ',' or ')' but got: " << *iter;
 			}
 		}
 

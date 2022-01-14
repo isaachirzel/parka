@@ -120,7 +120,7 @@ namespace warbler
 
 		if (iter->type() != TOKEN_SEMICOLON)
 		{
-			errortf(*iter, "expected ';' but got: %t", &(*iter));
+			error_out(iter) << "expected ';' but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
@@ -159,7 +159,7 @@ namespace warbler
 	{
 		if (iter->type() != TOKEN_LBRACE)
 		{
-			errortf(*iter, "expected '{' but got: %t", &(*iter));
+			error_out(iter) << "expected '{' but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 

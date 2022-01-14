@@ -10,7 +10,7 @@ namespace warbler
 	_rhs(rhs)
 	{}
 
-	static Result<BooleanOrExpression> parse(TokenIterator& iter)
+	Result<BooleanOrExpression> BooleanOrExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = BooleanAndExpression::parse(iter);
 

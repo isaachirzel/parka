@@ -68,7 +68,7 @@ namespace warbler
 	{
 		if (iter->type() != TOKEN_FUNC)
 		{
-			errortf(*iter, "expected 'func' but got: %t", &(*iter));
+			error_out(iter) << "expected 'func' but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
@@ -120,7 +120,7 @@ namespace warbler
 		}
 		else
 		{
-			errortf(*iter, "expected function body but got: %t", &(*iter));
+			error_out(iter) << "expected function body but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 	}

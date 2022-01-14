@@ -112,7 +112,7 @@ namespace warbler
 
 			if (iter->type() != TOKEN_RPAREN)
 			{
-				errortf(*iter, "expected ')' after expression but got: %t", &(*iter));
+				error_out(iter) << "expected ')' after expression but got: " << *iter << std::endl;
 				return ERROR_ARGUMENT;
 			}
 

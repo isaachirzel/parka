@@ -14,7 +14,7 @@ namespace warbler
 	_type(type)
 	{}
 
-	static Result<Prefix> parse(TokenIterator& iter)
+	Result<Prefix> Prefix::parse(TokenIterator& iter)
 	{
 		switch (iter->type())
 		{
@@ -39,7 +39,7 @@ namespace warbler
 		}
 	}
 
-	static Result<std::vector<Prefix>> parse_list(TokenIterator& iter)
+	Result<std::vector<Prefix>> Prefix::parse_list(TokenIterator& iter)
 	{
 		std::vector<Prefix> out;
 

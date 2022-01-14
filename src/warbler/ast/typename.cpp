@@ -13,7 +13,7 @@ namespace warbler
 	{
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
-			errortf(*iter, "expected typename but got: %t", &(*iter));
+			error_out(iter) << "expected typename but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 		

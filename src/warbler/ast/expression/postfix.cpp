@@ -100,7 +100,7 @@ namespace warbler
 
 				if (iter->type() != TOKEN_RBRACK)
 				{
-					errortf(*iter, "expected ']' after index operation but got: %t", &(*iter));
+					error_out(iter) << "expected ']' after index operation but got: " << *iter << std::endl;
 					return ERROR_ARGUMENT;
 				}
 

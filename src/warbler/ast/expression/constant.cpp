@@ -178,7 +178,7 @@ namespace warbler
 				return parse_float_literal(iter, is_negative);
 
 			default:
-				errortf(*iter, "expected number literal but got: %t", iter);
+				error_out(iter) << "expected number literal but got: " << *iter;
 				return ERROR_ARGUMENT;
 		}
 	}
@@ -236,7 +236,7 @@ namespace warbler
 				return Constant(false);
 
 			default:
-				errortf(*iter, "expected constant but got: %t", iter);
+				error_out(*iter) << "expected constant but got: " << *iter << std::endl;
 				return ERROR_ARGUMENT;
 		}
 

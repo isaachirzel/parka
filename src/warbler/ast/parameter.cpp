@@ -13,7 +13,7 @@ namespace warbler
 	_type(type)
 	{}
 
-	static Result<Parameter> parse(TokenIterator& iter)
+	Result<Parameter> Parameter::parse(TokenIterator& iter)
 	{
 		auto name = Identifier::parse(iter);
 
@@ -22,7 +22,7 @@ namespace warbler
 
 		if (iter->type() != TOKEN_COLON)
 		{
-			errortf(*iter, "type specification is necessary for function parameters: %t", &(*iter));
+			error_out(iter) << "type specification is necessary for function parameters: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
@@ -36,11 +36,11 @@ namespace warbler
 		return Parameter(name.unwrap(), type.unwrap());
 	}
 
-	static Result<std::vector<Parameter>> parse_list(TokenIterator& iter)
+	Result<std::vector<Parameter>> Parameter::parse_list(TokenIterator& iter)
 	{
 		if (iter->type() != TOKEN_LPAREN)
 		{
-			errortf(*iter, "expected '(' at start of parameter list but got: %t", &(*iter));
+			error_out(iter) << "expected '(' at start of parameter list but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
@@ -70,7 +70,7 @@ namespace warbler
 
 			if (iter->type() != TOKEN_RPAREN)
 			{
-				errortf(*iter, "expected ',' or ')' after parameter but got: %t", iter);
+				error_out(iter) << "expected ',' or ')' after parameter but got: " << *iter << std::endl;
 				return ERROR_ARGUMENT;
 			}
 		}

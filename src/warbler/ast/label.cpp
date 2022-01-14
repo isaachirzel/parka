@@ -14,7 +14,7 @@ namespace warbler
 
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
-			errortf(*iter, "expected identifier for label but got: %t", &(*iter));
+			error_out(iter) << "expected identifier for label but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
@@ -24,7 +24,7 @@ namespace warbler
 
 		if (iter->type() != TOKEN_COLON)
 		{
-			errortf(*iter, "expected ':' after label but got: %t", &(*iter));
+			error_out(iter) << "expected ':' after label but got: " << *iter << std::endl;
 			return ERROR_ARGUMENT;
 		}
 

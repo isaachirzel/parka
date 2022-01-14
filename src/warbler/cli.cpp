@@ -16,7 +16,7 @@ namespace warbler
 	{
 		if (argc != 2)
 		{
-			errorm("invalid arguments given");
+			error_out() << "invalid arguments given";
 			print_help();
 
 			return false;

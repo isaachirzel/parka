@@ -12,7 +12,7 @@ namespace warbler
 	{
 		if (fseek(file, 0, SEEK_END))
 		{
-			errorf("failed to iterate to end of file: ", filepath);
+			error_out() << "failed to iterate to end of file: " << filepath << std::endl;
 			return NULL;
 		}
 
@@ -20,18 +20,18 @@ namespace warbler
 
 		if (size == -1)
 		{
-			errorf("failed to get file size: %s", filepath);
+			error_out() << "failed to get file size: %s"<< filepath << std::endl;
 			return NULL;
 		}
 		else if (size == 0)
 		{
-			errorf("file is empty: %s", filepath);
+			error_out() << "file is empty: %s"<< filepath << std::endl;
 			return NULL;
 		}
 
 		if (fseek(file, 0, SEEK_SET))
 		{
-			errorf("failed to iterate to beginning of file: %s", filepath);
+			error_out() << "failed to iterate to beginning of file: %s" << filepath << std::endl;
 			return NULL;
 		}
 
@@ -39,7 +39,7 @@ namespace warbler
 
 		if (buffer == NULL)
 		{
-			errorf("failed to allocate buffer for file: %s", filepath);
+			error_out() << "failed to allocate buffer for file: %s" << filepath << std::endl;
 			return NULL;
 		}
 
@@ -48,7 +48,7 @@ namespace warbler
 		if (bytes_read == 0)
 		{
 			delete buffer;
-			errorf("failed to read data from file: %s", filepath);
+			error_out() << "failed to read data from file: %s" << filepath << std::endl;
 			return NULL;
 		}
 
@@ -63,7 +63,7 @@ namespace warbler
 		
 		if (!file)
 		{
-			errorf("failed to open file: %s", filepath);
+			error_out() << "failed to open file: %s" << filepath << std::endl;
 			return NULL;
 		}
 
