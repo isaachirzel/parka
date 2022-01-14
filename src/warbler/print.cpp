@@ -155,12 +155,6 @@ namespace warbler
 		fputs(debug_prompt, stderr);
 	}
 
-	inline static void print_error_header(const Token& token)
-	{
-		fprintf(stderr, "%s:%zu:%zu ", token.filename().c_str(), token.line(), token.col() + 1);
-		fputs(error_prompt, stderr);
-	}
-
 	size_t get_spaces_for_num(size_t number)
 	{
 		size_t out = 1;
@@ -174,7 +168,7 @@ namespace warbler
 		return out;
 	}
 
-	void print_token_highlight(const Token& token)
+	std::ostream& token_highlight(const Token& token)
 	{
 		size_t spaces_for_line_number = get_spaces_for_num(token.line());
 		const char * const start_of_line = token.text().data() - token.col();
@@ -214,60 +208,22 @@ namespace warbler
 		fputc('\n', stderr);
 	}
 
-	void errortf(const Token& token, const char *fmt, ...)
+	std::ostream& error_out()
 	{
-		print_error_header(token);
-		va_list args;
-		va_start(args, fmt);
-		vftprintf(stderr, fmt, args);
-		va_end(args);
-		fputc('\n', stderr);
-		print_token_highlight(token);
+		std::cout << error_prompt;
+
+		return std::cout;
 	}
 
-	void errort(const Token& token, const char *msg)
-	{	
-		print_error_header(token);
-		fputs(msg, stderr);
-		fputc('\n', stderr);
-		print_token_highlight(token);
-	}
-
-	void errorf(const char *fmt, ...)
+	std::ostream& error_out(const Token& token)
 	{
-		fputs(error_prompt, stderr);
-		va_list args;
-		va_start(args, fmt);
-		vftprintf(stderr, fmt, args);
-		va_end(args);
-		fputc('\n', stderr);
+		std::cout <<  token.filename() << ':' << token.line() << ':' << token.col() << error_prompt;
+
+		return std::cout;
 	}
 
-	void errorm(const char *msg)
+	std::ostream& error_out(TokenIterator& iter)
 	{
-		fprint_message(stderr, error_prompt, msg);	
-	}
-
-	void fatal(const char *msg)
-	{
-		fprint_message(stderr, fatal_prompt, msg);
-	}
-
-	void _debugf(const char *file, unsigned line, const char *func, const char *fmt, ...)
-	{	
-		print_debug_header(file, line, func);
-
-		va_list args;
-		va_start(args, fmt);
-		vfprintf(stderr, fmt, args);
-		va_end(args);
-		fputc('\n', stderr);
-	}
-
-	void _debug(const char *file, unsigned line, const char *func, const char *msg)
-	{
-		print_debug_header(file, line, func);
-		fputs(msg, stderr);
-		fputc('\n', stderr);
+		return error_out(*iter);
 	}
 }

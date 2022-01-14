@@ -3,6 +3,7 @@
 
 // local includes
 #include <warbler/primitive.hpp>
+#include <iostream>
 
 // standard headers
 #include <vector>
@@ -105,7 +106,7 @@ namespace warbler
 	private:
 
 		StringView _text;
-		const String& _filename;
+		const char *_filename;
 		usize _line;
 		usize _col;
 		TokenType _type;
@@ -113,21 +114,20 @@ namespace warbler
 	public:
 
 		Token();
-		Token(const StringView& text, const String& filename, usize line, usize col, TokenType type);
+		Token(const StringView& text, const char *filename, usize line, usize col, TokenType type);
+
+		static Token end_of_file(const char *filename, usize line, usize col);
 
 		const StringView& text() const { return _text; }
-		const String& filename() const { return _filename; }
+		const char *filename() const { return _filename; }
 		usize line() const { return _line; }
 		usize col() const { return _col; }
 		TokenType type() const { return _type; }
+
+		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};
 
 	typedef std::vector<Token>::const_iterator TokenIterator;
-
-	Token token_default();
-	Token token_initial(const char *filename, const char *src);
-	Token token_eof();
-	void token_print(const Token *token);
-	void token_println(const Token *token);
 }
+
 #endif

@@ -6,7 +6,7 @@
 
 namespace warbler
 {
-	Token::Token(const StringView& text, const String& filename, usize line, usize col, TokenType type) :
+	Token::Token(const StringView& text, const char *filename, usize line, usize col, TokenType type) :
 	_text(text),
 	_filename(filename),
 	_line(line),
@@ -21,4 +21,16 @@ namespace warbler
 	_col(0),
 	_type(TOKEN_END_OF_FILE)
 	{}
+
+	Token Token::end_of_file(const char *filename, usize line, usize col)
+	{
+		return Token(StringView("<end of file>"), filename, line, col, TOKEN_END_OF_FILE);
+	}
+
+	std::ostream& operator<<(std::ostream& out, const Token& token)
+	{
+		out << token.text();
+
+		return out;
+	}
 }

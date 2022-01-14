@@ -12,9 +12,7 @@
 
 namespace warbler
 {
-	Error tokenizer_init();
-	void tokenizer_free();
-
+	void tokenizer_init();
 	Result<std::vector<Token>> tokenize(const char *filename, const char *src);
 }
 

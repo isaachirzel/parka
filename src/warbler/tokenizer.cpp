@@ -10,9 +10,25 @@
 
 namespace warbler
 {
-	typedef enum CharType
+	struct Location
+	{
+		const char * filename;
+		const char *ptr;
+		usize line;
+		usize col;
+	};
+
+	std::ostream& error_out(const Location& location)
+	{
+		std::cout << location.filename << ':' << location.line << ':' << location.col;
+
+		return error_out();
+	}
+
+	enum CharType
 	{
 		CHAR_INVALID,
+		CHAR_WHITESPACE,
 		CHAR_NULL,
 		CHAR_IDENTIFIER,
 		CHAR_SEPARATOR,
@@ -20,15 +36,9 @@ namespace warbler
 		CHAR_DIGIT,
 		CHAR_OPERATOR,
 		CHAR_QUOTE
-	} CharType;
+	};
 
-	typedef struct TokenInfo
-	{
-		const char *key;
-		TokenType value;
-	} TokenInfo;
-
-	const TokenInfo keywords[] =
+	std::unordered_map<std::string, TokenType> token_types = 
 	{
 		{ "func", TOKEN_FUNC },
 		{ "var", TOKEN_VAR },
@@ -41,7 +51,7 @@ namespace warbler
 		{ "break", TOKEN_BREAK },
 		{ "if", TOKEN_IF },
 		{ "else", TOKEN_ELSE },
-		{ "switch", TOKEN_SWITCH },
+		{ "match", TOKEN_MATCH },
 		{ "case", TOKEN_CASE },
 		{ "struct", TOKEN_STRUCT },
 		{ "union", TOKEN_UNION },
@@ -52,38 +62,22 @@ namespace warbler
 		{ "export", TOKEN_EXPORT }
 	};
 
-	const size_t keyword_count = sizeof(keywords) / sizeof(*keywords);
-
-	// data
-
-	std::unordered_map<std::string, TokenType> token_types;
-	CharType char_types[CHAR_TYPE_COUNT];
-
-	// functions
-
-	Error init_token_types()
-	{
-
-		for (size_t i = 0; i < keyword_count; ++i)
-		{
-			const TokenInfo *info = keywords + i;
-			token_types[info->key] = info->value;
-		}
-
-		return ERROR_NONE;
-	}
+	CharType char_types[256];
 
 	void init_char_types()
 	{
 		char_types[0] = CHAR_NULL;
 
+		for (usize i = 1; i <= ' '; ++i)
+			char_types[i] = CHAR_WHITESPACE;
+
 		// setting up identifier characters
-		char_types[(size_t)'_'] = CHAR_IDENTIFIER;
-		for (size_t i = 'a'; i <= 'z'; ++i)
+		char_types[(usize)'_'] = CHAR_IDENTIFIER;
+		for (usize i = 'a'; i <= 'z'; ++i)
 			char_types[i] = CHAR_IDENTIFIER;
-		for (size_t i = 'A'; i <= 'Z'; ++i)
+		for (usize i = 'A'; i <= 'Z'; ++i)
 			char_types[i] = CHAR_IDENTIFIER;
-		for (size_t i = '0'; i <= '9'; ++i)
+		for (usize i = '0'; i <= '9'; ++i)
 			char_types[i] = CHAR_DIGIT;
 
 		// setting up separator characters
@@ -101,9 +95,6 @@ namespace warbler
 
 		// setting up operator characters
 		char_types[(size_t)'!'] = CHAR_OPERATOR;
-		char_types[(size_t)'@'] = CHAR_OPERATOR;
-		char_types[(size_t)'#'] = CHAR_OPERATOR;
-		char_types[(size_t)'$'] = CHAR_OPERATOR;
 		char_types[(size_t)'%'] = CHAR_OPERATOR;
 		char_types[(size_t)'^'] = CHAR_OPERATOR;
 		char_types[(size_t)'&'] = CHAR_OPERATOR;
@@ -123,121 +114,64 @@ namespace warbler
 		char_types[(size_t)'\"'] = CHAR_QUOTE;
 	}
 
-	Error tokenizer_init()
+	void tokenizer_init()
 	{
-		Error error;
-
-		if ((error = init_token_types()))
-			return error;
-
 		init_char_types();
-
-		return ERROR_NONE;
 	}
 
 	#define TEMP_KEY_SIZE (1023)
 
-	static Error get_token_type(Token *token)
+	static TokenType get_token_type(const StringView& text)
 	{
-		assert(token->text.data != NULL);
-		assert(token->text.length > 0);
+		auto iter = token_types.find(String(text));
 
-		if (token->text.length > TEMP_KEY_SIZE)
-		{
-			char *key = string_duplicate(&token->text);
+		if (iter == token_types.end())
+			return TOKEN_IDENTIFIER;
 
-			if (!key)
-				return ERROR_MEMORY;
-
-			auto iter = token_types.find(key);
-
-			if (iter == token_types.end())
-				token->type = TOKEN_IDENTIFIER;
-			else
-				token->type = iter->second;
-
-			free(key);
-		}
-		else
-		{
-			static char temp_key[TEMP_KEY_SIZE + 1];
-
-			strncpy(temp_key, token->text.data, token->text.length);
-			temp_key[token->text.length] = '\0';
-
-			auto iter = token_types.find(temp_key);
-
-			if (iter == token_types.end())
-				token->type = TOKEN_IDENTIFIER;
-			else
-				token->type = iter->second;
-		}
-
-		return ERROR_NONE;
+		return iter->second;
 	}
 
 	static inline CharType get_char_type(unsigned char c)
 	{
-		assert(c < CHAR_TYPE_COUNT);
-
 		return char_types[(size_t)c];
 	}
 
-	const char *get_token_string(TokenType type)
+	#pragma message("figure out find_next_location() for multiline strings")
+
+	static Location get_end_of_token_location(const Token& token)
 	{
-		if (type == TOKEN_IDENTIFIER)
-			return "<identifier>";
-		else if (type == TOKEN_END_OF_FILE)
-			return "<end of file>";
-
-		for (size_t i = 0; i < keyword_count; ++i)
+		return Location
 		{
-			const TokenInfo *info = keywords + i;
-			if (info->value == type)
-				return info->key;
-		}
-
-		return "<unknown>";
+			token.filename(),
+			token.text().data() + token.text().size(),
+			token.line(),
+			token.col()
+		};
 	}
 
-	static Token find_next_token(const Token *last_token)
+	static Location find_next_location(const Location& last_location)
 	{
-		Token out = (Token)
-		{
-			.filename = last_token->filename,
-			.line = last_token->line,
-			.col = last_token->col + last_token->text.length,
-			.text = (String)
-			{
-				.data = last_token->text.data + last_token->text.length,
-				.length = 0
-			},
-			.type = TOKEN_END_OF_FILE
-		};
-
-		register const char * pos = out.text.data;
+		auto location = last_location;
 
 		while (true)
 		{
-			if (*pos == '\0')
+			char character = location.ptr[0];
+			auto type = get_char_type(character);
+
+			if (character > ' ')
 				break;
 
-			if (*pos > ' ')
-				break;
-			
-			if (*pos == '\n')
+			location.ptr += 1;
+			location.col += 1;
+
+			if (character == '\n')
 			{
-				++out.line;
-				out.col = 0;
+				location.line += 1;
+				location.col = 0;
 			}
-
-			++out.col;
-			++pos;
 		}
 
-		out.text.data = pos;
-
-		return out;
+		return location;
 	}
 
 	static inline bool is_char_alphanumeric(char c)
@@ -247,485 +181,528 @@ namespace warbler
 		return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
 	}
 
-	static Error get_identifier_token(Token *self)
+	static Result<Token> get_identifier_token(const Location& location)
 	{
-		Error error;
-
-		const char *pos = self->text.data + 1;
+		const char *pos = location.ptr + 1;
 
 		while (is_char_alphanumeric(*pos))
-			++pos;
+			pos += 1;
 
-		self->text.length = pos - self->text.data;
+		StringView text(location.ptr, pos - location.ptr);
+		auto type = get_token_type(text);
 
-		if ((error = get_token_type(self)))
-			return error;
-
-		return ERROR_NONE;
+		return Token(text, location.filename, location.line, location.col, type);
 	}
 
-	static Error get_separator_token(Token *self)
+	static Result<Token> get_separator_token(const Location& location)
 	{
-		self->text.length = 1;
+		StringView text(location.ptr, 1);
 
-		switch (self->text.data[0])
+		TokenType type;
+		switch (text[0])
 		{
 			case '(':
-				self->type = TOKEN_LPAREN;
+				type = TOKEN_LPAREN;
 				break;
 
 			case ')':
-				self->type = TOKEN_RPAREN;
+				type = TOKEN_RPAREN;
 				break;
 
 			case '[':
-				self->type = TOKEN_LBRACK;
+				type = TOKEN_LBRACK;
 				break;
 
 			case ']':
-				self->type = TOKEN_RBRACK;
+				type = TOKEN_RBRACK;
 				break;
 
 			case '{':
-				self->type = TOKEN_LBRACE;
+				type = TOKEN_LBRACE;
 				break;
 
 			case '}':
-				self->type = TOKEN_RBRACE;
+				type = TOKEN_RBRACE;
 				break;
 
 			case ',':
-				self->type = TOKEN_COMMA;
+				type = TOKEN_COMMA;
 				break;
 
 			case ';':
-				self->type = TOKEN_SEMICOLON;
+				type = TOKEN_SEMICOLON;
 				break;
 			
 			default:
-				errortf(*self, "invalid chracter given for separator: '%c'", self->text.data[0]);
+				error_out(location) << "invalid character given for separator: " << location.ptr[0] << std::endl;
 				return ERROR_ARGUMENT;
 		}
 
-		return ERROR_NONE;
+		return Token(text, location.filename, location.line, location.col, type);
 	}
 
-	static Error get_digit_token(Token *self)
+	static Result<Token> get_digit_token(const Location& location)
 	{
-		assert(self != NULL);
-
-		const char *pos = self->text.data;
-		bool is_float = false;
+		const char *pos = location.ptr;
+		usize decimal_count = 0;
 
 		while (true)
 		{
 			CharType type = get_char_type(*pos);
 
-			switch (type)
+			if (type == CHAR_DOT)
 			{
-				case CHAR_DOT:
-					if (is_float)
-					{
-						errortf(*self, "extra decimal in float literal: %t", self);
-						return ERROR_ARGUMENT;
-					}
-
-					is_float = true;
-					++pos;
-					continue;
-
-				case CHAR_DIGIT:
-					++pos;
-					continue;
-
-				default:
-					break;
+				decimal_count += 1;
+			}
+			else if (type != CHAR_DIGIT)
+			{
+				break;
 			}
 
-			break;
+			pos += 1;
 		}
 
+		StringView text(location.ptr, pos - location.ptr);
 
-		self->text.length = pos - self->text.data;
-		self->type = is_float
+		if (decimal_count > 1)
+		{
+			error_out(location) << "only one decimal is allowed in float literal: " << text << std::endl;
+			return ERROR_ARGUMENT;
+		}
+
+		auto type = decimal_count > 0
 			? TOKEN_FLOAT_LITERAL
 			: TOKEN_INTEGER_LITERAL;
 
-		return ERROR_NONE;
+		return Token(text, location.filename, location.line, location.col, type);
 	}
 
-	static Error get_dot_token(Token *self)
+	static Result<Token> get_dot_token(const Location& location)
 	{
-		assert(self != NULL);
-
-		const char *pos = self->text.data;
+		const char *pos = location.ptr;
 
 		if (get_char_type(pos[1]) == CHAR_DIGIT)
-			return get_digit_token(self);
+			return get_digit_token(location);
 
-		++pos;
+		pos += 1;
 
 		while (get_char_type(*pos) == CHAR_DOT)
-			++pos;
+			pos += 1;
 
-		self->text.length = pos - self->text.data;
+		StringView text(location.ptr, pos - location.ptr);
 
-		switch (self->text.length)
+		TokenType type;
+
+		switch (text.size())
 		{
 			case 1:
-				self->type = TOKEN_DOT;
+				type = TOKEN_DOT;
 				break;
 
 			case 3:
-				self->type = TOKEN_ELIPSIS;
+				type = TOKEN_ELIPSIS;
 				break;
 
 			default:
-				errortf(*self, "invalid dot token: %t", self);
+				error_out(location) << "invalid dot token: " << text << std::endl;
 				return ERROR_ARGUMENT;
 		}
 
-		return ERROR_NONE;
+		return Token(text, location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_plus_operator(Token *self)
+	static Token get_plus_operator(const Location& location)
 	{
-		switch (self->text.data[1])
+		TokenType type;
+		usize length;
+
+		switch (location.ptr[1])
 		{
 			case '+':
-				self->type = TOKEN_INCREMENT;
-				self->text.length = 2;
+				type = TOKEN_INCREMENT;
+				length = 2;
 				break;
 
 			case '=':
-				self->type = TOKEN_ADD_ASSIGN;
-				self->text.length = 2;
+				type = TOKEN_ADD_ASSIGN;
+				length = 2;
 				break;
 
 			default:
-				self->type = TOKEN_PLUS;
-				self->text.length = 1;
+				type = TOKEN_PLUS;
+				length = 1;
 				break;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_hyphen_operator(Token *self)
+	static Token get_hyphen_operator(const Location& location)
 	{
-		switch (self->text.data[1])
+		TokenType type;
+		usize length;
+
+		switch (location.ptr[1])
 		{
 			case '-': // --
-				self->type = TOKEN_DECREMENT;
-				self->text.length = 2;
+				type = TOKEN_DECREMENT;
+				length = 2;
 				break;
 
 			case '=': // -=
-				self->type = TOKEN_SUBTRACT_ASSIGN;
-				self->text.length = 2;
+				type = TOKEN_SUBTRACT_ASSIGN;
+				length = 2;
 				break;
 
 			case '>': // ->
-				self->type = TOKEN_SINGLE_ARROW;
-				self->text.length = 2;
+				type = TOKEN_SINGLE_ARROW;
+				length = 2;
 				break;
 
 			default: // -
-				self->type = TOKEN_MINUS;
-				self->text.length = 1;
+				type = TOKEN_MINUS;
+				length = 1;
 				break;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_asterisk_operator(Token *self)
+	static Token get_asterisk_operator(const Location& location)
 	{
-		switch (self->text.data[1])
+		TokenType type;
+		usize length;
+		
+		switch (location.ptr[1])
 		{
 			case '*': // **
-				self->type = TOKEN_POW;
-				self->text.length = 2;
+				type = TOKEN_POW;
+				length = 2;
 				break;
 
 			case '=': // *=
-				self->type = TOKEN_MULTIPLY_ASSIGN;
-				self->text.length = 2;
+				type = TOKEN_MULTIPLY_ASSIGN;
+				length = 2;
 				break;
 
 			default: // *
-				self->type = TOKEN_ASTERISK;
-				self->text.length = 1;
+				type = TOKEN_ASTERISK;
+				length = 1;
 				break;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_slash_operator(Token *self)
+	static Token get_slash_operator(const Location& location)
 	{
-		if (self->text.data[1] == '=')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == '=')
 		{
-			self->type = TOKEN_DIVIDE_ASSIGN;
-			self->text.length = 2;
+			type = TOKEN_DIVIDE_ASSIGN;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_SLASH;
-			self->text.length = 1;
+			type = TOKEN_SLASH;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_langbrack_operator(Token *self)
+	static Token get_langbrack_operator(const Location& location)
 	{
-		switch (self->text.data[1])
+		TokenType type;
+		usize length;
+
+		switch (location.ptr[1])
 		{
 			case '<': // <<
-				if (self->text.data[2] == '=') // <<=
+				if (location.ptr[2] == '=') // <<=
 				{
-					self->type = TOKEN_LSHIFT_ASSIGN;
-					self->text.length = 3;
+					type = TOKEN_LSHIFT_ASSIGN;
+					length = 3;
 				}
 				else
 				{
-					self->type = TOKEN_LSHIFT;
-					self->text.length = 2;
+					type = TOKEN_LSHIFT;
+					length = 2;
 				}
 				break;
 
 			case '=': // <=
-				self->type = TOKEN_LESS_EQUALS;
-				self->text.length = 2;
+				type = TOKEN_LESS_EQUALS;
+				length = 2;
 				break;
 
 			default: // <
-				self->type = TOKEN_LANGBRACK;
-				self->text.length = 1;
+				type = TOKEN_LANGBRACK;
+				length = 1;
 				break;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_rangbrack_operator(Token *self)
+	static Token get_rangbrack_operator(const Location& location)
 	{
-		switch (self->text.data[1])
+		TokenType type;
+		usize length;
+
+		switch (location.ptr[1])
 		{
 			case '>': // >>
-				if (self->text.data[2] == '=') // >>=
+				if (location.ptr[2] == '=') // >>=
 				{
-					self->type = TOKEN_RSHIFT_ASSIGN;
-					self->text.length = 3;
+					type = TOKEN_RSHIFT_ASSIGN;
+					length = 3;
 				}
 				else
 				{
-					self->type = TOKEN_RSHIFT;
-					self->text.length = 2;
+					type = TOKEN_RSHIFT;
+					length = 2;
 				}
 				break;
 
 			case '=': // <=
-				self->type = TOKEN_GREATER_EQUALS;
-				self->text.length = 2;
+				type = TOKEN_GREATER_EQUALS;
+				length = 2;
 				break;
 
 			default: // >
-				self->type = TOKEN_RANGBRACK;
-				self->text.length = 1;
+				type = TOKEN_RANGBRACK;
+				length = 1;
 				break;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_ampersand_operator(Token *self)
+	static Token get_ampersand_operator(const Location& location)
 	{
-		if (self->text.data[1] == '=')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == '=')
 		{
-			self->type = TOKEN_BITAND_ASSIGN;
-			self->text.length = 2;
+			type = TOKEN_BITAND_ASSIGN;
+			length = 2;
 		}
-		else if (self->text.data[1] == '&')
+		else if (location.ptr[1] == '&')
 		{
-			self->type = TOKEN_BOOLEAN_AND;
-			self->text.length = 2;
+			type = TOKEN_BOOLEAN_AND;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_AMPERSAND;
-			self->text.length = 1;
+			type = TOKEN_AMPERSAND;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 	
-	static inline void get_pipeline_operator(Token *self)
+	static Token get_pipeline_operator(const Location& location)
 	{
+		TokenType type;
+		usize length;
 
-		if (self->text.data[1] == '=')
+		if (location.ptr[1] == '=')
 		{
-			self->type = TOKEN_BITOR_ASSIGN;
-			self->text.length = 2;
+			type = TOKEN_BITOR_ASSIGN;
+			length = 2;
 		}
-		else if (self->text.data[1] == '|')
+		else if (location.ptr[1] == '|')
 		{
-			self->type = TOKEN_BOOLEAN_OR;
-			self->text.length = 2;
+			type = TOKEN_BOOLEAN_OR;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_PIPELINE;
-			self->text.length = 1;
+			type = TOKEN_PIPELINE;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_carrot_operator(Token *self)
+	static Token get_carrot_operator(const Location& location)
 	{
-		if (self->text.data[1] == '=')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == '=')
 		{
-			self->type = TOKEN_BITXOR_ASSIGN;
-			self->text.length = 2;
+			type = TOKEN_BITXOR_ASSIGN;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_CARROT;
-			self->text.length = 1;
+			type = TOKEN_CARROT;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_equals_operator(Token *self)
+	static Token get_equals_operator(const Location& location)
 	{
-		switch (self->text.data[1])
+		TokenType type;
+		usize length;
+
+		switch (location.ptr[1])
 		{
 			case '=':
-				self->type = TOKEN_EQUALS;
-				self->text.length = 2;
+				type = TOKEN_EQUALS;
+				length = 2;
 				break;
 
 			case '>':
-				self->type = TOKEN_DOUBLE_ARROW;
-				self->text.length = 2;
+				type = TOKEN_DOUBLE_ARROW;
+				length = 2;
 				break;
 
 			default:
-				self->type = TOKEN_ASSIGN;
-				self->text.length = 1;
+				type = TOKEN_ASSIGN;
+				length = 1;
 				break;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_exclamation_operator(Token *self)
+	static Token get_exclamation_operator(const Location& location)
 	{
-		if (self->text.data[1] == '=')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == '=')
 		{
-			self->type = TOKEN_NOT_EQUALS;
-			self->text.length = 2;
+			type = TOKEN_NOT_EQUALS;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_BOOLEAN_NOT;
-			self->text.length = 1;
+			type = TOKEN_BOOLEAN_NOT;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_question_operator(Token *self)
+	static Token get_question_operator(const Location& location)
 	{
-		if (self->text.data[1] == '?')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == '?')
 		{
-			self->type = TOKEN_OPTION;
-			self->text.length = 2;
+			type = TOKEN_OPTION;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_QUESTION;
-			self->text.length = 1;
+			type = TOKEN_QUESTION;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_modulus_operator(Token *self)
+	static Token get_modulus_operator(const Location& location)
 	{
-		if (self->text.data[1] == '=')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == '=')
 		{
-			self->type = TOKEN_MODULUS_ASSIGN;
-			self->text.length = 2;
+			type = TOKEN_MODULUS_ASSIGN;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_MODULUS;
-			self->text.length = 1;
+			type = TOKEN_MODULUS;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static inline void get_colon_operator(Token *self)
+	static Token get_colon_operator(const Location& location)
 	{
-		if (self->text.data[1] == ':')
+		TokenType type;
+		usize length;
+
+		if (location.ptr[1] == ':')
 		{
-			self->type = TOKEN_SCOPE;
-			self->text.length = 2;
+			type = TOKEN_SCOPE;
+			length = 2;
 		}
 		else
 		{
-			self->type = TOKEN_COLON;
-			self->text.length = 1;
+			type = TOKEN_COLON;
+			length = 1;
 		}
+
+		return Token(StringView(location.ptr, length), location.filename, location.line, location.col, type);
 	}
 
-	static Error get_operator_token(Token *self)
+	static Result<Token> get_operator_token(const Location& location)
 	{
-		char character = self->text.data[0];
-
-		switch (character)
+		switch (location.ptr[0])
 		{
 			case '+': // +, ++, +=
-				get_plus_operator(self);
+				get_plus_operator(location);
 				break;
 
 			case '-': // -, --, -=, ->
-				get_hyphen_operator(self);
+				get_hyphen_operator(location);
 				break;
 
 			case '*': // *, **, *=
-				get_asterisk_operator(self);
+				get_asterisk_operator(location);
 				break;
 
 			case '/': // /, /=
-				get_slash_operator(self);
-				break;
+				return get_slash_operator(location);
 
 			case '<': // <, <<, <=
-				get_langbrack_operator(self);
-				break;
+				return get_langbrack_operator(location);
 
 			case '>': // >, >>, >=
-				get_rangbrack_operator(self);
-				break;
+				return get_rangbrack_operator(location);
 
 			case '&': // &, &=
-				get_ampersand_operator(self);
-				break;
+				return get_ampersand_operator(location);
 
 			case '|': // |, |=
-				get_pipeline_operator(self);
-				break;
+				return get_pipeline_operator(location);
 
 			case '^': // ^, ^=
-				get_carrot_operator(self);
-				break;
+				return get_carrot_operator(location);
 
 			case '=': // =, ==, =>
-				get_equals_operator(self);
-				break;
+				return get_equals_operator(location);
 
 			case '!': // !, !=
-				get_exclamation_operator(self);
-				break;
+				return get_exclamation_operator(location);
 
 			case '?': // ?, ??
-				get_question_operator(self);
-				break;
+				return get_question_operator(location);				
 
 			case '%': // %, %=
-				get_modulus_operator(self);
-				break;
+				return get_modulus_operator(location);
 
 			case ':': // :, ::
-				get_colon_operator(self);
-				break;
+				return get_colon_operator(location);
 
 			default:
-				errortf(*self, "invalid character given in operator: %c", character);
+				error_out(location) << "invalid character given in operator: " << location.ptr[0] << std::endl;
 				return ERROR_ARGUMENT;
 		}
-
-		return ERROR_NONE;
 	}
 
 	static inline bool is_end_of_text_literal(const char *pos, char terminal_char)
@@ -733,97 +710,98 @@ namespace warbler
 		return pos[0] == terminal_char && pos[-1] != '\\';
 	}
 
-	static Error get_quote_token(Token *self)
+	static Result<Token> get_quote_token(const Location& location)
 	{	
-		char terminal_char = self->text.data[0];
+		char terminal_char = location.ptr[0];
 
-		const char *pos = self->text.data + 1;
+		const char *pos = location.ptr + 1;
 		while (*pos && !is_end_of_text_literal(pos, terminal_char))
 			++pos;
 
 		if (*pos == '\0')
 		{
-			errorm("unterminated string literal");
+			error_out(location) << "unterminated string literal: " << location.ptr << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
-		++pos;
+		pos += 1;
 
-		self->text.length = pos - self->text.data;
+		TokenType type;
+		StringView text(location.ptr, pos - location.ptr);
 
-		if (self->text.data[0] == '\'')
+		if (text[0] == '\'')
 		{
-			self->type = TOKEN_CHAR_LITERAL;
+			type = TOKEN_CHAR_LITERAL;
 		}
-		else if (self->text.data[0] == '\"')
+		else
 		{
-			self->type = TOKEN_STRING_LITERAL;
+			type = TOKEN_STRING_LITERAL;
 		}
 			
-		return ERROR_NONE;
+		return Token(text, location.filename, location.line, location.col, type);
 	}
 
-	static Error get_next_token(Token *self)
+	static Result<Token> get_next_token(const Location& location)
 	{
-		assert(self != NULL);
-
-		CharType type = get_char_type(self->text.data[0]);
+		auto type = get_char_type(location.ptr[0]);
 
 		switch (type)
 		{
 			case CHAR_NULL:
-				*self = token_default();
-				return ERROR_NONE;
+				break;
 
 			case CHAR_IDENTIFIER:
-				return get_identifier_token(self);
+				return get_identifier_token(location);
 
 			case CHAR_SEPARATOR:
-				return get_separator_token(self);
+				return get_separator_token(location);
 
 			case CHAR_DOT:
-				return get_dot_token(self);
+				return get_dot_token(location);
 
 			case CHAR_DIGIT:
-				return get_digit_token(self);
+				return get_digit_token(location);
 
 			case CHAR_OPERATOR:
-				return get_operator_token(self);
+				return get_operator_token(location);
 
 			case CHAR_QUOTE:
-				return get_quote_token(self);
+				return get_quote_token(location);
 
-			default:
-				break;
+			case CHAR_INVALID:
+				error_out(location) << "invalid character in source file: " << location.ptr[0]
+					<< ", integer value: (" << (int)location.ptr[0] << ")" << std::endl; 
+				return ERROR_ARGUMENT;
 		}
 
-		errortf(*self, "invalid character in source file: %c", self->text.data[0]);
-		return ERROR_ARGUMENT;
+		return Token::end_of_file(location.filename, location.line, location.col);
 	}
 
 	Result<std::vector<Token>> tokenize(const char *filename, const char *src)
 	{	
 		std::vector<Token> out;
-		out.push_back(token_initial(filename, src));
 
-		Token *previous = &out[0];
+		out.reserve(10);
+
+		auto location = Location { filename, src, 0, 0 };
 
 		do
 		{
-			Token token = find_next_token(previous);
-			
-			Error error;
-			if ((error = get_next_token(&token)))
-				return error;
+			location = find_next_location(location);
 
 			if (out.size() == out.capacity())
 				out.reserve(out.size() * 2);
-			
-			out.push_back(token);
 
-			previous = &out.back();
+			auto res = get_next_token(location);
+
+			if (res.has_error())
+				return res.error();
+
+			out.emplace_back(res.unwrap());
+
+			location = get_end_of_token_location(out.back());
 		}
-		while (previous->type != TOKEN_END_OF_FILE);
+		while (out.back().type() != TOKEN_END_OF_FILE);
 
 		return ERROR_NONE;
 	}

@@ -3,6 +3,7 @@
 
 // local headers
 #include <warbler/token.hpp>
+#include <iostream>
 
 namespace warbler
 {
@@ -20,6 +21,10 @@ namespace warbler
 
 	void _debugf(const char *file, unsigned line, const char *func, const char *fmt, ...);
 	void _debug(const char *file, unsigned line, const char *func, const char *msg);
+
+	std::ostream& error_out();
+	std::ostream& error_out(const Token& token);
+	std::ostream& error_out(TokenIterator& iter);
 }
 
 #ifndef NDEBUG
