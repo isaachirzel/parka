@@ -5,8 +5,14 @@
 
 namespace warbler
 {
+	Typename::Typename() :
+	_name(),
+	_id(0)
+	{}
+
 	Typename::Typename(String&& name) :
-	_name(name)
+	_name(name),
+	_id(0)
 	{}
 
 	Result<Typename> Typename::parse(TokenIterator& iter)

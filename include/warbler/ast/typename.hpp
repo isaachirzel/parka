@@ -13,6 +13,7 @@ namespace warbler
 	private:
 
 		String _name;
+		u32 _id;
 
 	public:
 
