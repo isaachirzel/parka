@@ -19,7 +19,8 @@ namespace warbler
 
 	public:
 
-		Identifier(std::string&& text);
+		Identifier() = delete;
+		Identifier(String&& text);
 
 		static Result<Identifier> parse(TokenIterator& iter);
 

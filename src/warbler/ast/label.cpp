@@ -35,7 +35,6 @@ namespace warbler
 
 	void Label::print_tree(u32 depth) const
 	{
-		print_branch(depth);
-		puts(_identifier.c_str());
+		std::cout << tree_branch(depth) << _identifier << '\n';
 	}
 }

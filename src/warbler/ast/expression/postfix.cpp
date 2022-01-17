@@ -127,10 +127,10 @@ namespace warbler
 				return Postfix(member.unwrap());
 			}
 			default:
-				return ERROR_NOT_FOUND;
+				break;
 		}
 
-		return ERROR_NONE;
+		return ERROR_NOT_FOUND;
 	}
 
 	Result<std::vector<Postfix>> Postfix::parse_list(TokenIterator& iter)
@@ -157,22 +157,24 @@ namespace warbler
 
 	void Postfix::print_tree(u32 depth) const
 	{
+		std::cout << tree_branch(depth);
+
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				print_tree_branch_symbol("[]", depth);
+				std::cout << "[]\n";
 				_index->print_tree(depth + 1);
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
-				print_tree_branch_symbol("()", depth);
+				std::cout << "()\n";
 
 				for (const auto& arg : _arguments)
 					arg.print_tree(depth + 1);
 				break;
 
 			case POSTFIX_MEMBER:
-				print_tree_branch_symbol(".", depth);
+				std::cout << ".\n";
 				_member.print_tree(depth + 1);
 				break;
 		}

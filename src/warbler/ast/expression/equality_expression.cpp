@@ -14,6 +14,17 @@ namespace warbler
 	_rhs(rhs)
 	{}
 
+	EqualityExpression::EqualityExpression(EqualityExpression&& other) :
+	_lhs(std::move(other._lhs)),
+	_rhs(std::move(other._rhs))
+	{}
+
+	EqualityExpression::EqualityExpression(const EqualityExpression& other) :
+	_lhs(other._lhs),
+	_rhs(other._rhs)
+	{}
+
+
 	Result<EqualityExpression> EqualityExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = ComparisonExpression::parse(iter);
@@ -69,11 +80,10 @@ namespace warbler
 		for (const auto& rhs : _rhs)
 		{
 			const char *symbol = rhs.type == EQUALITY_EQUALS
-				? "=="
-				: "!=";
+				? "==\n"
+				: "!=\n";
 
-			print_tree_branch_symbol(symbol, depth - 1);
-
+			std::cout << tree_branch(depth - 1) << symbol;
 			rhs.expr.print_tree(depth);
 		}
 	}

@@ -43,7 +43,7 @@ namespace warbler
 
 		for (const auto& rhs : _rhs)
 		{
-			print_tree_branch_symbol("&&", depth - 1);
+			std::cout << tree_branch(depth - 1) << "&&\n";
 			rhs.print_tree(depth);
 		}
 	}

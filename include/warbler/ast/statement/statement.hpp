@@ -1,21 +1,21 @@
 #ifndef WARBLER_AST_STATEMENT_HPP
 #define WARBLER_AST_STATEMENT_HPP
 
-#include <warbler/ast/statement/expression_statement.hpp>
+//#include <warbler/ast/statement/expression_statement.hpp>
 #include <warbler/ast/statement/declaration_statement.hpp>
-#include <warbler/ast/statement/selection_statement.hpp>
-#include <warbler/ast/statement/loop_statement.hpp>
-#include <warbler/ast/statement/jump_statement.hpp>
+#include <warbler/ast/statement/if_statement.hpp>
+//#include <warbler/ast/statement/loop_statement.hpp>
+//#include <warbler/ast/statement/jump_statement.hpp>
 
 namespace warbler
 {
 	enum StatementType
 	{
-		STATEMENT_EXPRESSION,
+		//STATEMENT_EXPRESSION,
 		STATEMENT_DECLARATION,		
-		STATEMENT_SELECTION,
-		STATEMENT_LOOP,
-		STATEMENT_JUMP
+		STATEMENT_IF_THEN,
+		// STATEMENT_LOOP,
+		// STATEMENT_JUMP
 	};
 
 	class Statement
@@ -24,22 +24,22 @@ namespace warbler
 
 		union
 		{
-			ExpressionStatement _expression;
+			// ExpressionStatement _expression;
 			DeclarationStatement _declaration;
-			SelectionStatement _selection;
-			LoopStatement _loop;
-			JumpStatement _jump;
+			IfStatement _if_then;
+			//LoopStatement _loop;
+			//JumpStatement _jump;
 		};
 
 		StatementType _type;
 
 	public:
 
-		Statement(ExpressionStatement&& expression);
+		// Statement(ExpressionStatement&& expression);
 		Statement(DeclarationStatement&& declaration);
-		Statement(SelectionStatement&& selection);
-		Statement(LoopStatement&& loop);
-		Statement(JumpStatement&& jump);
+		Statement(IfStatement&& if_then);
+		//Statement(LoopStatement&& loop);
+		//Statement(JumpStatement&& jump);
 		Statement(Statement&& other);
 		Statement(const Statement& other);
 		~Statement();

@@ -16,7 +16,7 @@ namespace warbler
 	{
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
-			error_out(iter) << "expected identifier but got: " << *iter << std::endl;
+			error_out(iter) << "expected identifier but got: '" << *iter << '\''  << token_error(iter) << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
@@ -29,7 +29,6 @@ namespace warbler
 
 	void Identifier::print_tree(u32 depth) const
 	{
-		print_branch(depth);
-		puts(_text.c_str());
+		std::cout << tree_branch(depth) << _text << '\n';
 	}
 }

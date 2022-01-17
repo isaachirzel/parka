@@ -28,6 +28,8 @@ namespace warbler
 	public:
 
 		EqualityExpression(ComparisonExpression&& lhs, std::vector<EqualityRhs>&& rhs);
+		EqualityExpression(EqualityExpression&& other);
+		EqualityExpression(const EqualityExpression& other);
 
 		static Result<EqualityExpression> parse(TokenIterator& iter);
 

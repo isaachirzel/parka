@@ -47,20 +47,7 @@ namespace warbler
 		
 		for (const auto& rhs : _rhs)
 		{
-			
-			print_branch(depth - 1);
-
-			switch (rhs.type)
-			{
-				case ADDITIVE_ADD:
-					puts("+");
-					break;
-
-				case ADDITIVE_SUBTRACT:
-					puts("-");
-					break;		
-			}
-
+			std::cout << tree_branch(depth - 1) << (rhs.type == ADDITIVE_ADD ? "+\n" : "-\n");
 			rhs.expr.print_tree(depth);
 		}
 	}

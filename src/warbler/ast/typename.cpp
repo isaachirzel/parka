@@ -12,7 +12,7 @@ namespace warbler
 
 	Typename::Typename(String&& name) :
 	_name(name),
-	_id(0)
+	_id(1)
 	{}
 
 	Result<Typename> Typename::parse(TokenIterator& iter)
@@ -32,7 +32,9 @@ namespace warbler
 
 	void Typename::print_tree(u32 depth) const
 	{
-		print_branch(depth);
-		puts(_name.c_str());
+		std::cout << tree_branch(depth);
+		std::cout << ": ";
+		std::cout << (_id == 0 ? "<auto>" : _name);
+		std::cout << '\n';
 	}
 }

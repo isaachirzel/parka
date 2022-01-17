@@ -145,7 +145,7 @@ namespace warbler
 			token.filename(),
 			token.text().data() + token.text().size(),
 			token.line(),
-			token.col()
+			token.col() + token.text().size()
 		};
 	}
 
@@ -155,10 +155,9 @@ namespace warbler
 
 		while (true)
 		{
-			char character = location.ptr[0];
-			auto type = get_char_type(character);
+			auto character = *location.ptr;
 
-			if (character > ' ')
+			if (character == '\0' || character > ' ')
 				break;
 
 			location.ptr += 1;
@@ -434,12 +433,12 @@ namespace warbler
 				break;
 
 			case '=': // <=
-				type = TOKEN_LESS_EQUALS;
+				type = TOKEN_LESS_OR_EQUAL;
 				length = 2;
 				break;
 
 			default: // <
-				type = TOKEN_LANGBRACK;
+				type = TOKEN_LESS_THAN;
 				length = 1;
 				break;
 		}
@@ -468,12 +467,12 @@ namespace warbler
 				break;
 
 			case '=': // <=
-				type = TOKEN_GREATER_EQUALS;
+				type = TOKEN_GREATER_OR_EQUAL;
 				length = 2;
 				break;
 
 			default: // >
-				type = TOKEN_RANGBRACK;
+				type = TOKEN_GREATER_THAN;
 				length = 1;
 				break;
 		}
@@ -655,16 +654,13 @@ namespace warbler
 		switch (location.ptr[0])
 		{
 			case '+': // +, ++, +=
-				get_plus_operator(location);
-				break;
+				return get_plus_operator(location);
 
 			case '-': // -, --, -=, ->
-				get_hyphen_operator(location);
-				break;
+				return get_hyphen_operator(location);
 
 			case '*': // *, **, *=
-				get_asterisk_operator(location);
-				break;
+				return get_asterisk_operator(location);
 
 			case '/': // /, /=
 				return get_slash_operator(location);
@@ -700,9 +696,11 @@ namespace warbler
 				return get_colon_operator(location);
 
 			default:
-				error_out(location) << "invalid character given in operator: " << location.ptr[0] << std::endl;
-				return ERROR_ARGUMENT;
+				break;
 		}
+
+		error_out(location) << "invalid character given in operator: " << location.ptr[0] << std::endl;
+		return ERROR_ARGUMENT;
 	}
 
 	static inline bool is_end_of_text_literal(const char *pos, char terminal_char)
@@ -774,7 +772,7 @@ namespace warbler
 				return ERROR_ARGUMENT;
 		}
 
-		return Token::end_of_file(location.filename, location.line, location.col);
+		return Token(StringView(location.ptr, 0), location.filename, location.line, location.col, TOKEN_END_OF_FILE);
 	}
 
 	Result<std::vector<Token>> tokenize(const char *filename, const char *src)
@@ -798,11 +796,15 @@ namespace warbler
 				return res.error();
 
 			out.emplace_back(res.unwrap());
-
 			location = get_end_of_token_location(out.back());
 		}
 		while (out.back().type() != TOKEN_END_OF_FILE);
 
-		return ERROR_NONE;
+		for (const auto& token : out)
+		{
+			std::cout << token.line() << ':' << token.col() << " " << token << std::endl;
+		}
+
+		return out;
 	}
 }

@@ -22,8 +22,8 @@ namespace warbler
 		while (true)
 		{
 			bool should_break = false;
-			MultiplicativeType type;
 
+			MultiplicativeType type;
 			switch (iter->type())
 			{
 				case TOKEN_MODULUS:
@@ -68,20 +68,20 @@ namespace warbler
 
 		for (const auto& rhs : _rhs)
 		{
-			print_branch(depth - 1);
+			std::cout << tree_branch(depth - 1);
 
 			switch (rhs.type)
 			{
 				case MULTIPLICATIVE_MULTIPLY:
-					puts("*");
+					std::cout << "*\n";
 					break;
 
 				case MULTIPLICATIVE_DIVIDE:
-					puts("/");
+					std::cout << "/\n";
 					break;
 
 				case MULTIPLICATIVE_MODULUS:
-					puts("%");
+					std::cout << "%\n";
 					break;
 			}
 

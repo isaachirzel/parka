@@ -16,60 +16,60 @@ using namespace warbler;
 
 int main(int argc, char *argv[])
 {
-	if (!validate_cli_args(argc, argv))
-		return 1;
+	// if (!validate_cli_args(argc, argv))
+	// 	return 1;
 
-	char *src = read_file(argv[1]);
+	// char *src = read_file(argv[1]);
 
-	if (!src)
-		return ERROR_FILE;
+	// if (!src)
+	// 	return ERROR_FILE;
 
-	preprocess(src);
-	printf("Source:\n%s\n", src);
+	// preprocess(src);
+	// printf("Source:\n%s\n", src);
 
-	Error error = tokenizer_init();
-	if (error)
-	{
-		errorm("failed to initialize tokenizer");
-		free(src);
-		return (int)error;
-	}
+	// Error error = tokenizer_init();
+	// if (error)
+	// {
+	// 	errorm("failed to initialize tokenizer");
+	// 	free(src);
+	// 	return (int)error;
+	// }
 
-	puts(BAR "TOKENIZER" BAR "\n");
+	// puts(BAR "TOKENIZER" BAR "\n");
 
-	auto res = tokenize(argv[1], src);
+	// auto res = tokenize(argv[1], src);
 	
-	if (res.has_error())
-	{
-		errorm("failed to tokenize source");
-		free(src);
+	// if (res.has_error())
+	// {
+	// 	errorm("failed to tokenize source");
+	// 	free(src);
 
-		return (int)error;
-	}
+	// 	return (int)error;
+	// }
 
-	auto tokens = res.unwrap();
+	// auto tokens = res.unwrap();
 
-	for (size_t i = 0; i < tokens.size(); ++i)
-	{
-		auto& token = tokens[i];
-		printf("Token\t%d\t:\t", (int)token.type);
-		token_println(&token);
-	}
+	// for (size_t i = 0; i < tokens.size(); ++i)
+	// {
+	// 	auto& token = tokens[i];
+	// 	printf("Token\t%d\t:\t", (int)token.type);
+	// 	token_println(&token);
+	// }
 
-	puts(BAR "PARSER" BAR "\n");
+	// puts(BAR "PARSER" BAR "\n");
 
-	AdditiveExpression expr;
-	TokenIterator iter = tokens.begin();
+	// AdditiveExpression expr;
+	// TokenIterator iter = tokens.begin();
 	
-	if ((error = additive_expression_parse(&expr, iter)) == ERROR_NONE)
-	{
-		debug("Parsed additive expression :)");
-		additive_expression_print_tree(&expr, 1);
-	}
+	// if ((error = additive_expression_parse(&expr, iter)) == ERROR_NONE)
+	// {
+	// 	debug("Parsed additive expression :)");
+	// 	additive_expression_print_tree(&expr, 1);
+	// }
 
-	debug("freeing data");
-	additive_expression_free(&expr);
-	free(src);
-	return error;
+	// debug("freeing data");
+	// additive_expression_free(&expr);
+	// free(src);
+	return 0;
 }
 

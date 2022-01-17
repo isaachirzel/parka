@@ -21,15 +21,17 @@ namespace warbler
 	_col(0),
 	_type(TOKEN_END_OF_FILE)
 	{}
-
-	Token Token::end_of_file(const char *filename, usize line, usize col)
-	{
-		return Token(StringView("<end of file>"), filename, line, col, TOKEN_END_OF_FILE);
-	}
-
+	
 	std::ostream& operator<<(std::ostream& out, const Token& token)
 	{
-		out << token.text();
+		if (token._type == TOKEN_END_OF_FILE)
+		{
+			out << "<end of file>";
+		}
+		else
+		{
+			out << token.text();
+		}
 
 		return out;
 	}

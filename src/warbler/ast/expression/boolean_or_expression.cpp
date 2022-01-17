@@ -31,7 +31,7 @@ namespace warbler
 			rhs.emplace_back(res.unwrap());
 		}
 
-		return ERROR_NONE;
+		return BooleanOrExpression(lhs.unwrap(), std::move(rhs));
 	}
 
 	void BooleanOrExpression::print_tree(u32 depth) const
@@ -43,7 +43,7 @@ namespace warbler
 
 		for (const auto& rhs : _rhs)
 		{
-			print_tree_branch_symbol("||", depth - 1);
+			std::cout << tree_branch(depth) << "||\n";
 			rhs.print_tree(depth);
 		}
 	}

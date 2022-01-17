@@ -43,7 +43,7 @@ namespace warbler
 				break;
 
 			case CONSTANT_STRING:
-				_string = other._string;
+				new(&_string) auto(std::move(other._string));
 				break;
 
 			case CONSTANT_INTEGER:
@@ -72,7 +72,7 @@ namespace warbler
 				break;
 
 			case CONSTANT_STRING:
-				_string = std::move(other._string);
+				new(&_string) auto(other._string);
 				break;
 
 			case CONSTANT_INTEGER:
@@ -194,31 +194,24 @@ namespace warbler
 			case TOKEN_PLUS:
 				iter += 1;
 				return parse_number(iter, false);
-				break;
 
 			case TOKEN_INTEGER_LITERAL:
 				return parse_integer_literal(iter, false);
-				break;
 
 			case TOKEN_FLOAT_LITERAL:
 				return parse_float_literal(iter, false);
-				break;
 
 			case TOKEN_HEXADECIMAL_LITERAL:
 				return not_implemented_error();
-				break;
 
 			case TOKEN_BINARY_LITERAL:
 				return not_implemented_error();
-				break;
 
 			case TOKEN_OCTAL_LITERAL:
 				return not_implemented_error();
-				break;
 
 			case TOKEN_CHAR_LITERAL:
 				return not_implemented_error();
-				break;
 
 			case TOKEN_STRING_LITERAL:
 			{
@@ -236,101 +229,49 @@ namespace warbler
 				return Constant(false);
 
 			default:
-				error_out(*iter) << "expected constant but got: " << *iter << std::endl;
-				return ERROR_ARGUMENT;
+				break;
 		}
 
-		return ERROR_NONE;
+		error_out(iter) << "expected constant but got: " << *iter << std::endl;
+		return ERROR_ARGUMENT;
 	}
 
 	void Constant::print_tree(u32 depth) const
 	{
-		print_branch(depth);
-
+		std::cout << tree_branch(depth);
 		switch (_type)
 		{
 			case CONSTANT_CHARACTER:
 				assert(false && "character print is not implemented");
 				break;
 
-			case CONSTANT_STRING:	
-				puts(_string.c_str());
+			case CONSTANT_STRING:
+				std::cout << _string << '\n';
 				break;
 
 			case CONSTANT_INTEGER:
-				printf("%ld\n", _integer);
+				std::cout << _integer << '\n';
 				break;
 
 			case CONSTANT_FLOAT:
-				printf("%f\n", _floating);
+				std::cout << _floating << '\n';
 				break;
 
 			case CONSTANT_BOOLEAN:
-				printf("%s\n", _boolean ? "true" : "false");
+				std::cout << (_boolean ? "true\n" : "false\n");
 				break;
 		}
 	}
 
 	Constant& Constant::operator=(Constant&& other)
 	{
-		_type = other._type;
-
-		switch (_type)
-		{
-			case CONSTANT_CHARACTER:
-				_character = other._character;
-				break;
-
-			case CONSTANT_STRING:
-				_string = other._string;
-				break;
-
-			case CONSTANT_INTEGER:
-				_integer = other._integer;
-				break;
-
-			case CONSTANT_FLOAT:
-				_floating = other._floating;
-				break;
-
-			case CONSTANT_BOOLEAN:
-				_boolean = other._boolean;
-				break;
-		}
-
-		other._type = CONSTANT_INTEGER;
-
+		new(this) auto(other);
 		return *this;
 	}
 
 	Constant& Constant::operator=(const Constant& other)
 	{
-		_type = other._type;
-
-		switch (_type)
-		{
-			case CONSTANT_CHARACTER:
-				_character = other._character;
-				break;
-
-			case CONSTANT_STRING:
-				_string = other._string;
-
-				break;
-
-			case CONSTANT_INTEGER:
-				_integer = other._integer;
-				break;
-
-			case CONSTANT_FLOAT:
-				_floating = other._floating;
-				break;
-
-			case CONSTANT_BOOLEAN:
-				_boolean = other._boolean;
-				break;
-		}
-
+		new(this) auto(other);
 		return *this;
 	}
 }

@@ -93,47 +93,47 @@ namespace warbler
 				return;
 
 			case ASSIGN_BECOME:
-				print_tree_branch_symbol("=", depth);
+				std::cout << tree_branch(depth) << "=\n";
 				break;
 
 			case ASSIGN_MULTIPLY:
-				print_tree_branch_symbol("*=", depth);
+				std::cout << tree_branch(depth) << "*=\n";
 				break;
 
 			case ASSIGN_DIVIDE:
-				print_tree_branch_symbol("/=", depth);
+				std::cout << tree_branch(depth) << "/=\n";
 				break;
 
 			case ASSIGN_MODULUS:
-				print_tree_branch_symbol("%=", depth);
+				std::cout << tree_branch(depth) << "%=\n";				
 				break;
 
 			case ASSIGN_ADD:
-				print_tree_branch_symbol("+=", depth);
+				std::cout << tree_branch(depth) << "*=\n";
 				break;
 
 			case ASSIGN_SUBTRACT:
-				print_tree_branch_symbol("-=", depth);
+				std::cout << tree_branch(depth) << "-=\n";
 				break;
 
 			case ASSIGN_LSHIFT:
-				print_tree_branch_symbol("<<=", depth);
+				std::cout << tree_branch(depth) << "<<=\n";
 				break;
 
 			case ASSIGN_RSHIFT:
-				print_tree_branch_symbol(">>=", depth);
+				std::cout << tree_branch(depth) << ">>=\n";
 				break;
 
 			case ASSIGN_BITWISE_AND:
-				print_tree_branch_symbol("&=", depth);
+				std::cout << tree_branch(depth) << "&=\n";
 				break;
 
 			case ASSIGN_BITWISE_OR:
-				print_tree_branch_symbol("|=", depth);
+				std::cout << tree_branch(depth) << "|=\n";
 				break;
 
 			case ASSIGN_BITWISE_XOR:
-				print_tree_branch_symbol("^=", depth);
+				std::cout << tree_branch(depth) << "^=\n";
 				break;
 		}
 

@@ -42,11 +42,11 @@ namespace warbler
 		switch (_type)
 		{
 			case PRIMARY_IDENTIFIER:
-				_identifier = std::move(other._identifier);
+				new(&_identifier) auto(std::move(other._identifier));
 				break;
 
 			case PRIMARY_CONSTANT:
-				_constant = std::move(other._constant);
+				new(&_constant) auto(std::move(other._constant));
 				break;
 
 			case PRIMARY_EXPRESSION:
@@ -62,21 +62,38 @@ namespace warbler
 	_prefixes(other._prefixes),
 	_postfixes(other._postfixes),
 	_type(other._type)
-	{}
+	{
+		switch (_type)
+		{
+			case PRIMARY_IDENTIFIER:
+				new(&_identifier) auto(other._identifier);
+				break;
+
+			case PRIMARY_CONSTANT:
+				new(&_constant) auto(other._constant);
+				break;
+
+			case PRIMARY_EXPRESSION:
+				_expression = new Expression(*other._expression);
+				break;
+		}
+	}
 	
 	PrimaryExpression::~PrimaryExpression()
 	{
-		if (_type == PRIMARY_IDENTIFIER)
+		switch (_type)
 		{
-			_identifier.~Identifier();
-		}
-		else if (_type == PRIMARY_CONSTANT)
-		{
-			_constant.~Constant();
-		}
-		else // PRIMARY_EXPRESSION
-		{
-			delete _expression;
+			case PRIMARY_IDENTIFIER:
+				_identifier.~Identifier();
+				break;
+
+			case PRIMARY_CONSTANT:
+				_constant.~Constant();
+				break;
+
+			case PRIMARY_EXPRESSION:
+				delete _expression;
+				break;
 		}
 	}
 
@@ -112,7 +129,7 @@ namespace warbler
 
 			if (iter->type() != TOKEN_RPAREN)
 			{
-				error_out(iter) << "expected ')' after expression but got: " << *iter << std::endl;
+				error_out(iter) << "expected ')' after expression but got: " << *iter << token_error(iter) << std::endl;
 				return ERROR_ARGUMENT;
 			}
 

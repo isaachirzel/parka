@@ -69,11 +69,10 @@ namespace warbler
 		for (const auto& rhs : _rhs)
 		{
 			const char *symbol = rhs.type == SHIFT_LEFT
-				? "<<"
-				: ">>";
+				? "<<\n"
+				: ">>\n";
 
-			print_tree_branch_symbol(symbol, depth - 1);
-
+			std::cout << tree_branch(depth - 1) << symbol;
 			rhs.expr.print_tree(depth);
 		}
 	}

@@ -58,24 +58,24 @@ namespace warbler
 
 	void Prefix::print_tree(u32 depth) const
 	{
-		print_branch(depth);
+		std::cout << tree_branch(depth);
 
 		switch (_type)
 		{
 			case PREFIX_INCREMENT:
-				puts("++");
+				std::cout << "++\n";
 				break;
 
 			case PREFIX_DECREMENT:
-				puts("--");
+				std::cout << "--\n";
 				break;
 
 			case PREFIX_REFERENCE:
-				puts("&");
+				std::cout << "&\n";
 				break;
 
 			case PREFIX_DEREFERENCE:
-				puts("*");
+				std::cout << "*\n";
 				break;
 		}
 	}

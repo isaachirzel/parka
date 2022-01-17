@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/identifier.hpp>
 #include <warbler/ast/typename.hpp>
-#include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/expression/conditional_expression.hpp>
 
 namespace warbler
 {
@@ -14,11 +14,11 @@ namespace warbler
 
 		Identifier _name;
 		Typename _type;
-		Expression _value;
+		ConditionalExpression _value;
 
 	public:
 
-		DeclarationStatement(Identifier&& name, Typename&& type, Expression&& value);
+		DeclarationStatement(Identifier&& name, Typename&& type, ConditionalExpression&& value);
 
 		static Result<DeclarationStatement> parse(TokenIterator& iter);
 

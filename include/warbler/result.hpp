@@ -10,7 +10,6 @@ namespace warbler
 {
 	enum Error
 	{
-		ERROR_NONE,
 		ERROR_MEMORY,
 		ERROR_ARGUMENT,
 		ERROR_FILE,
@@ -41,61 +40,60 @@ namespace warbler
 
 		union
 		{
-			NullSpace _null;
 			T _value;
+			Error _error;
 		};
 
-		Error _error;
+		bool _ok;
 
 	public:
 
 		Result(T&& value) :
 		_value(value),
-		_error(ERROR_NONE)
+		_ok(true)
 		{}
 
 		Result(Error error) :
-		_null(),
-		_error(error)
+		_error(error),
+		_ok(false)
 		{}
 
 		Result(const Result& other) :
-		_error(other.error())
+		_ok(other._ok)
 		{
-			if (_error == ERROR_NONE)
+			if (_ok)
 			{
-				_value = other.value();
+				_value = other._value;
 			}
 			else
 			{
-				_null = {};
+				_error = other._error;
 			}
 		}
 
 		Result(Result&& other) :
-		_error(other._error)
+		_ok(other._ok)
 		{
-			if (_error == ERROR_NONE)
+			if (_ok)
 			{
 				_value = std::move(other._value);
 			}
 			else
 			{
-				_null = {};
+				_error = other._error;
 			}
 		}
 
 		~Result()
 		{
-			if (_error = ERROR_NONE)
+			if (_ok)
 				_value.~T();
 		}
 
-		T&& unwrap() { assert(_error == ERROR_NONE); return std::move(_value); }
-		T value() const { return _value; }
-		Error error() const { return _error; }
-		bool has_error() const { return _error; }
-		bool is_ok() const { return _error == ERROR_NONE; }
+		T&& unwrap() { assert(_ok); return std::move(_value); }
+		Error error() const { assert(!_ok); return _error; }
+		bool has_error() const { return !_ok; }
+		bool is_ok() const { return _ok; }
 	};
 }
 

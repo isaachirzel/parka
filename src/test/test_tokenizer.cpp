@@ -7,7 +7,7 @@
 const char *src =
 "func this_is_a_long_function_name(num: i32) -> i32		\n"\
 "{														\n"\
-"var foo = bar(.53, 6) * 12.6 + 4						\n"\
+"var foo = bar(.53, 6) * 12.6 + 4;						\n"\
 "														\n"\
 "}														\n";
 
@@ -26,7 +26,9 @@ int main(void)
 
 	printf("Length: %zu\n", tokens.size());
 
-	assert(tokens.size() == 25);
+	std::cout << "size: " << tokens.size() << std::endl;
+
+	assert(tokens.size() == 26);
 	for (size_t i = 0; i < tokens.size(); ++i)
 	{
 		std::cout << i << ": " << tokens[i] << std::endl;
@@ -55,8 +57,9 @@ int main(void)
 	assert(tokens[20].type() == TOKEN_FLOAT_LITERAL);
 	assert(tokens[21].type() == TOKEN_PLUS);
 	assert(tokens[22].type() == TOKEN_INTEGER_LITERAL);
-	assert(tokens[23].type() == TOKEN_RBRACE);
-	assert(tokens[24].type() == TOKEN_END_OF_FILE);
+	assert(tokens[23].type() == TOKEN_SEMICOLON);
+	assert(tokens[24].type() == TOKEN_RBRACE);
+	assert(tokens[25].type() == TOKEN_END_OF_FILE);
 
 	return 0;
 }

@@ -9,43 +9,52 @@
 #include <assert.h>
 
 //const char *src = "foo(3, 4) * 1 / 5 + 2 / hello % 3\n + 3 == 4 >= &hello";
-const char *src = "b = a || b && c << 1.7 * 3";
+//const char *src = "var b: int = a || b && c << 1.7 * 3;";
+// const char *src =
+// "func do_thing(num: i32, text: String)\n"
+// "{\n"
+// "	var value: f64 = 12.58 * log(234);\n"
+// "}\n"
+// ;
+const char *src = R"=====(
+	if true
+	{
+		var name : String = "hello";
+	}
+	else
+	{
+		var num : f64 = 12.5;
+	}
+
+)=====";
 
 using namespace warbler;
 
 int main()
 {
-	try(tokenizer_init());
+	tokenizer_init();
 
+	auto token_res = tokenize("<in-memory-file>", src);
 
-	auto res = tokenize("<in-memory-file>", src);
+	if (token_res.has_error())
+		return token_res.error();
+
+	auto tokens = token_res.unwrap();
+	TokenIterator iter = tokens.begin();
+	auto res = Statement::parse(iter);
 
 	if (res.has_error())
 		return res.error();
 
-	std::vector<Token> tokens = res.unwrap();
-
-	for (size_t i = 0; i < tokens.size(); ++i)
-		debugf("Token[%zu]: %d", i, tokens[i].type);
-
-	putchar('\n');
-
-	TokenIterator iter = tokens.begin();
-
-	Expression expr;
-	auto error = expression_parse(&expr, iter);
-
-	if (!error)
+	if (iter->type() != TOKEN_END_OF_FILE)
 	{
-		expression_print_tree(&expr, 1);
+		error_out(iter) << "current token is not EOF" << token_error(iter) << std::endl;
 	}
 
-	expression_free(&expr);
 
-	if (iter->type != TOKEN_END_OF_FILE)
-	{
-		errorf("current token is not EOF: %t", *iter);
-	}
+	auto node = res.unwrap();
+
+	node.print_tree(1);
 
 	return 0;
 }

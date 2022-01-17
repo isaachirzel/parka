@@ -4,7 +4,7 @@
 
 namespace warbler
 {
-	DeclarationStatement::DeclarationStatement(Identifier&& name, Typename&& type, Expression&& value) :
+	DeclarationStatement::DeclarationStatement(Identifier&& name, Typename&& type, ConditionalExpression&& value) :
 	_name(name),
 	_type(type),
 	_value(value)
@@ -16,34 +16,51 @@ namespace warbler
 
 		auto name = Identifier::parse(iter);
 		
-		auto type = iter->type() == TOKEN_COLON
-			? Typename::parse(++iter)
-			: Typename();
+		if (name.has_error())
+			return name.error();
 
-		if (iter->type() != TOKEN_EQUALS)
+		auto type = Typename();
+		if (iter->type() == TOKEN_COLON)
 		{
-			error_out(iter) << "expected '=' but got: " << *iter << std::endl;
+			iter += 1;
+
+			auto res = Typename::parse(iter);
+
+			if (res.has_error())
+				return res.error();
+
+			type = res.unwrap();
+		}
+
+		if (iter->type() != TOKEN_ASSIGN)
+		{
+			error_out(iter) << "expected '=' after declaration but got '" << *iter << '\'' << token_error(iter) << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
-		auto value = Expression::parse(iter);
+		iter += 1;
+
+		auto value = ConditionalExpression::parse(iter);
+
+		if (value.has_error())
+			return value.error();
 
 		if (iter->type() != TOKEN_SEMICOLON)
 		{
-			error_out(iter) << "expected ';' but got: " << *iter << std::endl;
+			error_out(iter) << "expected ';' but got " << *iter << token_error(iter) << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
-		return DeclarationStatement(name.unwrap(), type.unwrap(), value.unwrap());
+		iter += 1;
+
+		return DeclarationStatement(name.unwrap(), std::move(type), value.unwrap());
 	}
 
 	void DeclarationStatement::print_tree(u32 depth) const
 	{
 		_name.print_tree(depth);
-
-		print_tree_branch_symbol(":", depth);
 		_type.print_tree(depth + 1);
-		print_tree_branch_symbol("=", depth + 1);
+		std::cout << tree_branch(depth + 1) << "=\n";
 		_value.print_tree(depth  + 2);
 	}
 }

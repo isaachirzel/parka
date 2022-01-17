@@ -5,55 +5,55 @@
 
 namespace warbler
 {
-	Statement::Statement(ExpressionStatement&& expression) :
-	_expression(expression),
-	_type(STATEMENT_EXPRESSION)
-	{}
+	// Statement::Statement(ExpressionStatement&& expression) :
+	// _expression(expression),
+	// _type(STATEMENT_EXPRESSION)
+	// {}
 
 	Statement::Statement(DeclarationStatement&& declaration) :
 	_declaration(declaration),
 	_type(STATEMENT_DECLARATION)
 	{}
 
-	Statement::Statement(SelectionStatement&& selection) :
-	_selection(selection),
-	_type(STATEMENT_SELECTION)
+	Statement::Statement(IfStatement&& if_then) :
+	_if_then(if_then),
+	_type(STATEMENT_IF_THEN)
 	{}
 
-	Statement::Statement(LoopStatement&& loop) :
-	_loop(loop),
-	_type(STATEMENT_LOOP)
-	{}
+	// Statement::Statement(LoopStatement&& loop) :
+	// _loop(loop),
+	// _type(STATEMENT_LOOP)
+	// {}
 
-	Statement::Statement(JumpStatement&& jump) :
-	_jump(jump),
-	_type(STATEMENT_JUMP)
-	{}
+	// Statement::Statement(JumpStatement&& jump) :
+	// _jump(jump),
+	// _type(STATEMENT_JUMP)
+	// {}
 
 	Statement::Statement(Statement&& other) :
 	_type(other._type)
 	{
 		switch (_type)
 		{
-			case STATEMENT_EXPRESSION:
-				_expression = std::move(other._expression);
-				break;
+			// case STATEMENT_EXPRESSION:
+			// 	_expression = std::move(other._expression);
+			// 	break;
 
 			case STATEMENT_DECLARATION:
-				_declaration = std::move(other._declaration);
+				new(&_declaration) auto(std::move(other._declaration));
 				break;
 
-			case STATEMENT_SELECTION:
-				_selection = std::move(other._selection);
+			case STATEMENT_IF_THEN:
+				new(&_if_then) auto(std::move(other._if_then));
 				break;
 
-			case STATEMENT_LOOP:
-				_loop = std::move(other._loop);
-				break;
+			// case STATEMENT_LOOP:
+			// 	_loop = std::move(other._loop);
+			// 	break;
 
-			case STATEMENT_JUMP:
-				_jump = std::move(other._jump);
-				break;
+			// case STATEMENT_JUMP:
+			// 	_jump = std::move(other._jump);
+			// 	break;
 		}
 	}
 
@@ -62,25 +62,25 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			case STATEMENT_EXPRESSION:
-				_expression = other._expression;
-				break;
+			// case STATEMENT_EXPRESSION:
+			// 	_expression = other._expression;
+			// 	break;
 
 			case STATEMENT_DECLARATION:
-				_declaration = other._declaration;
+				new(&_declaration) auto(other._declaration);
 				break;
 
-			case STATEMENT_SELECTION:
-				_selection = other._selection;
+			case STATEMENT_IF_THEN:
+				new(&_if_then) auto(other._if_then);
 				break;
 
-			case STATEMENT_LOOP:
-				_loop = other._loop;
-				break;
+			// case STATEMENT_LOOP:
+			// 	_if_then = other._if_then;
+			// 	break;
 
-			case STATEMENT_JUMP:
-				_jump = other._jump;
-				break;
+			// case STATEMENT_JUMP:
+			// 	_jump = other._if_then;
+			// 	break;
 		}
 	}
 
@@ -88,71 +88,69 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			case STATEMENT_EXPRESSION:
-				_expression.~ExpressionStatement();
-				break;
+			// case STATEMENT_EXPRESSION:
+			// 	_expression.~ExpressionStatement();
+			// 	break;
 
 			case STATEMENT_DECLARATION:
 				_declaration.~DeclarationStatement();
 				break;
 
-			case STATEMENT_SELECTION:
-				_selection.~SelectionStatement();
+			case STATEMENT_IF_THEN:
+				_if_then.~IfStatement();
 				break;
 
-			case STATEMENT_LOOP:
-				_loop.~LoopStatement();
-				break;
+			// case STATEMENT_LOOP:
+			// 	_loop.~LoopStatement();
+			// 	break;
 
-			case STATEMENT_JUMP:
-				_jump.~JumpStatement();
-				break;
+			// case STATEMENT_JUMP:
+			// 	_jump.~JumpStatement();
+			// 	break;
 		}
-	}
-
-	template<typename T>
-	static Result<Statement> parse_statement(TokenIterator& iter)
-	{
-		auto res = T::parse(iter);
-
-		if (res.has_error())
-			return res.error();
-
-		if (iter->type() != TOKEN_SEMICOLON)
-		{
-			error_out(iter) << "expected ';' but got: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
-		}
-
-		iter += 1;
-
-		return Statement(res.unwrap());
 	}
 
 	Result<Statement> Statement::parse(TokenIterator& iter)
 	{
 		switch (iter->type())
 		{
-			case TOKEN_VAR:
-				return parse_statement<DeclarationStatement>(iter);
+			case TOKEN_VAR:				
+			{
+				auto res = DeclarationStatement::parse(iter);
 
-			case TOKEN_MATCH:
+				if (res.has_error())
+					return res.error();
+
+				return Statement(res.unwrap());
+			}
+
+			//case TOKEN_MATCH:
 			case TOKEN_IF:
-				return parse_statement<SelectionStatement>(iter);
+			{
+				auto res = IfStatement::parse(iter);
 
-			case TOKEN_LOOP:
-			case TOKEN_WHILE:
-			case TOKEN_FOR:
-				return parse_statement<LoopStatement>(iter);
+				if (res.has_error())
+					return res.error();
 
-			case TOKEN_CONTINUE:
-			case TOKEN_BREAK:
-			case TOKEN_RETURN:
-				return parse_statement<JumpStatement>(iter);
+				return Statement(res.unwrap());
+			}
+
+			// case TOKEN_LOOP:
+			// case TOKEN_WHILE:
+			// case TOKEN_FOR:
+			// 	return parse_statement<LoopStatement>(iter);
+
+			// case TOKEN_CONTINUE:
+			// case TOKEN_BREAK:
+			// case TOKEN_RETURN:
+			// 	return parse_statement<JumpStatement>(iter);
 
 			default:
-				return parse_statement<ExpressionStatement>(iter);
+				break;
 		}
+
+		error_out(iter) << "expected statement but got: " << *iter << token_error(iter) << std::endl;
+		return ERROR_ARGUMENT;
 	}
 
 	Result<std::vector<Statement>> Statement::parse_compound(TokenIterator& iter)
@@ -163,6 +161,8 @@ namespace warbler
 			return ERROR_ARGUMENT;
 		}
 
+		iter += 1;
+		
 		std::vector<Statement> out;
 
 		while (iter->type() != TOKEN_RBRACE)
@@ -184,88 +184,37 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			case STATEMENT_EXPRESSION:
-				_expression.print_tree(depth);
-				break;
+			// case STATEMENT_EXPRESSION:
+			// 	_expression.print_tree(depth);
+			// 	break;
 
 			case STATEMENT_DECLARATION:
 				_declaration.print_tree(depth);
 				break;
 
-			case STATEMENT_SELECTION:
-				_selection.print_tree(depth);
+			case STATEMENT_IF_THEN:
+				_if_then.print_tree(depth);
 				break;
 
-			case STATEMENT_LOOP:
-				_loop.print_tree(depth);
-				break;
+			// case STATEMENT_LOOP:
+			// 	_loop.print_tree(depth);
+			// 	break;
 
-			case STATEMENT_JUMP:
-				_jump.print_tree(depth);
-				break;
+			// case STATEMENT_JUMP:
+			// 	_jump.print_tree(depth);
+			// 	break;
 		}
 	}
 
 	Statement& Statement::operator=(Statement&& other)
 	{
-		_type = other._type;
-
-		switch (_type)
-		{
-			case STATEMENT_EXPRESSION:
-				_expression = std::move(other._expression);
-				break;
-
-			case STATEMENT_DECLARATION:
-				_declaration = std::move(other._declaration);
-				break;
-
-			case STATEMENT_SELECTION:
-				_selection = std::move(other._selection);
-				break;
-
-			case STATEMENT_LOOP:
-				_loop = std::move(other._loop);
-				break;
-
-			case STATEMENT_JUMP:
-				_jump = std::move(other._jump);
-				break;
-		}
-
+		new(this) auto(other);
 		return *this;
 	}
-
-	#pragma message("figure out if destruction of statement will cause double free or not")
 
 	Statement& Statement::operator=(const Statement& other)
 	{
-		_type = other._type;
-
-		switch (_type)
-		{
-			case STATEMENT_EXPRESSION:
-				_expression = other._expression;
-				break;
-
-			case STATEMENT_DECLARATION:
-				_declaration = other._declaration;
-				break;
-
-			case STATEMENT_SELECTION:
-				_selection = other._selection;
-				break;
-
-			case STATEMENT_LOOP:
-				_loop = other._loop;
-				break;
-
-			case STATEMENT_JUMP:
-				_jump = other._jump;
-				break;
-		}
-
+		new(this) auto(other);
 		return *this;
 	}
-
 }

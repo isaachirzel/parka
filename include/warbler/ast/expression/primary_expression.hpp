@@ -36,6 +36,7 @@ namespace warbler
 	
 	public:
 
+		PrimaryExpression() = delete;
 		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Identifier&& identifier);
 		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Constant&& constant);
 		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Expression *expression);

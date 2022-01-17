@@ -128,10 +128,13 @@ namespace warbler
 	void Function::print_tree(u32 depth) const 
 	{
 		_name.print_tree(depth);
-		print_tree_branch_symbol("()", depth + 1);
+
+		std::cout << tree_branch(depth + 1) << "(\n";
 
 		for (const auto& parameter : _parameters)
 			parameter.print_tree(depth + 2);
+
+		std::cout << tree_branch(depth + 1) << ")\n";
 
 		_return_type.print_tree(depth + 1);
 
@@ -141,10 +144,12 @@ namespace warbler
 		}
 		else
 		{
-			print_tree_branch_symbol("{}", depth + 1);
+			std::cout << tree_branch(depth + 1) << "{\n";
 
 			for (const auto& statement : _compound_body)
 				statement.print_tree(depth + 2);
+
+			std::cout << tree_branch(depth + 1) << "}\n";
 		}
 	}
 }

@@ -30,19 +30,19 @@ namespace warbler
 			ComparisonType type;
 			switch (iter->type())
 			{
-				case TOKEN_GREATER:
+				case TOKEN_GREATER_THAN:
 					type = COMPARISON_GREATER;
 					break;
 
-				case TOKEN_LESS:
+				case TOKEN_LESS_THAN:
 					type = COMPARISON_LESS;
 					break;
 
-				case TOKEN_GREATER_EQUALS:
+				case TOKEN_GREATER_OR_EQUAL:
 					type = COMPARISON_GREATER_EQUAL;
 					break;
 
-				case TOKEN_LESS_EQUALS:
+				case TOKEN_LESS_OR_EQUAL:
 					type = COMPARISON_LESS_EQUAL;
 					break;
 
@@ -53,6 +53,8 @@ namespace warbler
 
 			if (should_break)
 				break;
+
+			iter += 1;
 
 			auto res = ShiftExpression::parse(iter);
 
@@ -74,24 +76,24 @@ namespace warbler
 
 		for (const auto& rhs : _rhs)
 		{
-			print_branch(depth - 1);
+			std::cout << tree_branch(depth - 1);
 
 			switch (rhs.type)
 			{
 				case COMPARISON_GREATER:
-					puts(">");
+					std::cout << ">\n";
 					break;
 
 				case COMPARISON_LESS:
-					puts("<");
+					std::cout << "<\n";
 					break;
 
 				case COMPARISON_GREATER_EQUAL:
-					puts(">=");
+					std::cout << ">=\n";
 					break;
 
 				case COMPARISON_LESS_EQUAL:
-					puts("<=");
+					std::cout << "<=\n";
 					break;
 
 			}

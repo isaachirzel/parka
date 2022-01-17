@@ -6,10 +6,13 @@
 #include <cstdarg>
 #include <cstring>
 #include <cassert>
+#include <iomanip>
 
-#define COLOR_BLUE		"\033[94m"
 #define COLOR_RED		"\033[91m"
 #define COLOR_YELLOW 	"\033[93m"
+#define COLOR_BLUE		"\033[94m"
+#define COLOR_PURPLE	"\033[95m"
+#define COLOR_CYAN		"\033[96m"
 #define COLOR_RESET		"\033[0m"
 
 #define PROMPT_ERROR		"error: "
@@ -59,12 +62,6 @@ namespace warbler
 			fputs("|   ", stdout);
 
 		fputs("| > ", stdout);
-	}
-
-	void print_tree_branch_symbol(const char *symbol, unsigned depth)
-	{
-		print_branch(depth);
-		puts(symbol);
 	}
 
 	void print_spaces(unsigned count)
@@ -168,44 +165,78 @@ namespace warbler
 		return out;
 	}
 
-	std::ostream& token_highlight(const Token& token)
+	static std::string token_highlight(TokenIterator& iter, const char *color)
 	{
+		const auto& token = *iter;
+
 		size_t spaces_for_line_number = get_spaces_for_num(token.line());
 		const char * const start_of_line = token.text().data() - token.col();
-		fprintf(stderr, "  %zu | ", token.line());
-		fwrite(start_of_line, sizeof(char), token.col(), stderr);	
-		fputs(COLOR_RED, stderr);
-		fwrite(token.text().data(), sizeof(char), token.text().size(), stderr);
-		fputs(COLOR_RESET, stderr);
+		std::string line_header(start_of_line, token.col());
 
 		const char *text_after_token = token.text().data() + token.text().size();
 		const char *end = text_after_token;
+
 		while (*end != '\0' && *end != '\n')
-			++end;
+			end += 1;
 
-		size_t length_after_token = end - text_after_token;
-
-		fwrite(text_after_token, sizeof(char), length_after_token, stderr);
-		fputc('\n', stderr);
-
-		fputs("  ", stderr);
-		for (size_t i = 0; i < spaces_for_line_number; ++i)
-			fputc(' ', stderr);
-		fputs(" | ", stderr);
-		for (size_t i = 0; i < token.col(); ++i)
-			fputc(' ', stderr);
+		size_t footer_length = end - text_after_token;
 		
-		if (is_color_enabled)
-			fputs(COLOR_RED, stderr);
+		std::string line_footer(text_after_token, footer_length);
+		line_footer += '\n';
 
-		fputc('^', stderr);
-		for (size_t i = 1; i < token.text().size(); ++i)
-			fputc('~', stderr);
+		std::string out = "\n " + std::to_string(token.line() + 1) + " | " + line_header;
 
 		if (is_color_enabled)
-			fputs(COLOR_RESET, stderr);
+			out += color;
+		
+		out += token.text();
 
-		fputc('\n', stderr);
+		if (is_color_enabled)
+			out += COLOR_RESET;
+
+		out += line_footer + std::string(2 + spaces_for_line_number, ' ') + "| ";
+		
+		std::string spacing = line_header;
+	
+		for (char& c : line_header)
+		{
+			if (c != '\t')
+				c = ' ';
+		}
+			
+		out += spacing;
+
+		if (is_color_enabled)
+			out += color;
+
+		std::string underline = "^";
+
+		if (token.text().size() > 1)
+			underline += std::string(token.text().size() - 1, '~');
+
+		out += std::move(underline);
+
+		if (is_color_enabled)
+			out += COLOR_RESET;
+
+		out += '\n';
+
+		return out;
+	}
+
+	std::string token_error(TokenIterator& iter)
+	{
+		return token_highlight(iter, COLOR_RED);
+	}
+
+	std::string token_warning(TokenIterator& iter)
+	{
+		return token_highlight(iter, COLOR_PURPLE);
+	}
+
+	std::string token_message(TokenIterator& iter)
+	{
+		return token_highlight(iter, COLOR_BLUE);
 	}
 
 	std::ostream& error_out()
@@ -217,7 +248,7 @@ namespace warbler
 
 	std::ostream& error_out(const Token& token)
 	{
-		std::cout <<  token.filename() << ':' << token.line() << ':' << token.col() << error_prompt;
+		std::cout <<  token.filename() << ':' << token.line() + 1 << ':' << token.col() + 1 << ' ' << error_prompt;
 
 		return std::cout;
 	}
@@ -225,5 +256,29 @@ namespace warbler
 	std::ostream& error_out(TokenIterator& iter)
 	{
 		return error_out(*iter);
+	}
+
+	std::string tree_branch(u32 length)
+	{
+		std::string out;
+
+		if (length == 0)
+			return "";
+
+		out.resize(length * 4);
+		
+		length *= 4;
+
+		for (u32 i = 0; i < length; i += 4)
+		{
+			out[i]     = '|';
+			out[i + 1] = ' ';
+			out[i + 2] = ' ';
+			out[i + 3] = ' ';
+		}
+
+		out[out.size() - 2] = '>';
+
+		return out;
 	}
 }

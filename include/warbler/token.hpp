@@ -20,8 +20,6 @@ namespace warbler
 		TOKEN_RBRACK,
 		TOKEN_LBRACE,
 		TOKEN_RBRACE,
-		TOKEN_LANGBRACK,
-		TOKEN_RANGBRACK,
 		TOKEN_SEMICOLON,
 		TOKEN_COLON,
 		TOKEN_COMMA,
@@ -38,11 +36,11 @@ namespace warbler
 		TOKEN_XOR,
 		TOKEN_NOT,
 		TOKEN_EQUALS,
-		TOKEN_NOT_EQUALS,
-		TOKEN_LESS,
-		TOKEN_GREATER,
-		TOKEN_LESS_EQUALS,
-		TOKEN_GREATER_EQUALS,
+		TOKEN_NOT_EQUALS,		
+		TOKEN_LESS_OR_EQUAL,
+		TOKEN_GREATER_OR_EQUAL,
+		TOKEN_LESS_THAN,
+		TOKEN_GREATER_THAN,
 		TOKEN_SINGLE_ARROW,
 		TOKEN_DOUBLE_ARROW,
 		TOKEN_OPTION,
@@ -115,8 +113,6 @@ namespace warbler
 
 		Token();
 		Token(const StringView& text, const char *filename, usize line, usize col, TokenType type);
-
-		static Token end_of_file(const char *filename, usize line, usize col);
 
 		const StringView& text() const { return _text; }
 		const char *filename() const { return _filename; }
