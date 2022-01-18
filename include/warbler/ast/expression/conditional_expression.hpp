@@ -6,28 +6,37 @@
 
 namespace warbler
 {
-	struct Expression;
-
-	enum ConditionalType
-	{
-		CONDITIONAL_NONE,
-		CONDITIONAL_TERNARY
-	};
+	struct ConditionalRhs;
 
 	class ConditionalExpression
 	{
-	private:
+	private: // members
 
 		BooleanOrExpression _lhs;
-		ConditionalType _type;
+		ConditionalRhs *_rhs;
 
-	public:
+	public: // methods
 
 		ConditionalExpression(BooleanOrExpression&& lhs);
+		ConditionalExpression(BooleanOrExpression&& lhs, ConditionalRhs&& rhs);
+		ConditionalExpression(ConditionalExpression&& other);
+		ConditionalExpression(const ConditionalExpression& other);
+		~ConditionalExpression();
 
 		static Result<ConditionalExpression> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
+
+		ConditionalExpression& operator=(ConditionalExpression&& other);
+		ConditionalExpression& operator=(const ConditionalExpression& other);
+	};
+
+	struct ConditionalRhs
+	{
+		BooleanOrExpression true_case;
+		ConditionalExpression false_case;
+
+		ConditionalRhs(BooleanOrExpression&& true_case, ConditionalExpression&& false_case);
 	};
 }
 

@@ -1,4 +1,4 @@
-#include <warbler/ast/expression/assignment_expression.hpp>
+#include <warbler/ast/statement/assignment_statement.hpp>
 
 // local headers
 #include <warbler/print.hpp>
@@ -8,18 +8,18 @@
 
 namespace warbler
 {
-	AssignmentExpression::AssignmentExpression(PrimaryExpression&& lhs, ConditionalExpression *rhs, AssignmentType type) :
+	AssignmentStatement::AssignmentStatement(PrimaryExpression&& lhs, Expression&& rhs, AssignmentType type) :
 	_lhs(lhs),
 	_rhs(rhs),
 	_type(type)
 	{}
 
-	Result<AssignmentExpression> AssignmentExpression::parse(TokenIterator& iter)
+	Result<AssignmentStatement> AssignmentStatement::parse(TokenIterator& iter)
 	{
-		auto res = PrimaryExpression::parse(iter);
+		auto lhs = PrimaryExpression::parse(iter);
 
-		if (res.has_error())
-			return res.error();
+		if (lhs.has_error())
+			return lhs.error();
 
 		AssignmentType type;
 		switch (iter->type())
@@ -69,29 +69,26 @@ namespace warbler
 				break;
 
 			default:
-				type = ASSIGN_NONE;
-				return AssignmentExpression(res.unwrap(), nullptr, ASSIGN_NONE);
+				error_out(iter) << "expected assignment operator after primary expression but got '" << *iter << '\'' << token_error(iter) << std::endl;
+				return ERROR_ARGUMENT;
 		}
 
 		++iter;
 
-		auto rhs_res = ConditionalExpression::parse(iter);
+		auto rhs = ConditionalExpression::parse(iter);
 
-		if (rhs_res.has_error())
-			return rhs_res.error();
+		if (rhs.has_error())
+			return rhs.error();
 
-		return AssignmentExpression(res.unwrap(), new ConditionalExpression(rhs_res.unwrap()), type);
+		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}
 
-	void AssignmentExpression::print_tree(u32 depth) const
+	void AssignmentStatement::print_tree(u32 depth) const
 	{
 		_lhs.print_tree(depth);
 
 		switch (_type)
 		{
-			case ASSIGN_NONE:
-				return;
-
 			case ASSIGN_BECOME:
 				std::cout << tree_branch(depth) << "=\n";
 				break;
@@ -137,6 +134,6 @@ namespace warbler
 				break;
 		}
 
-		_rhs->print_tree(depth + 1);
+		_rhs.print_tree(depth + 1);
 	}
 }

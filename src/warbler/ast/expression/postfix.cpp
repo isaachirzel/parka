@@ -2,7 +2,7 @@
 
 // local headers
 #include <warbler/print.hpp>
-#include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/expression/conditional_expression.hpp>
 
 // standard headers
 #include <cassert>
@@ -15,7 +15,7 @@ namespace warbler
 	_type(POSTFIX_INDEX)
 	{}
 	
-	Postfix::Postfix(std::vector<Argument>&& arguments) :
+	Postfix::Postfix(Array<Argument>&& arguments) :
 	_arguments(arguments),
 	_type(POSTFIX_FUNCTION_CALL)
 	{}
@@ -32,19 +32,17 @@ namespace warbler
 		{
 			case POSTFIX_INDEX:
 				_index = other._index;
+				other._index = nullptr;
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
-				_arguments = std::move(other._arguments);
+				new(&_arguments) auto(std::move(other._arguments));
 				break;
 
 			case POSTFIX_MEMBER:
-				_member = std::move(other._member);
+				new(&_member) auto(std::move(other._member));
 				break;
 		}
-
-		other._index = nullptr;
-		other._type = POSTFIX_INDEX;
 	}
 
 	Postfix::Postfix(const Postfix& other) :
@@ -53,15 +51,15 @@ namespace warbler
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				_index = new Expression(*other._index);
+				new(&_index) auto(new Expression(*other._index));
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
-				_arguments = other._arguments;
+				new(&_arguments) auto(other._arguments);
 				break;
 
 			case POSTFIX_MEMBER:
-				_member = other._member;
+				new(&_member) auto(other._member);
 				break;
 		}
 	}
@@ -69,18 +67,20 @@ namespace warbler
 
 	Postfix::~Postfix()
 	{
-		if (_type == POSTFIX_INDEX)
+		switch (_type)
 		{
-			delete _index;
-		}
-		else if (_type == POSTFIX_FUNCTION_CALL)
-		{
-			_arguments.~vector();
-		}
-		else
-		{
-			_member.~Identifier();
-		}
+			case POSTFIX_INDEX:
+				delete _index;
+				break;
+
+			case POSTFIX_FUNCTION_CALL:
+				_arguments.~vector();
+				break;
+
+			case POSTFIX_MEMBER:
+				_member.~Identifier();
+				break;
+		}		
 	}
 
 	Result<Postfix> Postfix::parse(TokenIterator& iter)
@@ -133,23 +133,23 @@ namespace warbler
 		return ERROR_NOT_FOUND;
 	}
 
-	Result<std::vector<Postfix>> Postfix::parse_list(TokenIterator& iter)
+	Result<Array<Postfix>> Postfix::parse_list(TokenIterator& iter)
 	{
-		std::vector<Postfix> out;
+		Array<Postfix> out;
 
-		while (true)
+	parse_postfix:		
+
+		auto res = Postfix::parse(iter);
+
+		if (res.is_ok())
 		{
-			auto res = Postfix::parse(iter);
-
-			if (res.has_error())
-			{
-				if (res.error() == ERROR_NOT_FOUND)
-					break;
-
-				return res.error();
-			}
-
 			out.emplace_back(res.unwrap());
+
+			goto parse_postfix;
+		}
+		else if (res.error() != ERROR_NOT_FOUND)
+		{
+			return res.error();
 		}
 
 		return out;
@@ -157,20 +157,21 @@ namespace warbler
 
 	void Postfix::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth);
-
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				std::cout << "[]\n";
+				std::cout << tree_branch(depth) << "[\n";
 				_index->print_tree(depth + 1);
+				std::cout << tree_branch(depth) << "]\n";
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
-				std::cout << "()\n";
+				std::cout << tree_branch(depth) << "(\n";
 
 				for (const auto& arg : _arguments)
 					arg.print_tree(depth + 1);
+
+				std::cout << tree_branch(depth) << ")\n";
 				break;
 
 			case POSTFIX_MEMBER:

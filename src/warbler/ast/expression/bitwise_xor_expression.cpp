@@ -9,7 +9,7 @@
 
 namespace warbler
 {
-	BitwiseXorExpression::BitwiseXorExpression(BitwiseAndExpression&& lhs, std::vector<BitwiseAndExpression>&& rhs) :
+	BitwiseXorExpression::BitwiseXorExpression(BitwiseAndExpression&& lhs, Array<BitwiseAndExpression>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
@@ -18,7 +18,10 @@ namespace warbler
 	{
 		auto lhs = BitwiseAndExpression::parse(iter);
 
-		std::vector<BitwiseAndExpression> rhs;
+		if (lhs.has_error())
+			return lhs.error();
+
+		Array<BitwiseAndExpression> rhs;
 
 		while (iter->type() == TOKEN_CARROT)
 		{

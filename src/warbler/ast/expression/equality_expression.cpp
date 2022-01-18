@@ -9,21 +9,10 @@
 
 namespace warbler
 {
-	EqualityExpression::EqualityExpression(ComparisonExpression&& lhs, std::vector<EqualityRhs>&& rhs) :
+	EqualityExpression::EqualityExpression(ComparisonExpression&& lhs, Array<EqualityRhs>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
-
-	EqualityExpression::EqualityExpression(EqualityExpression&& other) :
-	_lhs(std::move(other._lhs)),
-	_rhs(std::move(other._rhs))
-	{}
-
-	EqualityExpression::EqualityExpression(const EqualityExpression& other) :
-	_lhs(other._lhs),
-	_rhs(other._rhs)
-	{}
-
 
 	Result<EqualityExpression> EqualityExpression::parse(TokenIterator& iter)
 	{
@@ -32,7 +21,7 @@ namespace warbler
 		if (lhs.has_error())
 			return lhs.error();
 
-		std::vector<EqualityRhs> rhs;
+		Array<EqualityRhs> rhs;
 
 		while (true)
 		{

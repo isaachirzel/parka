@@ -6,11 +6,10 @@
 #include <warbler/ast/expression/constant.hpp>
 #include <warbler/ast/expression/prefix.hpp>
 #include <warbler/ast/expression/postfix.hpp>
+#include <warbler/ast/expression/expression.hpp>
 
 namespace warbler
 {
-	class Expression;
-
 	enum PrimaryType
 	{
 		PRIMARY_IDENTIFIER,
@@ -22,8 +21,8 @@ namespace warbler
 	{
 	private:
 
-		std::vector<Prefix> _prefixes;
-		std::vector<Postfix> _postfixes;
+		Array<Prefix> _prefixes;
+		Array<Postfix> _postfixes;
 
 		union
 		{
@@ -37,9 +36,9 @@ namespace warbler
 	public:
 
 		PrimaryExpression() = delete;
-		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Identifier&& identifier);
-		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Constant&& constant);
-		PrimaryExpression(std::vector<Prefix>&& prefixes, std::vector<Postfix>&& postfixes, Expression *expression);
+		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Identifier&& identifier);
+		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Constant&& constant);
+		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Expression *expression);
 		PrimaryExpression(PrimaryExpression&& other);
 		PrimaryExpression(const PrimaryExpression& other);
 		~PrimaryExpression();

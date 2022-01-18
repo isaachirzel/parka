@@ -11,11 +11,11 @@ namespace warbler
 	private:
 
 		BitwiseOrExpression _lhs;
-		std::vector<BitwiseOrExpression> _rhs;
+		Array<BitwiseOrExpression> _rhs;
 
 	public:
 
-		BooleanAndExpression(BitwiseOrExpression&& lhs, std::vector<BitwiseOrExpression>&& rhs);
+		BooleanAndExpression(BitwiseOrExpression&& lhs, Array<BitwiseOrExpression>&& rhs);
 
 		static Result<BooleanAndExpression> parse(TokenIterator& iter);
 

@@ -9,18 +9,20 @@
 
 namespace warbler
 {
-	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Expression *inline_body) :
+	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Expression&& inline_body) :
 	_name(name),
 	_parameters(parameters),
 	_return_type(return_type),
-	_inline_body(inline_body)
+	_inline_body(inline_body),
+	_is_inline(true)
 	{}
 
 	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, std::vector<Statement>&& compound_body) :
 	_name(name),
 	_parameters(parameters),
 	_return_type(return_type),
-	_compound_body(compound_body)
+	_compound_body(compound_body),
+	_is_inline(false)
 	{}
 	
 	Function::Function(Function&& other) :
@@ -31,15 +33,12 @@ namespace warbler
 	{
 		if (_is_inline)
 		{
-			_inline_body = other._inline_body;
+			new(&_inline_body) auto(std::move(other._inline_body));
 		}
 		else
 		{
-			_compound_body = std::move(other._compound_body);
+			new(&_compound_body) auto(std::move(other._compound_body));
 		}
-
-		other._is_inline = true;
-		other._inline_body = nullptr;
 	}
 
 	Function::Function(const Function& other) :
@@ -50,18 +49,24 @@ namespace warbler
 	{
 		if (_is_inline)
 		{
-			_inline_body = new Expression(*other._inline_body);
+			new(&_inline_body) auto(other._inline_body);
 		}
 		else
 		{
-			_compound_body = other._compound_body;
+			new(&_compound_body) auto(other._compound_body);
 		}
 	}
 
 	Function::~Function()
 	{
 		if (_is_inline)
-			delete _inline_body;
+		{
+			_inline_body.~ConditionalExpression();
+		}
+		else
+		{
+			_compound_body.~vector();
+		}
 	}
 
 	Result<Function> Function::parse(TokenIterator& iter)
@@ -114,13 +119,12 @@ namespace warbler
 
 			if (body.has_error())
 				return body.error();
-
-			auto *expression = new Expression(body.unwrap());
-			return Function(name.unwrap(), parameters.unwrap(), std::move(type), expression);
+		
+			return Function(name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap());
 		}
 		else
 		{
-			error_out(iter) << "expected function body but got: " << *iter << std::endl;
+			error_out(iter) << "expected function body but got '" << *iter << '\'' << token_error(iter) << std::endl;
 			return ERROR_ARGUMENT;
 		}
 	}
@@ -140,7 +144,7 @@ namespace warbler
 
 		if (_is_inline)
 		{
-			_inline_body->print_tree(depth + 1);
+			_inline_body.print_tree(depth + 1);
 		}
 		else
 		{
@@ -151,5 +155,17 @@ namespace warbler
 
 			std::cout << tree_branch(depth + 1) << "}\n";
 		}
+	}
+
+	Function& Function::operator=(Function&& other)
+	{
+		new(this) auto(other);
+		return *this;
+	}
+
+	Function& Function::operator=(const Function& other)
+	{
+		new(this) auto(other);
+		return *this;
 	}
 }

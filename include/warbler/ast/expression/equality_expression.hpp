@@ -23,13 +23,11 @@ namespace warbler
 	private:
 
 		ComparisonExpression _lhs;
-		std::vector<EqualityRhs> _rhs;
+		Array<EqualityRhs> _rhs;
 
 	public:
 
-		EqualityExpression(ComparisonExpression&& lhs, std::vector<EqualityRhs>&& rhs);
-		EqualityExpression(EqualityExpression&& other);
-		EqualityExpression(const EqualityExpression& other);
+		EqualityExpression(ComparisonExpression&& lhs, Array<EqualityRhs>&& rhs);
 
 		static Result<EqualityExpression> parse(TokenIterator& iter);
 

@@ -2,9 +2,9 @@
 #define WARBLER_AST_STATEMENT_SELECTION_STATEMENT_HPP
 
 // local headers
-#include <warbler/token.hpp>
-#include <warbler/result.hpp>
 #include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/expression/conditional_expression.hpp>
+#include <warbler/util/array.hpp>
 
 namespace warbler
 {
@@ -22,11 +22,11 @@ namespace warbler
 	private:
 
 		Expression _condition;
-		std::vector<Statement> _then_body;
+		Array<Statement> _then_body;
 
 		union
 		{
-			std::vector<Statement> _else_body;
+			Array<Statement> _else_body;
 			IfStatement *_else_if;
 		};
 
@@ -34,9 +34,9 @@ namespace warbler
 
 	public:
 
-		IfStatement(Expression&& condition, std::vector<Statement>&& then_body);
-		IfStatement(Expression&& condition, std::vector<Statement>&& then_body, std::vector<Statement>&& else_body);
-		IfStatement(Expression&& condition, std::vector<Statement>&& then_body, IfStatement *else_if);
+		IfStatement(Expression&& condition, Array<Statement>&& then_body);
+		IfStatement(Expression&& condition, Array<Statement>&& then_body, Array<Statement>&& else_body);
+		IfStatement(Expression&& condition, Array<Statement>&& then_body, IfStatement *else_if);
 		IfStatement(IfStatement&& other);
 		IfStatement(const IfStatement& other);
 		~IfStatement();

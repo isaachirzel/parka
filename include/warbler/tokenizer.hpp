@@ -7,7 +7,9 @@
 
 // local includes
 #include <warbler/token.hpp>
-#include <warbler/result.hpp>
+#include <warbler/util/result.hpp>
+
+// standard headers
 #include <vector>
 
 namespace warbler

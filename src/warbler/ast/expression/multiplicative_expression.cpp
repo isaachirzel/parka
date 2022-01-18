@@ -5,7 +5,7 @@
 
 namespace warbler
 {
-	MultiplicativeExpression::MultiplicativeExpression(PrimaryExpression&& lhs, std::vector<MultiplicativeRhs>&& rhs) :
+	MultiplicativeExpression::MultiplicativeExpression(PrimaryExpression&& lhs, Array<MultiplicativeRhs>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
@@ -17,7 +17,7 @@ namespace warbler
 		if (lhs.has_error())
 			return lhs.error();
 
-		std::vector<MultiplicativeRhs> rhs;
+		Array<MultiplicativeRhs> rhs;
 
 		while (true)
 		{

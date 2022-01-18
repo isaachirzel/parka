@@ -2,11 +2,10 @@
 #define WARBLER_TOKEN_HPP
 
 // local includes
-#include <warbler/primitive.hpp>
+#include <warbler/util/array.hpp>
+#include <warbler/util/string.hpp>
+#include <warbler/util/primitive.hpp>
 #include <iostream>
-
-// standard headers
-#include <vector>
 
 namespace warbler
 {
@@ -30,11 +29,13 @@ namespace warbler
 		TOKEN_CARROT,
 		TOKEN_LSHIFT,
 		TOKEN_RSHIFT,
+		TOKEN_INCREMENT,
+		TOKEN_DECREMENT,
 		TOKEN_BOOLEAN_NOT,
 		TOKEN_BOOLEAN_AND,
 		TOKEN_BOOLEAN_OR,
-		TOKEN_XOR,
-		TOKEN_NOT,
+		TOKEN_BITWISE_NOT,
+		TOKEN_BITWISE_XOR,
 		TOKEN_EQUALS,
 		TOKEN_NOT_EQUALS,		
 		TOKEN_LESS_OR_EQUAL,
@@ -45,7 +46,6 @@ namespace warbler
 		TOKEN_DOUBLE_ARROW,
 		TOKEN_OPTION,
 		TOKEN_QUESTION,
-		// assign tokens
 		TOKEN_ASSIGN,
 		TOKEN_BECOME_ASSIGN,
 		TOKEN_ADD_ASSIGN,
@@ -58,16 +58,12 @@ namespace warbler
 		TOKEN_BITAND_ASSIGN,
 		TOKEN_BITOR_ASSIGN,
 		TOKEN_BITXOR_ASSIGN,
-
 		TOKEN_MODULUS,
 		TOKEN_SLASH,
 		TOKEN_ASTERISK,
 		TOKEN_PLUS,
 		TOKEN_MINUS,
 		TOKEN_POW,
-		TOKEN_INCREMENT,
-		TOKEN_DECREMENT,
-		// literal
 		TOKEN_INTEGER_LITERAL,
 		TOKEN_FLOAT_LITERAL,
 		TOKEN_HEXADECIMAL_LITERAL,
@@ -86,6 +82,7 @@ namespace warbler
 		TOKEN_CONTINUE,
 		TOKEN_BREAK,
 		TOKEN_IF,
+		TOKEN_THEN,
 		TOKEN_ELSE,
 		TOKEN_MATCH,
 		TOKEN_CASE,
@@ -123,7 +120,7 @@ namespace warbler
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};
 
-	typedef std::vector<Token>::const_iterator TokenIterator;
+	typedef Array<Token>::const_iterator TokenIterator;
 }
 
 #endif

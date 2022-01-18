@@ -14,43 +14,26 @@ namespace warbler
 	_type(type)
 	{}
 
-	Result<Prefix> Prefix::parse(TokenIterator& iter)
-	{
-		switch (iter->type())
-		{
-			case TOKEN_INCREMENT:
-				iter += 1;
-				return Prefix(PREFIX_INCREMENT);
-
-			case TOKEN_DECREMENT:
-				iter += 1;
-				return Prefix(PREFIX_DECREMENT);
-
-			case TOKEN_AMPERSAND:
-				iter += 1;
-				return Prefix(PREFIX_REFERENCE);
-
-			case TOKEN_ASTERISK:
-				iter += 1;
-				return Prefix(PREFIX_DEREFERENCE);
-
-			default:
-				return ERROR_NOT_FOUND;
-		}
-	}
-
-	Result<std::vector<Prefix>> Prefix::parse_list(TokenIterator& iter)
+	std::vector<Prefix> Prefix::parse_list(TokenIterator& iter)
 	{
 		std::vector<Prefix> out;
 
-		while (true)
-		{
-			auto res = Prefix::parse(iter);
+	parse_prefix:
 
-			if (res.has_error())
+		switch (iter->type())
+		{
+			case TOKEN_AMPERSAND:
+				iter += 1;
+				out.emplace_back(Prefix { PREFIX_REFERENCE });
+				goto parse_prefix;
+
+			case TOKEN_ASTERISK:
+				iter += 1;
+				out.emplace_back(Prefix { PREFIX_DEREFERENCE });
+				goto parse_prefix;
+
+			default:
 				break;
-			
-			out.emplace_back(res.unwrap());
 		}
 
 		return out;
@@ -60,23 +43,13 @@ namespace warbler
 	{
 		std::cout << tree_branch(depth);
 
-		switch (_type)
+		if (_type == PREFIX_REFERENCE)
 		{
-			case PREFIX_INCREMENT:
-				std::cout << "++\n";
-				break;
-
-			case PREFIX_DECREMENT:
-				std::cout << "--\n";
-				break;
-
-			case PREFIX_REFERENCE:
-				std::cout << "&\n";
-				break;
-
-			case PREFIX_DEREFERENCE:
-				std::cout << "*\n";
-				break;
+			std::cout << "&\n";
+		}
+		else
+		{
+			std::cout << "*\n";
 		}
 	}
 }

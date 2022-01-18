@@ -2,9 +2,9 @@
 #define WARBLER_AST_CONSTANT_HPP
 
 // local headers
-#include <warbler/result.hpp>
 #include <warbler/token.hpp>
-#include <warbler/primitive.hpp>
+#include <warbler/util/result.hpp>
+#include <warbler/util/primitive.hpp>
 namespace warbler
 {
 	enum ConstantType
@@ -44,7 +44,7 @@ namespace warbler
 
 		static Result<Constant> parse(TokenIterator& iter);
 
-		void print_tree(u32 depth = 0) const;
+	void print_tree(u32 depth = 0) const;
 
 		Constant& operator=(Constant&& other);
 		Constant& operator=(const Constant& other);

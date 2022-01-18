@@ -123,17 +123,28 @@ namespace warbler
 	{
 		std::cout << tree_branch(depth) << "if\n";
 		_condition.print_tree(depth + 1);
-		std::cout << tree_branch(depth) << "{\n";
+		std::cout << tree_branch(depth + 1) << "{\n";
+
 		for (const auto& statement : _then_body)
-			statement.print_tree(depth + 1);
-		std::cout << tree_branch(depth) << "}\n";
-		if (!_else_body.empty())
+			statement.print_tree(depth + 2);
+
+		std::cout << tree_branch(depth + 1) << "}\n";
+
+		if (_type == IF_THEN_ELSE)
 		{
-			std::cout << tree_branch(depth) << "else\n";
-			std::cout << tree_branch(depth) << "{\n";
+			std::cout << tree_branch(depth + 1) << "else\n";
+			std::cout << tree_branch(depth + 1) << "{\n";
+
 			for (const auto& statement : _else_body)
-				statement.print_tree(depth + 1);
-			std::cout << tree_branch(depth) << "}\n";
+				statement.print_tree(depth + 2);
+
+			std::cout << tree_branch(depth + 1) << "}\n";
+		}
+		else if (_type == IF_THEN_ELSE_IF)
+		{
+			std::cout << tree_branch(depth + 1) << "else\n";
+
+			_else_if->print_tree(depth + 2);
 		}
 	}
 

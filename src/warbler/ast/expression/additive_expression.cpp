@@ -5,7 +5,7 @@
 
 namespace warbler
 {
-	AdditiveExpression::AdditiveExpression(MultiplicativeExpression&& lhs, std::vector<AdditiveRhs>&& rhs) :
+	AdditiveExpression::AdditiveExpression(MultiplicativeExpression&& lhs, Array<AdditiveRhs>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
@@ -17,13 +17,23 @@ namespace warbler
 		if (lhs.has_error())
 			return lhs.error();
 
-		std::vector<AdditiveRhs> rhs;
+		Array<AdditiveRhs> rhs;
 
-		while (iter->type() == TOKEN_PLUS || iter->type() == TOKEN_MINUS)
+		while (true)
 		{
-			auto type = iter->type() == TOKEN_PLUS
-				? ADDITIVE_ADD
-				: ADDITIVE_SUBTRACT;
+			AdditiveType type;
+			if (iter->type() == TOKEN_PLUS)
+			{
+				type = ADDITIVE_ADD;
+			}
+			else if (iter->type() == TOKEN_MINUS)
+			{
+				type = ADDITIVE_ADD;
+			}
+			else
+			{
+				break;
+			}
 
 			iter += 1;			
 

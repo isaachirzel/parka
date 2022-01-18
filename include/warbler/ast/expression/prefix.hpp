@@ -3,14 +3,12 @@
 
 // local headers
 #include <warbler/token.hpp>
-#include <warbler/result.hpp>
+#include <warbler/util/result.hpp>
 
 namespace warbler
 {
 	enum PrefixType
 	{
-		PREFIX_INCREMENT,
-		PREFIX_DECREMENT,
 		PREFIX_REFERENCE,
 		PREFIX_DEREFERENCE
 	};
@@ -25,8 +23,7 @@ namespace warbler
 
 		Prefix(PrefixType type);
 
-		static Result<Prefix> parse(TokenIterator& iter);
-		static Result<std::vector<Prefix>> parse_list(TokenIterator& iter);
+		static std::vector<Prefix> parse_list(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 	};

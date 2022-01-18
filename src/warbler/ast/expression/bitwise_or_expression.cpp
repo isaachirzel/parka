@@ -8,7 +8,7 @@
 #include <cassert>
 namespace warbler
 {
-	BitwiseOrExpression::BitwiseOrExpression(BitwiseXorExpression&& lhs, std::vector<BitwiseXorExpression>&& rhs) :
+	BitwiseOrExpression::BitwiseOrExpression(BitwiseXorExpression&& lhs, Array<BitwiseXorExpression>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
@@ -17,7 +17,10 @@ namespace warbler
 	{
 		auto lhs = BitwiseXorExpression::parse(iter);
 
-		std::vector<BitwiseXorExpression> rhs;
+		if (lhs.has_error())
+			return lhs.error();
+
+		Array<BitwiseXorExpression> rhs;
 
 		while (iter->type() == TOKEN_PIPELINE)
 		{

@@ -4,8 +4,6 @@
 // standard headers
 #include <cstdint>
 #include <cstddef>
-#include <string>
-#include <string_view>
 
 namespace warbler
 {
@@ -29,9 +27,6 @@ namespace warbler
 
 	using f32 = float;
 	using f64 = double;
-
-	using String = std::string;
-	using StringView = std::string_view;
 }
 
 #endif

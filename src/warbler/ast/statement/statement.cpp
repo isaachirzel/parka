@@ -5,10 +5,10 @@
 
 namespace warbler
 {
-	// Statement::Statement(ExpressionStatement&& expression) :
-	// _expression(expression),
-	// _type(STATEMENT_EXPRESSION)
-	// {}
+	Statement::Statement(ExpressionStatement&& expression) :
+	_expression(expression),
+	_type(STATEMENT_EXPRESSION)
+	{}
 
 	Statement::Statement(DeclarationStatement&& declaration) :
 	_declaration(declaration),
@@ -35,9 +35,9 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			// case STATEMENT_EXPRESSION:
-			// 	_expression = std::move(other._expression);
-			// 	break;
+			case STATEMENT_EXPRESSION:
+				new (&_expression) auto(std::move(other._expression));
+				break;
 
 			case STATEMENT_DECLARATION:
 				new(&_declaration) auto(std::move(other._declaration));
@@ -62,9 +62,9 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			// case STATEMENT_EXPRESSION:
-			// 	_expression = other._expression;
-			// 	break;
+			case STATEMENT_EXPRESSION:
+				new(&_expression) auto(other._expression);
+				break;
 
 			case STATEMENT_DECLARATION:
 				new(&_declaration) auto(other._declaration);
@@ -88,9 +88,9 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			// case STATEMENT_EXPRESSION:
-			// 	_expression.~ExpressionStatement();
-			// 	break;
+			case STATEMENT_EXPRESSION:
+				_expression.~ExpressionStatement();
+				break;
 
 			case STATEMENT_DECLARATION:
 				_declaration.~DeclarationStatement();
@@ -149,21 +149,25 @@ namespace warbler
 				break;
 		}
 
-		error_out(iter) << "expected statement but got: " << *iter << token_error(iter) << std::endl;
-		return ERROR_ARGUMENT;
+		auto res = ExpressionStatement::parse(iter);
+
+		if (res.has_error())
+			return res.error();
+
+		return Statement(res.unwrap());
 	}
 
-	Result<std::vector<Statement>> Statement::parse_compound(TokenIterator& iter)
+	Result<Array<Statement>> Statement::parse_compound(TokenIterator& iter)
 	{
 		if (iter->type() != TOKEN_LBRACE)
 		{
-			error_out(iter) << "expected '{' but got: " << *iter << std::endl;
+			error_out(iter) << "expected '{' but got '" << *iter << '\'' << token_error(iter) << std::endl;
 			return ERROR_ARGUMENT;
 		}
 
 		iter += 1;
-		
-		std::vector<Statement> out;
+
+		Array<Statement> out;
 
 		while (iter->type() != TOKEN_RBRACE)
 		{
@@ -184,9 +188,9 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			// case STATEMENT_EXPRESSION:
-			// 	_expression.print_tree(depth);
-			// 	break;
+			case STATEMENT_EXPRESSION:
+				_expression.print_tree(depth);
+				break;
 
 			case STATEMENT_DECLARATION:
 				_declaration.print_tree(depth);

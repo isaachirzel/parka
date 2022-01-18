@@ -2,9 +2,9 @@
 #define WARBLER_AST_TYPENAME_HPP
 
 // local headers
-#include <warbler/result.hpp>
 #include <warbler/token.hpp>
-#include <warbler/primitive.hpp>
+#include <warbler/util/result.hpp>
+#include <warbler/util/primitive.hpp>
 
 namespace warbler
 {

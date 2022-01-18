@@ -9,7 +9,7 @@
 
 namespace warbler
 {
-	BitwiseAndExpression::BitwiseAndExpression(EqualityExpression&& lhs, std::vector<EqualityExpression>&& rhs) :
+	BitwiseAndExpression::BitwiseAndExpression(EqualityExpression&& lhs, Array<EqualityExpression>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
@@ -18,14 +18,17 @@ namespace warbler
 	{
 		auto lhs = EqualityExpression::parse(iter);
 
-		std::vector<EqualityExpression> rhs;
+		if (lhs.has_error())
+			return lhs.error();
+
+		Array<EqualityExpression> rhs;
 
 		while (iter->type() == TOKEN_AMPERSAND)
 		{
 			iter += 1;
 
 			auto res = EqualityExpression::parse(iter);
-			
+
 			if (res.has_error())
 				return res.error();
 

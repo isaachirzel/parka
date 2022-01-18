@@ -5,7 +5,7 @@
 
 namespace warbler
 {
-	BooleanAndExpression::BooleanAndExpression(BitwiseOrExpression&& lhs, std::vector<BitwiseOrExpression>&& rhs) :
+	BooleanAndExpression::BooleanAndExpression(BitwiseOrExpression&& lhs, Array<BitwiseOrExpression>&& rhs) :
 	_lhs(lhs),
 	_rhs(rhs)
 	{}
@@ -17,7 +17,7 @@ namespace warbler
 		if (lhs.has_error())
 			return lhs.error();
 
-		std::vector<BitwiseOrExpression> rhs;
+		Array<BitwiseOrExpression> rhs;
 
 		while (iter->type() == TOKEN_BOOLEAN_AND)
 		{

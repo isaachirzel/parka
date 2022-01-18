@@ -178,7 +178,7 @@ namespace warbler
 				return parse_float_literal(iter, is_negative);
 
 			default:
-				error_out(iter) << "expected number literal but got: " << *iter;
+				error_out(iter) << "expected number literal but got '" << *iter << '\'' << token_error(iter) << std::endl;
 				return ERROR_ARGUMENT;
 		}
 	}
@@ -232,7 +232,7 @@ namespace warbler
 				break;
 		}
 
-		error_out(iter) << "expected constant but got: " << *iter << std::endl;
+		error_out(iter) << "expected constant but got '" << *iter << '\'' << token_error(iter) << std::endl;
 		return ERROR_ARGUMENT;
 	}
 

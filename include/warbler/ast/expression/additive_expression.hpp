@@ -23,11 +23,11 @@ namespace warbler
 	private:
 
 		MultiplicativeExpression _lhs;
-		std::vector<AdditiveRhs> _rhs;
+		Array<AdditiveRhs> _rhs;
 	
 	public:
 
-		AdditiveExpression(MultiplicativeExpression&& lhs, std::vector<AdditiveRhs>&& rhs);
+		AdditiveExpression(MultiplicativeExpression&& lhs, Array<AdditiveRhs>&& rhs);
 
 		static Result<AdditiveExpression> parse(TokenIterator& iter);
 

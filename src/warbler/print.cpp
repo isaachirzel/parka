@@ -198,7 +198,7 @@ namespace warbler
 		
 		std::string spacing = line_header;
 	
-		for (char& c : line_header)
+		for (char& c : spacing)
 		{
 			if (c != '\t')
 				c = ' ';

@@ -2,7 +2,7 @@
 
 // local headers
 #include <warbler/print.hpp>
-#include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/expression/conditional_expression.hpp>
 
 // standard headers
 #include <stdlib.h>
@@ -12,6 +12,16 @@ namespace warbler
 {
 	Argument::Argument(Expression *expr) :
 	_expr(expr)
+	{}
+
+	Argument::Argument(Argument&& other) :
+	_expr(other._expr)
+	{
+		other._expr = nullptr;
+	}
+
+	Argument::Argument(const Argument& other) :
+	_expr(new Expression(*other._expr))
 	{}
 
 	Argument::~Argument()
@@ -29,7 +39,7 @@ namespace warbler
 		return Argument(new Expression(expr.unwrap()));
 	}
 
-	Result<std::vector<Argument>> Argument::parse_list(TokenIterator& iter)
+	Result<Array<Argument>> Argument::parse_list(TokenIterator& iter)
 	{
 		if (iter->type() != TOKEN_LPAREN)
 		{
@@ -39,7 +49,7 @@ namespace warbler
 
 		iter += 1;
 
-		std::vector<Argument> args;
+		Array<Argument> args;
 
 		if (iter->type() != TOKEN_RPAREN)
 		{
@@ -64,8 +74,11 @@ namespace warbler
 			if (iter->type() != TOKEN_RPAREN)
 			{
 				error_out(iter) << "expected ',' or ')' but got: " << *iter;
+				return ERROR_ARGUMENT;
 			}
 		}
+
+		iter += 1;
 
 		return args;
 	}
@@ -73,5 +86,16 @@ namespace warbler
 	void Argument::print_tree(u32 depth) const
 	{
 		_expr->print_tree(depth);
+	}
+
+	Argument& Argument::operator=(Argument&& other)
+	{
+		new(this) auto(other);
+		return *this;
+	}
+	Argument& Argument::operator=(const Argument& other)
+	{
+		new(this) auto(other);
+		return *this;
 	}
 }

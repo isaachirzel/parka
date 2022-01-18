@@ -2,9 +2,9 @@
 #define WARBLER_AST_LABEL_HPP
 
 // local headers
-#include <warbler/result.hpp>
 #include <warbler/token.hpp>
-#include <warbler/primitive.hpp>
+#include <warbler/util/primitive.hpp>
+#include <warbler/util/result.hpp>
 
 namespace warbler
 {

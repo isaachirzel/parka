@@ -17,15 +17,22 @@
 // "}\n"
 // ;
 const char *src = R"=====(
-	if true
+func do_thing(arg: i32)
+{
+	var value: i32 = arg * 3;
+	if value == 3
 	{
 		var name : String = "hello";
 	}
-	else
+	else if value == 6
 	{
 		var num : f64 = 12.5;
 	}
-
+	else
+	{
+		print("uh oh");
+	}
+}
 )=====";
 
 using namespace warbler;
@@ -40,8 +47,13 @@ int main()
 		return token_res.error();
 
 	auto tokens = token_res.unwrap();
+
+	for (const auto& token : tokens)
+		std::cout << token.line() << ':' << token.col() << " " << token << '\n';
+	std::cout << std::endl;
+
 	TokenIterator iter = tokens.begin();
-	auto res = Statement::parse(iter);
+	auto res = Function::parse(iter);
 
 	if (res.has_error())
 		return res.error();

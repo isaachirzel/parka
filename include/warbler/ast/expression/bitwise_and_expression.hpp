@@ -10,11 +10,11 @@ namespace warbler
 	private:
 
 		EqualityExpression _lhs;
-		std::vector<EqualityExpression> _rhs;
+		Array<EqualityExpression> _rhs;
 
 	public:
 
-		BitwiseAndExpression(EqualityExpression&& lhs, std::vector<EqualityExpression>&& rhs);
+		BitwiseAndExpression(EqualityExpression&& lhs, Array<EqualityExpression>&& rhs);
 
 		static Result<BitwiseAndExpression> parse(TokenIterator& iter);
 

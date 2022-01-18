@@ -1,7 +1,7 @@
 #ifndef WARBLER_AST_STATEMENT_HPP
 #define WARBLER_AST_STATEMENT_HPP
 
-//#include <warbler/ast/statement/expression_statement.hpp>
+#include <warbler/ast/statement/expression_statement.hpp>
 #include <warbler/ast/statement/declaration_statement.hpp>
 #include <warbler/ast/statement/if_statement.hpp>
 //#include <warbler/ast/statement/loop_statement.hpp>
@@ -11,7 +11,7 @@ namespace warbler
 {
 	enum StatementType
 	{
-		//STATEMENT_EXPRESSION,
+		STATEMENT_EXPRESSION,
 		STATEMENT_DECLARATION,		
 		STATEMENT_IF_THEN,
 		// STATEMENT_LOOP,
@@ -24,7 +24,7 @@ namespace warbler
 
 		union
 		{
-			// ExpressionStatement _expression;
+			ExpressionStatement _expression;
 			DeclarationStatement _declaration;
 			IfStatement _if_then;
 			//LoopStatement _loop;
@@ -35,7 +35,7 @@ namespace warbler
 
 	public:
 
-		// Statement(ExpressionStatement&& expression);
+		Statement(ExpressionStatement&& expression);
 		Statement(DeclarationStatement&& declaration);
 		Statement(IfStatement&& if_then);
 		//Statement(LoopStatement&& loop);
@@ -45,7 +45,7 @@ namespace warbler
 		~Statement();
 
 		static Result<Statement> parse(TokenIterator& iter);
-		static Result<std::vector<Statement>> parse_compound(TokenIterator& iter);
+		static Result<Array<Statement>> parse_compound(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 

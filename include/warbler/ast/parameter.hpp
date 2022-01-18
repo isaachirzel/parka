@@ -2,10 +2,10 @@
 #define WARBLER_AST_PARAMETER_HPP
 
 // local headers
-#include <warbler/result.hpp>
 #include <warbler/token.hpp>
 #include <warbler/ast/typename.hpp>
 #include <warbler/ast/identifier.hpp>
+#include <warbler/util/result.hpp>
 
 namespace warbler
 {

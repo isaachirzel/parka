@@ -11,11 +11,11 @@ namespace warbler
 	private:
 
 		BooleanAndExpression _lhs;
-		std::vector<BooleanAndExpression> _rhs;
+		Array<BooleanAndExpression> _rhs;
 
 	public:
 
-		BooleanOrExpression(BooleanAndExpression&& lhs, std::vector<BooleanAndExpression>&& rhs);
+		BooleanOrExpression(BooleanAndExpression&& lhs, Array<BooleanAndExpression>&& rhs);
 
 		static Result<BooleanOrExpression> parse(TokenIterator& iter);
 

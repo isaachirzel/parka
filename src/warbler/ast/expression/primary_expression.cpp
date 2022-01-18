@@ -2,7 +2,7 @@
 
 // local headers
 #include <warbler/print.hpp>
-#include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/expression/conditional_expression.hpp>
 
 // standard headers
 #include <cassert>
@@ -10,24 +10,24 @@
 
 namespace warbler
 {
-	PrimaryExpression::PrimaryExpression(std::vector<Prefix>&& prefixes,
-		std::vector<Postfix>&& postfixes, Identifier&& identifier) :
+	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
+		Array<Postfix>&& postfixes, Identifier&& identifier) :
 	_prefixes(prefixes),
 	_postfixes(postfixes),
 	_identifier(identifier),
 	_type(PRIMARY_IDENTIFIER)
 	{}
 
-	PrimaryExpression::PrimaryExpression(std::vector<Prefix>&& prefixes,
-		std::vector<Postfix>&& postfixes, Constant&& constant) :
+	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
+		Array<Postfix>&& postfixes, Constant&& constant) :
 	_prefixes(prefixes),
 	_postfixes(postfixes),
 	_constant(constant),
 	_type(PRIMARY_CONSTANT)
 	{}
 
-	PrimaryExpression::PrimaryExpression(std::vector<Prefix>&& prefixes,
-		std::vector<Postfix>&& postfixes, Expression *expression) :
+	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
+		Array<Postfix>&& postfixes, Expression *expression) :
 	_prefixes(prefixes),
 	_postfixes(postfixes),
 	_expression(expression),
@@ -51,11 +51,9 @@ namespace warbler
 
 			case PRIMARY_EXPRESSION:
 				_expression = other._expression;
+				other._expression = nullptr;
 				break;
 		}
-
-		other._expression = nullptr;
-		other._type = PRIMARY_EXPRESSION;
 	}
 
 	PrimaryExpression::PrimaryExpression(const PrimaryExpression& other) :
@@ -101,9 +99,6 @@ namespace warbler
 	{
 		auto prefixes = Prefix::parse_list(iter);
 
-		if (prefixes.has_error())
-			return prefixes.error();
-
 		if (iter->type() == TOKEN_IDENTIFIER)
 		{
 			auto identifier = Identifier::parse(iter);
@@ -116,7 +111,7 @@ namespace warbler
 			if (postfixes.has_error())
 				return postfixes.error();
 
-			return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), identifier.unwrap());
+			return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), identifier.unwrap());
 		}
 		else if (iter->type() == TOKEN_LPAREN)
 		{
@@ -134,12 +129,13 @@ namespace warbler
 			}
 
 			iter += 1;
+
 			auto postfixes = Postfix::parse_list(iter);
 
 			if (postfixes.has_error())
 				return postfixes.error();
 
-			return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), new Expression(expression.unwrap()));
+			return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), new Expression(expression.unwrap()));
 		}
 		
 		auto constant = Constant::parse(iter);
@@ -152,7 +148,7 @@ namespace warbler
 		if (postfixes.has_error())
 			return postfixes.error();
 
-		return PrimaryExpression(prefixes.unwrap(), postfixes.unwrap(), constant.unwrap());
+		return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), constant.unwrap());
 	}
 
 	void PrimaryExpression::print_tree(u32 depth) const

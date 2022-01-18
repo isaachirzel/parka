@@ -3,8 +3,9 @@
 
 // local headers
 #include <warbler/token.hpp>
-#include <warbler/result.hpp>
+#include <warbler/util/result.hpp>
 #include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/expression/conditional_expression.hpp>
 
 namespace warbler
 {

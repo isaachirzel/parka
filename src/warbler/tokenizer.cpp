@@ -50,6 +50,7 @@ namespace warbler
 		{ "continue", TOKEN_CONTINUE },
 		{ "break", TOKEN_BREAK },
 		{ "if", TOKEN_IF },
+		{ "then", TOKEN_THEN },
 		{ "else", TOKEN_ELSE },
 		{ "match", TOKEN_MATCH },
 		{ "case", TOKEN_CASE },
@@ -640,6 +641,11 @@ namespace warbler
 			type = TOKEN_SCOPE;
 			length = 2;
 		}
+		else if (location.ptr[1] == '=')
+		{
+			type == TOKEN_BECOME_ASSIGN;
+			length = 2;
+		}
 		else
 		{
 			type = TOKEN_COLON;
@@ -799,11 +805,6 @@ namespace warbler
 			location = get_end_of_token_location(out.back());
 		}
 		while (out.back().type() != TOKEN_END_OF_FILE);
-
-		for (const auto& token : out)
-		{
-			std::cout << token.line() << ':' << token.col() << " " << token << std::endl;
-		}
 
 		return out;
 	}

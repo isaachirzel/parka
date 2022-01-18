@@ -76,12 +76,14 @@ namespace warbler
 		{
 			if (_ok)
 			{
-				_value = std::move(other._value);
+				new(&_value) auto(std::move(other._value));
+				other._ok = false;
 			}
 			else
 			{
 				_error = other._error;
 			}
+
 		}
 
 		~Result()
