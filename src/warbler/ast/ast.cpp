@@ -21,4 +21,9 @@ namespace warbler
 	{
 		_program.print_tree(depth);
 	}
+
+	bool Ast::validate()
+	{
+		return _program.validate();
+	}
 }

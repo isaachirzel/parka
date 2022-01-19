@@ -2,6 +2,7 @@
 
 // local headers
 #include <warbler/print.hpp>
+#include <warbler/semantics/symbol.hpp>
 
 // standard headers
 #include <cstdlib>
@@ -155,6 +156,33 @@ namespace warbler
 
 			std::cout << tree_branch(depth + 1) << "}\n";
 		}
+	}
+
+	bool Function::validate(const Table<u32>& types, const Table<Symbol>& symbols)
+	{
+		// for (auto& parameter : _parameters)
+		// {
+		// 	//auto status = parameter.validate();
+
+		// 	if (!status)
+		// 		return status;
+		// }
+
+		// auto status = _return_type.validate();
+
+		// if (!status)
+		// 	return status;
+
+		// if (_is_inline)
+		// {
+
+		// }
+		// else
+		// {
+		// 	for (
+		// }
+
+		return false;
 	}
 
 	Function& Function::operator=(Function&& other)

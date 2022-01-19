@@ -43,8 +43,8 @@ int main()
 
 	auto token_res = tokenize("<in-memory-file>", src);
 
-	if (token_res.has_error())
-		return token_res.error();
+	if (!token_res)
+		return token_res;
 
 	auto tokens = token_res.unwrap();
 
@@ -53,7 +53,7 @@ int main()
 	std::cout << std::endl;
 
 	TokenIterator iter = tokens.begin();
-	auto res = Function::parse(iter);
+	auto res = Program::parse(iter);
 
 	if (res.has_error())
 		return res.error();
@@ -64,9 +64,12 @@ int main()
 	}
 
 
-	auto node = res.unwrap();
+	auto ast = res.unwrap();
 
-	node.print_tree(1);
+	ast.print_tree(1);
+
+	if (!ast.validate())
+		return (int)ERROR_VALIDATE;
 
 	return 0;
 }

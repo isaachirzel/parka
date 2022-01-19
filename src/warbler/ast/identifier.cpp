@@ -8,7 +8,8 @@
 
 namespace warbler
 {
-	Identifier::Identifier(String&& text) :
+	Identifier::Identifier(const Location& location, String&& text) :
+	_location(location),
 	_text(text)
 	{}
 
@@ -16,15 +17,17 @@ namespace warbler
 	{
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
-			error_out(iter) << "expected identifier but got: '" << *iter << '\''  << token_error(iter) << std::endl;
+			parse_error(iter, "identifier");
 			return ERROR_ARGUMENT;
 		}
 
 		String text = String(iter->text());
 			
+		const auto& location = iter->location();
+
 		iter += 1;
 
-		return Identifier(std::move(text));
+		return Identifier(location, std::move(text));
 	}
 
 	void Identifier::print_tree(u32 depth) const

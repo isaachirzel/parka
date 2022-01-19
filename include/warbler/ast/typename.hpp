@@ -12,17 +12,23 @@ namespace warbler
 	{
 	private:
 
+		Location _location;
 		String _name;
 		u32 _id;
 
 	public:
 
 		Typename();
-		Typename(String&& name);
+		Typename(const Location& location, String&& name);
 
 		static Result<Typename> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
+		bool validate();
+
+		const Location& location() const { return _location; }
+		const String& name() const { return _name; }
+		u32 id() const { return _id; }
 	};
 }
 

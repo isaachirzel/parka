@@ -15,18 +15,19 @@ namespace warbler
 	{
 	private:
 
+		Location _location;
 		String _text;
 
 	public:
 
-		Identifier() = delete;
-		Identifier(String&& text);
+		Identifier(const Location& location, String&& text);
 
 		static Result<Identifier> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 
 		const String& text() const { return _text; }
+		const Location& location() const { return _location; }
 	};
 
 }

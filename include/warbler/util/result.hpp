@@ -10,18 +10,14 @@ namespace warbler
 {
 	enum Error
 	{
-		ERROR_MEMORY,
+		ERROR_MEMORY = 1,
 		ERROR_ARGUMENT,
 		ERROR_FILE,
 		ERROR_PARSE,
 		ERROR_NOT_FOUND,
 		ERROR_INVALID_PTR,
-		ERROR_NOT_IMPLEMENTED
-	};
-
-	struct NullSpace
-	{
-		int get() { return 0; }
+		ERROR_NOT_IMPLEMENTED,
+		ERROR_VALIDATE
 	};
 
 	static inline Error _not_implemented_error(const char *func_name)
@@ -96,6 +92,9 @@ namespace warbler
 		Error error() const { assert(!_ok); return _error; }
 		bool has_error() const { return !_ok; }
 		bool is_ok() const { return _ok; }
+		operator Error() const { assert(!_ok); return _error; }
+		operator bool() const { return _ok; }
+		operator int() const { return _ok ? 0 : (int)_error; }
 	};
 }
 

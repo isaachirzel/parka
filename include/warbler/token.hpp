@@ -96,14 +96,30 @@ namespace warbler
 		TOKEN_COUNT
 	};
 
+	class Location
+	{
+	private:
+
+		const char *_filename;
+		usize _line;
+		usize _col;
+
+	public:
+
+		Location();
+		Location(const char *_filename, usize line, usize col);
+		
+		const char *filename() const { return _filename; }
+		usize line() const { return _line; }
+		usize col() const { return _col; }
+	};
+
 	struct Token
 	{
 	private:
 
 		StringView _text;
-		const char *_filename;
-		usize _line;
-		usize _col;
+		Location _location;
 		TokenType _type;
 	
 	public:
@@ -112,9 +128,10 @@ namespace warbler
 		Token(const StringView& text, const char *filename, usize line, usize col, TokenType type);
 
 		const StringView& text() const { return _text; }
-		const char *filename() const { return _filename; }
-		usize line() const { return _line; }
-		usize col() const { return _col; }
+		const Location& location() const { return _location; }
+		const char *filename() const { return _location.filename(); }
+		usize line() const { return _location.line(); }
+		usize col() const { return _location.col(); }
 		TokenType type() const { return _type; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);

@@ -246,16 +246,21 @@ namespace warbler
 		return std::cout;
 	}
 
+	std::ostream& error_out(const Location& location)
+	{
+		std::cout << location.filename() << ':' << location.line() + 1 << ':' << location.col() + 1 << ' ' << error_prompt;
+	}
+
 	std::ostream& error_out(const Token& token)
 	{
-		std::cout <<  token.filename() << ':' << token.line() + 1 << ':' << token.col() + 1 << ' ' << error_prompt;
+		error_out(token.location());
 
 		return std::cout;
 	}
 
 	std::ostream& error_out(TokenIterator& iter)
 	{
-		return error_out(*iter);
+		return error_out(iter->location());
 	}
 
 	std::string tree_branch(u32 length)
@@ -280,5 +285,10 @@ namespace warbler
 		out[out.size() - 2] = '>';
 
 		return out;
+	}
+
+	void parse_error(TokenIterator& iter, const char *expected)
+	{
+		error_out(iter) << "expected " << expected << " but got '" << *iter << '\'' << token_error(iter) << std::endl;
 	}
 }

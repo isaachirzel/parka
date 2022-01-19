@@ -15,11 +15,13 @@ namespace warbler
 
 	std::string tree_branch(u32 length);
 	std::ostream& error_out();
+	std::ostream& error_out(const Location& location);
 	std::ostream& error_out(const Token& token);
 	std::ostream& error_out(TokenIterator& iter);
 	std::string token_error(TokenIterator& iter);
 	std::string token_warning(TokenIterator& iter);
-	std::string token_message(TokenIterator& iter);
+	std::string token_message(TokenIterator& iter);	
+	void parse_error(TokenIterator& iter, const char *expected);
 }
 
 #ifndef NDEBUG

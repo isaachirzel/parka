@@ -6,11 +6,13 @@
 namespace warbler
 {
 	Typename::Typename() :
+	_location(),
 	_name(),
 	_id(0)
 	{}
 
-	Typename::Typename(String&& name) :
+	Typename::Typename(const Location& location, String&& name) :
+	_location(location),
 	_name(name),
 	_id(1)
 	{}
@@ -25,9 +27,11 @@ namespace warbler
 		
 		String name = String(iter->text());
 
+		const auto& location = iter->location();
+
 		iter += 1;
 
-		return Typename(std::move(name));
+		return Typename(location, std::move(name));
 	}
 
 	void Typename::print_tree(u32 depth) const

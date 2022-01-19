@@ -8,9 +8,12 @@
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/ast/statement/statement.hpp>
+#include <warbler/util/table.hpp>
 
 namespace warbler
 {
+	class Symbol;
+
 	class Function
 	{
 	private:
@@ -38,6 +41,9 @@ namespace warbler
 		static Result<Function> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
+		bool validate(const Table<u32>& types, const Table<Symbol>& symbols);
+
+		const Identifier& name() const { return _name; }
 
 		Function& operator=(Function&& other);
 		Function& operator=(const Function& other);
