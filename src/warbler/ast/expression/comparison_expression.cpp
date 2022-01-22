@@ -3,11 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-// standard headers
-#include <cstdlib>
-#include <cassert>
-
-namespace warbler
+namespace warbler::ast
 {
 	ComparisonExpression::ComparisonExpression(ShiftExpression&& lhs, std::vector<ComparisonRhs>&& rhs) :
 	_lhs(lhs),

@@ -1,24 +1,27 @@
 #ifndef WARBLER_SEMANTICS_SYMBOL_HPP
 #define WARBLER_SEMANTICS_SYMBOL_HPP
 
-#include <warbler/ast/function.hpp>
+namespace warbler::ast
+{
+	class Function;
+}
 
-namespace warbler
+namespace warbler::semantics
 {
 	class Symbol
 	{
 	private:
 
-		Function* _function;
+		ast::Function* _function;
 
 	public:
 	
-		Symbol(Function* function) :
+		Symbol(ast::Function* function) :
 		_function(function)
 		{}
 
-		Function& function() { return *_function; }
-		const Function& function() const { return *_function; }
+		ast::Function& function() { return *_function; }
+		const ast::Function& function() const { return *_function; }
 	};
 }
 

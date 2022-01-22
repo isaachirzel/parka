@@ -3,7 +3,7 @@
 #include <warbler/ast/statement/statement.hpp>
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	IfStatement::IfStatement(Expression&& condition, std::vector<Statement>&& then_body) :
 	_condition(condition),

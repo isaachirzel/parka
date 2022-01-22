@@ -60,7 +60,9 @@ namespace warbler
 		{ "true", TOKEN_TRUE },
 		{ "false", TOKEN_FALSE },
 		{ "import", TOKEN_IMPORT },
-		{ "export", TOKEN_EXPORT }
+		{ "export", TOKEN_EXPORT },
+		{ "public", TOKEN_PUBLIC },
+		{ "private", TOKEN_PRIVATE }
 	};
 
 	CharType char_types[256];

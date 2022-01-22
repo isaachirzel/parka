@@ -249,13 +249,13 @@ namespace warbler
 	std::ostream& error_out(const Location& location)
 	{
 		std::cout << location.filename() << ':' << location.line() + 1 << ':' << location.col() + 1 << ' ' << error_prompt;
+
+		return std::cout;
 	}
 
 	std::ostream& error_out(const Token& token)
 	{
-		error_out(token.location());
-
-		return std::cout;
+		return error_out(token.location());
 	}
 
 	std::ostream& error_out(TokenIterator& iter)

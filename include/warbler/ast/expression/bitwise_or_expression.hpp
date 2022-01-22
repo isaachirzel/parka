@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/expression/bitwise_xor_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class BitwiseOrExpression
 	{

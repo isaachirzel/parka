@@ -8,7 +8,7 @@
 #include <warbler/ast/expression/postfix.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum PrimaryType
 	{

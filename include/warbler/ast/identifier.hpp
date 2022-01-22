@@ -6,10 +6,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 
-// standard headers
-#include <string>
-
-namespace warbler
+namespace warbler::ast
 {
 	class Identifier
 	{

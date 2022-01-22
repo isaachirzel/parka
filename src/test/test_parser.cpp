@@ -17,6 +17,13 @@
 // "}\n"
 // ;
 const char *src = R"=====(
+
+type Person
+{
+	age: i32,
+	name: String
+}
+
 func do_thing(arg: i32)
 {
 	var value: i32 = arg * 3;
@@ -49,7 +56,7 @@ int main()
 	auto tokens = token_res.unwrap();
 
 	for (const auto& token : tokens)
-		std::cout << token.line() << ':' << token.col() << " " << token << '\n';
+		std::cout << token.line() << ':' << token.col() << "\t" << token << "\t\ttype: " << token.type() << '\n';
 	std::cout << std::endl;
 
 	TokenIterator iter = tokens.begin();

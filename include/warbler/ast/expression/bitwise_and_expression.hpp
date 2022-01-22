@@ -3,7 +3,8 @@
 
 // local headers
 #include <warbler/ast/expression/equality_expression.hpp>
-namespace warbler
+
+namespace warbler::ast
 {
 	class BitwiseAndExpression
 	{

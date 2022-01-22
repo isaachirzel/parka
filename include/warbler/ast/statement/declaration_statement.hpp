@@ -6,7 +6,7 @@
 #include <warbler/ast/typename.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class DeclarationStatement
 	{

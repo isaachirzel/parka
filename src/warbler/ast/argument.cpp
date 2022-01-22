@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-namespace warbler
+namespace warbler::ast
 {
 	Argument::Argument(Expression *expr) :
 	_expr(expr)

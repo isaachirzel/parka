@@ -5,7 +5,7 @@
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum PrefixType
 	{

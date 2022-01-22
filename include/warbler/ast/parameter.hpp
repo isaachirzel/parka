@@ -7,7 +7,7 @@
 #include <warbler/ast/identifier.hpp>
 #include <warbler/util/result.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Parameter
 	{

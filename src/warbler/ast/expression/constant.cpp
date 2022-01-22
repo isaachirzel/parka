@@ -6,7 +6,7 @@
 // standard headers
 #include <cstring>
 
-namespace warbler
+namespace warbler::ast
 {
 	Constant::Constant(String&& string) :
 	_string(string),

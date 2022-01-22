@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cassert>
 
-namespace warbler
+namespace warbler::ast
 {
 	BitwiseAndExpression::BitwiseAndExpression(EqualityExpression&& lhs, Array<EqualityExpression>&& rhs) :
 	_lhs(lhs),

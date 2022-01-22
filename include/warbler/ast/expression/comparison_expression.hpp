@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/expression/shift_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum ComparisonType
 	{

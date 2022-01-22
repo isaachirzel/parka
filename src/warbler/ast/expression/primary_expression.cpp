@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstdlib>
 
-namespace warbler
+namespace warbler::ast
 {
 	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
 		Array<Postfix>&& postfixes, Identifier&& identifier) :

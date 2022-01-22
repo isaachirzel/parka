@@ -3,7 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	Label::Label(String&& identifier) :
 	_identifier(identifier)

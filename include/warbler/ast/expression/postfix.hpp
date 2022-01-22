@@ -6,7 +6,7 @@
 #include <warbler/ast/identifier.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum PostfixType
 	{

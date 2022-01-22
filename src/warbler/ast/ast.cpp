@@ -1,6 +1,8 @@
 #include <warbler/ast/ast.hpp>
 
-namespace warbler
+#include <warbler/ast/function.hpp>
+
+namespace warbler::ast
 {
 	Ast::Ast(Program&& program) :
 	_program(program)

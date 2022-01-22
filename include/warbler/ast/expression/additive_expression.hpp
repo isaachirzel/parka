@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/expression/multiplicative_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum AdditiveType
 	{

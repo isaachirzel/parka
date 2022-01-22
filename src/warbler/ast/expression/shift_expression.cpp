@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cassert>
 
-namespace warbler
+namespace warbler::ast
 {
 	ShiftExpression::ShiftExpression(AdditiveExpression&& lhs, std::vector<ShiftRhs>&& rhs) :
 	_lhs(lhs),

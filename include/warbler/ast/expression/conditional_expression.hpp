@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/expression/boolean_or_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	struct ConditionalRhs;
 

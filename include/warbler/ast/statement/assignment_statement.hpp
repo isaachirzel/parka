@@ -6,7 +6,7 @@
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/ast/expression/primary_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum AssignmentType
 	{

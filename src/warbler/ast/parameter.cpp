@@ -3,10 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-// standard headers
-#include <cstdlib>
-
-namespace warbler
+namespace warbler::ast
 {
 	Parameter::Parameter(Identifier&& name, Typename&& type) :
 	_name(name),

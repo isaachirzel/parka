@@ -6,7 +6,7 @@
 // standard headers
 #include <cstdlib>
 
-namespace warbler
+namespace warbler::ast
 {
 	Identifier::Identifier(const Location& location, String&& text) :
 	_location(location),

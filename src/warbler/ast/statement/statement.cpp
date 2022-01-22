@@ -3,7 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	Statement::Statement(ExpressionStatement&& expression) :
 	_expression(expression),

@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstdlib>
 
-namespace warbler
+namespace warbler::ast
 {
 	Postfix::Postfix(Expression *index) :
 	_index(index),

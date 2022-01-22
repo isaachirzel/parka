@@ -6,7 +6,7 @@
 #include <warbler/token.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Argument
 	{

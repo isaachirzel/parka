@@ -9,8 +9,9 @@
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/ast/statement/statement.hpp>
 #include <warbler/util/table.hpp>
+#include <warbler/semantics/context.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Symbol;
 
@@ -41,7 +42,7 @@ namespace warbler
 		static Result<Function> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
-		bool validate(const Table<u32>& types, const Table<Symbol>& symbols);
+		bool validate(const semantics::Context& context);
 
 		const Identifier& name() const { return _name; }
 

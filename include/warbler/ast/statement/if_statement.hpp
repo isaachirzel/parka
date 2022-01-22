@@ -6,7 +6,7 @@
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/util/array.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Statement;
 

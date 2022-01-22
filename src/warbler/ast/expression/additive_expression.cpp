@@ -3,7 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	AdditiveExpression::AdditiveExpression(MultiplicativeExpression&& lhs, Array<AdditiveRhs>&& rhs) :
 	_lhs(lhs),

@@ -3,7 +3,7 @@
 // local includes
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	MultiplicativeExpression::MultiplicativeExpression(PrimaryExpression&& lhs, Array<MultiplicativeRhs>&& rhs) :
 	_lhs(lhs),

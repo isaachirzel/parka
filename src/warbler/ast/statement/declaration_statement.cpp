@@ -2,7 +2,7 @@
 
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	DeclarationStatement::DeclarationStatement(Identifier&& name, Typename&& type, ConditionalExpression&& value) :
 	_name(name),

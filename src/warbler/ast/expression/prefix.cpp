@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cassert>
 
-namespace warbler
+namespace warbler::ast
 {
 
 	Prefix::Prefix(PrefixType type) :

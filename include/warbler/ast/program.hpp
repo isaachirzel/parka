@@ -4,26 +4,28 @@
 // local headers
 #include <warbler/ast/function.hpp>
 #include <warbler/util/table.hpp>
-#include <warbler/semantics/symbol.hpp>
+#include <warbler/ast/type/type_definition.hpp>
+#include <warbler/semantics/context.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Program
 	{
 	private:
 		
-		Table<u32> _types;
-		Table<Symbol> _symbols;
-		std::vector<Function> _functions;
+		semantics::Context _context;
+
+		Array<Function> _functions;
+		Array<TypeDefinition> _types;
+
+		Program(Array<Function>&& functions, Array<TypeDefinition>&& types);
 
 	public:
 
-		Program(std::vector<Function>&& functions);
-
 		static Result<Program> parse(TokenIterator& iter);
 
-		void print_tree(u32 depth = 0) const;
 		bool validate();
+		void print_tree(u32 depth = 0) const;
 	};
 }
 

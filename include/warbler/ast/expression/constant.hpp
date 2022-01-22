@@ -5,7 +5,8 @@
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
-namespace warbler
+
+namespace warbler::ast
 {
 	enum ConstantType
 	{

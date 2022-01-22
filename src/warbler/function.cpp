@@ -4,11 +4,7 @@
 #include <warbler/print.hpp>
 #include <warbler/semantics/symbol.hpp>
 
-// standard headers
-#include <cstdlib>
-#include <cassert>
-
-namespace warbler
+namespace warbler::ast
 {
 	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Expression&& inline_body) :
 	_name(name),
@@ -158,7 +154,7 @@ namespace warbler
 		}
 	}
 
-	bool Function::validate(const Table<u32>& types, const Table<Symbol>& symbols)
+	bool Function::validate(const semantics::Context& context)
 	{
 		// for (auto& parameter : _parameters)
 		// {

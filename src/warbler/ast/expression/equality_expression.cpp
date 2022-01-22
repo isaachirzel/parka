@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cassert>
 
-namespace warbler
+namespace warbler::ast
 {
 	EqualityExpression::EqualityExpression(ComparisonExpression&& lhs, Array<EqualityRhs>&& rhs) :
 	_lhs(lhs),

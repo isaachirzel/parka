@@ -7,7 +7,7 @@
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class ExpressionStatement
 	{

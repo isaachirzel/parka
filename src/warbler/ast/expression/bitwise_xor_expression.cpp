@@ -3,11 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-// standard headers
-#include <cstdlib>
-#include <cassert>
-
-namespace warbler
+namespace warbler::ast
 {
 	BitwiseXorExpression::BitwiseXorExpression(BitwiseAndExpression&& lhs, Array<BitwiseAndExpression>&& rhs) :
 	_lhs(lhs),

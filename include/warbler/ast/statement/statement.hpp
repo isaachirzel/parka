@@ -7,7 +7,7 @@
 //#include <warbler/ast/statement/loop_statement.hpp>
 //#include <warbler/ast/statement/jump_statement.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum StatementType
 	{

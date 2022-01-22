@@ -93,7 +93,8 @@ namespace warbler
 		TOKEN_IMPORT,
 		TOKEN_EXPORT,
 		TOKEN_SCOPE,
-		TOKEN_COUNT
+		TOKEN_PRIVATE,
+		TOKEN_PUBLIC
 	};
 
 	class Location

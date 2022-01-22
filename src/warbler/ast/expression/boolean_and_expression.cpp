@@ -3,7 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	BooleanAndExpression::BooleanAndExpression(BitwiseOrExpression&& lhs, Array<BitwiseOrExpression>&& rhs) :
 	_lhs(lhs),

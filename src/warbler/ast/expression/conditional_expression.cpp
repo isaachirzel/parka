@@ -4,10 +4,7 @@
 #include <warbler/print.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
-// standard headers
-#include <stdexcept>
-
-namespace warbler
+namespace warbler::ast
 {
 	ConditionalRhs::ConditionalRhs(BooleanOrExpression&& true_case, ConditionalExpression&& false_case) :
 	true_case(true_case),

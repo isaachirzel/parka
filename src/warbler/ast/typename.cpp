@@ -3,7 +3,7 @@
 // standard headers
 #include <warbler/print.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	Typename::Typename() :
 	_location(),

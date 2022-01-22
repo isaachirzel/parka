@@ -6,7 +6,7 @@
 // standard headers
 #include <cstdlib>
 
-namespace warbler
+namespace warbler::ast
 {
 	AssignmentStatement::AssignmentStatement(PrimaryExpression&& lhs, Expression&& rhs, AssignmentType type) :
 	_lhs(lhs),

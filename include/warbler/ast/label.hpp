@@ -6,7 +6,7 @@
 #include <warbler/util/primitive.hpp>
 #include <warbler/util/result.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Label
 	{

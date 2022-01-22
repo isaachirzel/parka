@@ -6,7 +6,7 @@
 #include <warbler/result.hpp>
 #include <warbler/ast/loop_condition.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	class Statement;
 	

@@ -6,7 +6,7 @@
 #include <warbler/result.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
-namespace warbler
+namespace warbler::ast
 {
 	enum JumpType
 	{
