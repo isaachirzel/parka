@@ -18,7 +18,8 @@
 // ;
 const char *src = R"=====(
 
-type Person
+type Person :
+struct
 {
 	age: i32,
 	name: String
@@ -43,7 +44,7 @@ func do_thing(arg: i32)
 )=====";
 
 using namespace warbler;
-
+using namespace warbler::ast;
 int main()
 {
 	tokenizer_init();

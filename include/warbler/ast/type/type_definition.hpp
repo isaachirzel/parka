@@ -6,6 +6,11 @@
 #include <warbler/ast/type/struct.hpp>
 #include <warbler/ast/type/enum.hpp>
 
+namespace warbler::semantics
+{
+	class Context;
+}
+
 namespace warbler::ast
 {
 	enum TypeDefinitionType
@@ -40,6 +45,9 @@ namespace warbler::ast
 
 		void validate(const semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
+
+		TypeDefinition& operator=(TypeDefinition&& other);
+		TypeDefinition& operator=(const TypeDefinition& other);
 	};
 }
 
