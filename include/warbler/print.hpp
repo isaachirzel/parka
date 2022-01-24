@@ -13,11 +13,16 @@ namespace warbler
 	void _debugf(const char *file, unsigned line, const char *func, const char *fmt, ...);
 	void _debug(const char *file, unsigned line, const char *func, const char *msg);
 
+	extern std::ostream& error_stream;
 	std::string tree_branch(u32 length);
 	std::ostream& error_out();
 	std::ostream& error_out(const Location& location);
 	std::ostream& error_out(const Token& token);
 	std::ostream& error_out(TokenIterator& iter);
+	
+	void error_highlight(const Location& location);
+	void error_highlight(const TokenIterator& iter);
+	void error_highlight(const Token& token);
 	std::string token_error(TokenIterator& iter);
 	std::string token_warning(TokenIterator& iter);
 	std::string token_message(TokenIterator& iter);	

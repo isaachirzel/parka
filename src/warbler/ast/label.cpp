@@ -18,7 +18,8 @@ namespace warbler::ast
 			return ERROR_ARGUMENT;
 		}
 
-		String identifier = String(iter->text());
+		const auto& location = iter->location();
+		String identifier = String(location.pos_ptr(), location.length());
 
 		iter += 1;
 

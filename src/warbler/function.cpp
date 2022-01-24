@@ -121,23 +121,24 @@ namespace warbler::ast
 		}
 		else
 		{
-			error_out(iter) << "expected function body but got '" << *iter << '\'' << token_error(iter) << std::endl;
+			parse_error(iter, "fucntion body");
 			return ERROR_ARGUMENT;
 		}
 	}
 
 	void Function::print_tree(u32 depth) const 
 	{
-		_name.print_tree(depth);
+		std::cout << tree_branch(depth) << "func\n";
+		_name.print_tree(depth + 1);
 
-		std::cout << tree_branch(depth + 1) << "(\n";
+		std::cout << tree_branch(depth + 2) << "(\n";
 
 		for (const auto& parameter : _parameters)
-			parameter.print_tree(depth + 2);
+			parameter.print_tree(depth + 3);
 
-		std::cout << tree_branch(depth + 1) << ")\n";
-
-		_return_type.print_tree(depth + 1);
+		std::cout << tree_branch(depth + 2) << ")\n";
+		std::cout << tree_branch(depth + 2) << "->\n";
+		_return_type.print_tree(depth + 3);
 
 		if (_is_inline)
 		{

@@ -13,6 +13,7 @@ namespace warbler::semantics
 	{
 		Table<u32> types;
 		Table<Symbol> symbols;
+		Array<String> scope;
 	};
 }
 

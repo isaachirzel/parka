@@ -69,7 +69,7 @@ namespace warbler::ast
 				break;
 
 			default:
-				error_out(iter) << "expected assignment operator after primary expression but got '" << *iter << '\'' << token_error(iter) << std::endl;
+				parse_error(iter, "expected assignment operator after primary expression");
 				return ERROR_ARGUMENT;
 		}
 

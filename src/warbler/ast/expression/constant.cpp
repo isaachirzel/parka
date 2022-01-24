@@ -95,17 +95,25 @@ namespace warbler::ast
 			_string.~basic_string();
 	}
 
-	static inline u32 parse_character(const char *text)
+	static Constant parse_character(TokenIterator& iter)
 	{
-		#pragma message "Make sure character literals are only 1 long"
-		return 0;
+		const auto& loc = iter->location();
+		u32 character = (u32)loc[0];
+
+		iter += 1;
+
+		return Constant(character);
 	}
 
-	static f64 string_to_f64(const StringView& text)
+	static f64 string_to_f64(const Token& token)
 	{
 		f64 out = 0.0;
 
-		for (size_t i = 0; i < text.size(); ++i)
+		const auto& location = token.location();
+		const char *text = location.pos_ptr();
+		usize length = location.length();
+
+		for (size_t i = 0; i < length; ++i)
 		{
 			if (text[i] != '.')
 			{
@@ -118,7 +126,7 @@ namespace warbler::ast
 				f64 decimal = 0.0;
 				f64 place = 1.0;
 
-				while (i < text.length())
+				while (i < length)
 				{
 					decimal = decimal * 10.0 + (text[i] - '0');
 					place *= 10.0;
@@ -133,11 +141,14 @@ namespace warbler::ast
 		return out;
 	}
 
-	static i64 string_to_i64(const StringView& text)
+	static i64 string_to_i64(const Token& token)
 	{
 		i64 out = 0;
+		const auto& location = token.location();
+		const char *text = location.pos_ptr();
+		usize length = location.length();
 
-		for (size_t i = 0; i < text.size(); ++i)
+		for (size_t i = 0; i < length; ++i)
 			out = out * 10 + (text[i] - '0');
 
 		return out;
@@ -145,7 +156,7 @@ namespace warbler::ast
 
 	static Constant parse_integer_literal(TokenIterator& iter, bool is_negative)
 	{
-		i64 value = string_to_i64(iter->text());
+		i64 value = string_to_i64(*iter);
 
 		if (is_negative)
 			value = -value;
@@ -157,7 +168,7 @@ namespace warbler::ast
 
 	static Constant parse_float_literal(TokenIterator& iter, bool is_negative)
 	{
-		f64 value = string_to_f64(iter->text());
+		f64 value = string_to_f64(*iter);
 
 		if (is_negative)
 			value = -value;
@@ -178,7 +189,8 @@ namespace warbler::ast
 				return parse_float_literal(iter, is_negative);
 
 			default:
-				error_out(iter) << "expected number literal but got '" << *iter << '\'' << token_error(iter) << std::endl;
+				error_out(iter) << "expected number literal but got '" << *iter << '\'';
+				error_highlight(iter);
 				return ERROR_ARGUMENT;
 		}
 	}
@@ -211,12 +223,15 @@ namespace warbler::ast
 				return not_implemented_error();
 
 			case TOKEN_CHAR_LITERAL:
-				return not_implemented_error();
+				return parse_character(iter);
 
 			case TOKEN_STRING_LITERAL:
 			{
-				String string = String(iter->text());
+				const auto& location = iter->location();
+				String string(location.pos_ptr(), location.length());
+
 				iter += 1;
+
 				return Constant(std::move(string));
 			}
 
@@ -232,7 +247,8 @@ namespace warbler::ast
 				break;
 		}
 
-		error_out(iter) << "expected constant but got '" << *iter << '\'' << token_error(iter) << std::endl;
+		error_out(iter) << "expected constant but got '" << *iter << '\'';
+		error_highlight(iter);
 		return ERROR_ARGUMENT;
 	}
 

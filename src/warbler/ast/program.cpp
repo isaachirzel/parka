@@ -54,6 +54,9 @@ namespace warbler::ast
 
 	void Program::print_tree(u32 depth) const
 	{
+		for (const auto& type: _types)
+			type.print_tree(depth);
+
 		for (const auto& function : _functions)
 			function.print_tree(depth);
 	}

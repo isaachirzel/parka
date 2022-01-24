@@ -65,7 +65,8 @@ namespace warbler::ast
 
 		if (iter->type() != TOKEN_ELSE)
 		{
-			error_out(iter) << "expected 'else' for false case of conditional expression but got '" << *iter << '\'' << token_error(iter) << std::endl;
+			error_out(iter) << "expected 'else' for false case of conditional expression but got '" << *iter << '\'';
+			error_highlight(iter);
 			return ERROR_ARGUMENT;
 		}
 

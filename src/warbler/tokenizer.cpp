@@ -10,25 +10,9 @@
 
 namespace warbler
 {
-	struct SourcePosition
-	{
-		const char * filename;
-		const char *ptr;
-		usize line;
-		usize col;
-	};
-
-	std::ostream& error_out(const SourcePosition& position)
-	{
-		std::cout << position.filename << ':' << position.line << ':' << position.col;
-
-		return error_out();
-	}
-
 	enum CharType
 	{
 		CHAR_INVALID,
-		CHAR_WHITESPACE,
 		CHAR_NULL,
 		CHAR_IDENTIFIER,
 		CHAR_SEPARATOR,
@@ -70,9 +54,6 @@ namespace warbler
 	void init_char_types()
 	{
 		char_types[0] = CHAR_NULL;
-
-		for (usize i = 1; i <= ' '; ++i)
-			char_types[i] = CHAR_WHITESPACE;
 
 		// setting up identifier characters
 		char_types[(usize)'_'] = CHAR_IDENTIFIER;
@@ -139,41 +120,30 @@ namespace warbler
 		return char_types[(size_t)c];
 	}
 
-	#pragma message("figure out find_next_position() for multiline strings")
-
-	static SourcePosition get_end_of_token_position(const Token& token)
+	static Location find_next_position(const Location& last_location)
 	{
-		return SourcePosition
-		{
-			token.filename(),
-			token.text().data() + token.text().size(),
-			token.line(),
-			token.col() + token.text().size()
-		};
-	}
-
-	static SourcePosition find_next_position(const SourcePosition& last_position)
-	{
-		auto position = last_position;
+		const auto* pos = last_location.pos_ptr();
+		usize line = last_location.line();
+		usize col = last_location.col();
 
 		while (true)
 		{
-			auto character = *position.ptr;
+			auto character = *pos;
 
 			if (character == '\0' || character > ' ')
 				break;
 
-			position.ptr += 1;
-			position.col += 1;
+			pos += 1;
+			col += 1;
 
 			if (character == '\n')
 			{
-				position.line += 1;
-				position.col = 0;
+				line += 1;
+				col = 0;
 			}
 		}
 
-		return position;
+		return { last_location.filename(), last_location.src(), line, col, (usize)(pos - last_location.src()), 0 };
 	}
 
 	static inline bool is_char_alphanumeric(char c)
@@ -183,25 +153,24 @@ namespace warbler
 		return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
 	}
 
-	static Result<Token> get_identifier_token(const SourcePosition& position)
+	static Result<Token> get_identifier_token(const Location& location)
 	{
-		const char *pos = position.ptr + 1;
+		const char *start = location.pos_ptr();
+		const char *pos = start + 1;
 
 		while (is_char_alphanumeric(*pos))
 			pos += 1;
 
-		StringView text(position.ptr, pos - position.ptr);
+		StringView text(start, pos - start);
 		auto type = get_token_type(text);
 
-		return Token(text, position.filename, position.line, position.col, type);
+		return Token(location, type, pos - start);
 	}
 
-	static Result<Token> get_separator_token(const SourcePosition& position)
+	static Result<Token> get_separator_token(const Location& location)
 	{
-		StringView text(position.ptr, 1);
-
 		TokenType type;
-		switch (text[0])
+		switch (location[0])
 		{
 			case '(':
 				type = TOKEN_LPAREN;
@@ -236,16 +205,17 @@ namespace warbler
 				break;
 			
 			default:
-				error_out(position) << "invalid character given for separator: " << position.ptr[0] << std::endl;
+				error_out(location) << "invalid character given for separator: " << location[0] << std::endl;
 				return ERROR_ARGUMENT;
 		}
 
-		return Token(text, position.filename, position.line, position.col, type);
+		return Token(location, type, 1);
 	}
 
-	static Result<Token> get_digit_token(const SourcePosition& position)
+	static Result<Token> get_digit_token(const Location& location)
 	{
-		const char *pos = position.ptr;
+		const char * const start = location.pos_ptr();
+		const char *pos = start;
 		usize decimal_count = 0;
 
 		while (true)
@@ -264,11 +234,10 @@ namespace warbler
 			pos += 1;
 		}
 
-		StringView text(position.ptr, pos - position.ptr);
-
 		if (decimal_count > 1)
 		{
-			error_out(position) << "only one decimal is allowed in float literal: " << text << std::endl;
+			error_out(location) << "only one decimal is allowed in float literal";
+			error_highlight(location);
 			return ERROR_ARGUMENT;
 		}
 
@@ -276,26 +245,24 @@ namespace warbler
 			? TOKEN_FLOAT_LITERAL
 			: TOKEN_INTEGER_LITERAL;
 
-		return Token(text, position.filename, position.line, position.col, type);
+		return Token(location, type, pos - start);
 	}
 
-	static Result<Token> get_dot_token(const SourcePosition& position)
+	static Result<Token> get_dot_token(const Location& location)
 	{
-		const char *pos = position.ptr;
+		const char * const start = location.pos_ptr();
+		const char *pos = start;
 
 		if (get_char_type(pos[1]) == CHAR_DIGIT)
-			return get_digit_token(position);
+			return get_digit_token(location);
 
 		pos += 1;
 
 		while (get_char_type(*pos) == CHAR_DOT)
 			pos += 1;
 
-		StringView text(position.ptr, pos - position.ptr);
-
 		TokenType type;
-
-		switch (text.size())
+		switch (location.length())
 		{
 			case 1:
 				type = TOKEN_DOT;
@@ -306,409 +273,249 @@ namespace warbler
 				break;
 
 			default:
-				error_out(position) << "invalid dot token: " << text << std::endl;
+				error_out(location) << "invalid token";
+				error_highlight(location);
 				return ERROR_ARGUMENT;
 		}
 
-		return Token(text, position.filename, position.line, position.col, type);
+		return Token(location, type, pos - start);
 	}
 
-	static Token get_plus_operator(const SourcePosition& position)
+	static Token get_plus_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		switch (position.ptr[1])
+		switch (location[1])
 		{
 			case '+':
-				type = TOKEN_INCREMENT;
-				length = 2;
-				break;
+				return Token(location, TOKEN_INCREMENT, 2);
 
 			case '=':
-				type = TOKEN_ADD_ASSIGN;
-				length = 2;
-				break;
+				return Token(location, TOKEN_ADD_ASSIGN, 2);
 
 			default:
-				type = TOKEN_PLUS;
-				length = 1;
-				break;
+				return Token(location, TOKEN_PLUS, 1);
 		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
 	}
 
-	static Token get_hyphen_operator(const SourcePosition& position)
+	static Token get_hyphen_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		switch (position.ptr[1])
+		switch (location[1])
 		{
 			case '-': // --
-				type = TOKEN_DECREMENT;
-				length = 2;
-				break;
+				return Token(location, TOKEN_DECREMENT, 2);
 
 			case '=': // -=
-				type = TOKEN_SUBTRACT_ASSIGN;
-				length = 2;
-				break;
+				return Token(location, TOKEN_SUBTRACT_ASSIGN, 2);
 
 			case '>': // ->
-				type = TOKEN_SINGLE_ARROW;
-				length = 2;
-				break;
+				return Token(location, TOKEN_SINGLE_ARROW, 2);
 
 			default: // -
-				type = TOKEN_MINUS;
-				length = 1;
-				break;
+				return Token(location, TOKEN_MINUS, 1);
 		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
 	}
 
-	static Token get_asterisk_operator(const SourcePosition& position)
+	static Token get_asterisk_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-		
-		switch (position.ptr[1])
+		switch (location[1])
 		{
 			case '*': // **
-				type = TOKEN_POW;
-				length = 2;
-				break;
+				return Token(location, TOKEN_POW, 2);
 
 			case '=': // *=
-				type = TOKEN_MULTIPLY_ASSIGN;
-				length = 2;
-				break;
+				return Token(location, TOKEN_MULTIPLY_ASSIGN, 2);
 
 			default: // *
-				type = TOKEN_ASTERISK;
-				length = 1;
-				break;
+				return Token(location, TOKEN_ASTERISK, 1);
 		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
 	}
 
-	static Token get_slash_operator(const SourcePosition& position)
+	static Token get_slash_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
+		if (location[1] == '=')
+			return Token(location, TOKEN_DIVIDE_ASSIGN, 2);
 
-		if (position.ptr[1] == '=')
-		{
-			type = TOKEN_DIVIDE_ASSIGN;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_SLASH;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
+		return Token(location, TOKEN_SLASH, 1);
 	}
 
-	static Token get_langbrack_operator(const SourcePosition& position)
+	static Token get_langbrack_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		switch (position.ptr[1])
+		switch (location[1])
 		{
 			case '<': // <<
-				if (position.ptr[2] == '=') // <<=
-				{
-					type = TOKEN_LSHIFT_ASSIGN;
-					length = 3;
-				}
-				else
-				{
-					type = TOKEN_LSHIFT;
-					length = 2;
-				}
-				break;
+				if (location[2] == '=') // <<=
+					return Token(location, TOKEN_LSHIFT_ASSIGN, 3);
+
+				return Token(location, TOKEN_LSHIFT, 2);
 
 			case '=': // <=
-				type = TOKEN_LESS_OR_EQUAL;
-				length = 2;
-				break;
+				return Token(location, TOKEN_LESS_OR_EQUAL, 2);
 
 			default: // <
-				type = TOKEN_LESS_THAN;
-				length = 1;
-				break;
+				return Token(location, TOKEN_LESS_THAN, 1);
 		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
 	}
 
-	static Token get_rangbrack_operator(const SourcePosition& position)
+	static Token get_rangbrack_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		switch (position.ptr[1])
+		switch (location[1])
 		{
 			case '>': // >>
-				if (position.ptr[2] == '=') // >>=
-				{
-					type = TOKEN_RSHIFT_ASSIGN;
-					length = 3;
-				}
-				else
-				{
-					type = TOKEN_RSHIFT;
-					length = 2;
-				}
-				break;
+				if (location[2] == '=') // >>=
+					return Token(location, TOKEN_RSHIFT_ASSIGN, 3);
+
+				return Token(location, TOKEN_RSHIFT, 2);
 
 			case '=': // <=
-				type = TOKEN_GREATER_OR_EQUAL;
-				length = 2;
-				break;
+				return Token(location, TOKEN_GREATER_OR_EQUAL, 2);
 
 			default: // >
-				type = TOKEN_GREATER_THAN;
-				length = 1;
-				break;
+				return Token(location, TOKEN_GREATER_THAN, 1);
 		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
 	}
 
-	static Token get_ampersand_operator(const SourcePosition& position)
+	static Token get_ampersand_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		if (position.ptr[1] == '=')
-		{
-			type = TOKEN_BITAND_ASSIGN;
-			length = 2;
-		}
-		else if (position.ptr[1] == '&')
-		{
-			type = TOKEN_BOOLEAN_AND;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_AMPERSAND;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
-	}
-	
-	static Token get_pipeline_operator(const SourcePosition& position)
-	{
-		TokenType type;
-		usize length;
-
-		if (position.ptr[1] == '=')
-		{
-			type = TOKEN_BITOR_ASSIGN;
-			length = 2;
-		}
-		else if (position.ptr[1] == '|')
-		{
-			type = TOKEN_BOOLEAN_OR;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_PIPELINE;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
-	}
-
-	static Token get_carrot_operator(const SourcePosition& position)
-	{
-		TokenType type;
-		usize length;
-
-		if (position.ptr[1] == '=')
-		{
-			type = TOKEN_BITXOR_ASSIGN;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_CARROT;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
-	}
-
-	static Token get_equals_operator(const SourcePosition& position)
-	{
-		TokenType type;
-		usize length;
-
-		switch (position.ptr[1])
+		switch (location[0])
 		{
 			case '=':
-				type = TOKEN_EQUALS;
-				length = 2;
-				break;
+				return Token(location, TOKEN_BITAND_ASSIGN, 2);
+
+			case '&':
+				return Token(location, TOKEN_BOOLEAN_AND, 2);
+
+			default:
+				return Token(location, TOKEN_AMPERSAND, 1);
+		}
+	}
+	
+	static Token get_pipeline_operator(const Location& location)
+	{
+		switch (location[1])
+		{
+			case '=':
+				return Token(location, TOKEN_BITOR_ASSIGN, 2);
+
+			case '|':
+				return Token(location, TOKEN_BOOLEAN_OR, 2);
+
+			default:
+				return Token(location, TOKEN_PIPELINE, 1);
+		}
+	}
+
+	static Token get_carrot_operator(const Location& location)
+	{
+		if (location[1] == '=')
+			return Token(location, TOKEN_BITXOR_ASSIGN, 2);
+
+		return Token(location, TOKEN_CARROT, 1);
+	}
+
+	static Token get_equals_operator(const Location& location)
+	{
+		switch (location[1])
+		{
+			case '=':
+				return Token(location, TOKEN_EQUALS, 2);
 
 			case '>':
-				type = TOKEN_DOUBLE_ARROW;
-				length = 2;
-				break;
+				return Token(location, TOKEN_DOUBLE_ARROW, 2);
 
 			default:
-				type = TOKEN_ASSIGN;
-				length = 1;
-				break;
+				return Token(location, TOKEN_ASSIGN, 1);
 		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
 	}
 
-	static Token get_exclamation_operator(const SourcePosition& position)
+	static Token get_exclamation_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
+		if (location[1] == '=')
+			return Token(location, TOKEN_NOT_EQUALS, 2);
 
-		if (position.ptr[1] == '=')
-		{
-			type = TOKEN_NOT_EQUALS;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_BOOLEAN_NOT;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
+		return Token(location, TOKEN_BOOLEAN_NOT, 1);
 	}
 
-	static Token get_question_operator(const SourcePosition& position)
+	static Token get_question_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		if (position.ptr[1] == '?')
-		{
-			type = TOKEN_OPTION;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_QUESTION;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
+		if (location[1] == '?')		
+			return Token(location, TOKEN_OPTION, 2);
+	
+		return Token(location, TOKEN_QUESTION, 1);
 	}
 
-	static Token get_modulus_operator(const SourcePosition& position)
+	static Token get_modulus_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
-
-		if (position.ptr[1] == '=')
-		{
-			type = TOKEN_MODULUS_ASSIGN;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_MODULUS;
-			length = 1;
-		}
-
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
+		if (location[1] == '=')
+			return Token(location, TOKEN_MODULUS_ASSIGN, 2);
+		
+		return Token(location, TOKEN_MODULUS, 1);
 	}
 
-	static Token get_colon_operator(const SourcePosition& position)
+	static Token get_colon_operator(const Location& location)
 	{
-		TokenType type;
-		usize length;
+		switch (location[1])
+		{
+			case ':':
+				return Token(location, TOKEN_SCOPE, 2);
 
-		if (position.ptr[1] == ':')
-		{
-			type = TOKEN_SCOPE;
-			length = 2;
-		}
-		else if (position.ptr[1] == '=')
-		{
-			type == TOKEN_BECOME_ASSIGN;
-			length = 2;
-		}
-		else
-		{
-			type = TOKEN_COLON;
-			length = 1;
-		}
+			case '=':
+				return Token(location, TOKEN_BECOME_ASSIGN, 2);
 
-		return Token(StringView(position.ptr, length), position.filename, position.line, position.col, type);
+			default:
+				return Token(location, TOKEN_COLON, 1);
+		}
 	}
 
-	static Result<Token> get_operator_token(const SourcePosition& position)
+	static Result<Token> get_operator_token(const Location& location)
 	{
-		switch (position.ptr[0])
+		switch (location[0])
 		{
 			case '+': // +, ++, +=
-				return get_plus_operator(position);
+				return get_plus_operator(location);
 
 			case '-': // -, --, -=, ->
-				return get_hyphen_operator(position);
+				return get_hyphen_operator(location);
 
 			case '*': // *, **, *=
-				return get_asterisk_operator(position);
+				return get_asterisk_operator(location);
 
 			case '/': // /, /=
-				return get_slash_operator(position);
+				return get_slash_operator(location);
 
 			case '<': // <, <<, <=
-				return get_langbrack_operator(position);
+				return get_langbrack_operator(location);
 
 			case '>': // >, >>, >=
-				return get_rangbrack_operator(position);
+				return get_rangbrack_operator(location);
 
 			case '&': // &, &=
-				return get_ampersand_operator(position);
+				return get_ampersand_operator(location);
 
 			case '|': // |, |=
-				return get_pipeline_operator(position);
+				return get_pipeline_operator(location);
 
 			case '^': // ^, ^=
-				return get_carrot_operator(position);
+				return get_carrot_operator(location);
 
 			case '=': // =, ==, =>
-				return get_equals_operator(position);
+				return get_equals_operator(location);
 
 			case '!': // !, !=
-				return get_exclamation_operator(position);
+				return get_exclamation_operator(location);
 
 			case '?': // ?, ??
-				return get_question_operator(position);				
+				return get_question_operator(location);				
 
 			case '%': // %, %=
-				return get_modulus_operator(position);
+				return get_modulus_operator(location);
 
 			case ':': // :, ::
-				return get_colon_operator(position);
+				return get_colon_operator(location);
 
 			default:
-				break;
+				error_out(location) << "invalid character given in operator";
+				error_highlight(location.with_length(1));
+				return ERROR_ARGUMENT;
 		}
-
-		error_out(position) << "invalid character given in operator: " << position.ptr[0] << std::endl;
-		return ERROR_ARGUMENT;
 	}
 
 	static inline bool is_end_of_text_literal(const char *pos, char terminal_char)
@@ -716,40 +523,34 @@ namespace warbler
 		return pos[0] == terminal_char && pos[-1] != '\\';
 	}
 
-	static Result<Token> get_quote_token(const SourcePosition& position)
+	static Result<Token> get_quote_token(const Location& location)
 	{	
-		char terminal_char = position.ptr[0];
+		const char * const start = location.pos_ptr();
+		char terminal_char = start[0];
+		const char *pos = start + 1;
 
-		const char *pos = position.ptr + 1;
 		while (*pos && !is_end_of_text_literal(pos, terminal_char))
 			++pos;
 
 		if (*pos == '\0')
 		{
-			error_out(position) << "unterminated string literal: " << position.ptr << std::endl;
+			error_out(location) << "unterminated string literal";
+			error_highlight(location.with_length((usize)(pos - start)));
 			return ERROR_ARGUMENT;
 		}
 
 		pos += 1;
 
-		TokenType type;
-		StringView text(position.ptr, pos - position.ptr);
-
-		if (text[0] == '\'')
-		{
-			type = TOKEN_CHAR_LITERAL;
-		}
-		else
-		{
-			type = TOKEN_STRING_LITERAL;
-		}
+		auto type = terminal_char == '\''
+			? TOKEN_CHAR_LITERAL
+			: TOKEN_STRING_LITERAL;
 			
-		return Token(text, position.filename, position.line, position.col, type);
+		return Token(location, type, pos - start);
 	}
 
-	static Result<Token> get_next_token(const SourcePosition& position)
+	static Result<Token> get_next_token(const Location& location)
 	{
-		auto type = get_char_type(position.ptr[0]);
+		auto type = get_char_type(location[0]);
 
 		switch (type)
 		{
@@ -757,30 +558,31 @@ namespace warbler
 				break;
 
 			case CHAR_IDENTIFIER:
-				return get_identifier_token(position);
+				return get_identifier_token(location);
 
 			case CHAR_SEPARATOR:
-				return get_separator_token(position);
+				return get_separator_token(location);
 
 			case CHAR_DOT:
-				return get_dot_token(position);
+				return get_dot_token(location);
 
 			case CHAR_DIGIT:
-				return get_digit_token(position);
+				return get_digit_token(location);
 
 			case CHAR_OPERATOR:
-				return get_operator_token(position);
+				return get_operator_token(location);
 
 			case CHAR_QUOTE:
-				return get_quote_token(position);
+				return get_quote_token(location);
 
 			case CHAR_INVALID:
-				error_out(position) << "invalid character in source file: " << position.ptr[0]
-					<< ", integer value: (" << (int)position.ptr[0] << ")" << std::endl; 
+				error_out(location) << "invalid character in source file: " << location[0]
+					<< ", integer value: (" << (int)location[0] << ")";
+				error_highlight(location.with_length(1));
 				return ERROR_ARGUMENT;
 		}
 
-		return Token(StringView(position.ptr, 0), position.filename, position.line, position.col, TOKEN_END_OF_FILE);
+		return Token();
 	}
 
 	Result<std::vector<Token>> tokenize(const char *filename, const char *src)
@@ -789,22 +591,22 @@ namespace warbler
 
 		out.reserve(10);
 
-		auto position = SourcePosition { filename, src, 0, 0 };
+		Location location(filename, src);
 
 		do
 		{
-			position = find_next_position(position);
+			location = find_next_position(location);
 
 			if (out.size() == out.capacity())
 				out.reserve(out.size() * 2);
 
-			auto res = get_next_token(position);
+			auto res = get_next_token(location);
 
-			if (res.has_error())
+			if (!res)
 				return res.error();
 
 			out.emplace_back(res.unwrap());
-			position = get_end_of_token_position(out.back());
+			location.offset(out.back().length());
 		}
 		while (out.back().type() != TOKEN_END_OF_FILE);
 

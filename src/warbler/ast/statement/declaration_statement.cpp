@@ -34,7 +34,7 @@ namespace warbler::ast
 
 		if (iter->type() != TOKEN_ASSIGN)
 		{
-			error_out(iter) << "expected '=' after declaration but got '" << *iter << '\'' << token_error(iter) << std::endl;
+			parse_error(iter, "expected '=' after declaration");
 			return ERROR_ARGUMENT;
 		}
 
@@ -47,7 +47,7 @@ namespace warbler::ast
 
 		if (iter->type() != TOKEN_SEMICOLON)
 		{
-			error_out(iter) << "expected ';' but got " << *iter << token_error(iter) << std::endl;
+			parse_error(iter, "expected ';'");
 			return ERROR_ARGUMENT;
 		}
 

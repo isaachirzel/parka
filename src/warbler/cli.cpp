@@ -12,16 +12,17 @@ namespace warbler
 		printf("%s\n", help_str);
 	}
 
-	bool validate_cli_args(int argc, char *argv[])
-	{
-		if (argc != 2)
-		{
-			error_out() << "invalid arguments given";
-			print_help();
+	// bool validate_cli_args(int argc, char *argv[])
+	// {
+	// 	if (argc != 2)
+	// 	{
+	// 		error_out() << "invalid arguments given";
+	// 		print_help();
 
-			return false;
-		}
+	// 		return false;
+	// 	}
 
-		return true;
-	}
+
+	// 	return true;
+	// }
 }

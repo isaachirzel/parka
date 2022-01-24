@@ -159,12 +159,6 @@ namespace warbler::ast
 
 	Result<Array<Statement>> Statement::parse_compound(TokenIterator& iter)
 	{
-		if (iter->type() != TOKEN_LBRACE)
-		{
-			error_out(iter) << "expected '{' but got '" << *iter << '\'' << token_error(iter) << std::endl;
-			return ERROR_ARGUMENT;
-		}
-
 		iter += 1;
 
 		Array<Statement> out;

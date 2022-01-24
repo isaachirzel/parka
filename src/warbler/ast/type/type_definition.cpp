@@ -99,13 +99,55 @@ namespace warbler::ast
 
 	}
 
-	void TypeDefinition::validate(const semantics::Context& context)
+	void TypeDefinition::validate(semantics::Context& context)
 	{
+		_name.validate(context);
+
+		auto iter = context.types.find(_name.symbol());
+
+		if (iter != context.types.end())
+		{
+			error_out(_name.location()) << "duplicate typename '" << _name.text() << "' in module '";
+
+			bool is_first = true;
+
+			for (const auto& module : context.scope)
+			{
+				if (is_first)
+				{
+					is_first = false;
+				}
+				else
+				{
+					error_stream << "::";
+				}
+
+				error_stream << module;
+			}
+
+			error_stream << "'";
+
+			error_highlight(_name.location());
+		}
 	}
 
 	void TypeDefinition::print_tree(u32 depth) const
 	{
 		std::cout << tree_branch(depth) << "type\n";
+
+		_name.print_tree(depth + 1);
+
+		switch (_type)
+		{
+			case DEFINITION_STRUCT:
+				_struct.print_tree(depth + 1);
+				break;
+
+			case DEFINITION_ENUM:
+				throw std::runtime_error("TypeDefinition::print_tree is not implemented for enum");
+				// _enum.print_tree(depth + 1);
+				break;
+		}
 	}
 
 	TypeDefinition& TypeDefinition::operator=(TypeDefinition&& other)

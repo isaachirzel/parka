@@ -23,12 +23,11 @@ namespace warbler
 		}
 	}
 
-	typedef struct BlockCommentResult
+	struct BlockCommentResult
 	{
 		char *end_of_comment;
 		size_t new_line_count;
-	}
-	BlockCommentResult;
+	};
 
 	char *read_line_comment(char *pos)
 	{
@@ -67,7 +66,7 @@ namespace warbler
 			pos += 1;
 		}
 
-		return (BlockCommentResult) { pos, new_line_count};
+		return { pos, new_line_count};
 	}
 
 	void preprocess(char *src)

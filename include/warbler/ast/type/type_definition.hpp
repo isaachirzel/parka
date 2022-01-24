@@ -43,7 +43,7 @@ namespace warbler::ast
 
 		static Result<TypeDefinition> parse(TokenIterator& iter);
 
-		void validate(const semantics::Context& context);
+		void validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 
 		TypeDefinition& operator=(TypeDefinition&& other);

@@ -18,7 +18,7 @@ namespace warbler::ast
 
 		if (iter->type() != TOKEN_SEMICOLON)
 		{
-			error_out(iter) << "expected ';' after expression but got '" << *iter << '\'' << token_error(iter) << std::endl;
+			parse_error(iter, "expected ';' after expression");
 			return ERROR_ARGUMENT;
 		}
 

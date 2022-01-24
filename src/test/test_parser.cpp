@@ -45,6 +45,7 @@ func do_thing(arg: i32)
 
 using namespace warbler;
 using namespace warbler::ast;
+
 int main()
 {
 	tokenizer_init();
@@ -55,9 +56,10 @@ int main()
 		return token_res;
 
 	auto tokens = token_res.unwrap();
-
+	
 	for (const auto& token : tokens)
-		std::cout << token.line() << ':' << token.col() << "\t" << token << "\t\ttype: " << token.type() << '\n';
+		std::cout << token.line() << ':' << token.col() << '\t' << token << "\t\ttype: " << token.type() << std::endl;;	
+
 	std::cout << std::endl;
 
 	TokenIterator iter = tokens.begin();
@@ -68,13 +70,15 @@ int main()
 
 	if (iter->type() != TOKEN_END_OF_FILE)
 	{
-		error_out(iter) << "current token is not EOF" << token_error(iter) << std::endl;
+		error_out(iter) << "current token is not EOF";
+		error_highlight(iter);
+		return 1;
 	}
 
 
 	auto ast = res.unwrap();
 
-	ast.print_tree(1);
+	ast.print_tree();
 
 	if (!ast.validate())
 		return (int)ERROR_VALIDATE;

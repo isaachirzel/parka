@@ -25,9 +25,8 @@ namespace warbler::ast
 			return ERROR_ARGUMENT;
 		}
 		
-		String name = String(iter->text());
-
 		const auto& location = iter->location();
+		String name = String(location.pos_ptr(), location.length());
 
 		iter += 1;
 
@@ -36,9 +35,6 @@ namespace warbler::ast
 
 	void Typename::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth);
-		std::cout << ": ";
-		std::cout << (_id == 0 ? "<auto>" : _name);
-		std::cout << '\n';
+		std::cout << tree_branch(depth) << (_id == 0 ? "<auto>" : _name) << '\n';
 	}
 }

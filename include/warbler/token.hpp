@@ -102,38 +102,60 @@ namespace warbler
 	private:
 
 		const char *_filename;
+		const char *_src;
 		usize _line;
 		usize _col;
+		usize _pos;
+		usize _length;
 
 	public:
 
 		Location();
-		Location(const char *_filename, usize line, usize col);
-		
+		Location(const char *filename, const char *src, usize line, usize col, usize pos, usize length);
+		Location(const char *filename, const char *src);
+
+		Location with_length(usize length) const;
+		void offset(usize offset);
+
+		const char *src() const { return _src; }
+		const char *pos_ptr() const { return _src + _pos; }
+		const char *start_of_line() const { return (_src + _pos) - _col; }
 		const char *filename() const { return _filename; }
 		usize line() const { return _line; }
 		usize col() const { return _col; }
+		usize pos() const { return _pos; }
+		usize length() const { return _length; }
+
+		const char *begin() const { return _src + _pos; }
+		const char *end() const { return _src + _pos + _length; }
+
+		char operator[](usize i) const { return _src[_pos + i]; }
+
+		friend std::ostream& operator<<(std::ostream& out, const Location& location);
 	};
 
 	struct Token
 	{
 	private:
 
-		StringView _text;
 		Location _location;
 		TokenType _type;
 	
 	public:
 
 		Token();
-		Token(const StringView& text, const char *filename, usize line, usize col, TokenType type);
+		Token(const Location& location, TokenType type, usize length);
 
-		const StringView& text() const { return _text; }
+		usize length() const { return _location.length(); }
 		const Location& location() const { return _location; }
 		const char *filename() const { return _location.filename(); }
 		usize line() const { return _location.line(); }
 		usize col() const { return _location.col(); }
 		TokenType type() const { return _type; }
+
+		const char *begin() const { return _location.begin(); }
+		const char *end() const { return _location.end(); }
+		char operator[](usize i) const { return _location[i]; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};

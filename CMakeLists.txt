@@ -10,7 +10,7 @@ set(INCLUDE_DIRS
 if (MSVC)
 	add_compile_options(/W4)
 else()
-	#add_compile_options(-Wall -Wextra -pedantic)
+	add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 if (WIN32)

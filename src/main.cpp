@@ -14,7 +14,7 @@
 
 using namespace warbler;
 
-int main(int argc, char *argv[])
+int main()
 {
 	// if (!validate_cli_args(argc, argv))
 	// 	return 1;
