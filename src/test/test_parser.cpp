@@ -16,31 +16,52 @@
 // "	var value: f64 = 12.58 * log(234);\n"
 // "}\n"
 // ;
+// const char *src = R"=====(
+
+// type Person :
+// struct
+// {
+// 	age: i32,
+// 	name: String
+// }
+
+// func do_thing(arg: i32)
+// {
+// 	var value: i32 = arg * 3;
+// 	if value == 3
+// 	{
+// 		var name : String = "hello";
+// 	}
+// 	else if value == 6
+// 	{
+// 		var num : f64 = 12.5;
+// 	}
+// 	else
+// 	{
+// 		print("uh oh");
+// 	}
+// }
+// )=====";
+
 const char *src = R"=====(
 
-type Person :
-struct
-{
-	age: i32,
-	name: String
-}
+	type Person: struct
+	{
+		age: u8,
+		height: f64
+	}
 
-func do_thing(arg: i32)
-{
-	var value: i32 = arg * 3;
-	if value == 3
+	type House: struct
 	{
-		var name : String = "hello";
+		owner: Person,
+		sq_footage: u16,
+		elevation: i32
 	}
-	else if value == 6
+
+	func print_person(person: Person, persons: i32): Persons
 	{
-		var num : f64 = 12.5;
 	}
-	else
-	{
-		print("uh oh");
-	}
-}
+
 )=====";
 
 using namespace warbler;
@@ -63,10 +84,13 @@ int main()
 	std::cout << std::endl;
 
 	TokenIterator iter = tokens.begin();
-	auto res = Program::parse(iter);
+	auto res = Module::parse(iter);
 
 	if (res.has_error())
+	{
+		error_out() << "failed to parse src" << std::endl;
 		return res.error();
+	}
 
 	if (iter->type() != TOKEN_END_OF_FILE)
 	{
@@ -75,13 +99,19 @@ int main()
 		return 1;
 	}
 
-
 	auto ast = res.unwrap();
 
 	ast.print_tree();
 
-	if (!ast.validate())
-		return (int)ERROR_VALIDATE;
+	std::cout << "validating ast..." << std::endl;
+
+	if (!ast.validate({ "test" }))
+	{
+		error_out() << "errors when validating ast" << std::endl;
+		return 1;
+	}
+	
+	std::cout << "successfully validated ast" << std::endl;
 
 	return 0;
 }

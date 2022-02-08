@@ -2,66 +2,29 @@
 
 #include <warbler/print.hpp>
 #include <warbler/semantics/context.hpp>
+#include <warbler/ast/type/struct.hpp>
+#include <warbler/ast/type/enum.hpp>
 
 namespace warbler::ast
 {
-	TypeDefinition::TypeDefinition(Identifier&& name, Struct&& struct_def) :
-	_name(name),
-	_struct(struct_def),
-	_type(DEFINITION_STRUCT)
-	{}
-
-	TypeDefinition::TypeDefinition(Identifier&& name, Enum&& enum_def) :
-	_name(name),
-	_enum(enum_def),
-	_type(DEFINITION_ENUM)
+	TypeDefinition::TypeDefinition(Identifier&& name, TypeDefinitionBody *body) :
+	_name(std::move(name)),
+	_body(body)
 	{}
 
 	TypeDefinition::TypeDefinition(TypeDefinition&& other) :
-	_name(other._name),
-	_type(other._type)
+	_name(std::move(other._name)),
+	_symbol(std::move(other._symbol)),
+	_body(other._body)
 	{
-		switch (_type)
-		{
-			case DEFINITION_STRUCT:
-				new (&_struct) auto(std::move(other._struct));
-				break;
-
-			case DEFINITION_ENUM:
-				new(&_enum) auto(std::move(other._enum));
-				break;
-		}
-	}
-
-	TypeDefinition::TypeDefinition(const TypeDefinition& other) :
-	_name(other._name),
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case DEFINITION_STRUCT:
-				new (&_struct) auto(other._struct);
-				break;
-
-			case DEFINITION_ENUM:
-				new(&_enum) auto(other._enum);
-				break;
-		}
+		other._body = nullptr;
 	}
 
 	TypeDefinition::~TypeDefinition()
 	{
-		switch (_type)
-		{
-			case DEFINITION_STRUCT:
-				_struct.~Struct();
-				break;
-
-			case DEFINITION_ENUM:
-				_enum.~Enum();
-				break;
-		}
+		delete _body;
 	}
+
 #pragma message("TODO: implement all type parsing")
 	Result<TypeDefinition> TypeDefinition::parse(TokenIterator& iter)
 	{
@@ -89,7 +52,7 @@ namespace warbler::ast
 				if (!struct_def)
 					return struct_def.error();
 
-				return TypeDefinition(name.unwrap(), struct_def.unwrap());
+				return TypeDefinition { name.unwrap(), new Struct(struct_def.unwrap()) };
 			}
 
 			default:
@@ -99,36 +62,31 @@ namespace warbler::ast
 
 	}
 
-	void TypeDefinition::validate(semantics::Context& context)
+	bool TypeDefinition::validate(semantics::Context& context)
 	{
-		_name.validate(context);
+		return _body->validate(context);
+	}
 
-		auto iter = context.types.find(_name.symbol());
+	const String& TypeDefinition::generate_symbol(semantics::Context& context)
+	{
+		usize size = 0;
 
-		if (iter != context.types.end())
+		for (const auto& mod : context.scope)
+			size += mod.size() + 2;
+
+		size += _name.text().size();
+
+		_symbol.reserve(size);
+
+		for (const auto& mod : context.scope)
 		{
-			error_out(_name.location()) << "duplicate typename '" << _name.text() << "' in module '";
-
-			bool is_first = true;
-
-			for (const auto& module : context.scope)
-			{
-				if (is_first)
-				{
-					is_first = false;
-				}
-				else
-				{
-					error_stream << "::";
-				}
-
-				error_stream << module;
-			}
-
-			error_stream << "'";
-
-			error_highlight(_name.location());
+			_symbol += mod;
+			_symbol += "@";
 		}
+
+		_symbol += _name.text();
+
+		return _symbol;
 	}
 
 	void TypeDefinition::print_tree(u32 depth) const
@@ -136,29 +94,12 @@ namespace warbler::ast
 		std::cout << tree_branch(depth) << "type\n";
 
 		_name.print_tree(depth + 1);
-
-		switch (_type)
-		{
-			case DEFINITION_STRUCT:
-				_struct.print_tree(depth + 1);
-				break;
-
-			case DEFINITION_ENUM:
-				throw std::runtime_error("TypeDefinition::print_tree is not implemented for enum");
-				// _enum.print_tree(depth + 1);
-				break;
-		}
+		_body->print_tree(depth + 1);
 	}
 
 	TypeDefinition& TypeDefinition::operator=(TypeDefinition&& other)
 	{
-		new(this) auto(other);
-		return *this;
-	}
-
-	TypeDefinition& TypeDefinition::operator=(const TypeDefinition& other)
-	{
-		new(this) auto(other);
+		new (this) auto(std::move(other));
 		return *this;
 	}
 }

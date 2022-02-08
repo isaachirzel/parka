@@ -88,7 +88,7 @@ namespace warbler::ast
 		
 		Typename type;
 
-		if (iter->type() == TOKEN_SINGLE_ARROW)
+		if (iter->type() == TOKEN_COLON)
 		{
 			iter += 1;
 
@@ -137,7 +137,8 @@ namespace warbler::ast
 			parameter.print_tree(depth + 3);
 
 		std::cout << tree_branch(depth + 2) << ")\n";
-		std::cout << tree_branch(depth + 2) << "->\n";
+		std::cout << tree_branch(depth + 2) << ":\n";
+		
 		_return_type.print_tree(depth + 3);
 
 		if (_is_inline)
@@ -155,15 +156,27 @@ namespace warbler::ast
 		}
 	}
 
-	bool Function::validate(const semantics::Context& context)
+	bool Function::validate(semantics::Context& context)
 	{
-		// for (auto& parameter : _parameters)
-		// {
-		// 	//auto status = parameter.validate();
+		Set<String> parameter_names;
 
-		// 	if (!status)
-		// 		return status;
-		// }
+		for (auto& parameter : _parameters)
+		{
+			const auto& name = parameter.name().text();
+
+			if (parameter_names.find(name) != parameter_names.end())
+			{
+				error_out(parameter.name().location()) << "function " << context.qualified_scope(_name.text()) << "(...) already contains parameter '" << name << '\'';
+				error_highlight(parameter.name().location());
+
+				return false;
+			}
+
+			parameter_names.insert(name);
+
+			if (!parameter.validate(context))
+				return false;
+		}
 
 		// auto status = _return_type.validate();
 
@@ -172,14 +185,14 @@ namespace warbler::ast
 
 		// if (_is_inline)
 		// {
-
+ 
 		// }
 		// else
 		// {
 		// 	for (
 		// }
 
-		return false;
+		return true;
 	}
 
 	Function& Function::operator=(Function&& other)

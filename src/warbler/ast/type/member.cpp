@@ -46,6 +46,11 @@ namespace warbler::ast
 		return Member(name.unwrap(), type.unwrap(), is_public);
 	}
 
+	bool Member::validate(semantics::Context& context)
+	{
+		return _type.validate(context);
+	}
+
 	void Member::print_tree(u32 depth) const
 	{
 		_name.print_tree(depth);

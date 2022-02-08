@@ -5,6 +5,7 @@
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
 {
@@ -23,6 +24,7 @@ namespace warbler::ast
 
 		static Result<Typename> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 		bool validate();
 

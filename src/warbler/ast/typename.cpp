@@ -5,6 +5,32 @@
 
 namespace warbler::ast
 {
+	static std::unordered_set<String> primitive_types = {
+
+		// signed types
+		"i8",
+		"i16",
+		"i32",
+		"i64",
+		"isize",
+
+		// unsigned types
+		"u8",
+		"u16",
+		"u32",
+		"u64",
+		"usize",
+
+		// floating point types
+		"f32",
+		"f64",
+
+		// util types
+		"char",
+		"bool",
+		"byte"
+	};
+
 	Typename::Typename() :
 	_location(),
 	_name(),
@@ -31,6 +57,18 @@ namespace warbler::ast
 		iter += 1;
 
 		return Typename(location, std::move(name));
+	}
+
+	bool Typename::validate(semantics::Context& context)
+	{
+		if (context.types.find(_name) == context.types.end() && primitive_types.find(_name) == primitive_types.end())
+		{
+			error_out(_location) << '\'' << _name << "' is not an imported or locally defined type or primitive";
+			error_highlight(_location);
+			return false;
+		}
+
+		return true;
 	}
 
 	void Typename::print_tree(u32 depth) const

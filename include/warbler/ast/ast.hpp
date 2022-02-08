@@ -2,7 +2,7 @@
 #define WARBLER_PARSER_HPP
 
 // local headers
-#include <warbler/ast/program.hpp>
+#include <warbler/ast/module.hpp>
 
 namespace warbler::ast
 {
@@ -10,9 +10,9 @@ namespace warbler::ast
 	{
 	private:
 
-		Program _program;
+		Module _module;
 
-		Ast(Program&& program);
+		Ast(Module&& program);
 
 	public:
 	

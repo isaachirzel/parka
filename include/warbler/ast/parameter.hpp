@@ -6,6 +6,7 @@
 #include <warbler/ast/typename.hpp>
 #include <warbler/ast/identifier.hpp>
 #include <warbler/util/result.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
 {
@@ -22,6 +23,11 @@ namespace warbler::ast
 
 		static Result<Parameter> parse(TokenIterator& iter);
 		static Result<std::vector<Parameter>> parse_list(TokenIterator& iter);
+
+		bool validate(semantics::Context& context);
+
+		const Identifier& name() const { return _name; }
+		const Typename& type() const { return _type; }
 
 		void print_tree(u32 depth = 0) const;
 	};

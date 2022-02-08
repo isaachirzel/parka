@@ -4,14 +4,14 @@
 
 namespace warbler::ast
 {
-	Ast::Ast(Program&& program) :
-	_program(program)
+	Ast::Ast(Module&& module) :
+	_module(std::move(module))
 	{}
 
 	Result<Ast> Ast::parse(const std::vector<Token>& tokens)
 	{
 		auto iter = tokens.begin();
-		auto res = Program::parse(iter);
+		auto res = Module::parse(iter);
 
 		if (res.has_error())
 			return res.error();
@@ -21,11 +21,12 @@ namespace warbler::ast
 
 	void Ast::print_tree(u32 depth) const
 	{
-		_program.print_tree(depth);
+		_module.print_tree(depth);
 	}
 
 	bool Ast::validate()
 	{
-		return _program.validate();
+		#pragma message("actually implement passing scope to module")
+		return _module.validate({ "TEST_MODULE" });
 	}
 }

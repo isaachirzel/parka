@@ -77,6 +77,11 @@ namespace warbler::ast
 		return out;
 	}
 
+	bool Parameter::validate(semantics::Context& context)
+	{
+		return _type.validate(context);
+	}
+
 	void Parameter::print_tree(u32 depth) const
 	{
 		_name.print_tree(depth);

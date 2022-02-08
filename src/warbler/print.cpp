@@ -130,31 +130,37 @@ namespace warbler
 		if (is_color_enabled)
 			out <<  COLOR_RESET;
 
+		// std::cout << "(" << location.length() << ")\n";
+
 		pos = location.pos_ptr() + location.length();
 
-		for (pos = location.pos_ptr(); *pos != 0 && *pos != '\n'; ++pos)
+		while (true)
+		{
+			if (*pos == '\0' || *pos == '\n')
+				break;
+
 			out << *pos;
-		
-		out << std::setw(2 + line_number_length) << "| ";
+			pos += 1;
+		}
+
+		out << '\n' << std::string(2 + line_number_length, ' ') << "| ";
 		
 		std::string spacing = line_header;
 
 		pos = location.start_of_line();
 		for (usize i = 0; i < location.col(); ++i)
-			out << (*pos == '\t' ? '\t' : ' ');
+		{
+			out << (pos[i] == '\t' ? '\t' : ' ');
+		}
 
 		if (is_color_enabled)
 			out << color;
 
-		out << '^';
+		// prints stray ~ so that there is at least one regardless of token length
+		out << '~';
 
-		if (location.length() > 1)
-		{
-			auto length = location.length() - 1;
-
-			for (usize i = 0; i < length; ++i)
-				std::cout << '~';
-		}
+		for (usize i = 1; i < location.length(); ++i)
+			out << '~';
 
 		if (is_color_enabled)
 			out << COLOR_RESET;

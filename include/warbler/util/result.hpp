@@ -45,7 +45,7 @@ namespace warbler
 	public:
 
 		Result(T&& value) :
-		_value(value),
+		_value(std::move(value)),
 		_ok(true)
 		{}
 
@@ -54,18 +54,18 @@ namespace warbler
 		_ok(false)
 		{}
 
-		Result(const Result& other) :
-		_ok(other._ok)
-		{
-			if (_ok)
-			{
-				_value = other._value;
-			}
-			else
-			{
-				_error = other._error;
-			}
-		}
+		// Result(const Result& other) :
+		// _ok(other._ok)
+		// {
+		// 	if (_ok)
+		// 	{
+		// 		_value = other._value;
+		// 	}
+		// 	else
+		// 	{
+		// 		_error = other._error;
+		// 	}
+		// }
 
 		Result(Result&& other) :
 		_ok(other._ok)

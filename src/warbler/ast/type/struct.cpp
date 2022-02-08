@@ -42,12 +42,24 @@ namespace warbler::ast
 			if (iter->type() != TOKEN_RBRACE)
 			{
 				parse_error(iter, "'}' after struct body");
+				return ERROR_ARGUMENT;
 			}
 		}
 
 		iter += 1;
 
 		return Struct(std::move(out));
+	}
+	
+	bool Struct::validate(semantics::Context& context)
+	{
+		for (auto& member : _members)
+		{
+			if (!member.validate(context))
+				return false;
+		}
+
+		return true;
 	}
 
 	void Struct::print_tree(u32 depth) const

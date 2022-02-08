@@ -5,6 +5,7 @@
 #include <warbler/ast/identifier.hpp>
 #include <warbler/ast/type/struct.hpp>
 #include <warbler/ast/type/enum.hpp>
+#include <warbler/ast/type/type_definition_body.hpp>
 
 namespace warbler::semantics
 {
@@ -24,30 +25,27 @@ namespace warbler::ast
 	private:
 
 		Identifier _name;
-
-		union
-		{
-			Struct _struct;
-			Enum _enum;
-		};
-
-		TypeDefinitionType _type;
+		String _symbol;
+		TypeDefinitionBody *_body;
 
 	public:
 
-		TypeDefinition(Identifier&& name, Struct&& struct_def);
-		TypeDefinition(Identifier&& name, Enum&& enum_def);
-		TypeDefinition(TypeDefinition&& other);
-		TypeDefinition(const TypeDefinition& other);
+		TypeDefinition(Identifier&& name, TypeDefinitionBody *body);
+		TypeDefinition(TypeDefinition&&);
+		TypeDefinition(const TypeDefinition&) = delete;
 		~TypeDefinition();
 
 		static Result<TypeDefinition> parse(TokenIterator& iter);
 
-		void validate(semantics::Context& context);
+		bool validate(semantics::Context& context);
+		const String& generate_symbol(semantics::Context& contetxt);
 		void print_tree(u32 depth = 0) const;
 
+		const Identifier& name() const { return _name; }
+		const String& symbol() const { return _symbol; }
+
 		TypeDefinition& operator=(TypeDefinition&& other);
-		TypeDefinition& operator=(const TypeDefinition& other);
+		TypeDefinition& operator=(const TypeDefinition& other) = delete;
 	};
 }
 

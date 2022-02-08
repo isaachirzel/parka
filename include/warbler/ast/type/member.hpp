@@ -4,6 +4,7 @@
 // local headers
 #include <warbler/ast/identifier.hpp>
 #include <warbler/ast/typename.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
 {
@@ -20,6 +21,8 @@ namespace warbler::ast
 		Member(Identifier&& name, Typename&& type, bool is_public);
 
 		static Result<Member> parse(TokenIterator& iter);
+
+		bool validate(semantics::Context& context);
 
 		void print_tree(u32 depth = 0) const;
 	};
