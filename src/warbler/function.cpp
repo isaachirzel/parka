@@ -7,18 +7,18 @@
 namespace warbler::ast
 {
 	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Expression&& inline_body) :
-	_name(name),
-	_parameters(parameters),
-	_return_type(return_type),
-	_inline_body(inline_body),
+	_name(std::move(name)),
+	_parameters(std::move(parameters)),
+	_return_type(std::move(return_type)),
+	_inline_body(std::move(inline_body)),
 	_is_inline(true)
 	{}
 
-	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, std::vector<Statement>&& compound_body) :
-	_name(name),
-	_parameters(parameters),
-	_return_type(return_type),
-	_compound_body(compound_body),
+	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, CompoundStatement&& compound_body) :
+	_name(std::move(name)),
+	_parameters(std::move(parameters)),
+	_return_type(std::move(return_type)),
+	_compound_body(std::move(compound_body)),
 	_is_inline(false)
 	{}
 	
@@ -38,22 +38,6 @@ namespace warbler::ast
 		}
 	}
 
-	Function::Function(const Function& other) :
-	_name(other._name),
-	_parameters(other._parameters),
-	_return_type(other._return_type),
-	_is_inline(other._is_inline)
-	{
-		if (_is_inline)
-		{
-			new(&_inline_body) auto(other._inline_body);
-		}
-		else
-		{
-			new(&_compound_body) auto(other._compound_body);
-		}
-	}
-
 	Function::~Function()
 	{
 		if (_is_inline)
@@ -62,7 +46,7 @@ namespace warbler::ast
 		}
 		else
 		{
-			_compound_body.~vector();
+			_compound_body.~CompoundStatement();
 		}
 	}
 
@@ -102,7 +86,7 @@ namespace warbler::ast
 		
 		if (iter->type() == TOKEN_LBRACE)
 		{
-			auto body = Statement::parse_compound(iter);
+			auto body = CompoundStatement::parse(iter);
 
 			if (body.has_error())
 				return body.error();
@@ -147,12 +131,7 @@ namespace warbler::ast
 		}
 		else
 		{
-			std::cout << tree_branch(depth + 1) << "{\n";
-
-			for (const auto& statement : _compound_body)
-				statement.print_tree(depth + 2);
-
-			std::cout << tree_branch(depth + 1) << "}\n";
+			_compound_body.print_tree(depth + 1);
 		}
 	}
 
@@ -197,13 +176,7 @@ namespace warbler::ast
 
 	Function& Function::operator=(Function&& other)
 	{
-		new(this) auto(other);
-		return *this;
-	}
-
-	Function& Function::operator=(const Function& other)
-	{
-		new(this) auto(other);
+		new(this) auto(std::move(other));
 		return *this;
 	}
 }

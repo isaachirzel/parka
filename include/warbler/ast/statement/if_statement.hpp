@@ -2,14 +2,13 @@
 #define WARBLER_AST_STATEMENT_SELECTION_STATEMENT_HPP
 
 // local headers
+#include <warbler/ast/statement/compound_statement.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/util/array.hpp>
 
 namespace warbler::ast
 {
-	class Statement;
-
 	enum IfType
 	{
 		IF_THEN,
@@ -17,16 +16,16 @@ namespace warbler::ast
 		IF_THEN_ELSE_IF
 	};
 
-	class IfStatement
+	class IfStatement : public Statement
 	{
 	private:
 
 		Expression _condition;
-		Array<Statement> _then_body;
+		CompoundStatement _then_body;
 
 		union
 		{
-			Array<Statement> _else_body;
+			CompoundStatement _else_body;
 			IfStatement *_else_if;
 		};
 
@@ -34,19 +33,20 @@ namespace warbler::ast
 
 	public:
 
-		IfStatement(Expression&& condition, Array<Statement>&& then_body);
-		IfStatement(Expression&& condition, Array<Statement>&& then_body, Array<Statement>&& else_body);
-		IfStatement(Expression&& condition, Array<Statement>&& then_body, IfStatement *else_if);
+		IfStatement(Expression&& condition, CompoundStatement&& then_body);
+		IfStatement(Expression&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body);
+		IfStatement(Expression&& condition, CompoundStatement&& then_body, IfStatement *else_if);
 		IfStatement(IfStatement&& other);
-		IfStatement(const IfStatement& other);
+		IfStatement(const IfStatement& other) = delete;
 		~IfStatement();
 
 		static Result<IfStatement> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 		
-		IfStatement operator=(IfStatement&& other);
-		IfStatement operator=(const IfStatement& other);
+		IfStatement& operator=(IfStatement&& other);
+		IfStatement& operator=(const IfStatement& other) = delete;
 	};
 }
 

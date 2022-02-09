@@ -5,10 +5,11 @@
 #include <warbler/ast/identifier.hpp>
 #include <warbler/ast/typename.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
+#include <warbler/ast/statement/statement.hpp>
 
 namespace warbler::ast
 {
-	class DeclarationStatement
+	class DeclarationStatement : public Statement
 	{
 	private:
 
@@ -22,6 +23,7 @@ namespace warbler::ast
 
 		static Result<DeclarationStatement> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 	};
 }

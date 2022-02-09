@@ -4,12 +4,14 @@
 // local headers
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
+#include <warbler/ast/statement/statement.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
 {
-	class ExpressionStatement
+	class ExpressionStatement : public Statement
 	{
 	private:
 
@@ -21,6 +23,7 @@ namespace warbler::ast
 
 		static Result<ExpressionStatement> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 	};
 }

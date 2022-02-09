@@ -7,6 +7,7 @@
 #include <warbler/ast/parameter.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
+#include <warbler/ast/statement/compound_statement.hpp>
 #include <warbler/ast/statement/statement.hpp>
 #include <warbler/util/table.hpp>
 #include <warbler/semantics/context.hpp>
@@ -26,7 +27,7 @@ namespace warbler::ast
 		union
 		{
 			Expression _inline_body;
-			Array<Statement> _compound_body;
+			CompoundStatement _compound_body;
 		};
 		
 		bool _is_inline;
@@ -34,9 +35,9 @@ namespace warbler::ast
 	public:
 
 		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, Expression&& inline_body);
-		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, Array<Statement>&& compound_body);
+		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, CompoundStatement&& compound_body);
 		Function(Function&& other);
-		Function(const Function& other);
+		Function(const Function& other) = delete;
 		~Function();
 
 		static Result<Function> parse(TokenIterator& iter);
@@ -47,7 +48,7 @@ namespace warbler::ast
 		const Identifier& name() const { return _name; }
 
 		Function& operator=(Function&& other);
-		Function& operator=(const Function& other);
+		Function& operator=(const Function& other) = delete;
 	};
 }
 
