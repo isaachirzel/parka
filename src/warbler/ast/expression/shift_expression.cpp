@@ -10,8 +10,8 @@
 namespace warbler::ast
 {
 	ShiftExpression::ShiftExpression(AdditiveExpression&& lhs, std::vector<ShiftRhs>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<ShiftExpression> ShiftExpression::parse(TokenIterator& iter)

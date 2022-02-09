@@ -15,11 +15,13 @@ namespace warbler::ast
 
 		Identifier _name;
 		Typename _type;
-		ConditionalExpression _value;
+		Ptr<Expression> _value;
 
 	public:
 
-		DeclarationStatement(Identifier&& name, Typename&& type, ConditionalExpression&& value);
+		DeclarationStatement(Identifier&& name, Typename&& type, Ptr<Expression>&& value);
+		DeclarationStatement(DeclarationStatement&&) = default;
+		DeclarationStatement(const DeclarationStatement&) = delete;
 
 		static Result<DeclarationStatement> parse(TokenIterator& iter);
 

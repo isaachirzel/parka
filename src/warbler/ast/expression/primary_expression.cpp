@@ -10,27 +10,24 @@
 
 namespace warbler::ast
 {
-	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
-		Array<Postfix>&& postfixes, Identifier&& identifier) :
-	_prefixes(prefixes),
-	_postfixes(postfixes),
-	_identifier(identifier),
+	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Identifier&& identifier) :
+	_prefixes(std::move(prefixes)),
+	_postfixes(std::move(postfixes)),
+	_identifier(std::move(identifier)),
 	_type(PRIMARY_IDENTIFIER)
 	{}
 
-	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
-		Array<Postfix>&& postfixes, Constant&& constant) :
-	_prefixes(prefixes),
-	_postfixes(postfixes),
-	_constant(constant),
+	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Constant&& constant) :
+	_prefixes(std::move(prefixes)),
+	_postfixes(std::move(postfixes)),
+	_constant(std::move(constant)),
 	_type(PRIMARY_CONSTANT)
 	{}
 
-	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes,
-		Array<Postfix>&& postfixes, Expression *expression) :
-	_prefixes(prefixes),
-	_postfixes(postfixes),
-	_expression(expression),
+	PrimaryExpression::PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Ptr<Expression>&& expression) :
+	_prefixes(std::move(prefixes)),
+	_postfixes(std::move(postfixes)),
+	_expression(std::move(expression)),
 	_type(PRIMARY_EXPRESSION)
 	{}
 
@@ -50,29 +47,7 @@ namespace warbler::ast
 				break;
 
 			case PRIMARY_EXPRESSION:
-				_expression = other._expression;
-				other._expression = nullptr;
-				break;
-		}
-	}
-
-	PrimaryExpression::PrimaryExpression(const PrimaryExpression& other) :
-	_prefixes(other._prefixes),
-	_postfixes(other._postfixes),
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case PRIMARY_IDENTIFIER:
-				new(&_identifier) auto(other._identifier);
-				break;
-
-			case PRIMARY_CONSTANT:
-				new(&_constant) auto(other._constant);
-				break;
-
-			case PRIMARY_EXPRESSION:
-				_expression = new Expression(*other._expression);
+				new (&_expression) auto(std::move(other._expression));
 				break;
 		}
 	}
@@ -90,7 +65,7 @@ namespace warbler::ast
 				break;
 
 			case PRIMARY_EXPRESSION:
-				delete _expression;
+				_expression.~Ptr();
 				break;
 		}
 	}
@@ -135,7 +110,7 @@ namespace warbler::ast
 			if (postfixes.has_error())
 				return postfixes.error();
 
-			return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), new Expression(expression.unwrap()));
+			return PrimaryExpression { std::move(prefixes), postfixes.unwrap(), expression.unwrap() };
 		}
 		
 		auto constant = Constant::parse(iter);
@@ -180,52 +155,7 @@ namespace warbler::ast
 
 	PrimaryExpression& PrimaryExpression::operator=(PrimaryExpression&& other)
 	{
-		_prefixes = std::move(other._prefixes);
-		_postfixes = std::move(other._postfixes);
-		_type = other._type;
-
-		switch (_type)
-		{
-			case PRIMARY_IDENTIFIER:
-				_identifier = std::move(other._identifier);
-				break;
-
-			case PRIMARY_CONSTANT:
-				_constant = std::move(other._constant);
-				break;
-
-			case PRIMARY_EXPRESSION:
-				_expression = other._expression;
-				break;
-		}
-
-		other._type = PRIMARY_EXPRESSION;
-		other._expression = nullptr;
-
-		return *this;
-	}
-
-	PrimaryExpression& PrimaryExpression::operator=(const PrimaryExpression& other)
-	{
-		_prefixes = other._prefixes;
-		_postfixes = other._postfixes;
-		_type = other._type;
-
-		switch (_type)
-		{
-			case PRIMARY_IDENTIFIER:
-				_identifier = other._identifier;
-				break;
-
-			case PRIMARY_CONSTANT:
-				_constant = other._constant;
-				break;
-
-			case PRIMARY_EXPRESSION:
-				_expression = new Expression(*other._expression);
-				break;
-		}
-
+		new (this) auto(std::move(other));
 		return *this;
 	}
 }

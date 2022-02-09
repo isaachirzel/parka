@@ -28,7 +28,7 @@ namespace warbler::ast
 		{
 			Identifier _identifier;
 			Constant _constant;
-			Expression *_expression;
+			Ptr<Expression> _expression;
 		};
 
 		PrimaryType _type;
@@ -38,16 +38,18 @@ namespace warbler::ast
 		PrimaryExpression() = delete;
 		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Identifier&& identifier);
 		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Constant&& constant);
-		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Expression *expression);
+		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Ptr<Expression>&& expression);
 		PrimaryExpression(PrimaryExpression&& other);
-		PrimaryExpression(const PrimaryExpression& other);
+		PrimaryExpression(const PrimaryExpression&) = delete;
 		~PrimaryExpression();
 
 		static Result<PrimaryExpression> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
+
 		PrimaryExpression& operator=(PrimaryExpression&& other);
-		PrimaryExpression& operator=(const PrimaryExpression& other);
+		PrimaryExpression& operator=(const PrimaryExpression&) = delete;
 	};
 }
 #endif

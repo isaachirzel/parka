@@ -28,12 +28,12 @@ namespace warbler::ast
 	private:
 
 		PrimaryExpression _lhs;
-		Expression _rhs;
+		Ptr<Expression> _rhs;
 		AssignmentType _type;
 
 	public:
 
-		AssignmentStatement(PrimaryExpression&& lhs, Expression &&rhs, AssignmentType type);
+		AssignmentStatement(PrimaryExpression&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
 
 		static Result<AssignmentStatement> parse(TokenIterator& iter);
 

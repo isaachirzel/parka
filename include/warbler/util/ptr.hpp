@@ -12,6 +12,10 @@ namespace warbler
 
 	public:
 
+		Ptr() :
+		_value(nullptr)
+		{}
+
 		Ptr(T* value) :
 		_value(value)
 		{}
@@ -30,8 +34,15 @@ namespace warbler
 
 		~Ptr() { delete _value; }
 
+		operator bool() const { return _value; }
+
 		T* operator->() { return _value; }
+		const T* operator->() const { return _value; }
+		
 		T& operator*() { return *_value; }
+		const T& operator*() const { return *_value; }
+
+		Ptr& operator=(Ptr&& other) { new (this) auto(std::move(other)); return *this; }
 	};
 }
 

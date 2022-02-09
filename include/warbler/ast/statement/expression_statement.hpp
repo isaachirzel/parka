@@ -15,11 +15,11 @@ namespace warbler::ast
 	{
 	private:
 
-		Expression _expression;
+		Ptr<Expression> _expression;
 
 	public:
 
-		ExpressionStatement(Expression&& expression);
+		ExpressionStatement(Ptr<Expression>&& expression);
 
 		static Result<ExpressionStatement> parse(TokenIterator& iter);
 

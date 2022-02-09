@@ -6,8 +6,8 @@
 namespace warbler::ast
 {
 	BitwiseOrExpression::BitwiseOrExpression(BitwiseXorExpression&& lhs, Array<BitwiseXorExpression>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<BitwiseOrExpression> BitwiseOrExpression::parse(TokenIterator& iter)

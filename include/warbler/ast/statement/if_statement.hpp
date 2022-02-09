@@ -20,7 +20,7 @@ namespace warbler::ast
 	{
 	private:
 
-		Expression _condition;
+		Ptr<Expression> _condition;
 		CompoundStatement _then_body;
 
 		union
@@ -33,9 +33,9 @@ namespace warbler::ast
 
 	public:
 
-		IfStatement(Expression&& condition, CompoundStatement&& then_body);
-		IfStatement(Expression&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body);
-		IfStatement(Expression&& condition, CompoundStatement&& then_body, IfStatement *else_if);
+		IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body);
+		IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body);
+		IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, IfStatement *else_if);
 		IfStatement(IfStatement&& other);
 		IfStatement(const IfStatement& other) = delete;
 		~IfStatement();

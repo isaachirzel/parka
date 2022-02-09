@@ -4,10 +4,10 @@
 
 namespace warbler::ast
 {
-	DeclarationStatement::DeclarationStatement(Identifier&& name, Typename&& type, ConditionalExpression&& value) :
-	_name(name),
-	_type(type),
-	_value(value)
+	DeclarationStatement::DeclarationStatement(Identifier&& name, Typename&& type, Ptr<Expression>&& value) :
+	_name(std::move(name)),
+	_type(std::move(type)),
+	_value(std::move(value))
 	{}
 
 	Result<DeclarationStatement> DeclarationStatement::parse(TokenIterator& iter)
@@ -40,9 +40,9 @@ namespace warbler::ast
 
 		iter += 1;
 
-		auto value = ConditionalExpression::parse(iter);
+		auto value = Expression::parse(iter);
 
-		if (value.has_error())
+		if (!value)
 			return value.error();
 
 		if (iter->type() != TOKEN_SEMICOLON)
@@ -56,11 +56,22 @@ namespace warbler::ast
 		return DeclarationStatement(name.unwrap(), std::move(type), value.unwrap());
 	}
 
+	bool DeclarationStatement::validate(semantics::Context& context)
+	{
+		if (!_type.validate(context))
+			return false;
+
+		if (!_value->validate(context))
+			return false;
+
+		return true;
+	}
+
 	void DeclarationStatement::print_tree(u32 depth) const
 	{
 		_name.print_tree(depth);
 		_type.print_tree(depth + 1);
 		std::cout << tree_branch(depth + 1) << "=\n";
-		_value.print_tree(depth  + 2);
+		_value->print_tree(depth  + 2);
 	}
 }

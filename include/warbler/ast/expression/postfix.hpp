@@ -21,7 +21,7 @@ namespace warbler::ast
 
 		union
 		{
-			Expression *_index;
+			Ptr<Expression> _index;
 			Array<Argument> _arguments;
 			Identifier _member;
 		};
@@ -30,11 +30,11 @@ namespace warbler::ast
 
 	public:
 
-		Postfix(Expression *index);
+		Postfix(Ptr<Expression>&& index);
 		Postfix(Array<Argument>&& arguments);
 		Postfix(Identifier&& member);
 		Postfix(Postfix&& other);
-		Postfix(const Postfix& other);
+		Postfix(const Postfix&) = delete;
 		~Postfix();
 
 		static Result<Postfix> parse(TokenIterator& iter);
@@ -43,7 +43,7 @@ namespace warbler::ast
 		void print_tree(u32 depth = 0) const;
 
 		Postfix& operator=(Postfix&& other);
-		Postfix& operator=(const Postfix& other);
+		Postfix& operator=(const Postfix&) = delete;
 	};
 }
 

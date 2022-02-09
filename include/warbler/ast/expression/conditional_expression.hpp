@@ -3,32 +3,33 @@
 
 // local headers
 #include <warbler/ast/expression/boolean_or_expression.hpp>
+#include <warbler/ast/expression/expression.hpp>
 
 namespace warbler::ast
 {
 	struct ConditionalRhs;
 
-	class ConditionalExpression
+	class ConditionalExpression : public Expression
 	{
 	private: // members
 
 		BooleanOrExpression _lhs;
-		ConditionalRhs *_rhs;
+		Ptr<ConditionalRhs> _rhs;
 
 	public: // methods
 
 		ConditionalExpression(BooleanOrExpression&& lhs);
 		ConditionalExpression(BooleanOrExpression&& lhs, ConditionalRhs&& rhs);
-		ConditionalExpression(ConditionalExpression&& other);
-		ConditionalExpression(const ConditionalExpression& other);
-		~ConditionalExpression();
+		ConditionalExpression(ConditionalExpression&&) = default;
+		ConditionalExpression(const ConditionalExpression&) = delete;
 
 		static Result<ConditionalExpression> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 
-		ConditionalExpression& operator=(ConditionalExpression&& other);
-		ConditionalExpression& operator=(const ConditionalExpression& other);
+		ConditionalExpression& operator=(ConditionalExpression&&) = default;
+		ConditionalExpression& operator=(const ConditionalExpression&) = delete;
 	};
 
 	struct ConditionalRhs

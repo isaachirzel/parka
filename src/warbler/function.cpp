@@ -6,7 +6,7 @@
 
 namespace warbler::ast
 {
-	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Expression&& inline_body) :
+	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Ptr<Expression>&& inline_body) :
 	_name(std::move(name)),
 	_parameters(std::move(parameters)),
 	_return_type(std::move(return_type)),
@@ -42,7 +42,7 @@ namespace warbler::ast
 	{
 		if (_is_inline)
 		{
-			_inline_body.~ConditionalExpression();
+			_inline_body.~Ptr();
 		}
 		else
 		{
@@ -101,7 +101,7 @@ namespace warbler::ast
 			if (body.has_error())
 				return body.error();
 		
-			return Function(name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap());
+			return Function { name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap() };
 		}
 		else
 		{
@@ -127,7 +127,7 @@ namespace warbler::ast
 
 		if (_is_inline)
 		{
-			_inline_body.print_tree(depth + 1);
+			_inline_body->print_tree(depth + 1);
 		}
 		else
 		{

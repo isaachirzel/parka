@@ -10,24 +10,9 @@
 
 namespace warbler::ast
 {
-	Argument::Argument(Expression *expr) :
-	_expr(expr)
+	Argument::Argument(Ptr<Expression>&& expr) :
+	_expr(std::move(expr))
 	{}
-
-	Argument::Argument(Argument&& other) :
-	_expr(other._expr)
-	{
-		other._expr = nullptr;
-	}
-
-	Argument::Argument(const Argument& other) :
-	_expr(new Expression(*other._expr))
-	{}
-
-	Argument::~Argument()
-	{
-		delete _expr;
-	}
 
 	Result<Argument> Argument::parse(TokenIterator& iter)
 	{
@@ -36,7 +21,7 @@ namespace warbler::ast
 		if (expr.has_error())
 			return expr.error();
 
-		return Argument(new Expression(expr.unwrap()));
+		return Argument { expr.unwrap() };
 	}
 
 	Result<Array<Argument>> Argument::parse_list(TokenIterator& iter)
@@ -83,19 +68,13 @@ namespace warbler::ast
 		return args;
 	}
 	
+	bool Argument::validate(semantics::Context& context)
+	{
+		return _expr->validate(context);
+	}
+
 	void Argument::print_tree(u32 depth) const
 	{
 		_expr->print_tree(depth);
-	}
-
-	Argument& Argument::operator=(Argument&& other)
-	{
-		new(this) auto(other);
-		return *this;
-	}
-	Argument& Argument::operator=(const Argument& other)
-	{
-		new(this) auto(other);
-		return *this;
 	}
 }

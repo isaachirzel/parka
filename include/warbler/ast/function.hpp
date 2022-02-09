@@ -26,7 +26,7 @@ namespace warbler::ast
 
 		union
 		{
-			Expression _inline_body;
+			Ptr<Expression> _inline_body;
 			CompoundStatement _compound_body;
 		};
 		
@@ -34,7 +34,7 @@ namespace warbler::ast
 	
 	public:
 
-		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, Expression&& inline_body);
+		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, Ptr<Expression>&& inline_body);
 		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, CompoundStatement&& compound_body);
 		Function(Function&& other);
 		Function(const Function& other) = delete;

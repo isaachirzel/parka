@@ -34,4 +34,25 @@ namespace warbler::ast
 
 		return CompoundStatement { std::move(statements) };
 	}
+
+	bool CompoundStatement::validate(semantics::Context& context)
+	{
+		for (auto& statement : _statements)
+		{
+			if (!statement->validate(context))
+				return false;
+		}
+
+		return true;
+	}
+
+	void CompoundStatement::print_tree(u32 depth) const
+	{
+		std::cout << tree_branch(depth) << "{\n";
+		for (const auto& statement : _statements)
+		{
+			statement->print_tree(depth + 1);
+		}
+		std::cout << tree_branch(depth) << "}\n";
+	}
 }

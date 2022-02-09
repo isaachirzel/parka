@@ -6,8 +6,8 @@
 namespace warbler::ast
 {
 	BooleanOrExpression::BooleanOrExpression(BooleanAndExpression&& lhs, Array<BooleanAndExpression>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<BooleanOrExpression> BooleanOrExpression::parse(TokenIterator& iter)

@@ -10,18 +10,18 @@
 
 namespace warbler::ast
 {
-	Postfix::Postfix(Expression *index) :
-	_index(index),
+	Postfix::Postfix(Ptr<Expression>&& index) :
+	_index(std::move(index)),
 	_type(POSTFIX_INDEX)
 	{}
 	
 	Postfix::Postfix(Array<Argument>&& arguments) :
-	_arguments(arguments),
+	_arguments(std::move(arguments)),
 	_type(POSTFIX_FUNCTION_CALL)
 	{}
 	
 	Postfix::Postfix(Identifier&& member) :
-	_member(member),
+	_member(std::move(member)),
 	_type(POSTFIX_MEMBER)
 	{}
 	
@@ -31,8 +31,7 @@ namespace warbler::ast
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				_index = other._index;
-				other._index = nullptr;
+				new (&_index) auto(std::move(other._index));
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
@@ -45,32 +44,12 @@ namespace warbler::ast
 		}
 	}
 
-	Postfix::Postfix(const Postfix& other) :
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case POSTFIX_INDEX:
-				new(&_index) auto(new Expression(*other._index));
-				break;
-
-			case POSTFIX_FUNCTION_CALL:
-				new(&_arguments) auto(other._arguments);
-				break;
-
-			case POSTFIX_MEMBER:
-				new(&_member) auto(other._member);
-				break;
-		}
-	}
-
-
 	Postfix::~Postfix()
 	{
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				delete _index;
+				_index.~Ptr();
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
@@ -104,7 +83,7 @@ namespace warbler::ast
 					return ERROR_ARGUMENT;
 				}
 
-				return Postfix(new Expression(index.unwrap()));
+				return Postfix { index.unwrap() };
 			}
 			case TOKEN_LPAREN:
 			{
@@ -113,7 +92,7 @@ namespace warbler::ast
 				if (arguments.has_error())
 					return arguments.error();
 
-				return Postfix(arguments.unwrap());
+				return Postfix { arguments.unwrap() };
 			}
 			case TOKEN_DOT:
 			{
@@ -188,7 +167,7 @@ namespace warbler::ast
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				_index = other._index;
+				_index = std::move(other._index);
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
@@ -197,31 +176,6 @@ namespace warbler::ast
 
 			case POSTFIX_MEMBER:
 				_member = std::move(other._member);
-				break;
-		}
-
-		other._type = POSTFIX_INDEX;
-		other._index = nullptr;
-
-		return *this;
-	}
-
-	Postfix& Postfix::operator=(const Postfix& other)
-	{
-		_type = other._type;
-
-		switch (_type)
-		{
-			case POSTFIX_INDEX:
-				_index = new Expression(*other._index);
-				break;
-
-			case POSTFIX_FUNCTION_CALL:
-				_arguments = other._arguments;
-				break;
-
-			case POSTFIX_MEMBER:
-				_member = other._member;
 				break;
 		}
 

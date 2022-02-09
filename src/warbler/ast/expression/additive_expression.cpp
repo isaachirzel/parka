@@ -6,8 +6,8 @@
 namespace warbler::ast
 {
 	AdditiveExpression::AdditiveExpression(MultiplicativeExpression&& lhs, Array<AdditiveRhs>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<AdditiveExpression> AdditiveExpression::parse(TokenIterator& iter)

@@ -8,9 +8,9 @@
 
 namespace warbler::ast
 {
-	AssignmentStatement::AssignmentStatement(PrimaryExpression&& lhs, Expression&& rhs, AssignmentType type) :
-	_lhs(lhs),
-	_rhs(rhs),
+	AssignmentStatement::AssignmentStatement(PrimaryExpression&& lhs, Ptr<Expression>&& rhs, AssignmentType type) :
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs)),
 	_type(type)
 	{}
 
@@ -75,9 +75,9 @@ namespace warbler::ast
 
 		++iter;
 
-		auto rhs = ConditionalExpression::parse(iter);
+		auto rhs = Expression::parse(iter);
 
-		if (rhs.has_error())
+		if (!rhs)
 			return rhs.error();
 
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
@@ -134,6 +134,6 @@ namespace warbler::ast
 				break;
 		}
 
-		_rhs.print_tree(depth + 1);
+		_rhs->print_tree(depth + 1);
 	}
 }

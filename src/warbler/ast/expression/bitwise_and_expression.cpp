@@ -10,8 +10,8 @@
 namespace warbler::ast
 {
 	BitwiseAndExpression::BitwiseAndExpression(EqualityExpression&& lhs, Array<EqualityExpression>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<BitwiseAndExpression> BitwiseAndExpression::parse(TokenIterator& iter)

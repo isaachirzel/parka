@@ -6,8 +6,8 @@
 namespace warbler::ast
 {
 	ComparisonExpression::ComparisonExpression(ShiftExpression&& lhs, std::vector<ComparisonRhs>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<ComparisonExpression> ComparisonExpression::parse(TokenIterator& iter)

@@ -10,8 +10,8 @@
 namespace warbler::ast
 {
 	EqualityExpression::EqualityExpression(ComparisonExpression&& lhs, Array<EqualityRhs>&& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
 
 	Result<EqualityExpression> EqualityExpression::parse(TokenIterator& iter)

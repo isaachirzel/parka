@@ -4,20 +4,20 @@
 
 namespace warbler::ast
 {
-	IfStatement::IfStatement(Expression&& condition, CompoundStatement&& then_body) :
+	IfStatement::IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_type(IF_THEN)
 	{}
 
-	IfStatement::IfStatement(Expression&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body) :
+	IfStatement::IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_body(std::move(else_body)),
 	_type(IF_THEN_ELSE)
 	{}
 
-	IfStatement::IfStatement(Expression&& condition, CompoundStatement&& then_body, IfStatement *else_if) :
+	IfStatement::IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, IfStatement *else_if) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_if(std::move(else_if)),
@@ -98,10 +98,15 @@ namespace warbler::ast
 		return IfStatement(condition.unwrap(), then_body.unwrap());
 	}
 
+	bool IfStatement::validate(semantics::Context& context)
+	{
+		throw std::runtime_error("IfStatement::validate is not implemented yet");
+	}
+
 	void IfStatement::print_tree(u32 depth) const
 	{
 		std::cout << tree_branch(depth) << "if\n";
-		_condition.print_tree(depth + 1);
+		_condition->print_tree(depth + 1);
 		_then_body.print_tree(depth + 1);
 
 		if (_type == IF_THEN)

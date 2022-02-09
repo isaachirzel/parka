@@ -5,8 +5,8 @@
 
 namespace warbler::ast
 {
-	ExpressionStatement::ExpressionStatement(Expression&& expression) :
-	_expression(expression)
+	ExpressionStatement::ExpressionStatement(Ptr<Expression>&& expression) :
+	_expression(std::move(expression))
 	{}
 
 	Result<ExpressionStatement> ExpressionStatement::parse(TokenIterator& iter)
@@ -29,6 +29,6 @@ namespace warbler::ast
 
 	void ExpressionStatement::print_tree(u32 depth) const
 	{
-		_expression.print_tree(depth);
+		_expression->print_tree(depth);
 	}
 }

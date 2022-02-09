@@ -7,44 +7,19 @@
 namespace warbler::ast
 {
 	ConditionalRhs::ConditionalRhs(BooleanOrExpression&& true_case, ConditionalExpression&& false_case) :
-	true_case(true_case),
-	false_case(false_case)
+	true_case(std::move(true_case)),
+	false_case(std::move(false_case))
 	{}
 
 	ConditionalExpression::ConditionalExpression(BooleanOrExpression&& lhs) :
-	_lhs(lhs),
-	_rhs(nullptr)
+	_lhs(std::move(lhs)),
+	_rhs()
 	{}
 
 	ConditionalExpression::ConditionalExpression(BooleanOrExpression&& lhs, ConditionalRhs&& rhs) :
-	_lhs(lhs),
-	_rhs(new ConditionalRhs(rhs))
+	_lhs(std::move(lhs)),
+	_rhs(std::move(rhs))
 	{}
-
-	ConditionalExpression::ConditionalExpression(ConditionalExpression&& other) :
-	_lhs(std::move(other._lhs)),
-	_rhs(other._rhs)
-	{
-		other._rhs = nullptr;
-	}
-
-	ConditionalExpression::ConditionalExpression(const ConditionalExpression& other) :
-	_lhs(other._lhs)
-	{
-		if (other._rhs != nullptr)
-		{
-			_rhs = new ConditionalRhs(*other._rhs);
-		}
-		else
-		{
-			_rhs = nullptr;
-		}
-	}
-
-	ConditionalExpression::~ConditionalExpression()
-	{
-		delete _rhs;
-	}
 
 	Result<ConditionalExpression> ConditionalExpression::parse(TokenIterator& iter)
 	{
@@ -84,7 +59,7 @@ namespace warbler::ast
 	{
 		_lhs.print_tree(depth);
 
-		if (_rhs != NULL)
+		if (_rhs)
 		{
 			std::cout << tree_branch(depth + 1) << "?\n";
 			_rhs->true_case.print_tree(depth + 2);
@@ -92,17 +67,5 @@ namespace warbler::ast
 			std::cout << tree_branch(depth + 1) << ":\n";
 			_rhs->false_case.print_tree(depth + 2);
 		}
-	}
-
-	ConditionalExpression& ConditionalExpression::operator=(ConditionalExpression&& other)
-	{
-		new(this) auto(other);
-		return *this;
-	}
-
-	ConditionalExpression& ConditionalExpression::operator=(const ConditionalExpression& other)
-	{
-		new(this) auto(other);
-		return *this;
 	}
 }
