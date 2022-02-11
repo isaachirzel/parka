@@ -77,7 +77,7 @@ namespace warbler::ast
 		return out;
 	}
 
-	bool Parameter::validate(semantics::Context& context)
+	bool Parameter::validate(semantics::ModuleContext& context)
 	{
 		return _type.validate(context);
 	}

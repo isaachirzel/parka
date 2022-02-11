@@ -34,7 +34,7 @@ namespace warbler::ast
 		return BitwiseOrExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool BitwiseOrExpression::validate(semantics::Context& context)
+	bool BitwiseOrExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

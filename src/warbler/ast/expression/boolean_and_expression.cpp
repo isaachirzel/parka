@@ -34,7 +34,7 @@ namespace warbler::ast
 		return BooleanAndExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool BooleanAndExpression::validate(semantics::Context& context)
+	bool BooleanAndExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

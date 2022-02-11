@@ -4,65 +4,58 @@
 
 namespace warbler::semantics
 {
-	static u32 last_id = 0;
+// {
+// 	String ModuleContext::qualified_scope() const
+// 	{
+// 		String out;
+// 		usize size = 0;
 
-	u32 Context::generate_type_id()
-	{
-		last_id += 1;
-		return last_id;
-	}
+// 		assert(!scope.empty());
 
-	String Context::qualified_scope() const
-	{
-		String out;
-		usize size = 0;
+// 		for (const auto& mod : scope)
+// 			size += mod.size();
 
-		assert(!scope.empty());
+// 		size += (scope.size() - 1) * 2;	
+// 		out.reserve(size);
 
-		for (const auto& mod : scope)
-			size += mod.size();
+// 		bool is_first = true;
 
-		size += (scope.size() - 1) * 2;	
-		out.reserve(size);
+// 		for (const auto& mod : scope)
+// 		{
+// 			out += mod;
 
-		bool is_first = true;
+// 			if (is_first)
+// 			{
+// 				is_first = false;
+// 			}
+// 			else
+// 			{
+// 				out += "::";
+// 			}
+// 		}
 
-		for (const auto& mod : scope)
-		{
-			out += mod;
+// 		return out;
+// 	}
 
-			if (is_first)
-			{
-				is_first = false;
-			}
-			else
-			{
-				out += "::";
-			}
-		}
+	// String ModueContext::qualified_scope(const String& name) const
+	// {
+	// 	String out;
+	// 	usize size = 0;
 
-		return out;
-	}
+	// 	for (const auto& mod : scope)
+	// 		size += mod.size();
 
-	String Context::qualified_scope(const String& name) const
-	{
-		String out;
-		usize size = 0;
+	// 	size += scope.size() * 2 + name.size();
+	// 	out.reserve(size);
 
-		for (const auto& mod : scope)
-			size += mod.size();
+	// 	for (const auto& mod : scope)
+	// 	{
+	// 		out += mod;
+	// 		out += "::";
+	// 	}
 
-		size += scope.size() * 2 + name.size();
-		out.reserve(size);
+	// 	out += name;
 
-		for (const auto& mod : scope)
-		{
-			out += mod;
-			out += "::";
-		}
-
-		out += name;
-
-		return out;
-	}
+	// 	return out;
+	// }
 }

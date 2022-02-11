@@ -63,7 +63,7 @@ namespace warbler::ast
 		return ComparisonExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool ComparisonExpression::validate(semantics::Context& context)
+	bool ComparisonExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

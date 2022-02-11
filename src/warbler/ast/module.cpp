@@ -61,25 +61,24 @@ namespace warbler::ast
 			function.print_tree(depth);
 	}
 
-	bool Module::validate(const Array<String>& scope)
+	bool Module::validate(const String& module_name)
 	{
-		_context.scope = scope;
+		_context.module_name = module_name;
 		// gettting valid types in module & generating symbols
 		for (auto& type : _types)
 		{
-			type.generate_symbol(_context);
 			const auto& type_name = type.name().text();
 
 			if (_context.types.find(type_name) != _context.types.end())
 			{
 				error_out(type.name().location()) << "duplicate type " << type.name().text()
-					<< " in module " << _context.qualified_scope();
+					<< " in module '" << module_name << '\'';
 				error_highlight(type.name().location());
 
 				return false;
 			}
 
-			_context.types.insert(type_name);
+			_context.types[type_name] = &type;
 		}
 
 		std::cout << "validating types: " << _types.size() << std::endl;
@@ -96,7 +95,7 @@ namespace warbler::ast
 		{
 			const auto& function_name = function.name().text();
 
-			if (_context.symbols.find(function_name) != _context.symbols.end())
+			if (_context.functions.find(function_name) != _context.functions.end())
 			{
 				error_out(function.name().location()) << "function '" << function_name << "' already defined in module '" << _context.qualified_scope() << '\'';
 				error_highlight(function.name().location());
@@ -104,7 +103,7 @@ namespace warbler::ast
 				return false;
 			}
 
-			_context.symbols.insert(function_name);
+			_context.functions[function_name] = &function;
 		}
 
 		// validating functions

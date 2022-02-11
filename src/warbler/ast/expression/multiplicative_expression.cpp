@@ -59,7 +59,7 @@ namespace warbler::ast
 		return MultiplicativeExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool MultiplicativeExpression::validate(semantics::Context& context)
+	bool MultiplicativeExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

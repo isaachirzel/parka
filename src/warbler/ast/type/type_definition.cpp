@@ -62,28 +62,19 @@ namespace warbler::ast
 
 	}
 
-	bool TypeDefinition::validate(semantics::Context& context)
+	bool TypeDefinition::validate(semantics::ModuleContext& context)
 	{
 		return _body->validate(context);
 	}
 
-	const String& TypeDefinition::generate_symbol(semantics::Context& context)
+	const String& TypeDefinition::generate_symbol(semantics::ModuleContext& context)
 	{
-		usize size = 0;
-
-		for (const auto& mod : context.scope)
-			size += mod.size() + 2;
-
-		size += _name.text().size();
+		usize size = context.module_name.size() + 1 + _name.text().size();
 
 		_symbol.reserve(size);
 
-		for (const auto& mod : context.scope)
-		{
-			_symbol += mod;
-			_symbol += "@";
-		}
-
+		_symbol += context.module_name;
+		_symbol += '@';
 		_symbol += _name.text();
 
 		return _symbol;

@@ -13,7 +13,7 @@ namespace warbler::ast
 	{
 	private:
 		
-		semantics::Context _context;
+		semantics::ModuleContext _context;
 
 		Array<Function> _functions;
 		Array<TypeDefinition> _types;
@@ -24,7 +24,7 @@ namespace warbler::ast
 
 		static Result<Module> parse(TokenIterator& iter);
 
-		bool validate(const Array<String>& scope);
+		bool validate(const String& module_name);
 		void print_tree(u32 depth = 0) const;
 	};
 }

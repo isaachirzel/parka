@@ -7,11 +7,6 @@
 #include <warbler/ast/type/enum.hpp>
 #include <warbler/ast/type/type_definition_body.hpp>
 
-namespace warbler::semantics
-{
-	class Context;
-}
-
 namespace warbler::ast
 {
 	enum TypeDefinitionType
@@ -37,8 +32,8 @@ namespace warbler::ast
 
 		static Result<TypeDefinition> parse(TokenIterator& iter);
 
-		bool validate(semantics::Context& context);
-		const String& generate_symbol(semantics::Context& contetxt);
+		bool validate(semantics::ModuleContext& context);
+		const String& generate_symbol(semantics::ModuleContext& contetxt);
 		void print_tree(u32 depth = 0) const;
 
 		const Identifier& name() const { return _name; }

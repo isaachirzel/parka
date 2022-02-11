@@ -128,20 +128,19 @@ namespace warbler::ast
 
 	bool PrimaryExpression::validate(semantics::ModuleContext& context, bool expect_lvalue)
 	{
-		#pragma message("implement reference depth handling in validation")
-		#pragma message("implement type handling in validation")
+		#pragma message("TODO: implement reference depth handling in validation")
+		#pragma message("TODO: implement type handling in validation")
 
 		switch (_type)
 		{
 			case PRIMARY_IDENTIFIER:
-				if (context.
-				if (!_identifier.validate(context))
-					return false;
+				#pragma message("TODO: implement identifier validation")
 				break;
 
 			case PRIMARY_CONSTANT:
-				if (!_constant.validate(context))
-					return false;
+				#pragma message("TODO: implement constant validation")
+				// if (!_constant.validate(context, ))
+				// 	return false;
 				break;
 
 			case PRIMARY_EXPRESSION:

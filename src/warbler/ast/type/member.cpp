@@ -46,7 +46,7 @@ namespace warbler::ast
 		return Member(name.unwrap(), type.unwrap(), is_public);
 	}
 
-	bool Member::validate(semantics::Context& context)
+	bool Member::validate(semantics::ModuleContext& context)
 	{
 		return _type.validate(context);
 	}

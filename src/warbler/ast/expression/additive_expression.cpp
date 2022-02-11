@@ -48,7 +48,7 @@ namespace warbler::ast
 		return AdditiveExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool AdditiveExpression::validate(semantics::Context& context)
+	bool AdditiveExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

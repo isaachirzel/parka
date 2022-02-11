@@ -51,7 +51,7 @@ namespace warbler::ast
 		return Struct(std::move(out));
 	}
 	
-	bool Struct::validate(semantics::Context& context)
+	bool Struct::validate(semantics::ModuleContext& context)
 	{
 		for (auto& member : _members)
 		{

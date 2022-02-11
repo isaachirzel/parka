@@ -59,7 +59,7 @@ namespace warbler::ast
 		return ShiftExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool ShiftExpression::validate(semantics::Context& context)
+	bool ShiftExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

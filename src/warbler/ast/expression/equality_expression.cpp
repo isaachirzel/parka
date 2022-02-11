@@ -59,7 +59,7 @@ namespace warbler::ast
 		return EqualityExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool EqualityExpression::validate(semantics::Context& context)
+	bool EqualityExpression::validate(semantics::ModuleContext& context)
 	{
 		if (!_lhs.validate(context))
 			return false;

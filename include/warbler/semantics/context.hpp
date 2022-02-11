@@ -8,40 +8,29 @@
 #include <warbler/util/string.hpp>
 #include <warbler/util/set.hpp>
 
-namespace warbler::semantics
+// forward declarations
+
+namespace warbler::ast
 {
-	class Typename;
+	class TypeDefinition;
 	class Parameter;
 	class Declaration;
 	class Function;
+}
 
+namespace warbler::semantics
+{
 	struct ModuleContext
 	{
 		String module_name;
-		Table<Typename*> types;
-		Table<Function*> functions;
-	};
-
-	struct Pointer
-	{
-
-	};
-
-	struct Variable
-	{
-		Typename *type;
-
-
-		u32 type_id;
-		u16 reference_count;
-		bool is_mutable;
-		bool is_ref_mutable;
+		Table<ast::TypeDefinition*> types;
+		Table<ast::Function*> functions;
 	};
 
 	struct FunctionContext
 	{
-		Table<Declaration*> variables;
-		Table<Parameter*> parameters;
+		Table<ast::Declaration*> variables;
+		Table<ast::Parameter*> parameters;
 	};
 }
 

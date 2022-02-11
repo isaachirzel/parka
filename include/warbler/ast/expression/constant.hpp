@@ -5,6 +5,7 @@
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
 {
@@ -45,7 +46,8 @@ namespace warbler::ast
 
 		static Result<Constant> parse(TokenIterator& iter);
 
-	void print_tree(u32 depth = 0) const;
+		bool validate(semantics::ModuleContext& module_context, semantics::FunctionContext& function_context);
+		void print_tree(u32 depth = 0) const;
 
 		Constant& operator=(Constant&& other);
 		Constant& operator=(const Constant& other);
