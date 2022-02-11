@@ -44,7 +44,7 @@ namespace warbler::ast
 
 	bool DeclarationStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		return _declaration.validate(mod_ctx) && !_value->validate(func_ctx);
+		return _declaration.validate(mod_ctx, func_ctx) && !_value->validate(mod_ctx, func_ctx);
 	}
 
 	void DeclarationStatement::print_tree(u32 depth) const

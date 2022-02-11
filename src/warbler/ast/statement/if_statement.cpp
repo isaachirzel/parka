@@ -98,7 +98,7 @@ namespace warbler::ast
 		return IfStatement(condition.unwrap(), then_body.unwrap());
 	}
 
-	bool IfStatement::validate(semantics::ModuleContext& context)
+	bool IfStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
 		throw std::runtime_error("IfStatement::validate is not implemented yet");
 	}

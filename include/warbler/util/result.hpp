@@ -20,15 +20,6 @@ namespace warbler
 		ERROR_VALIDATE
 	};
 
-	static inline Error _not_implemented_error(const char *func_name)
-	{
-		fprintf(stderr, "\033[31mnot implemented:\033[0m %s()\n", func_name);
-		return ERROR_NOT_IMPLEMENTED;
-	}
-	
-	#define not_implemented_error() _not_implemented_error(__func__);
-	#define try(expression) { Error error = expression; if (error) return error; }
-
 	template<typename T>
 	class Result
 	{

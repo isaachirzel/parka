@@ -126,7 +126,7 @@ namespace warbler::ast
 		return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), constant.unwrap());
 	}
 
-	bool PrimaryExpression::validate(semantics::ModuleContext& context, bool expect_lvalue)
+	bool PrimaryExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx, bool expect_lvalue)
 	{
 		#pragma message("TODO: implement reference depth handling in validation")
 		#pragma message("TODO: implement type handling in validation")
@@ -139,12 +139,13 @@ namespace warbler::ast
 
 			case PRIMARY_CONSTANT:
 				#pragma message("TODO: implement constant validation")
-				// if (!_constant.validate(context, ))
-				// 	return false;
+
+				if (!_constant.validate(mod_ctx, func_ctx))
+					return false;
 				break;
 
 			case PRIMARY_EXPRESSION:
-				if (!_expression->validate(context))
+				if (!_expression->validate(mod_ctx, func_ctx))
 					return false;
 				break;
 		}

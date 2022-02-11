@@ -34,14 +34,14 @@ namespace warbler::ast
 		return BitwiseXorExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool BitwiseXorExpression::validate(semantics::ModuleContext& context)
+	bool BitwiseXorExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(context))
+		if (!_lhs.validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& expr : _rhs)
 		{
-			if (!expr.validate(context))
+			if (!expr.validate(mod_ctx, func_ctx))
 				return false;
 		}
 

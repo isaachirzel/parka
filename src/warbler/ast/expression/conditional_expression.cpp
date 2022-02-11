@@ -55,16 +55,13 @@ namespace warbler::ast
 		return ConditionalExpression(lhs.unwrap(), ConditionalRhs { true_case.unwrap(), false_case.unwrap() });
 	}
 
-	bool ConditionalExpression::validate(semantics::ModuleContext& context)
+	bool ConditionalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(context))
+		if (!_lhs.validate(mod_ctx, func_ctx))
 			return false;
 
-		if (_rhs)
-		{
-			if (!_rhs->true_case.validate(context) || !_rhs->false_case.validate(context))
-				return false;			
-		}
+		if (_rhs && (!_rhs->true_case.validate(mod_ctx, func_ctx) || !_rhs->false_case.validate(mod_ctx, func_ctx)))
+			return false;			
 
 		return true;
 	}

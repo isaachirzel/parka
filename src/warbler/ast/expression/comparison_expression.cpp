@@ -63,14 +63,14 @@ namespace warbler::ast
 		return ComparisonExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool ComparisonExpression::validate(semantics::ModuleContext& context)
+	bool ComparisonExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(context))
+		if (!_lhs.validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& rhs : _rhs)
 		{
-			if (!rhs.expr.validate(context))
+			if (!rhs.expr.validate(mod_ctx, func_ctx))
 				return false;
 		}
 

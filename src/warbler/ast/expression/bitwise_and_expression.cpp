@@ -38,14 +38,14 @@ namespace warbler::ast
 		return BitwiseAndExpression(lhs.unwrap(), std::move(rhs));
 	}
 
-	bool BitwiseAndExpression::validate(semantics::ModuleContext& context)
+	bool BitwiseAndExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(context))
+		if (!_lhs.validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& expr : _rhs)
 		{
-			if (!expr.validate(context))
+			if (!expr.validate(mod_ctx, func_ctx))
 				return false;
 		}
 

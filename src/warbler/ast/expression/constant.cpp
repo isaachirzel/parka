@@ -214,13 +214,13 @@ namespace warbler::ast
 				return parse_float_literal(iter, false);
 
 			case TOKEN_HEXADECIMAL_LITERAL:
-				return not_implemented_error();
+				break;
 
 			case TOKEN_BINARY_LITERAL:
-				return not_implemented_error();
+				break;
 
 			case TOKEN_OCTAL_LITERAL:
-				return not_implemented_error();
+				break;
 
 			case TOKEN_CHAR_LITERAL:
 				return parse_character(iter);
@@ -247,8 +247,8 @@ namespace warbler::ast
 				break;
 		}
 
-		error_out(iter) << "expected constant but got '" << *iter << '\'';
-		error_highlight(iter);
+		parse_error(iter, "constant");
+
 		return ERROR_ARGUMENT;
 	}
 

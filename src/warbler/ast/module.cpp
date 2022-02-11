@@ -71,9 +71,7 @@ namespace warbler::ast
 
 			if (_context.types.find(type_name) != _context.types.end())
 			{
-				error_out(type.name().location()) << "duplicate type " << type.name().text()
-					<< " in module '" << module_name << '\'';
-				error_highlight(type.name().location());
+				print_error(type.name().location(), "duplicate type " + type.name().text() + " in module '" + module_name + "'");
 
 				return false;
 			}
@@ -97,8 +95,7 @@ namespace warbler::ast
 
 			if (_context.functions.find(function_name) != _context.functions.end())
 			{
-				error_out(function.name().location()) << "function '" << function_name << "' already defined in module '" << _context.qualified_scope() << '\'';
-				error_highlight(function.name().location());
+				print_error(function.name().location(), "function '" + function_name + "' is already defined in module '" + module_name + "'");
 
 				return false;
 			}

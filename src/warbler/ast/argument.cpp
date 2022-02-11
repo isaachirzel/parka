@@ -68,9 +68,9 @@ namespace warbler::ast
 		return args;
 	}
 	
-	bool Argument::validate(semantics::ModuleContext& context)
+	bool Argument::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		return _expr->validate(context);
+		return _expr->validate(mod_ctx, func_ctx);
 	}
 
 	void Argument::print_tree(u32 depth) const

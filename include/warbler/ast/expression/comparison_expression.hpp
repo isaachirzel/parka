@@ -33,7 +33,7 @@ namespace warbler::ast
 
 		static Result<ComparisonExpression> parse(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& context);
+		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 	};
 

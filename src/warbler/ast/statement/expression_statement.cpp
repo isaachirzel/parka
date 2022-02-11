@@ -24,12 +24,12 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return ExpressionStatement(expression.unwrap());
+		return ExpressionStatement { expression.unwrap() };
 	}
 
-	bool ExpressionStatement::validate(semantics::ModuleContext& context)
+	bool ExpressionStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		return _expression->validate(context);
+		return _expression->validate(mod_ctx, func_ctx);
 	}
 
 	void ExpressionStatement::print_tree(u32 depth) const

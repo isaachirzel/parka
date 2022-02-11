@@ -35,11 +35,11 @@ namespace warbler::ast
 		return CompoundStatement { std::move(statements) };
 	}
 
-	bool CompoundStatement::validate(semantics::ModuleContext& context)
+	bool CompoundStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
 		for (auto& statement : _statements)
 		{
-			if (!statement->validate(context))
+			if (!statement->validate(mod_ctx, func_ctx))
 				return false;
 		}
 
