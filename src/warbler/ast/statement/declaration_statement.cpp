@@ -19,14 +19,15 @@ namespace warbler::ast
 		if (name.has_error())
 			return name.error();
 
-		auto type = Typename();
+		auto type = Typename(iter->location());
+		
 		if (iter->type() == TOKEN_COLON)
 		{
 			iter += 1;
 
 			auto res = Typename::parse(iter);
 
-			if (res.has_error())
+			if (!res)
 				return res.error();
 
 			type = res.unwrap();

@@ -59,6 +59,20 @@ namespace warbler::ast
 		return EqualityExpression(lhs.unwrap(), std::move(rhs));
 	}
 
+	bool EqualityExpression::validate(semantics::Context& context)
+	{
+		if (!_lhs.validate(context))
+			return false;
+
+		for (auto& rhs : _rhs)
+		{
+			if (!rhs.expr.validate(context))
+				return false;
+		}
+
+		return true;
+	}
+
 	void EqualityExpression::print_tree(u32 depth) const
 	{
 		if (_rhs.size() > 0)

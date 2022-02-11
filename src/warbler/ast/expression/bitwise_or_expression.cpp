@@ -34,6 +34,20 @@ namespace warbler::ast
 		return BitwiseOrExpression(lhs.unwrap(), std::move(rhs));
 	}
 
+	bool BitwiseOrExpression::validate(semantics::Context& context)
+	{
+		if (!_lhs.validate(context))
+			return false;
+
+		for (auto& expr : _rhs)
+		{
+			if (!expr.validate(context))
+				return false;
+		}
+
+		return true;
+	}
+
 	void BitwiseOrExpression::print_tree(u32 depth) const
 	{
 		if (_rhs.size() > 0)

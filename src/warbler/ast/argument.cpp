@@ -2,7 +2,7 @@
 
 // local headers
 #include <warbler/print.hpp>
-#include <warbler/ast/expression/conditional_expression.hpp>
+#include <warbler/ast/expression/expression.hpp>
 
 // standard headers
 #include <stdlib.h>

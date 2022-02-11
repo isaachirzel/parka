@@ -5,42 +5,59 @@
 
 namespace warbler::ast
 {
-	static std::unordered_set<String> primitive_types = {
+	static u32 last_type_id = PRIMITIVE_BOOL;
+
+	u32 Typename::generate_id()
+	{
+		last_type_id += 1;
+
+		return last_type_id;
+	}
+
+	const Table<u32> Typename::primitive_types =
+	{
+		// no type
+		{ "void", PRIMITIVE_VOID },
 
 		// signed types
-		"i8",
-		"i16",
-		"i32",
-		"i64",
-		"isize",
+		{ "i8", PRIMITIVE_I8 },
+		{ "i16", PRIMITIVE_I16 },
+		{ "i32", PRIMITIVE_I32 },
+		{ "i64", PRIMITIVE_I64 },
+		{ "isize", PRIMITIVE_ISIZE },
 
 		// unsigned types
-		"u8",
-		"u16",
-		"u32",
-		"u64",
-		"usize",
+		{ "u8", PRIMITIVE_U8 },
+		{ "u16", PRIMITIVE_U16 },
+		{ "u32", PRIMITIVE_U32 },
+		{ "u64", PRIMITIVE_U64 },
+		{ "usize", PRIMITIVE_USIZE },
+
+		// binary types
+		{ "b8", PRIMITIVE_B8 },
+		{ "b16", PRIMITIVE_B16 },
+		{ "b32", PRIMITIVE_B32 },
+		{ "b64", PRIMITIVE_B64 },
 
 		// floating point types
-		"f32",
-		"f64",
+		{ "f32", PRIMITIVE_F32 },
+		{ "f64", PRIMITIVE_F64 },
 
 		// util types
-		"char",
-		"bool",
-		"byte"
+		{ "char", PRIMITIVE_CHAR },
+		{ "bool", PRIMITIVE_BOOL },
 	};
 
-	Typename::Typename() :
-	_location(),
-	_name(),
-	_id(0)
+	Typename::Typename(const Location& location) :
+	_location(location),
+	_name("void"),
+	_id(PRIMITIVE_VOID)
 	{}
 
 	Typename::Typename(const Location& location, String&& name) :
 	_location(location),
-	_name(name),
-	_id(1)
+	_name(std::move(name)),
+	_id(PRIMITIVE_VOID)
 	{}
 
 	Result<Typename> Typename::parse(TokenIterator& iter)

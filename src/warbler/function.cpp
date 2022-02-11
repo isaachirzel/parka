@@ -70,7 +70,7 @@ namespace warbler::ast
 		if (parameters.has_error())
 			return parameters.error();
 		
-		Typename type;
+		Typename type(iter->location());
 
 		if (iter->type() == TOKEN_COLON)
 		{
@@ -78,7 +78,7 @@ namespace warbler::ast
 
 			auto res = Typename::parse(iter);
 			
-			if (res.has_error())
+			if (!res)
 				return res.error();
 
 			type = res.unwrap();

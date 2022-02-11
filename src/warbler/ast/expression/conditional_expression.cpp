@@ -55,6 +55,20 @@ namespace warbler::ast
 		return ConditionalExpression(lhs.unwrap(), ConditionalRhs { true_case.unwrap(), false_case.unwrap() });
 	}
 
+	bool ConditionalExpression::validate(semantics::Context& context)
+	{
+		if (!_lhs.validate(context))
+			return false;
+
+		if (_rhs)
+		{
+			if (!_rhs->true_case.validate(context) || !_rhs->false_case.validate(context))
+				return false;			
+		}
+
+		return true;
+	}
+
 	void ConditionalExpression::print_tree(u32 depth) const
 	{
 		_lhs.print_tree(depth);

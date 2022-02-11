@@ -59,6 +59,20 @@ namespace warbler::ast
 		return MultiplicativeExpression(lhs.unwrap(), std::move(rhs));
 	}
 
+	bool MultiplicativeExpression::validate(semantics::Context& context)
+	{
+		if (!_lhs.validate(context))
+			return false;
+
+		for (auto& rhs : _rhs)
+		{
+			if (!rhs.expr.validate(context))
+				return false;
+		}
+
+		return true;
+	}
+
 	void MultiplicativeExpression::print_tree(u32 depth) const
 	{
 		if (_rhs.size() > 0)

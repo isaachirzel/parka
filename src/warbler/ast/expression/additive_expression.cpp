@@ -48,6 +48,20 @@ namespace warbler::ast
 		return AdditiveExpression(lhs.unwrap(), std::move(rhs));
 	}
 
+	bool AdditiveExpression::validate(semantics::Context& context)
+	{
+		if (!_lhs.validate(context))
+			return false;
+
+		for (auto& rhs : _rhs)
+		{
+			if (!rhs.expr.validate(context))
+				return false;
+		}
+
+		return true;
+	}
+
 	void AdditiveExpression::print_tree(u32 depth) const
 	{
 		if (_rhs.size() > 0)

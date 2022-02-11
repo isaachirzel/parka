@@ -29,6 +29,7 @@ namespace warbler::ast
 
 		ShiftExpression(AdditiveExpression&& lhs, std::vector<ShiftRhs>&& rhs);
 
+		bool validate(semantics::Context& context);
 		static Result<ShiftExpression> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;

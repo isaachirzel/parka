@@ -126,6 +126,93 @@ namespace warbler::ast
 		return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), constant.unwrap());
 	}
 
+	bool PrimaryExpression::validate(semantics::Context& context, bool expect_lvalue)
+	{
+		auto is_rvalue = false;
+		auto reference_depth = 0u; // TODO: infer from type
+
+		for (i32 i = _prefixes.size() - 1; i >= 0; --i)
+		{
+			const auto& prefix = _prefixes[i];
+
+			switch (prefix.type())
+			{
+				case PREFIX_REFERENCE:
+
+					// ERROR if ravlue
+					// OK for any type
+
+					if (is_rvalue)
+					{
+						// ERROR cannot take refence of rvalue
+					}
+
+					is_rvalue = true;
+					reference_depth += 1;
+					break;
+
+				case PREFIX_DEREFERENCE:
+					if (reference_depth == 0)
+					{
+						// ERROR value is not ptr
+					}
+
+					is_rvalue = false;
+					break;
+
+				case PREFIX_POSITIVE:
+					is_rvalue = true;
+					// ERROR if not integral
+					break;
+
+				case PREFIX_NEGATIVE:
+					is_rvalue = true;
+					// ERROR if not integral
+					break;
+
+				case PREFIX_BITWISE_NOT:
+					is_rvalue = true;
+					// ERROR if not integral or byte
+					break;
+
+				case PREFIX_BOOLEAN_NOT:
+					is_rvalue = true;
+					// ERROR if not boolean-ish					
+					break;
+			}
+
+			int value = 3;
+			int *ptr = &value;
+
+			int a = *&value;
+			int *b = &*ptr;
+			int c = +-~*ptr;
+			int *d = ptr;
+			int e = *&*ptr;
+
+			// modifiers
+			// reference
+			// dereference
+			// modifiers > reference > dereference
+
+			if (prefix.type() == PREFIX_REFERENCE)
+			{
+				if (is_rvalue)
+				{
+					error_out(prefix.location());
+					error_highlight(prefix.location());
+
+					return false;
+				}
+
+				is_rvalue = true;
+			}
+		}
+
+
+		return true;
+	}
+
 	void PrimaryExpression::print_tree(u32 depth) const
 	{
 		if (_prefixes.size() > 0)

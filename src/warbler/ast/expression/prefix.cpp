@@ -10,31 +10,53 @@
 namespace warbler::ast
 {
 
-	Prefix::Prefix(PrefixType type) :
-	_type(type)
+	Prefix::Prefix(PrefixType type, const Location& location) :
+	_type(type),
+	_location(location)
 	{}
 
 	std::vector<Prefix> Prefix::parse_list(TokenIterator& iter)
 	{
 		std::vector<Prefix> out;
+		PrefixType type;
 
 	parse_prefix:
 
 		switch (iter->type())
 		{
 			case TOKEN_AMPERSAND:
-				iter += 1;
-				out.emplace_back(Prefix { PREFIX_REFERENCE });
-				goto parse_prefix;
+				type = PREFIX_REFERENCE;
+				break;
 
 			case TOKEN_ASTERISK:
-				iter += 1;
-				out.emplace_back(Prefix { PREFIX_DEREFERENCE });
-				goto parse_prefix;
+				type = PREFIX_DEREFERENCE;
+				break;
+
+			case TOKEN_PLUS:
+				type = PREFIX_POSITIVE;
+				break;
+
+			case TOKEN_MINUS:
+				type = PREFIX_NEGATIVE;
+				break;
+
+			case TOKEN_BITWISE_NOT:
+				type = PREFIX_BITWISE_NOT;
+				break;
+
+			case TOKEN_BOOLEAN_NOT:
+				type = PREFIX_BOOLEAN_NOT;
+				break;
 
 			default:
-				break;
+				goto finish;
 		}
+	
+		iter += 1;
+		out.emplace_back(Prefix { type, iter->location() });
+		goto parse_prefix;
+
+	finish:
 
 		return out;
 	}
@@ -43,13 +65,31 @@ namespace warbler::ast
 	{
 		std::cout << tree_branch(depth);
 
-		if (_type == PREFIX_REFERENCE)
+		switch (_type)
 		{
-			std::cout << "&\n";
-		}
-		else
-		{
-			std::cout << "*\n";
+			case PREFIX_REFERENCE:
+				std::cout << "&\n";
+				break;
+
+			case PREFIX_DEREFERENCE:
+				std::cout << "*\n";
+				break;
+
+			case PREFIX_POSITIVE:
+				std::cout << "+\n";
+				break;
+
+			case PREFIX_NEGATIVE:
+				std::cout << "-\n";
+				break;
+
+			case PREFIX_BITWISE_NOT:
+				std::cout << "~\n";
+				break;
+
+			case PREFIX_BOOLEAN_NOT:
+				std::cout << "!\n";
+				break;
 		}
 	}
 }

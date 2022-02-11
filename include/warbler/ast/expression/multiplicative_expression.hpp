@@ -32,6 +32,7 @@ namespace warbler::ast
 
 		static Result<MultiplicativeExpression> parse(TokenIterator& iter);
 
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 	};
 }

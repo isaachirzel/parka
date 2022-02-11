@@ -34,6 +34,20 @@ namespace warbler::ast
 		return BooleanOrExpression(lhs.unwrap(), std::move(rhs));
 	}
 
+	bool BooleanOrExpression::validate(semantics::Context& context)
+	{
+		if (!_lhs.validate(context))
+			return false;
+
+		for (auto& expr : _rhs)
+		{
+			if (!expr.validate(context))
+				return false;
+		}
+
+		return true;
+	}
+
 	void BooleanOrExpression::print_tree(u32 depth) const
 	{
 		if (_rhs.size() > 0)
