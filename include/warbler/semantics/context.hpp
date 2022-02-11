@@ -10,17 +10,39 @@
 
 namespace warbler::semantics
 {
-	struct Context
-	{
-		Set<String> types;
-		Set<String> symbols;
-		Array<String> scope;
+	class Typename;
+	class Parameter;
+	class Declaration;
+	class Function;
 
-		String qualified_scope() const;
-		String qualified_scope(const String& name) const;
-		static u32 generate_type_id();
+	struct ModuleContext
+	{
+		String module_name;
+		Table<Typename*> types;
+		Table<Function*> functions;
 	};
 
+	struct Pointer
+	{
+
+	};
+
+	struct Variable
+	{
+		Typename *type;
+
+
+		u32 type_id;
+		u16 reference_count;
+		bool is_mutable;
+		bool is_ref_mutable;
+	};
+
+	struct FunctionContext
+	{
+		Table<Declaration*> variables;
+		Table<Parameter*> parameters;
+	};
 }
 
 #endif

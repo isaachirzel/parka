@@ -126,8 +126,31 @@ namespace warbler::ast
 		return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), constant.unwrap());
 	}
 
-	bool PrimaryExpression::validate(semantics::Context& context, bool expect_lvalue)
+	bool PrimaryExpression::validate(semantics::ModuleContext& context, bool expect_lvalue)
 	{
+		#pragma message("implement reference depth handling in validation")
+		#pragma message("implement type handling in validation")
+
+		switch (_type)
+		{
+			case PRIMARY_IDENTIFIER:
+				if (context.
+				if (!_identifier.validate(context))
+					return false;
+				break;
+
+			case PRIMARY_CONSTANT:
+				if (!_constant.validate(context))
+					return false;
+				break;
+
+			case PRIMARY_EXPRESSION:
+				if (!_expression->validate(context))
+					return false;
+				break;
+		}
+		
+
 		auto is_rvalue = false;
 		auto reference_depth = 0u; // TODO: infer from type
 
@@ -154,7 +177,8 @@ namespace warbler::ast
 				case PREFIX_DEREFERENCE:
 					if (reference_depth == 0)
 					{
-						// ERROR value is not ptr
+						print_error(prefix.location(), "dereferencing may only be done on pointer types");
+						return false;
 					}
 
 					is_rvalue = false;
@@ -162,6 +186,7 @@ namespace warbler::ast
 
 				case PREFIX_POSITIVE:
 					is_rvalue = true;
+
 					// ERROR if not integral
 					break;
 
@@ -180,20 +205,6 @@ namespace warbler::ast
 					// ERROR if not boolean-ish					
 					break;
 			}
-
-			int value = 3;
-			int *ptr = &value;
-
-			int a = *&value;
-			int *b = &*ptr;
-			int c = +-~*ptr;
-			int *d = ptr;
-			int e = *&*ptr;
-
-			// modifiers
-			// reference
-			// dereference
-			// modifiers > reference > dereference
 
 			if (prefix.type() == PREFIX_REFERENCE)
 			{

@@ -27,6 +27,11 @@ namespace warbler::ast
 		return ExpressionStatement(expression.unwrap());
 	}
 
+	bool ExpressionStatement::validate(semantics::ModuleContext& context)
+	{
+		return _expression->validate(context);
+	}
+
 	void ExpressionStatement::print_tree(u32 depth) const
 	{
 		_expression->print_tree(depth);

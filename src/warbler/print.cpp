@@ -246,4 +246,10 @@ namespace warbler
 		error_out(iter) << "expected " << expected << " but got '" << *iter << '\'';
 		error_highlight(iter);
 	}
+
+	void print_error(const Location& location, const String& msg)
+	{
+		error_out(location) << msg;
+		error_highlight(location);
+	}
 }

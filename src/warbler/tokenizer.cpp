@@ -24,6 +24,7 @@ namespace warbler
 
 	std::unordered_map<std::string, TokenType> token_types = 
 	{
+		{ "mut", TOKEN_MUT },
 		{ "func", TOKEN_FUNC },
 		{ "var", TOKEN_VAR },
 		{ "type", TOKEN_TYPE },

@@ -135,7 +135,7 @@ namespace warbler::ast
 		}
 	}
 
-	bool Function::validate(semantics::Context& context)
+	bool Function::validate(semantics::ModuleContext& context)
 	{
 		Set<String> parameter_names;
 

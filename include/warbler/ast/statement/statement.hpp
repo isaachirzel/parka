@@ -11,7 +11,7 @@ namespace warbler::ast
 	struct Statement
 	{
 		virtual ~Statement() = default;
-		virtual bool validate(semantics::Context& context) = 0;
+		virtual bool validate(semantics::ModuleContext& context) = 0;
 		virtual void print_tree(u32 depth = 0) const = 0;
 
 		static Result<Ptr<Statement>> parse(TokenIterator& iter);

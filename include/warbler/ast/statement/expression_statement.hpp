@@ -23,7 +23,7 @@ namespace warbler::ast
 
 		static Result<ExpressionStatement> parse(TokenIterator& iter);
 
-		bool validate(semantics::Context& context);
+		bool validate(semantics::ModuleContext& context);
 		void print_tree(u32 depth = 0) const;
 	};
 }

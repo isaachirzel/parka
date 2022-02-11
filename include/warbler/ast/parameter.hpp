@@ -24,7 +24,7 @@ namespace warbler::ast
 		static Result<Parameter> parse(TokenIterator& iter);
 		static Result<std::vector<Parameter>> parse_list(TokenIterator& iter);
 
-		bool validate(semantics::Context& context);
+		bool validate(semantics::ModuleContext& context);
 
 		const Identifier& name() const { return _name; }
 		const Typename& type() const { return _type; }

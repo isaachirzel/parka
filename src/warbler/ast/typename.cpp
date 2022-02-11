@@ -76,7 +76,7 @@ namespace warbler::ast
 		return Typename(location, std::move(name));
 	}
 
-	bool Typename::validate(semantics::Context& context)
+	bool Typename::validate(semantics::ModuleContext& context)
 	{
 		if (context.types.find(_name) == context.types.end() && primitive_types.find(_name) == primitive_types.end())
 		{

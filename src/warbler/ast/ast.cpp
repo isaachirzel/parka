@@ -26,6 +26,8 @@ namespace warbler::ast
 
 	bool Ast::validate()
 	{
+		const int *****p = nullptr;
+
 		#pragma message("actually implement passing scope to module")
 		return _module.validate({ "TEST_MODULE" });
 	}

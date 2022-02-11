@@ -45,7 +45,7 @@ namespace warbler::ast
 
 		static Result<PrimaryExpression> parse(TokenIterator& iter);
 
-		bool validate(semantics::Context& context, bool expect_lvalue = false);
+		bool validate(semantics::ModuleContext& context, bool expect_lvalue = false);
 		void print_tree(u32 depth = 0) const;
 
 		PrimaryExpression& operator=(PrimaryExpression&& other);

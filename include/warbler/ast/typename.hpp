@@ -52,6 +52,7 @@ namespace warbler::ast
 		Location _location;
 		String _name;
 		u32 _id;
+		u32 _reference_depth;
 
 	public:
 
@@ -60,13 +61,14 @@ namespace warbler::ast
 
 		static Result<Typename> parse(TokenIterator& iter);
 
-		bool validate(semantics::Context& context);
+		bool validate(semantics::ModuleContext& context);
 		void print_tree(u32 depth = 0) const;
 		bool validate();
 
 		const Location& location() const { return _location; }
 		const String& name() const { return _name; }
 		u32 id() const { return _id; }
+		u32 reference_depth() const { return _reference_depth; }
 	};
 }
 

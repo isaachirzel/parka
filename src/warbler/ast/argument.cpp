@@ -68,7 +68,7 @@ namespace warbler::ast
 		return args;
 	}
 	
-	bool Argument::validate(semantics::Context& context)
+	bool Argument::validate(semantics::ModuleContext& context)
 	{
 		return _expr->validate(context);
 	}

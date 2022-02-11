@@ -20,6 +20,7 @@ namespace warbler::ast
 	{
 	private:
 
+		semantics::FunctionContext _context;
 		Identifier _name;
 		Array<Parameter> _parameters;
 		Typename _return_type;
@@ -43,7 +44,7 @@ namespace warbler::ast
 		static Result<Function> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
-		bool validate(semantics::Context& context);
+		bool validate(semantics::ModuleContext& context);
 
 		const Identifier& name() const { return _name; }
 

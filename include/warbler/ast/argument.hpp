@@ -23,7 +23,7 @@ namespace warbler::ast
 		static Result<Argument> parse(TokenIterator& iter);
 		static Result<std::vector<Argument>> parse_list(TokenIterator& iter);
 
-		bool validate(semantics::Context& context);
+		bool validate(semantics::ModuleContext& context);
 		void print_tree(u32 depth = 0) const;
 
 		Argument& operator=(Argument&& other) = default;

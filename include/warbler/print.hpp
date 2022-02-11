@@ -5,6 +5,7 @@
 #include <warbler/token.hpp>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 namespace warbler
 {
@@ -14,6 +15,7 @@ namespace warbler
 	void _debug(const char *file, unsigned line, const char *func, const char *msg);
 
 	extern std::ostream& error_stream;
+	extern std::ostringstream& errout;
 	std::string tree_branch(u32 length);
 	std::ostream& error_out();
 	std::ostream& error_out(const Location& location);
@@ -23,6 +25,7 @@ namespace warbler
 	void error_highlight(const Location& location);
 	void error_highlight(const TokenIterator& iter);
 	void error_highlight(const Token& token);
+	void print_error(const Location& location, const String& msg);
 	std::string token_error(TokenIterator& iter);
 	std::string token_warning(TokenIterator& iter);
 	std::string token_message(TokenIterator& iter);	
