@@ -18,9 +18,11 @@ namespace warbler::ast
 
 		Declaration(bool is_mutable, Identifier&& name, Typename&& type);
 
-		static Result<Declaration> parse(TokenIterator& iter);
+		static Result<Declaration> parse_parameter(TokenIterator& iter);
+		static Result<Declaration> parse_variable(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& module_context, semantics::FunctionContext& function_context);
+		bool validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
+		bool validate_parameter(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 
 		bool is_mutable() const { return _is_mutable; }

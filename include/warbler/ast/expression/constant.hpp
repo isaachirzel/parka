@@ -46,7 +46,7 @@ namespace warbler::ast
 
 		static Result<Constant> parse(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& module_context, semantics::FunctionContext& function_context);
+		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 
 		Constant& operator=(Constant&& other);

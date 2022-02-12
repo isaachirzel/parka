@@ -25,38 +25,28 @@ namespace warbler
 	{
 	private:
 
+		struct NullSpace {};
+
+	private:
+
 		union
 		{
+			NullSpace _null;
 			T _value;
-			Error _error;
 		};
 
 		bool _ok;
 
 	public:
 
+		Result() :
+		_ok(false)
+		{}
+
 		Result(T&& value) :
 		_value(std::move(value)),
 		_ok(true)
 		{}
-
-		Result(Error error) :
-		_error(error),
-		_ok(false)
-		{}
-
-		// Result(const Result& other) :
-		// _ok(other._ok)
-		// {
-		// 	if (_ok)
-		// 	{
-		// 		_value = other._value;
-		// 	}
-		// 	else
-		// 	{
-		// 		_error = other._error;
-		// 	}
-		// }
 
 		Result(Result&& other) :
 		_ok(other._ok)

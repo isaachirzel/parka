@@ -13,7 +13,7 @@ namespace warbler::ast
 	{		
 		iter += 1;
 
-		auto declaration = Declaration::parse(iter);
+		auto declaration = Declaration::parse_variable(iter);
 
 		if (!declaration)
 			return declaration.error();
@@ -44,7 +44,7 @@ namespace warbler::ast
 
 	bool DeclarationStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		return _declaration.validate(mod_ctx, func_ctx) && !_value->validate(mod_ctx, func_ctx);
+		return _declaration.validate_variable(mod_ctx, func_ctx) && !_value->validate(mod_ctx, func_ctx);
 	}
 
 	void DeclarationStatement::print_tree(u32 depth) const

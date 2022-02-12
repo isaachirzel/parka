@@ -252,6 +252,12 @@ namespace warbler::ast
 		return ERROR_ARGUMENT;
 	}
 
+	bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	{
+		#pragma message("Implement byte counting for each data type")
+		return true;
+	}
+
 	void Constant::print_tree(u32 depth) const
 	{
 		std::cout << tree_branch(depth);
