@@ -207,7 +207,7 @@ namespace warbler
 			
 			default:
 				error_out(location) << "invalid character given for separator: " << location[0] << std::endl;
-				return ERROR_ARGUMENT;
+				return {};
 		}
 
 		return Token(location, type, 1);
@@ -239,7 +239,7 @@ namespace warbler
 		{
 			error_out(location) << "only one decimal is allowed in float literal";
 			error_highlight(location);
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		auto type = decimal_count > 0
@@ -276,7 +276,7 @@ namespace warbler
 			default:
 				error_out(location) << "invalid token";
 				error_highlight(location);
-				return ERROR_ARGUMENT;
+				return {};
 		}
 
 		return Token(location, type, pos - start);
@@ -515,7 +515,7 @@ namespace warbler
 			default:
 				error_out(location) << "invalid character given in operator";
 				error_highlight(location.with_length(1));
-				return ERROR_ARGUMENT;
+				return {};
 		}
 	}
 
@@ -537,7 +537,7 @@ namespace warbler
 		{
 			error_out(location) << "unterminated string literal";
 			error_highlight(location.with_length((usize)(pos - start)));
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		pos += 1;
@@ -580,7 +580,7 @@ namespace warbler
 				error_out(location) << "invalid character in source file: " << location[0]
 					<< ", integer value: (" << (int)location[0] << ")";
 				error_highlight(location.with_length(1));
-				return ERROR_ARGUMENT;
+				return {};
 		}
 
 		return Token();
@@ -604,7 +604,7 @@ namespace warbler
 			auto res = get_next_token(location);
 
 			if (!res)
-				return res.error();
+				return {};
 
 			out.emplace_back(res.unwrap());
 			location.offset(out.back().length());

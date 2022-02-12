@@ -19,8 +19,8 @@ int main(void)
 
 	auto res = tokenize("<in-memory-file>", src);
 
-	if (res.has_error())
-		return res.error();
+	if (!res)
+		return {};
 
 	auto tokens = res.unwrap();
 

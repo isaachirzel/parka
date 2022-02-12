@@ -63,13 +63,13 @@ namespace warbler::ast
 		
 		auto condition = Expression::parse(iter);
 
-		if (condition.has_error())
-			return condition.error();
+		if (!condition)
+			return {};
 
 		auto then_body = CompoundStatement::parse(iter);
 
-		if (then_body.has_error())
-			return then_body.error();
+		if (!then_body)
+			return {};
 
 		if (iter->type() == TOKEN_ELSE)
 		{
@@ -79,8 +79,8 @@ namespace warbler::ast
 			{
 				auto else_if = IfStatement::parse(iter);
 
-				if (else_if.has_error())
-					return else_if.error();
+				if (!else_if)
+					return {};
 
 				return IfStatement { condition.unwrap(), then_body.unwrap(), new IfStatement(else_if.unwrap()) };
 			}
@@ -88,8 +88,8 @@ namespace warbler::ast
 			{
 				auto else_body = CompoundStatement::parse(iter);
 
-				if (else_body.has_error())
-					return else_body.error();
+				if (!else_body)
+					return {};
 
 				return IfStatement { condition.unwrap(), then_body.unwrap(), else_body.unwrap() };
 			}

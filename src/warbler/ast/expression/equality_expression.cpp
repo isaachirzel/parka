@@ -18,8 +18,8 @@ namespace warbler::ast
 	{
 		auto lhs = ComparisonExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		Array<EqualityRhs> rhs;
 
@@ -50,8 +50,8 @@ namespace warbler::ast
 
 			auto res = ComparisonExpression::parse(iter);
 
-			if (res.has_error())
-				return res.error();
+			if (!res)
+				return {};
 
 			rhs.emplace_back(EqualityRhs { res.unwrap(), type });
 		}

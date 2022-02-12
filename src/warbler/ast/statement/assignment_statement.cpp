@@ -18,8 +18,8 @@ namespace warbler::ast
 	{
 		auto lhs = PrimaryExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		AssignmentType type;
 		switch (iter->type())
@@ -70,7 +70,7 @@ namespace warbler::ast
 
 			default:
 				parse_error(iter, "expected assignment operator after primary expression");
-				return ERROR_ARGUMENT;
+				return {};
 		}
 
 		++iter;
@@ -78,7 +78,7 @@ namespace warbler::ast
 		auto rhs = Expression::parse(iter);
 
 		if (!rhs)
-			return rhs.error();
+			return {};
 
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}

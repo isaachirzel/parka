@@ -72,15 +72,15 @@ namespace warbler::ast
 
 				auto index = Expression::parse(iter);
 
-				if (index.has_error())
-					return index.error();
+				if (!index)
+					return {};
 
 				iter += 1;
 
 				if (iter->type() != TOKEN_RBRACK)
 				{
 					error_out(iter) << "expected ']' after index operation but got: " << *iter << std::endl;
-					return ERROR_ARGUMENT;
+					return {};
 				}
 
 				return Postfix { index.unwrap() };
@@ -89,8 +89,8 @@ namespace warbler::ast
 			{
 				auto arguments = Argument::parse_list(iter);
 
-				if (arguments.has_error())
-					return arguments.error();
+				if (!arguments)
+					return {};
 
 				return Postfix { arguments.unwrap() };
 			}
@@ -100,16 +100,14 @@ namespace warbler::ast
 
 				auto member = Identifier::parse(iter);
 
-				if (member.has_error())
-					return member.error();
+				if (!member)
+					return {};
 
 				return Postfix(member.unwrap());
 			}
 			default:
-				break;
+				return {};
 		}
-
-		return ERROR_NOT_FOUND;
 	}
 
 	Result<Array<Postfix>> Postfix::parse_list(TokenIterator& iter)
@@ -126,10 +124,11 @@ namespace warbler::ast
 
 			goto parse_postfix;
 		}
-		else if (res.error() != ERROR_NOT_FOUND)
-		{
-			return res.error();
-		}
+		#pragma message("FIXME: update the way postfixes are parsed")
+		// else if (res.error() != ERROR_NOT_FOUND)
+		// {
+		// 	return {};
+		// }
 
 		return out;
 	}

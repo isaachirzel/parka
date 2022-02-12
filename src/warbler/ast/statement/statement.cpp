@@ -16,8 +16,8 @@ namespace warbler::ast
 			{
 				auto res = DeclarationStatement::parse(iter);
 
-				if (res.has_error())
-					return res.error();
+				if (!res)
+					return {};
 
 				return Ptr<Statement> { new DeclarationStatement { res.unwrap() } };
 			}
@@ -27,8 +27,8 @@ namespace warbler::ast
 			{
 				auto res = IfStatement::parse(iter);
 
-				if (res.has_error())
-					return res.error();
+				if (!res)
+					return {};
 
 				return Ptr<Statement> { new IfStatement { res.unwrap() } };
 			}
@@ -49,8 +49,8 @@ namespace warbler::ast
 
 		auto res = ExpressionStatement::parse(iter);
 
-		if (res.has_error())
-			return res.error();
+		if (!res)
+			return {};
 
 		return Ptr<Statement> { new ExpressionStatement { res.unwrap() } };
 	}

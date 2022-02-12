@@ -33,12 +33,12 @@ namespace warbler::ast
 		auto name = Identifier::parse(iter);
 
 		if (!name)
-			return name.error();
+			return {};
 
 		if (iter->type() != TOKEN_COLON)
 		{
 			parse_error(iter, "':' after typename specification");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -50,14 +50,14 @@ namespace warbler::ast
 				auto struct_def = Struct::parse(iter);
 
 				if (!struct_def)
-					return struct_def.error();
+					return {};
 
 				return TypeDefinition { name.unwrap(), new Struct(struct_def.unwrap()) };
 			}
 
 			default:
 				parse_error(iter, "typename, enum definition, or struct definition");
-				return ERROR_ARGUMENT;
+				return {};
 		}
 
 	}

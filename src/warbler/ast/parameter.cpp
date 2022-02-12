@@ -14,21 +14,21 @@ namespace warbler::ast
 	{
 		auto name = Identifier::parse(iter);
 
-		if (name.has_error())
-			return name.error();
+		if (!name)
+			return {};
 
 		if (iter->type() != TOKEN_COLON)
 		{
 			error_out(iter) << "type specification is necessary for function parameters: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
 
 		auto type = Typename::parse(iter);
 
-		if (type.has_error())
-			return type.error();
+		if (!type)
+			return {};
 
 		return Parameter(name.unwrap(), type.unwrap());
 	}
@@ -38,7 +38,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_LPAREN)
 		{
 			error_out(iter) << "expected '(' at start of parameter list but got: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -51,8 +51,8 @@ namespace warbler::ast
 			{
 				auto res = Parameter::parse(iter);
 
-				if (res.has_error())
-					return res.error();
+				if (!res)
+					return {};
 
 				out.emplace_back(res.unwrap());
 
@@ -68,7 +68,7 @@ namespace warbler::ast
 			if (iter->type() != TOKEN_RPAREN)
 			{
 				error_out(iter) << "expected ',' or ')' after parameter but got: " << *iter << std::endl;
-				return ERROR_ARGUMENT;
+				return {};
 			}
 		}
 

@@ -25,8 +25,8 @@ namespace warbler::ast
 	{
 		auto lhs = BooleanOrExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		if (iter->type() != TOKEN_THEN)
 			return ConditionalExpression(lhs.unwrap());
@@ -35,22 +35,22 @@ namespace warbler::ast
 
 		auto true_case = BooleanOrExpression::parse(iter);
 
-		if (true_case.has_error())
-			return true_case.error();
+		if (!true_case)
+			return {};
 
 		if (iter->type() != TOKEN_ELSE)
 		{
 			error_out(iter) << "expected 'else' for false case of conditional expression but got '" << *iter << '\'';
 			error_highlight(iter);
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
 
 		auto false_case = ConditionalExpression::parse(iter);
 
-		if (false_case.has_error())
-			return false_case.error();
+		if (!false_case)
+			return {};
 
 		return ConditionalExpression(lhs.unwrap(), ConditionalRhs { true_case.unwrap(), false_case.unwrap() });
 	}

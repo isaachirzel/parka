@@ -18,7 +18,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
 			parse_error(iter, "identifier");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		const auto& location = iter->location();

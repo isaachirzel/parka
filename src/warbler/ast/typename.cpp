@@ -65,7 +65,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
 			error_out(iter) << "expected typename but got: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 		
 		const auto& location = iter->location();

@@ -22,8 +22,8 @@ namespace warbler::ast
 				{
 					auto function = Function::parse(iter);
 
-					if (function.has_error())
-						return function.error();
+					if (!function)
+						return {};
 
 					functions.emplace_back(function.unwrap());
 					continue;
@@ -33,7 +33,7 @@ namespace warbler::ast
 					auto type = TypeDefinition::parse(iter);
 
 					if (!type)
-						return type.error();
+						return {};
 
 					types.emplace_back(type.unwrap());
 					continue;
@@ -43,7 +43,7 @@ namespace warbler::ast
 
 				default:
 					parse_error(iter, "type or function definition");
-					return ERROR_ARGUMENT;
+					return {};
 			}
 
 			break;

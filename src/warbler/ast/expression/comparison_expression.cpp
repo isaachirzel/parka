@@ -14,8 +14,8 @@ namespace warbler::ast
 	{
 		auto lhs = ShiftExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		std::vector<ComparisonRhs> rhs;
 
@@ -54,8 +54,8 @@ namespace warbler::ast
 
 			auto res = ShiftExpression::parse(iter);
 
-			if (res.has_error())
-				return res.error();
+			if (!res)
+				return {};
 
 			rhs.emplace_back(ComparisonRhs { res.unwrap(), type });
 		}

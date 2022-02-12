@@ -13,7 +13,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_LBRACE)
 		{
 			parse_error(iter, "compound statement starting with '{'");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -25,7 +25,7 @@ namespace warbler::ast
 			auto res = Statement::parse(iter);
 
 			if (!res)
-				return res.error();
+				return {};
 
 			statements.emplace_back(res.unwrap());
 		}

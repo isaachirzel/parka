@@ -191,7 +191,7 @@ namespace warbler::ast
 			default:
 				error_out(iter) << "expected number literal but got '" << *iter << '\'';
 				error_highlight(iter);
-				return ERROR_ARGUMENT;
+				return {};
 		}
 	}
 
@@ -249,7 +249,7 @@ namespace warbler::ast
 
 		parse_error(iter, "constant");
 
-		return ERROR_ARGUMENT;
+		return {};
 	}
 
 	bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)

@@ -18,8 +18,8 @@ namespace warbler::ast
 	{
 		auto lhs = AdditiveExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		std::vector<ShiftRhs> rhs;
 
@@ -50,8 +50,8 @@ namespace warbler::ast
 
 			auto res = AdditiveExpression::parse(iter);
 
-			if (res.has_error())
-				return res.error();
+			if (!res)
+				return {};
 
 			rhs.emplace_back(ShiftRhs { res.unwrap(), type });
 		}

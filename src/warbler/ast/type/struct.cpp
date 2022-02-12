@@ -15,7 +15,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_LBRACE)
 		{
 			parse_error(iter, "'{' before struct body");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -29,7 +29,7 @@ namespace warbler::ast
 				auto member = Member::parse(iter);
 
 				if (!member)
-					return member.error();
+					return {};
 
 				out.emplace_back(member.unwrap());
 
@@ -42,7 +42,7 @@ namespace warbler::ast
 			if (iter->type() != TOKEN_RBRACE)
 			{
 				parse_error(iter, "'}' after struct body");
-				return ERROR_ARGUMENT;
+				return {};
 			}
 		}
 

@@ -23,12 +23,12 @@ namespace warbler::ast
 		auto name = Identifier::parse(iter);
 
 		if (!name)
-			return name.error();
+			return {};
 
 		if (iter->type() != TOKEN_COLON)
 		{
 			print_error(iter->location(), "parameters may not be declared without a type");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -36,7 +36,7 @@ namespace warbler::ast
 		auto type = Typename::parse(iter);
 
 		if (!type)
-			return type.error();
+			return {};
 
 		return Declaration { is_mutable, name.unwrap(), type.unwrap() };
 	}
@@ -53,8 +53,8 @@ namespace warbler::ast
 
 		auto name = Identifier::parse(iter);
 		
-		if (name.has_error())
-			return name.error();
+		if (!name)
+			return {};
 
 		auto type = Typename(iter->location());
 
@@ -65,7 +65,7 @@ namespace warbler::ast
 			auto res = Typename::parse(iter);
 
 			if (!res)
-				return res.error();
+				return {};
 
 			type = res.unwrap();
 		}

@@ -9,7 +9,7 @@ namespace warbler::ast
 		auto res = ConditionalExpression::parse(iter);
 
 		if (!res)
-			return ERROR_ARGUMENT;
+			return {};
 
 		return Ptr<Expression> { new ConditionalExpression(res.unwrap()) };
 	}

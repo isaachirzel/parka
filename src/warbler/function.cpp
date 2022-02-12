@@ -55,20 +55,20 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_FUNC)
 		{
 			error_out(iter) << "expected 'func' but got: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
 
 		auto name = Identifier::parse(iter);
 
-		if (name.has_error())
-			return name.error();
+		if (!name)
+			return {};
 
 		auto parameters = Parameter::parse_list(iter);
 
-		if (parameters.has_error())
-			return parameters.error();
+		if (!parameters)
+			return {};
 		
 		Typename type(iter->location());
 
@@ -79,7 +79,7 @@ namespace warbler::ast
 			auto res = Typename::parse(iter);
 			
 			if (!res)
-				return res.error();
+				return {};
 
 			type = res.unwrap();
 		}
@@ -88,8 +88,8 @@ namespace warbler::ast
 		{
 			auto body = CompoundStatement::parse(iter);
 
-			if (body.has_error())
-				return body.error();
+			if (!body)
+				return {};
 
 			return Function(name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap());
 		}
@@ -98,15 +98,15 @@ namespace warbler::ast
 			iter += 1;
 			auto body = Expression::parse(iter);
 
-			if (body.has_error())
-				return body.error();
+			if (!body)
+				return {};
 		
 			return Function { name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap() };
 		}
 		else
 		{
 			parse_error(iter, "fucntion body");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 	}
 

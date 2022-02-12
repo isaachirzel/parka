@@ -18,8 +18,8 @@ namespace warbler::ast
 	{
 		auto expr = Expression::parse(iter);
 
-		if (expr.has_error())
-			return expr.error();
+		if (!expr)
+			return {};
 
 		return Argument { expr.unwrap() };
 	}
@@ -29,7 +29,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_LPAREN)
 		{
 			error_out(iter) << "expected '(' at start of argument list but got: " << *iter;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -42,8 +42,8 @@ namespace warbler::ast
 			{
 				auto res = Argument::parse(iter);
 
-				if (res.has_error())
-					return res.error();
+				if (!res)
+					return {};
 
 				args.emplace_back(res.unwrap());
 
@@ -59,7 +59,7 @@ namespace warbler::ast
 			if (iter->type() != TOKEN_RPAREN)
 			{
 				error_out(iter) << "expected ',' or ')' but got: " << *iter;
-				return ERROR_ARGUMENT;
+				return {};
 			}
 		}
 

@@ -16,12 +16,12 @@ namespace warbler::ast
 		auto declaration = Declaration::parse_variable(iter);
 
 		if (!declaration)
-			return declaration.error();
+			return {};
 
 		if (iter->type() != TOKEN_ASSIGN)
 		{
 			parse_error(iter, "expected '=' after declaration");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;
@@ -29,12 +29,12 @@ namespace warbler::ast
 		auto value = Expression::parse(iter);
 
 		if (!value)
-			return value.error();
+			return {};
 
 		if (iter->type() != TOKEN_SEMICOLON)
 		{
 			parse_error(iter, "expected ';' after declaration");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;

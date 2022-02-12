@@ -13,13 +13,13 @@ namespace warbler::ast
 	{
 		auto expression = Expression::parse(iter);
 
-		if (expression.has_error())
-			return expression.error();
+		if (!expression)
+			return {};
 
 		if (iter->type() != TOKEN_SEMICOLON)
 		{
 			parse_error(iter, "expected ';' after expression");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;

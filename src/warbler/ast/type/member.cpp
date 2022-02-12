@@ -28,12 +28,12 @@ namespace warbler::ast
 		auto name = Identifier::parse(iter);
 
 		if (!name)
-			return name.error();
+			return {};
 
 		if (iter->type() != TOKEN_COLON)
 		{
 			parse_error(iter, "':' after member name");
-			return ERROR_ARGUMENT;
+			return {};
 		}
 		
 		iter += 1;
@@ -41,7 +41,7 @@ namespace warbler::ast
 		auto type = Typename::parse(iter);
 
 		if (!type)
-			return type.error();
+			return {};
 
 		return Member(name.unwrap(), type.unwrap(), is_public);
 	}

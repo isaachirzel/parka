@@ -14,8 +14,8 @@ namespace warbler::ast
 	{
 		auto lhs = BitwiseXorExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		Array<BitwiseXorExpression> rhs;
 
@@ -25,8 +25,8 @@ namespace warbler::ast
 
 			auto res = BitwiseXorExpression::parse(iter);
 			
-			if (res.has_error())
-				return res.error();
+			if (!res)
+				return {};
 
 			rhs.emplace_back(res.unwrap());
 		}

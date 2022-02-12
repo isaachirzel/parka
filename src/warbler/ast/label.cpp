@@ -15,7 +15,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
 			error_out(iter) << "expected identifier for label but got: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		const auto& location = iter->location();
@@ -26,7 +26,7 @@ namespace warbler::ast
 		if (iter->type() != TOKEN_COLON)
 		{
 			error_out(iter) << "expected ':' after label but got: " << *iter << std::endl;
-			return ERROR_ARGUMENT;
+			return {};
 		}
 
 		iter += 1;

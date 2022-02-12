@@ -87,10 +87,10 @@ int main()
 	TokenIterator iter = tokens.begin();
 	auto res = Module::parse(iter);
 
-	if (res.has_error())
+	if (!res)
 	{
 		error_out() << "failed to parse src" << std::endl;
-		return res.error();
+		return {};
 	}
 
 	if (iter->type() != TOKEN_END_OF_FILE)

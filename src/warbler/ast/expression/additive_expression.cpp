@@ -14,8 +14,8 @@ namespace warbler::ast
 	{
 		auto lhs = MultiplicativeExpression::parse(iter);
 
-		if (lhs.has_error())
-			return lhs.error();
+		if (!lhs)
+			return {};
 
 		Array<AdditiveRhs> rhs;
 
@@ -39,8 +39,8 @@ namespace warbler::ast
 
 			auto res = MultiplicativeExpression::parse(iter);
 
-			if (res.has_error())
-				return res.error();
+			if (!res)
+				return {};
 
 			rhs.emplace_back(AdditiveRhs { res.unwrap(), type });
 		}

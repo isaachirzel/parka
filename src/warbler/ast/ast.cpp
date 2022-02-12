@@ -13,8 +13,8 @@ namespace warbler::ast
 		auto iter = tokens.begin();
 		auto res = Module::parse(iter);
 
-		if (res.has_error())
-			return res.error();
+		if (!res)
+			return {};
 
 		return Ast(res.unwrap());
 	}

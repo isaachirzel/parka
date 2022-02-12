@@ -39,7 +39,7 @@ int main()
 
 	// auto res = tokenize(argv[1], src);
 	
-	// if (res.has_error())
+	// if (!res)
 	// {
 	// 	errorm("failed to tokenize source");
 	// 	free(src);

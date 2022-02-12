@@ -78,13 +78,13 @@ namespace warbler::ast
 		{
 			auto identifier = Identifier::parse(iter);
 
-			if (identifier.has_error())
-				return identifier.error();
+			if (!identifier)
+				return {};
 
 			auto postfixes = Postfix::parse_list(iter);
 
-			if (postfixes.has_error())
-				return postfixes.error();
+			if (!postfixes)
+				return {};
 
 			return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), identifier.unwrap());
 		}
@@ -94,34 +94,34 @@ namespace warbler::ast
 
 			auto expression = Expression::parse(iter);
 
-			if (expression.has_error())
-				return expression.error();
+			if (!expression)
+				return {};
 
 			if (iter->type() != TOKEN_RPAREN)
 			{
 				parse_error(iter, "expected ')' after expression");
-				return ERROR_ARGUMENT;
+				return {};
 			}
 
 			iter += 1;
 
 			auto postfixes = Postfix::parse_list(iter);
 
-			if (postfixes.has_error())
-				return postfixes.error();
+			if (!postfixes)
+				return {};
 
 			return PrimaryExpression { std::move(prefixes), postfixes.unwrap(), expression.unwrap() };
 		}
 		
 		auto constant = Constant::parse(iter);
 
-		if (constant.has_error())
-			return constant.error();
+		if (!constant)
+			return {};
 
 		auto postfixes = Postfix::parse_list(iter);
 
-		if (postfixes.has_error())
-			return postfixes.error();
+		if (!postfixes)
+			return {};
 
 		return PrimaryExpression(std::move(prefixes), postfixes.unwrap(), constant.unwrap());
 	}
