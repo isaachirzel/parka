@@ -22,7 +22,7 @@ namespace warbler::semantics
 {
 	struct ModuleContext
 	{
-		String module_name;
+		String name;
 		Table<ast::TypeDefinition*> types;
 		Table<ast::Function*> functions;
 	};

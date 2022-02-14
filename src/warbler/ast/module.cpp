@@ -63,7 +63,7 @@ namespace warbler::ast
 
 	bool Module::validate(const String& module_name)
 	{
-		_context.module_name = module_name;
+		_context.name = module_name;
 		// gettting valid types in module & generating symbols
 		for (auto& type : _types)
 		{

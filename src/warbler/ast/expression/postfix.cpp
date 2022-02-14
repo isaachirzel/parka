@@ -121,7 +121,7 @@ namespace warbler::ast
 		if (res.is_ok())
 		{
 			out.emplace_back(res.unwrap());
-
+ 
 			goto parse_postfix;
 		}
 		#pragma message("FIXME: update the way postfixes are parsed")

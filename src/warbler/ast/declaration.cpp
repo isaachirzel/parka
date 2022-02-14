@@ -101,7 +101,7 @@ namespace warbler::ast
 		return true;
 	}
 
-	void Declaration::print_tree(u32 depth = 0) const
+	void Declaration::print_tree(u32 depth) const
 	{
 		if (_is_mutable)
 			std::cout << tree_branch(depth) << "mut\n";

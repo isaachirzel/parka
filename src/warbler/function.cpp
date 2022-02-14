@@ -145,9 +145,7 @@ namespace warbler::ast
 
 			if (parameter_names.find(name) != parameter_names.end())
 			{
-				error_out(parameter.name().location()) << "function " << context.module_name << "::" << _name.text() << "(...) already contains parameter '" << name << '\'';
-				error_highlight(parameter.name().location());
-
+				print_error(parameter.name().location(), "function " + context.name + "::" + _name.text() + "(...) already contains parameter '" + name + "'");
 				return false;
 			}
 

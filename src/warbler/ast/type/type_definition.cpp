@@ -69,11 +69,11 @@ namespace warbler::ast
 
 	const String& TypeDefinition::generate_symbol(semantics::ModuleContext& context)
 	{
-		usize size = context.module_name.size() + 1 + _name.text().size();
+		usize size = context.name.size() + 1 + _name.text().size();
 
 		_symbol.reserve(size);
 
-		_symbol += context.module_name;
+		_symbol += context.name;
 		_symbol += '@';
 		_symbol += _name.text();
 
