@@ -20,7 +20,7 @@ namespace warbler::ast
 	_type(POSTFIX_FUNCTION_CALL)
 	{}
 	
-	Postfix::Postfix(Identifier&& member) :
+	Postfix::Postfix(Name&& member) :
 	_member(std::move(member)),
 	_type(POSTFIX_MEMBER)
 	{}
@@ -57,7 +57,7 @@ namespace warbler::ast
 				break;
 
 			case POSTFIX_MEMBER:
-				_member.~Identifier();
+				_member.~Name();
 				break;
 		}		
 	}
@@ -98,7 +98,7 @@ namespace warbler::ast
 			{
 				iter += 1;
 
-				auto member = Identifier::parse(iter);
+				auto member = Name::parse(iter);
 
 				if (!member)
 					return {};
@@ -116,19 +116,56 @@ namespace warbler::ast
 
 	parse_postfix:		
 
-		auto res = Postfix::parse(iter);
-
-		if (res.is_ok())
+		switch (iter->type())
 		{
-			out.emplace_back(res.unwrap());
- 
-			goto parse_postfix;
+			case TOKEN_LBRACK:
+			{
+				iter += 1;
+
+				auto index = Expression::parse(iter);
+
+				if (!index)
+					return {};
+
+				if (iter->type() != TOKEN_RBRACK)
+				{
+					error_out(iter) << "expected ']' after index operation but got: " << *iter << std::endl;
+					return {};
+				}
+
+				iter += 1;
+
+				out.emplace_back(Postfix { index.unwrap() });
+				goto parse_postfix;
+			}
+
+			case TOKEN_LPAREN:
+			{
+				auto arguments = Argument::parse_list(iter);
+
+				if (!arguments)
+					return {};
+
+				out.emplace_back(Postfix { arguments.unwrap() });
+				goto parse_postfix;
+			}
+
+			case TOKEN_DOT:
+			{
+				iter += 1;
+
+				auto member = Name::parse(iter);
+
+				if (!member)
+					return {};
+
+				out.emplace_back(Postfix { member.unwrap() });
+				goto parse_postfix;
+			}
+
+			default:
+				break;
 		}
-		#pragma message("FIXME: update the way postfixes are parsed")
-		// else if (res.error() != ERROR_NOT_FOUND)
-		// {
-		// 	return {};
-		// }
 
 		return out;
 	}
@@ -153,8 +190,7 @@ namespace warbler::ast
 				break;
 
 			case POSTFIX_MEMBER:
-				std::cout << ".\n";
-				_member.print_tree(depth + 1);
+				std::cout << '.' << _member.text() << '\n';
 				break;
 		}
 	}

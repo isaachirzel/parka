@@ -5,9 +5,9 @@
 
 namespace warbler::ast
 {
-	Member::Member(Identifier&& name, Typename&& type, bool is_public) :
-	_name(name),
-	_type(type),
+	Member::Member(Name&& name, Typename&& type, bool is_public) :
+	_name(std::move(name)),
+	_type(std::move(type)),
 	_is_public(is_public)
 	{}
 
@@ -25,7 +25,7 @@ namespace warbler::ast
 			iter += 1;
 		}
 
-		auto name = Identifier::parse(iter);
+		auto name = Name::parse(iter);
 
 		if (!name)
 			return {};
@@ -64,6 +64,6 @@ namespace warbler::ast
 			std::cout << tree_branch(depth + 1) << "private\n";
 		}
 
-		_name.print_tree(depth + 1);
+		_type.print_tree(depth + 1);
 	}
 }

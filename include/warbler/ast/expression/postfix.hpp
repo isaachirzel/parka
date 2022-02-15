@@ -3,7 +3,7 @@
 
 // local headers
 #include <warbler/ast/argument.hpp>
-#include <warbler/ast/identifier.hpp>
+#include <warbler/ast/name.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
 namespace warbler::ast
@@ -23,7 +23,7 @@ namespace warbler::ast
 		{
 			Ptr<Expression> _index;
 			Array<Argument> _arguments;
-			Identifier _member;
+			Name _member;
 		};
 
 		PostfixType _type;
@@ -32,7 +32,7 @@ namespace warbler::ast
 
 		Postfix(Ptr<Expression>&& index);
 		Postfix(Array<Argument>&& arguments);
-		Postfix(Identifier&& member);
+		Postfix(Name&& member);
 		Postfix(Postfix&& other);
 		Postfix(const Postfix&) = delete;
 		~Postfix();

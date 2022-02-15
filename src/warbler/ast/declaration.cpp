@@ -4,10 +4,10 @@
 
 namespace warbler::ast
 {
-	Declaration::Declaration(bool is_mutable, Identifier&& name, Typename&& type) :
-	_is_mutable(is_mutable),
+	Declaration::Declaration(Name&& name, Typename&& type, bool is_mutable) :
 	_name(std::move(name)),
-	_type(std::move(type))
+	_type(std::move(type)),
+	_is_mutable(is_mutable)
 	{}
 
 	Result<Declaration> Declaration::parse_parameter(TokenIterator& iter)
@@ -20,7 +20,7 @@ namespace warbler::ast
 			iter += 1;
 		}
 
-		auto name = Identifier::parse(iter);
+		auto name = Name::parse(iter);
 
 		if (!name)
 			return {};
@@ -38,7 +38,7 @@ namespace warbler::ast
 		if (!type)
 			return {};
 
-		return Declaration { is_mutable, name.unwrap(), type.unwrap() };
+		return Declaration { name.unwrap(), type.unwrap(), is_mutable };
 	}
 
 	Result<Declaration> Declaration::parse_variable(TokenIterator& iter)
@@ -51,12 +51,12 @@ namespace warbler::ast
 			iter += 1;
 		}
 
-		auto name = Identifier::parse(iter);
+		auto name = Name::parse(iter);
 		
 		if (!name)
 			return {};
 
-		auto type = Typename(iter->location());
+		auto type = Typename();
 
 		if (iter->type() == TOKEN_COLON)
 		{
@@ -70,12 +70,12 @@ namespace warbler::ast
 			type = res.unwrap();
 		}
 
-		return Declaration { is_mutable, name.unwrap(), std::move(type) };
+		return Declaration { name.unwrap(), std::move(type), is_mutable };
 	}
 
 	bool Declaration::validate_parameter(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (func_ctx.contains_parameter(_name.text()))
+		if (func_ctx.contains(_name.text()))
 		{
 			print_error(_name.location(), "parameter '" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
 			return false;
@@ -86,16 +86,19 @@ namespace warbler::ast
 
 	bool Declaration::validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (func_ctx.contains_parameter(_name.text()))
+		if (func_ctx.contains(_name.text()))
 		{
 			print_error(_name.location(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
 			return false;
 		}
 
-		if (func_ctx.contains_variable(_name.text()))
+		for (auto *block : func_ctx.blocks)
 		{
-			print_error(_name.location(), "'" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
-			return false;
+			if (block->contains(_name.text()))
+			{
+				print_error(_name.location(), "'" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
+				return false;
+			}
 		}
 
 		return true;
@@ -103,7 +106,11 @@ namespace warbler::ast
 
 	void Declaration::print_tree(u32 depth) const
 	{
+		std::cout << tree_branch(depth);
+
 		if (_is_mutable)
-			std::cout << tree_branch(depth) << "mut\n";
+			std::cout << "mut ";
+		
+		std::cout << _name.text() << ": " << _type.name() << '\n';
 	}
 }

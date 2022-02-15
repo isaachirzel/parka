@@ -26,7 +26,7 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return Identifier(location, std::move(text));
+		return Identifier { location, std::move(text) };
 	}
 
 	void Identifier::print_tree(u32 depth) const

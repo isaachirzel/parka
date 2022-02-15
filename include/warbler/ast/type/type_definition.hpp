@@ -2,7 +2,7 @@
 #define WARBLER_AST_TYPE_DEFINITION_HPP
 
 // local headers
-#include <warbler/ast/identifier.hpp>
+#include <warbler/ast/name.hpp>
 #include <warbler/ast/type/struct.hpp>
 #include <warbler/ast/type/enum.hpp>
 #include <warbler/ast/type/type_definition_body.hpp>
@@ -19,13 +19,13 @@ namespace warbler::ast
 	{
 	private:
 
-		Identifier _name;
+		Name _name;
 		String _symbol;
 		TypeDefinitionBody *_body;
 
 	public:
 
-		TypeDefinition(Identifier&& name, TypeDefinitionBody *body);
+		TypeDefinition(Name&& name, TypeDefinitionBody *body);
 		TypeDefinition(TypeDefinition&&);
 		TypeDefinition(const TypeDefinition&) = delete;
 		~TypeDefinition();
@@ -36,7 +36,7 @@ namespace warbler::ast
 		const String& generate_symbol(semantics::ModuleContext& contetxt);
 		void print_tree(u32 depth = 0) const;
 
-		const Identifier& name() const { return _name; }
+		const Name& name() const { return _name; }
 		const String& symbol() const { return _symbol; }
 
 		TypeDefinition& operator=(TypeDefinition&& other);

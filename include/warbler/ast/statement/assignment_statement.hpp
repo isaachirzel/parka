@@ -4,7 +4,6 @@
 // local headers
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
-#include <warbler/ast/expression/primary_expression.hpp>
 
 namespace warbler::ast
 {
@@ -27,13 +26,13 @@ namespace warbler::ast
 	{
 	private:
 
-		PrimaryExpression _lhs;
+		AffixExpression _lhs;
 		Ptr<Expression> _rhs;
 		AssignmentType _type;
 
 	public:
 
-		AssignmentStatement(PrimaryExpression&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
+		AssignmentStatement(AffixExpression&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
 
 		static Result<AssignmentStatement> parse(TokenIterator& iter);
 

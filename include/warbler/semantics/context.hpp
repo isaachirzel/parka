@@ -27,25 +27,25 @@ namespace warbler::semantics
 		Table<ast::Function*> functions;
 	};
 
-	struct FunctionContext
+	struct BlockContext
 	{
-		String name;
 		Table<ast::Declaration*> variables;
-		Table<ast::Parameter*> parameters;
 
-		bool contains_parameter(const String& name)
-		{
-			return parameters.find(name) != parameters.end();
-		}
-
-		bool contains_variable(const String& name)
+		bool contains(const String& name)
 		{
 			return variables.find(name) != variables.end();
 		}
+	};
 
-		bool contains_name(const String& name)
+	struct FunctionContext
+	{
+		String name;
+		Table<ast::Parameter*> parameters;
+		Array<BlockContext*> blocks;
+
+		bool contains(const String& name)
 		{
-			return contains_parameter(name) || contains_variable(name);
+			return parameters.find(name) != parameters.end();
 		}
 	};
 }

@@ -2,13 +2,12 @@
 #define WARBLER_AST_FUNCTION_HPP
 
 // local headers
-#include <warbler/ast/typename.hpp>
-#include <warbler/ast/identifier.hpp>
-#include <warbler/ast/parameter.hpp>
+#include <warbler/ast/name.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
-#include <warbler/ast/statement/compound_statement.hpp>
+#include <warbler/ast/statement/block_statement.hpp>
 #include <warbler/ast/statement/statement.hpp>
+#include <warbler/ast/declaration.hpp>
 #include <warbler/util/table.hpp>
 #include <warbler/semantics/context.hpp>
 
@@ -21,34 +20,25 @@ namespace warbler::ast
 	private:
 
 		semantics::FunctionContext _context;
-		Identifier _name;
-		Array<Parameter> _parameters;
+		Name _name;
+		Array<Declaration> _parameters;
 		Typename _return_type;
-
-		union
-		{
-			Ptr<Expression> _inline_body;
-			CompoundStatement _compound_body;
-		};
-		
-		bool _is_inline;
+		BlockStatement _body;
 	
 	public:
 
-		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, Ptr<Expression>&& inline_body);
-		Function(Identifier&& name, Array<Parameter>&& parameters, Typename&& return_type, CompoundStatement&& compound_body);
-		Function(Function&& other);
-		Function(const Function& other) = delete;
-		~Function();
+		Function(Name&& name, Array<Declaration>&& parameters, Typename&& return_type, BlockStatement&& compound_body);
+		Function(Function&& other) = default;
+		Function(const Function& other) = delete;		
 
 		static Result<Function> parse(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 		bool validate(semantics::ModuleContext& context);
 
-		const Identifier& name() const { return _name; }
+		const Name& name() const { return _name; }
 
-		Function& operator=(Function&& other);
+		Function& operator=(Function&& other) = default;
 		Function& operator=(const Function& other) = delete;
 	};
 }

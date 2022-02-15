@@ -7,7 +7,7 @@
 
 namespace warbler::ast
 {
-	TypeDefinition::TypeDefinition(Identifier&& name, TypeDefinitionBody *body) :
+	TypeDefinition::TypeDefinition(Name&& name, TypeDefinitionBody *body) :
 	_name(std::move(name)),
 	_body(body)
 	{}
@@ -30,7 +30,7 @@ namespace warbler::ast
 	{
 		iter += 1;
 
-		auto name = Identifier::parse(iter);
+		auto name = Name::parse(iter);
 
 		if (!name)
 			return {};

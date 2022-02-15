@@ -60,7 +60,8 @@ const char *src = R"=====(
 
 	func print_person(person: Person, persons: i32): Persons
 	{
-		var age: i32 = 1;
+		var age = 1;
+		age[3];
 	}
 
 )=====";

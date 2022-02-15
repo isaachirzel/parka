@@ -2,7 +2,7 @@
 #define WARBLER_AST_STATEMENT_SELECTION_STATEMENT_HPP
 
 // local headers
-#include <warbler/ast/statement/compound_statement.hpp>
+#include <warbler/ast/statement/block_statement.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/util/array.hpp>
@@ -21,11 +21,11 @@ namespace warbler::ast
 	private:
 
 		Ptr<Expression> _condition;
-		CompoundStatement _then_body;
+		BlockStatement _then_body;
 
 		union
 		{
-			CompoundStatement _else_body;
+			BlockStatement _else_body;
 			IfStatement *_else_if;
 		};
 
@@ -33,9 +33,9 @@ namespace warbler::ast
 
 	public:
 
-		IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body);
-		IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body);
-		IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, IfStatement *else_if);
+		IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body);
+		IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, BlockStatement&& else_body);
+		IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, IfStatement *else_if);
 		IfStatement(IfStatement&& other);
 		IfStatement(const IfStatement& other) = delete;
 		~IfStatement();

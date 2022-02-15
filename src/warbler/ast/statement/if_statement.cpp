@@ -4,20 +4,20 @@
 
 namespace warbler::ast
 {
-	IfStatement::IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body) :
+	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_type(IF_THEN)
 	{}
 
-	IfStatement::IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, CompoundStatement&& else_body) :
+	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, BlockStatement&& else_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_body(std::move(else_body)),
 	_type(IF_THEN_ELSE)
 	{}
 
-	IfStatement::IfStatement(Ptr<Expression>&& condition, CompoundStatement&& then_body, IfStatement *else_if) :
+	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, IfStatement *else_if) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_if(std::move(else_if)),
@@ -49,7 +49,7 @@ namespace warbler::ast
 	{
 		if (_type == IF_THEN_ELSE)
 		{
-			_else_body.~CompoundStatement();
+			_else_body.~BlockStatement();
 		}
 		else if (_type == IF_THEN_ELSE_IF)
 		{
@@ -66,7 +66,7 @@ namespace warbler::ast
 		if (!condition)
 			return {};
 
-		auto then_body = CompoundStatement::parse(iter);
+		auto then_body = BlockStatement::parse(iter);
 
 		if (!then_body)
 			return {};
@@ -86,7 +86,7 @@ namespace warbler::ast
 			}
 			else
 			{
-				auto else_body = CompoundStatement::parse(iter);
+				auto else_body = BlockStatement::parse(iter);
 
 				if (!else_body)
 					return {};

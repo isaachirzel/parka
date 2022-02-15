@@ -2,7 +2,7 @@
 #define WARBLER_AST_EXPRESSION_MULTIPLICATIVE_HPP
 
 // local headers
-#include <warbler/ast/expression/primary_expression.hpp>
+#include <warbler/ast/expression/affix_expression.hpp>
 
 namespace warbler::ast
 {
@@ -15,7 +15,7 @@ namespace warbler::ast
 
 	struct MultiplicativeRhs
 	{
-		PrimaryExpression expr;
+		AffixExpression expr;
 		MultiplicativeType type;
 	};
 
@@ -23,12 +23,12 @@ namespace warbler::ast
 	{
 	private:
 
-		PrimaryExpression _lhs;
+		AffixExpression _lhs;
 		Array<MultiplicativeRhs> _rhs;
 	
 	public:
 
-		MultiplicativeExpression(PrimaryExpression&& lhs, Array<MultiplicativeRhs>&& rhs);
+		MultiplicativeExpression(AffixExpression&& lhs, Array<MultiplicativeRhs>&& rhs);
 
 		static Result<MultiplicativeExpression> parse(TokenIterator& iter);
 

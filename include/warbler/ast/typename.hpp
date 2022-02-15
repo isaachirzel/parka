@@ -56,7 +56,7 @@ namespace warbler::ast
 
 	public:
 
-		Typename(const Location& location);
+		Typename();
 		Typename(const Location& location, String&& name);
 
 		static Result<Typename> parse(TokenIterator& iter);

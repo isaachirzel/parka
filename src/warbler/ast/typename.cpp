@@ -48,9 +48,9 @@ namespace warbler::ast
 		{ "bool", PRIMITIVE_BOOL },
 	};
 
-	Typename::Typename(const Location& location) :
-	_location(location),
-	_name("void"),
+	Typename::Typename() :
+	_location(),
+	_name("<auto>"),
 	_id(PRIMITIVE_VOID)
 	{}
 
@@ -90,6 +90,7 @@ namespace warbler::ast
 
 	void Typename::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth) << (_id == 0 ? "<auto>" : _name) << '\n';
+		
+		std::cout << tree_branch(depth) << ": " <<  _name << '\n';
 	}
 }

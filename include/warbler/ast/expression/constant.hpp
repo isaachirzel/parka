@@ -6,6 +6,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/semantics/context.hpp>
+#include <warbler/ast/expression/expression.hpp>
 
 namespace warbler::ast
 {
@@ -18,7 +19,7 @@ namespace warbler::ast
 		CONSTANT_BOOLEAN
 	};
 
-	class Constant
+	class Constant : public Expression
 	{
 	private:
 

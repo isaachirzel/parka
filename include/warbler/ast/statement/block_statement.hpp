@@ -7,17 +7,18 @@
 
 namespace warbler::ast
 {
-	class CompoundStatement : public Statement
+	class BlockStatement : public Statement
 	{
 	private:
 
+		semantics::BlockContext _context;
 		Array<Ptr<Statement>> _statements;
 
 	public:
 
-		CompoundStatement(Array<Ptr<Statement>>&& statements);
+		BlockStatement(Array<Ptr<Statement>>&& statements);
 
-		static Result<CompoundStatement> parse(TokenIterator& iter);
+		static Result<BlockStatement> parse(TokenIterator& iter);
 		
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;

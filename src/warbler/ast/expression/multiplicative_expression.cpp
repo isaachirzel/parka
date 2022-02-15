@@ -5,14 +5,14 @@
 
 namespace warbler::ast
 {
-	MultiplicativeExpression::MultiplicativeExpression(PrimaryExpression&& lhs, Array<MultiplicativeRhs>&& rhs) :
+	MultiplicativeExpression::MultiplicativeExpression(AffixExpression&& lhs, Array<MultiplicativeRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
 	Result<MultiplicativeExpression> MultiplicativeExpression::parse(TokenIterator& iter)
 	{
-		auto lhs = PrimaryExpression::parse(iter);
+		auto lhs = AffixExpression::parse(iter);
 
 		if (!lhs)
 			return {};
@@ -48,7 +48,7 @@ namespace warbler::ast
 
 			iter += 1;
 
-			auto res = PrimaryExpression::parse(iter);
+			auto res = AffixExpression::parse(iter);
 
 			if (!res)
 				return {};

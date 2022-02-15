@@ -1,55 +1,17 @@
-#ifndef WARBLER_AST_PRIMARY_EXPRESSION_HPP
-#define WARBLER_AST_PRIMARY_EXPRESSION_HPP
+#ifndef WARBLER_AST_EXPRESSION_PRIMARY_EXPRESSION
+#define WARBLER_AST_EXPRESSION_PRIMARY_EXPRESSION
 
-// local headers
-#include <warbler/ast/identifier.hpp>
-#include <warbler/ast/expression/constant.hpp>
-#include <warbler/ast/expression/prefix.hpp>
-#include <warbler/ast/expression/postfix.hpp>
+#include <warbler/token.hpp>
+#include <warbler/util/ptr.hpp>
+#include <warbler/util/result.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
 namespace warbler::ast
 {
-	enum PrimaryType
+	struct PrimaryExpression
 	{
-		PRIMARY_IDENTIFIER,
-		PRIMARY_CONSTANT,
-		PRIMARY_EXPRESSION
-	};
-
-	class PrimaryExpression
-	{
-	private:
-
-		Array<Prefix> _prefixes;
-		Array<Postfix> _postfixes;
-
-		union
-		{
-			Identifier _identifier;
-			Constant _constant;
-			Ptr<Expression> _expression;
-		};
-
-		PrimaryType _type;
-	
-	public:
-
-		PrimaryExpression() = delete;
-		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Identifier&& identifier);
-		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Constant&& constant);
-		PrimaryExpression(Array<Prefix>&& prefixes, Array<Postfix>&& postfixes, Ptr<Expression>&& expression);
-		PrimaryExpression(PrimaryExpression&& other);
-		PrimaryExpression(const PrimaryExpression&) = delete;
-		~PrimaryExpression();
-
-		static Result<PrimaryExpression> parse(TokenIterator& iter);
-
-		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx, bool expect_lvalue = false);
-		void print_tree(u32 depth = 0) const;
-
-		PrimaryExpression& operator=(PrimaryExpression&& other);
-		PrimaryExpression& operator=(const PrimaryExpression&) = delete;
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 	};
 }
+
 #endif

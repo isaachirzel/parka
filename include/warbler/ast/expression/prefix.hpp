@@ -28,7 +28,7 @@ namespace warbler::ast
 
 		Prefix(PrefixType type, const Location& location);
 
-		static std::vector<Prefix> parse_list(TokenIterator& iter);
+		static Array<Prefix> parse_list(TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 

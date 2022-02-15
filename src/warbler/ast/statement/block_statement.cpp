@@ -1,14 +1,14 @@
-#include <warbler/ast/statement/compound_statement.hpp>
+#include <warbler/ast/statement/block_statement.hpp>
 
 #include <warbler/print.hpp>
 
 namespace warbler::ast
 {
-	CompoundStatement::CompoundStatement(Array<Ptr<Statement>>&& statements) :
+	BlockStatement::BlockStatement(Array<Ptr<Statement>>&& statements) :
 	_statements(std::move(statements))
 	{}
 
-	Result<CompoundStatement> CompoundStatement::parse(TokenIterator& iter)
+	Result<BlockStatement> BlockStatement::parse(TokenIterator& iter)
 	{
 		if (iter->type() != TOKEN_LBRACE)
 		{
@@ -32,10 +32,10 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return CompoundStatement { std::move(statements) };
+		return BlockStatement { std::move(statements) };
 	}
 
-	bool CompoundStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	bool BlockStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
 		for (auto& statement : _statements)
 		{
@@ -46,7 +46,7 @@ namespace warbler::ast
 		return true;
 	}
 
-	void CompoundStatement::print_tree(u32 depth) const
+	void BlockStatement::print_tree(u32 depth) const
 	{
 		std::cout << tree_branch(depth) << "{\n";
 		for (const auto& statement : _statements)

@@ -6,71 +6,75 @@
 
 namespace warbler::ast
 {
-	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, Ptr<Expression>&& inline_body) :
+	Function::Function(Name&& name, std::vector<Declaration>&& parameters, Typename&& return_type, BlockStatement&& body) :
 	_name(std::move(name)),
 	_parameters(std::move(parameters)),
 	_return_type(std::move(return_type)),
-	_inline_body(std::move(inline_body)),
-	_is_inline(true)
+	_body(std::move(body))
 	{}
 
-	Function::Function(Identifier&& name, std::vector<Parameter>&& parameters, Typename&& return_type, CompoundStatement&& compound_body) :
-	_name(std::move(name)),
-	_parameters(std::move(parameters)),
-	_return_type(std::move(return_type)),
-	_compound_body(std::move(compound_body)),
-	_is_inline(false)
-	{}
-	
-	Function::Function(Function&& other) :
-	_name(std::move(other._name)),
-	_parameters(std::move(other._parameters)),
-	_return_type(std::move(other._return_type)),
-	_is_inline(other._is_inline)
+	static Result<Array<Declaration>> parse_parameters(TokenIterator& iter)
 	{
-		if (_is_inline)
+		if (iter->type() != TOKEN_LPAREN)
 		{
-			new(&_inline_body) auto(std::move(other._inline_body));
+			parse_error(iter, "'(' after function name");
+			return {};
 		}
-		else
-		{
-			new(&_compound_body) auto(std::move(other._compound_body));
-		}
-	}
 
-	Function::~Function()
-	{
-		if (_is_inline)
+		iter += 1;
+
+		Array<Declaration> parameters;
+
+		if (iter->type() != TOKEN_RPAREN)
 		{
-			_inline_body.~Ptr();
+			while (true)
+			{
+				auto res = Declaration::parse_parameter(iter);
+
+				if (!res)
+					return {};
+
+				parameters.emplace_back(res.unwrap());
+
+				if (iter->type() != TOKEN_COMMA)
+					break;
+
+				iter += 1;
+			}
+
+			if (iter->type() != TOKEN_RPAREN)
+			{
+				parse_error(iter, "')' after function parameters");
+				return {};
+			}
 		}
-		else
-		{
-			_compound_body.~CompoundStatement();
-		}
+
+		iter += 1;
+
+		return parameters;
 	}
 
 	Result<Function> Function::parse(TokenIterator& iter)
 	{
 		if (iter->type() != TOKEN_FUNC)
 		{
-			error_out(iter) << "expected 'func' but got: " << *iter << std::endl;
+			parse_error(iter, "'function'");
 			return {};
 		}
 
 		iter += 1;
 
-		auto name = Identifier::parse(iter);
+		auto name = Name::parse(iter);
 
 		if (!name)
 			return {};
 
-		auto parameters = Parameter::parse_list(iter);
+		auto parameters = parse_parameters(iter);
 
 		if (!parameters)
 			return {};
 		
-		Typename type(iter->location());
+		auto type = Typename();
 
 		if (iter->type() == TOKEN_COLON)
 		{
@@ -83,98 +87,43 @@ namespace warbler::ast
 
 			type = res.unwrap();
 		}
-		
-		if (iter->type() == TOKEN_LBRACE)
-		{
-			auto body = CompoundStatement::parse(iter);
 
-			if (!body)
-				return {};
-
-			return Function(name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap());
-		}
-		else if (iter->type() == TOKEN_DOUBLE_ARROW)
+		if (iter->type() != TOKEN_LBRACE)
 		{
-			iter += 1;
-			auto body = Expression::parse(iter);
-
-			if (!body)
-				return {};
-		
-			return Function { name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap() };
-		}
-		else
-		{
-			parse_error(iter, "fucntion body");
+			parse_error(iter, "function body starting with '{'");
 			return {};
 		}
+		
+		auto body = BlockStatement::parse(iter);
+
+		if (!body)
+			return {};
+
+		return Function(name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap());
 	}
 
 	void Function::print_tree(u32 depth) const 
 	{
-		std::cout << tree_branch(depth) << "func\n";
-		_name.print_tree(depth + 1);
-
-		std::cout << tree_branch(depth + 2) << "(\n";
+		std::cout << tree_branch(depth) << "function " << _name.text() << '\n';
+		std::cout << tree_branch(depth + 1) << "(\n";
 
 		for (const auto& parameter : _parameters)
-			parameter.print_tree(depth + 3);
+			parameter.print_tree(depth + 2);
 
-		std::cout << tree_branch(depth + 2) << ")\n";
-		std::cout << tree_branch(depth + 2) << ":\n";
+		std::cout << tree_branch(depth + 1) << ")\n";
+		std::cout << tree_branch(depth + 1) << ": " << _return_type.name() << '\n';
 		
-		_return_type.print_tree(depth + 3);
-
-		if (_is_inline)
-		{
-			_inline_body->print_tree(depth + 1);
-		}
-		else
-		{
-			_compound_body.print_tree(depth + 1);
-		}
+		_body.print_tree(depth + 1);
 	}
 
-	bool Function::validate(semantics::ModuleContext& context)
+	bool Function::validate(semantics::ModuleContext& mod_ctx)
 	{
-		Set<String> parameter_names;
-
 		for (auto& parameter : _parameters)
 		{
-			const auto& name = parameter.name().text();
-
-			if (parameter_names.find(name) != parameter_names.end())
-			{
-				print_error(parameter.name().location(), "function " + context.name + "::" + _name.text() + "(...) already contains parameter '" + name + "'");
-				return false;
-			}
-
-			parameter_names.insert(name);
-
-			if (!parameter.validate(context))
+			if (!parameter.validate_parameter(mod_ctx, _context))
 				return false;
 		}
 
-		// auto status = _return_type.validate();
-
-		// if (!status)
-		// 	return status;
-
-		// if (_is_inline)
-		// {
- 
-		// }
-		// else
-		// {
-		// 	for (
-		// }
-
-		return true;
-	}
-
-	Function& Function::operator=(Function&& other)
-	{
-		new(this) auto(std::move(other));
-		return *this;
+		return _body.validate(mod_ctx, _context);
 	}
 }

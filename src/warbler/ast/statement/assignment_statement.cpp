@@ -8,7 +8,7 @@
 
 namespace warbler::ast
 {
-	AssignmentStatement::AssignmentStatement(PrimaryExpression&& lhs, Ptr<Expression>&& rhs, AssignmentType type) :
+	AssignmentStatement::AssignmentStatement(AffixExpression&& lhs, Ptr<Expression>&& rhs, AssignmentType type) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs)),
 	_type(type)
@@ -16,7 +16,7 @@ namespace warbler::ast
 
 	Result<AssignmentStatement> AssignmentStatement::parse(TokenIterator& iter)
 	{
-		auto lhs = PrimaryExpression::parse(iter);
+		auto lhs = AffixExpression::parse(iter);
 
 		if (!lhs)
 			return {};

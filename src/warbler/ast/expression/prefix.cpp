@@ -15,9 +15,9 @@ namespace warbler::ast
 	_location(location)
 	{}
 
-	std::vector<Prefix> Prefix::parse_list(TokenIterator& iter)
+	Array<Prefix> Prefix::parse_list(TokenIterator& iter)
 	{
-		std::vector<Prefix> out;
+		Array<Prefix> out;
 		PrefixType type;
 
 	parse_prefix:
