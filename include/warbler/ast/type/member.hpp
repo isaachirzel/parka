@@ -22,7 +22,7 @@ namespace warbler::ast
 
 		static Result<Member> parse(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& context);
+		bool validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx);
 		void print_tree(u32 depth = 0) const;
 
 		const Name& name() const { return _name; }

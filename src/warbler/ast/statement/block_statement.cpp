@@ -37,11 +37,15 @@ namespace warbler::ast
 
 	bool BlockStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
+		func_ctx.blocks.push_back(&_context);
+
 		for (auto& statement : _statements)
 		{
 			if (!statement->validate(mod_ctx, func_ctx))
 				return false;
 		}
+
+		func_ctx.blocks.pop_back();
 
 		return true;
 	}

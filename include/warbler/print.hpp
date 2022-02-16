@@ -25,7 +25,15 @@ namespace warbler
 	void error_highlight(const Location& location);
 	void error_highlight(const TokenIterator& iter);
 	void error_highlight(const Token& token);
+
+	void print_note(const Location& location, const String& msg);
+	void print_warning(const Location& location, const String& msg);
 	void print_error(const Location& location, const String& msg);
+
+	void print_note(const String& msg);
+	void print_warning(const String& msg);
+	void print_error(const String& msg);
+
 	std::string token_error(TokenIterator& iter);
 	std::string token_warning(TokenIterator& iter);
 	std::string token_message(TokenIterator& iter);	

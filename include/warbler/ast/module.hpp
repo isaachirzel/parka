@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/ast/function.hpp>
 #include <warbler/util/table.hpp>
-#include <warbler/ast/type/type_definition.hpp>
+#include <warbler/ast/type/type.hpp>
 #include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
@@ -16,9 +16,9 @@ namespace warbler::ast
 		semantics::ModuleContext _context;
 
 		Array<Function> _functions;
-		Array<TypeDefinition> _types;
+		Array<Type> _types;
 
-		Module(Array<Function>&& functions, Array<TypeDefinition>&& types);
+		Module(Array<Function>&& functions, Array<Type>&& types);
 
 	public:
 

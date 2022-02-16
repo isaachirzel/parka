@@ -40,7 +40,9 @@ namespace warbler::ast
 		#pragma message("TODO: implement type handling in validation")
 
 		if (!_expression->validate(mod_ctx, func_ctx))
+		{
 			return false;
+		}
 
 		auto is_rvalue = false;
 		auto reference_depth = 0u; // TODO: infer from type
@@ -59,6 +61,8 @@ namespace warbler::ast
 					if (is_rvalue)
 					{
 						// ERROR cannot take refence of rvalue
+						print_error(prefix.location(), "reference cannot be taken of rvalue");
+						return false;
 					}
 
 					is_rvalue = true;
@@ -95,19 +99,6 @@ namespace warbler::ast
 					is_rvalue = true;
 					// ERROR if not boolean-ish					
 					break;
-			}
-
-			if (prefix.type() == PREFIX_REFERENCE)
-			{
-				if (is_rvalue)
-				{
-					error_out(prefix.location());
-					error_highlight(prefix.location());
-
-					return false;
-				}
-
-				is_rvalue = true;
 			}
 		}
 

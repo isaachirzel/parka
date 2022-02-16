@@ -2,6 +2,7 @@
 #define WARBLER_AST_EXPRESSION_ASSIGNMENT_HPP
 
 // local headers
+#include <warbler/ast/statement/statement.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 
@@ -22,7 +23,7 @@ namespace warbler::ast
 		ASSIGN_BITWISE_XOR
 	};
 
-	class AssignmentStatement
+	class AssignmentStatement : public Statement
 	{
 	private:
 

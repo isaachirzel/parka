@@ -102,6 +102,19 @@ namespace warbler::ast
 		return Function(name.unwrap(), parameters.unwrap(), std::move(type), body.unwrap());
 	}
 
+	bool Function::validate(semantics::ModuleContext& mod_ctx)
+	{
+		_context.body = &_body.context();
+
+		for (auto& parameter : _parameters)
+		{
+			if (!parameter.validate_parameter(mod_ctx, _context))
+				return false;
+		}
+
+		return _body.validate(mod_ctx, _context);
+	}
+
 	void Function::print_tree(u32 depth) const 
 	{
 		std::cout << tree_branch(depth) << "function " << _name.text() << '\n';
@@ -114,16 +127,5 @@ namespace warbler::ast
 		std::cout << tree_branch(depth + 1) << ": " << _return_type.name() << '\n';
 		
 		_body.print_tree(depth + 1);
-	}
-
-	bool Function::validate(semantics::ModuleContext& mod_ctx)
-	{
-		for (auto& parameter : _parameters)
-		{
-			if (!parameter.validate_parameter(mod_ctx, _context))
-				return false;
-		}
-
-		return _body.validate(mod_ctx, _context);
 	}
 }

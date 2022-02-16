@@ -29,6 +29,21 @@ namespace warbler::ast
 		return Identifier { location, std::move(text) };
 	}
 
+	bool Identifier::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	{
+		#pragma message("Implement identifier checking for functions on validation")
+
+		auto *declaration = func_ctx.get_declaration(_text);
+
+		if (declaration == nullptr)
+		{
+			print_error(_location, "identifier '" + _text + "' is not declared in scope");
+			return false;
+		}
+
+		return true;
+	}
+
 	void Identifier::print_tree(u32 depth) const
 	{
 		std::cout << tree_branch(depth) << _text << '\n';

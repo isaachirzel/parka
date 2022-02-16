@@ -75,9 +75,12 @@ namespace warbler::ast
 
 	bool Declaration::validate_parameter(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (func_ctx.contains(_name.text()))
+		auto *previous_declaration = func_ctx.get_parameter(_name.text());
+
+		if (previous_declaration)
 		{
 			print_error(_name.location(), "parameter '" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
+			print_note(previous_declaration->name().location(), "previous declaration is here");
 			return false;
 		}
 
@@ -86,20 +89,39 @@ namespace warbler::ast
 
 	bool Declaration::validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (func_ctx.contains(_name.text()))
+		if (func_ctx.is_body_scope())
 		{
-			print_error(_name.location(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
-			return false;
-		}
+			auto *previous_declaration = func_ctx.get_parameter(_name.text());
 
-		for (auto *block : func_ctx.blocks)
-		{
-			if (block->contains(_name.text()))
+			if (previous_declaration)
 			{
-				print_error(_name.location(), "'" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
+				print_error(_name.location(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
+				print_note(previous_declaration->name().location(), "previous declaration here");
+				return false;
+			}
+
+			previous_declaration = func_ctx.body->get_variable(_name.text());
+
+			if (previous_declaration)
+			{
+				print_error(_name.location(), "'" + _name.text() + "' is previously declared as a variable in function '" + func_ctx.name + "'");
+				print_note(previous_declaration->name().location(), "previous declaration here");
 				return false;
 			}
 		}
+		else
+		{
+			auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
+
+			if (previous_declaration)
+			{
+				print_error(_name.location(), "'" + _name.text() + "' is previously declared as a variable in same scope");
+				print_note(previous_declaration->name().location(), "previous declaration here");
+				return false;
+			}
+		}
+
+		func_ctx.current_block().variables[_name.text()] = this;
 
 		return true;
 	}

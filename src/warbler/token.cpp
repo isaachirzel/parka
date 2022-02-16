@@ -47,6 +47,11 @@ namespace warbler
 		_pos += offset;
 	}
 
+	Location::operator String() const
+	{
+		return String(pos_ptr(), length());
+	}
+
 	std::ostream& operator<<(std::ostream& out, const Location& location)
 	{
 		for (auto c : location)

@@ -83,6 +83,11 @@ namespace warbler::ast
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}
 
+	bool AssignmentStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	{
+		throw std::runtime_error("AssignmentStatement::validate is not implemented yet");
+	}
+
 	void AssignmentStatement::print_tree(u32 depth) const
 	{
 		_lhs.print_tree(depth);

@@ -255,6 +255,7 @@ namespace warbler::ast
 	bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
 		#pragma message("Implement byte counting for each data type")
+		//throw std::runtime_error("Constant::validate is not implemented yet");
 		return true;
 	}
 

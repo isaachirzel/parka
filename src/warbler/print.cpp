@@ -15,39 +15,47 @@
 #define COLOR_CYAN		"\033[96m"
 #define COLOR_RESET		"\033[0m"
 
+#define PROMPT_NOTE			"note: "
+#define PROMPT_WARNING		"warning: "
 #define PROMPT_ERROR		"error: "
-#define PROMPT_FATAL		"fatal: "
-#define PROMPT_DEBUG		"debug: "
 
-#define PROMPT_ERROR_COLOR	COLOR_RED PROMPT_ERROR COLOR_RESET
-#define PROMPT_FATAL_COLOR	COLOR_RED PROMPT_FATAL COLOR_RESET
-#define PROMPT_DEBUG_COLOR	COLOR_BLUE PROMPT_DEBUG COLOR_RESET
+#define COLOR_NOTE		COLOR_CYAN
+#define COLOR_WARNING	COLOR_PURPLE
+#define COLOR_ERROR		COLOR_RED
+
+#define PROMPT_NOTE_COLOR		COLOR_NOTE PROMPT_NOTE COLOR_RESET
+#define PROMPT_WARNING_COLOR	COLOR_WARNING PROMPT_WARNING COLOR_RESET
+#define PROMPT_ERROR_COLOR		COLOR_ERROR PROMPT_ERROR COLOR_RESET
 
 namespace warbler
 {
 	std::ostream& error_stream = std::cout;
-
-	static const char *error_prompt = PROMPT_ERROR_COLOR;
-	static const char *fatal_prompt = PROMPT_FATAL_COLOR;
-	static const char *debug_prompt = PROMPT_DEBUG_COLOR;
 	static bool is_color_enabled = true;
+
+	static inline const char *note_prompt()
+	{
+		return is_color_enabled
+			? PROMPT_NOTE_COLOR
+			: PROMPT_NOTE;
+	}
+
+	static inline const char *error_prompt()
+	{
+		return is_color_enabled
+			? PROMPT_ERROR_COLOR
+			: PROMPT_ERROR;
+	}
+
+	static inline const char *warning_prompt()
+	{
+		return is_color_enabled
+			? PROMPT_WARNING_COLOR
+			: PROMPT_WARNING;
+	}
 
 	void print_enable_color(bool enabled)
 	{
 		is_color_enabled = enabled;
-
-		if (enabled)
-		{
-			error_prompt = COLOR_RED PROMPT_ERROR COLOR_RESET;
-			fatal_prompt = COLOR_RED PROMPT_FATAL COLOR_RESET;
-			debug_prompt = COLOR_BLUE PROMPT_DEBUG COLOR_RESET;
-		}
-		else
-		{
-			error_prompt = PROMPT_ERROR;
-			fatal_prompt = PROMPT_FATAL;
-			debug_prompt = PROMPT_DEBUG;
-		}	
 	}
 
 	void print_branch(unsigned count)
@@ -77,12 +85,6 @@ namespace warbler
 		}
 
 		return file;
-	}
-
-	inline static void print_debug_header(const char *file, unsigned line, const char *func)
-	{
-		fprintf(stderr, "%s:%u:%s() ", get_shortened_file(file), line, func);
-		fputs(debug_prompt, stderr);
 	}
 
 	size_t get_spaces_for_num(size_t number)
@@ -195,14 +197,20 @@ namespace warbler
 
 	std::ostream& error_out()
 	{
-		error_stream << error_prompt;
+		error_stream << error_prompt();
 
 		return error_stream;
 	}
 
+	static void print_header(std::ostream& stream, const Location& location)
+	{
+		stream << location.filename() << ':' << location.line() + 1 << ':' << location.col() + 1 << ' ';
+	}
+
 	std::ostream& error_out(const Location& location)
 	{
-		error_stream << location.filename() << ':' << location.line() + 1 << ':' << location.col() + 1 << ' ' << error_prompt;
+		print_header(error_stream, location);
+		error_stream << error_prompt();
 
 		return error_stream;
 	}
@@ -243,13 +251,69 @@ namespace warbler
 
 	void parse_error(TokenIterator& iter, const char *expected)
 	{
-		error_out(iter) << "expected " << expected << " but got '" << *iter << '\'';
-		error_highlight(iter);
+		print_error(iter->location(), "expected " + String(expected) + ", found '" + String(*iter) + '\'');
+	}
+
+	static void print_message(std::ostream& stream, const char *prompt, const char *color, const Location& location, const String& msg)
+	{
+		print_header(stream, location);
+
+		if (is_color_enabled)
+		{
+			stream << color << prompt << COLOR_RESET;
+		}
+		else
+		{
+			stream << prompt;
+		}
+
+		stream << msg;
+		
+		highlight(stream, location, color);
+	}
+
+	void print_note(const Location& location, const String& msg)
+	{
+		print_message(error_stream, PROMPT_NOTE, COLOR_NOTE, location, msg); 
+	}
+	
+	void print_warning(const Location& location, const String& msg)
+	{
+		print_message(error_stream, PROMPT_WARNING, COLOR_WARNING, location, msg);
 	}
 
 	void print_error(const Location& location, const String& msg)
 	{
-		error_out(location) << msg;
-		error_highlight(location);
+		print_message(error_stream, PROMPT_ERROR, COLOR_ERROR, location, msg); 
 	}
+
+	static void print_message(std::ostream& stream, const char *prompt, const char *color, const String& msg)
+	{
+		if (is_color_enabled)
+		{
+			stream << color << prompt << COLOR_RESET;
+		}
+		else
+		{
+			stream << prompt;
+		}
+
+		stream << msg << std::endl;
+	}
+
+	void print_note(const String& msg)
+	{
+		print_message(error_stream, PROMPT_NOTE, COLOR_NOTE, msg);
+	}
+
+	void print_warning(const String& msg)
+	{
+		print_message(error_stream, PROMPT_WARNING, COLOR_WARNING, msg);
+	}
+
+	void print_error(const String& msg)
+	{
+		print_message(error_stream, PROMPT_ERROR, COLOR_ERROR, msg);
+	}
+
 }

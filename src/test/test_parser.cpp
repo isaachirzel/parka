@@ -47,8 +47,9 @@ const char *src = R"=====(
 
 	type Person: struct
 	{
-		age: u8,
-		height: f64
+		public age: u8,
+		height: f64,
+		ages: str
 	}
 
 	type House: struct
@@ -62,6 +63,7 @@ const char *src = R"=====(
 	{
 		var age = 1;
 		age[3];
+
 	}
 
 )=====";
@@ -109,7 +111,8 @@ int main()
 
 	if (!ast.validate({ "test" }))
 	{
-		error_out() << "errors when validating ast" << std::endl;
+		std::cout << '\n';
+		print_error("errors during compilation");
 		return 1;
 	}
 	

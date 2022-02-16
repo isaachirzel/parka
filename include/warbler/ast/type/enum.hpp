@@ -2,25 +2,23 @@
 #define WARBLER_AST_TYPE_ENUM_HPP
 
 // local headers
-#include <warbler/ast/identifier.hpp>
-#include <warbler/semantics/context.hpp>
+#include <warbler/ast/type/type.hpp>
 
 namespace warbler::ast
 {
-	class Enum
+	class Enum : public Type
 	{
 	private:
 
-		Array<Identifier> _values;
+		Array<Member> _values;
 
 	public:
 
-		Enum(Array<Identifier>&& values);
+		Enum(Array<Member>&& values);
 
 		static Result<Enum> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& context);
-
 		void print_tree(u32 depth = 0) const;
 	};
 }

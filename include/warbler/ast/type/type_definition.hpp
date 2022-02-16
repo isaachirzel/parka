@@ -1,46 +1,21 @@
-#ifndef WARBLER_AST_TYPE_DEFINITION_HPP
-#define WARBLER_AST_TYPE_DEFINITION_HPP
+#ifndef WARBLER_AST_TYPE_TYPE_DEFINITION
+#define WARBLER_AST_TYPE_TYPE_DEFINITION
 
-// local headers
-#include <warbler/ast/name.hpp>
-#include <warbler/ast/type/struct.hpp>
-#include <warbler/ast/type/enum.hpp>
-#include <warbler/ast/type/type_definition_body.hpp>
+#include <warbler/semantics/context.hpp>
+#include <warbler/token.hpp>
+#include <warbler/util/primitive.hpp>
+#include <warbler/util/result.hpp>
+#include <warbler/util/ptr.hpp>
 
 namespace warbler::ast
 {
-	enum TypeDefinitionType
+	struct TypeDefinition
 	{
-		DEFINITION_STRUCT,
-		DEFINITION_ENUM
-	};
+		virtual ~TypeDefinition() {}
+		virtual bool validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx) = 0;
+		virtual void print_tree(u32 depth = 0) const = 0;
 
-	class TypeDefinition
-	{
-	private:
-
-		Name _name;
-		String _symbol;
-		TypeDefinitionBody *_body;
-
-	public:
-
-		TypeDefinition(Name&& name, TypeDefinitionBody *body);
-		TypeDefinition(TypeDefinition&&);
-		TypeDefinition(const TypeDefinition&) = delete;
-		~TypeDefinition();
-
-		static Result<TypeDefinition> parse(TokenIterator& iter);
-
-		bool validate(semantics::ModuleContext& context);
-		const String& generate_symbol(semantics::ModuleContext& contetxt);
-		void print_tree(u32 depth = 0) const;
-
-		const Name& name() const { return _name; }
-		const String& symbol() const { return _symbol; }
-
-		TypeDefinition& operator=(TypeDefinition&& other);
-		TypeDefinition& operator=(const TypeDefinition& other) = delete;
+		static Result<Ptr<TypeDefinition>> parse(TokenIterator& iter);
 	};
 }
 

@@ -132,6 +132,8 @@ namespace warbler
 
 		char operator[](usize i) const { return _src[_pos + i]; }
 
+		operator String() const;
+
 		friend std::ostream& operator<<(std::ostream& out, const Location& location);
 	};
 
@@ -158,6 +160,7 @@ namespace warbler
 		const char *end() const { return _location.end(); }
 		char operator[](usize i) const { return _location[i]; }
 
+		operator String() const { return _location; }
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};
 

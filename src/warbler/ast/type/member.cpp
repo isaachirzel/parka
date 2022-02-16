@@ -46,24 +46,27 @@ namespace warbler::ast
 		return Member(name.unwrap(), type.unwrap(), is_public);
 	}
 
-	bool Member::validate(semantics::ModuleContext& context)
+	bool Member::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
 	{
-		return _type.validate(context);
+		auto *member = type_ctx.get_member(_name.text());
+
+		if (member != nullptr)
+		{
+			print_error(_name.location(), "member '" + _name.text() + "' already defined in type '" + type_ctx.name + "'");
+			print_note(member->name().location(), "previous declaration here");
+			return false;
+		}
+
+		type_ctx.members[_name.text()] = this;
+
+		return _type.validate(mod_ctx);
 	}
 
 	void Member::print_tree(u32 depth) const
 	{
-		_name.print_tree(depth);
-
-		if (_is_public)
-		{
-			std::cout << tree_branch(depth + 1) << "public\n";
-		}
-		else
-		{
-			std::cout << tree_branch(depth + 1) << "private\n";
-		}
-
-		_type.print_tree(depth + 1);
+		std::cout << tree_branch(depth)
+			<< (_is_public ? "public " : "private ")
+			<< _name.text()
+			<< ": " << _type.name() << '\n';
 	}
 }

@@ -4,7 +4,7 @@
 
 namespace warbler::ast
 {
-	Module::Module(Array<Function>&& functions, Array<TypeDefinition>&& types) :
+	Module::Module(Array<Function>&& functions, Array<Type>&& types) :
 	_functions(std::move(functions)),
 	_types(std::move(types))
 	{}
@@ -12,7 +12,7 @@ namespace warbler::ast
 	Result<Module> Module::parse(TokenIterator& iter)
 	{
 		Array<Function> functions;
-		Array<TypeDefinition> types;
+		Array<Type> types;
 
 		while (true)
 		{
@@ -30,7 +30,7 @@ namespace warbler::ast
 				}
 				case TOKEN_TYPE:
 				{
-					auto type = TypeDefinition::parse(iter);
+					auto type = Type::parse(iter);
 
 					if (!type)
 						return {};
@@ -64,7 +64,7 @@ namespace warbler::ast
 	bool Module::validate(const String& module_name)
 	{
 		_context.name = module_name;
-		// gettting valid types in module & generating symbols
+		
 		for (auto& type : _types)
 		{
 			const auto& type_name = type.name().text();

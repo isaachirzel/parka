@@ -5,7 +5,7 @@
 namespace warbler::ast
 {
 	Struct::Struct(Array<Member>&& members) :
-	_members(members)
+	_members(std::move(members))
 	{}
 
 	Result<Struct> Struct::parse(TokenIterator& iter)
@@ -48,14 +48,14 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return Struct(std::move(out));
+		return Struct { std::move(out) };
 	}
 	
-	bool Struct::validate(semantics::ModuleContext& context)
+	bool Struct::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
 	{
 		for (auto& member : _members)
 		{
-			if (!member.validate(context))
+			if (!member.validate(mod_ctx, type_ctx))
 				return false;
 		}
 
@@ -64,6 +64,7 @@ namespace warbler::ast
 
 	void Struct::print_tree(u32 depth) const
 	{
+
 		std::cout << tree_branch(depth) << "struct\n";
 		std::cout << tree_branch(depth) << "{\n";
 
