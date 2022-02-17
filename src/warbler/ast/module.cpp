@@ -79,8 +79,6 @@ namespace warbler::ast
 			_context.types[type_name] = &type;
 		}
 
-		std::cout << "validating types: " << _types.size() << std::endl;
-
 		// checking if members of types are valid
 		for (auto& type : _types)
 		{

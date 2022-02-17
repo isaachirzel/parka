@@ -84,6 +84,9 @@ namespace warbler::ast
 			return false;
 		}
 
+		func_ctx.parameters[_name.text()] = this;
+		_type.validate(mod_ctx);
+
 		return true;
 	}
 
@@ -122,6 +125,7 @@ namespace warbler::ast
 		}
 
 		func_ctx.current_block().variables[_name.text()] = this;
+		_type.validate(mod_ctx);
 
 		return true;
 	}
@@ -133,6 +137,6 @@ namespace warbler::ast
 		if (_is_mutable)
 			std::cout << "mut ";
 		
-		std::cout << _name.text() << ": " << _type.name() << '\n';
+		std::cout << _name.text() << ": " << (!_type.name().empty() ?  _type.name() : "<auto>") << '\n';
 	}
 }

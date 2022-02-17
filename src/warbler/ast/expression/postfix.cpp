@@ -3,6 +3,8 @@
 // local headers
 #include <warbler/print.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
+#include <warbler/ast/identifier.hpp>
+#include <warbler/ast/constant.hpp>
 
 // standard headers
 #include <cassert>
@@ -168,6 +170,41 @@ namespace warbler::ast
 		}
 
 		return out;
+	}
+
+	bool Postfix::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx, Ptr<Expression>& expression)
+	{
+		switch (_type)
+		{
+			case POSTFIX_INDEX:
+				// TODO: check if expression is array (for now)
+				break;
+
+			case POSTFIX_FUNCTION_CALL:
+				// TODO: check if expression is function
+				break;
+
+			case POSTFIX_MEMBER:
+				// TODO: check if expression is struct
+				auto *type = expression->get_type(mod_ctx);
+				
+				auto *identifier = dynamic_cast<Identifier*>(expression.raw_ptr());
+
+				if (identifier == nullptr)
+				{
+					auto *constant = dynamic_cast<Constant*>(expression.raw_ptr());
+
+					if (constant == nullptr)
+					{
+						print_error(_member.location(), "cannot get member '" + _member.text() + "' of ");
+
+					}
+				}
+
+				break;
+		}
+
+		"".hello();
 	}
 
 	void Postfix::print_tree(u32 depth) const

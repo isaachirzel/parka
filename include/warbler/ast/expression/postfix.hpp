@@ -40,6 +40,7 @@ namespace warbler::ast
 		static Result<Postfix> parse(TokenIterator& iter);
 		static Result<Array<Postfix>> parse_list(TokenIterator& iter);
 
+		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx, Ptr<Expression>& expression);
 		void print_tree(u32 depth = 0) const;
 
 		Postfix& operator=(Postfix&& other);

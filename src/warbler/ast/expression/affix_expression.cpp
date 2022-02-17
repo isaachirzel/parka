@@ -102,6 +102,12 @@ namespace warbler::ast
 			}
 		}
 
+		for (auto& postfix : _postfixes)
+		{
+			if (!postfix.validate(mod_ctx, func_ctx, _expression))
+				return false;
+		}
+
 		return true;
 	}
 

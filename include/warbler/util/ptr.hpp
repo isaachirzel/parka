@@ -44,7 +44,7 @@ namespace warbler
 
 		Ptr& operator=(Ptr&& other) { new (this) auto(std::move(other)); return *this; }
 
-		T* raw() { return _value; }
+		T* raw_ptr() { return _value; }
 		const T* raw_ptr() const { return _value; }
 	};
 }

@@ -26,6 +26,8 @@ namespace warbler::ast
 		static Result<ConditionalExpression> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
+		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
 
 		ConditionalExpression& operator=(ConditionalExpression&&) = default;
@@ -34,10 +36,10 @@ namespace warbler::ast
 
 	struct ConditionalRhs
 	{
-		BooleanOrExpression true_case;
+		ConditionalExpression true_case;
 		ConditionalExpression false_case;
 
-		ConditionalRhs(BooleanOrExpression&& true_case, ConditionalExpression&& false_case);
+		ConditionalRhs(ConditionalExpression&& true_case, ConditionalExpression&& false_case);
 	};
 }
 

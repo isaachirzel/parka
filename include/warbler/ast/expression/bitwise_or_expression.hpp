@@ -20,6 +20,8 @@ namespace warbler::ast
 		static Result<BitwiseOrExpression> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
+		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
 	};
 }

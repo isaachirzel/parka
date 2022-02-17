@@ -12,8 +12,8 @@ namespace warbler::ast
 	private:
 
 		Array<Prefix> _prefixes;
-		Array<Postfix> _postfixes;
 		Ptr<Expression> _expression;
+		Array<Postfix> _postfixes;
 
 	public:
 
@@ -25,6 +25,8 @@ namespace warbler::ast
 		static Result<AffixExpression> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx, bool expect_lvalue = false);
+		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
 
 		AffixExpression& operator=(AffixExpression&& other) = default;

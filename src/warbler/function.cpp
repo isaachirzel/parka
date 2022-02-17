@@ -112,7 +112,7 @@ namespace warbler::ast
 				return false;
 		}
 
-		return _body.validate(mod_ctx, _context);
+		return _return_type.validate(mod_ctx) && _body.validate(mod_ctx, _context);
 	}
 
 	void Function::print_tree(u32 depth) const 

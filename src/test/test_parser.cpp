@@ -59,7 +59,7 @@ const char *src = R"=====(
 		elevation: i32
 	}
 
-	func print_person(person: Person, persons: i32): Persons
+	func print_person(person: Person, persons: i32s): Person
 	{
 		var age = 1;
 		age[3];
@@ -106,17 +106,15 @@ int main()
 	auto ast = res.unwrap();
 
 	ast.print_tree();
-
-	std::cout << "validating ast..." << std::endl;
+	std::cout << '\n';
 
 	if (!ast.validate({ "test" }))
 	{
-		std::cout << '\n';
 		print_error("errors during compilation");
 		return 1;
 	}
 	
-	std::cout << "successfully validated ast" << std::endl;
+	print_note("successfully validated ast");
 
 	return 0;
 }

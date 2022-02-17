@@ -3,10 +3,11 @@
 // local headers
 #include <warbler/print.hpp>
 #include <warbler/ast/expression/expression.hpp>
+#include <warbler/ast/type/type.hpp>
 
 namespace warbler::ast
 {
-	ConditionalRhs::ConditionalRhs(BooleanOrExpression&& true_case, ConditionalExpression&& false_case) :
+	ConditionalRhs::ConditionalRhs(ConditionalExpression&& true_case, ConditionalExpression&& false_case) :
 	true_case(std::move(true_case)),
 	false_case(std::move(false_case))
 	{}
@@ -29,7 +30,7 @@ namespace warbler::ast
 			return {};
 
 		if (iter->type() != TOKEN_THEN)
-			return ConditionalExpression(lhs.unwrap());
+			return ConditionalExpression { lhs.unwrap() };
 
 		iter += 1;
 
@@ -60,10 +61,31 @@ namespace warbler::ast
 		if (!_lhs.validate(mod_ctx, func_ctx))
 			return false;
 
-		if (_rhs && (!_rhs->true_case.validate(mod_ctx, func_ctx) || !_rhs->false_case.validate(mod_ctx, func_ctx)))
-			return false;			
+		if (_rhs)
+		{
+			if (!_rhs->true_case.validate(mod_ctx, func_ctx) || !_rhs->false_case.validate(mod_ctx, func_ctx))
+				return false;
+
+			auto *true_type = _rhs->true_case.get_type(mod_ctx);
+			auto *false_type = _rhs->false_case.get_type(mod_ctx);
+
+			if (true_type != false_type)
+			{
+				#pragma message("TODO: implement type checking that allows for implicitly castable types")
+				print_error(_rhs->false_case.location(), "type of false case is '" + false_type->name().text() + "', which is incompatible with true case type '" + true_type->name().text() + "'");
+				print_note(_rhs->true_case.location(), "true case defined here");
+				return false;
+			}
+		}
 
 		return true;
+	}
+
+	Type *ConditionalExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		return _rhs
+			? _rhs->true_case.get_type(mod_ctx)
+			: _lhs.get_type(mod_ctx);
 	}
 
 	void ConditionalExpression::print_tree(u32 depth) const
