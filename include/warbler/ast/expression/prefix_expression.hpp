@@ -7,7 +7,6 @@ namespace warbler::ast
 {
 	enum PrefixType
 	{
-		PREFIX_NONE,
 		PREFIX_REFERENCE,
 		PREFIX_DEREFERENCE,
 		PREFIX_POSITIVE,
@@ -27,6 +26,12 @@ namespace warbler::ast
 
 		PrefixExpression(Ptr<Expression>&& expression, PrefixType type);
 
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
+
+		bool validate(semantics::ModuleContext& module, semantics::FunctionContext function);
+		ast::Type *get_type(semantics::ModuleContext& module) const;
+		const Location& location() const;
+		void print_tree(u32 depth = 0) const;
 	};
 }
 
