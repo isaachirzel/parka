@@ -126,7 +126,7 @@ namespace warbler::ast
 
 				iter += 1;
 
-				expression = (Expression*) new PostfixExpression(std::move(expression), res.unwrap());
+				expression = new PostfixExpression(std::move(expression), res.unwrap());
 				goto parse_postfix;
 			}
 
@@ -137,7 +137,7 @@ namespace warbler::ast
 				if (!res)
 					return {};
 
-				expression = (Expression*) new PostfixExpression(std::move(expression), res.unwrap());
+				expression = new PostfixExpression(std::move(expression), res.unwrap());
 				goto parse_postfix;
 			}
 
@@ -150,7 +150,7 @@ namespace warbler::ast
 				if (!res)
 					return {};
 				
-				expression = (Expression*) new PostfixExpression { std::move(expression), res.unwrap() };
+				expression = new PostfixExpression { std::move(expression), res.unwrap() };
 				goto parse_postfix;
 			}
 			
@@ -178,6 +178,28 @@ namespace warbler::ast
 
 	void PostfixExpression::print_tree(u32 depth) const
 	{
-		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
+		_expression->print_tree(depth);
+
+		switch (_type)
+		{
+			case POSTFIX_INDEX:
+				std::cout << tree_branch(depth) << "[\n";
+				_index->print_tree(depth + 1);
+				std::cout << tree_branch(depth) << "]\n";
+				break;
+
+			case POSTFIX_FUNCTION_CALL:
+				std::cout << tree_branch(depth) << "(\n";
+
+				for (const auto& arg : _arguments)
+					arg->print_tree(depth + 1);
+
+				std::cout << tree_branch(depth) << ")\n";
+				break;
+
+			case POSTFIX_MEMBER:
+				std::cout << '.' << _member.text() << '\n';
+				break;
+		}
 	}
 }

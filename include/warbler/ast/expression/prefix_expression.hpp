@@ -28,7 +28,7 @@ namespace warbler::ast
 
 		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& module, semantics::FunctionContext function);
+		bool validate(semantics::ModuleContext& module, semantics::FunctionContext& function);
 		ast::Type *get_type(semantics::ModuleContext& module) const;
 		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
