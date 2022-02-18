@@ -3,6 +3,7 @@
 
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/name.hpp>
+#include <warbler/util/ptr.hpp>
 
 namespace warbler::ast
 {
@@ -33,10 +34,13 @@ namespace warbler::ast
 		PostfixExpression(Ptr<Expression>&& expression, Ptr<Expression>&& index);
 		PostfixExpression(Ptr<Expression>&& expression, Array<Ptr<Expression>>&& arguments);
 		PostfixExpression(Ptr<Expression>&& expression, Name&& member);
+		PostfixExpression(PostfixExpression&& other);
+		PostfixExpression(const PostfixExpression& other) = delete;
+		~PostfixExpression();
 		
 		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& module, semantics::FunctionContext function);
+		bool validate(semantics::ModuleContext& module, semantics::FunctionContext& function);
 		ast::Type *get_type(semantics::ModuleContext& module) const;
 		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
