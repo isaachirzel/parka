@@ -4,7 +4,7 @@
 
 namespace warbler::ast
 {
-	Declaration::Declaration(Name&& name, Typename&& type, bool is_mutable) :
+	Declaration::Declaration(Identifier&& name, Typename&& type, bool is_mutable) :
 	_name(std::move(name)),
 	_type(std::move(type)),
 	_is_mutable(is_mutable)
@@ -20,7 +20,7 @@ namespace warbler::ast
 			iter += 1;
 		}
 
-		auto name = Name::parse(iter);
+		auto name = Identifier::parse(iter);
 
 		if (!name)
 			return {};
@@ -51,7 +51,7 @@ namespace warbler::ast
 			iter += 1;
 		}
 
-		auto name = Name::parse(iter);
+		auto name = Identifier::parse(iter);
 		
 		if (!name)
 			return {};

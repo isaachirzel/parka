@@ -20,7 +20,7 @@ namespace warbler::ast
 	_type(POSTFIX_FUNCTION_CALL)
 	{}
 
-	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Name&& member) :
+	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member) :
 	_expression(std::move(expression)),
 	_member(std::move(member)),
 	_type(POSTFIX_MEMBER)
@@ -58,7 +58,7 @@ namespace warbler::ast
 				break;
 
 			case POSTFIX_MEMBER:
-				_member.~Name();
+				_member.~Identifier();
 				break;
 		}
 	}
@@ -145,7 +145,7 @@ namespace warbler::ast
 			{
 				iter += 1;
 
-				auto res = Name::parse(iter);
+				auto res = Identifier::parse(iter);
 
 				if (!res)
 					return {};
@@ -166,7 +166,7 @@ namespace warbler::ast
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	ast::Type *PostfixExpression::get_type(semantics::ModuleContext& module) const
+	ast::Typename *PostfixExpression::get_type(semantics::ModuleContext& module) const
 	{
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}

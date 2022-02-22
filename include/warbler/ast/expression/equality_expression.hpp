@@ -2,7 +2,7 @@
 #define WARBLER_AST_EXPRESSION_EQUALITY_EXPRESSION_HPP
 
 // local headers
-#include <warbler/ast/expression/comparison_expression.hpp>
+#include <warbler/ast/expression/relational_expression.hpp>
 
 namespace warbler::ast
 {
@@ -14,27 +14,27 @@ namespace warbler::ast
 
 	struct EqualityRhs
 	{
-		ComparisonExpression expr;
+		RelationalExpression expr;
 		EqualityType type;
 	};
 
-	class EqualityExpression
+	class EqualityExpression : public Expression
 	{
 	private:
 
-		ComparisonExpression _lhs;
+		RelationalExpression _lhs;
 		Array<EqualityRhs> _rhs;
 
 	public:
 
-		EqualityExpression(ComparisonExpression&& lhs, Array<EqualityRhs>&& rhs);
+		EqualityExpression(RelationalExpression&& lhs, Array<EqualityRhs>&& rhs);
 
 		static Result<EqualityExpression> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
-		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
+		Typename *get_type(semantics::ModuleContext& mod_ctx) const;
+		const Location& location() const;
 	};
 }
 #endif

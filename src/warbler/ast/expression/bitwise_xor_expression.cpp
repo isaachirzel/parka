@@ -61,4 +61,14 @@ namespace warbler::ast
 			rhs.print_tree(depth);
 		}
 	}
+
+	Typename *BitwiseXorExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		throw std::runtime_error("BitwiseXorExpression::" + String(__func__) + " is not implemented yet");
+	}
+
+	const Location& BitwiseXorExpression::location() const
+	{
+		throw std::runtime_error("BitwiseXorExpression::" + String(__func__) + " is not implemented yet");
+	}
 }

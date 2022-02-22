@@ -132,9 +132,11 @@ namespace warbler
 
 		char operator[](usize i) const { return _src[_pos + i]; }
 
+		String text() const;
 		operator String() const;
 
 		friend std::ostream& operator<<(std::ostream& out, const Location& location);
+		Location operator+(const Location& rhs) const;
 	};
 
 	struct Token

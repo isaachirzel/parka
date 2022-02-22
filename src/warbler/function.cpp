@@ -6,7 +6,7 @@
 
 namespace warbler::ast
 {
-	Function::Function(Name&& name, std::vector<Declaration>&& parameters, Typename&& return_type, BlockStatement&& body) :
+	Function::Function(Identifier&& name, std::vector<Declaration>&& parameters, Typename&& return_type, BlockStatement&& body) :
 	_name(std::move(name)),
 	_parameters(std::move(parameters)),
 	_return_type(std::move(return_type)),
@@ -64,7 +64,7 @@ namespace warbler::ast
 
 		iter += 1;
 
-		auto name = Name::parse(iter);
+		auto name = Identifier::parse(iter);
 
 		if (!name)
 			return {};

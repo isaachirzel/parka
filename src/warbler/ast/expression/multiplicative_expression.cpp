@@ -5,14 +5,14 @@
 
 namespace warbler::ast
 {
-	MultiplicativeExpression::MultiplicativeExpression(AffixExpression&& lhs, Array<MultiplicativeRhs>&& rhs) :
+	MultiplicativeExpression::MultiplicativeExpression(Ptr<Expression>&& lhs, Array<MultiplicativeRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
 	Result<MultiplicativeExpression> MultiplicativeExpression::parse(TokenIterator& iter)
 	{
-		auto lhs = AffixExpression::parse(iter);
+		auto lhs = PrefixExpression::parse(iter);
 
 		if (!lhs)
 			return {};
@@ -48,7 +48,7 @@ namespace warbler::ast
 
 			iter += 1;
 
-			auto res = AffixExpression::parse(iter);
+			auto res = PrefixExpression::parse(iter);
 
 			if (!res)
 				return {};
@@ -61,12 +61,12 @@ namespace warbler::ast
 
 	bool MultiplicativeExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(mod_ctx, func_ctx))
+		if (!_lhs->validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& rhs : _rhs)
 		{
-			if (!rhs.expr.validate(mod_ctx, func_ctx))
+			if (!rhs.expr->validate(mod_ctx, func_ctx))
 				return false;
 		}
 
@@ -78,7 +78,7 @@ namespace warbler::ast
 		if (_rhs.size() > 0)
 			depth += 1;
 
-		_lhs.print_tree(depth);
+		_lhs->print_tree(depth);
 
 		for (const auto& rhs : _rhs)
 		{
@@ -99,7 +99,17 @@ namespace warbler::ast
 					break;
 			}
 
-			rhs.expr.print_tree(depth);
+			rhs.expr->print_tree(depth);
 		}
+	}
+
+	Typename *MultiplicativeExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
+	}
+
+	const Location& MultiplicativeExpression::location() const
+	{
+		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}
 }

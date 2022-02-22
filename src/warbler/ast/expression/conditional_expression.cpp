@@ -72,20 +72,15 @@ namespace warbler::ast
 			if (true_type != false_type)
 			{
 				#pragma message("TODO: implement type checking that allows for implicitly castable types")
-				print_error(_rhs->false_case.location(), "type of false case is '" + false_type->name().text() + "', which is incompatible with true case type '" + true_type->name().text() + "'");
+
+				print_error(_rhs->false_case.location(), "type of false case is '" + false_type->name() + "', which is incompatible with true case type '" + true_type->name() + "'");
 				print_note(_rhs->true_case.location(), "true case defined here");
+
 				return false;
 			}
 		}
 
 		return true;
-	}
-
-	Type *ConditionalExpression::get_type(semantics::ModuleContext& mod_ctx) const
-	{
-		return _rhs
-			? _rhs->true_case.get_type(mod_ctx)
-			: _lhs.get_type(mod_ctx);
 	}
 
 	void ConditionalExpression::print_tree(u32 depth) const
@@ -100,5 +95,17 @@ namespace warbler::ast
 			std::cout << tree_branch(depth + 1) << ":\n";
 			_rhs->false_case.print_tree(depth + 2);
 		}
+	}
+
+	Typename *ConditionalExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		return _rhs
+			? _rhs->true_case.get_type(mod_ctx)
+			: _lhs.get_type(mod_ctx);
+	}
+
+	const Location& ConditionalExpression::location() const
+	{
+		throw std::runtime_error("ConditionalExpression::" + String(__func__) + " is not implemented yet");
 	}
 }

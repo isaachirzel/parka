@@ -255,6 +255,7 @@ namespace warbler::ast
 	bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
 		#pragma message("Implement byte counting for each data type")
+		#pragma message("Implemented Constant type validation")
 		//throw std::runtime_error("Constant::validate is not implemented yet");
 		return true;
 	}
@@ -284,6 +285,16 @@ namespace warbler::ast
 				std::cout << (_boolean ? "true\n" : "false\n");
 				break;
 		}
+	}
+
+	Typename *Constant::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		throw std::runtime_error("Constant::" + String(__func__) + " is not implemented yet");
+	}
+
+	const Location& Constant::location() const
+	{
+		throw std::runtime_error("Constant::" + String(__func__) + " is not implemented yet");
 	}
 
 	Constant& Constant::operator=(Constant&& other)

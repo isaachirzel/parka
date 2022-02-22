@@ -1,7 +1,7 @@
 #ifndef WARBLER_AST_TYPE_TYPE_HPP
 #define WARBLER_AST_TYPE_TYPE_HPP
 
-#include <warbler/ast/name.hpp>
+#include <warbler/ast/identifier.hpp>
 #include <warbler/ast/type/type_definition.hpp>
 
 #include <warbler/semantics/context.hpp>
@@ -15,13 +15,13 @@ namespace warbler::ast
 	{
 	private:
 
-		Name _name;
+		Identifier _name;
 		Ptr<TypeDefinition> _definition;
 		semantics::TypeContext _context;
 
 	public:
 
-		Type(Name&& name, Ptr<TypeDefinition>&& definition);
+		Type(Identifier&& name, Ptr<TypeDefinition>&& definition);
 		Type(Type&&) = default;
 		Type(const Type&) = delete;
 
@@ -30,7 +30,7 @@ namespace warbler::ast
 		bool validate(semantics::ModuleContext& mod_ctx);
 		void print_tree(u32 depth = 0) const;
 
-		const Name& name() const { return _name; }
+		const Identifier& name() const { return _name; }
 		const TypeDefinition& definition() const { return *_definition; }
 	};
 }

@@ -18,7 +18,7 @@ namespace warbler::ast
 		ShiftType type;
 	};
 
-	class ShiftExpression
+	class ShiftExpression : public Expression
 	{
 	private:
 
@@ -32,9 +32,9 @@ namespace warbler::ast
 		static Result<ShiftExpression> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
-		const Location& location() const;
 		void print_tree(u32 depth = 0) const;
+		Typename *get_type(semantics::ModuleContext& mod_ctx) const;
+		const Location& location() const;
 	};
 }
 

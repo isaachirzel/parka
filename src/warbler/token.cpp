@@ -47,9 +47,36 @@ namespace warbler
 		_pos += offset;
 	}
 
-	Location::operator String() const
+	String Location::text() const
 	{
 		return String(pos_ptr(), length());
+	}
+
+	Location::operator String() const
+	{
+		return text();
+	}
+
+	Location Location::operator+(const Location& other) const
+	{
+		assert(_filename == other._filename);
+		assert(_src == other._src);
+
+		const Location *min;
+		const Location *max;
+
+		if (_pos <= other._pos)
+		{
+			min = this;
+			max = &other;
+		}
+		else
+		{
+			min = &other;
+			max = this;
+		}
+
+		return Location(_filename, _src, min->_line, min->_col, min->_pos, max->_pos + max->_length);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Location& location)

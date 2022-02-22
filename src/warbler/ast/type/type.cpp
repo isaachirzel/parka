@@ -4,7 +4,7 @@
 
 namespace warbler::ast
 {
-	Type::Type(Name&& name, Ptr<TypeDefinition>&& definition) :
+	Type::Type(Identifier&& name, Ptr<TypeDefinition>&& definition) :
 	_name(std::move(name)),
 	_definition(std::move(definition))
 	{}
@@ -14,7 +14,7 @@ namespace warbler::ast
 		// skip 'type' keyword
 		iter += 1;
 
-		auto name = Name::parse(iter);
+		auto name = Identifier::parse(iter);
 
 		if (!name)
 			return {};

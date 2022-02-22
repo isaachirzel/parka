@@ -2,7 +2,7 @@
 #define WARBLER_AST_FUNCTION_HPP
 
 // local headers
-#include <warbler/ast/name.hpp>
+#include <warbler/ast/identifier.hpp>
 #include <warbler/ast/expression/expression.hpp>
 #include <warbler/ast/expression/conditional_expression.hpp>
 #include <warbler/ast/statement/block_statement.hpp>
@@ -20,14 +20,14 @@ namespace warbler::ast
 	private:
 
 		semantics::FunctionContext _context;
-		Name _name;
+		Identifier _name;
 		Array<Declaration> _parameters;
 		Typename _return_type;
 		BlockStatement _body;
 	
 	public:
 
-		Function(Name&& name, Array<Declaration>&& parameters, Typename&& return_type, BlockStatement&& compound_body);
+		Function(Identifier&& name, Array<Declaration>&& parameters, Typename&& return_type, BlockStatement&& compound_body);
 		Function(Function&& other) = default;
 		Function(const Function& other) = delete;		
 
@@ -36,7 +36,7 @@ namespace warbler::ast
 		void print_tree(u32 depth = 0) const;
 		bool validate(semantics::ModuleContext& context);
 
-		const Name& name() const { return _name; }
+		const Identifier& name() const { return _name; }
 
 		Function& operator=(Function&& other) = default;
 		Function& operator=(const Function& other) = delete;

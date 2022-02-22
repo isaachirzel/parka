@@ -1,7 +1,7 @@
 #include <warbler/ast/expression/primary_expression.hpp>
 
 #include <warbler/print.hpp>
-#include <warbler/ast/identifier.hpp>
+#include <warbler/ast/symbol.hpp>
 #include <warbler/ast/expression/constant.hpp>
 #include <warbler/ast/expression/expression.hpp>
 
@@ -11,12 +11,12 @@ namespace warbler::ast
 	{
 		if (iter->type() == TOKEN_IDENTIFIER)
 		{
-			auto identifier = Identifier::parse(iter);
+			auto identifier = Symbol::parse(iter);
 
 			if (!identifier)
 				return {};
 
-			return Ptr<Expression> { new Identifier { identifier.unwrap() } };
+			return Ptr<Expression> { new Symbol { identifier.unwrap() } };
 		}
 		else if (iter->type() == TOKEN_LPAREN)
 		{

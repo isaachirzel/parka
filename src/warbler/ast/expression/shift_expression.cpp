@@ -90,4 +90,14 @@ namespace warbler::ast
 			rhs.expr.print_tree(depth);
 		}
 	}
+
+	Typename *ShiftExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
+	}
+
+	const Location& ShiftExpression::location() const
+	{
+		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
+	}
 }

@@ -5,7 +5,7 @@
 
 namespace warbler::ast
 {
-	Member::Member(Name&& name, Typename&& type, bool is_public) :
+	Member::Member(Identifier&& name, Typename&& type, bool is_public) :
 	_name(std::move(name)),
 	_type(std::move(type)),
 	_is_public(is_public)
@@ -25,7 +25,7 @@ namespace warbler::ast
 			iter += 1;
 		}
 
-		auto name = Name::parse(iter);
+		auto name = Identifier::parse(iter);
 
 		if (!name)
 			return {};

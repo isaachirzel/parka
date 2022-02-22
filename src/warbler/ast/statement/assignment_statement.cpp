@@ -8,7 +8,7 @@
 
 namespace warbler::ast
 {
-	AssignmentStatement::AssignmentStatement(AffixExpression&& lhs, Ptr<Expression>&& rhs, AssignmentType type) :
+	AssignmentStatement::AssignmentStatement(Ptr<Expression>&& lhs, Ptr<Expression>&& rhs, AssignmentType type) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs)),
 	_type(type)
@@ -16,7 +16,7 @@ namespace warbler::ast
 
 	Result<AssignmentStatement> AssignmentStatement::parse(TokenIterator& iter)
 	{
-		auto lhs = AffixExpression::parse(iter);
+		auto lhs = PrefixExpression::parse(iter);
 
 		if (!lhs)
 			return {};
@@ -90,52 +90,54 @@ namespace warbler::ast
 
 	void AssignmentStatement::print_tree(u32 depth) const
 	{
-		_lhs.print_tree(depth);
+		_lhs->print_tree(depth);
+
+		std::cout << tree_branch(depth);
 
 		switch (_type)
 		{
 			case ASSIGN_BECOME:
-				std::cout << tree_branch(depth) << "=\n";
+				std::cout << "=\n";
 				break;
 
 			case ASSIGN_MULTIPLY:
-				std::cout << tree_branch(depth) << "*=\n";
+				std::cout << "*=\n";
 				break;
 
 			case ASSIGN_DIVIDE:
-				std::cout << tree_branch(depth) << "/=\n";
+				std::cout << "/=\n";
 				break;
 
 			case ASSIGN_MODULUS:
-				std::cout << tree_branch(depth) << "%=\n";				
+				std::cout << "%=\n";				
 				break;
 
 			case ASSIGN_ADD:
-				std::cout << tree_branch(depth) << "*=\n";
+				std::cout << "*=\n";
 				break;
 
 			case ASSIGN_SUBTRACT:
-				std::cout << tree_branch(depth) << "-=\n";
+				std::cout << "-=\n";
 				break;
 
 			case ASSIGN_LSHIFT:
-				std::cout << tree_branch(depth) << "<<=\n";
+				std::cout << "<<=\n";
 				break;
 
 			case ASSIGN_RSHIFT:
-				std::cout << tree_branch(depth) << ">>=\n";
+				std::cout << ">>=\n";
 				break;
 
 			case ASSIGN_BITWISE_AND:
-				std::cout << tree_branch(depth) << "&=\n";
+				std::cout << "&=\n";
 				break;
 
 			case ASSIGN_BITWISE_OR:
-				std::cout << tree_branch(depth) << "|=\n";
+				std::cout << "|=\n";
 				break;
 
 			case ASSIGN_BITWISE_XOR:
-				std::cout << tree_branch(depth) << "^=\n";
+				std::cout << "^=\n";
 				break;
 		}
 

@@ -7,28 +7,48 @@ namespace warbler::ast
 {
 	Typename::Typename() :
 	_location(),
-	_name("")
+	_name(""),
+	_ptr_mutability(),
+	_type(nullptr)
 	{}
 
-	Typename::Typename(const Location& location, String&& name) :
+	Typename::Typename(const Location& location, Array<bool>&& ptr_mutability) :
 	_location(location),
-	_name(std::move(name))
+	_name(location.text()),
+	_ptr_mutability(std::move(ptr_mutability)),
+	_type(nullptr)
 	{}
 
 	Result<Typename> Typename::parse(TokenIterator& iter)
 	{
+		Array<bool> ptr_mutability;
+
+		while (iter->type() == TOKEN_ASTERISK)
+		{
+			iter += 1;
+
+			if (iter->type() == TOKEN_MUT)
+			{
+				ptr_mutability.push_back(true);
+				iter += 1;
+			}
+			else
+			{
+				ptr_mutability.push_back(false);
+			}
+		}
+
 		if (iter->type() != TOKEN_IDENTIFIER)
 		{
-			error_out(iter) << "expected typename but got: " << *iter << std::endl;
+			parse_error(iter, "typename");
 			return {};
 		}
 		
 		const auto& location = iter->location();
-		String name = String(location.pos_ptr(), location.length());
 
 		iter += 1;
 
-		return Typename(location, std::move(name));
+		return Typename { location, std::move(ptr_mutability) };
 	}
 
 	bool Typename::validate(semantics::ModuleContext& context)

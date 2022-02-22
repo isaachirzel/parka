@@ -6,6 +6,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/semantics/context.hpp>
+#include <warbler/ast/type/type.hpp>
 
 namespace warbler::ast
 {
@@ -15,12 +16,13 @@ namespace warbler::ast
 
 		Location _location;
 		String _name;
-		u32 _reference_depth;
+		Array<bool> _ptr_mutability;
+		Type *_type;
 
 	public:
 
 		Typename();
-		Typename(const Location& location, String&& name);
+		Typename(const Location& location, Array<bool>&& ptr_mutability);
 
 		static Result<Typename> parse(TokenIterator& iter);
 
@@ -28,9 +30,12 @@ namespace warbler::ast
 		void print_tree(u32 depth = 0) const;
 		bool validate();
 
+		bool validate_cast_from(semantics::ModuleContext& context, const Typename& other);
+
 		const Location& location() const { return _location; }
 		const String& name() const { return _name; }
-		u32 reference_depth() const { return _reference_depth; }
+		const Array<bool>& ptr_mutability() const { return _ptr_mutability; }
+		u32 reference_depth() const { return _ptr_mutability.size(); }
 	};
 }
 

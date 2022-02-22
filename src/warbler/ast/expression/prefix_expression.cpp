@@ -60,7 +60,7 @@ namespace warbler::ast
 		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
 	}
 
-	ast::Type *PrefixExpression::get_type(semantics::ModuleContext& module) const
+	Typename *PrefixExpression::get_type(semantics::ModuleContext& module) const
 	{
 		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
 	}

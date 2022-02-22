@@ -1,7 +1,7 @@
 #ifndef WARBLER_AST_DECLARATION_HPP
 #define WARBLER_AST_DECLARATION_HPP
 
-#include <warbler/ast/name.hpp>
+#include <warbler/ast/identifier.hpp>
 #include <warbler/ast/typename.hpp>
 #include <warbler/semantics/context.hpp>
 
@@ -11,13 +11,13 @@ namespace warbler::ast
 	{
 	private:
 
-		Name _name;
+		Identifier _name;
 		Typename _type;
 		bool _is_mutable;
 
 	public:
 
-		Declaration(Name&& name, Typename&& type, bool is_mutable);
+		Declaration(Identifier&& name, Typename&& type, bool is_mutable);
 
 		static Result<Declaration> parse_parameter(TokenIterator& iter);
 		static Result<Declaration> parse_variable(TokenIterator& iter);
@@ -27,7 +27,7 @@ namespace warbler::ast
 		void print_tree(u32 depth = 0) const;
 
 		bool is_mutable() const { return _is_mutable; }
-		const Name& name() const { return _name; }
+		const Identifier& name() const { return _name; }
 		const Typename& type() const { return _type; }
 	};
 }

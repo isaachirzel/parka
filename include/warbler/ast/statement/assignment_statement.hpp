@@ -27,13 +27,13 @@ namespace warbler::ast
 	{
 	private:
 
-		AffixExpression _lhs;
+		Ptr<Expression> _lhs;
 		Ptr<Expression> _rhs;
 		AssignmentType _type;
 
 	public:
 
-		AssignmentStatement(AffixExpression&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
+		AssignmentStatement(Ptr<Expression>&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
 
 		static Result<AssignmentStatement> parse(TokenIterator& iter);
 

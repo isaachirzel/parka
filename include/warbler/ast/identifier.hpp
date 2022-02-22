@@ -1,34 +1,32 @@
-#ifndef WARBLER_AST_IDENTIFIER_HPP
-#define WARBLER_AST_IDENTIFIER_HPP
+#ifndef WARBLER_AST_NAME_HPP
+#define WARBLER_AST_NAME_HPP
 
-// local headers
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
-#include <warbler/util/primitive.hpp>
-#include <warbler/ast/expression/primary_expression.hpp>>
+#include <warbler/util/string.hpp>
 
 namespace warbler::ast
 {
-	class Identifier : public Expression
+	class Identifier
 	{
 	private:
 
-		Location _location;
 		String _text;
+		Location _location;
+
+		Identifier(String&& text, const Location& location);
 
 	public:
 
-		Identifier(const Location& location, String&& text);
+		Identifier();
 
 		static Result<Identifier> parse(TokenIterator& iter);
 
-		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
 		void print_tree(u32 depth = 0) const;
 
-		const Location& location() const { return _location; }
 		const String& text() const { return _text; }
+		const Location& location() const { return _location; }
 	};
-
 }
+
 #endif

@@ -9,14 +9,14 @@
 
 namespace warbler::ast
 {
-	EqualityExpression::EqualityExpression(ComparisonExpression&& lhs, Array<EqualityRhs>&& rhs) :
+	EqualityExpression::EqualityExpression(RelationalExpression&& lhs, Array<EqualityRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
 	Result<EqualityExpression> EqualityExpression::parse(TokenIterator& iter)
 	{
-		auto lhs = ComparisonExpression::parse(iter);
+		auto lhs = RelationalExpression::parse(iter);
 
 		if (!lhs)
 			return {};
@@ -48,7 +48,7 @@ namespace warbler::ast
 
 			iter += 1;
 
-			auto res = ComparisonExpression::parse(iter);
+			auto res = RelationalExpression::parse(iter);
 
 			if (!res)
 				return {};
@@ -89,5 +89,15 @@ namespace warbler::ast
 			std::cout << tree_branch(depth - 1) << symbol;
 			rhs.expr.print_tree(depth);
 		}
+	}
+
+	Typename *EqualityExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	{
+		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
+	}
+
+	const Location& EqualityExpression::location() const
+	{
+		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
 	}
 }
