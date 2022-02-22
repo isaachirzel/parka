@@ -59,11 +59,11 @@ const char *src = R"=====(
 		elevation: i32
 	}
 
-	func print_person(person: Person, persons: i32s): Person
+	func print_person(person: Person, persons: i32): Person
 	{
 		var age = 1;
 		age[3];
-
+		person.age;
 	}
 
 )=====";

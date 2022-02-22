@@ -14,6 +14,12 @@ namespace warbler::ast
 		POSTFIX_MEMBER
 	};
 
+	struct MemberExpression
+	{
+		Identifier name;
+		Member *definition;
+	};
+
 	class PostfixExpression : public Expression
 	{
 	private:
@@ -24,7 +30,7 @@ namespace warbler::ast
 		{
 			Ptr<Expression> _index;
 			Array<Ptr<Expression>> _arguments;
-			Identifier _member;
+			MemberExpression _member;
 		};
 
 		PostfixType _type;
@@ -33,7 +39,7 @@ namespace warbler::ast
 
 		PostfixExpression(Ptr<Expression>&& expression, Ptr<Expression>&& index);
 		PostfixExpression(Ptr<Expression>&& expression, Array<Ptr<Expression>>&& arguments);
-		PostfixExpression(Ptr<Expression>&& expression, Identifier&& member);
+		PostfixExpression(Ptr<Expression>&& expression, Identifier&& member_name);
 		PostfixExpression(PostfixExpression&& other);
 		PostfixExpression(const PostfixExpression& other) = delete;
 		~PostfixExpression();

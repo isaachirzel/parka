@@ -150,6 +150,7 @@ namespace warbler
 		std::string spacing = line_header;
 
 		pos = location.start_of_line();
+
 		for (usize i = 0; i < location.col(); ++i)
 		{
 			out << (pos[i] == '\t' ? '\t' : ' ');

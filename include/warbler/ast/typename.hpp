@@ -2,6 +2,7 @@
 #define WARBLER_AST_TYPENAME_HPP
 
 // local headers
+#include <cassert>
 #include <warbler/token.hpp>
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
@@ -27,14 +28,13 @@ namespace warbler::ast
 		static Result<Typename> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& context);
-		void print_tree(u32 depth = 0) const;
-		bool validate();
-
 		bool validate_cast_from(semantics::ModuleContext& context, const Typename& other);
+		void print_tree(u32 depth = 0) const;
 
 		const Location& location() const { return _location; }
 		const String& name() const { return _name; }
 		const Array<bool>& ptr_mutability() const { return _ptr_mutability; }
+		Type *type() { assert(_type != nullptr); return _type; }
 		u32 reference_depth() const { return _ptr_mutability.size(); }
 	};
 }

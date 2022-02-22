@@ -11,7 +11,7 @@ namespace warbler::ast
 {
 	struct TypeDefinition
 	{
-		virtual ~TypeDefinition() {}
+		virtual ~TypeDefinition() = default;
 		virtual bool validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx) = 0;
 		virtual void print_tree(u32 depth = 0) const = 0;
 

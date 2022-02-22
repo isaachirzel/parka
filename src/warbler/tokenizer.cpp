@@ -251,6 +251,7 @@ namespace warbler
 
 	static Result<Token> get_dot_token(const Location& location)
 	{
+		auto value = location[1];
 		const char * const start = location.pos_ptr();
 		const char *pos = start;
 
@@ -262,8 +263,12 @@ namespace warbler
 		while (get_char_type(*pos) == CHAR_DOT)
 			pos += 1;
 
+		std::cout << "Len: " << location.length() << std::endl;
+
+		auto length = pos - start;
+
 		TokenType type;
-		switch (location.length())
+		switch (length)
 		{
 			case 1:
 				type = TOKEN_DOT;
@@ -274,12 +279,11 @@ namespace warbler
 				break;
 
 			default:
-				error_out(location) << "invalid token";
-				error_highlight(location);
+				print_error(location.with_length(length), "invalid token, expected '.' or '...'");
 				return {};
 		}
 
-		return Token(location, type, pos - start);
+		return Token(location, type, length);
 	}
 
 	static Token get_plus_operator(const Location& location)

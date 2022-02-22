@@ -76,7 +76,12 @@ namespace warbler
 			max = this;
 		}
 
-		return Location(_filename, _src, min->_line, min->_col, min->_pos, max->_pos + max->_length);
+		auto line = min->_line;
+		auto col = min->_col;
+		auto pos = min->_pos;
+		auto length = max->_pos + max->_length - min->_pos;
+
+		return Location(_filename, _src, line, col, pos, length);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Location& location)

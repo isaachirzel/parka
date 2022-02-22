@@ -23,6 +23,8 @@ namespace warbler::ast
 	{
 		Array<bool> ptr_mutability;
 
+		const Location start_location = iter->location();
+
 		while (iter->type() == TOKEN_ASTERISK)
 		{
 			iter += 1;
@@ -44,16 +46,16 @@ namespace warbler::ast
 			return {};
 		}
 		
-		const auto& location = iter->location();
+		const auto& end_location = iter->location();
 
 		iter += 1;
 
-		return Typename { location, std::move(ptr_mutability) };
+		return Typename { start_location + end_location, std::move(ptr_mutability) };
 	}
 
 	bool Typename::validate(semantics::ModuleContext& context)
 	{
-		if (context.types.find(_name) == context.types.end() && context.primitives.find(_name) == context.primitives.end())
+		if (!_name.empty() && context.types.find(_name) == context.types.end() && context.primitives.find(_name) == context.primitives.end())
 		{
 			print_error(_location, "'" + _name + "' is not an imported or locally defined type");
 			return false;

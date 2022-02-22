@@ -20,9 +20,9 @@ namespace warbler::ast
 	_type(POSTFIX_FUNCTION_CALL)
 	{}
 
-	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member) :
+	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member_name) :
 	_expression(std::move(expression)),
-	_member(std::move(member)),
+	_member(MemberExpression { std::move(member_name), nullptr }),
 	_type(POSTFIX_MEMBER)
 	{}
  
@@ -40,7 +40,7 @@ namespace warbler::ast
 				break;
 
 			case POSTFIX_MEMBER:
-				new (&_member) auto(std::move(other._member));				
+				new (&_member) auto(std::move(other._member));
 				break;
 		}
 	}
@@ -58,7 +58,7 @@ namespace warbler::ast
 				break;
 
 			case POSTFIX_MEMBER:
-				_member.~Identifier();
+				_member.~MemberExpression();
 				break;
 		}
 	}
@@ -161,12 +161,42 @@ namespace warbler::ast
 		return expression;
 	}
 
-	bool PostfixExpression::validate(semantics::ModuleContext& module, semantics::FunctionContext& function)
+	bool PostfixExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
+		if (!_expression->validate(mod_ctx, func_ctx))
+			return false;
+
+		switch (_type)
+		{
+			case POSTFIX_INDEX:
+				_index->validate(mod_ctx, func_ctx);
+				break;
+
+			case POSTFIX_FUNCTION_CALL:
+				for (auto& arg : _arguments)
+				{
+					arg->validate(mod_ctx, func_ctx);
+				}
+				break;
+
+			case POSTFIX_MEMBER:
+			{
+				auto *type_name = _expression->get_type(mod_ctx);
+				_member.definition = type_name->type()->get_member(_member.name.text());
+
+				if (_member.definition == nullptr)
+				{
+					print_error(_member.name.location(), "'" + _member.name.text() + "' is not a member of type '" + type_name->name() + "'");
+					return false;
+				}
+				break;
+			}
+		}
+
+		return true;
 	}
 
-	ast::Typename *PostfixExpression::get_type(semantics::ModuleContext& module) const
+	Typename *PostfixExpression::get_type(semantics::ModuleContext& module) const
 	{
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}
@@ -198,7 +228,7 @@ namespace warbler::ast
 				break;
 
 			case POSTFIX_MEMBER:
-				std::cout << '.' << _member.text() << '\n';
+				std::cout << tree_branch(depth + 1) << '.' << _member.name.text() << '\n';
 				break;
 		}
 	}

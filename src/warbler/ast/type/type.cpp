@@ -47,4 +47,13 @@ namespace warbler::ast
 		std::cout << "type " << _name.text() << ":\n";
 		_definition->print_tree(depth + 1);
 	}	
+
+	Member *Type::get_member(const String& member_name) const
+	{
+		auto iter = _context.members.find(member_name);
+
+		return iter != _context.members.end()
+			? iter->second
+			: nullptr;
+	}
 }

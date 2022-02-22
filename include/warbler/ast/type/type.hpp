@@ -32,6 +32,7 @@ namespace warbler::ast
 
 		const Identifier& name() const { return _name; }
 		const TypeDefinition& definition() const { return *_definition; }
+		Member *get_member(const String& member_name) const;
 	};
 }
 
