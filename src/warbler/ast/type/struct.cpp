@@ -4,11 +4,12 @@
 
 namespace warbler::ast
 {
-	Struct::Struct(Array<Member>&& members) :
+	Struct::Struct(Identifier&& name, Array<Member>&& members) :
+	_name(std::move(name)),
 	_members(std::move(members))
 	{}
 
-	Result<Struct> Struct::parse(TokenIterator& iter)
+	Result<Struct> Struct::parse(TokenIterator& iter, Identifier&& name)
 	{
 		iter += 1;
 
@@ -20,7 +21,7 @@ namespace warbler::ast
 
 		iter += 1;
 
-		Array<Member> out;
+		Array<Member> members;
 
 		if (iter->type() != TOKEN_RBRACE)
 		{
@@ -31,7 +32,7 @@ namespace warbler::ast
 				if (!member)
 					return {};
 
-				out.emplace_back(member.unwrap());
+				members.emplace_back(member.unwrap());
 
 				if (iter->type() != TOKEN_COMMA)
 					break;
@@ -48,14 +49,14 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return Struct { std::move(out) };
+		return Struct { std::move(name), std::move(members) };
 	}
 	
-	bool Struct::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
+	bool Struct::validate(semantics::ModuleContext& mod_ctx)
 	{
 		for (auto& member : _members)
 		{
-			if (!member.validate(mod_ctx, type_ctx))
+			if (!member.validate(mod_ctx, _context))
 				return false;
 		}
 

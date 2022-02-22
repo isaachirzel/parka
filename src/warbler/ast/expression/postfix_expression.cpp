@@ -182,7 +182,9 @@ namespace warbler::ast
 			case POSTFIX_MEMBER:
 			{
 				auto *type_name = _expression->get_type(mod_ctx);
-				_member.definition = type_name->type()->get_member(_member.name.text());
+				auto& type_definition = type_name->definition();
+
+				_member.definition = type_definition.get_member(_member.name.text());
 
 				if (_member.definition == nullptr)
 				{
@@ -213,19 +215,19 @@ namespace warbler::ast
 		switch (_type)
 		{
 			case POSTFIX_INDEX:
-				std::cout << tree_branch(depth) << "[\n";
-				_index->print_tree(depth + 1);
-				std::cout << tree_branch(depth) << "]\n";
+				std::cout << tree_branch(depth + 1) << "[\n";
+				_index->print_tree(depth + 2);
+				std::cout << tree_branch(depth + 1) << "]\n";
 				break;
 
 			case POSTFIX_FUNCTION_CALL:
-				std::cout << tree_branch(depth) << "(\n";
+				std::cout << tree_branch(depth + 1) << "(\n";
 
 				for (const auto& arg : _arguments)
-					arg->print_tree(depth + 1);
+					arg->print_tree(depth + 2);
 
-				std::cout << tree_branch(depth) << ")\n";
-				break;
+				std::cout << tree_branch(depth + 1) << ")\n";
+			break;
 
 			case POSTFIX_MEMBER:
 				std::cout << tree_branch(depth + 1) << '.' << _member.name.text() << '\n';

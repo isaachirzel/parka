@@ -2,7 +2,7 @@
 #define WARBLER_AST_TYPE_ENUM_HPP
 
 // local headers
-#include <warbler/ast/type/type.hpp>
+#include <warbler/ast/type/type_definition.hpp>
 
 namespace warbler::ast
 {

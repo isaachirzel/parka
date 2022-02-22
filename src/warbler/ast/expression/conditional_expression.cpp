@@ -3,7 +3,7 @@
 // local headers
 #include <warbler/print.hpp>
 #include <warbler/ast/expression/expression.hpp>
-#include <warbler/ast/type/type.hpp>
+#include <warbler/ast/type/type_definition.hpp>
 
 namespace warbler::ast
 {

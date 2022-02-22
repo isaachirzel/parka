@@ -104,7 +104,7 @@ namespace warbler::ast
 
 	bool Function::validate(semantics::ModuleContext& mod_ctx)
 	{
-		_context.body = &_body.context();
+		_context.blocks.push_back(&_body.context());
 
 		for (auto& parameter : _parameters)
 		{

@@ -2,15 +2,16 @@
 
 // local headers
 #include <warbler/print.hpp>
+#include <warbler/ast/declaration.hpp>
 
 // standard headers
 #include <cstdlib>
 
 namespace warbler::ast
 {
-	Symbol::Symbol(const Location& location, String&& text) :
+	Symbol::Symbol(const Location& location) :
 	_location(location),
-	_text(text)
+	_text(location.text())
 	{}
 
 	Result<Symbol> Symbol::parse(TokenIterator& iter)
@@ -22,11 +23,10 @@ namespace warbler::ast
 		}
 
 		const auto& location = iter->location();
-		String text = String(location.pos_ptr(), location.length());
 
 		iter += 1;
 
-		return Symbol { location, std::move(text) };
+		return Symbol { location };
 	}
 
 	bool Symbol::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
@@ -41,6 +41,8 @@ namespace warbler::ast
 			return false;
 		}
 
+		_type_name = declaration->type_name();
+
 		return true;
 	}
 
@@ -49,8 +51,5 @@ namespace warbler::ast
 		std::cout << tree_branch(depth) << _text << '\n';
 	}
 
-	Typename *Symbol::get_type(semantics::ModuleContext& mod_ctx) const
-	{
-		throw std::runtime_error("Typename::" + String(__func__) + " is not implemented yet");
-	}
+
 }

@@ -11,13 +11,14 @@ namespace warbler::ast
 	{
 	private:
 
-		String _text;
 		Location _location;
+		String _text;
 
-		Identifier(String&& text, const Location& location);
+		Identifier(const Location& location);
 
 	public:
 
+		Identifier(String&& text);
 		Identifier();
 
 		static Result<Identifier> parse(TokenIterator& iter);

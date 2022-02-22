@@ -28,7 +28,7 @@ namespace warbler::ast
 
 		bool is_mutable() const { return _is_mutable; }
 		const Identifier& name() const { return _name; }
-		const Typename& type() const { return _type; }
+		Typename* type_name() { return &_type; }
 	};
 }
 

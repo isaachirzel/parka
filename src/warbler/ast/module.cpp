@@ -4,7 +4,7 @@
 
 namespace warbler::ast
 {
-	Module::Module(Array<Function>&& functions, Array<Type>&& types) :
+	Module::Module(Array<Function>&& functions, Array<Ptr<TypeDefinition>>&& types) :
 	_functions(std::move(functions)),
 	_types(std::move(types))
 	{}
@@ -12,7 +12,7 @@ namespace warbler::ast
 	Result<Module> Module::parse(TokenIterator& iter)
 	{
 		Array<Function> functions;
-		Array<Type> types;
+		Array<Ptr<TypeDefinition>> types;
 
 		while (true)
 		{
@@ -30,7 +30,7 @@ namespace warbler::ast
 				}
 				case TOKEN_TYPE:
 				{
-					auto type = Type::parse(iter);
+					auto type = TypeDefinition::parse(iter);
 
 					if (!type)
 						return {};
@@ -55,7 +55,7 @@ namespace warbler::ast
 	void Module::print_tree(u32 depth) const
 	{
 		for (const auto& type: _types)
-			type.print_tree(depth);
+			type->print_tree(depth);
 
 		for (const auto& function : _functions)
 			function.print_tree(depth);
@@ -67,22 +67,22 @@ namespace warbler::ast
 		
 		for (auto& type : _types)
 		{
-			const auto& type_name = type.name().text();
+			const auto& type_name = type->name().text();
 
 			if (_context.types.find(type_name) != _context.types.end())
 			{
-				print_error(type.name().location(), "duplicate type " + type.name().text() + " in module '" + module_name + "'");
+				print_error(type->name().location(), "duplicate type " + type->name().text() + " in module '" + module_name + "'");
 
 				return false;
 			}
 
-			_context.types[type_name] = &type;
+			_context.types[type_name] = type.raw_ptr();
 		}
 
 		// checking if members of types are valid
 		for (auto& type : _types)
 		{
-			if (!type.validate(_context))
+			if (!type->validate(_context))
 				return false;
 		}
 

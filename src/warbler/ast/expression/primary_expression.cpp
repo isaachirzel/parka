@@ -11,12 +11,14 @@ namespace warbler::ast
 	{
 		if (iter->type() == TOKEN_IDENTIFIER)
 		{
-			auto identifier = Symbol::parse(iter);
+			auto symbol = Symbol::parse(iter);
 
-			if (!identifier)
+			if (!symbol)
 				return {};
 
-			return Ptr<Expression> { new Symbol { identifier.unwrap() } };
+			auto *ptr = new Symbol { symbol.unwrap() };
+
+			return Ptr<Expression> { ptr };
 		}
 		else if (iter->type() == TOKEN_LPAREN)
 		{

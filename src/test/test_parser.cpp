@@ -74,6 +74,7 @@ using namespace warbler::ast;
 int main()
 {
 	tokenizer_init();
+	semantics::init_context();
 
 	auto token_res = tokenize("<in-memory-file>", src);
 

@@ -1,43 +1,40 @@
 #include <warbler/semantics/context.hpp>
 
 #include <cassert>
+#include <warbler/print.hpp>
+#include <warbler/ast/type/primitive.hpp>
+#include <warbler/ast/type/type_definition.hpp>
 
 namespace warbler::semantics
 {
-	const Table<PrimitiveType> ModuleContext::primitives
+	using ast::TypeDefinition;
+	using ast::Primitive;
+	using ast::Identifier;
+	using ast::PrimitiveType;
+
+	static Table<Ptr<TypeDefinition>> primitives;
+
+	void init_context()
 	{
-		{ "i8", PRIMITIVE_I8 },
-		{ "i16", PRIMITIVE_I16 },
-		{ "i32", PRIMITIVE_I32 },
-		{ "i64", PRIMITIVE_I64 },
-		{ "isize", PRIMITIVE_ISIZE },
+		primitives.emplace("i8", Ptr<TypeDefinition> { new Primitive(Identifier("i8"), 1, ast::PRIMITIVE_INTEGER) });
+		primitives.emplace("i16", Ptr<TypeDefinition> { new Primitive(Identifier("i16"), 2, ast::PRIMITIVE_INTEGER) });
+		primitives.emplace("i32", Ptr<TypeDefinition> { new Primitive(Identifier("i32"), 2, ast::PRIMITIVE_INTEGER) });
+		primitives.emplace("i64", Ptr<TypeDefinition> { new Primitive(Identifier("i64"), 2, ast::PRIMITIVE_INTEGER) });
+	}
 
-		{ "u8", PRIMITIVE_U8 },
-		{ "u16", PRIMITIVE_U16 },
-		{ "u32", PRIMITIVE_U32 },
-		{ "u64", PRIMITIVE_U64 },
-		{ "usize", PRIMITIVE_USIZE },
-
-		{ "b8", PRIMITIVE_B8 },
-		{ "b16", PRIMITIVE_B16 },
-		{ "b32", PRIMITIVE_B32 },
-		{ "b64", PRIMITIVE_B64 },
-
-		{ "f32", PRIMITIVE_F32 },
-		{ "f64", PRIMITIVE_F64 },
-
-		{ "char", PRIMITIVE_CHAR},
-		{ "bool", PRIMITIVE_BOOL},
-		{ "str", PRIMITIVE_STR}
-	};
-
-	ast::Type *ModuleContext::get_type(const String& name)
+	ast::TypeDefinition *ModuleContext::get_type(const String& name)
 	{
 		auto iter = types.find(name);
 
-		return iter != types.end()
-			? iter->second
-			: nullptr;
+		if (iter != types.end())
+			return iter->second;
+
+		auto prim_iter = primitives.find(name);
+
+		if (prim_iter == primitives.end())
+			return nullptr;
+
+		return prim_iter->second.raw_ptr();
 	}
 
 	ast::Function *ModuleContext::get_function(const String& name)
@@ -84,22 +81,14 @@ namespace warbler::semantics
 
 	ast::Declaration *FunctionContext::get_declaration_in_current_block(const String& name)
 	{
-		ast::Declaration *declaration = nullptr;
+		auto *declaration = current_block().get_variable(name);
 
-		if (blocks.empty())
+		if (declaration != nullptr)
+			return declaration;
+
+		if (is_body_scope())
 		{
 			declaration = get_parameter(name);
-
-			if (declaration == nullptr)
-			{
-				declaration = body->get_variable(name);
-			}
-		}
-		else
-		{
-			auto *scope = blocks.back();
-			
-			declaration = scope->get_variable(name);
 		}
 
 		return declaration;

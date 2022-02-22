@@ -92,33 +92,24 @@ namespace warbler::ast
 
 	bool Declaration::validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (func_ctx.is_body_scope())
+		auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
+
+		if (previous_declaration)
 		{
-			auto *previous_declaration = func_ctx.get_parameter(_name.text());
+			print_error(_name.location(), "'" + _name.text() + "' is previously declared as a variable in scope");
+			print_note(previous_declaration->name().location(), "previous declaration here");
+			return false;
+		}
+
+		auto is_base_scope = func_ctx.blocks.size() == 1;
+
+		if (is_base_scope)
+		{
+			previous_declaration = func_ctx.get_parameter(_name.text());
 
 			if (previous_declaration)
 			{
 				print_error(_name.location(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
-				print_note(previous_declaration->name().location(), "previous declaration here");
-				return false;
-			}
-
-			previous_declaration = func_ctx.body->get_variable(_name.text());
-
-			if (previous_declaration)
-			{
-				print_error(_name.location(), "'" + _name.text() + "' is previously declared as a variable in function '" + func_ctx.name + "'");
-				print_note(previous_declaration->name().location(), "previous declaration here");
-				return false;
-			}
-		}
-		else
-		{
-			auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
-
-			if (previous_declaration)
-			{
-				print_error(_name.location(), "'" + _name.text() + "' is previously declared as a variable in same scope");
 				print_note(previous_declaration->name().location(), "previous declaration here");
 				return false;
 			}

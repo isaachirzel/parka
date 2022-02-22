@@ -9,14 +9,14 @@ namespace warbler::ast
 	_location(),
 	_name(""),
 	_ptr_mutability(),
-	_type(nullptr)
+	_definition(nullptr)
 	{}
 
 	Typename::Typename(const Location& location, Array<bool>&& ptr_mutability) :
 	_location(location),
 	_name(location.text()),
 	_ptr_mutability(std::move(ptr_mutability)),
-	_type(nullptr)
+	_definition(nullptr)
 	{}
 
 	Result<Typename> Typename::parse(TokenIterator& iter)
@@ -55,10 +55,15 @@ namespace warbler::ast
 
 	bool Typename::validate(semantics::ModuleContext& context)
 	{
-		if (!_name.empty() && context.types.find(_name) == context.types.end() && context.primitives.find(_name) == context.primitives.end())
+		if (!_name.empty())
 		{
-			print_error(_location, "'" + _name + "' is not an imported or locally defined type");
-			return false;
+			_definition = context.get_type(_name);
+
+			if (_definition == nullptr)
+			{
+				print_error(_location, "'" + _name + "' is not an imported or locally defined type");
+				return false;
+			}
 		}
 
 		return true;

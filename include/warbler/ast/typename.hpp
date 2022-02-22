@@ -7,7 +7,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/semantics/context.hpp>
-#include <warbler/ast/type/type.hpp>
+#include <warbler/ast/type/type_definition.hpp>
 
 namespace warbler::ast
 {
@@ -18,7 +18,7 @@ namespace warbler::ast
 		Location _location;
 		String _name;
 		Array<bool> _ptr_mutability;
-		Type *_type;
+		TypeDefinition *_definition;
 
 	public:
 
@@ -34,7 +34,7 @@ namespace warbler::ast
 		const Location& location() const { return _location; }
 		const String& name() const { return _name; }
 		const Array<bool>& ptr_mutability() const { return _ptr_mutability; }
-		Type *type() { assert(_type != nullptr); return _type; }
+		TypeDefinition& definition() { assert(_definition != nullptr); return *_definition; }
 		u32 reference_depth() const { return _ptr_mutability.size(); }
 	};
 }

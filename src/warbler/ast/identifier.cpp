@@ -4,9 +4,14 @@
 
 namespace warbler::ast
 {
-	Identifier::Identifier(String&& text, const Location& location) :
-	_text(std::move(text)),
-	_location(location)
+	Identifier::Identifier(const Location& location) :
+	_location(location),
+	_text(location.text())
+	{}
+
+	Identifier::Identifier(String&& text) :
+	_location(),
+	_text(std::move(text))
 	{}
 
 	Identifier::Identifier() :
@@ -23,7 +28,7 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return Identifier { String { location.pos_ptr(), location.length() }, location };
+		return Identifier { location };
 	}
 
 	void Identifier::print_tree(u32 depth) const
