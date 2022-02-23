@@ -8,69 +8,58 @@
 
 namespace warbler
 {
-	static char *read_from_file(FILE *file, const char *filepath)
+	Result<String> read_from_file(FILE *file)
 	{
 		if (fseek(file, 0, SEEK_END))
-		{
-			error_out() << "failed to iterate to end of file: " << filepath << std::endl;
-			return NULL;
-		}
+			return {};
 
 		long size = ftell(file);
 
 		if (size == -1)
-		{
-			error_out() << "failed to get file size: %s"<< filepath << std::endl;
-			return NULL;
-		}
-		else if (size == 0)
-		{
-			error_out() << "file is empty: %s"<< filepath << std::endl;
-			return NULL;
-		}
+			return {};
 
 		if (fseek(file, 0, SEEK_SET))
-		{
-			error_out() << "failed to iterate to beginning of file: %s" << filepath << std::endl;
-			return NULL;
-		}
+			return {};
+		
+		String buffer;
 
-		char *buffer = new char[size + 1];
+		buffer.resize(size);
 
-		if (buffer == NULL)
-		{
-			error_out() << "failed to allocate buffer for file: %s" << filepath << std::endl;
-			return NULL;
-		}
+		size_t bytes_read = fread(&buffer[0], sizeof(char), size, file);
 
-		size_t bytes_read = fread(buffer, sizeof(char), size, file);
-
-		if (bytes_read == 0)
-		{
-			delete buffer;
-			error_out() << "failed to read data from file: %s" << filepath << std::endl;
-			return NULL;
-		}
-
-		buffer[bytes_read] = '\0';
+		buffer.resize(bytes_read);
 
 		return buffer;
 	}
 
-	char *read_file(const char *filepath)
+	Result<String> read_file(const String& filepath)
 	{
-		FILE *file = fopen(filepath, "r");
+		FILE *file = fopen(filepath.c_str(), "r");
 		
 		if (!file)
 		{
-			error_out() << "failed to open file: %s" << filepath << std::endl;
-			return NULL;
+			print_error("failed to open file '" + filepath + "'");
+			return {};
 		}
 
-		char *out = read_from_file(file, filepath);
+		auto res =  read_from_file(file);
 
 		fclose(file);
 
-		return out;
+		if (!res)
+		{
+			print_error("failed to read file '" + filepath + "'");
+			return {};
+		}
+
+		auto text = res.unwrap();
+
+		if (text.empty())
+		{
+			print_error("file '" + filepath + "' was empty");
+			return {};
+		}
+
+		return text;
 	}
 }

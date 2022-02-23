@@ -1,9 +1,12 @@
-#ifndef WARBLER_FILE_HPP
-#define WARBLER_FILE_HPP
+#ifndef WARBLER_UTIL_FILE_HPP
+#define WARBLER_UTIL_FILE_HPP
+
+#include <warbler/util/string.hpp>
+#include <warbler/util/result.hpp>
 
 namespace warbler
 {
-	char *read_file(const char *filepath);
+	Result<String> read_file(const String& filepath);
 }
 
 #endif

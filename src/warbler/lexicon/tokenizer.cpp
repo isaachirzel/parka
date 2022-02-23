@@ -590,22 +590,22 @@ namespace warbler::lexicon
 		return Token();
 	}
 
-	Result<std::vector<Token>> tokenize(const char *filename, const char *src)
+	Result<std::vector<Token>> tokenize(const source::File& file)
 	{	
 		std::vector<Token> out;
 
 		out.reserve(10);
 
-		Location location(filename, src);
+		usize position = 0;
 
 		do
 		{
-			location = find_next_position(location);
+			position = find_next_position(file, position);
 
 			if (out.size() == out.capacity())
 				out.reserve(out.size() * 2);
 
-			auto res = get_next_token(location);
+			auto res = get_next_token(file, position);
 
 			if (!res)
 				return {};

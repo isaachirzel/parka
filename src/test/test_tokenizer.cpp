@@ -4,12 +4,14 @@
 // standard headers
 #include <assert.h>
 
-const char *src =
-"func this_is_a_long_function_name(num: i32) -> i32		\n"\
-"{														\n"\
-"var foo = bar(.53, 6) * 12.6 + 4;						\n"\
-"														\n"\
-"}														\n";
+const char *src = R"==(
+
+function this_is_a_long_function_name(num: i32) -> i32
+{
+	var foo = bar(.53, 6) * 12.6 + 4;
+}
+
+)==";
 
 using namespace warbler;
 
@@ -17,10 +19,11 @@ int main(void)
 {
 	lexicon::init_tokenizer();
 
-	auto res = lexicon::tokenize("<in-memory-file>", src);
+	auto file = source::File::from(src);
+	auto res = lexicon::tokenize(file);
 
 	if (!res)
-		return {};
+		return 1;
 
 	auto tokens = res.unwrap();
 

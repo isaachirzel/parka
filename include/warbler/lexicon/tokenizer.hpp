@@ -7,7 +7,7 @@
 
 // local includes
 #include <warbler/lexicon/token.hpp>
-#include <warbler/util/result.hpp>
+#include <warbler/source/file.hpp>
 
 // standard headers
 #include <vector>
@@ -15,7 +15,7 @@
 namespace warbler::lexicon
 {
 	void init_tokenizer();
-	Result<std::vector<Token>> tokenize(const char *filename, const char *src);
+	Result<Array<Token>> tokenize(const source::File& file);
 }
 
 #endif
