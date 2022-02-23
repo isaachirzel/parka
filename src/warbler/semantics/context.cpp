@@ -1,45 +1,45 @@
 #include <warbler/semantics/context.hpp>
 
 #include <cassert>
-#include <warbler/print.hpp>
-#include <warbler/ast/type/primitive.hpp>
-#include <warbler/ast/type/type_definition.hpp>
+#include <warbler/util/print.hpp>
+#include <warbler/syntax//type/primitive.hpp>
+#include <warbler/syntax//type/type_definition.hpp>
 
 namespace warbler::semantics
 {
-	using ast::TypeDefinition;
-	using ast::Primitive;
-	using ast::Identifier;
-	using ast::PrimitiveType;
+	using syntax::TypeDefinition;
+	using syntax::Primitive;
+	using syntax::Identifier;
+	using syntax::PrimitiveType;
 
 	static Table<Ptr<TypeDefinition>> primitives;
 
 	void init_context()
 	{
-		primitives.emplace("i8", Ptr<TypeDefinition> { new Primitive(Identifier("i8"), 1, ast::PRIMITIVE_INTEGER) });
-		primitives.emplace("i16", Ptr<TypeDefinition> { new Primitive(Identifier("i16"), 2, ast::PRIMITIVE_INTEGER) });
-		primitives.emplace("i32", Ptr<TypeDefinition> { new Primitive(Identifier("i32"), 2, ast::PRIMITIVE_INTEGER) });
-		primitives.emplace("i64", Ptr<TypeDefinition> { new Primitive(Identifier("i64"), 2, ast::PRIMITIVE_INTEGER) });
+		primitives.emplace("i8", Ptr<TypeDefinition> { new Primitive(Identifier("i8"), 1, syntax::PRIMITIVE_INTEGER) });
+		primitives.emplace("i16", Ptr<TypeDefinition> { new Primitive(Identifier("i16"), 2, syntax::PRIMITIVE_INTEGER) });
+		primitives.emplace("i32", Ptr<TypeDefinition> { new Primitive(Identifier("i32"), 2, syntax::PRIMITIVE_INTEGER) });
+		primitives.emplace("i64", Ptr<TypeDefinition> { new Primitive(Identifier("i64"), 2, syntax::PRIMITIVE_INTEGER) });
 
-		primitives.emplace("u8", Ptr<TypeDefinition> { new Primitive(Identifier("u8"), 1, ast::PRIMITIVE_UNSIGNED) });
-		primitives.emplace("u16", Ptr<TypeDefinition> { new Primitive(Identifier("u16"), 2, ast::PRIMITIVE_UNSIGNED) });
-		primitives.emplace("u32", Ptr<TypeDefinition> { new Primitive(Identifier("u32"), 2, ast::PRIMITIVE_UNSIGNED) });
-		primitives.emplace("u64", Ptr<TypeDefinition> { new Primitive(Identifier("u64"), 2, ast::PRIMITIVE_UNSIGNED) });
+		primitives.emplace("u8", Ptr<TypeDefinition> { new Primitive(Identifier("u8"), 1, syntax::PRIMITIVE_UNSIGNED) });
+		primitives.emplace("u16", Ptr<TypeDefinition> { new Primitive(Identifier("u16"), 2, syntax::PRIMITIVE_UNSIGNED) });
+		primitives.emplace("u32", Ptr<TypeDefinition> { new Primitive(Identifier("u32"), 2, syntax::PRIMITIVE_UNSIGNED) });
+		primitives.emplace("u64", Ptr<TypeDefinition> { new Primitive(Identifier("u64"), 2, syntax::PRIMITIVE_UNSIGNED) });
 
-		primitives.emplace("b8", Ptr<TypeDefinition> { new Primitive(Identifier("b8"), 1, ast::PRIMITIVE_BINARY) });
-		primitives.emplace("b16", Ptr<TypeDefinition> { new Primitive(Identifier("b16"), 2, ast::PRIMITIVE_BINARY) });
-		primitives.emplace("b32", Ptr<TypeDefinition> { new Primitive(Identifier("b32"), 2, ast::PRIMITIVE_BINARY) });
-		primitives.emplace("b64", Ptr<TypeDefinition> { new Primitive(Identifier("b64"), 2, ast::PRIMITIVE_BINARY) });
+		primitives.emplace("b8", Ptr<TypeDefinition> { new Primitive(Identifier("b8"), 1, syntax::PRIMITIVE_BINARY) });
+		primitives.emplace("b16", Ptr<TypeDefinition> { new Primitive(Identifier("b16"), 2, syntax::PRIMITIVE_BINARY) });
+		primitives.emplace("b32", Ptr<TypeDefinition> { new Primitive(Identifier("b32"), 2, syntax::PRIMITIVE_BINARY) });
+		primitives.emplace("b64", Ptr<TypeDefinition> { new Primitive(Identifier("b64"), 2, syntax::PRIMITIVE_BINARY) });
 
-		primitives.emplace("f32", Ptr<TypeDefinition> { new Primitive(Identifier("f32"), 2, ast::PRIMITIVE_FLOAT) });
-		primitives.emplace("f64", Ptr<TypeDefinition> { new Primitive(Identifier("f64"), 2, ast::PRIMITIVE_FLOAT) });
+		primitives.emplace("f32", Ptr<TypeDefinition> { new Primitive(Identifier("f32"), 2, syntax::PRIMITIVE_FLOAT) });
+		primitives.emplace("f64", Ptr<TypeDefinition> { new Primitive(Identifier("f64"), 2, syntax::PRIMITIVE_FLOAT) });
 
-		primitives.emplace("bool", Ptr<TypeDefinition> { new Primitive(Identifier("bool"), 2, ast::PRIMITIVE_BOOL) });
-		primitives.emplace("char", Ptr<TypeDefinition> { new Primitive(Identifier("char"), 2, ast::PRIMITIVE_CHAR) });
-		//primitives.emplace("str", Ptr<TypeDefinition> { new Primitive(Identifier("str"), 2, ast::PRIMITIVE_STR) });
+		primitives.emplace("bool", Ptr<TypeDefinition> { new Primitive(Identifier("bool"), 2, syntax::PRIMITIVE_BOOL) });
+		primitives.emplace("char", Ptr<TypeDefinition> { new Primitive(Identifier("char"), 2, syntax::PRIMITIVE_CHAR) });
+		//primitives.emplace("str", Ptr<TypeDefinition> { new Primitive(Identifier("str"), 2, syntax::PRIMITIVE_STR) });
 	}
 
-	ast::TypeDefinition *ModuleContext::get_type(const String& name)
+	syntax::TypeDefinition *ModuleContext::get_type(const String& name)
 	{
 		auto iter = types.find(name);
 
@@ -54,7 +54,7 @@ namespace warbler::semantics
 		return prim_iter->second.raw_ptr();
 	}
 
-	ast::Function *ModuleContext::get_function(const String& name)
+	syntax::Function *ModuleContext::get_function(const String& name)
 	{
 		auto iter = functions.find(name);
 
@@ -63,7 +63,7 @@ namespace warbler::semantics
 			: nullptr;
 	}
 
-	ast::Member *TypeContext::get_member(const String& name)
+	syntax::Member *TypeContext::get_member(const String& name)
 	{
 		auto iter = members.find(name);
 
@@ -72,7 +72,7 @@ namespace warbler::semantics
 			: nullptr;
 	}
 
-	ast::Declaration *FunctionContext::get_parameter(const String& name)
+	syntax::Declaration *FunctionContext::get_parameter(const String& name)
 	{
 		auto iter = parameters.find(name);
 
@@ -81,7 +81,7 @@ namespace warbler::semantics
 			: nullptr;
 	}
 
-	ast::Declaration *FunctionContext::get_declaration(const String& name)
+	syntax::Declaration *FunctionContext::get_declaration(const String& name)
 	{
 		for (auto iter = blocks.rbegin(); iter != blocks.rend(); ++iter)
 		{
@@ -96,7 +96,7 @@ namespace warbler::semantics
 		return get_parameter(name);
 	}
 
-	ast::Declaration *FunctionContext::get_declaration_in_current_block(const String& name)
+	syntax::Declaration *FunctionContext::get_declaration_in_current_block(const String& name)
 	{
 		auto *declaration = current_block().get_variable(name);
 
@@ -111,7 +111,7 @@ namespace warbler::semantics
 		return declaration;
 	}
 
-	ast::Declaration *BlockContext::get_variable(const String& name)
+	syntax::Declaration *BlockContext::get_variable(const String& name)
 	{
 		auto iter = variables.find(name);
 

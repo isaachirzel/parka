@@ -1,8 +1,8 @@
-#include <warbler/tokenizer.hpp>
+#include <warbler/lexicon/tokenizer.hpp>
 
 // local headers
-#include <warbler/ast/ast.hpp>
-#include <warbler/print.hpp>
+#include <warbler/syntax//ast.hpp>
+#include <warbler/util/print.hpp>
 
 // standard headers
 #include <stdio.h>
@@ -77,14 +77,14 @@ const char *src = R"==(
 // )=====";
 
 using namespace warbler;
-using namespace warbler::ast;
+using namespace warbler::syntax;
 
 int main()
 {
-	tokenizer_init();
+	lexicon::init_tokenizer();
 	semantics::init_context();
 
-	auto token_res = tokenize("<in-memory-file>", src);
+	auto token_res = lexicon::tokenize("<in-memory-file>", src);
 
 	if (!token_res)
 		return token_res;

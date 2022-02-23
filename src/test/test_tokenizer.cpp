@@ -1,5 +1,5 @@
 // local headers
-#include <warbler/tokenizer.hpp>
+#include <warbler/lexicon/tokenizer.hpp>
 
 // standard headers
 #include <assert.h>
@@ -15,9 +15,9 @@ using namespace warbler;
 
 int main(void)
 {
-	tokenizer_init();
+	lexicon::init_tokenizer();
 
-	auto res = tokenize("<in-memory-file>", src);
+	auto res = lexicon::tokenize("<in-memory-file>", src);
 
 	if (!res)
 		return {};

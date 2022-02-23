@@ -1,10 +1,10 @@
 // local includes
-#include <warbler/file.hpp>
+#include <warbler/util/file.hpp>
 #include <warbler/cli.hpp>
 #include <warbler/preprocessor.hpp>
-#include <warbler/tokenizer.hpp>
-#include <warbler/ast/ast.hpp>
-#include <warbler/print.hpp>
+#include <warbler/lexicon/tokenizer.hpp>
+#include <warbler/syntax//ast.hpp>
+#include <warbler/util/print.hpp>
 
 // standard library
 #include <cstdio>
