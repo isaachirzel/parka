@@ -2,7 +2,7 @@
 #define WARBLER_AST_DECLARATION_HPP
 
 #include <warbler/ast/identifier.hpp>
-#include <warbler/ast/typename.hpp>
+#include <warbler/ast/type.hpp>
 #include <warbler/semantics/context.hpp>
 
 namespace warbler::ast
@@ -28,7 +28,7 @@ namespace warbler::ast
 
 		bool is_mutable() const { return _is_mutable; }
 		const Identifier& name() const { return _name; }
-		Type* type_name() { return &_type; }
+		Type& type() { return _type; }
 	};
 }
 

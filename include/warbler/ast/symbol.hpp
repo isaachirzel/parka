@@ -15,7 +15,7 @@ namespace warbler::ast
 
 		Location _location;
 		String _text;
-		Type *_type_name;
+		Type *_type;
 
 	public:
 
@@ -25,7 +25,7 @@ namespace warbler::ast
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const { return _type_name; }
+		Type *get_type() { return _type; }
 
 		const Location& location() const { return _location; }
 		const String& text() const { return _text; }

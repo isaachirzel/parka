@@ -47,7 +47,15 @@ namespace warbler::ast
 		if (!_declaration.validate_variable(mod_ctx, func_ctx) && _value->validate(mod_ctx, func_ctx))
 			return false;
 
-		
+		auto& decl_type = _declaration.type();
+
+		if (!decl_type.is_auto())
+		{
+			auto *expr_type = _value->get_type();
+
+			if (!decl_type.validate_cast_from(expr_type))
+				return false;
+		}
 
 		return true;
 	}

@@ -7,39 +7,30 @@
 
 namespace warbler::ast
 {
-	struct ConditionalRhs;
-
 	class ConditionalExpression : public Expression
 	{
 	private: // members
 
-		BooleanOrExpression _lhs;
-		Ptr<ConditionalRhs> _rhs;
+		Ptr<Expression> _lhs;
+		Ptr<Expression> _true_case;
+		Ptr<Expression> _false_case;
 
 	public: // methods
 
-		ConditionalExpression(BooleanOrExpression&& lhs);
-		ConditionalExpression(BooleanOrExpression&& lhs, ConditionalRhs&& rhs);
+		ConditionalExpression(Ptr<Expression>&& lhs);
+		ConditionalExpression(Ptr<Expression>&& lhs, Ptr<Expression>&& true_case, Ptr<Expression>&& false_case);
 		ConditionalExpression(ConditionalExpression&&) = default;
 		ConditionalExpression(const ConditionalExpression&) = delete;
 
-		static Result<ConditionalExpression> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		Type *get_type();
 		const Location& location() const;
 
 		ConditionalExpression& operator=(ConditionalExpression&&) = default;
 		ConditionalExpression& operator=(const ConditionalExpression&) = delete;
-	};
-
-	struct ConditionalRhs
-	{
-		ConditionalExpression true_case;
-		ConditionalExpression false_case;
-
-		ConditionalRhs(ConditionalExpression&& true_case, ConditionalExpression&& false_case);
 	};
 }
 

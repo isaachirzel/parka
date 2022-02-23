@@ -10,7 +10,7 @@ namespace warbler::ast
 	_rhs(std::move(rhs))
 	{}
 
-	Result<MultiplicativeExpression> MultiplicativeExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> MultiplicativeExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = PrefixExpression::parse(iter);
 
@@ -56,7 +56,12 @@ namespace warbler::ast
 			rhs.emplace_back(MultiplicativeRhs { res.unwrap(), type });
 		}
 
-		return MultiplicativeExpression(lhs.unwrap(), std::move(rhs));
+		if (rhs.empty())
+			return lhs.unwrap();
+
+		auto *ptr = new MultiplicativeExpression(lhs.unwrap(), std::move(rhs));
+
+		return Ptr<Expression>(ptr);
 	}
 
 	bool MultiplicativeExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
@@ -103,7 +108,7 @@ namespace warbler::ast
 		}
 	}
 
-	Type *MultiplicativeExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *MultiplicativeExpression::get_type()
 	{
 		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}

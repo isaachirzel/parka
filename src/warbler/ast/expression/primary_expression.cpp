@@ -18,7 +18,7 @@ namespace warbler::ast
 
 			auto *ptr = new Symbol { symbol.unwrap() };
 
-			return Ptr<Expression> { ptr };
+			return Ptr<Expression> (ptr);
 		}
 		else if (iter->type() == TOKEN_LPAREN)
 		{
@@ -46,7 +46,9 @@ namespace warbler::ast
 			if (!constant)
 				return {};
 
-			return Ptr<Expression> { new Constant { constant.unwrap() } };
+			auto *ptr = new Constant(constant.unwrap());			
+
+			return Ptr<Expression>(ptr);
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace warbler::ast
 
 	struct EqualityRhs
 	{
-		RelationalExpression expr;
+		Ptr<Expression> expr;
 		EqualityType type;
 	};
 
@@ -22,18 +22,18 @@ namespace warbler::ast
 	{
 	private:
 
-		RelationalExpression _lhs;
+		Ptr<Expression> _lhs;
 		Array<EqualityRhs> _rhs;
 
 	public:
 
-		EqualityExpression(RelationalExpression&& lhs, Array<EqualityRhs>&& rhs);
+		EqualityExpression(Ptr<Expression>&& lhs, Array<EqualityRhs>&& rhs);
 
-		static Result<EqualityExpression> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		Type *get_type();
 		const Location& location() const;
 	};
 }

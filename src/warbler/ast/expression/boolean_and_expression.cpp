@@ -5,19 +5,19 @@
 
 namespace warbler::ast
 {
-	BooleanAndExpression::BooleanAndExpression(BitwiseOrExpression&& lhs, Array<BitwiseOrExpression>&& rhs) :
+	BooleanAndExpression::BooleanAndExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<BooleanAndExpression> BooleanAndExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> BooleanAndExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = BitwiseOrExpression::parse(iter);
 
 		if (!lhs)
 			return {};
 
-		Array<BitwiseOrExpression> rhs;
+		Array<Ptr<Expression>> rhs;
 
 		while (iter->type() == TOKEN_BOOLEAN_AND)
 		{
@@ -31,17 +31,22 @@ namespace warbler::ast
 			rhs.emplace_back(res.unwrap());
 		}
 
-		return BooleanAndExpression(lhs.unwrap(), std::move(rhs));
+		if (rhs.empty())
+			return lhs.unwrap();
+
+		auto *ptr = new BooleanAndExpression(lhs.unwrap(), std::move(rhs));
+
+		return Ptr<Expression>(ptr);
 	}
 
 	bool BooleanAndExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(mod_ctx, func_ctx))
+		if (!_lhs->validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& expr : _rhs)
 		{
-			if (!expr.validate(mod_ctx, func_ctx))
+			if (!expr->validate(mod_ctx, func_ctx))
 				return false;
 		}
 
@@ -53,16 +58,16 @@ namespace warbler::ast
 		if (_rhs.size() > 0)
 			depth += 1;
 
-		_lhs.print_tree(depth);
+		_lhs->print_tree(depth);
 
 		for (const auto& rhs : _rhs)
 		{
 			std::cout << tree_branch(depth - 1) << "&&\n";
-			rhs.print_tree(depth);
+			rhs->print_tree(depth);
 		}
 	}
 
-	Type *BooleanAndExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *BooleanAndExpression::get_type()
 	{
 		throw std::runtime_error("BooleanAndExpression::" + String(__func__) + " is not implemented yet");
 	}

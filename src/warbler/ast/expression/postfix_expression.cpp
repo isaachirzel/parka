@@ -181,14 +181,13 @@ namespace warbler::ast
 
 			case POSTFIX_MEMBER:
 			{
-				auto *type_name = _expression->get_type(mod_ctx);
-				auto& type_definition = type_name->definition();
+				auto *expr_type = _expression->get_type();
 
-				_member.definition = type_definition.get_member(_member.name.text());
+				_member.definition = expr_type->definition()->get_member(_member.name.text());
 
 				if (_member.definition == nullptr)
 				{
-					print_error(_member.name.location(), "'" + _member.name.text() + "' is not a member of type '" + type_name->name() + "'");
+					print_error(_member.name.location(), "'" + _member.name.text() + "' is not a member of type '" + expr_type->text() + "'");
 					return false;
 				}
 				break;
@@ -198,8 +197,21 @@ namespace warbler::ast
 		return true;
 	}
 
-	Type *PostfixExpression::get_type(semantics::ModuleContext& module) const
+	Type *PostfixExpression::get_type()
 	{
+		// switch (_type)
+		// {
+		// 	case POSTFIX_INDEX:
+		// 		break;
+
+		// 	case POSTFIX_FUNCTION_CALL:
+		// 		return 
+		// 		break;
+
+		// 	case POSTFIX_MEMBER:
+				
+		// 		break;
+		// }
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}
 

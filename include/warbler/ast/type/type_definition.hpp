@@ -1,9 +1,9 @@
 #ifndef WARBLER_AST_TYPE_TYPE_HPP
 #define WARBLER_AST_TYPE_TYPE_HPP
 
-#include <warbler/ast/identifier.hpp>
-#include <warbler/ast/type/type_definition.hpp>
 
+#include <warbler/ast/type/type_definition.hpp>
+#include <warbler/ast/identifier.hpp>
 #include <warbler/semantics/context.hpp>
 #include <warbler/token.hpp>
 #include <warbler/util/ptr.hpp>

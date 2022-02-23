@@ -2,6 +2,7 @@
 #define WARBLER_AST_TYPE_PRIMITIVE_HPP
 
 #include <warbler/util/primitive.hpp>
+#include <warbler/ast/identifier.hpp>
 #include <warbler/ast/type/type_definition.hpp>
 
 namespace warbler::ast
@@ -35,6 +36,8 @@ namespace warbler::ast
 		Member *get_member(const String&) { return nullptr; }
 		bool is_primitive() const { return true; }
 		const Identifier& name() const { return _name; }
+		u32 bytes() const { return _bytes; }
+		PrimitiveType type() const { return _type; }
 	};
 }
 

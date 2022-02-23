@@ -14,7 +14,7 @@ namespace warbler::ast
 
 	struct ShiftRhs
 	{
-		AdditiveExpression expr;
+		Ptr<Expression> expr;
 		ShiftType type;
 	};
 
@@ -22,18 +22,18 @@ namespace warbler::ast
 	{
 	private:
 
-		AdditiveExpression _lhs;
+		Ptr<Expression> _lhs;
 		std::vector<ShiftRhs> _rhs;
 
 	public:
 
-		ShiftExpression(AdditiveExpression&& lhs, std::vector<ShiftRhs>&& rhs);
+		ShiftExpression(Ptr<Expression>&& lhs, std::vector<ShiftRhs>&& rhs);
 
-		static Result<ShiftExpression> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		Type *get_type();
 		const Location& location() const;
 	};
 }

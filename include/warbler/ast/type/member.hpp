@@ -3,7 +3,7 @@
 
 // local headers
 #include <warbler/ast/identifier.hpp>
-#include <warbler/ast/typename.hpp>
+#include <warbler/ast/type.hpp>
 #include <warbler/semantics/context.hpp>
 
 namespace warbler::ast

@@ -128,6 +128,6 @@ namespace warbler::ast
 		if (_is_mutable)
 			std::cout << "mut ";
 		
-		std::cout << _name.text() << ": " << (!_type.name().empty() ?  _type.name() : "<auto>") << '\n';
+		std::cout << _name.text() << ": " << (_type.is_auto() ? "<auto>" : _type.location().text()) << '\n';
 	}
 }

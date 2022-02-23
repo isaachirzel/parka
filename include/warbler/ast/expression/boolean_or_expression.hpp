@@ -10,18 +10,18 @@ namespace warbler::ast
 	{
 	private:
 
-		BooleanAndExpression _lhs;
-		Array<BooleanAndExpression> _rhs;
+		Ptr<Expression> _lhs;
+		Array<Ptr<Expression>> _rhs;
 
 	public:
 
-		BooleanOrExpression(BooleanAndExpression&& lhs, Array<BooleanAndExpression>&& rhs);
+		BooleanOrExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs);
 
-		static Result<BooleanOrExpression> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		Type *get_type();
 		const Location& location() const;
 	};
 }

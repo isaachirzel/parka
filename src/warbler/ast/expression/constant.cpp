@@ -8,35 +8,41 @@
 
 namespace warbler::ast
 {
-	Constant::Constant(String&& string) :
+	Constant::Constant(const Location& location, String&& string) :
+	_location(location),
 	_string(string),
-	_type(CONSTANT_STRING)
+	_constant_type(CONSTANT_STRING)
 	{}
 
-	Constant::Constant(i64 integer) :
+	Constant::Constant(const Location& location, i64 integer) :
+	_location(location),
 	_integer(integer),
-	_type(CONSTANT_INTEGER)
+	_constant_type(CONSTANT_INTEGER)
 	{}
 
-	Constant::Constant(f64 floating) :
+	Constant::Constant(const Location& location, f64 floating) :
+	_location(location),
 	_floating(floating),
-	_type(CONSTANT_FLOAT)
+	_constant_type(CONSTANT_FLOAT)
 	{}
 
-	Constant::Constant(u32 character) :
+	Constant::Constant(const Location& location, u32 character) :
+	_location(location),
 	_character(character),
-	_type(CONSTANT_CHARACTER)
+	_constant_type(CONSTANT_CHARACTER)
 	{}
 
-	Constant::Constant(bool boolean) :
+	Constant::Constant(const Location& location, bool boolean) :
+	_location(location),
 	_boolean(boolean),
-	_type(CONSTANT_BOOLEAN)
+	_constant_type(CONSTANT_BOOLEAN)
 	{}
 
 	Constant::Constant(Constant&& other) :
-	_type(other._type)
+	_location(other._location),
+	_constant_type(other._constant_type)
 	{
-		switch (_type)
+		switch (_constant_type)
 		{
 			case CONSTANT_CHARACTER:
 				_character = other._character;
@@ -59,50 +65,23 @@ namespace warbler::ast
 				break;
 		}
 
-		other._type = CONSTANT_INTEGER;
-	}
-
-	Constant::Constant(const Constant& other) :
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case CONSTANT_CHARACTER:
-				_character = other._character;
-				break;
-
-			case CONSTANT_STRING:
-				new(&_string) auto(other._string);
-				break;
-
-			case CONSTANT_INTEGER:
-				_integer = other._integer;
-				break;
-
-			case CONSTANT_FLOAT:
-				_floating = other._floating;
-				break;
-
-			case CONSTANT_BOOLEAN:
-				_boolean = other._boolean;
-				break;
-		}
+		other._constant_type = CONSTANT_INTEGER;
 	}
 
 	Constant::~Constant()
 	{
-		if (_type == CONSTANT_STRING)
+		if (_constant_type == CONSTANT_STRING)
 			_string.~basic_string();
 	}
 
 	static Constant parse_character(TokenIterator& iter)
 	{
-		const auto& loc = iter->location();
-		u32 character = (u32)loc[0];
+		const auto& location = iter->location();
+		u32 character = (u32)location[0];
 
 		iter += 1;
 
-		return Constant(character);
+		return Constant(location, character);
 	}
 
 	static f64 string_to_f64(const Token& token)
@@ -161,9 +140,11 @@ namespace warbler::ast
 		if (is_negative)
 			value = -value;
 
+		const auto& location = iter->location();
+
 		iter += 1;
 
-		return Constant(value);
+		return Constant(location, value);
 	}
 
 	static Constant parse_float_literal(TokenIterator& iter, bool is_negative)
@@ -173,9 +154,11 @@ namespace warbler::ast
 		if (is_negative)
 			value = -value;
 
+		const auto& location = iter->location();
+
 		iter += 1;
 
-		return Constant(value);
+		return Constant(location, value);
 	}
 
 	static Result<Constant> parse_number(TokenIterator& iter, bool is_negative)
@@ -232,16 +215,23 @@ namespace warbler::ast
 
 				iter += 1;
 
-				return Constant(std::move(string));
+				return Constant(location, std::move(string));
 			}
 
 			case TOKEN_TRUE:
+			{
+				const auto& location = iter->location();
 				iter += 1;
-				return Constant(true);
+				return Constant(location, true);
+			}
 
 			case TOKEN_FALSE:
+			{
+				const auto& location = iter->location();
+
 				iter += 1;
-				return Constant(false);
+				return Constant(location, false);
+			}
 
 			default:
 				break;
@@ -254,16 +244,49 @@ namespace warbler::ast
 
 	bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
+		std::cout << "Constant::" << __func__ << std::endl;
+
 		#pragma message("Implement byte counting for each data type")
-		#pragma message("Implemented Constant type validation")
-		//throw std::runtime_error("Constant::validate is not implemented yet");
+
+		const char *type_base_name;
+
+		switch (_constant_type)
+		{
+			case CONSTANT_CHARACTER:
+				type_base_name = "char";
+				break;
+
+			case CONSTANT_STRING:
+				type_base_name = "str";
+				break;
+
+			case CONSTANT_INTEGER:
+				type_base_name = "i64";
+				break;
+
+			case CONSTANT_FLOAT:
+				type_base_name = "f64";
+				break;
+
+			case CONSTANT_BOOLEAN:
+				type_base_name = "bool";
+				break;
+		}
+
+		auto *definition = mod_ctx.get_type(type_base_name);
+
+		assert(definition != nullptr);
+
+		_type = Type(type_base_name, definition);
+
 		return true;
 	}
 
 	void Constant::print_tree(u32 depth) const
 	{
 		std::cout << tree_branch(depth);
-		switch (_type)
+
+		switch (_constant_type)
 		{
 			case CONSTANT_CHARACTER:
 				assert(false && "character print is not implemented");
@@ -287,25 +310,9 @@ namespace warbler::ast
 		}
 	}
 
-	Type *Constant::get_type(semantics::ModuleContext& mod_ctx) const
-	{
-		throw std::runtime_error("Constant::" + String(__func__) + " is not implemented yet");
-	}
-
-	const Location& Constant::location() const
-	{
-		throw std::runtime_error("Constant::" + String(__func__) + " is not implemented yet");
-	}
-
 	Constant& Constant::operator=(Constant&& other)
 	{
-		new(this) auto(other);
-		return *this;
-	}
-
-	Constant& Constant::operator=(const Constant& other)
-	{
-		new(this) auto(other);
+		new(this) auto(std::move(other));
 		return *this;
 	}
 }

@@ -2,7 +2,6 @@
 
 // local headers
 #include <warbler/print.hpp>
-#include <warbler/semantics/symbol.hpp>
 
 namespace warbler::ast
 {
@@ -124,7 +123,7 @@ namespace warbler::ast
 			parameter.print_tree(depth + 2);
 
 		std::cout << tree_branch(depth + 1) << ")\n";
-		std::cout << tree_branch(depth + 1) << ": " << _return_type.name() << '\n';
+		std::cout << tree_branch(depth + 1) << ": " << _return_type.text() << '\n';
 		
 		_body.print_tree(depth + 1);
 	}

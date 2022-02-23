@@ -67,6 +67,6 @@ namespace warbler::ast
 		std::cout << tree_branch(depth)
 			<< (_is_public ? "public " : "private ")
 			<< _name.text()
-			<< ": " << _type.name() << '\n';
+			<< ": " << _type.text() << '\n';
 	}
 }

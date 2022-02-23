@@ -16,7 +16,7 @@ namespace warbler::ast
 
 	struct RelationalRhs
 	{
-		ShiftExpression expr;
+		Ptr<Expression> expr;
 		RelationalType type;
 	};
 
@@ -24,18 +24,18 @@ namespace warbler::ast
 	{
 	private:
 
-		ShiftExpression _lhs;
+		Ptr<Expression> _lhs;
 		std::vector<RelationalRhs> _rhs;
 
 	public:
 
-		RelationalExpression(ShiftExpression&& lhs, std::vector<RelationalRhs>&& rhs);
+		RelationalExpression(Ptr<Expression>&& lhs, std::vector<RelationalRhs>&& rhs);
 
-		static Result<RelationalExpression> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		Type *get_type();
 		const Location& location() const;
 	};
 

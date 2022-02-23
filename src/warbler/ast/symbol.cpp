@@ -41,7 +41,7 @@ namespace warbler::ast
 			return false;
 		}
 
-		_type_name = declaration->type_name();
+		_type = &declaration->type();
 
 		return true;
 	}

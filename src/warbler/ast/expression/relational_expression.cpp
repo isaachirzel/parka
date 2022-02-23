@@ -5,12 +5,12 @@
 
 namespace warbler::ast
 {
-	RelationalExpression::RelationalExpression(ShiftExpression&& lhs, std::vector<RelationalRhs>&& rhs) :
+	RelationalExpression::RelationalExpression(Ptr<Expression>&& lhs, std::vector<RelationalRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<RelationalExpression> RelationalExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> RelationalExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = ShiftExpression::parse(iter);
 
@@ -60,17 +60,22 @@ namespace warbler::ast
 			rhs.emplace_back(RelationalRhs { res.unwrap(), type });
 		}
 
-		return RelationalExpression(lhs.unwrap(), std::move(rhs));
+		if (rhs.empty())
+			return lhs.unwrap();
+
+		auto *ptr = new  RelationalExpression(lhs.unwrap(), std::move(rhs));
+
+		return Ptr<Expression>(ptr);
 	}
 
 	bool RelationalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(mod_ctx, func_ctx))
+		if (!_lhs->validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& rhs : _rhs)
 		{
-			if (!rhs.expr.validate(mod_ctx, func_ctx))
+			if (!rhs.expr->validate(mod_ctx, func_ctx))
 				return false;
 		}
 
@@ -82,7 +87,7 @@ namespace warbler::ast
 		if (_rhs.size() > 0)
 			depth += 1;
 
-		_lhs.print_tree(depth);
+		_lhs->print_tree(depth);
 
 		for (const auto& rhs : _rhs)
 		{
@@ -108,11 +113,11 @@ namespace warbler::ast
 
 			}
 
-			rhs.expr.print_tree(depth);
+			rhs.expr->print_tree(depth);
 		}
 	}
 
-	Type *RelationalExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *RelationalExpression::get_type()
 	{
 		throw std::runtime_error("RelationExpression::" + String(__func__) + " is not implemented yet");
 	}
@@ -121,11 +126,11 @@ namespace warbler::ast
 	{
 		if (!_rhs.empty())
 		{
-			return _lhs.location();
+			return _lhs->location();
 		}
 		else
 		{
-			return _lhs.location() + _rhs.back().expr.location();
+			return _lhs->location() + _rhs.back().expr->location();
 		}
 	}
 }

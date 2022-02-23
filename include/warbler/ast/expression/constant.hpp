@@ -23,6 +23,8 @@ namespace warbler::ast
 	{
 	private:
 
+		Location _location;
+
 		union
 		{
 			String _string;
@@ -32,28 +34,42 @@ namespace warbler::ast
 			bool _boolean;
 		};
 
-		ConstantType _type;
+		ConstantType _constant_type;
+		Type _type;
 
 	public:
 
-		Constant(String&& string);
-		Constant(i64 integer);
-		Constant(f64 floatingpt);
-		Constant(u32 character);
-		Constant(bool boolean);
+		Constant(const Location& location, String&& string);
+		Constant(const Location& location, i64 integer);
+		Constant(const Location& location, f64 floatingpt);
+		Constant(const Location& location, u32 character);
+		Constant(const Location& location, bool boolean);
 		Constant(Constant&& other);
-		Constant(const Constant& other);
+		Constant(const Constant& other) = delete;
 		~Constant();
 
 		static Result<Constant> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
-		const Location& location() const;
+
+		Type *get_type() { return &_type; }
+		const Location& location() const { return _location; }
 
 		Constant& operator=(Constant&& other);
-		Constant& operator=(const Constant& other);
+		Constant& operator=(const Constant& other) = delete;
 	};
 }
+
+/*
+
+TokenArray - stores textual data
+
+Constant - stores parsed textual data
+
+ConstantIR 
+
+
+*/
+
 #endif

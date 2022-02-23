@@ -5,12 +5,12 @@
 
 namespace warbler::ast
 {
-	AdditiveExpression::AdditiveExpression(MultiplicativeExpression&& lhs, Array<AdditiveRhs>&& rhs) :
+	AdditiveExpression::AdditiveExpression(Ptr<Expression>&& lhs, Array<AdditiveRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<AdditiveExpression> AdditiveExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> AdditiveExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = MultiplicativeExpression::parse(iter);
 
@@ -45,17 +45,22 @@ namespace warbler::ast
 			rhs.emplace_back(AdditiveRhs { res.unwrap(), type });
 		}
 
-		return AdditiveExpression(lhs.unwrap(), std::move(rhs));
+		if (rhs.empty())
+			return lhs.unwrap();
+
+		auto *ptr = new AdditiveExpression(lhs.unwrap(), std::move(rhs));
+
+		return Ptr<Expression>(ptr);
 	}
 
 	bool AdditiveExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(mod_ctx, func_ctx))
+		if (!_lhs->validate(mod_ctx, func_ctx))
 			return false;
 
 		for (auto& rhs : _rhs)
 		{
-			if (!rhs.expr.validate(mod_ctx, func_ctx))
+			if (!rhs.expr->validate(mod_ctx, func_ctx))
 				return false;
 		}
 
@@ -67,16 +72,16 @@ namespace warbler::ast
 		if (_rhs.size() > 0)
 			depth += 1;
 
-		_lhs.print_tree(depth);
+		_lhs->print_tree(depth);
 		
 		for (const auto& rhs : _rhs)
 		{
 			std::cout << tree_branch(depth - 1) << (rhs.type == ADDITIVE_ADD ? "+\n" : "-\n");
-			rhs.expr.print_tree(depth);
+			rhs.expr->print_tree(depth);
 		}
 	}
 
-	Type *AdditiveExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *AdditiveExpression::get_type()
 	{
 		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
 	}

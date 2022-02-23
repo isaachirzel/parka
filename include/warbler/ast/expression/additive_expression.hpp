@@ -14,7 +14,7 @@ namespace warbler::ast
 
 	struct AdditiveRhs
 	{
-		MultiplicativeExpression expr;
+		Ptr<Expression> expr;
 		AdditiveType type;
 	};
 
@@ -22,18 +22,18 @@ namespace warbler::ast
 	{
 	private:
 
-		MultiplicativeExpression _lhs;
+		Ptr<Expression> _lhs;
 		Array<AdditiveRhs> _rhs;
 	
 	public:
 
-		AdditiveExpression(MultiplicativeExpression&& lhs, Array<AdditiveRhs>&& rhs);
+		AdditiveExpression(Ptr<Expression>&& lhs, Array<AdditiveRhs>&& rhs);
 
-		static Result<AdditiveExpression> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
-		Type *get_type(semantics::ModuleContext& mod_ctx) const;
+		Type *get_type();
 		const Location& location() const;
 	};
 }

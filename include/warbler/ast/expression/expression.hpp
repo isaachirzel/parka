@@ -1,7 +1,7 @@
 #ifndef WARBLER_AST_EXPRESSION_HPP
 #define WARBLER_AST_EXPRESSION_HPP
 
-#include <warbler/ast/typename.hpp>
+#include <warbler/ast/type.hpp>
 #include <warbler/token.hpp>
 #include <warbler/semantics/context.hpp>
 #include <warbler/util/ptr.hpp>
@@ -13,7 +13,7 @@ namespace warbler::ast
 	{
 		virtual ~Expression() = default;
 		virtual bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx) = 0;
-		virtual Type* get_type(semantics::ModuleContext& mod_ctx) const = 0;
+		virtual Type* get_type() = 0;
 		virtual void print_tree(u32 depth = 0) const = 0;
 		virtual const Location& location() const = 0;
 

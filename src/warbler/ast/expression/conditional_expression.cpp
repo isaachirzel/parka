@@ -7,22 +7,17 @@
 
 namespace warbler::ast
 {
-	ConditionalRhs::ConditionalRhs(ConditionalExpression&& true_case, ConditionalExpression&& false_case) :
-	true_case(std::move(true_case)),
-	false_case(std::move(false_case))
+	ConditionalExpression::ConditionalExpression(Ptr<Expression>&& lhs) :
+	_lhs(std::move(lhs))
 	{}
 
-	ConditionalExpression::ConditionalExpression(BooleanOrExpression&& lhs) :
+	ConditionalExpression::ConditionalExpression(Ptr<Expression>&& lhs, Ptr<Expression>&& true_case, Ptr<Expression>&& false_case) :
 	_lhs(std::move(lhs)),
-	_rhs()
+	_true_case(std::move(true_case)),
+	_false_case(std::move(false_case))
 	{}
 
-	ConditionalExpression::ConditionalExpression(BooleanOrExpression&& lhs, ConditionalRhs&& rhs) :
-	_lhs(std::move(lhs)),
-	_rhs(std::move(rhs))
-	{}
-
-	Result<ConditionalExpression> ConditionalExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> ConditionalExpression::parse(TokenIterator& iter)
 	{
 		auto lhs = BooleanOrExpression::parse(iter);
 
@@ -30,7 +25,7 @@ namespace warbler::ast
 			return {};
 
 		if (iter->type() != TOKEN_THEN)
-			return ConditionalExpression { lhs.unwrap() };
+			return lhs.unwrap();
 
 		iter += 1;
 
@@ -53,28 +48,30 @@ namespace warbler::ast
 		if (!false_case)
 			return {};
 
-		return ConditionalExpression(lhs.unwrap(), ConditionalRhs { true_case.unwrap(), false_case.unwrap() });
+		auto *ptr = new ConditionalExpression(lhs.unwrap(), true_case.unwrap(), false_case.unwrap());
+
+		return Ptr<Expression>(ptr);
 	}
 
 	bool ConditionalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
 	{
-		if (!_lhs.validate(mod_ctx, func_ctx))
+		if (!_lhs->validate(mod_ctx, func_ctx))
 			return false;
 
-		if (_rhs)
+		if (_true_case)
 		{
-			if (!_rhs->true_case.validate(mod_ctx, func_ctx) || !_rhs->false_case.validate(mod_ctx, func_ctx))
+			if (!_true_case->validate(mod_ctx, func_ctx) || !_false_case->validate(mod_ctx, func_ctx))
 				return false;
 
-			auto *true_type = _rhs->true_case.get_type(mod_ctx);
-			auto *false_type = _rhs->false_case.get_type(mod_ctx);
+			auto *true_type = _true_case->get_type();
+			auto *false_type = _false_case->get_type();
 
 			if (true_type != false_type)
 			{
 				#pragma message("TODO: implement type checking that allows for implicitly castable types")
 
-				print_error(_rhs->false_case.location(), "type of false case is '" + false_type->name() + "', which is incompatible with true case type '" + true_type->name() + "'");
-				print_note(_rhs->true_case.location(), "true case defined here");
+				print_error(_false_case->location(), "type of false case is '" + false_type->text() + "', which is incompatible with true case type '" + true_type->text() + "'");
+				print_note(_true_case->location(), "true case defined here");
 
 				return false;
 			}
@@ -85,23 +82,23 @@ namespace warbler::ast
 
 	void ConditionalExpression::print_tree(u32 depth) const
 	{
-		_lhs.print_tree(depth);
+		_lhs->print_tree(depth);
 
-		if (_rhs)
+		if (_true_case)
 		{
 			std::cout << tree_branch(depth + 1) << "?\n";
-			_rhs->true_case.print_tree(depth + 2);
+			_true_case->print_tree(depth + 2);
 
 			std::cout << tree_branch(depth + 1) << ":\n";
-			_rhs->false_case.print_tree(depth + 2);
+			_false_case->print_tree(depth + 2);
 		}
 	}
 
-	Type *ConditionalExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *ConditionalExpression::get_type()
 	{
-		return _rhs
-			? _rhs->true_case.get_type(mod_ctx)
-			: _lhs.get_type(mod_ctx);
+		return _true_case
+			? _true_case->get_type()
+			: _lhs->get_type();
 	}
 
 	const Location& ConditionalExpression::location() const
