@@ -6,7 +6,7 @@
 
 namespace warbler::ast
 {
-	Function::Function(Identifier&& name, std::vector<Declaration>&& parameters, Typename&& return_type, BlockStatement&& body) :
+	Function::Function(Identifier&& name, std::vector<Declaration>&& parameters, Type&& return_type, BlockStatement&& body) :
 	_name(std::move(name)),
 	_parameters(std::move(parameters)),
 	_return_type(std::move(return_type)),
@@ -74,13 +74,13 @@ namespace warbler::ast
 		if (!parameters)
 			return {};
 		
-		auto type = Typename();
+		auto type = Type();
 
 		if (iter->type() == TOKEN_COLON)
 		{
 			iter += 1;
 
-			auto res = Typename::parse(iter);
+			auto res = Type::parse(iter);
 			
 			if (!res)
 				return {};

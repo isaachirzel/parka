@@ -103,7 +103,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *MultiplicativeExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *MultiplicativeExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}

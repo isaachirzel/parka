@@ -91,7 +91,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *ShiftExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *ShiftExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
 	}

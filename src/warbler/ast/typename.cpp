@@ -5,21 +5,21 @@
 
 namespace warbler::ast
 {
-	Typename::Typename() :
+	Type::Type() :
 	_location(),
 	_name(""),
 	_ptr_mutability(),
 	_definition(nullptr)
 	{}
 
-	Typename::Typename(const Location& location, Array<bool>&& ptr_mutability) :
+	Type::Type(const Location& location, Array<bool>&& ptr_mutability) :
 	_location(location),
 	_name(location.text()),
 	_ptr_mutability(std::move(ptr_mutability)),
 	_definition(nullptr)
 	{}
 
-	Result<Typename> Typename::parse(TokenIterator& iter)
+	Result<Type> Type::parse(TokenIterator& iter)
 	{
 		Array<bool> ptr_mutability;
 
@@ -50,10 +50,10 @@ namespace warbler::ast
 
 		iter += 1;
 
-		return Typename { start_location + end_location, std::move(ptr_mutability) };
+		return Type { start_location + end_location, std::move(ptr_mutability) };
 	}
 
-	bool Typename::validate(semantics::ModuleContext& context)
+	bool Type::validate(semantics::ModuleContext& context)
 	{
 		if (!_name.empty())
 		{
@@ -69,7 +69,7 @@ namespace warbler::ast
 		return true;
 	}
 
-	void Typename::print_tree(u32 depth) const
+	void Type::print_tree(u32 depth) const
 	{
 		
 		std::cout << tree_branch(depth) << ": " <<  _name << '\n';

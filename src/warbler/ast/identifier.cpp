@@ -15,8 +15,8 @@ namespace warbler::ast
 	{}
 
 	Identifier::Identifier() :
-	_text(),
-	_location()
+	_location(),
+	_text()
 	{}
 
 	Result<Identifier> Identifier::parse(TokenIterator& iter)

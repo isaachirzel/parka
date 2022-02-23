@@ -22,12 +22,12 @@ namespace warbler::ast
 		semantics::FunctionContext _context;
 		Identifier _name;
 		Array<Declaration> _parameters;
-		Typename _return_type;
+		Type _return_type;
 		BlockStatement _body;
 	
 	public:
 
-		Function(Identifier&& name, Array<Declaration>&& parameters, Typename&& return_type, BlockStatement&& compound_body);
+		Function(Identifier&& name, Array<Declaration>&& parameters, Type&& return_type, BlockStatement&& compound_body);
 		Function(Function&& other) = default;
 		Function(const Function& other) = delete;		
 

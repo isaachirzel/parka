@@ -91,7 +91,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *EqualityExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *EqualityExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
 	}

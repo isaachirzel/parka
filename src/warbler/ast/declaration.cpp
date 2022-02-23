@@ -4,7 +4,7 @@
 
 namespace warbler::ast
 {
-	Declaration::Declaration(Identifier&& name, Typename&& type, bool is_mutable) :
+	Declaration::Declaration(Identifier&& name, Type&& type, bool is_mutable) :
 	_name(std::move(name)),
 	_type(std::move(type)),
 	_is_mutable(is_mutable)
@@ -33,7 +33,7 @@ namespace warbler::ast
 
 		iter += 1;
 
-		auto type = Typename::parse(iter);
+		auto type = Type::parse(iter);
 
 		if (!type)
 			return {};
@@ -56,13 +56,13 @@ namespace warbler::ast
 		if (!name)
 			return {};
 
-		auto type = Typename();
+		auto type = Type();
 
 		if (iter->type() == TOKEN_COLON)
 		{
 			iter += 1;
 
-			auto res = Typename::parse(iter);
+			auto res = Type::parse(iter);
 
 			if (!res)
 				return {};

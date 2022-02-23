@@ -62,7 +62,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *BitwiseXorExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *BitwiseXorExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("BitwiseXorExpression::" + String(__func__) + " is not implemented yet");
 	}

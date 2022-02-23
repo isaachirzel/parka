@@ -43,30 +43,38 @@
 // }
 // )=====";
 
-const char *src = R"=====(
+const char *src = R"==(
 
-	type Person: struct
+	function main(argc: i32)
 	{
-		public age: u8,
-		height: f64,
-		ages: str
+		var value: i32 = 3;
 	}
 
-	type House: struct
-	{
-		owner: Person,
-		sq_footage: u16,
-		elevation: i32
-	}
+)==";
 
-	func print_person(person: Person, persons: i32): Person
-	{
-		var age = 1;
-		age[3];
-		person.age;
-	}
+// const char *src = R"=====(
 
-)=====";
+// 	type Person: struct
+// 	{
+// 		public age: u8,
+// 		height: f64
+// 	}
+
+// 	type House: struct
+// 	{
+// 		owner: Person,
+// 		sq_footage: u16,
+// 		elevation: i32
+// 	}
+
+// 	function print_person(person: Person, persons: i32): Person
+// 	{
+// 		var age = 1;
+// 		age[3];
+// 		person.age;
+// 	}
+
+// )=====";
 
 using namespace warbler;
 using namespace warbler::ast;

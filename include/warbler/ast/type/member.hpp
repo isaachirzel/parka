@@ -13,12 +13,12 @@ namespace warbler::ast
 	private:
 
 		Identifier _name;
-		Typename _type;
+		Type _type;
 		bool _is_public;
 
 	public:
 
-		Member(Identifier&& id, Typename&& type, bool is_public);
+		Member(Identifier&& id, Type&& type, bool is_public);
 
 		static Result<Member> parse(TokenIterator& iter);
 
@@ -26,7 +26,7 @@ namespace warbler::ast
 		void print_tree(u32 depth = 0) const;
 
 		const Identifier& name() const { return _name; }
-		const Typename& type() const { return _type; }
+		const Type& type() const { return _type; }
 	};
 }
 

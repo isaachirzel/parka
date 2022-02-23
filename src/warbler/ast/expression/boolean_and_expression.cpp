@@ -62,7 +62,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *BooleanAndExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *BooleanAndExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("BooleanAndExpression::" + String(__func__) + " is not implemented yet");
 	}

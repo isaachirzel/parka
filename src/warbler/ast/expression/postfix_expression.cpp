@@ -198,7 +198,7 @@ namespace warbler::ast
 		return true;
 	}
 
-	Typename *PostfixExpression::get_type(semantics::ModuleContext& module) const
+	Type *PostfixExpression::get_type(semantics::ModuleContext& module) const
 	{
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}

@@ -287,7 +287,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *Constant::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *Constant::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("Constant::" + String(__func__) + " is not implemented yet");
 	}

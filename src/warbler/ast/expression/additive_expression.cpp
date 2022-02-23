@@ -76,7 +76,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *AdditiveExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *AdditiveExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
 	}

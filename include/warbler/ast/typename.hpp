@@ -11,7 +11,7 @@
 
 namespace warbler::ast
 {
-	class Typename
+	class Type
 	{
 	private:
 
@@ -22,13 +22,13 @@ namespace warbler::ast
 
 	public:
 
-		Typename();
-		Typename(const Location& location, Array<bool>&& ptr_mutability);
+		Type();
+		Type(const Location& location, Array<bool>&& ptr_mutability);
 
-		static Result<Typename> parse(TokenIterator& iter);
+		static Result<Type> parse(TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& context);
-		bool validate_cast_from(semantics::ModuleContext& context, const Typename& other);
+		bool validate_cast_from(semantics::ModuleContext& context, const Type& other);
 		void print_tree(u32 depth = 0) const;
 
 		const Location& location() const { return _location; }

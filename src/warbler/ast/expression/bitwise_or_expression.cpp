@@ -62,7 +62,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *BitwiseOrExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *BitwiseOrExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("BitwiseOrExpression::" + String(__func__) + " is not implemented yet");
 	}

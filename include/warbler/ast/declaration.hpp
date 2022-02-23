@@ -12,12 +12,12 @@ namespace warbler::ast
 	private:
 
 		Identifier _name;
-		Typename _type;
+		Type _type;
 		bool _is_mutable;
 
 	public:
 
-		Declaration(Identifier&& name, Typename&& type, bool is_mutable);
+		Declaration(Identifier&& name, Type&& type, bool is_mutable);
 
 		static Result<Declaration> parse_parameter(TokenIterator& iter);
 		static Result<Declaration> parse_variable(TokenIterator& iter);
@@ -28,7 +28,7 @@ namespace warbler::ast
 
 		bool is_mutable() const { return _is_mutable; }
 		const Identifier& name() const { return _name; }
-		Typename* type_name() { return &_type; }
+		Type* type_name() { return &_type; }
 	};
 }
 

@@ -112,7 +112,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *RelationalExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *RelationalExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		throw std::runtime_error("RelationExpression::" + String(__func__) + " is not implemented yet");
 	}

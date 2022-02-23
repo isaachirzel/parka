@@ -97,7 +97,7 @@ namespace warbler::ast
 		}
 	}
 
-	Typename *ConditionalExpression::get_type(semantics::ModuleContext& mod_ctx) const
+	Type *ConditionalExpression::get_type(semantics::ModuleContext& mod_ctx) const
 	{
 		return _rhs
 			? _rhs->true_case.get_type(mod_ctx)
