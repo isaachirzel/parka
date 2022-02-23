@@ -53,5 +53,12 @@ namespace warbler::source
 		auto line_lengths = get_line_lengths(source);
 
 		return File(std::move(filename), std::move(source), std::move(line_lengths));
-	};
+	}
+
+	String File::get_string(const Location& location) const
+	{
+		const char *ptr = &_src[location.pos()];
+
+		return String(ptr, location.length());
+	}
 }

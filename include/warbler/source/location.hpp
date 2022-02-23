@@ -14,10 +14,9 @@ namespace warbler::source
 
 	public:
 
-		Location(usize pos, usize length) :
-		_pos(pos),
-		_length(length)
-		{}
+		Location(usize pos, usize length);
+
+		Location operator+(const Location& other);
 
 		usize pos() const { return _pos; }
 		usize length() const { return _length; }

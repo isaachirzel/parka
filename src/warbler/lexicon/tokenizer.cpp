@@ -10,6 +10,8 @@
 
 namespace warbler::lexicon
 {
+	using source::File;
+
 	enum CharType
 	{
 		CHAR_INVALID,
@@ -24,30 +26,7 @@ namespace warbler::lexicon
 
 	std::unordered_map<std::string, TokenType> token_types = 
 	{
-		{ "mut", TOKEN_MUT },
-		{ "function", TOKEN_FUNC },
-		{ "var", TOKEN_VAR },
-		{ "type", TOKEN_TYPE },
-		{ "return", TOKEN_RETURN },
-		{ "for", TOKEN_FOR },
-		{ "while", TOKEN_WHILE },
-		{ "loop", TOKEN_LOOP },
-		{ "continue", TOKEN_CONTINUE },
-		{ "break", TOKEN_BREAK },
-		{ "if", TOKEN_IF },
-		{ "then", TOKEN_THEN },
-		{ "else", TOKEN_ELSE },
-		{ "match", TOKEN_MATCH },
-		{ "case", TOKEN_CASE },
-		{ "struct", TOKEN_STRUCT },
-		{ "union", TOKEN_UNION },
-		{ "enum", TOKEN_ENUM },
-		{ "true", TOKEN_TRUE },
-		{ "false", TOKEN_FALSE },
-		{ "import", TOKEN_IMPORT },
-		{ "export", TOKEN_EXPORT },
-		{ "public", TOKEN_PUBLIC },
-		{ "private", TOKEN_PRIVATE }
+		
 	};
 
 	CharType char_types[256];
@@ -121,30 +100,19 @@ namespace warbler::lexicon
 		return char_types[(size_t)c];
 	}
 
-	static Location find_next_position(const Location& last_location)
-	{
-		const auto* pos = last_location.pos_ptr();
-		usize line = last_location.line();
-		usize col = last_location.col();
-
+	static usize find_next_position(const File& file, usize pos)
+	{		
 		while (true)
 		{
-			auto character = *pos;
+			auto character = file[pos];
 
 			if (character == '\0' || character > ' ')
 				break;
 
 			pos += 1;
-			col += 1;
-
-			if (character == '\n')
-			{
-				line += 1;
-				col = 0;
-			}
 		}
 
-		return { last_location.filename(), last_location.src(), line, col, (usize)(pos - last_location.src()), 0 };
+		return pos;
 	}
 
 	static inline bool is_char_alphanumeric(char c)
@@ -611,6 +579,7 @@ namespace warbler::lexicon
 				return {};
 
 			out.emplace_back(res.unwrap());
+			position += out.back().location.length();
 			location.offset(out.back().length());
 		}
 		while (out.back().type() != TOKEN_END_OF_FILE);

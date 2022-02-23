@@ -5,6 +5,8 @@
 #include <warbler/util/array.hpp>
 #include <warbler/util/result.hpp>
 
+#include <cassert>
+
 namespace warbler::source
 {
 	class File
@@ -23,6 +25,9 @@ namespace warbler::source
 		static File from(const char *text);
 
 		Text get_text(usize pos, usize length);
+		String get_string(const Location& location) const;
+
+		char operator[](usize i) const { assert(i < _src.size()); return _src[i]; }
 
 		const String& filename() const { return _filename; }
 		const String& src() const { return _src; }
