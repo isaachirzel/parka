@@ -26,11 +26,11 @@ namespace warbler::syntax
 
 		PrefixExpression(Ptr<Expression>&& expression, PrefixType type);
 
-		static Result<Ptr<Expression>> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& module, semantics::FunctionContext& function);
 		Type *get_type();
-		const Location& location() const;
+		const source::Location& location() const;
 		void print_tree(u32 depth = 0) const;
 	};
 }

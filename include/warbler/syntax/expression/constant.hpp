@@ -23,7 +23,7 @@ namespace warbler::syntax
 	{
 	private:
 
-		Location _location;
+		source::Location _location;
 
 		union
 		{
@@ -39,22 +39,22 @@ namespace warbler::syntax
 
 	public:
 
-		Constant(const Location& location, String&& string);
-		Constant(const Location& location, i64 integer);
-		Constant(const Location& location, f64 floatingpt);
-		Constant(const Location& location, u32 character);
-		Constant(const Location& location, bool boolean);
+		Constant(const source::Location& location, String&& string);
+		Constant(const source::Location& location, i64 integer);
+		Constant(const source::Location& location, f64 floatingpt);
+		Constant(const source::Location& location, u32 character);
+		Constant(const source::Location& location, bool boolean);
 		Constant(Constant&& other);
 		Constant(const Constant& other) = delete;
 		~Constant();
 
-		static Result<Constant> parse(TokenIterator& iter);
+		static Result<Constant> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 
 		Type *get_type() { return &_type; }
-		const Location& location() const { return _location; }
+		const source::Location& location() const { return _location; }
 
 		Constant& operator=(Constant&& other);
 		Constant& operator=(const Constant& other) = delete;

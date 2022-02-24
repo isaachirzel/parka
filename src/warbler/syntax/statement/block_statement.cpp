@@ -8,11 +8,11 @@ namespace warbler::syntax
 	_statements(std::move(statements))
 	{}
 
-	Result<BlockStatement> BlockStatement::parse(TokenIterator& iter)
+	Result<BlockStatement> BlockStatement::parse(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() != TOKEN_LBRACE)
+		if (iter->type() != lexicon::TOKEN_LBRACE)
 		{
-			parse_error(iter, "compound statement starting with '{'");
+			print_parse_error(iter, "compound statement starting with '{'");
 			return {};
 		}
 
@@ -20,7 +20,7 @@ namespace warbler::syntax
 
 		Array<Ptr<Statement>> statements;
 
-		while (iter->type() != TOKEN_RBRACE)
+		while (iter->type() != lexicon::TOKEN_RBRACE)
 		{
 			auto res = Statement::parse(iter);
 

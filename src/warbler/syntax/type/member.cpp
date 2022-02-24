@@ -11,16 +11,16 @@ namespace warbler::syntax
 	_is_public(is_public)
 	{}
 
-	Result<Member> Member::parse(TokenIterator& iter)
+	Result<Member> Member::parse(lexicon::TokenIterator& iter)
 	{
 		auto is_public = false;
 
-		if (iter->type() == TOKEN_PUBLIC)
+		if (iter->type() == lexicon::TOKEN_PUBLIC)
 		{
 			is_public = true;
 			iter += 1;
 		}
-		else if (iter->type() == TOKEN_PRIVATE)
+		else if (iter->type() == lexicon::TOKEN_PRIVATE)
 		{
 			iter += 1;
 		}
@@ -30,9 +30,9 @@ namespace warbler::syntax
 		if (!name)
 			return {};
 
-		if (iter->type() != TOKEN_COLON)
+		if (iter->type() != lexicon::TOKEN_COLON)
 		{
-			parse_error(iter, "':' after member name");
+			print_parse_error(iter, "':' after member name");
 			return {};
 		}
 		

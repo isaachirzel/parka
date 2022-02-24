@@ -8,7 +8,7 @@ namespace warbler::syntax
 	_module(std::move(module))
 	{}
 
-	Result<Ast> Ast::parse(const std::vector<Token>& tokens)
+	Result<Ast> Ast::parse(const Array<lexicon::Token>& tokens)
 	{
 		auto iter = tokens.begin();
 		auto res = Module::parse(iter);

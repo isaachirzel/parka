@@ -15,7 +15,7 @@ namespace warbler::syntax
 	{
 		virtual ~TypeDefinition() {}
 
-		static Result<Ptr<TypeDefinition>> parse(TokenIterator& iter);
+		static Result<Ptr<TypeDefinition>> parse(lexicon::TokenIterator& iter);
 
 		virtual bool validate(semantics::ModuleContext& mod_ctx) = 0;
 		virtual void print_tree(u32 depth = 0) const = 0;

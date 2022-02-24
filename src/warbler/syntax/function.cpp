@@ -5,18 +5,18 @@
 
 namespace warbler::syntax
 {
-	Function::Function(Identifier&& name, std::vector<Declaration>&& parameters, Type&& return_type, BlockStatement&& body) :
+	Function::Function(Identifier&& name, Array<Declaration>&& parameters, Type&& return_type, BlockStatement&& body) :
 	_name(std::move(name)),
 	_parameters(std::move(parameters)),
 	_return_type(std::move(return_type)),
 	_body(std::move(body))
 	{}
 
-	static Result<Array<Declaration>> parse_parameters(TokenIterator& iter)
+	static Result<Array<Declaration>> parse_parameters(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() != TOKEN_LPAREN)
+		if (iter->type() != lexicon::TOKEN_LPAREN)
 		{
-			parse_error(iter, "'(' after function name");
+			print_parse_error(iter, "'(' after function name");
 			return {};
 		}
 
@@ -24,7 +24,7 @@ namespace warbler::syntax
 
 		Array<Declaration> parameters;
 
-		if (iter->type() != TOKEN_RPAREN)
+		if (iter->type() != lexicon::TOKEN_RPAREN)
 		{
 			while (true)
 			{
@@ -35,15 +35,15 @@ namespace warbler::syntax
 
 				parameters.emplace_back(res.unwrap());
 
-				if (iter->type() != TOKEN_COMMA)
+				if (iter->type() != lexicon::TOKEN_COMMA)
 					break;
 
 				iter += 1;
 			}
 
-			if (iter->type() != TOKEN_RPAREN)
+			if (iter->type() != lexicon::TOKEN_RPAREN)
 			{
-				parse_error(iter, "')' after function parameters");
+				print_parse_error(iter, "')' after function parameters");
 				return {};
 			}
 		}
@@ -53,11 +53,11 @@ namespace warbler::syntax
 		return parameters;
 	}
 
-	Result<Function> Function::parse(TokenIterator& iter)
+	Result<Function> Function::parse(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() != TOKEN_FUNC)
+		if (iter->type() != lexicon::TOKEN_FUNC)
 		{
-			parse_error(iter, "'function'");
+			print_parse_error(iter, "'function'");
 			return {};
 		}
 
@@ -75,7 +75,7 @@ namespace warbler::syntax
 		
 		auto type = Type();
 
-		if (iter->type() == TOKEN_COLON)
+		if (iter->type() == lexicon::TOKEN_COLON)
 		{
 			iter += 1;
 
@@ -87,9 +87,9 @@ namespace warbler::syntax
 			type = res.unwrap();
 		}
 
-		if (iter->type() != TOKEN_LBRACE)
+		if (iter->type() != lexicon::TOKEN_LBRACE)
 		{
-			parse_error(iter, "function body starting with '{'");
+			print_parse_error(iter, "function body starting with '{'");
 			return {};
 		}
 		

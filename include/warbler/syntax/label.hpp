@@ -18,7 +18,7 @@ namespace warbler::syntax
 
 		Label(String&& identifier);
 
-		static Result<Label> parse(TokenIterator& iter);
+		static Result<Label> parse(lexicon::TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 	};

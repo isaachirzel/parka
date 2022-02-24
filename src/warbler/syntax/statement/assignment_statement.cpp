@@ -14,7 +14,7 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	Result<AssignmentStatement> AssignmentStatement::parse(TokenIterator& iter)
+	Result<AssignmentStatement> AssignmentStatement::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = PrefixExpression::parse(iter);
 
@@ -69,7 +69,7 @@ namespace warbler::syntax
 				break;
 
 			default:
-				parse_error(iter, "expected assignment operator after primary expression");
+				print_parse_error(iter, "expected assignment operator after primary expression");
 				return {};
 		}
 

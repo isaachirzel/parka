@@ -10,11 +10,11 @@ namespace warbler::syntax
 	_is_mutable(is_mutable)
 	{}
 
-	Result<Declaration> Declaration::parse_parameter(TokenIterator& iter)
+	Result<Declaration> Declaration::parse_parameter(lexicon::TokenIterator& iter)
 	{
 		auto is_mutable = false;
 
-		if (iter->type() == TOKEN_MUT)
+		if (iter->type() == lexicon::TOKEN_KEYWORD_MUT)
 		{
 			is_mutable = true;
 			iter += 1;
@@ -25,9 +25,9 @@ namespace warbler::syntax
 		if (!name)
 			return {};
 
-		if (iter->type() != TOKEN_COLON)
+		if (iter->type() != lexicon::TOKEN_COLON)
 		{
-			print_error(iter->location(), "parameters may not be declared without a type");
+			print_error(iter->get_snippet(), "parameters may not be declared without a type");
 			return {};
 		}
 
@@ -41,11 +41,11 @@ namespace warbler::syntax
 		return Declaration { name.unwrap(), type.unwrap(), is_mutable };
 	}
 
-	Result<Declaration> Declaration::parse_variable(TokenIterator& iter)
+	Result<Declaration> Declaration::parse_variable(lexicon::TokenIterator& iter)
 	{
 		auto is_mutable = false;
 
-		if (iter->type() == TOKEN_MUT)
+		if (iter->type() == lexicon::TOKEN_KEYWORD_MUT)
 		{
 			is_mutable = true;
 			iter += 1;
@@ -58,7 +58,7 @@ namespace warbler::syntax
 
 		auto type = Type();
 
-		if (iter->type() == TOKEN_COLON)
+		if (iter->type() == lexicon::TOKEN_COLON)
 		{
 			iter += 1;
 

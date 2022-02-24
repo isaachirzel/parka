@@ -17,14 +17,14 @@ namespace warbler::syntax
 	_false_case(std::move(false_case))
 	{}
 
-	Result<Ptr<Expression>> ConditionalExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> ConditionalExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = BooleanOrExpression::parse(iter);
 
 		if (!lhs)
 			return {};
 
-		if (iter->type() != TOKEN_THEN)
+		if (iter->type() != lexicon::TOKEN_THEN)
 			return lhs.unwrap();
 
 		iter += 1;
@@ -34,7 +34,7 @@ namespace warbler::syntax
 		if (!true_case)
 			return {};
 
-		if (iter->type() != TOKEN_ELSE)
+		if (iter->type() != lexicon::TOKEN_ELSE)
 		{
 			error_out(iter) << "expected 'else' for false case of conditional expression but got '" << *iter << '\'';
 			error_highlight(iter);

@@ -10,7 +10,7 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> BooleanOrExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> BooleanOrExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = BooleanAndExpression::parse(iter);
 
@@ -19,7 +19,7 @@ namespace warbler::syntax
 
 		Array<Ptr<Expression>> rhs;
 
-		while (iter->type() == TOKEN_BOOLEAN_OR)
+		while (iter->type() == lexicon::TOKEN_BOOLEAN_OR)
 		{
 			iter += 1;
 

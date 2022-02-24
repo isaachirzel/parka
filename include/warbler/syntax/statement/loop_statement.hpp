@@ -21,15 +21,15 @@ namespace warbler::syntax
 	{
 	private:
 
-		std::vector<Statement> _body;
+		Array<Statement> _body;
 		LoopCondition _condition;
 		LoopType _type;
 
 	public:
 
-		LoopStatement(std::vector<Statement>&& body, LoopCondition&& condition, LoopType type);
+		LoopStatement(Array<Statement>&& body, LoopCondition&& condition, LoopType type);
 
-		static Result<LoopStatement> parse(TokenIterator& iter);
+		static Result<LoopStatement> parse(lexicon::TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 	};

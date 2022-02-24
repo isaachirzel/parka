@@ -40,7 +40,7 @@ namespace warbler::syntax
 		IfStatement(const IfStatement& other) = delete;
 		~IfStatement();
 
-		static Result<IfStatement> parse(TokenIterator& iter);
+		static Result<IfStatement> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;

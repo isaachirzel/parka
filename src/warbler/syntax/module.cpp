@@ -9,7 +9,7 @@ namespace warbler::syntax
 	_types(std::move(types))
 	{}
 
-	Result<Module> Module::parse(TokenIterator& iter)
+	Result<Module> Module::parse(lexicon::TokenIterator& iter)
 	{
 		Array<Function> functions;
 		Array<Ptr<TypeDefinition>> types;
@@ -18,7 +18,7 @@ namespace warbler::syntax
 		{
 			switch (iter->type())
 			{
-				case TOKEN_FUNC:
+				case lexicon::TOKEN_KEYWORD_FUNCTION:
 				{
 					auto function = Function::parse(iter);
 
@@ -28,7 +28,7 @@ namespace warbler::syntax
 					functions.emplace_back(function.unwrap());
 					continue;
 				}
-				case TOKEN_TYPE:
+				case lexicon::TOKEN_KEYWORD_TYPE:
 				{
 					auto type = TypeDefinition::parse(iter);
 
@@ -38,11 +38,11 @@ namespace warbler::syntax
 					types.emplace_back(type.unwrap());
 					continue;
 				}
-				case TOKEN_END_OF_FILE:
+				case lexicon::TOKEN_END_OF_FILE:
 					break;
 
 				default:
-					parse_error(iter, "type or function definition");
+					print_parse_error(iter, "type or function definition");
 					return {};
 			}
 

@@ -57,7 +57,7 @@ namespace warbler::syntax
 		}
 	}
 
-	Result<IfStatement> IfStatement::parse(TokenIterator& iter)
+	Result<IfStatement> IfStatement::parse(lexicon::TokenIterator& iter)
 	{
 		iter += 1;
 		
@@ -71,11 +71,11 @@ namespace warbler::syntax
 		if (!then_body)
 			return {};
 
-		if (iter->type() == TOKEN_ELSE)
+		if (iter->type() == lexicon::TOKEN_ELSE)
 		{
 			iter += 1;
 
-			if (iter->type() == TOKEN_IF)
+			if (iter->type() == lexicon::TOKEN_IF)
 			{
 				auto else_if = IfStatement::parse(iter);
 

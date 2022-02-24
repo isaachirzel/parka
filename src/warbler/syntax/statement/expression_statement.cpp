@@ -9,16 +9,16 @@ namespace warbler::syntax
 	_expression(std::move(expression))
 	{}
 
-	Result<ExpressionStatement> ExpressionStatement::parse(TokenIterator& iter)
+	Result<ExpressionStatement> ExpressionStatement::parse(lexicon::TokenIterator& iter)
 	{
 		auto expression = Expression::parse(iter);
 
 		if (!expression)
 			return {};
 
-		if (iter->type() != TOKEN_SEMICOLON)
+		if (iter->type() != lexicon::TOKEN_SEMICOLON)
 		{
-			parse_error(iter, "expected ';' after expression");
+			print_parse_error(iter, "expected ';' after expression");
 			return {};
 		}
 

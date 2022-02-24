@@ -24,8 +24,8 @@ namespace warbler::source
 		static Result<File> read(const String& filepath);
 		static File from(const char *text);
 
-		Text get_text(usize pos, usize length);
-		String get_string(const Location& location) const;
+		Snippet get_snippet(usize pos, usize length) const;
+		String get_string(usize pos, usize length) const;
 
 		char operator[](usize i) const { assert(i < _src.size()); return _src[i]; }
 

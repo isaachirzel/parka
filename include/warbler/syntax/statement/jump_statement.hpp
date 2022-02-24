@@ -27,7 +27,7 @@ namespace warbler::syntax
 
 		JumpStatement(Expression *value, JumpType type);
 
-		static Result<JumpStatement> parse(TokenIterator& iter);
+		static Result<JumpStatement> parse(lexicon::TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 	};

@@ -4,7 +4,7 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<Expression>> Expression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> Expression::parse(lexicon::TokenIterator& iter)
 	{
 		auto res = ConditionalExpression::parse(iter);
 

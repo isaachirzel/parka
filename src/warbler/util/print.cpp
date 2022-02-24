@@ -29,6 +29,8 @@
 
 namespace warbler
 {
+	using source::Snippet;
+
 	std::ostream& error_stream = std::cout;
 	static bool is_color_enabled = true;
 
@@ -58,15 +60,18 @@ namespace warbler
 		is_color_enabled = enabled;
 	}
 
-	void print_branch(unsigned count)
+	void print_branch(u32 depth, const String& text)
 	{
-		if (!count)
-			return;
+		if (depth > 0)
+		{
 
-		for (unsigned i = 0; i < count - 1; ++i)
-			fputs("|   ", stdout);
+			for (u32 i = 0; i < depth - 1; ++i)
+				error_stream << "|   ";
 
-		fputs("| > ", stdout);
+			error_stream << "| > ";
+		}
+
+		error_stream << text << '\n';
 	}
 
 	void print_spaces(unsigned count)
@@ -100,10 +105,10 @@ namespace warbler
 		return out;
 	}
 
-	void highlight(std::ostream& out, const Location& location, const char *color)
+	void highlight(std::ostream& out, const Snippet& location, const char *color)
 	{
 		size_t line_number_length = get_spaces_for_num(location.line());	
-		std::string line_header(location.start_of_line(), location.col());
+		String line_header(location.start_of_line(), location.col());
 
 		const char *text_after_location = location.end();
 		const char *end = text_after_location;
@@ -113,7 +118,7 @@ namespace warbler
 
 		size_t footer_length = end - text_after_location;
 		
-		std::string line_footer(text_after_location, footer_length);
+		String line_footer(text_after_location, footer_length);
 		line_footer += '\n';
 
 		out << "\n " << location.line() + 1 << " | ";
@@ -145,9 +150,9 @@ namespace warbler
 			pos += 1;
 		}
 
-		out << '\n' << std::string(2 + line_number_length, ' ') << "| ";
+		out << '\n' << String(2 + line_number_length, ' ') << "| ";
 		
-		std::string spacing = line_header;
+		String spacing = line_header;
 
 		pos = location.start_of_line();
 
@@ -226,9 +231,9 @@ namespace warbler
 		return error_out(iter->location());
 	}
 
-	std::string tree_branch(u32 length)
+	String tree_branch(u32 length)
 	{
-		std::string out;
+		String out;
 
 		if (length == 0)
 			return "";
@@ -250,9 +255,9 @@ namespace warbler
 		return out;
 	}
 
-	void parse_error(TokenIterator& iter, const char *expected)
+	void print_parse_error(TokenIterator& iter, const String& expected)
 	{
-		print_error(iter->location(), "expected " + String(expected) + ", found '" + String(*iter) + '\'');
+		print_error(iter->location(), "expected " + expected + ", found '" + iter->get_string() + '\'');
 	}
 
 	static void print_message(std::ostream& stream, const char *prompt, const char *color, const Location& location, const String& msg)

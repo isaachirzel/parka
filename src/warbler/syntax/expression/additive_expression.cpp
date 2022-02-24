@@ -10,7 +10,7 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> AdditiveExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> AdditiveExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = MultiplicativeExpression::parse(iter);
 
@@ -22,11 +22,11 @@ namespace warbler::syntax
 		while (true)
 		{
 			AdditiveType type;
-			if (iter->type() == TOKEN_PLUS)
+			if (iter->type() == lexicon::TOKEN_PLUS)
 			{
 				type = ADDITIVE_ADD;
 			}
-			else if (iter->type() == TOKEN_MINUS)
+			else if (iter->type() == lexicon::TOKEN_MINUS)
 			{
 				type = ADDITIVE_ADD;
 			}

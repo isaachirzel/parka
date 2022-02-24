@@ -31,7 +31,7 @@ namespace warbler::syntax
 		Function(Function&& other) = default;
 		Function(const Function& other) = delete;		
 
-		static Result<Function> parse(TokenIterator& iter);
+		static Result<Function> parse(lexicon::TokenIterator& iter);
 
 		void print_tree(u32 depth = 0) const;
 		bool validate(semantics::ModuleContext& context);

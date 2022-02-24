@@ -5,19 +5,19 @@
 
 namespace warbler::syntax
 {
-	RelationalExpression::RelationalExpression(Ptr<Expression>&& lhs, std::vector<RelationalRhs>&& rhs) :
+	RelationalExpression::RelationalExpression(Ptr<Expression>&& lhs, Array<RelationalRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> RelationalExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> RelationalExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = ShiftExpression::parse(iter);
 
 		if (!lhs)
 			return {};
 
-		std::vector<RelationalRhs> rhs;
+		Array<RelationalRhs> rhs;
 
 		while (true)
 		{

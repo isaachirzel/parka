@@ -11,7 +11,7 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	Result<Ptr<Expression>> PrefixExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> PrefixExpression::parse(lexicon::TokenIterator& iter)
 	{
 		PrefixType type;
 

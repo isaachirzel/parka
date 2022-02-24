@@ -25,18 +25,18 @@ namespace warbler::syntax
 	private:
 
 		Ptr<Expression> _lhs;
-		std::vector<RelationalRhs> _rhs;
+		Array<RelationalRhs> _rhs;
 
 	public:
 
-		RelationalExpression(Ptr<Expression>&& lhs, std::vector<RelationalRhs>&& rhs);
+		RelationalExpression(Ptr<Expression>&& lhs, Array<RelationalRhs>&& rhs);
 
-		static Result<Ptr<Expression>> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
-		const Location& location() const;
+		const source::Location& location() const;
 	};
 
 }

@@ -9,10 +9,10 @@ namespace warbler::syntax
 	_identifier(identifier)
 	{}
 
-	Result<Label> Label::parse(TokenIterator& iter)
+	Result<Label> Label::parse(lexicon::TokenIterator& iter)
 	{
 
-		if (iter->type() != TOKEN_IDENTIFIER)
+		if (iter->type() != lexicon::TOKEN_IDENTIFIER)
 		{
 			error_out(iter) << "expected identifier for label but got: " << *iter << std::endl;
 			return {};
@@ -23,7 +23,7 @@ namespace warbler::syntax
 
 		iter += 1;
 
-		if (iter->type() != TOKEN_COLON)
+		if (iter->type() != lexicon::TOKEN_COLON)
 		{
 			error_out(iter) << "expected ':' after label but got: " << *iter << std::endl;
 			return {};

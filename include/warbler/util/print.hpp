@@ -3,49 +3,28 @@
 
 // local headers
 #include <warbler/lexicon/token.hpp>
-#include <iostream>
-#include <string>
-#include <sstream>
+#include <warbler/source/text.hpp>
 
 namespace warbler
 {
 	void print_enable_color(bool enabled);
 
-	void _debugf(const char *file, unsigned line, const char *func, const char *fmt, ...);
-	void _debug(const char *file, unsigned line, const char *func, const char *msg);
+	String tree_branch(u32 length);
+	void print_branch(u32 depth, const String& text);
 
-	extern std::ostream& error_stream;
-	extern std::ostringstream& errout;
-	std::string tree_branch(u32 length);
-	std::ostream& error_out();
-	std::ostream& error_out(const Location& location);
-	std::ostream& error_out(const Token& token);
-	std::ostream& error_out(TokenIterator& iter);
-	
-	void error_highlight(const Location& location);
-	void error_highlight(const TokenIterator& iter);
-	void error_highlight(const Token& token);
+	void print_note(const source::Snippet& text, const String& msg);
+	void print_warning(const source::Snippet& text, const String& msg);
+	void print_error(const source::Snippet& text, const String& msg);
 
-	void print_note(const Location& location, const String& msg);
-	void print_warning(const Location& location, const String& msg);
-	void print_error(const Location& location, const String& msg);
+	inline void print_note(const source::Location& location, const String& msg) { print_note(location.get_snippet(), msg); }
+	inline void print_warning(const source::Location& location, const String& msg) { print_warning(location.get_snippet(), msg); }
+	inline void print_error(const source::Location& location, const String& msg) { print_error(location.get_snippet(), msg); }
 
 	void print_note(const String& msg);
 	void print_warning(const String& msg);
 	void print_error(const String& msg);
 
-	std::string token_error(TokenIterator& iter);
-	std::string token_warning(TokenIterator& iter);
-	std::string token_message(TokenIterator& iter);	
-	void parse_error(TokenIterator& iter, const char *expected);
+	void print_parse_error(lexicon::TokenIterator& iter, const String& expected);
 }
-
-#ifndef NDEBUG
-	#define debugf(fmt, ...) _debugf(__FILE__, __LINE__, __func__, fmt, __VA_ARGS__)
-	#define debug(msg) _debug(__FILE__, __LINE__, __func__, msg)
-#else
-	#define debugf(fmt, ...)
-	#define debug(msg)
-#endif
 
 #endif

@@ -63,7 +63,7 @@ namespace warbler::syntax
 		}
 	}
 
-	static Result<Array<Ptr<Expression>>> parse_arguments(TokenIterator& iter)
+	static Result<Array<Ptr<Expression>>> parse_arguments(lexicon::TokenIterator& iter)
 	{
 		iter += 1;
 
@@ -71,7 +71,7 @@ namespace warbler::syntax
 
 	parse_argument:
 
-		if (iter->type() != TOKEN_RPAREN)
+		if (iter->type() != lexicon::TOKEN_RPAREN)
 		{
 			auto res = Expression::parse(iter);
 
@@ -80,15 +80,15 @@ namespace warbler::syntax
 			
 			arguments.emplace_back(res.unwrap());
 
-			if (iter->type() == TOKEN_COMMA)
+			if (iter->type() == lexicon::TOKEN_COMMA)
 			{
 				iter += 1;
 				goto parse_argument;
 			}
 
-			if (iter->type() != TOKEN_RPAREN)
+			if (iter->type() != lexicon::TOKEN_RPAREN)
 			{
-				parse_error(iter, "')' after function arguments");
+				print_parse_error(iter, "')' after function arguments");
 				return {};
 			}
 		}
@@ -98,7 +98,7 @@ namespace warbler::syntax
 		return arguments;
 	}
 	
-	Result<Ptr<Expression>> PostfixExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> PostfixExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto primary_expression = PrimaryExpression::parse(iter);
 
@@ -118,9 +118,9 @@ namespace warbler::syntax
 				if (!res)
 					return {};
 
-				if (iter->type() != TOKEN_RBRACK)
+				if (iter->type() != lexicon::TOKEN_RBRACK)
 				{
-					parse_error(iter, "']' after index operation");
+					print_parse_error(iter, "']' after index operation");
 					return {};
 				}
 

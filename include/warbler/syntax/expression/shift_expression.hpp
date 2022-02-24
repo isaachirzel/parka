@@ -23,18 +23,18 @@ namespace warbler::syntax
 	private:
 
 		Ptr<Expression> _lhs;
-		std::vector<ShiftRhs> _rhs;
+		Array<ShiftRhs> _rhs;
 
 	public:
 
-		ShiftExpression(Ptr<Expression>&& lhs, std::vector<ShiftRhs>&& rhs);
+		ShiftExpression(Ptr<Expression>&& lhs, Array<ShiftRhs>&& rhs);
 
-		static Result<Ptr<Expression>> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
-		const Location& location() const;
+		const source::Location& location() const;
 	};
 }
 

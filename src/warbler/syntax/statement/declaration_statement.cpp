@@ -9,7 +9,7 @@ namespace warbler::syntax
 	_value(std::move(value))
 	{}
 
-	Result<DeclarationStatement> DeclarationStatement::parse(TokenIterator& iter)
+	Result<DeclarationStatement> DeclarationStatement::parse(lexicon::TokenIterator& iter)
 	{		
 		iter += 1;
 
@@ -18,9 +18,9 @@ namespace warbler::syntax
 		if (!declaration)
 			return {};
 
-		if (iter->type() != TOKEN_ASSIGN)
+		if (iter->type() != lexicon::TOKEN_ASSIGN)
 		{
-			parse_error(iter, "expected '=' after declaration");
+			print_parse_error(iter, "expected '=' after declaration");
 			return {};
 		}
 
@@ -31,9 +31,9 @@ namespace warbler::syntax
 		if (!value)
 			return {};
 
-		if (iter->type() != TOKEN_SEMICOLON)
+		if (iter->type() != lexicon::TOKEN_SEMICOLON)
 		{
-			parse_error(iter, "expected ';' after declaration");
+			print_parse_error(iter, "expected ';' after declaration");
 			return {};
 		}
 

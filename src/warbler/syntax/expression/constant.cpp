@@ -74,7 +74,7 @@ namespace warbler::syntax
 			_string.~basic_string();
 	}
 
-	static Constant parse_character(TokenIterator& iter)
+	static Constant parse_character(lexicon::TokenIterator& iter)
 	{
 		const auto& location = iter->location();
 		u32 character = (u32)location[0];
@@ -133,7 +133,7 @@ namespace warbler::syntax
 		return out;
 	}
 
-	static Constant parse_integer_literal(TokenIterator& iter, bool is_negative)
+	static Constant parse_integer_literal(lexicon::TokenIterator& iter, bool is_negative)
 	{
 		i64 value = string_to_i64(*iter);
 
@@ -147,7 +147,7 @@ namespace warbler::syntax
 		return Constant(location, value);
 	}
 
-	static Constant parse_float_literal(TokenIterator& iter, bool is_negative)
+	static Constant parse_float_literal(lexicon::TokenIterator& iter, bool is_negative)
 	{
 		f64 value = string_to_f64(*iter);
 
@@ -161,7 +161,7 @@ namespace warbler::syntax
 		return Constant(location, value);
 	}
 
-	static Result<Constant> parse_number(TokenIterator& iter, bool is_negative)
+	static Result<Constant> parse_number(lexicon::TokenIterator& iter, bool is_negative)
 	{
 		switch (iter->type())
 		{
@@ -178,7 +178,7 @@ namespace warbler::syntax
 		}
 	}
 
-	Result<Constant> Constant::parse(TokenIterator& iter)
+	Result<Constant> Constant::parse(lexicon::TokenIterator& iter)
 	{
 		switch (iter->type())
 		{
@@ -237,7 +237,7 @@ namespace warbler::syntax
 				break;
 		}
 
-		parse_error(iter, "constant");
+		print_parse_error(iter, "constant");
 
 		return {};
 	}

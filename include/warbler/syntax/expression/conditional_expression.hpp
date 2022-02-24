@@ -22,12 +22,12 @@ namespace warbler::syntax
 		ConditionalExpression(ConditionalExpression&&) = default;
 		ConditionalExpression(const ConditionalExpression&) = delete;
 
-		static Result<Ptr<Expression>> parse(TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
-		const Location& location() const;
+		const source::Location& location() const;
 
 		ConditionalExpression& operator=(ConditionalExpression&&) = default;
 		ConditionalExpression& operator=(const ConditionalExpression&) = delete;

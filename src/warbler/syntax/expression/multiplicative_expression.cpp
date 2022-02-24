@@ -10,7 +10,7 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> MultiplicativeExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> MultiplicativeExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = PrefixExpression::parse(iter);
 

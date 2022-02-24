@@ -6,11 +6,15 @@
 // standard headers
 #include <cstring>
 #include <cstdlib>
+#include <stdexcept>
 #include <unordered_map>
+
+#define MAX_KEYWORD_LENGTH	(15)
 
 namespace warbler::lexicon
 {
 	using source::File;
+	using source::Location;
 
 	enum CharType
 	{
@@ -24,12 +28,186 @@ namespace warbler::lexicon
 		CHAR_QUOTE
 	};
 
-	std::unordered_map<std::string, TokenType> token_types = 
-	{
-		
-	};
+	static CharType char_types[256];
 
-	CharType char_types[256];
+	static inline bool _match_str(const char * const text, const char * const compare, const usize size)
+	{
+		for (usize i = 0; i < size; ++i)
+		{
+			if (text[i] != compare[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	#define match_str(text, compare) _match_str(text, compare, sizeof(compare))
+
+	TokenType get_identifier_type(const char *text)
+	{
+		switch (text[0])
+		{
+			case 'b':
+				if (match_str(text + 1, "reak"))
+					return TOKEN_KEYWORD_BREAK;
+				break;
+
+			case 'c':
+				if (text[1] == 'a')
+				{
+					if (match_str(text + 2, "se"))
+						return TOKEN_KEYWORD_CASE;
+				}
+				else if (text[1] == 'o')
+				{
+					if (match_str(text + 2, "ntinue"))
+						return TOKEN_KEYWORD_CONTINUE;
+				}
+				break;
+
+			case 'e':
+				switch (text[1])
+				{
+					case 'l':
+						if (match_str(text + 2, "se"))
+							return TOKEN_KEYWORD_ELSE;
+						break;
+
+					case 'n':
+						if (match_str(text + 2, "um"))
+							return TOKEN_KEYWORD_ENUM;
+						break;
+
+					case 'x':
+						if (match_str(text + 2, "port"))
+							return TOKEN_KEYWORD_EXPORT;
+						break;
+
+					default:
+						return TOKEN_IDENTIFIER;
+				}
+				break;
+
+			case 'f':
+				switch (text[1])
+				{
+					case 'a':
+						if (match_str(text + 2, "lse"))
+							return TOKEN_KEYWORD_FALSE;
+						break;
+						
+					case 'o':
+						if (text[2] == 'r' && text[3] == '\0')
+							return TOKEN_KEYWORD_FOR;
+						break;
+
+					case 'u':
+						if (match_str(text + 2, "nction"))
+							return TOKEN_KEYWORD_FUNCTION;
+						break;
+
+					default:
+						return TOKEN_IDENTIFIER;
+				}
+				break;
+
+			case 'i':
+				if (text[1] == 'f')
+				{
+					if (text[2] == '\0')
+						return TOKEN_KEYWORD_IF;
+				}
+				else if (text[1] == 'm')
+				{
+					if (match_str(text + 2, "port"))
+						return TOKEN_KEYWORD_IMPORT;
+				}
+				break;
+
+			case 'l':
+				if (match_str(text + 1, "oop"))
+					return TOKEN_KEYWORD_LOOP;
+				break;
+
+			case 'm':
+				if (text[1] == 'a')
+				{
+					if (match_str(text + 2, "tch"))
+						return TOKEN_KEYWORD_MATCH;
+				}
+				else if (text[1] == 'u')
+				{
+					if (match_str(text + 2, "t"))
+						return TOKEN_KEYWORD_MUT;
+				}
+				break;
+
+			case 'p':
+				if (text[1] == 'r')
+				{
+					if (match_str(text + 2, "ivate"))
+						return TOKEN_KEYWORD_PRIVATE;
+				}
+				else if (text[1] == 'u')
+				{
+					if (match_str(text + 2, "blic"))
+						return TOKEN_KEYWORD_PUBLIC;
+				}
+				break;
+
+			case 'r':
+				if (match_str(text + 1, "eturn"))
+					return TOKEN_KEYWORD_RETURN;
+				break;
+
+			case 's':
+				if (match_str(text + 1, "truct"))
+					return TOKEN_KEYWORD_STRUCT;
+				break;
+
+			case 't':
+				switch (text[1])
+				{
+					case 'h':
+						if (match_str(text + 2, "en"))
+							return TOKEN_KEYWORD_THEN;
+						break;
+
+					case 'r':
+						if (match_str(text + 2, "ue"))
+							return TOKEN_KEYWORD_TRUE;
+						break;
+
+					case 'y':
+						if (match_str(text + 2, "pe"))
+							return TOKEN_KEYWORD_TYPE;
+						break;
+				}
+				break;
+
+			case 'u':
+				if (match_str(text + 1, "nion"))
+					return TOKEN_KEYWORD_UNION;
+				break;
+
+			case 'v':
+				if (match_str(text + 1, "ar"))
+					return TOKEN_KEYWORD_VAR;
+				break;
+
+			case 'w':
+				if (match_str(text + 1, "hile"))
+					return TOKEN_KEYWORD_WHILE;
+				break;
+				
+			default:
+				break;
+		}
+
+		return TOKEN_IDENTIFIER;
+	}
+	
+
 
 	void init_char_types()
 	{
@@ -83,18 +261,6 @@ namespace warbler::lexicon
 		init_char_types();
 	}
 
-	#define TEMP_KEY_SIZE (1023)
-
-	static TokenType get_token_type(const StringView& text)
-	{
-		auto iter = token_types.find(String(text));
-
-		if (iter == token_types.end())
-			return TOKEN_IDENTIFIER;
-
-		return iter->second;
-	}
-
 	static inline CharType get_char_type(unsigned char c)
 	{
 		return char_types[(size_t)c];
@@ -122,24 +288,23 @@ namespace warbler::lexicon
 		return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
 	}
 
-	static Result<Token> get_identifier_token(const Location& location)
+	static Token get_identifier_token(const File& file, const usize start_pos)
 	{
-		const char *start = location.pos_ptr();
-		const char *pos = start + 1;
+		auto pos = start_pos + 1;
 
-		while (is_char_alphanumeric(*pos))
+		while (is_char_alphanumeric(file[pos]))
 			pos += 1;
 
-		StringView text(start, pos - start);
-		auto type = get_token_type(text);
+		usize length = pos - start_pos;
 
-		return Token(location, type, pos - start);
+		return Token(Location(file, start_pos, length), TOKEN_IDENTIFIER);
 	}
 
-	static Result<Token> get_separator_token(const Location& location)
+	static Token get_separator_token(const File& file, const usize start_pos)
 	{
 		TokenType type;
-		switch (location[0])
+
+		switch (file[start_pos])
 		{
 			case '(':
 				type = TOKEN_LPAREN;
@@ -174,22 +339,20 @@ namespace warbler::lexicon
 				break;
 			
 			default:
-				error_out(location) << "invalid character given for separator: " << location[0] << std::endl;
-				return {};
+				throw std::runtime_error("invalid chracter was passed to get_separator_token: '" + String(1, file[start_pos]) + "'");
 		}
 
-		return Token(location, type, 1);
+		return Token(Location(file, start_pos, 1), type);
 	}
 
-	static Result<Token> get_digit_token(const Location& location)
+	static Result<Token> get_digit_token(const File& file, const usize start_pos)
 	{
-		const char * const start = location.pos_ptr();
-		const char *pos = start;
+		auto pos = start_pos;
 		usize decimal_count = 0;
 
 		while (true)
 		{
-			CharType type = get_char_type(*pos);
+			CharType type = get_char_type(file[pos]);
 
 			if (type == CHAR_DOT)
 			{
@@ -203,10 +366,12 @@ namespace warbler::lexicon
 			pos += 1;
 		}
 
+		auto length = pos - start_pos;
+
 		if (decimal_count > 1)
 		{
-			error_out(location) << "only one decimal is allowed in float literal";
-			error_highlight(location);
+			auto text = file.get_snippet(start_pos, length);
+			print_error(text, "only one decimal is allowed in float literal");
 			return {};
 		}
 
@@ -214,28 +379,23 @@ namespace warbler::lexicon
 			? TOKEN_FLOAT_LITERAL
 			: TOKEN_INTEGER_LITERAL;
 
-		return Token(location, type, pos - start);
+		return Token(Location(file, start_pos, length), type);
 	}
 
-	static Result<Token> get_dot_token(const Location& location)
+	static Result<Token> get_dot_token(const File& file, const usize start_pos)
 	{
-		auto value = location[1];
-		const char * const start = location.pos_ptr();
-		const char *pos = start;
+		if (get_char_type(file[start_pos + 1]) == CHAR_DIGIT)
+			return get_digit_token(file, start_pos);
 
-		if (get_char_type(pos[1]) == CHAR_DIGIT)
-			return get_digit_token(location);
+		usize pos = start_pos + 1;
 
-		pos += 1;
-
-		while (get_char_type(*pos) == CHAR_DOT)
+		while (get_char_type(file[pos]) == CHAR_DOT)
 			pos += 1;
 
-		std::cout << "Len: " << location.length() << std::endl;
-
-		auto length = pos - start;
+		auto length = pos - start_pos;
 
 		TokenType type;
+
 		switch (length)
 		{
 			case 1:
@@ -247,283 +407,276 @@ namespace warbler::lexicon
 				break;
 
 			default:
-				print_error(location.with_length(length), "invalid token, expected '.' or '...'");
+			{
+				auto text = file.get_snippet(start_pos, length);
+				print_error(text, "invalid token, expected '.' or '...'");
 				return {};
+			}
 		}
 
-		return Token(location, type, length);
+		return Token(Location(file, start_pos, length), type);
 	}
 
-	static Token get_plus_operator(const Location& location)
+	static Token get_plus_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[1])
 		{
-			case '+':
-				return Token(location, TOKEN_INCREMENT, 2);
-
 			case '=':
-				return Token(location, TOKEN_ADD_ASSIGN, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_ADD_ASSIGN);
 
 			default:
-				return Token(location, TOKEN_PLUS, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_PLUS);
 		}
 	}
 
-	static Token get_hyphen_operator(const Location& location)
+	static Token get_hyphen_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
-			case '-': // --
-				return Token(location, TOKEN_DECREMENT, 2);
-
 			case '=': // -=
-				return Token(location, TOKEN_SUBTRACT_ASSIGN, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_SUBTRACT_ASSIGN);
 
 			case '>': // ->
-				return Token(location, TOKEN_SINGLE_ARROW, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_SINGLE_ARROW);
 
 			default: // -
-				return Token(location, TOKEN_MINUS, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_MINUS);
 		}
 	}
 
-	static Token get_asterisk_operator(const Location& location)
+	static Token get_asterisk_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
 			case '*': // **
-				return Token(location, TOKEN_POW, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_POW);
 
 			case '=': // *=
-				return Token(location, TOKEN_MULTIPLY_ASSIGN, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_MULTIPLY_ASSIGN);
 
 			default: // *
-				return Token(location, TOKEN_ASTERISK, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_ASTERISK);
 		}
 	}
 
-	static Token get_slash_operator(const Location& location)
+	static Token get_slash_operator(const File& file, const usize start_pos)
 	{
-		if (location[1] == '=')
-			return Token(location, TOKEN_DIVIDE_ASSIGN, 2);
+		if (file[start_pos + 1] == '=')
+			return Token(Location(file, start_pos, 2), TOKEN_DIVIDE_ASSIGN);
 
-		return Token(location, TOKEN_SLASH, 1);
+		return Token(Location(file, start_pos, 1), TOKEN_SLASH);
 	}
 
-	static Token get_langbrack_operator(const Location& location)
+	static Token get_langbrack_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
 			case '<': // <<
-				if (location[2] == '=') // <<=
-					return Token(location, TOKEN_LSHIFT_ASSIGN, 3);
+				if (file[start_pos + 2] == '=') // <<=
+					return Token(Location(file, start_pos, 3), TOKEN_LSHIFT_ASSIGN);
 
-				return Token(location, TOKEN_LSHIFT, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_LSHIFT);
 
 			case '=': // <=
-				return Token(location, TOKEN_LESS_OR_EQUAL, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_LESS_OR_EQUAL);
 
 			default: // <
-				return Token(location, TOKEN_LESS_THAN, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_LESS_THAN);
 		}
 	}
 
-	static Token get_rangbrack_operator(const Location& location)
+	static Token get_rangbrack_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
 			case '>': // >>
-				if (location[2] == '=') // >>=
-					return Token(location, TOKEN_RSHIFT_ASSIGN, 3);
+				if (file[start_pos + 2] == '=') // >>=
+					return Token(Location(file, start_pos, 3), TOKEN_RSHIFT_ASSIGN);
 
-				return Token(location, TOKEN_RSHIFT, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_RSHIFT);
 
 			case '=': // <=
-				return Token(location, TOKEN_GREATER_OR_EQUAL, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_GREATER_OR_EQUAL);
 
 			default: // >
-				return Token(location, TOKEN_GREATER_THAN, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_GREATER_THAN);
 		}
 	}
 
-	static Token get_ampersand_operator(const Location& location)
+	static Token get_ampersand_operator(const File& file, const usize start_pos)
 	{
-		switch (location[0])
+		switch (file[start_pos])
 		{
 			case '=':
-				return Token(location, TOKEN_BITAND_ASSIGN, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_BITAND_ASSIGN);
 
 			case '&':
-				return Token(location, TOKEN_BOOLEAN_AND, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_BOOLEAN_AND);
 
 			default:
-				return Token(location, TOKEN_AMPERSAND, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_AMPERSAND);
 		}
 	}
 	
-	static Token get_pipeline_operator(const Location& location)
+	static Token get_pipeline_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
 			case '=':
-				return Token(location, TOKEN_BITOR_ASSIGN, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_BITOR_ASSIGN);
 
 			case '|':
-				return Token(location, TOKEN_BOOLEAN_OR, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_BOOLEAN_OR);
 
 			default:
-				return Token(location, TOKEN_PIPELINE, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_PIPELINE);
 		}
 	}
 
-	static Token get_carrot_operator(const Location& location)
+	static Token get_carrot_operator(const File& file, const usize start_pos)
 	{
-		if (location[1] == '=')
-			return Token(location, TOKEN_BITXOR_ASSIGN, 2);
+		if (file[start_pos + 1] == '=')
+			return Token(Location(file, start_pos, 2), TOKEN_BITXOR_ASSIGN);
 
-		return Token(location, TOKEN_CARROT, 1);
+		return Token(Location(file, start_pos, 1), TOKEN_CARROT);
 	}
 
-	static Token get_equals_operator(const Location& location)
+	static Token get_equals_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
 			case '=':
-				return Token(location, TOKEN_EQUALS, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_EQUALS);
 
 			case '>':
-				return Token(location, TOKEN_DOUBLE_ARROW, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_DOUBLE_ARROW);
 
 			default:
-				return Token(location, TOKEN_ASSIGN, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_ASSIGN);
 		}
 	}
 
-	static Token get_exclamation_operator(const Location& location)
+	static Token get_exclamation_operator(const File& file, const usize start_pos)
 	{
-		if (location[1] == '=')
-			return Token(location, TOKEN_NOT_EQUALS, 2);
+		if (file[start_pos + 1] == '=')
+			return Token(Location(file, start_pos, 2), TOKEN_NOT_EQUALS);
 
-		return Token(location, TOKEN_BOOLEAN_NOT, 1);
+		return Token(Location(file, start_pos, 1), TOKEN_BOOLEAN_NOT);
 	}
 
-	static Token get_question_operator(const Location& location)
+	static Token get_question_operator(const File& file, const usize start_pos)
 	{
-		if (location[1] == '?')		
-			return Token(location, TOKEN_OPTION, 2);
+		if (file[start_pos + 1] == '?')		
+			return Token(Location(file, start_pos, 2), TOKEN_OPTION);
 	
-		return Token(location, TOKEN_QUESTION, 1);
+		return Token(Location(file, start_pos, 1), TOKEN_QUESTION);
 	}
 
-	static Token get_modulus_operator(const Location& location)
+	static Token get_modulus_operator(const File& file, const usize start_pos)
 	{
-		if (location[1] == '=')
-			return Token(location, TOKEN_MODULUS_ASSIGN, 2);
+		if (file[start_pos + 1] == '=')
+			return Token(Location(file, start_pos, 2), TOKEN_MODULUS_ASSIGN);
 		
-		return Token(location, TOKEN_MODULUS, 1);
+		return Token(Location(file, start_pos, 1), TOKEN_MODULUS);
 	}
 
-	static Token get_colon_operator(const Location& location)
+	static Token get_colon_operator(const File& file, const usize start_pos)
 	{
-		switch (location[1])
+		switch (file[start_pos + 1])
 		{
 			case ':':
-				return Token(location, TOKEN_SCOPE, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_SCOPE);
 
 			case '=':
-				return Token(location, TOKEN_BECOME_ASSIGN, 2);
+				return Token(Location(file, start_pos, 2), TOKEN_BECOME_ASSIGN);
 
 			default:
-				return Token(location, TOKEN_COLON, 1);
+				return Token(Location(file, start_pos, 1), TOKEN_COLON);
 		}
 	}
 
-	static Result<Token> get_operator_token(const Location& location)
+	static Result<Token> get_operator_token(const File& file, const usize start_pos)
 	{
-		switch (location[0])
+		switch (file[start_pos])
 		{
 			case '+': // +, ++, +=
-				return get_plus_operator(location);
+				return get_plus_operator(file, start_pos);
 
 			case '-': // -, --, -=, ->
-				return get_hyphen_operator(location);
+				return get_hyphen_operator(file, start_pos);
 
 			case '*': // *, **, *=
-				return get_asterisk_operator(location);
+				return get_asterisk_operator(file, start_pos);
 
 			case '/': // /, /=
-				return get_slash_operator(location);
+				return get_slash_operator(file, start_pos);
 
 			case '<': // <, <<, <=
-				return get_langbrack_operator(location);
+				return get_langbrack_operator(file, start_pos);
 
 			case '>': // >, >>, >=
-				return get_rangbrack_operator(location);
+				return get_rangbrack_operator(file, start_pos);
 
 			case '&': // &, &=
-				return get_ampersand_operator(location);
+				return get_ampersand_operator(file, start_pos);
 
 			case '|': // |, |=
-				return get_pipeline_operator(location);
+				return get_pipeline_operator(file, start_pos);
 
 			case '^': // ^, ^=
-				return get_carrot_operator(location);
+				return get_carrot_operator(file, start_pos);
 
 			case '=': // =, ==, =>
-				return get_equals_operator(location);
+				return get_equals_operator(file, start_pos);
 
 			case '!': // !, !=
-				return get_exclamation_operator(location);
+				return get_exclamation_operator(file, start_pos);
 
 			case '?': // ?, ??
-				return get_question_operator(location);				
+				return get_question_operator(file, start_pos);				
 
 			case '%': // %, %=
-				return get_modulus_operator(location);
+				return get_modulus_operator(file, start_pos);
 
 			case ':': // :, ::
-				return get_colon_operator(location);
+				return get_colon_operator(file, start_pos);
 
 			default:
-				error_out(location) << "invalid character given in operator";
-				error_highlight(location.with_length(1));
-				return {};
+				throw std::runtime_error("invalid chracter given in operator: '" + String(1, file[0]) + "'");
 		}
 	}
 
-	static inline bool is_end_of_text_literal(const char *pos, char terminal_char)
+	static Result<Token> get_quote_token(const source::File& file, const usize start_pos)
 	{
-		return pos[0] == terminal_char && pos[-1] != '\\';
-	}
+		char terminal_character = file[start_pos];
+		auto pos = start_pos + 1;
 
-	static Result<Token> get_quote_token(const Location& location)
-	{	
-		const char * const start = location.pos_ptr();
-		char terminal_char = start[0];
-		const char *pos = start + 1;
-
-		while (*pos && !is_end_of_text_literal(pos, terminal_char))
-			++pos;
-
-		if (*pos == '\0')
+		while (true)
 		{
-			error_out(location) << "unterminated string literal";
-			error_highlight(location.with_length((usize)(pos - start)));
-			return {};
+			auto current_character = file[pos]; 
+
+			if (current_character == '\0')
+			{
+				print_error(file.get_snippet(start_pos, pos - start_pos), "unterminated string literal");
+				return {};
+			}
+
+			if (current_character == terminal_character && file[pos - 1] != '\\')
+				break;
+
+			pos += 1;
 		}
 
-		pos += 1;
-
-		auto type = terminal_char == '\''
+		auto type = terminal_character == '\''
 			? TOKEN_CHAR_LITERAL
 			: TOKEN_STRING_LITERAL;
 			
-		return Token(location, type, pos - start);
+		return Token(Location(file, start_pos, pos - start_pos), type);
 	}
 
-	static Result<Token> get_next_token(const Location& location)
+	static Result<Token> get_next_token(const source::File& file, const usize start_pos)
 	{
-		auto type = get_char_type(location[0]);
+		auto type = get_char_type(file[start_pos]);
 
 		switch (type)
 		{
@@ -531,36 +684,34 @@ namespace warbler::lexicon
 				break;
 
 			case CHAR_IDENTIFIER:
-				return get_identifier_token(location);
+				return get_identifier_token(file, start_pos);
 
 			case CHAR_SEPARATOR:
-				return get_separator_token(location);
+				return get_separator_token(file, start_pos);
 
 			case CHAR_DOT:
-				return get_dot_token(location);
+				return get_dot_token(file, start_pos);
 
 			case CHAR_DIGIT:
-				return get_digit_token(location);
+				return get_digit_token(file, start_pos);
 
 			case CHAR_OPERATOR:
-				return get_operator_token(location);
+				return get_operator_token(file, start_pos);
 
 			case CHAR_QUOTE:
-				return get_quote_token(location);
+				return get_quote_token(file, start_pos);
 
 			case CHAR_INVALID:
-				error_out(location) << "invalid character in source file: " << location[0]
-					<< ", integer value: (" << (int)location[0] << ")";
-				error_highlight(location.with_length(1));
+				print_error(file.get_snippet(start_pos, 1), "invalid character in source file '" + String(1, file[start_pos]) + "'");
 				return {};
 		}
 
-		return Token();
+		return Token(Location(file, start_pos, 1), TOKEN_END_OF_FILE);
 	}
 
-	Result<std::vector<Token>> tokenize(const source::File& file)
+	Result<Array<Token>> tokenize(const source::File& file)
 	{	
-		std::vector<Token> out;
+		Array<Token> out;
 
 		out.reserve(10);
 
@@ -579,8 +730,7 @@ namespace warbler::lexicon
 				return {};
 
 			out.emplace_back(res.unwrap());
-			position += out.back().location.length();
-			location.offset(out.back().length());
+			position += out.back().location().length();
 		}
 		while (out.back().type() != TOKEN_END_OF_FILE);
 

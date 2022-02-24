@@ -10,7 +10,7 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> BitwiseXorExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> BitwiseXorExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = BitwiseAndExpression::parse(iter);
 
@@ -19,7 +19,7 @@ namespace warbler::syntax
 
 		Array<Ptr<Expression>> rhs;
 
-		while (iter->type() == TOKEN_CARROT)
+		while (iter->type() == lexicon::TOKEN_CARROT)
 		{
 			iter += 1;
 

@@ -16,26 +16,26 @@ namespace warbler::semantics
 
 	void init_context()
 	{
-		primitives.emplace("i8", Ptr<TypeDefinition> { new Primitive(Identifier("i8"), 1, syntax::PRIMITIVE_INTEGER) });
-		primitives.emplace("i16", Ptr<TypeDefinition> { new Primitive(Identifier("i16"), 2, syntax::PRIMITIVE_INTEGER) });
-		primitives.emplace("i32", Ptr<TypeDefinition> { new Primitive(Identifier("i32"), 2, syntax::PRIMITIVE_INTEGER) });
-		primitives.emplace("i64", Ptr<TypeDefinition> { new Primitive(Identifier("i64"), 2, syntax::PRIMITIVE_INTEGER) });
+		// primitives.emplace("i8", Ptr<TypeDefinition> { new Primitive(Identifier("i8"), 1, syntax::PRIMITIVE_INTEGER) });
+		// primitives.emplace("i16", Ptr<TypeDefinition> { new Primitive(Identifier("i16"), 2, syntax::PRIMITIVE_INTEGER) });
+		// primitives.emplace("i32", Ptr<TypeDefinition> { new Primitive(Identifier("i32"), 2, syntax::PRIMITIVE_INTEGER) });
+		// primitives.emplace("i64", Ptr<TypeDefinition> { new Primitive(Identifier("i64"), 2, syntax::PRIMITIVE_INTEGER) });
 
-		primitives.emplace("u8", Ptr<TypeDefinition> { new Primitive(Identifier("u8"), 1, syntax::PRIMITIVE_UNSIGNED) });
-		primitives.emplace("u16", Ptr<TypeDefinition> { new Primitive(Identifier("u16"), 2, syntax::PRIMITIVE_UNSIGNED) });
-		primitives.emplace("u32", Ptr<TypeDefinition> { new Primitive(Identifier("u32"), 2, syntax::PRIMITIVE_UNSIGNED) });
-		primitives.emplace("u64", Ptr<TypeDefinition> { new Primitive(Identifier("u64"), 2, syntax::PRIMITIVE_UNSIGNED) });
+		// primitives.emplace("u8", Ptr<TypeDefinition> { new Primitive(Identifier("u8"), 1, syntax::PRIMITIVE_UNSIGNED) });
+		// primitives.emplace("u16", Ptr<TypeDefinition> { new Primitive(Identifier("u16"), 2, syntax::PRIMITIVE_UNSIGNED) });
+		// primitives.emplace("u32", Ptr<TypeDefinition> { new Primitive(Identifier("u32"), 2, syntax::PRIMITIVE_UNSIGNED) });
+		// primitives.emplace("u64", Ptr<TypeDefinition> { new Primitive(Identifier("u64"), 2, syntax::PRIMITIVE_UNSIGNED) });
 
-		primitives.emplace("b8", Ptr<TypeDefinition> { new Primitive(Identifier("b8"), 1, syntax::PRIMITIVE_BINARY) });
-		primitives.emplace("b16", Ptr<TypeDefinition> { new Primitive(Identifier("b16"), 2, syntax::PRIMITIVE_BINARY) });
-		primitives.emplace("b32", Ptr<TypeDefinition> { new Primitive(Identifier("b32"), 2, syntax::PRIMITIVE_BINARY) });
-		primitives.emplace("b64", Ptr<TypeDefinition> { new Primitive(Identifier("b64"), 2, syntax::PRIMITIVE_BINARY) });
+		// primitives.emplace("b8", Ptr<TypeDefinition> { new Primitive(Identifier("b8"), 1, syntax::PRIMITIVE_BINARY) });
+		// primitives.emplace("b16", Ptr<TypeDefinition> { new Primitive(Identifier("b16"), 2, syntax::PRIMITIVE_BINARY) });
+		// primitives.emplace("b32", Ptr<TypeDefinition> { new Primitive(Identifier("b32"), 2, syntax::PRIMITIVE_BINARY) });
+		// primitives.emplace("b64", Ptr<TypeDefinition> { new Primitive(Identifier("b64"), 2, syntax::PRIMITIVE_BINARY) });
 
-		primitives.emplace("f32", Ptr<TypeDefinition> { new Primitive(Identifier("f32"), 2, syntax::PRIMITIVE_FLOAT) });
-		primitives.emplace("f64", Ptr<TypeDefinition> { new Primitive(Identifier("f64"), 2, syntax::PRIMITIVE_FLOAT) });
+		// primitives.emplace("f32", Ptr<TypeDefinition> { new Primitive(Identifier("f32"), 2, syntax::PRIMITIVE_FLOAT) });
+		// primitives.emplace("f64", Ptr<TypeDefinition> { new Primitive(Identifier("f64"), 2, syntax::PRIMITIVE_FLOAT) });
 
-		primitives.emplace("bool", Ptr<TypeDefinition> { new Primitive(Identifier("bool"), 2, syntax::PRIMITIVE_BOOL) });
-		primitives.emplace("char", Ptr<TypeDefinition> { new Primitive(Identifier("char"), 2, syntax::PRIMITIVE_CHAR) });
+		// primitives.emplace("bool", Ptr<TypeDefinition> { new Primitive(Identifier("bool"), 2, syntax::PRIMITIVE_BOOL) });
+		// primitives.emplace("char", Ptr<TypeDefinition> { new Primitive(Identifier("char"), 2, syntax::PRIMITIVE_CHAR) });
 		//primitives.emplace("str", Ptr<TypeDefinition> { new Primitive(Identifier("str"), 2, syntax::PRIMITIVE_STR) });
 	}
 

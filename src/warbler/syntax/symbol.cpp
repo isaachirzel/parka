@@ -14,11 +14,11 @@ namespace warbler::syntax
 	_text(location.text())
 	{}
 
-	Result<Symbol> Symbol::parse(TokenIterator& iter)
+	Result<Symbol> Symbol::parse(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() != TOKEN_IDENTIFIER)
+		if (iter->type() != lexicon::TOKEN_IDENTIFIER)
 		{
-			parse_error(iter, "identifier");
+			print_parse_error(iter, "identifier");
 			return {};
 		}
 

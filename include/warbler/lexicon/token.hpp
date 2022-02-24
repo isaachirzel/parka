@@ -5,7 +5,7 @@
 #include <warbler/util/array.hpp>
 #include <warbler/util/table.hpp>
 #include <warbler/source/text.hpp>
-#include <warbler/source/file.hpp>
+#include <warbler/source/location.hpp>
 
 namespace warbler::lexicon
 {
@@ -29,8 +29,6 @@ namespace warbler::lexicon
 		TOKEN_CARROT,
 		TOKEN_LSHIFT,
 		TOKEN_RSHIFT,
-		TOKEN_INCREMENT,
-		TOKEN_DECREMENT,
 		TOKEN_BOOLEAN_NOT,
 		TOKEN_BOOLEAN_AND,
 		TOKEN_BOOLEAN_OR,
@@ -71,25 +69,50 @@ namespace warbler::lexicon
 		TOKEN_OCTAL_LITERAL,
 		TOKEN_CHAR_LITERAL,
 		TOKEN_STRING_LITERAL,
-		TOKEN_SCOPE
+		TOKEN_SCOPE,
+
+		TOKEN_KEYWORD_BREAK,
+		TOKEN_KEYWORD_CASE,
+		TOKEN_KEYWORD_CONTINUE,
+		TOKEN_KEYWORD_ELSE,
+		TOKEN_KEYWORD_ENUM,
+		TOKEN_KEYWORD_EXPORT,
+		TOKEN_KEYWORD_FALSE,
+		TOKEN_KEYWORD_FOR,
+		TOKEN_KEYWORD_FUNCTION,
+		TOKEN_KEYWORD_IF,
+		TOKEN_KEYWORD_IMPORT,
+		TOKEN_KEYWORD_LOOP,
+		TOKEN_KEYWORD_MATCH,
+		TOKEN_KEYWORD_MUT,
+		TOKEN_KEYWORD_PRIVATE,
+		TOKEN_KEYWORD_PUBLIC,
+		TOKEN_KEYWORD_RETURN,
+		TOKEN_KEYWORD_STRUCT,
+		TOKEN_KEYWORD_THEN,
+		TOKEN_KEYWORD_TRUE,
+		TOKEN_KEYWORD_TYPE,
+		TOKEN_KEYWORD_UNION,
+		TOKEN_KEYWORD_VAR,
+		TOKEN_KEYWORD_WHILE,
 	};
 
 	class Token
 	{
 	private:
 
-		const source::File& _file;
 		source::Location _location;
 		TokenType _type;
 
 	public:
 
-		Token(const source::File& file, const source::Location& location, TokenType type);
+		Token(const source::Location& location, TokenType type);
 
-		source::Text text();
-		String get_string() { return _file.get_string(_location); }
+		source::Snippet get_snippet() const { return _location.get_snippet(); }
+		String get_string() const { return _location.get_string(); }
 
-		const source::File& file() const { return _file; }
+		bool is_keyword();
+
 		const source::Location& location() const { return _location; }
 		TokenType type() const { return _type; }
 	};

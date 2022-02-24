@@ -21,7 +21,7 @@ namespace warbler::syntax
 
 		ExpressionStatement(Ptr<Expression>&& expression);
 
-		static Result<ExpressionStatement> parse(TokenIterator& iter);
+		static Result<ExpressionStatement> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;

@@ -14,7 +14,7 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> EqualityExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> EqualityExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = RelationalExpression::parse(iter);
 

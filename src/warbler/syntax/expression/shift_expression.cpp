@@ -9,19 +9,19 @@
 
 namespace warbler::syntax
 {
-	ShiftExpression::ShiftExpression(Ptr<Expression>&& lhs, std::vector<ShiftRhs>&& rhs) :
+	ShiftExpression::ShiftExpression(Ptr<Expression>&& lhs, Array<ShiftRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> ShiftExpression::parse(TokenIterator& iter)
+	Result<Ptr<Expression>> ShiftExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = AdditiveExpression::parse(iter);
 
 		if (!lhs)
 			return {};
 
-		std::vector<ShiftRhs> rhs;
+		Array<ShiftRhs> rhs;
 
 		while (true)
 		{

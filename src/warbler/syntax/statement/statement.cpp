@@ -8,7 +8,7 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<Statement>> Statement::parse(TokenIterator& iter)
+	Result<Ptr<Statement>> Statement::parse(lexicon::TokenIterator& iter)
 	{
 		switch (iter->type())
 		{

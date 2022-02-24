@@ -9,13 +9,13 @@ namespace warbler::syntax
 	_members(std::move(members))
 	{}
 
-	Result<Struct> Struct::parse(TokenIterator& iter, Identifier&& name)
+	Result<Struct> Struct::parse(lexicon::TokenIterator& iter, Identifier&& name)
 	{
 		iter += 1;
 
-		if (iter->type() != TOKEN_LBRACE)
+		if (iter->type() != lexicon::TOKEN_LBRACE)
 		{
-			parse_error(iter, "'{' before struct body");
+			print_parse_error(iter, "'{' before struct body");
 			return {};
 		}
 
@@ -23,7 +23,7 @@ namespace warbler::syntax
 
 		Array<Member> members;
 
-		if (iter->type() != TOKEN_RBRACE)
+		if (iter->type() != lexicon::TOKEN_RBRACE)
 		{
 			while (true)
 			{
@@ -34,15 +34,15 @@ namespace warbler::syntax
 
 				members.emplace_back(member.unwrap());
 
-				if (iter->type() != TOKEN_COMMA)
+				if (iter->type() != lexicon::TOKEN_COMMA)
 					break;
 
 				iter += 1;
 			}
 
-			if (iter->type() != TOKEN_RBRACE)
+			if (iter->type() != lexicon::TOKEN_RBRACE)
 			{
-				parse_error(iter, "'}' after struct body");
+				print_parse_error(iter, "'}' after struct body");
 				return {};
 			}
 		}

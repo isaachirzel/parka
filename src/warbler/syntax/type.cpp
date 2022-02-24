@@ -21,17 +21,17 @@ namespace warbler::syntax
 	_is_auto(false)
 	{}
 
-	Result<Type> Type::parse(TokenIterator& iter)
+	Result<Type> Type::parse(lexicon::TokenIterator& iter)
 	{
 		Array<bool> ptr_mutability;
 
 		const Location start_location = iter->location();
 
-		while (iter->type() == TOKEN_ASTERISK)
+		while (iter->type() == lexicon::TOKEN_ASTERISK)
 		{
 			iter += 1;
 
-			if (iter->type() == TOKEN_MUT)
+			if (iter->type() == lexicon::TOKEN_MUT)
 			{
 				ptr_mutability.push_back(true);
 				iter += 1;
@@ -42,9 +42,9 @@ namespace warbler::syntax
 			}
 		}
 
-		if (iter->type() != TOKEN_IDENTIFIER)
+		if (iter->type() != lexicon::TOKEN_IDENTIFIER)
 		{
-			parse_error(iter, "typename");
+			print_parse_error(iter, "typename");
 			return {};
 		}
 		
