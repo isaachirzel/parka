@@ -1,4 +1,4 @@
-#include <warbler/syntax//type/struct.hpp>
+#include <warbler/syntax/type/struct.hpp>
 
 #include <warbler/util/print.hpp>
 

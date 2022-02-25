@@ -3,7 +3,7 @@
 #include <warbler/cli.hpp>
 #include <warbler/preprocessor.hpp>
 #include <warbler/lexicon/tokenizer.hpp>
-#include <warbler/syntax//ast.hpp>
+#include <warbler/syntax/ast.hpp>
 #include <warbler/util/print.hpp>
 
 // standard library

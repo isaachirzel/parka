@@ -1,9 +1,9 @@
-#include <warbler/syntax//expression/conditional_expression.hpp>
+#include <warbler/syntax/expression/conditional_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
-#include <warbler/syntax//expression/expression.hpp>
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/expression/expression.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 
 namespace warbler::syntax
 {
@@ -101,8 +101,8 @@ namespace warbler::syntax
 			: _lhs->get_type();
 	}
 
-	const Location& ConditionalExpression::location() const
+	const source::Location& ConditionalExpression::location() const
 	{
-		throw std::runtime_error("ConditionalExpression::" + String(__func__) + " is not implemented yet");
+		throw not_implemented();
 	}
 }

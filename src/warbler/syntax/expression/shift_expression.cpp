@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/shift_expression.hpp>
+#include <warbler/syntax/expression/shift_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
@@ -101,7 +101,7 @@ namespace warbler::syntax
 		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const Location& ShiftExpression::location() const
+	const source::Location& ShiftExpression::location() const
 	{
 		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
 	}

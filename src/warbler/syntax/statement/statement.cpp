@@ -1,9 +1,9 @@
-#include <warbler/syntax//statement/statement.hpp>
+#include <warbler/syntax/statement/statement.hpp>
 
 // local headers
-#include <warbler/syntax//statement/declaration_statement.hpp>
-#include <warbler/syntax//statement/expression_statement.hpp>
-#include <warbler/syntax//statement/if_statement.hpp>
+#include <warbler/syntax/statement/declaration_statement.hpp>
+#include <warbler/syntax/statement/expression_statement.hpp>
+#include <warbler/syntax/statement/if_statement.hpp>
 #include <warbler/util/print.hpp>
 
 namespace warbler::syntax

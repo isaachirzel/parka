@@ -2,8 +2,8 @@
 #define WARBLER_SYNTAX_TYPE_MEMBER_HPP
 
 // local headers
-#include <warbler/syntax//identifier.hpp>
-#include <warbler/syntax//type.hpp>
+#include <warbler/syntax/identifier.hpp>
+#include <warbler/syntax/type.hpp>
 #include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax

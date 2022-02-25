@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/relational_expression.hpp>
+#include <warbler/syntax/expression/relational_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
@@ -122,7 +122,7 @@ namespace warbler::syntax
 		throw std::runtime_error("RelationExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const Location& RelationalExpression::location() const
+	const source::Location& RelationalExpression::location() const
 	{
 		if (!_rhs.empty())
 		{

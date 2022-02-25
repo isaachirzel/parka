@@ -2,8 +2,8 @@
 #define WARBLER_SYNTAX_TYPE_PRIMITIVE_HPP
 
 #include <warbler/util/primitive.hpp>
-#include <warbler/syntax//identifier.hpp>
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/identifier.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 
 namespace warbler::syntax
 {

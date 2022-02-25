@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <warbler/util/print.hpp>
-#include <warbler/syntax//type/primitive.hpp>
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/type/primitive.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 
 namespace warbler::semantics
 {

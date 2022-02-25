@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/boolean_or_expression.hpp>
+#include <warbler/syntax/expression/boolean_or_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
@@ -62,19 +62,18 @@ namespace warbler::syntax
 
 		for (const auto& rhs : _rhs)
 		{
-			std::cout << tree_branch(depth) << "||\n";
+			print_branch(depth - 1, "||");
 			rhs->print_tree(depth);
 		}
 	}
 
 	Type *BooleanOrExpression::get_type()
 	{
-
-		throw std::runtime_error("BooleanOrExpression::" + String(__func__) + " is not implemented yet");
+		throw not_implemented();
 	}
 
-	const Location& BooleanOrExpression::location() const
+	const source::Location& BooleanOrExpression::location() const
 	{
-		throw std::runtime_error("BooleanOrExpression::" + String(__func__) + " is not implemented yet");
+		throw not_implemented();
 	}
 }

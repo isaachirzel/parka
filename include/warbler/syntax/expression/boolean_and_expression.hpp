@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_BOOLEAN_AND_HPP
 
 // local headers
-#include <warbler/syntax//expression/bitwise_or_expression.hpp>
+#include <warbler/syntax/expression/bitwise_or_expression.hpp>
 
 namespace warbler::syntax
 {

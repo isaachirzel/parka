@@ -1,7 +1,7 @@
 #ifndef WARBLER_SYNTAX_EXPRESSION_HPP
 #define WARBLER_SYNTAX_EXPRESSION_HPP
 
-#include <warbler/syntax//type.hpp>
+#include <warbler/syntax/type.hpp>
 #include <warbler/lexicon/token.hpp>
 #include <warbler/semantics/context.hpp>
 #include <warbler/util/ptr.hpp>

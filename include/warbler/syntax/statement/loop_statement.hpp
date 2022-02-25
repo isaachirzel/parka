@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/lexicon/token.hpp>
 #include <warbler/result.hpp>
-#include <warbler/syntax//loop_condition.hpp>
+#include <warbler/syntax/loop_condition.hpp>
 
 namespace warbler::syntax
 {

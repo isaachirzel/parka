@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/constant.hpp>
+#include <warbler/syntax/expression/constant.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
@@ -8,31 +8,31 @@
 
 namespace warbler::syntax
 {
-	Constant::Constant(const Location& location, String&& string) :
+	Constant::Constant(const source::Location& location, String&& string) :
 	_location(location),
 	_string(string),
 	_constant_type(CONSTANT_STRING)
 	{}
 
-	Constant::Constant(const Location& location, i64 integer) :
+	Constant::Constant(const source::Location& location, i64 integer) :
 	_location(location),
 	_integer(integer),
 	_constant_type(CONSTANT_INTEGER)
 	{}
 
-	Constant::Constant(const Location& location, f64 floating) :
+	Constant::Constant(const source::Location& location, f64 floating) :
 	_location(location),
 	_floating(floating),
 	_constant_type(CONSTANT_FLOAT)
 	{}
 
-	Constant::Constant(const Location& location, u32 character) :
+	Constant::Constant(const source::Location& location, u32 character) :
 	_location(location),
 	_character(character),
 	_constant_type(CONSTANT_CHARACTER)
 	{}
 
-	Constant::Constant(const Location& location, bool boolean) :
+	Constant::Constant(const source::Location& location, bool boolean) :
 	_location(location),
 	_boolean(boolean),
 	_constant_type(CONSTANT_BOOLEAN)

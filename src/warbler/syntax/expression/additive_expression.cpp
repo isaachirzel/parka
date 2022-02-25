@@ -1,7 +1,8 @@
-#include <warbler/syntax//expression/additive_expression.hpp>
+#include <warbler/syntax/expression/additive_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
+#include <stdexcept>
 
 namespace warbler::syntax
 {
@@ -76,7 +77,7 @@ namespace warbler::syntax
 		
 		for (const auto& rhs : _rhs)
 		{
-			std::cout << tree_branch(depth - 1) << (rhs.type == ADDITIVE_ADD ? "+\n" : "-\n");
+			print_branch(depth - 1, rhs.type == ADDITIVE_ADD ? "+" : "-");
 			rhs.expr->print_tree(depth);
 		}
 	}
@@ -86,7 +87,7 @@ namespace warbler::syntax
 		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const Location& AdditiveExpression::location() const
+	const source::Location& AdditiveExpression::location() const
 	{
 		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
 	}

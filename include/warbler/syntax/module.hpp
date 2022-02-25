@@ -2,9 +2,9 @@
 #define WARBLER_SYNTAX_MODULE_HPP
 
 // local headers
-#include <warbler/syntax//function.hpp>
+#include <warbler/syntax/function.hpp>
 #include <warbler/util/table.hpp>
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 #include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax

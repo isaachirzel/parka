@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_BOOLEAN_RELATIONAL_HPP
 
 // local headers
-#include <warbler/syntax//expression/shift_expression.hpp>
+#include <warbler/syntax/expression/shift_expression.hpp>
 
 namespace warbler::syntax
 {

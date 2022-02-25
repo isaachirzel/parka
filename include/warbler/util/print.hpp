@@ -3,13 +3,16 @@
 
 // local headers
 #include <warbler/lexicon/token.hpp>
-#include <warbler/source/text.hpp>
+#include <warbler/source/snippet.hpp>
+#include <stdexcept>
 
 namespace warbler
 {
-	void print_enable_color(bool enabled);
+	std::runtime_error _not_implemented(const char *file, int line, const char *func);
+	#define not_implemented() _not_implemented(__FILE__, __LINE__, __func__)
 
-	String tree_branch(u32 length);
+	void print_enable_color(bool enabled);
+	
 	void print_branch(u32 depth, const String& text);
 
 	void print_note(const source::Snippet& text, const String& msg);

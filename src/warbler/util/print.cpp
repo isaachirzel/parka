@@ -7,6 +7,9 @@
 #include <cstring>
 #include <cassert>
 #include <iomanip>
+#include <cstdlib>
+#include <warbler/util/primitive.hpp>
+#include <warbler/util/string.hpp>
 
 #define COLOR_RED		"\033[91m"
 #define COLOR_YELLOW 	"\033[93m"
@@ -30,8 +33,10 @@
 namespace warbler
 {
 	using source::Snippet;
+	using source::Location;
+	using lexicon::TokenIterator;
 
-	std::ostream& error_stream = std::cout;
+	std::ostream& output_stream = std::cout;
 	static bool is_color_enabled = true;
 
 	static inline const char *note_prompt()
@@ -66,12 +71,12 @@ namespace warbler
 		{
 
 			for (u32 i = 0; i < depth - 1; ++i)
-				error_stream << "|   ";
+				output_stream << "|   ";
 
-			error_stream << "| > ";
+			output_stream << "| > ";
 		}
 
-		error_stream << text << '\n';
+		output_stream << text << '\n';
 	}
 
 	void print_spaces(unsigned count)
@@ -105,10 +110,78 @@ namespace warbler
 		return out;
 	}
 
-	void highlight(std::ostream& out, const Snippet& location, const char *color)
+	static inline print_margin(usize line = 0)
 	{
-		size_t line_number_length = get_spaces_for_num(location.line());	
-		String line_header(location.start_of_line(), location.col());
+		output_stream << ' ';
+
+		if (line > 0)
+		{
+			usize size_of_num = get_spaces_for_num(line);
+			usize spaces = 8 - size_of_num;
+
+			output_stream << String(spaces, ' ') << line << " | ";
+
+			
+		}
+		else
+		{
+			output_stream << "          | ";
+		}
+	}
+
+	void print_snippet_highlight(const Snippet& snippet, const char *color)
+	{
+		Array<String> lines;
+
+		for (usize i = 0; i < snippet.length(); ++i)
+		{
+			
+		}
+
+		while (true) // loop for each line
+		{
+			print_margin
+		}
+
+		for (usize
+
+		for (usize i = 0; i < snippet.start_pos(); ++i)
+			output_stream << snippet[i];
+
+		if (is_color_enabled)
+			output_stream << color;
+
+		usize line = snippet.line();
+
+		for (usize i = snippet.start_pos(); i < snippet.end_pos(); ++i)
+		{
+			auto character = snippet[i];
+			output_stream << snippet[i];
+
+			if (character == '\n')
+			{
+				line += 1;
+
+			}
+		}
+		
+		for (usize i = snippet.end_pos();
+
+		const auto& data = snippet.data();
+
+		for (usize i = snippet.start; i < snippet.pos(); ++i)
+			output_stream << data[i];
+
+		if (is_color_enabled)
+			output_stream << color;
+
+		usize end = snippet.pos() + snippet.length();
+
+		for (usize i = snippet.pos(); i < 
+
+		highlight.reserve(snippet.data().size() * 3)
+		size_t line_number_length = get_spaces_for_num(snippet.line());	
+		String line_header = snippet.data().substr(0, snippet.col());
 
 		const char *text_after_location = location.end();
 		const char *end = text_after_location;
@@ -121,21 +194,21 @@ namespace warbler
 		String line_footer(text_after_location, footer_length);
 		line_footer += '\n';
 
-		out << "\n " << location.line() + 1 << " | ";
+		output_stream << "\n " << location.line() + 1 << " | ";
 
 		const char *pos = location.start_of_line();
 		for (usize i = 0; i < location.col(); ++i)
-			out << pos[i];
+			output_stream << pos[i];
 
 		if (is_color_enabled)
-			out << color;
+			output_stream << color;
 
 		pos = location.pos_ptr();
 		for (usize i = 0; i < location.length(); ++i)
-			out << pos[i];
+			output_stream << pos[i];
 
 		if (is_color_enabled)
-			out <<  COLOR_RESET;
+			output_stream <<  COLOR_RESET;
 
 		// std::cout << "(" << location.length() << ")\n";
 
@@ -146,11 +219,11 @@ namespace warbler
 			if (*pos == '\0' || *pos == '\n')
 				break;
 
-			out << *pos;
+			output_stream << *pos;
 			pos += 1;
 		}
 
-		out << '\n' << String(2 + line_number_length, ' ') << "| ";
+		output_stream << '\n' << String(2 + line_number_length, ' ') << "| ";
 		
 		String spacing = line_header;
 
@@ -158,77 +231,22 @@ namespace warbler
 
 		for (usize i = 0; i < location.col(); ++i)
 		{
-			out << (pos[i] == '\t' ? '\t' : ' ');
+			output_stream << (pos[i] == '\t' ? '\t' : ' ');
 		}
 
 		if (is_color_enabled)
-			out << color;
+			output_stream << color;
 
 		// prints stray ~ so that there is at least one regardless of token length
-		out << '~';
+		output_stream << '~';
 
 		for (usize i = 1; i < location.length(); ++i)
-			out << '~';
+			output_stream << '~';
 
 		if (is_color_enabled)
-			out << COLOR_RESET;
+			output_stream << COLOR_RESET;
 
-		out << '\n';
-	}
-
-	void error_highlight(const Location& location)
-	{
-		highlight(error_stream, location, COLOR_RED);
-	}
-
-	void error_highlight(const TokenIterator& iter)
-	{
-		error_highlight(iter->location());
-	}
-
-	void error_highlight(const Token& token)
-	{
-		error_highlight(token.location());
-	}
-
-	void message_highlight(const Location& location)
-	{
-		highlight(error_stream, location, COLOR_CYAN);
-	}
-
-	void warning_highlight(const Location& location)
-	{
-		highlight(error_stream, location, COLOR_PURPLE);
-	}
-
-	std::ostream& error_out()
-	{
-		error_stream << error_prompt();
-
-		return error_stream;
-	}
-
-	static void print_header(std::ostream& stream, const Location& location)
-	{
-		stream << location.filename() << ':' << location.line() + 1 << ':' << location.col() + 1 << ' ';
-	}
-
-	std::ostream& error_out(const Location& location)
-	{
-		print_header(error_stream, location);
-		error_stream << error_prompt();
-
-		return error_stream;
-	}
-
-	std::ostream& error_out(const Token& token)
-	{
-		return error_out(token.location());
-	}
-
-	std::ostream& error_out(TokenIterator& iter)
-	{
-		return error_out(iter->location());
+		output_stream << '\n';
 	}
 
 	String tree_branch(u32 length)
@@ -260,66 +278,58 @@ namespace warbler
 		print_error(iter->location(), "expected " + expected + ", found '" + iter->get_string() + '\'');
 	}
 
-	static void print_message(std::ostream& stream, const char *prompt, const char *color, const Location& location, const String& msg)
+	static void print_message(const char *prompt, const char *color, const Location& location, const String& msg)
 	{
-		print_header(stream, location);
+		auto snippet = location.get_snippet();
+
+		output_stream << snippet.filename() << ':' << snippet.line() + 1 << ':' << snippet.col() + 1 << ' ';
 
 		if (is_color_enabled)
 		{
-			stream << color << prompt << COLOR_RESET;
+			output_stream << color << prompt << COLOR_RESET;
 		}
 		else
 		{
-			stream << prompt;
+			output_stream << prompt;
 		}
 
-		stream << msg;
+		output_stream << msg;
 		
-		highlight(stream, location, color);
+		print_snippet_highlight(snippet, color);
 	}
 
 	void print_note(const Location& location, const String& msg)
 	{
-		print_message(error_stream, PROMPT_NOTE, COLOR_NOTE, location, msg); 
+		print_message(PROMPT_NOTE, COLOR_NOTE, location, msg); 
 	}
 	
 	void print_warning(const Location& location, const String& msg)
 	{
-		print_message(error_stream, PROMPT_WARNING, COLOR_WARNING, location, msg);
+		print_message(PROMPT_WARNING, COLOR_WARNING, location, msg);
 	}
 
 	void print_error(const Location& location, const String& msg)
 	{
-		print_message(error_stream, PROMPT_ERROR, COLOR_ERROR, location, msg); 
-	}
-
-	static void print_message(std::ostream& stream, const char *prompt, const char *color, const String& msg)
-	{
-		if (is_color_enabled)
-		{
-			stream << color << prompt << COLOR_RESET;
-		}
-		else
-		{
-			stream << prompt;
-		}
-
-		stream << msg << std::endl;
+		print_message(PROMPT_ERROR, COLOR_ERROR, location, msg); 
 	}
 
 	void print_note(const String& msg)
 	{
-		print_message(error_stream, PROMPT_NOTE, COLOR_NOTE, msg);
+		print_message(PROMPT_NOTE, COLOR_NOTE, msg);
 	}
 
 	void print_warning(const String& msg)
 	{
-		print_message(error_stream, PROMPT_WARNING, COLOR_WARNING, msg);
+		print_message(PROMPT_WARNING, COLOR_WARNING, msg);
 	}
 
 	void print_error(const String& msg)
 	{
-		print_message(error_stream, PROMPT_ERROR, COLOR_ERROR, msg);
+		print_message(PROMPT_ERROR, COLOR_ERROR, msg);
 	}
 
+	std::runtime_error _not_implemented(const char *file, int line, const char *func)
+	{
+		return std::runtime_error(String(file) +  ":" + std::to_string(line) + " " + String(func) + "() is not implemented yet");
+	}
 }

@@ -1,7 +1,7 @@
 #ifndef WARBLER_SYNTAX_EXPRESSION_PREFIX_EXRESSION
 #define WARBLER_SYNTAX_EXPRESSION_PREFIX_EXRESSION
 
-#include <warbler/syntax//expression/postfix_expression.hpp>
+#include <warbler/syntax/expression/postfix_expression.hpp>
 
 namespace warbler::syntax
 {

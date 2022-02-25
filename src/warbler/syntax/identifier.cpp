@@ -1,4 +1,4 @@
-#include <warbler/syntax//identifier.hpp>
+#include <warbler/syntax/identifier.hpp>
 
 #include <warbler/util/print.hpp>
 #include <warbler/
@@ -8,7 +8,7 @@ namespace warbler::syntax
 	using source::Location;
 	using lexicon::lexicon::TokenIterator;
 
-	Identifier::Identifier(const Location& location) :
+	Identifier::Identifier(const source::Location& location) :
 	_location(location)
 	{}
 

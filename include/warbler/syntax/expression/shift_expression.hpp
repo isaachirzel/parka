@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_BITWISE_SHIFT_HPP
 
 // local headers
-#include <warbler/syntax//expression/additive_expression.hpp>
+#include <warbler/syntax/expression/additive_expression.hpp>
 
 namespace warbler::syntax
 {

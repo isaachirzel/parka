@@ -2,8 +2,8 @@
 #define WARBLER_SYNTAX_TYPE_TYPE_HPP
 
 
-#include <warbler/syntax//type/type_definition.hpp>
-#include <warbler/syntax//identifier.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
+#include <warbler/syntax/identifier.hpp>
 #include <warbler/semantics/context.hpp>
 #include <warbler/lexicon/token.hpp>
 #include <warbler/util/ptr.hpp>

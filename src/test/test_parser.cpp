@@ -1,7 +1,7 @@
 #include <warbler/lexicon/tokenizer.hpp>
 
 // local headers
-#include <warbler/syntax//ast.hpp>
+#include <warbler/syntax/ast.hpp>
 #include <warbler/util/print.hpp>
 
 // standard headers

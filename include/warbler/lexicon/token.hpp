@@ -4,7 +4,7 @@
 // local includes
 #include <warbler/util/array.hpp>
 #include <warbler/util/table.hpp>
-#include <warbler/source/text.hpp>
+#include <warbler/source/snippet.hpp>
 #include <warbler/source/location.hpp>
 
 namespace warbler::lexicon

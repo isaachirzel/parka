@@ -1,8 +1,8 @@
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 
 #include <warbler/util/print.hpp>
 
-#include <warbler/syntax//type/struct.hpp>
+#include <warbler/syntax/type/struct.hpp>
 
 namespace warbler::syntax
 {

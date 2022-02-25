@@ -2,8 +2,8 @@
 #define WARBLER_SYNTAX_EXPRESSION_CONDITIONAL_HPP
 
 // local headers
-#include <warbler/syntax//expression/boolean_or_expression.hpp>
-#include <warbler/syntax//expression/expression.hpp>
+#include <warbler/syntax/expression/boolean_or_expression.hpp>
+#include <warbler/syntax/expression/expression.hpp>
 
 namespace warbler::syntax
 {

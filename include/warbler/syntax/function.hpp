@@ -2,14 +2,15 @@
 #define WARBLER_SYNTAX_FUNCTION_HPP
 
 // local headers
-#include <warbler/syntax//identifier.hpp>
-#include <warbler/syntax//expression/expression.hpp>
-#include <warbler/syntax//expression/conditional_expression.hpp>
-#include <warbler/syntax//statement/block_statement.hpp>
-#include <warbler/syntax//statement/statement.hpp>
-#include <warbler/syntax//declaration.hpp>
-#include <warbler/util/table.hpp>
 #include <warbler/semantics/context.hpp>
+#include <warbler/syntax/identifier.hpp>
+#include <warbler/syntax/expression/expression.hpp>
+#include <warbler/syntax/expression/conditional_expression.hpp>
+#include <warbler/syntax/statement/block_statement.hpp>
+#include <warbler/syntax/statement/statement.hpp>
+#include <warbler/syntax/declaration.hpp>
+#include <warbler/util/table.hpp>
+#include <warbler/util/optional.hpp>
 
 namespace warbler::syntax
 {
@@ -22,7 +23,7 @@ namespace warbler::syntax
 		semantics::FunctionContext _context;
 		Identifier _name;
 		Array<Declaration> _parameters;
-		Type _return_type;
+		Optional<Type> _return_type;
 		BlockStatement _body;
 	
 	public:

@@ -1,6 +1,6 @@
-#include <warbler/syntax//expression/expression.hpp>
+#include <warbler/syntax/expression/expression.hpp>
 
-#include <warbler/syntax//expression/conditional_expression.hpp>
+#include <warbler/syntax/expression/conditional_expression.hpp>
 
 namespace warbler::syntax
 {

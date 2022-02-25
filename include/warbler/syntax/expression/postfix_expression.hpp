@@ -1,8 +1,8 @@
 #ifndef WARBLER_SYNTAX_EXPRESSION_POSTFIX_EXRESSION
 #define WARBLER_SYNTAX_EXPRESSION_POSTFIX_EXRESSION
 
-#include <warbler/syntax//expression/expression.hpp>
-#include <warbler/syntax//identifier.hpp>
+#include <warbler/syntax/expression/expression.hpp>
+#include <warbler/syntax/identifier.hpp>
 #include <warbler/util/ptr.hpp>
 
 namespace warbler::syntax

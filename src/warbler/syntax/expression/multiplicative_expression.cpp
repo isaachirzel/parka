@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/multiplicative_expression.hpp>
+#include <warbler/syntax/expression/multiplicative_expression.hpp>
 
 // local includes
 #include <warbler/util/print.hpp>
@@ -113,7 +113,7 @@ namespace warbler::syntax
 		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const Location& MultiplicativeExpression::location() const
+	const source::Location& MultiplicativeExpression::location() const
 	{
 		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}

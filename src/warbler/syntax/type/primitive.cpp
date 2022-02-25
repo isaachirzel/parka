@@ -1,4 +1,4 @@
-#include <warbler/syntax//type/primitive.hpp>
+#include <warbler/syntax/type/primitive.hpp>
 
 #include <warbler/util/print.hpp>
 

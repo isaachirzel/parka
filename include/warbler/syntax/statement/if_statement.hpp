@@ -2,9 +2,9 @@
 #define WARBLER_SYNTAX_STATEMENT_SELECTION_STATEMENT_HPP
 
 // local headers
-#include <warbler/syntax//statement/block_statement.hpp>
-#include <warbler/syntax//expression/expression.hpp>
-#include <warbler/syntax//expression/conditional_expression.hpp>
+#include <warbler/syntax/statement/block_statement.hpp>
+#include <warbler/syntax/expression/expression.hpp>
+#include <warbler/syntax/expression/conditional_expression.hpp>
 #include <warbler/util/array.hpp>
 
 namespace warbler::syntax

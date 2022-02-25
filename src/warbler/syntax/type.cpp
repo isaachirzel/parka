@@ -1,14 +1,14 @@
-#include <warbler/syntax//type.hpp>
+#include <warbler/syntax/type.hpp>
 
 // standard headers
 #include <warbler/util/print.hpp>
-#include <warbler/syntax//type/primitive.hpp>
+#include <warbler/syntax/type/primitive.hpp>
 
 namespace warbler::syntax
 {
 	Type::Type() {}
 
-	Type::Type(const Location& location, String&& base_name, Array<bool>&& ptr_mutability) :
+	Type::Type(const source::Location& location, String&& base_name, Array<bool>&& ptr_mutability) :
 	_location(location),
 	_base_name(std::move(base_name)),
 	_ptr_mutability(std::move(ptr_mutability)),	
@@ -25,7 +25,7 @@ namespace warbler::syntax
 	{
 		Array<bool> ptr_mutability;
 
-		const Location start_location = iter->location();
+		const source::Location start_location = iter->location();
 
 		while (iter->type() == lexicon::TOKEN_ASTERISK)
 		{

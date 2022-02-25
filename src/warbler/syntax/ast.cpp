@@ -1,6 +1,6 @@
-#include <warbler/syntax//ast.hpp>
+#include <warbler/syntax/ast.hpp>
 
-#include <warbler/syntax//function.hpp>
+#include <warbler/syntax/function.hpp>
 
 namespace warbler::syntax
 {

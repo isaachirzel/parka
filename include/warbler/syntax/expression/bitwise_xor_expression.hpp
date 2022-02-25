@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_BITWISE_XOR_HPP
 
 // local headers
-#include <warbler/syntax//expression/bitwise_and_expression.hpp>
+#include <warbler/syntax/expression/bitwise_and_expression.hpp>
 
 namespace warbler::syntax
 {

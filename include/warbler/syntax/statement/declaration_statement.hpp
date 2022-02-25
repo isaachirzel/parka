@@ -2,9 +2,9 @@
 #define WARBLER_SYNTAX_STATEMENT_DECLARATION_STATEMENT_HPP
 
 // local headers
-#include <warbler/syntax//declaration.hpp>
-#include <warbler/syntax//expression/conditional_expression.hpp>
-#include <warbler/syntax//statement/statement.hpp>
+#include <warbler/syntax/declaration.hpp>
+#include <warbler/syntax/expression/conditional_expression.hpp>
+#include <warbler/syntax/statement/statement.hpp>
 
 namespace warbler::syntax
 {

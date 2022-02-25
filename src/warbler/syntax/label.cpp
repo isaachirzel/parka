@@ -1,4 +1,4 @@
-#include <warbler/syntax//label.hpp>
+#include <warbler/syntax/label.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>

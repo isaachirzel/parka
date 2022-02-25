@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_ARITHMETIC_ADDITIVE_HPP
 
 // local headers
-#include <warbler/syntax//expression/multiplicative_expression.hpp>
+#include <warbler/syntax/expression/multiplicative_expression.hpp>
 
 namespace warbler::syntax
 {

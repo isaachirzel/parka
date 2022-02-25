@@ -1,6 +1,6 @@
-#include <warbler/syntax//expression/prefix_expression.hpp>
+#include <warbler/syntax/expression/prefix_expression.hpp>
 
-#include <warbler/syntax//expression/postfix_expression.hpp>
+#include <warbler/syntax/expression/postfix_expression.hpp>
 
 // check for type then parse
 
@@ -65,7 +65,7 @@ namespace warbler::syntax
 		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
 	}
 
-	const Location& PrefixExpression::location() const
+	const source::Location& PrefixExpression::location() const
 	{
 		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
 	}

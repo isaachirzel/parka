@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_MULTIPLICATIVE_HPP
 
 // local headers
-#include <warbler/syntax//expression/prefix_expression.hpp>
+#include <warbler/syntax/expression/prefix_expression.hpp>
 
 namespace warbler::syntax
 {

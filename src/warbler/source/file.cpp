@@ -30,6 +30,8 @@ namespace warbler::source
 				last_start_of_line = i + 1;
 			}
 		}
+
+		return line_lengths;
 	}
 
 	Result<File> File::read(const String& filepath)

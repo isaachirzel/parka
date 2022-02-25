@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_TYPE_ENUM_HPP
 
 // local headers
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 
 namespace warbler::syntax
 {

@@ -7,7 +7,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/semantics/context.hpp>
-#include <warbler/syntax//type/type_definition.hpp>
+#include <warbler/syntax/type/type_definition.hpp>
 
 namespace warbler::syntax
 {

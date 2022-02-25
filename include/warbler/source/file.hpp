@@ -1,7 +1,6 @@
 #ifndef WARBLER_SOURCE_FILE_HPP
 #define WARBLER_SOURCE_FILE_HPP
 
-#include <warbler/source/text.hpp>
 #include <warbler/util/array.hpp>
 #include <warbler/util/result.hpp>
 
@@ -23,9 +22,6 @@ namespace warbler::source
 
 		static Result<File> read(const String& filepath);
 		static File from(const char *text);
-
-		Snippet get_snippet(usize pos, usize length) const;
-		String get_string(usize pos, usize length) const;
 
 		char operator[](usize i) const { assert(i < _src.size()); return _src[i]; }
 

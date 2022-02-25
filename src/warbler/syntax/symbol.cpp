@@ -1,15 +1,15 @@
-#include <warbler/syntax//symbol.hpp>
+#include <warbler/syntax/symbol.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
-#include <warbler/syntax//declaration.hpp>
+#include <warbler/syntax/declaration.hpp>
 
 // standard headers
 #include <cstdlib>
 
 namespace warbler::syntax
 {
-	Symbol::Symbol(const Location& location) :
+	Symbol::Symbol(const source::Location& location) :
 	_location(location),
 	_text(location.text())
 	{}

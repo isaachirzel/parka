@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_AST_HPP
 
 // local headers
-#include <warbler/syntax//module.hpp>
+#include <warbler/syntax/module.hpp>
 
 namespace warbler::syntax
 {

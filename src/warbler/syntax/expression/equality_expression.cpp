@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/equality_expression.hpp>
+#include <warbler/syntax/expression/equality_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
@@ -101,7 +101,7 @@ namespace warbler::syntax
 		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const Location& EqualityExpression::location() const
+	const source::Location& EqualityExpression::location() const
 	{
 		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
 	}

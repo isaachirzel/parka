@@ -1,4 +1,4 @@
-#include <warbler/syntax//type/member.hpp>
+#include <warbler/syntax/type/member.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>

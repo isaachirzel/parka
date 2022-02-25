@@ -1,4 +1,4 @@
-#include <warbler/syntax//statement/expression_statement.hpp>
+#include <warbler/syntax/statement/expression_statement.hpp>
 
 // standard headers
 #include <warbler/util/print.hpp>

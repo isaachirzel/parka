@@ -1,9 +1,7 @@
 #ifndef WARBLER_SOURCE_LOCATION_HPP
 #define WARBLER_SOURCE_LOCATION_HPP
 
-#include <warbler/util/primitive.hpp>
-#include <warbler/source/file.hpp>
-#include <warbler/source/text.hpp>
+#include <warbler/source/snippet.hpp>
 
 namespace warbler::source
 {

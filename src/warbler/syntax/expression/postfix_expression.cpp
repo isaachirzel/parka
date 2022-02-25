@@ -1,7 +1,7 @@
-#include <warbler/syntax//expression/postfix_expression.hpp>
+#include <warbler/syntax/expression/postfix_expression.hpp>
 
 #include <warbler/util/print.hpp>
-#include <warbler/syntax//expression/primary_expression.hpp>
+#include <warbler/syntax/expression/primary_expression.hpp>
 
 // call parse then check for type
 // not sure how to do this
@@ -215,7 +215,7 @@ namespace warbler::syntax
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const Location& PostfixExpression::location() const
+	const source::Location& PostfixExpression::location() const
 	{
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}

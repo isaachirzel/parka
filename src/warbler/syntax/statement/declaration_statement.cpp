@@ -1,4 +1,4 @@
-#include <warbler/syntax//statement/declaration_statement.hpp>
+#include <warbler/syntax/statement/declaration_statement.hpp>
 
 #include <warbler/util/print.hpp>
 

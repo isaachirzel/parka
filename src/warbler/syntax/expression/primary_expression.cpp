@@ -1,9 +1,9 @@
-#include <warbler/syntax//expression/primary_expression.hpp>
+#include <warbler/syntax/expression/primary_expression.hpp>
 
 #include <warbler/util/print.hpp>
-#include <warbler/syntax//symbol.hpp>
-#include <warbler/syntax//expression/constant.hpp>
-#include <warbler/syntax//expression/expression.hpp>
+#include <warbler/syntax/symbol.hpp>
+#include <warbler/syntax/expression/constant.hpp>
+#include <warbler/syntax/expression/expression.hpp>
 
 namespace warbler::syntax
 {

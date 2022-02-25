@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_BOOLEAN_OR_HPP
 
 // local headers
-#include <warbler/syntax//expression/boolean_and_expression.hpp>
+#include <warbler/syntax/expression/boolean_and_expression.hpp>
 
 namespace warbler::syntax
 {

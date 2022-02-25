@@ -1,4 +1,4 @@
-#include <warbler/syntax//expression/bitwise_and_expression.hpp>
+#include <warbler/syntax/expression/bitwise_and_expression.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
@@ -66,18 +66,18 @@ namespace warbler::syntax
 
 		for (const auto& rhs : _rhs)
 		{
-			std::cout << tree_branch(depth - 1) << "&\n";
+			print_branch(depth - 1, "&");
 			rhs->print_tree(depth);
 		}
 	}
 
 	Type *BitwiseAndExpression::get_type()
 	{
-		throw std::runtime_error("BitwiseAndExpression::" + String(__func__) + " is not implemented yet");
+		throw not_implemented();
 	}
 
-	const Location& BitwiseAndExpression::location() const
+	const source::Location& BitwiseAndExpression::location() const
 	{
-		throw std::runtime_error("BitwiseAndExpression::" + String(__func__) + " is not implemented yet");
+		throw not_implemented();
 	}
 }

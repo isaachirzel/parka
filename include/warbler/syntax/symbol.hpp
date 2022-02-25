@@ -5,7 +5,7 @@
 #include <warbler/lexicon/token.hpp>
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
-#include <warbler/syntax//expression/primary_expression.hpp>
+#include <warbler/syntax/expression/primary_expression.hpp>
 
 namespace warbler::syntax
 {

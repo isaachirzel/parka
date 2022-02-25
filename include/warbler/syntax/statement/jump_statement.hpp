@@ -4,7 +4,7 @@
 // local headers
 #include <warbler/lexicon/token.hpp>
 #include <warbler/result.hpp>
-#include <warbler/syntax//expression/expression.hpp>
+#include <warbler/syntax/expression/expression.hpp>
 
 namespace warbler::syntax
 {

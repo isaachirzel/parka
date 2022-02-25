@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_STATEMENT_COMPOUND_STATEMENT
 
 #include <warbler/util/array.hpp>
-#include <warbler/syntax//statement/statement.hpp>
+#include <warbler/syntax/statement/statement.hpp>
 #include <warbler/util/ptr.hpp>
 
 namespace warbler::syntax

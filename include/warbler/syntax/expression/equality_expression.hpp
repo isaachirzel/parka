@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_EXPRESSION_EQUALITY_EXPRESSION_HPP
 
 // local headers
-#include <warbler/syntax//expression/relational_expression.hpp>
+#include <warbler/syntax/expression/relational_expression.hpp>
 
 namespace warbler::syntax
 {
