@@ -8,7 +8,7 @@
 
 namespace warbler::syntax
 {
-	enum JumpType
+	enum class JumpType
 	{
 		JUMP_CONTINUE,
 		JUMP_BREAK,

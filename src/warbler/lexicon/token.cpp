@@ -16,76 +16,76 @@ namespace warbler::lexicon
 	{
 		switch (_type)
 		{
-			case TOKEN_KEYWORD_MUT:
+			case TokenType::KeywordMut:
 				return true;
 
-			case TOKEN_KEYWORD_FUNCTION:
+			case TokenType::KeywordFunction:
 				return true;
 
-			case TOKEN_KEYWORD_VAR:
+			case TokenType::KeywordVar:
 				return true;
 
-			case TOKEN_KEYWORD_TYPE:
+			case TokenType::KeywordType:
 				return true;
 
-			case TOKEN_KEYWORD_RETURN:
+			case TokenType::KeywordReturn:
 				return true;
 
-			case TOKEN_KEYWORD_FOR:
+			case TokenType::KeywordFor:
 				return true;
 
-			case TOKEN_KEYWORD_WHILE:
+			case TokenType::KeywordWhile:
 				return true;
 
-			case TOKEN_KEYWORD_LOOP:
+			case TokenType::KeywordLoop:
 				return true;
 
-			case TOKEN_KEYWORD_CONTINUE:
+			case TokenType::KeywordContinue:
 				return true;
 
-			case TOKEN_KEYWORD_BREAK:
+			case TokenType::KeywordBreak:
 				return true;
 
-			case TOKEN_KEYWORD_IF:
+			case TokenType::KeywordIf:
 				return true;
 
-			case TOKEN_KEYWORD_THEN:
+			case TokenType::KeywordThen:
 				return true;
 
-			case TOKEN_KEYWORD_ELSE:
+			case TokenType::KeywordElse:
 				return true;
 
-			case TOKEN_KEYWORD_MATCH:
+			case TokenType::KeywordMatch:
 				return true;
 
-			case TOKEN_KEYWORD_CASE:
+			case TokenType::KeywordCase:
 				return true;
 
-			case TOKEN_KEYWORD_STRUCT:
+			case TokenType::KeywordStruct:
 				return true;
 
-			case TOKEN_KEYWORD_UNION:
+			case TokenType::KeywordUnion:
 				return true;
 
-			case TOKEN_KEYWORD_ENUM:
+			case TokenType::KeywordEnum:
 				return true;
 
-			case TOKEN_KEYWORD_TRUE:
+			case TokenType::KeywordTrue:
 				return true;
 
-			case TOKEN_KEYWORD_FALSE:
+			case TokenType::KeywordFalse:
 				return true;
 
-			case TOKEN_KEYWORD_IMPORT:
+			case TokenType::KeywordImport:
 				return true;
 
-			case TOKEN_KEYWORD_EXPORT:
+			case TokenType::KeywordExport:
 				return true;
 
-			case TOKEN_KEYWORD_PUBLIC:
+			case TokenType::KeywordPublic:
 				return true;
 
-			case TOKEN_KEYWORD_PRIVATE:
+			case TokenType::KeywordPrivate:
 				return true;
 
 			default:

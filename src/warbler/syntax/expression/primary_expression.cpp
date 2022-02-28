@@ -9,7 +9,7 @@ namespace warbler::syntax
 {
 	Result<Ptr<Expression>> PrimaryExpression::parse(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() == lexicon::TOKEN_IDENTIFIER)
+		if (iter->type() == lexicon::TokenType::Identifier)
 		{
 			auto symbol = Symbol::parse(iter);
 
@@ -20,7 +20,7 @@ namespace warbler::syntax
 
 			return Ptr<Expression> (ptr);
 		}
-		else if (iter->type() == lexicon::TOKEN_LPAREN)
+		else if (iter->type() == lexicon::TokenType::LeftParenthesis)
 		{
 			iter += 1;
 
@@ -29,7 +29,7 @@ namespace warbler::syntax
 			if (!expression)
 				return {};
 
-			if (iter->type() != lexicon::TOKEN_RPAREN)
+			if (iter->type() != lexicon::TokenType::RightParenthesis)
 			{
 				print_parse_error(iter, "expected ')' after primary sub-expression");
 				return {};

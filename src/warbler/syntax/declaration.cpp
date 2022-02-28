@@ -14,7 +14,7 @@ namespace warbler::syntax
 	{
 		auto is_mutable = false;
 
-		if (iter->type() == lexicon::TOKEN_KEYWORD_MUT)
+		if (iter->type() == lexicon::TokenType::KeywordMut)
 		{
 			is_mutable = true;
 			iter += 1;
@@ -25,7 +25,7 @@ namespace warbler::syntax
 		if (!name)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_COLON)
+		if (iter->type() != lexicon::TokenType::Colon)
 		{
 			print_error(iter->get_snippet(), "parameters may not be declared without a type");
 			return {};
@@ -45,7 +45,7 @@ namespace warbler::syntax
 	{
 		auto is_mutable = false;
 
-		if (iter->type() == lexicon::TOKEN_KEYWORD_MUT)
+		if (iter->type() == lexicon::TokenType::KeywordMut)
 		{
 			is_mutable = true;
 			iter += 1;
@@ -58,7 +58,7 @@ namespace warbler::syntax
 
 		Optional<Type> type;
 
-		if (iter->type() == lexicon::TOKEN_COLON)
+		if (iter->type() == lexicon::TokenType::Colon)
 		{
 			iter += 1;
 
@@ -127,7 +127,7 @@ namespace warbler::syntax
 			? "mut "
 			: "";
 
-		text += _name.location().get_string() + ": " + (_type.has_value() ? _type->location().get_string() : "<auto>");
+		text += _name.location().text() + ": " + (_type.has_value() ? _type->base_type().text() : "<auto>");
 
 		print_branch(depth, text);
 	}

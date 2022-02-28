@@ -58,7 +58,7 @@ namespace warbler::source
 		return File(std::move(filename), std::move(source), std::move(line_lengths));
 	}
 
-	String File::get_string(usize pos, usize length) const
+	String File::get_text(usize pos, usize length) const
 	{		
 		assert(pos + length < _src.size());
 

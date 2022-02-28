@@ -18,9 +18,7 @@ namespace warbler::source
 		Location(const File& file, usize pos, usize length);
 
 		Snippet get_snippet() const;
-		String get_string() const;
-
-		Location operator+(const Location& other) const;
+		String text() const;
 
 		usize pos() const { return _pos; }
 		usize length() const { return _length; }

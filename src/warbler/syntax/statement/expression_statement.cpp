@@ -16,7 +16,7 @@ namespace warbler::syntax
 		if (!expression)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_SEMICOLON)
+		if (iter->type() != lexicon::TokenType::Semicolon)
 		{
 			print_parse_error(iter, "expected ';' after expression");
 			return {};
@@ -27,10 +27,10 @@ namespace warbler::syntax
 		return ExpressionStatement { expression.unwrap() };
 	}
 
-	bool ExpressionStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		return _expression->validate(mod_ctx, func_ctx);
-	}
+	// bool ExpressionStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	return _expression->validate(mod_ctx, func_ctx);
+	// }
 
 	void ExpressionStatement::print_tree(u32 depth) const
 	{

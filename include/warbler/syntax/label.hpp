@@ -12,11 +12,11 @@ namespace warbler::syntax
 	{
 	private:
 
-		String _identifier;
+		source::Location _location;
 
 	public:
 
-		Label(String&& identifier);
+		Label(const source::Location& location);
 
 		static Result<Label> parse(lexicon::TokenIterator& iter);
 

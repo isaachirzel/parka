@@ -6,11 +6,11 @@
 
 namespace warbler::syntax
 {
-	enum MultiplicativeType
+	enum class MultiplicativeType
 	{
-		MULTIPLICATIVE_MULTIPLY,
-		MULTIPLICATIVE_DIVIDE,
-		MULTIPLICATIVE_MODULUS
+		Multiply,
+		Divide,
+		Modulus
 	};
 
 	struct MultiplicativeRhs

@@ -1,5 +1,5 @@
-#ifndef WARBLER_SYNTAX_EXPRESSION_POSTFIX_EXRESSION
-#define WARBLER_SYNTAX_EXPRESSION_POSTFIX_EXRESSION
+#ifndef WARBLER_SYNTAX_EXPRESSION_POSTFIX_EXRESSION_HPP
+#define WARBLER_SYNTAX_EXPRESSION_POSTFIX_EXRESSION_HPP
 
 #include <warbler/syntax/expression/expression.hpp>
 #include <warbler/syntax/identifier.hpp>
@@ -7,11 +7,11 @@
 
 namespace warbler::syntax
 {
-	enum PostfixType
+	enum class PostfixType
 	{
-		POSTFIX_INDEX,
-		POSTFIX_FUNCTION_CALL,
-		POSTFIX_MEMBER
+		Index,
+		FunctionCall,
+		Member
 	};
 
 	struct MemberExpression

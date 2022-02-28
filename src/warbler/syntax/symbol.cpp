@@ -10,15 +10,14 @@
 namespace warbler::syntax
 {
 	Symbol::Symbol(const source::Location& location) :
-	_location(location),
-	_text(location.text())
+	_location(location)
 	{}
 
 	Result<Symbol> Symbol::parse(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() != lexicon::TOKEN_IDENTIFIER)
+		if (iter->type() != lexicon::TokenType::Identifier)
 		{
-			print_parse_error(iter, "identifier");
+			print_parse_error(iter, "symbol");
 			return {};
 		}
 
@@ -29,27 +28,25 @@ namespace warbler::syntax
 		return Symbol { location };
 	}
 
-	bool Symbol::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		#pragma message("Implement identifier checking for functions on validation")
+	// bool Symbol::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	#pragma message("Implement symbol checking for functions on validation")
 
-		auto *declaration = func_ctx.get_declaration(_text);
+	// 	auto *declaration = func_ctx.get_declaration(_text);
 
-		if (declaration == nullptr)
-		{
-			print_error(_location, "identifier '" + _text + "' is not declared in scope");
-			return false;
-		}
+	// 	if (declaration == nullptr)
+	// 	{
+	// 		print_error(_location, "symbol '" + _text + "' is not declared in scope");
+	// 		return false;
+	// 	}
 
-		_type = &declaration->type();
+	// 	_type = &declaration->type();
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void Symbol::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth) << _text << '\n';
+		print_branch(depth, _location.text());
 	}
-
-
 }

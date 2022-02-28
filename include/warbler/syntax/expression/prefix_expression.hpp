@@ -5,32 +5,33 @@
 
 namespace warbler::syntax
 {
-	enum PrefixType
+	enum class PrefixType
 	{
-		PREFIX_REFERENCE,
-		PREFIX_DEREFERENCE,
-		PREFIX_POSITIVE,
-		PREFIX_NEGATIVE,
-		PREFIX_BITWISE_NOT,
-		PREFIX_BOOLEAN_NOT
+		Reference,
+		Dereference,
+		Positive,
+		Negative,
+		BitwiseNot,
+		BooleanNot
 	};
 
 	class PrefixExpression : public Expression
 	{
 	private:
 
+		source::Location _location;
 		Ptr<Expression> _expression;
 		PrefixType _type;
 
 	public:
 
-		PrefixExpression(Ptr<Expression>&& expression, PrefixType type);
+		PrefixExpression(const source::Location& location, Ptr<Expression>&& expression, PrefixType type);
 
 		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& module, semantics::FunctionContext& function);
 		Type *get_type();
-		const source::Location& location() const;
+		const source::Location& location() const { return _location; }
 		void print_tree(u32 depth = 0) const;
 	};
 }

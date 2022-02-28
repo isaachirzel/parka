@@ -6,10 +6,10 @@
 
 namespace warbler::syntax
 {
-	enum ShiftType
+	enum class ShiftType
 	{
-		SHIFT_LEFT,
-		SHIFT_RIGHT
+		Left,
+		Right
 	};
 
 	struct ShiftRhs

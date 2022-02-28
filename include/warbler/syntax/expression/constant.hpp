@@ -10,13 +10,17 @@
 
 namespace warbler::syntax
 {
-	enum ConstantType
+	enum class ConstantType
 	{
-		CONSTANT_CHARACTER,
-		CONSTANT_STRING,
-		CONSTANT_INTEGER,
-		CONSTANT_FLOAT, 
-		CONSTANT_BOOLEAN
+		Character,
+		String,
+		Integer,
+		Hexadecimal,
+		Binary,
+		Octal,
+		Float,
+		BooleanTrue,
+		BooleanFalse
 	};
 
 	class Constant : public Expression
@@ -24,39 +28,22 @@ namespace warbler::syntax
 	private:
 
 		source::Location _location;
-
-		union
-		{
-			String _string;
-			i64 _integer;
-			f64 _floating;
-			u32 _character;
-			bool _boolean;
-		};
-
-		ConstantType _constant_type;
-		Type _type;
+		ConstantType _type;
 
 	public:
 
-		Constant(const source::Location& location, String&& string);
-		Constant(const source::Location& location, i64 integer);
-		Constant(const source::Location& location, f64 floatingpt);
-		Constant(const source::Location& location, u32 character);
-		Constant(const source::Location& location, bool boolean);
-		Constant(Constant&& other);
+		Constant(const source::Location& location, ConstantType);
+		Constant(Constant&& other) = default;
 		Constant(const Constant& other) = delete;
-		~Constant();
 
 		static Result<Constant> parse(lexicon::TokenIterator& iter);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 
-		Type *get_type() { return &_type; }
 		const source::Location& location() const { return _location; }
 
-		Constant& operator=(Constant&& other);
+		Constant& operator=(Constant&& other) = default;
 		Constant& operator=(const Constant& other) = delete;
 	};
 }

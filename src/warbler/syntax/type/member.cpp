@@ -15,12 +15,12 @@ namespace warbler::syntax
 	{
 		auto is_public = false;
 
-		if (iter->type() == lexicon::TOKEN_PUBLIC)
+		if (iter->type() == lexicon::TokenType::KeywordPublic)
 		{
 			is_public = true;
 			iter += 1;
 		}
-		else if (iter->type() == lexicon::TOKEN_PRIVATE)
+		else if (iter->type() == lexicon::TokenType::KeywordPrivate)
 		{
 			iter += 1;
 		}
@@ -30,7 +30,7 @@ namespace warbler::syntax
 		if (!name)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_COLON)
+		if (iter->type() != lexicon::TokenType::Colon)
 		{
 			print_parse_error(iter, "':' after member name");
 			return {};
@@ -46,27 +46,24 @@ namespace warbler::syntax
 		return Member(name.unwrap(), type.unwrap(), is_public);
 	}
 
-	bool Member::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
-	{
-		auto *member = type_ctx.get_member(_name.text());
+	// bool Member::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
+	// {
+	// 	auto *member = type_ctx.get_member(_name.location().text());
 
-		if (member != nullptr)
-		{
-			print_error(_name.location(), "member '" + _name.text() + "' already defined in type '" + type_ctx.name + "'");
-			print_note(member->name().location(), "previous declaration here");
-			return false;
-		}
+	// 	if (member != nullptr)
+	// 	{
+	// 		print_error(_name.location(), "member '" + _name.location().text() + "' already defined in type '" + type_ctx.name + "'");
+	// 		print_note(member->name().location(), "previous declaration here");
+	// 		return false;
+	// 	}
 
-		type_ctx.members[_name.text()] = this;
+	// 	type_ctx.members[_name.text()] = this;
 
-		return _type.validate(mod_ctx);
-	}
+	// 	return _type.validate(mod_ctx);
+	// }
 
 	void Member::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth)
-			<< (_is_public ? "public " : "private ")
-			<< _name.text()
-			<< ": " << _type.text() << '\n';
+		print_branch(depth, (_is_public ? "public" : "private") + _name.location().text() + ": " + _type.base_type().text());
 	}
 }

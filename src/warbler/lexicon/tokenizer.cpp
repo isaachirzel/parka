@@ -9,23 +9,23 @@
 #include <stdexcept>
 #include <unordered_map>
 
-#define MAX_KEYWORD_LENGTH	(15)
+#define MAX_KeywordLENGTH	(15)
 
 namespace warbler::lexicon
 {
 	using source::File;
 	using source::Location;
 
-	enum CharType
+	enum class CharType
 	{
-		CHAR_INVALID,
-		CHAR_NULL,
-		CHAR_IDENTIFIER,
-		CHAR_SEPARATOR,
-		CHAR_DOT,
-		CHAR_DIGIT,
-		CHAR_OPERATOR,
-		CHAR_QUOTE
+		Invalid,
+		Null,
+		Identifier,
+		Separator,
+		Dot,
+		Digit,
+		Operator,
+		Quote
 	};
 
 	static CharType char_types[256];
@@ -49,19 +49,19 @@ namespace warbler::lexicon
 		{
 			case 'b':
 				if (match_str(text + 1, "reak"))
-					return TOKEN_KEYWORD_BREAK;
+					return TokenType::KeywordBreak;
 				break;
 
 			case 'c':
 				if (text[1] == 'a')
 				{
 					if (match_str(text + 2, "se"))
-						return TOKEN_KEYWORD_CASE;
+						return TokenType::KeywordCase;
 				}
 				else if (text[1] == 'o')
 				{
 					if (match_str(text + 2, "ntinue"))
-						return TOKEN_KEYWORD_CONTINUE;
+						return TokenType::KeywordContinue;
 				}
 				break;
 
@@ -70,21 +70,21 @@ namespace warbler::lexicon
 				{
 					case 'l':
 						if (match_str(text + 2, "se"))
-							return TOKEN_KEYWORD_ELSE;
+							return TokenType::KeywordElse;
 						break;
 
 					case 'n':
 						if (match_str(text + 2, "um"))
-							return TOKEN_KEYWORD_ENUM;
+							return TokenType::KeywordEnum;
 						break;
 
 					case 'x':
 						if (match_str(text + 2, "port"))
-							return TOKEN_KEYWORD_EXPORT;
+							return TokenType::KeywordExport;
 						break;
 
 					default:
-						return TOKEN_IDENTIFIER;
+						return TokenType::Identifier;
 				}
 				break;
 
@@ -93,21 +93,21 @@ namespace warbler::lexicon
 				{
 					case 'a':
 						if (match_str(text + 2, "lse"))
-							return TOKEN_KEYWORD_FALSE;
+							return TokenType::KeywordFalse;
 						break;
 						
 					case 'o':
 						if (text[2] == 'r' && text[3] == '\0')
-							return TOKEN_KEYWORD_FOR;
+							return TokenType::KeywordFor;
 						break;
 
 					case 'u':
 						if (match_str(text + 2, "nction"))
-							return TOKEN_KEYWORD_FUNCTION;
+							return TokenType::KeywordFunction;
 						break;
 
 					default:
-						return TOKEN_IDENTIFIER;
+						return TokenType::Identifier;
 				}
 				break;
 
@@ -115,30 +115,30 @@ namespace warbler::lexicon
 				if (text[1] == 'f')
 				{
 					if (text[2] == '\0')
-						return TOKEN_KEYWORD_IF;
+						return TokenType::KeywordIf;
 				}
 				else if (text[1] == 'm')
 				{
 					if (match_str(text + 2, "port"))
-						return TOKEN_KEYWORD_IMPORT;
+						return TokenType::KeywordImport;
 				}
 				break;
 
 			case 'l':
 				if (match_str(text + 1, "oop"))
-					return TOKEN_KEYWORD_LOOP;
+					return TokenType::KeywordLoop;
 				break;
 
 			case 'm':
 				if (text[1] == 'a')
 				{
 					if (match_str(text + 2, "tch"))
-						return TOKEN_KEYWORD_MATCH;
+						return TokenType::KeywordMatch;
 				}
 				else if (text[1] == 'u')
 				{
 					if (match_str(text + 2, "t"))
-						return TOKEN_KEYWORD_MUT;
+						return TokenType::KeywordMut;
 				}
 				break;
 
@@ -146,23 +146,23 @@ namespace warbler::lexicon
 				if (text[1] == 'r')
 				{
 					if (match_str(text + 2, "ivate"))
-						return TOKEN_KEYWORD_PRIVATE;
+						return TokenType::KeywordPrivate;
 				}
 				else if (text[1] == 'u')
 				{
 					if (match_str(text + 2, "blic"))
-						return TOKEN_KEYWORD_PUBLIC;
+						return TokenType::KeywordPublic;
 				}
 				break;
 
 			case 'r':
 				if (match_str(text + 1, "eturn"))
-					return TOKEN_KEYWORD_RETURN;
+					return TokenType::KeywordReturn;
 				break;
 
 			case 's':
 				if (match_str(text + 1, "truct"))
-					return TOKEN_KEYWORD_STRUCT;
+					return TokenType::KeywordStruct;
 				break;
 
 			case 't':
@@ -170,90 +170,90 @@ namespace warbler::lexicon
 				{
 					case 'h':
 						if (match_str(text + 2, "en"))
-							return TOKEN_KEYWORD_THEN;
+							return TokenType::KeywordThen;
 						break;
 
 					case 'r':
 						if (match_str(text + 2, "ue"))
-							return TOKEN_KEYWORD_TRUE;
+							return TokenType::KeywordTrue;
 						break;
 
 					case 'y':
 						if (match_str(text + 2, "pe"))
-							return TOKEN_KEYWORD_TYPE;
+							return TokenType::KeywordType;
 						break;
 				}
 				break;
 
 			case 'u':
 				if (match_str(text + 1, "nion"))
-					return TOKEN_KEYWORD_UNION;
+					return TokenType::KeywordUnion;
 				break;
 
 			case 'v':
 				if (match_str(text + 1, "ar"))
-					return TOKEN_KEYWORD_VAR;
+					return TokenType::KeywordVar;
 				break;
 
 			case 'w':
 				if (match_str(text + 1, "hile"))
-					return TOKEN_KEYWORD_WHILE;
+					return TokenType::KeywordWhile;
 				break;
 				
 			default:
 				break;
 		}
 
-		return TOKEN_IDENTIFIER;
+		return TokenType::Identifier;
 	}
 	
 
 
 	void init_char_types()
 	{
-		char_types[0] = CHAR_NULL;
+		char_types[0] = CharType::Null;
 
 		// setting up identifier characters
-		char_types[(usize)'_'] = CHAR_IDENTIFIER;
+		char_types[(usize)'_'] = CharType::Identifier;
 		for (usize i = 'a'; i <= 'z'; ++i)
-			char_types[i] = CHAR_IDENTIFIER;
+			char_types[i] = CharType::Identifier;
 		for (usize i = 'A'; i <= 'Z'; ++i)
-			char_types[i] = CHAR_IDENTIFIER;
+			char_types[i] = CharType::Identifier;
 		for (usize i = '0'; i <= '9'; ++i)
-			char_types[i] = CHAR_DIGIT;
+			char_types[i] = CharType::Digit;
 
 		// setting up separator characters
-		char_types[(size_t)'('] = CHAR_SEPARATOR;
-		char_types[(size_t)')'] = CHAR_SEPARATOR;
-		char_types[(size_t)'['] = CHAR_SEPARATOR;
-		char_types[(size_t)']'] = CHAR_SEPARATOR;
-		char_types[(size_t)'{'] = CHAR_SEPARATOR;
-		char_types[(size_t)'}'] = CHAR_SEPARATOR;
-		char_types[(size_t)';'] = CHAR_SEPARATOR;
-		char_types[(size_t)','] = CHAR_SEPARATOR;
+		char_types[(size_t)'('] = CharType::Separator;
+		char_types[(size_t)')'] = CharType::Separator;
+		char_types[(size_t)'['] = CharType::Separator;
+		char_types[(size_t)']'] = CharType::Separator;
+		char_types[(size_t)'{'] = CharType::Separator;
+		char_types[(size_t)'}'] = CharType::Separator;
+		char_types[(size_t)';'] = CharType::Separator;
+		char_types[(size_t)','] = CharType::Separator;
 
 		// dot character
-		char_types[(size_t)'.'] = CHAR_DOT;
+		char_types[(size_t)'.'] = CharType::Dot;
 
 		// setting up operator characters
-		char_types[(size_t)'!'] = CHAR_OPERATOR;
-		char_types[(size_t)'%'] = CHAR_OPERATOR;
-		char_types[(size_t)'^'] = CHAR_OPERATOR;
-		char_types[(size_t)'&'] = CHAR_OPERATOR;
-		char_types[(size_t)'*'] = CHAR_OPERATOR;
-		char_types[(size_t)'-'] = CHAR_OPERATOR;
-		char_types[(size_t)'='] = CHAR_OPERATOR;
-		char_types[(size_t)'|'] = CHAR_OPERATOR;
-		char_types[(size_t)'+'] = CHAR_OPERATOR;
-		char_types[(size_t)'<'] = CHAR_OPERATOR;
-		char_types[(size_t)'>'] = CHAR_OPERATOR;
-		char_types[(size_t)'?'] = CHAR_OPERATOR;
-		char_types[(size_t)'/'] = CHAR_OPERATOR;
-		char_types[(size_t)':'] = CHAR_OPERATOR;
+		char_types[(size_t)'!'] = CharType::Operator;
+		char_types[(size_t)'%'] = CharType::Operator;
+		char_types[(size_t)'^'] = CharType::Operator;
+		char_types[(size_t)'&'] = CharType::Operator;
+		char_types[(size_t)'*'] = CharType::Operator;
+		char_types[(size_t)'-'] = CharType::Operator;
+		char_types[(size_t)'='] = CharType::Operator;
+		char_types[(size_t)'|'] = CharType::Operator;
+		char_types[(size_t)'+'] = CharType::Operator;
+		char_types[(size_t)'<'] = CharType::Operator;
+		char_types[(size_t)'>'] = CharType::Operator;
+		char_types[(size_t)'?'] = CharType::Operator;
+		char_types[(size_t)'/'] = CharType::Operator;
+		char_types[(size_t)':'] = CharType::Operator;
 
 		// setting literal types
-		char_types[(size_t)'\''] = CHAR_QUOTE;
-		char_types[(size_t)'\"'] = CHAR_QUOTE;
+		char_types[(size_t)'\''] = CharType::Quote;
+		char_types[(size_t)'\"'] = CharType::Quote;
 	}
 
 	void init_tokenizer()
@@ -285,7 +285,7 @@ namespace warbler::lexicon
 	{
 		CharType type = get_char_type(c);
 
-		return type == CHAR_IDENTIFIER || type == CHAR_DIGIT;
+		return type == CharType::Identifier || type == CharType::Digit;
 	}
 
 	static Token get_identifier_token(const File& file, const usize start_pos)
@@ -297,7 +297,7 @@ namespace warbler::lexicon
 
 		usize length = pos - start_pos;
 
-		return Token(Location(file, start_pos, length), TOKEN_IDENTIFIER);
+		return Token(Location(file, start_pos, length), TokenType::Identifier);
 	}
 
 	static Token get_separator_token(const File& file, const usize start_pos)
@@ -307,35 +307,35 @@ namespace warbler::lexicon
 		switch (file[start_pos])
 		{
 			case '(':
-				type = TOKEN_LPAREN;
+				type = TokenType::LeftParenthesis;
 				break;
 
 			case ')':
-				type = TOKEN_RPAREN;
+				type = TokenType::RightParenthesis;
 				break;
 
 			case '[':
-				type = TOKEN_LBRACK;
+				type = TokenType::LeftBracket;
 				break;
 
 			case ']':
-				type = TOKEN_RBRACK;
+				type = TokenType::RightBracket;
 				break;
 
 			case '{':
-				type = TOKEN_LBRACE;
+				type = TokenType::LeftBrace;
 				break;
 
 			case '}':
-				type = TOKEN_RBRACE;
+				type = TokenType::RightBrace;
 				break;
 
 			case ',':
-				type = TOKEN_COMMA;
+				type = TokenType::Comma;
 				break;
 
 			case ';':
-				type = TOKEN_SEMICOLON;
+				type = TokenType::Semicolon;
 				break;
 			
 			default:
@@ -354,11 +354,11 @@ namespace warbler::lexicon
 		{
 			CharType type = get_char_type(file[pos]);
 
-			if (type == CHAR_DOT)
+			if (type == CharType::Dot)
 			{
 				decimal_count += 1;
 			}
-			else if (type != CHAR_DIGIT)
+			else if (type != CharType::Digit)
 			{
 				break;
 			}
@@ -370,26 +370,25 @@ namespace warbler::lexicon
 
 		if (decimal_count > 1)
 		{
-			auto text = file.get_snippet(start_pos, length);
-			print_error(text, "only one decimal is allowed in float literal");
+			print_error(source::Snippet(file, start_pos, length), "only one decimal is allowed in float literal");
 			return {};
 		}
 
 		auto type = decimal_count > 0
-			? TOKEN_FLOAT_LITERAL
-			: TOKEN_INTEGER_LITERAL;
+			? TokenType::FloatLiteral
+			: TokenType::IntegerLiteral;
 
 		return Token(Location(file, start_pos, length), type);
 	}
 
 	static Result<Token> get_dot_token(const File& file, const usize start_pos)
 	{
-		if (get_char_type(file[start_pos + 1]) == CHAR_DIGIT)
+		if (get_char_type(file[start_pos + 1]) == CharType::Digit)
 			return get_digit_token(file, start_pos);
 
 		usize pos = start_pos + 1;
 
-		while (get_char_type(file[pos]) == CHAR_DOT)
+		while (get_char_type(file[pos]) == CharType::Dot)
 			pos += 1;
 
 		auto length = pos - start_pos;
@@ -399,16 +398,16 @@ namespace warbler::lexicon
 		switch (length)
 		{
 			case 1:
-				type = TOKEN_DOT;
+				type = TokenType::Dot;
 				break;
 
 			case 3:
-				type = TOKEN_ELIPSIS;
+				type = TokenType::Elipsis;
 				break;
 
 			default:
 			{
-				auto text = file.get_snippet(start_pos, length);
+				auto text = source::Snippet(file, start_pos, length);
 				print_error(text, "invalid token, expected '.' or '...'");
 				return {};
 			}
@@ -422,10 +421,10 @@ namespace warbler::lexicon
 		switch (file[1])
 		{
 			case '=':
-				return Token(Location(file, start_pos, 2), TOKEN_ADD_ASSIGN);
+				return Token(Location(file, start_pos, 2), TokenType::AddAssign);
 
 			default:
-				return Token(Location(file, start_pos, 1), TOKEN_PLUS);
+				return Token(Location(file, start_pos, 1), TokenType::Plus);
 		}
 	}
 
@@ -434,13 +433,13 @@ namespace warbler::lexicon
 		switch (file[start_pos + 1])
 		{
 			case '=': // -=
-				return Token(Location(file, start_pos, 2), TOKEN_SUBTRACT_ASSIGN);
+				return Token(Location(file, start_pos, 2), TokenType::SubtractAssign);
 
 			case '>': // ->
-				return Token(Location(file, start_pos, 2), TOKEN_SINGLE_ARROW);
+				return Token(Location(file, start_pos, 2), TokenType::SingleArrow);
 
 			default: // -
-				return Token(Location(file, start_pos, 1), TOKEN_MINUS);
+				return Token(Location(file, start_pos, 1), TokenType::Minus);
 		}
 	}
 
@@ -449,22 +448,21 @@ namespace warbler::lexicon
 		switch (file[start_pos + 1])
 		{
 			case '*': // **
-				return Token(Location(file, start_pos, 2), TOKEN_POW);
+				return Token(Location(file, start_pos, 2), TokenType::Pow);
 
 			case '=': // *=
-				return Token(Location(file, start_pos, 2), TOKEN_MULTIPLY_ASSIGN);
+				return Token(Location(file, start_pos, 2), TokenType::MultiplyAssign);
 
 			default: // *
-				return Token(Location(file, start_pos, 1), TOKEN_ASTERISK);
+				return Token(Location(file, start_pos, 1), TokenType::Asterisk);
 		}
 	}
 
 	static Token get_slash_operator(const File& file, const usize start_pos)
 	{
-		if (file[start_pos + 1] == '=')
-			return Token(Location(file, start_pos, 2), TOKEN_DIVIDE_ASSIGN);
-
-		return Token(Location(file, start_pos, 1), TOKEN_SLASH);
+		return file[start_pos + 1] == '='
+			? Token(Location(file, start_pos, 2), TokenType::DivideAssign)
+			: Token(Location(file, start_pos, 1), TokenType::Slash);
 	}
 
 	static Token get_langbrack_operator(const File& file, const usize start_pos)
@@ -473,15 +471,15 @@ namespace warbler::lexicon
 		{
 			case '<': // <<
 				if (file[start_pos + 2] == '=') // <<=
-					return Token(Location(file, start_pos, 3), TOKEN_LSHIFT_ASSIGN);
+					return Token(Location(file, start_pos, 3), TokenType::LeftBitShiftAssign);
 
-				return Token(Location(file, start_pos, 2), TOKEN_LSHIFT);
+				return Token(Location(file, start_pos, 2), TokenType::LeftBitShift);
 
 			case '=': // <=
-				return Token(Location(file, start_pos, 2), TOKEN_LESS_OR_EQUAL);
+				return Token(Location(file, start_pos, 2), TokenType::LessThanOrEqualTo);
 
 			default: // <
-				return Token(Location(file, start_pos, 1), TOKEN_LESS_THAN);
+				return Token(Location(file, start_pos, 1), TokenType::LessThan);
 		}
 	}
 
@@ -491,15 +489,15 @@ namespace warbler::lexicon
 		{
 			case '>': // >>
 				if (file[start_pos + 2] == '=') // >>=
-					return Token(Location(file, start_pos, 3), TOKEN_RSHIFT_ASSIGN);
+					return Token(Location(file, start_pos, 3), TokenType::RightBitShiftAssign);
 
-				return Token(Location(file, start_pos, 2), TOKEN_RSHIFT);
+				return Token(Location(file, start_pos, 2), TokenType::RightBitShift);
 
 			case '=': // <=
-				return Token(Location(file, start_pos, 2), TOKEN_GREATER_OR_EQUAL);
+				return Token(Location(file, start_pos, 2), TokenType::GreaterThanOrEqualTo);
 
 			default: // >
-				return Token(Location(file, start_pos, 1), TOKEN_GREATER_THAN);
+				return Token(Location(file, start_pos, 1), TokenType::GreaterThan);
 		}
 	}
 
@@ -508,13 +506,13 @@ namespace warbler::lexicon
 		switch (file[start_pos])
 		{
 			case '=':
-				return Token(Location(file, start_pos, 2), TOKEN_BITAND_ASSIGN);
+				return Token(Location(file, start_pos, 2), TokenType::BitwiseAndAssign);
 
 			case '&':
-				return Token(Location(file, start_pos, 2), TOKEN_BOOLEAN_AND);
+				return Token(Location(file, start_pos, 2), TokenType::BooleanAnd);
 
 			default:
-				return Token(Location(file, start_pos, 1), TOKEN_AMPERSAND);
+				return Token(Location(file, start_pos, 1), TokenType::Ampersand);
 		}
 	}
 	
@@ -523,22 +521,21 @@ namespace warbler::lexicon
 		switch (file[start_pos + 1])
 		{
 			case '=':
-				return Token(Location(file, start_pos, 2), TOKEN_BITOR_ASSIGN);
+				return Token(Location(file, start_pos, 2), TokenType::BitwiseOrAssign);
 
 			case '|':
-				return Token(Location(file, start_pos, 2), TOKEN_BOOLEAN_OR);
+				return Token(Location(file, start_pos, 2), TokenType::BooleanOr);
 
 			default:
-				return Token(Location(file, start_pos, 1), TOKEN_PIPELINE);
+				return Token(Location(file, start_pos, 1), TokenType::Pipeline);
 		}
 	}
 
 	static Token get_carrot_operator(const File& file, const usize start_pos)
 	{
-		if (file[start_pos + 1] == '=')
-			return Token(Location(file, start_pos, 2), TOKEN_BITXOR_ASSIGN);
-
-		return Token(Location(file, start_pos, 1), TOKEN_CARROT);
+		return file[start_pos + 1] == '='
+			? Token(Location(file, start_pos, 2), TokenType::BitwiseXorAssign)
+			: Token(Location(file, start_pos, 1), TokenType::Carrot);
 	}
 
 	static Token get_equals_operator(const File& file, const usize start_pos)
@@ -546,53 +543,42 @@ namespace warbler::lexicon
 		switch (file[start_pos + 1])
 		{
 			case '=':
-				return Token(Location(file, start_pos, 2), TOKEN_EQUALS);
+				return Token(Location(file, start_pos, 2), TokenType::Equals);
 
 			case '>':
-				return Token(Location(file, start_pos, 2), TOKEN_DOUBLE_ARROW);
+				return Token(Location(file, start_pos, 2), TokenType::DoubleArrow);
 
 			default:
-				return Token(Location(file, start_pos, 1), TOKEN_ASSIGN);
+				return Token(Location(file, start_pos, 1), TokenType::Assign);
 		}
 	}
 
 	static Token get_exclamation_operator(const File& file, const usize start_pos)
 	{
-		if (file[start_pos + 1] == '=')
-			return Token(Location(file, start_pos, 2), TOKEN_NOT_EQUALS);
-
-		return Token(Location(file, start_pos, 1), TOKEN_BOOLEAN_NOT);
+		return file[start_pos + 1] == '='
+			? Token(Location(file, start_pos, 2), TokenType::NotEquals)
+			: Token(Location(file, start_pos, 1), TokenType::BooleanNot);
 	}
 
 	static Token get_question_operator(const File& file, const usize start_pos)
 	{
-		if (file[start_pos + 1] == '?')		
-			return Token(Location(file, start_pos, 2), TOKEN_OPTION);
-	
-		return Token(Location(file, start_pos, 1), TOKEN_QUESTION);
+		return file[start_pos + 1] == '?'
+			? Token(Location(file, start_pos, 2), TokenType::Option)
+			: Token(Location(file, start_pos, 1), TokenType::Question);
 	}
 
 	static Token get_modulus_operator(const File& file, const usize start_pos)
 	{
-		if (file[start_pos + 1] == '=')
-			return Token(Location(file, start_pos, 2), TOKEN_MODULUS_ASSIGN);
-		
-		return Token(Location(file, start_pos, 1), TOKEN_MODULUS);
+		return file[start_pos + 1] == '='
+			? Token(Location(file, start_pos, 2), TokenType::ModulusAssign)
+			: Token(Location(file, start_pos, 1), TokenType::Modulus);
 	}
 
 	static Token get_colon_operator(const File& file, const usize start_pos)
 	{
-		switch (file[start_pos + 1])
-		{
-			case ':':
-				return Token(Location(file, start_pos, 2), TOKEN_SCOPE);
-
-			case '=':
-				return Token(Location(file, start_pos, 2), TOKEN_BECOME_ASSIGN);
-
-			default:
-				return Token(Location(file, start_pos, 1), TOKEN_COLON);
-		}
+		return file[start_pos + 1] == ':'
+			? Token(Location(file, start_pos, 2), TokenType::Scope)
+			: Token(Location(file, start_pos, 1), TokenType::Colon);
 	}
 
 	static Result<Token> get_operator_token(const File& file, const usize start_pos)
@@ -657,7 +643,7 @@ namespace warbler::lexicon
 
 			if (current_character == '\0')
 			{
-				print_error(file.get_snippet(start_pos, pos - start_pos), "unterminated string literal");
+				print_error(source::Snippet(file, start_pos, pos - start_pos), "unterminated string literal");
 				return {};
 			}
 
@@ -668,8 +654,8 @@ namespace warbler::lexicon
 		}
 
 		auto type = terminal_character == '\''
-			? TOKEN_CHAR_LITERAL
-			: TOKEN_STRING_LITERAL;
+			? TokenType::CharLiteral
+			: TokenType::StringLiteral;
 			
 		return Token(Location(file, start_pos, pos - start_pos), type);
 	}
@@ -680,33 +666,33 @@ namespace warbler::lexicon
 
 		switch (type)
 		{
-			case CHAR_NULL:
+			case CharType::Null:
 				break;
 
-			case CHAR_IDENTIFIER:
+			case CharType::Identifier:
 				return get_identifier_token(file, start_pos);
 
-			case CHAR_SEPARATOR:
+			case CharType::Separator:
 				return get_separator_token(file, start_pos);
 
-			case CHAR_DOT:
+			case CharType::Dot:
 				return get_dot_token(file, start_pos);
 
-			case CHAR_DIGIT:
+			case CharType::Digit:
 				return get_digit_token(file, start_pos);
 
-			case CHAR_OPERATOR:
+			case CharType::Operator:
 				return get_operator_token(file, start_pos);
 
-			case CHAR_QUOTE:
+			case CharType::Quote:
 				return get_quote_token(file, start_pos);
 
-			case CHAR_INVALID:
-				print_error(file.get_snippet(start_pos, 1), "invalid character in source file '" + String(1, file[start_pos]) + "'");
+			case CharType::Invalid:
+				print_error(source::Snippet(file, start_pos, 1), "invalid character in source file '" + String(1, file[start_pos]) + "'");
 				return {};
 		}
 
-		return Token(Location(file, start_pos, 1), TOKEN_END_OF_FILE);
+		return Token(Location(file, start_pos, 1), TokenType::EndOfFile);
 	}
 
 	Result<Array<Token>> tokenize(const source::File& file)
@@ -732,7 +718,7 @@ namespace warbler::lexicon
 			out.emplace_back(res.unwrap());
 			position += out.back().location().length();
 		}
-		while (out.back().type() != TOKEN_END_OF_FILE);
+		while (out.back().type() != TokenType::EndOfFile);
 
 		return out;
 	}

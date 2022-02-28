@@ -18,7 +18,7 @@ namespace warbler::syntax
 		{
 			switch (iter->type())
 			{
-				case lexicon::TOKEN_KEYWORD_FUNCTION:
+				case lexicon::TokenType::KeywordFunction:
 				{
 					auto function = Function::parse(iter);
 
@@ -28,7 +28,7 @@ namespace warbler::syntax
 					functions.emplace_back(function.unwrap());
 					continue;
 				}
-				case lexicon::TOKEN_KEYWORD_TYPE:
+				case lexicon::TokenType::KeywordType:
 				{
 					auto type = TypeDefinition::parse(iter);
 
@@ -38,7 +38,7 @@ namespace warbler::syntax
 					types.emplace_back(type.unwrap());
 					continue;
 				}
-				case lexicon::TOKEN_END_OF_FILE:
+				case lexicon::TokenType::EndOfFile:
 					break;
 
 				default:
@@ -61,53 +61,53 @@ namespace warbler::syntax
 			function.print_tree(depth);
 	}
 
-	bool Module::validate(const String& module_name)
-	{
-		_context.name = module_name;
+	// bool Module::validate(const String& module_name)
+	// {
+	// 	_context.name = module_name;
 		
-		for (auto& type : _types)
-		{
-			const auto& type_name = type->name().text();
+	// 	for (auto& type : _types)
+	// 	{
+	// 		const auto& type_name = type->name().text();
 
-			if (_context.types.find(type_name) != _context.types.end())
-			{
-				print_error(type->name().location(), "duplicate type " + type->name().text() + " in module '" + module_name + "'");
+	// 		if (_context.types.find(type_name) != _context.types.end())
+	// 		{
+	// 			print_error(type->name().location(), "duplicate type " + type->name().text() + " in module '" + module_name + "'");
 
-				return false;
-			}
+	// 			return false;
+	// 		}
 
-			_context.types[type_name] = type.raw_ptr();
-		}
+	// 		_context.types[type_name] = type.raw_ptr();
+	// 	}
 
-		// checking if members of types are valid
-		for (auto& type : _types)
-		{
-			if (!type->validate(_context))
-				return false;
-		}
+	// 	// checking if members of types are valid
+	// 	for (auto& type : _types)
+	// 	{
+	// 		if (!type->validate(_context))
+	// 			return false;
+	// 	}
 
-		// checking for duplicate symbols
-		for (auto& function : _functions)
-		{
-			const auto& function_name = function.name().text();
+	// 	// checking for duplicate symbols
+	// 	for (auto& function : _functions)
+	// 	{
+	// 		const auto& function_name = function.name().text();
 
-			if (_context.functions.find(function_name) != _context.functions.end())
-			{
-				print_error(function.name().location(), "function '" + function_name + "' is already defined in module '" + module_name + "'");
+	// 		if (_context.functions.find(function_name) != _context.functions.end())
+	// 		{
+	// 			print_error(function.name().location(), "function '" + function_name + "' is already defined in module '" + module_name + "'");
 
-				return false;
-			}
+	// 			return false;
+	// 		}
 
-			_context.functions[function_name] = &function;
-		}
+	// 		_context.functions[function_name] = &function;
+	// 	}
 
-		// validating functions
-		for (auto& function : _functions)
-		{
-			if (!function.validate(_context))
-				return false;
-		}
+	// 	// validating functions
+	// 	for (auto& function : _functions)
+	// 	{
+	// 		if (!function.validate(_context))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 }

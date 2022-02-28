@@ -8,19 +8,19 @@
 
 namespace warbler::syntax
 {
-	enum AssignmentType
+	enum class AssignmentType
 	{
-		ASSIGN_BECOME,
-		ASSIGN_MULTIPLY,
-		ASSIGN_DIVIDE,
-		ASSIGN_MODULUS,
-		ASSIGN_ADD,
-		ASSIGN_SUBTRACT,
-		ASSIGN_LSHIFT,
-		ASSIGN_RSHIFT,
-		ASSIGN_BITWISE_AND,
-		ASSIGN_BITWISE_OR,
-		ASSIGN_BITWISE_XOR
+		Become,
+		Multiply,
+		Divide,
+		Modulus,
+		Add,
+		Subtract,
+		LeftBitShift,
+		RightBitShift,
+		BitwiseAnd,
+		BitwiseOr,
+		BitwiseXor
 	};
 
 	class AssignmentStatement : public Statement

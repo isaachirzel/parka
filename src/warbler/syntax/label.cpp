@@ -5,37 +5,36 @@
 
 namespace warbler::syntax
 {
-	Label::Label(String&& identifier) :
-	_identifier(identifier)
+	Label::Label(const source::Location& location) :
+	_location(location)
 	{}
 
 	Result<Label> Label::parse(lexicon::TokenIterator& iter)
 	{
 
-		if (iter->type() != lexicon::TOKEN_IDENTIFIER)
+		if (iter->type() != lexicon::TokenType::Identifier)
 		{
-			error_out(iter) << "expected identifier for label but got: " << *iter << std::endl;
+			print_parse_error(iter, "label identifer");
 			return {};
 		}
 
 		const auto& location = iter->location();
-		String identifier = String(location.pos_ptr(), location.length());
 
 		iter += 1;
 
-		if (iter->type() != lexicon::TOKEN_COLON)
+		if (iter->type() != lexicon::TokenType::Colon)
 		{
-			error_out(iter) << "expected ':' after label but got: " << *iter << std::endl;
+			print_parse_error(iter, "':' after label");
 			return {};
 		}
 
 		iter += 1;
 
-		return Label(std::move(identifier));
+		return Label(location);
 	}
 
 	void Label::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth) << _identifier << '\n';
+		print_branch(depth, _location.text());
 	}
 }

@@ -19,9 +19,9 @@ namespace warbler
 	void print_warning(const source::Snippet& text, const String& msg);
 	void print_error(const source::Snippet& text, const String& msg);
 
-	inline void print_note(const source::Location& location, const String& msg) { print_note(location.get_snippet(), msg); }
-	inline void print_warning(const source::Location& location, const String& msg) { print_warning(location.get_snippet(), msg); }
-	inline void print_error(const source::Location& location, const String& msg) { print_error(location.get_snippet(), msg); }
+	inline void print_note(const source::Location& location, const String& msg);
+	inline void print_warning(const source::Location& location, const String& msg);
+	inline void print_error(const source::Location& location, const String& msg);
 
 	void print_note(const String& msg);
 	void print_warning(const String& msg);

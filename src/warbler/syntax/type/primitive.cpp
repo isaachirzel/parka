@@ -10,43 +10,47 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	bool Primitive::validate(semantics::ModuleContext& mod_ctx)
-	{
-		print_note("Primitive::validate is not defined");
-		return true;
-	}
+	// bool Primitive::validate(semantics::ModuleContext& mod_ctx)
+	// {
+	// 	print_note("Primitive::validate is not defined");
+	// 	return true;
+	// }
 
 	void Primitive::print_tree(u32 depth) const
 	{
-		switch (_type)
-		{
-			case PRIMITIVE_INTEGER:
-				std::cout << tree_branch(depth) << "i" << _bytes * 8 << '\n';
-				break;
-
-			case PRIMITIVE_UNSIGNED:
-				std::cout << tree_branch(depth) << "u" << _bytes * 8 << '\n';
-				break;
-
-			case PRIMITIVE_BINARY:
-				std::cout << tree_branch(depth) << "b" << _bytes * 8 << '\n';
-				break;
-
-			case PRIMITIVE_FLOAT:
-				std::cout << tree_branch(depth) << "f" << _bytes * 8 << '\n';
-				break;
-
-			case PRIMITIVE_BOOL:
-				std::cout << tree_branch(depth) << "bool\n";
-				break;
-
-			case PRIMITIVE_CHAR:
-				std::cout << tree_branch(depth) << "char\n";
-				break;
-
-			case PRIMITIVE_STR:
-				std::cout << tree_branch(depth) << "str\n";
-				break;
-		}
+		_name.print_tree(depth);
+		#pragma message "TODO: Implement better tree printing for primitives"
 	}
+	// 	switch (_type)
+	// 	{
+	// 		case PrimitiveType::Integer:
+
+	// 			print_branch(depth) << "i" << _bytes * 8 << '\n';
+	// 			break;
+
+	// 		case PrimitiveType::Unsigned:
+	// 			print_branch(depth) << "u" << _bytes * 8 << '\n';
+	// 			break;
+
+	// 		case PrimitiveType::Binary:
+	// 			print_branch(depth) << "b" << _bytes * 8 << '\n';
+	// 			break;
+
+	// 		case PrimitiveType::Float:
+	// 			print_branch(depth) << "f" << _bytes * 8 << '\n';
+	// 			break;
+
+	// 		case PrimitiveType::Bool:
+	// 			print_branch(depth) << "bool\n";
+	// 			break;
+
+	// 		case PrimitiveType::Char:
+	// 			print_branch(depth) << "char\n";
+	// 			break;
+
+	// 		case PrimitiveType::Str:
+	// 			print_branch(depth) << "str\n";
+	// 			break;
+	// 	}
+	// }
 }

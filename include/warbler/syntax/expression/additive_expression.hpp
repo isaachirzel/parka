@@ -1,15 +1,15 @@
-#ifndef WARBLER_SYNTAX_EXPRESSION_ARITHMETIC_ADDITIVE_HPP
-#define WARBLER_SYNTAX_EXPRESSION_ARITHMETIC_ADDITIVE_HPP
+#ifndef WARBLER_SYNTAX_EXPRESSION_ARITHMETIC_EXPRESSION_HPP
+#define WARBLER_SYNTAX_EXPRESSION_ARITHMETIC_EXPRESSION_HPP
 
 // local headers
 #include <warbler/syntax/expression/multiplicative_expression.hpp>
 
 namespace warbler::syntax
 {
-	enum AdditiveType
+	enum class AdditiveType
 	{
-		ADDITIVE_ADD,
-		ADDITIVE_SUBTRACT
+		Add,
+		Subtract
 	};
 
 	struct AdditiveRhs

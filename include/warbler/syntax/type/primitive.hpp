@@ -7,15 +7,15 @@
 
 namespace warbler::syntax
 {
-	enum PrimitiveType
+	enum class PrimitiveType
 	{
-		PRIMITIVE_INTEGER,
-		PRIMITIVE_UNSIGNED,
-		PRIMITIVE_BINARY,
-		PRIMITIVE_FLOAT,
-		PRIMITIVE_BOOL,
-		PRIMITIVE_CHAR,
-		PRIMITIVE_STR
+		Integer,
+		Unsigned,
+		Binary,
+		Float,
+		Bool,
+		Char,
+		Str
 	};
 
 	class Primitive : public TypeDefinition

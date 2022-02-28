@@ -10,7 +10,7 @@ namespace warbler::syntax
 {
 	class Statement;
 	
-	enum LoopType
+	enum class LoopType
 	{
 		LOOP_FOR,
 		LOOP_WHILE,

@@ -13,7 +13,7 @@ namespace warbler::syntax
 	{
 		iter += 1;
 
-		if (iter->type() != lexicon::TOKEN_LBRACE)
+		if (iter->type() != lexicon::TokenType::LeftBrace)
 		{
 			print_parse_error(iter, "'{' before struct body");
 			return {};
@@ -23,7 +23,7 @@ namespace warbler::syntax
 
 		Array<Member> members;
 
-		if (iter->type() != lexicon::TOKEN_RBRACE)
+		if (iter->type() != lexicon::TokenType::RightBrace)
 		{
 			while (true)
 			{
@@ -34,13 +34,13 @@ namespace warbler::syntax
 
 				members.emplace_back(member.unwrap());
 
-				if (iter->type() != lexicon::TOKEN_COMMA)
+				if (iter->type() != lexicon::TokenType::Comma)
 					break;
 
 				iter += 1;
 			}
 
-			if (iter->type() != lexicon::TOKEN_RBRACE)
+			if (iter->type() != lexicon::TokenType::RightBrace)
 			{
 				print_parse_error(iter, "'}' after struct body");
 				return {};
@@ -66,12 +66,12 @@ namespace warbler::syntax
 	void Struct::print_tree(u32 depth) const
 	{
 
-		std::cout << tree_branch(depth) << "struct\n";
-		std::cout << tree_branch(depth) << "{\n";
+		print_branch(depth, "struct");
+		print_branch(depth, "{");
 
 		for (const auto& member: _members)
 			member.print_tree(depth + 1);
 
-		std::cout << tree_branch(depth) << "}\n";
+		print_branch(depth, "}");
 	}
 }

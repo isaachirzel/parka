@@ -1,17 +1,17 @@
-#ifndef WARBLER_SYNTAX_EXPRESSION_BOOLEAN_RELATIONAL_HPP
-#define WARBLER_SYNTAX_EXPRESSION_BOOLEAN_RELATIONAL_HPP
+#ifndef WARBLER_SYNTAX_EXPRESSION_RELATIONAL_EXPRESSION_HPP
+#define WARBLER_SYNTAX_EXPRESSION_RELATIONAL_EXPRESSION_HPP
 
 // local headers
 #include <warbler/syntax/expression/shift_expression.hpp>
 
 namespace warbler::syntax
 {
-	enum RelationalType
+	enum class RelationalType
 	{
-		RELATIONAL_GREATER,
-		RELATIONAL_LESS,
-		RELATIONAL_GREATER_EQUAL,
-		RELATIONAL_LESS_EQUAL
+		GreaterThan,
+		LessThan,
+		GreaterThanOrEqualTo,
+		LessThanOrEqualTo
 	};
 
 	struct RelationalRhs

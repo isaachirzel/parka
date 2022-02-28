@@ -18,7 +18,7 @@ namespace warbler::syntax
 		if (!declaration)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_ASSIGN)
+		if (iter->type() != lexicon::TokenType::Assign)
 		{
 			print_parse_error(iter, "expected '=' after declaration");
 			return {};
@@ -31,7 +31,7 @@ namespace warbler::syntax
 		if (!value)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_SEMICOLON)
+		if (iter->type() != lexicon::TokenType::Semicolon)
 		{
 			print_parse_error(iter, "expected ';' after declaration");
 			return {};
@@ -42,28 +42,28 @@ namespace warbler::syntax
 		return DeclarationStatement { declaration.unwrap(), value.unwrap() };
 	}
 
-	bool DeclarationStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_declaration.validate_variable(mod_ctx, func_ctx) && _value->validate(mod_ctx, func_ctx))
-			return false;
+	// bool DeclarationStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_declaration.validate_variable(mod_ctx, func_ctx) && _value->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		auto& decl_type = _declaration.type();
+	// 	auto& decl_type = _declaration.type();
 
-		if (!decl_type.is_auto())
-		{
-			auto *expr_type = _value->get_type();
+	// 	if (!decl_type.is_auto())
+	// 	{
+	// 		auto *expr_type = _value->get_type();
 
-			if (!decl_type.validate_cast_from(expr_type))
-				return false;
-		}
+	// 		if (!decl_type.validate_cast_from(expr_type))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void DeclarationStatement::print_tree(u32 depth) const
 	{
 		_declaration.print_tree(depth);
-		std::cout << tree_branch(depth + 1) << "=\n";
+		print_branch(depth + 1, "=");
 		_value->print_tree(depth  + 2);
 	}
 }

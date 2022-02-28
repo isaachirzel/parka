@@ -11,19 +11,19 @@ namespace warbler::syntax
 	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Ptr<Expression>&& index) :
 	_expression(std::move(expression)),
 	_index(std::move(index)),
-	_type(POSTFIX_INDEX)
+	_type(PostfixType::Index)
 	{}
 
 	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Array<Ptr<Expression>>&& arguments) :
 	_expression(std::move(expression)),
 	_arguments(std::move(arguments)),
-	_type(POSTFIX_FUNCTION_CALL)
+	_type(PostfixType::FunctionCall)
 	{}
 
 	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member_name) :
 	_expression(std::move(expression)),
 	_member(MemberExpression { std::move(member_name), nullptr }),
-	_type(POSTFIX_MEMBER)
+	_type(PostfixType::Member)
 	{}
  
 	PostfixExpression::PostfixExpression(PostfixExpression&& other) :
@@ -31,15 +31,15 @@ namespace warbler::syntax
 	{
 		switch (_type)
 		{
-			case POSTFIX_INDEX:
+			case PostfixType::Index:
 				new(&_index) auto(std::move(other._index));
 				break;
 
-			case POSTFIX_FUNCTION_CALL:
+			case PostfixType::FunctionCall:
 				new(&_arguments) auto(std::move(other._arguments));
 				break;
 
-			case POSTFIX_MEMBER:
+			case PostfixType::Member:
 				new (&_member) auto(std::move(other._member));
 				break;
 		}
@@ -49,15 +49,15 @@ namespace warbler::syntax
 	{
 		switch (_type)
 		{
-			case POSTFIX_INDEX:
+			case PostfixType::Index:
 				_index.~Ptr();
 				break;
 
-			case POSTFIX_FUNCTION_CALL:
+			case PostfixType::FunctionCall:
 				_arguments.~vector();
 				break;
 
-			case POSTFIX_MEMBER:
+			case PostfixType::Member:
 				_member.~MemberExpression();
 				break;
 		}
@@ -71,7 +71,7 @@ namespace warbler::syntax
 
 	parse_argument:
 
-		if (iter->type() != lexicon::TOKEN_RPAREN)
+		if (iter->type() != lexicon::TokenType::RightParenthesis)
 		{
 			auto res = Expression::parse(iter);
 
@@ -80,13 +80,13 @@ namespace warbler::syntax
 			
 			arguments.emplace_back(res.unwrap());
 
-			if (iter->type() == lexicon::TOKEN_COMMA)
+			if (iter->type() == lexicon::TokenType::Comma)
 			{
 				iter += 1;
 				goto parse_argument;
 			}
 
-			if (iter->type() != lexicon::TOKEN_RPAREN)
+			if (iter->type() != lexicon::TokenType::RightParenthesis)
 			{
 				print_parse_error(iter, "')' after function arguments");
 				return {};
@@ -110,7 +110,7 @@ namespace warbler::syntax
 	parse_postfix:
 		switch (iter->type())
 		{
-			case TOKEN_LBRACK:
+			case lexicon::TokenType::LeftBracket:
 			{
 				iter += 1;
 				auto res = Expression::parse(iter);
@@ -118,7 +118,7 @@ namespace warbler::syntax
 				if (!res)
 					return {};
 
-				if (iter->type() != lexicon::TOKEN_RBRACK)
+				if (iter->type() != lexicon::TokenType::RightBracket)
 				{
 					print_parse_error(iter, "']' after index operation");
 					return {};
@@ -130,7 +130,7 @@ namespace warbler::syntax
 				goto parse_postfix;
 			}
 
-			case TOKEN_LPAREN:
+			case lexicon::TokenType::LeftParenthesis:
 			{
 				auto res = parse_arguments(iter);
 
@@ -141,7 +141,7 @@ namespace warbler::syntax
 				goto parse_postfix;
 			}
 
-			case TOKEN_DOT:
+			case lexicon::TokenType::Dot:
 			{
 				iter += 1;
 
@@ -161,54 +161,54 @@ namespace warbler::syntax
 		return expression;
 	}
 
-	bool PostfixExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_expression->validate(mod_ctx, func_ctx))
-			return false;
+	// bool PostfixExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_expression->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		switch (_type)
-		{
-			case POSTFIX_INDEX:
-				_index->validate(mod_ctx, func_ctx);
-				break;
+	// 	switch (_type)
+	// 	{
+	// 		case PostfixType::Index:
+	// 			_index->validate(mod_ctx, func_ctx);
+	// 			break;
 
-			case POSTFIX_FUNCTION_CALL:
-				for (auto& arg : _arguments)
-				{
-					arg->validate(mod_ctx, func_ctx);
-				}
-				break;
+	// 		case PostfixType::FunctionCall:
+	// 			for (auto& arg : _arguments)
+	// 			{
+	// 				arg->validate(mod_ctx, func_ctx);
+	// 			}
+	// 			break;
 
-			case POSTFIX_MEMBER:
-			{
-				auto *expr_type = _expression->get_type();
+	// 		case PostfixType::Member:
+	// 		{
+	// 			auto *expr_type = _expression->get_type();
 
-				_member.definition = expr_type->definition()->get_member(_member.name.text());
+	// 			_member.definition = expr_type->definition()->get_member(_member.name.text());
 
-				if (_member.definition == nullptr)
-				{
-					print_error(_member.name.location(), "'" + _member.name.text() + "' is not a member of type '" + expr_type->text() + "'");
-					return false;
-				}
-				break;
-			}
-		}
+	// 			if (_member.definition == nullptr)
+	// 			{
+	// 				print_error(_member.name.location(), "'" + _member.name.text() + "' is not a member of type '" + expr_type->text() + "'");
+	// 				return false;
+	// 			}
+	// 			break;
+	// 		}
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	Type *PostfixExpression::get_type()
 	{
 		// switch (_type)
 		// {
-		// 	case POSTFIX_INDEX:
+		// 	case PostfixType::Index:
 		// 		break;
 
-		// 	case POSTFIX_FUNCTION_CALL:
+		// 	case PostfixType::FunctionCall:
 		// 		return 
 		// 		break;
 
-		// 	case POSTFIX_MEMBER:
+		// 	case PostfixType::Member:
 				
 		// 		break;
 		// }
@@ -226,23 +226,23 @@ namespace warbler::syntax
 
 		switch (_type)
 		{
-			case POSTFIX_INDEX:
-				std::cout << tree_branch(depth + 1) << "[\n";
+			case PostfixType::Index:
+				print_branch(depth + 1, "[");
 				_index->print_tree(depth + 2);
-				std::cout << tree_branch(depth + 1) << "]\n";
+				print_branch(depth + 1, "]");
 				break;
 
-			case POSTFIX_FUNCTION_CALL:
-				std::cout << tree_branch(depth + 1) << "(\n";
+			case PostfixType::FunctionCall:
+				print_branch(depth + 1, "(");
 
 				for (const auto& arg : _arguments)
 					arg->print_tree(depth + 2);
 
-				std::cout << tree_branch(depth + 1) << ")\n";
+				print_branch(depth + 1, ")");
 			break;
 
-			case POSTFIX_MEMBER:
-				std::cout << tree_branch(depth + 1) << '.' << _member.name.text() << '\n';
+			case PostfixType::Member:
+				print_branch(depth + 1, "." + _member.name.location().text());
 				break;
 		}
 	}

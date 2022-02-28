@@ -28,7 +28,7 @@ namespace warbler::syntax
 	
 	public:
 
-		Function(Identifier&& name, Array<Declaration>&& parameters, Type&& return_type, BlockStatement&& compound_body);
+		Function(Identifier&& name, Array<Declaration>&& parameters, Optional<Type>&& return_type, BlockStatement&& compound_body);
 		Function(Function&& other) = default;
 		Function(const Function& other) = delete;		
 

@@ -105,7 +105,7 @@ int main()
 		return {};
 	}
 
-	if (iter->type() != TOKEN_END_OF_FILE)
+	if (iter->type() != source::TokenType::END_OF_FILE)
 	{
 		error_out(iter) << "current token is not EOF";
 		error_highlight(iter);

@@ -12,7 +12,7 @@ namespace warbler::syntax
 	{
 		switch (iter->type())
 		{
-			case TOKEN_VAR:
+			case lexicon::TokenType::KeywordVar:
 			{
 				auto res = DeclarationStatement::parse(iter);
 
@@ -22,8 +22,8 @@ namespace warbler::syntax
 				return Ptr<Statement> { new DeclarationStatement { res.unwrap() } };
 			}
 
-			//case TOKEN_MATCH:
-			case TOKEN_IF:
+			//case lexicon::TokenType::MATCH:
+			case lexicon::TokenType::KeywordIf:
 			{
 				auto res = IfStatement::parse(iter);
 
@@ -33,14 +33,14 @@ namespace warbler::syntax
 				return Ptr<Statement> { new IfStatement { res.unwrap() } };
 			}
 
-			// case TOKEN_LOOP:
-			// case TOKEN_WHILE:
-			// case TOKEN_FOR:
+			// case lexicon::TokenType::LOOP:
+			// case lexicon::TokenType::WHILE:
+			// case lexicon::TokenType::FOR:
 			// 	return parse_statement<LoopStatement>(iter);
 
-			// case TOKEN_CONTINUE:
-			// case TOKEN_BREAK:
-			// case TOKEN_RETURN:
+			// case lexicon::TokenType::CONTINUE:
+			// case lexicon::TokenType::BREAK:
+			// case lexicon::TokenType::RETURN:
 			// 	return parse_statement<JumpStatement>(iter);
 
 			default:

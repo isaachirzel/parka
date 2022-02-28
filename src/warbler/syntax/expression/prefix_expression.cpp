@@ -4,9 +4,12 @@
 
 // check for type then parse
 
+#include <warbler/util/print.hpp>
+
 namespace warbler::syntax
 {
-	PrefixExpression::PrefixExpression(Ptr<Expression>&& expression, PrefixType type) :
+	PrefixExpression::PrefixExpression(const source::Location& location, Ptr<Expression>&& expression, PrefixType type) :
+	_location(location),
 	_expression(std::move(expression)),
 	_type(type)
 	{}
@@ -17,33 +20,35 @@ namespace warbler::syntax
 
 		switch (iter->type())
 		{
-			case TOKEN_AMPERSAND:
-				type = PREFIX_REFERENCE;
+			case lexicon::TokenType::Ampersand:
+				type = PrefixType::Reference;
 				break;
 
-			case TOKEN_ASTERISK:
-				type = PREFIX_DEREFERENCE;
+			case lexicon::TokenType::Asterisk:
+				type = PrefixType::Dereference;
 				break;
 
-			case TOKEN_PLUS:
-				type = PREFIX_POSITIVE;
+			case lexicon::TokenType::Plus:
+				type = PrefixType::Positive;
 				break;
 
-			case TOKEN_MINUS:
-				type = PREFIX_NEGATIVE;
+			case lexicon::TokenType::Minus:
+				type = PrefixType::Negative;
 				break;
 
-			case TOKEN_BITWISE_NOT:
-				type = PREFIX_BITWISE_NOT;
+			case lexicon::TokenType::BitwiseNot:
+				type = PrefixType::BitwiseNot;
 				break;
 
-			case TOKEN_BOOLEAN_NOT:
-				type = PREFIX_BOOLEAN_NOT;
+			case lexicon::TokenType::BooleanNot:
+				type = PrefixType::BooleanNot;
 				break;
 
 			default:
 				return PostfixExpression::parse(iter);
 		}
+
+		const auto& token = iter->location();
 
 		iter += 1;
 
@@ -52,26 +57,48 @@ namespace warbler::syntax
 		if (!res)
 			return {};
 
-		return Ptr<Expression> { new PrefixExpression(res.unwrap(), type) };
-	}
-
-	bool PrefixExpression::validate(semantics::ModuleContext& module, semantics::FunctionContext& function)
-	{
-		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
-	}
-
-	Type *PrefixExpression::get_type()
-	{
-		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
-	}
-
-	const source::Location& PrefixExpression::location() const
-	{
-		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
+		return Ptr<Expression> { new PrefixExpression(token, res.unwrap(), type) };
 	}
 
 	void PrefixExpression::print_tree(u32 depth) const
 	{
-		throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
+		switch (_type)
+		{
+			case PrefixType::Reference:
+				print_branch(depth, "&");
+				break;
+
+			case PrefixType::Dereference:
+				print_branch(depth, "*");
+				break;
+
+			case PrefixType::Positive:
+				print_branch(depth, "+");
+				break;
+
+			case PrefixType::Negative:
+				print_branch(depth, "-");
+				break;
+
+			case PrefixType::BitwiseNot:
+				print_branch(depth, "~");
+				break;
+
+			case PrefixType::BooleanNot:
+				print_branch(depth, "!");
+				break;
+		}
+
+		_expression->print_tree(depth + 1);
 	}
+
+	// bool PrefixExpression::validate(semantics::ModuleContext& module, semantics::FunctionContext& function)
+	// {
+	// 	throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
+	// }
+
+	// Type *PrefixExpression::get_type()
+	// {
+	// 	throw std::runtime_error("PrefixExpression::" + String(__func__) + " is not implemented");
+	// }
 }

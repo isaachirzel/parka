@@ -23,7 +23,7 @@ namespace warbler::syntax
 
 		Array<Ptr<Expression>> rhs;
 
-		while (iter->type() == lexicon::TOKEN_AMPERSAND)
+		while (iter->type() == lexicon::TokenType::Ampersand)
 		{
 			iter += 1;
 
@@ -43,19 +43,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool BitwiseAndExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool BitwiseAndExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& expr : _rhs)
-		{
-			if (!expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& expr : _rhs)
+	// 	{
+	// 		if (!expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void BitwiseAndExpression::print_tree(u32 depth) const
 	{

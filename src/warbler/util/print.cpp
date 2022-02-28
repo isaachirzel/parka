@@ -12,23 +12,15 @@
 #include <warbler/util/string.hpp>
 
 #define COLOR_RED		"\033[91m"
-#define COLOR_YELLOW 	"\033[93m"
+#define COLOR_YELLOW	"\033[93m"
 #define COLOR_BLUE		"\033[94m"
 #define COLOR_PURPLE	"\033[95m"
 #define COLOR_CYAN		"\033[96m"
 #define COLOR_RESET		"\033[0m"
 
-#define PROMPT_NOTE			"note: "
-#define PROMPT_WARNING		"warning: "
-#define PROMPT_ERROR		"error: "
-
-#define COLOR_NOTE		COLOR_CYAN
-#define COLOR_WARNING	COLOR_PURPLE
-#define COLOR_ERROR		COLOR_RED
-
-#define PROMPT_NOTE_COLOR		COLOR_NOTE PROMPT_NOTE COLOR_RESET
-#define PROMPT_WARNING_COLOR	COLOR_WARNING PROMPT_WARNING COLOR_RESET
-#define PROMPT_ERROR_COLOR		COLOR_ERROR PROMPT_ERROR COLOR_RESET
+#define PROMPT_NOTE		"note: "
+#define PROMPT_WARNING	"warning: "
+#define PROMPT_ERROR	"error: "
 
 namespace warbler
 {
@@ -39,25 +31,66 @@ namespace warbler
 	std::ostream& output_stream = std::cout;
 	static bool is_color_enabled = true;
 
-	static inline const char *note_prompt()
+	enum class LogLevel
 	{
-		return is_color_enabled
-			? PROMPT_NOTE_COLOR
-			: PROMPT_NOTE;
-	}
+		Note,
+		Warning,
+		Error
+	};
 
-	static inline const char *error_prompt()
+	struct LogContext
 	{
-		return is_color_enabled
-			? PROMPT_ERROR_COLOR
-			: PROMPT_ERROR;
-	}
+		const char * const prompt;
+		const char * const color;
+		const char * const reset;
 
-	static inline const char *warning_prompt()
+		LogContext() :
+		prompt(""),
+		color(""),
+		reset("")
+		{}
+
+		LogContext(const char *prompt) :
+		prompt(prompt),
+		color(""),
+		reset("")
+		{}
+
+		LogContext(const char *prompt, const char *color) :
+		prompt(prompt),
+		color(color),
+		reset(COLOR_RESET)
+		{}
+	};
+
+	LogContext get_log_context(LogLevel level)
 	{
-		return is_color_enabled
-			? PROMPT_WARNING_COLOR
-			: PROMPT_WARNING;
+		if (is_color_enabled)
+		{
+			switch (level)
+			{
+				case LogLevel::Note:
+					return { PROMPT_NOTE, COLOR_CYAN };
+				case LogLevel::Warning:
+					return { PROMPT_WARNING, COLOR_PURPLE };
+				case LogLevel::Error:
+					return { PROMPT_ERROR, COLOR_RED };
+			}
+		}
+		else
+		{
+			switch (level)
+			{
+				case LogLevel::Note:
+					return { PROMPT_NOTE };
+				case LogLevel::Warning:
+					return { PROMPT_WARNING };
+				case LogLevel::Error:
+					return { PROMPT_ERROR };
+			} 
+		}
+
+		return {};
 	}
 
 	void print_enable_color(bool enabled)
@@ -85,19 +118,19 @@ namespace warbler
 			putchar(' ');
 	}
 
-	static const char *get_shortened_file(const char *file)
-	{
+	// static const char *get_shortened_file(const char *file)
+	// {
 
-		for (const char *pos = file; *pos; pos += 1)
-		{
-			if (!strncmp(pos, "warbler/", 8))
-				return pos + 8;
-		}
+	// 	for (const char *pos = file; *pos; pos += 1)
+	// 	{
+	// 		if (!strncmp(pos, "warbler/", 8))
+	// 			return pos + 8;
+	// 	}
 
-		return file;
-	}
+	// 	return file;
+	// }
 
-	size_t get_spaces_for_num(size_t number)
+	size_t get_number_width(size_t number)
 	{
 		size_t out = 1;
 		
@@ -110,163 +143,104 @@ namespace warbler
 		return out;
 	}
 
-	static inline print_margin(usize line = 0)
+	String get_margin(usize line_number_padding, usize line = 0)
 	{
-		output_stream << ' ';
+		String margin;
+
+		const usize margin_padding_spaces = 4;
+		const usize margin_size = line_number_padding + margin_padding_spaces;
+
+		margin.reserve(margin_size);
 
 		if (line > 0)
 		{
-			usize size_of_num = get_spaces_for_num(line);
-			usize spaces = 8 - size_of_num;
-
-			output_stream << String(spaces, ' ') << line << " | ";
-
-			
+			usize number_padding_spaces = line_number_padding - get_number_width(line) + 1;
+		
+			margin += String(number_padding_spaces, ' ');
+			margin += std::to_string(line);
+			margin += " | ";
 		}
 		else
 		{
-			output_stream << "          | ";
+			margin.resize(margin_size, ' ');
+			margin[margin_size - 2] = '|';
 		}
+
+		return margin;
 	}
 
-	void print_snippet_highlight(const Snippet& snippet, const char *color)
+	String get_snippet_highlight(const Snippet& snippet, const LogContext& context)
 	{
-		Array<String> lines;
+		assert(snippet.lines().size() > 0);
 
-		for (usize i = 0; i < snippet.length(); ++i)
+		usize length = 0;
+
+		for (const auto& line : snippet.lines())
+			length += line.length();
+
+		String highlight;
+		
+		usize line_number_width = get_number_width(snippet.line() + snippet.lines().size() - 1);
+
+		highlight.reserve(length * 3);
+
+		usize current_line_number = snippet.line();
+
+		for (const auto& line : snippet.lines())
 		{
-			
-		}
+			String line_text = line;
+			String underline_text;
 
-		while (true) // loop for each line
-		{
-			print_margin
-		}
+			line_text.reserve(line.size() + 8); // extra padding for color codes & newline
+			underline_text.reserve(line.capacity());
 
-		for (usize
+			line_text += get_margin(line_number_width, current_line_number);
+			underline_text += get_margin(line_number_width);
 
-		for (usize i = 0; i < snippet.start_pos(); ++i)
-			output_stream << snippet[i];
-
-		if (is_color_enabled)
-			output_stream << color;
-
-		usize line = snippet.line();
-
-		for (usize i = snippet.start_pos(); i < snippet.end_pos(); ++i)
-		{
-			auto character = snippet[i];
-			output_stream << snippet[i];
-
-			if (character == '\n')
+			for (usize i = 0; i < line.size(); ++i)
 			{
-				line += 1;
+				auto is_first_line = &line == &snippet.lines().front();
+				auto is_last_line = &line == &snippet.lines().back();
 
+				if (is_first_line && i == snippet.start_pos())
+				{
+					line_text += context.color;
+					underline_text += context.color;
+				}
+				else if (is_last_line && i == snippet.end_pos())
+				{	
+					line_text += context.reset;
+					underline_text += context.reset;
+				}
 			}
-		}
-		
-		for (usize i = snippet.end_pos();
 
-		const auto& data = snippet.data();
+			String empty_line_text = get_margin(line_number_width);
 
-		for (usize i = snippet.start; i < snippet.pos(); ++i)
-			output_stream << data[i];
+			empty_line_text += '\n';
+			line_text += '\n';
+			underline_text += '\n';
 
-		if (is_color_enabled)
-			output_stream << color;
+			highlight += empty_line_text;
+			highlight += line_text;
+			highlight += underline_text;
 
-		usize end = snippet.pos() + snippet.length();
-
-		for (usize i = snippet.pos(); i < 
-
-		highlight.reserve(snippet.data().size() * 3)
-		size_t line_number_length = get_spaces_for_num(snippet.line());	
-		String line_header = snippet.data().substr(0, snippet.col());
-
-		const char *text_after_location = location.end();
-		const char *end = text_after_location;
-
-		while (*end != '\0' && *end != '\n')
-			end += 1;
-
-		size_t footer_length = end - text_after_location;
-		
-		String line_footer(text_after_location, footer_length);
-		line_footer += '\n';
-
-		output_stream << "\n " << location.line() + 1 << " | ";
-
-		const char *pos = location.start_of_line();
-		for (usize i = 0; i < location.col(); ++i)
-			output_stream << pos[i];
-
-		if (is_color_enabled)
-			output_stream << color;
-
-		pos = location.pos_ptr();
-		for (usize i = 0; i < location.length(); ++i)
-			output_stream << pos[i];
-
-		if (is_color_enabled)
-			output_stream <<  COLOR_RESET;
-
-		// std::cout << "(" << location.length() << ")\n";
-
-		pos = location.pos_ptr() + location.length();
-
-		while (true)
-		{
-			if (*pos == '\0' || *pos == '\n')
-				break;
-
-			output_stream << *pos;
-			pos += 1;
+			current_line_number += 1;
 		}
 
-		output_stream << '\n' << String(2 + line_number_length, ' ') << "| ";
-		
-		String spacing = line_header;
-
-		pos = location.start_of_line();
-
-		for (usize i = 0; i < location.col(); ++i)
-		{
-			output_stream << (pos[i] == '\t' ? '\t' : ' ');
-		}
-
-		if (is_color_enabled)
-			output_stream << color;
-
-		// prints stray ~ so that there is at least one regardless of token length
-		output_stream << '~';
-
-		for (usize i = 1; i < location.length(); ++i)
-			output_stream << '~';
-
-		if (is_color_enabled)
-			output_stream << COLOR_RESET;
-
-		output_stream << '\n';
+		return highlight;
 	}
 
 	String tree_branch(u32 length)
 	{
-		String out;
-
 		if (length == 0)
 			return "";
 
-		out.resize(length * 4);
-		
 		length *= 4;
 
+		String out(length, ' ');
+
 		for (u32 i = 0; i < length; i += 4)
-		{
-			out[i]     = '|';
-			out[i + 1] = ' ';
-			out[i + 2] = ' ';
-			out[i + 3] = ' ';
-		}
+			out[i] = '|';
 
 		out[out.size() - 2] = '>';
 
@@ -278,54 +252,65 @@ namespace warbler
 		print_error(iter->location(), "expected " + expected + ", found '" + iter->get_string() + '\'');
 	}
 
-	static void print_message(const char *prompt, const char *color, const Location& location, const String& msg)
+	static inline void print_message(const LogContext& context, const String& msg)
 	{
-		auto snippet = location.get_snippet();
+		output_stream << context.color << context.prompt << context.reset << msg << '\n';
+	}
 
+	static void print_message(LogLevel level, const Snippet& snippet, const String& msg)
+	{
 		output_stream << snippet.filename() << ':' << snippet.line() + 1 << ':' << snippet.col() + 1 << ' ';
 
-		if (is_color_enabled)
-		{
-			output_stream << color << prompt << COLOR_RESET;
-		}
-		else
-		{
-			output_stream << prompt;
-		}
+		auto context = get_log_context(level);
 
-		output_stream << msg;
-		
-		print_snippet_highlight(snippet, color);
+		print_message(context, msg);
+
+		output_stream << get_snippet_highlight(snippet, context);
+	}
+
+	void print_note(const Snippet& snippet, const String& msg)
+	{
+		print_message(LogLevel::Note, snippet, msg);
+	}
+
+	void print_warning(const Snippet& snippet, const String& msg)
+	{
+		print_message(LogLevel::Warning, snippet, msg);
+	}
+
+	void print_error(const Snippet& snippet, const String& msg)
+	{
+		print_message(LogLevel::Error, snippet, msg);
 	}
 
 	void print_note(const Location& location, const String& msg)
 	{
-		print_message(PROMPT_NOTE, COLOR_NOTE, location, msg); 
+		print_message(LogLevel::Note, location.get_snippet(), msg);
 	}
 	
 	void print_warning(const Location& location, const String& msg)
 	{
-		print_message(PROMPT_WARNING, COLOR_WARNING, location, msg);
+		print_message(LogLevel::Warning, location.get_snippet(), msg);
 	}
 
 	void print_error(const Location& location, const String& msg)
 	{
-		print_message(PROMPT_ERROR, COLOR_ERROR, location, msg); 
+		print_message(LogLevel::Error, location.get_snippet(), msg);
 	}
 
 	void print_note(const String& msg)
 	{
-		print_message(PROMPT_NOTE, COLOR_NOTE, msg);
+		print_message(get_log_context(LogLevel::Note), msg);
 	}
 
 	void print_warning(const String& msg)
 	{
-		print_message(PROMPT_WARNING, COLOR_WARNING, msg);
+		print_message(get_log_context(LogLevel::Warning), msg);
 	}
 
 	void print_error(const String& msg)
 	{
-		print_message(PROMPT_ERROR, COLOR_ERROR, msg);
+		print_message(get_log_context(LogLevel::Error), msg);
 	}
 
 	std::runtime_error _not_implemented(const char *file, int line, const char *func)

@@ -26,16 +26,16 @@ namespace warbler::syntax
 			MultiplicativeType type;
 			switch (iter->type())
 			{
-				case TOKEN_MODULUS:
-					type = MULTIPLICATIVE_MODULUS;
+				case lexicon::TokenType::Modulus:
+					type = MultiplicativeType::Modulus;
 					break;
 
-				case TOKEN_ASTERISK:
-					type = MULTIPLICATIVE_MULTIPLY;
+				case lexicon::TokenType::Asterisk:
+					type = MultiplicativeType::Multiply;
 					break;
 
-				case TOKEN_SLASH:
-					type = MULTIPLICATIVE_DIVIDE;
+				case lexicon::TokenType::Slash:
+					type = MultiplicativeType::Divide;
 					break;
 
 				default:
@@ -64,19 +64,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool MultiplicativeExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool MultiplicativeExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& rhs : _rhs)
-		{
-			if (!rhs.expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& rhs : _rhs)
+	// 	{
+	// 		if (!rhs.expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void MultiplicativeExpression::print_tree(u32 depth) const
 	{
@@ -87,20 +87,18 @@ namespace warbler::syntax
 
 		for (const auto& rhs : _rhs)
 		{
-			std::cout << tree_branch(depth - 1);
-
 			switch (rhs.type)
 			{
-				case MULTIPLICATIVE_MULTIPLY:
-					std::cout << "*\n";
+				case MultiplicativeType::Multiply:
+					print_branch(depth - 1, "*");
 					break;
 
-				case MULTIPLICATIVE_DIVIDE:
-					std::cout << "/\n";
+				case MultiplicativeType::Divide:
+					print_branch(depth - 1, "/");
 					break;
 
-				case MULTIPLICATIVE_MODULUS:
-					std::cout << "%\n";
+				case MultiplicativeType::Modulus:
+					print_branch(depth - 1, "%");
 					break;
 			}
 

@@ -26,20 +26,20 @@ namespace warbler::syntax
 			RelationalType type;
 			switch (iter->type())
 			{
-				case TOKEN_GREATER_THAN:
-					type = RELATIONAL_GREATER;
+				case lexicon::TokenType::GreaterThan:
+					type = RelationalType::GreaterThan;
 					break;
 
-				case TOKEN_LESS_THAN:
-					type = RELATIONAL_LESS;
+				case lexicon::TokenType::LessThan:
+					type = RelationalType::LessThan;
 					break;
 
-				case TOKEN_GREATER_OR_EQUAL:
-					type = RELATIONAL_GREATER_EQUAL;
+				case lexicon::TokenType::GreaterThanOrEqualTo:
+					type = RelationalType::GreaterThanOrEqualTo;
 					break;
 
-				case TOKEN_LESS_OR_EQUAL:
-					type = RELATIONAL_LESS_EQUAL;
+				case lexicon::TokenType::LessThanOrEqualTo:
+					type = RelationalType::LessThanOrEqualTo;
 					break;
 
 				default:
@@ -68,19 +68,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool RelationalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool RelationalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& rhs : _rhs)
-		{
-			if (!rhs.expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& rhs : _rhs)
+	// 	{
+	// 		if (!rhs.expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void RelationalExpression::print_tree(u32 depth) const
 	{
@@ -91,24 +91,22 @@ namespace warbler::syntax
 
 		for (const auto& rhs : _rhs)
 		{
-			std::cout << tree_branch(depth - 1);
-
 			switch (rhs.type)
 			{
-				case RELATIONAL_GREATER:
-					std::cout << ">\n";
+				case RelationalType::GreaterThan:
+					print_branch(depth - 1, ">");
 					break;
 
-				case RELATIONAL_LESS:
-					std::cout << "<\n";
+				case RelationalType::LessThan:
+					print_branch(depth - 1, "<");
 					break;
 
-				case RELATIONAL_GREATER_EQUAL:
-					std::cout << ">=\n";
+				case RelationalType::GreaterThanOrEqualTo:
+					print_branch(depth - 1, ">=");
 					break;
 
-				case RELATIONAL_LESS_EQUAL:
-					std::cout << "<=\n";
+				case RelationalType::LessThanOrEqualTo:
+					print_branch(depth - 1, "<=");
 					break;
 
 			}
@@ -117,20 +115,20 @@ namespace warbler::syntax
 		}
 	}
 
-	Type *RelationalExpression::get_type()
-	{
-		throw std::runtime_error("RelationExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// Type *RelationalExpression::get_type()
+	// {
+	// 	throw std::runtime_error("RelationExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	const source::Location& RelationalExpression::location() const
-	{
-		if (!_rhs.empty())
-		{
-			return _lhs->location();
-		}
-		else
-		{
-			return _lhs->location() + _rhs.back().expr->location();
-		}
-	}
+	// const source::Location& RelationalExpression::location() const
+	// {
+	// 	if (!_rhs.empty())
+	// 	{
+	// 		return _lhs->location();
+	// 	}
+	// 	else
+	// 	{
+	// 		return _lhs->location() + _rhs.back().expr->location();
+	// 	}
+	// }
 }

@@ -17,7 +17,7 @@ namespace warbler::syntax
 	Result<Ptr<Expression>> EqualityExpression::parse(lexicon::TokenIterator& iter)
 	{
 		auto lhs = RelationalExpression::parse(iter);
-
+		 
 		if (!lhs)
 			return {};
 
@@ -30,12 +30,12 @@ namespace warbler::syntax
 			EqualityType type;
 			switch (iter->type())
 			{
-				case TOKEN_EQUALS:
-					type = EQUALITY_EQUALS;
+				case lexicon::TokenType::Equals:
+					type = EqualityType::Equals;
 					break;
 
-				case TOKEN_NOT_EQUALS:
-					type = EQUALITY_NOT_EQUALS;
+				case lexicon::TokenType::NotEquals:
+					type = EqualityType::NotEquals;
 					break;
 
 				default:
@@ -64,19 +64,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool EqualityExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool EqualityExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& rhs : _rhs)
-		{
-			if (!rhs.expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& rhs : _rhs)
+	// 	{
+	// 		if (!rhs.expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void EqualityExpression::print_tree(u32 depth) const
 	{
@@ -87,11 +87,7 @@ namespace warbler::syntax
 
 		for (const auto& rhs : _rhs)
 		{
-			const char *symbol = rhs.type == EQUALITY_EQUALS
-				? "==\n"
-				: "!=\n";
-
-			std::cout << tree_branch(depth - 1) << symbol;
+			print_branch(depth - 1, rhs.type == EqualityType::Equals ? "==" : "!=");
 			rhs.expr->print_tree(depth);
 		}
 	}

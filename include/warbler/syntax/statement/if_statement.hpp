@@ -9,11 +9,11 @@
 
 namespace warbler::syntax
 {
-	enum IfType
+	enum class IfType
 	{
-		IF_THEN,
-		IF_THEN_ELSE,
-		IF_THEN_ELSE_IF
+		Then,
+		ThenElse,
+		ThenElseIf
 	};
 
 	class IfStatement : public Statement

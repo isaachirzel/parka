@@ -19,7 +19,7 @@ namespace warbler::syntax
 
 		Array<Ptr<Expression>> rhs;
 
-		while (iter->type() == lexicon::TOKEN_BOOLEAN_OR)
+		while (iter->type() == lexicon::TokenType::BooleanOr)
 		{
 			iter += 1;
 
@@ -39,19 +39,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool BooleanOrExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool BooleanOrExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& expr : _rhs)
-		{
-			if (!expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& expr : _rhs)
+	// 	{
+	// 		if (!expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void BooleanOrExpression::print_tree(u32 depth) const
 	{

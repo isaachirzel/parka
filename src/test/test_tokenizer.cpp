@@ -37,32 +37,32 @@ int main()
 	// 	std::cout << i << ": " << tokens[i] << std::endl;
 	// }
 
-	// assert(tokens[0].type() == TOKEN_FUNC);
-	// assert(tokens[1].type() == TOKEN_IDENTIFIER);
-	// assert(tokens[2].type() == TOKEN_LPAREN);
-	// assert(tokens[3].type() == TOKEN_IDENTIFIER);
-	// assert(tokens[4].type() == TOKEN_COLON);
-	// assert(tokens[5].type() == TOKEN_IDENTIFIER);
-	// assert(tokens[6].type() == TOKEN_RPAREN);
-	// assert(tokens[7].type() == TOKEN_SINGLE_ARROW);
-	// assert(tokens[8].type() == TOKEN_IDENTIFIER);
-	// assert(tokens[9].type() == TOKEN_LBRACE);
-	// assert(tokens[10].type() == TOKEN_VAR);
-	// assert(tokens[11].type() == TOKEN_IDENTIFIER);
-	// assert(tokens[12].type() == TOKEN_ASSIGN);
-	// assert(tokens[13].type() == TOKEN_IDENTIFIER);
-	// assert(tokens[14].type() == TOKEN_LPAREN);
-	// assert(tokens[15].type() == TOKEN_FLOAT_LITERAL);
-	// assert(tokens[16].type() == TOKEN_COMMA);
-	// assert(tokens[17].type() == TOKEN_INTEGER_LITERAL);
-	// assert(tokens[18].type() == TOKEN_RPAREN);
-	// assert(tokens[19].type() == TOKEN_ASTERISK);
-	// assert(tokens[20].type() == TOKEN_FLOAT_LITERAL);
-	// assert(tokens[21].type() == TOKEN_PLUS);
-	// assert(tokens[22].type() == TOKEN_INTEGER_LITERAL);
-	// assert(tokens[23].type() == TOKEN_SEMICOLON);
-	// assert(tokens[24].type() == TOKEN_RBRACE);
-	// assert(tokens[25].type() == TOKEN_END_OF_FILE);
+	// assert(tokens[0].type() == source::TokenType::FUNC);
+	// assert(tokens[1].type() == source::TokenType::IDENTIFIER);
+	// assert(tokens[2].type() == source::TokenType::LPAREN);
+	// assert(tokens[3].type() == source::TokenType::IDENTIFIER);
+	// assert(tokens[4].type() == source::TokenType::Colon);
+	// assert(tokens[5].type() == source::TokenType::IDENTIFIER);
+	// assert(tokens[6].type() == source::TokenType::RPAREN);
+	// assert(tokens[7].type() == source::TokenType::SINGLE_ARROW);
+	// assert(tokens[8].type() == source::TokenType::IDENTIFIER);
+	// assert(tokens[9].type() == source::TokenType::LBRACE);
+	// assert(tokens[10].type() == source::TokenType::VAR);
+	// assert(tokens[11].type() == source::TokenType::IDENTIFIER);
+	// assert(tokens[12].type() == source::TokenType::ASSIGN);
+	// assert(tokens[13].type() == source::TokenType::IDENTIFIER);
+	// assert(tokens[14].type() == source::TokenType::LPAREN);
+	// assert(tokens[15].type() == source::TokenType::FLOAT_LITERAL);
+	// assert(tokens[16].type() == source::TokenType::Comma);
+	// assert(tokens[17].type() == source::TokenType::INTEGER_LITERAL);
+	// assert(tokens[18].type() == source::TokenType::RPAREN);
+	// assert(tokens[19].type() == source::TokenType::ASTERISK);
+	// assert(tokens[20].type() == source::TokenType::FLOAT_LITERAL);
+	// assert(tokens[21].type() == source::TokenType::PLUS);
+	// assert(tokens[22].type() == source::TokenType::INTEGER_LITERAL);
+	// assert(tokens[23].type() == source::TokenType::SEMICOLON);
+	// assert(tokens[24].type() == source::TokenType::RightBrace);
+	// assert(tokens[25].type() == source::TokenType::END_OF_FILE);
 
 	return 0;
 }

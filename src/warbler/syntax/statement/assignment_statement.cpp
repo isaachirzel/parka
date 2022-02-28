@@ -24,48 +24,48 @@ namespace warbler::syntax
 		AssignmentType type;
 		switch (iter->type())
 		{
-			case TOKEN_ASSIGN:
-				type = ASSIGN_BECOME;
+			case lexicon::TokenType::Assign:
+				type = AssignmentType::Become;
 				break;
 
-			case TOKEN_MULTIPLY_ASSIGN:
-				type = ASSIGN_MULTIPLY;
+			case lexicon::TokenType::MultiplyAssign:
+				type = AssignmentType::Multiply;
 				break;
 
-			case TOKEN_DIVIDE_ASSIGN:
-				type = ASSIGN_DIVIDE;
+			case lexicon::TokenType::DivideAssign:
+				type = AssignmentType::Divide;
 				break;
 
-			case TOKEN_MODULUS_ASSIGN:
-				type = ASSIGN_MODULUS;
+			case lexicon::TokenType::ModulusAssign:
+				type = AssignmentType::Modulus;
 				break;
 
-			case TOKEN_ADD_ASSIGN:
-				type = ASSIGN_ADD;
+			case lexicon::TokenType::AddAssign:
+				type = AssignmentType::Add;
 				break;
 
-			case TOKEN_SUBTRACT_ASSIGN:
-				type = ASSIGN_SUBTRACT;
+			case lexicon::TokenType::SubtractAssign:
+				type = AssignmentType::Subtract;
 				break;
 
-			case TOKEN_LSHIFT_ASSIGN:
-				type = ASSIGN_LSHIFT;
+			case lexicon::TokenType::LeftBitShiftAssign:
+				type = AssignmentType::LeftBitShift;
 				break;
 
-			case TOKEN_RSHIFT_ASSIGN:
-				type = ASSIGN_RSHIFT;
+			case lexicon::TokenType::RightBitShiftAssign:
+				type = AssignmentType::RightBitShift;
 				break;
 
-			case TOKEN_BITAND_ASSIGN:
-				type = ASSIGN_BITWISE_AND;
+			case lexicon::TokenType::BitwiseAndAssign:
+				type = AssignmentType::BitwiseAnd;
 				break;
 
-			case TOKEN_BITOR_ASSIGN:
-				type = ASSIGN_BITWISE_OR;
+			case lexicon::TokenType::BitwiseOrAssign:
+				type = AssignmentType::BitwiseOr;
 				break;
 
-			case TOKEN_BITXOR_ASSIGN:
-				type = ASSIGN_BITWISE_XOR;
+			case lexicon::TokenType::BitwiseXorAssign:
+				type = AssignmentType::BitwiseXor;
 				break;
 
 			default:
@@ -83,61 +83,59 @@ namespace warbler::syntax
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}
 
-	bool AssignmentStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		throw std::runtime_error("AssignmentStatement::validate is not implemented yet");
-	}
+	// bool AssignmentStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	throw std::runtime_error("AssignmentStatement::validate is not implemented yet");
+	// }
 
 	void AssignmentStatement::print_tree(u32 depth) const
 	{
 		_lhs->print_tree(depth);
 
-		std::cout << tree_branch(depth);
-
 		switch (_type)
 		{
-			case ASSIGN_BECOME:
-				std::cout << "=\n";
+			case AssignmentType::Become:
+				print_branch(depth, "=");
 				break;
 
-			case ASSIGN_MULTIPLY:
-				std::cout << "*=\n";
+			case AssignmentType::Multiply:
+				print_branch(depth, "*=");
 				break;
 
-			case ASSIGN_DIVIDE:
-				std::cout << "/=\n";
+			case AssignmentType::Divide:
+				print_branch(depth, "/=");
 				break;
 
-			case ASSIGN_MODULUS:
-				std::cout << "%=\n";				
+			case AssignmentType::Modulus:
+				print_branch(depth, "%=");		
 				break;
 
-			case ASSIGN_ADD:
-				std::cout << "*=\n";
+			case AssignmentType::Add:
+				print_branch(depth, "*=");
 				break;
 
-			case ASSIGN_SUBTRACT:
-				std::cout << "-=\n";
+			case AssignmentType::Subtract:
+				print_branch(depth, "-=");				
 				break;
 
-			case ASSIGN_LSHIFT:
-				std::cout << "<<=\n";
+			case AssignmentType::LeftBitShift:
+				print_branch(depth, "<<=");
 				break;
 
-			case ASSIGN_RSHIFT:
-				std::cout << ">>=\n";
+			case AssignmentType::RightBitShift:
+				print_branch(depth, ">>=");
 				break;
 
-			case ASSIGN_BITWISE_AND:
-				std::cout << "&=\n";
+			case AssignmentType::BitwiseAnd:
+				print_branch(depth, "&=");
 				break;
 
-			case ASSIGN_BITWISE_OR:
-				std::cout << "|=\n";
+			case AssignmentType::BitwiseOr:
+				print_branch(depth, "|=");
 				break;
 
-			case ASSIGN_BITWISE_XOR:
-				std::cout << "^=\n";
+			case AssignmentType::BitwiseXor:
+				print_branch(depth, "^=");
 				break;
 		}
 

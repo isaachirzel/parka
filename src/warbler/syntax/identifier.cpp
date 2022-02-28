@@ -1,12 +1,11 @@
 #include <warbler/syntax/identifier.hpp>
 
 #include <warbler/util/print.hpp>
-#include <warbler/
 
 namespace warbler::syntax
 {
 	using source::Location;
-	using lexicon::lexicon::TokenIterator;
+	using lexicon::TokenIterator;
 
 	Identifier::Identifier(const source::Location& location) :
 	_location(location)
@@ -14,7 +13,7 @@ namespace warbler::syntax
 
 	Result<Identifier> Identifier::parse(lexicon::TokenIterator& iter)
 	{
-		if (iter->type() != lexicon::TOKEN_IDENTIFIER)
+		if (iter->type() != lexicon::TokenType::Identifier)
 			return {};
 
 		const auto& location = iter->location();
@@ -27,6 +26,6 @@ namespace warbler::syntax
 
 	void Identifier::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth) << _location.get_string() << '\n';
-}
+		print_branch(depth, _location.text());
+	}
 }

@@ -23,13 +23,13 @@ namespace warbler::syntax
 		while (true)
 		{
 			AdditiveType type;
-			if (iter->type() == lexicon::TOKEN_PLUS)
+			if (iter->type() == lexicon::TokenType::Plus)
 			{
-				type = ADDITIVE_ADD;
+				type = AdditiveType::Add;
 			}
-			else if (iter->type() == lexicon::TOKEN_MINUS)
+			else if (iter->type() == lexicon::TokenType::Minus)
 			{
-				type = ADDITIVE_ADD;
+				type = AdditiveType::Add;
 			}
 			else
 			{
@@ -54,19 +54,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool AdditiveExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool AdditiveExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& rhs : _rhs)
-		{
-			if (!rhs.expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& rhs : _rhs)
+	// 	{
+	// 		if (!rhs.expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void AdditiveExpression::print_tree(u32 depth) const
 	{
@@ -77,7 +77,7 @@ namespace warbler::syntax
 		
 		for (const auto& rhs : _rhs)
 		{
-			print_branch(depth - 1, rhs.type == ADDITIVE_ADD ? "+" : "-");
+			print_branch(depth - 1, rhs.type == AdditiveType::Add ? "+" : "-");
 			rhs.expr->print_tree(depth);
 		}
 	}

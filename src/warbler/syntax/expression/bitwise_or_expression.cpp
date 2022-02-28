@@ -19,7 +19,7 @@ namespace warbler::syntax
 
 		Array<Ptr<Expression>> rhs;
 
-		while (iter->type() == lexicon::TOKEN_PIPELINE)
+		while (iter->type() == lexicon::TokenType::Pipeline)
 		{
 			iter += 1;
 
@@ -39,19 +39,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool BitwiseOrExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool BitwiseOrExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& expr : _rhs)
-		{
-			if (!expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& expr : _rhs)
+	// 	{
+	// 		if (!expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void BitwiseOrExpression::print_tree(u32 depth) const
 	{

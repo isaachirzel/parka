@@ -11,19 +11,22 @@
 
 namespace warbler::syntax
 {
+	struct PtrLocation
+	{
+		source::Location location;
+		bool is_mutable;
+	};
+
 	class Type
 	{
 	private:
 
-		source::Location _location;
-		source::Location _base_type_location;
-		Array<bool> _ptr_mutability;
+		source::Location _base_type;
+		Array<PtrLocation> _ptrs;
 
 	public:
 
-		Type();
-		Type(const source::Location& location, String&& base_name, Array<bool>&& ptr_mutability);
-		Type(String&& base_name, TypeDefinition *_definition);
+		Type(const source::Location& base_type, Array<PtrLocation>&& ptrs);
 
 		static Result<Type> parse(lexicon::TokenIterator& iter);
 
@@ -31,9 +34,8 @@ namespace warbler::syntax
 		bool validate_cast_from(Type* other);
 		void print_tree(u32 depth = 0) const;
 
-		const source::Location& location() const { return _location; }
-		const source::Location& base_type_location() const { return _base_type_location; }
-		const Array<bool>& ptr_mutability() const { return _ptr_mutability; }
+		const source::Location& base_type() const { return _base_type; }
+		const Array<PtrLocation>& ptrs() const { return _ptrs; }
 	};
 }
 

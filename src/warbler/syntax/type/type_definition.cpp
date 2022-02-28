@@ -19,7 +19,7 @@ namespace warbler::syntax
 			return {};
 		}
 
-		if (iter->type() != lexicon::TOKEN_COLON)
+		if (iter->type() != lexicon::TokenType::Colon)
 		{
 			print_parse_error(iter, "':' after type name");
 			return {};
@@ -29,7 +29,7 @@ namespace warbler::syntax
 
 		switch (iter->type())
 		{
-			case TOKEN_KEYWORD_STRUCT:
+			case lexicon::TokenType::KeywordStruct:
 			{
 				auto res = Struct::parse(iter, name.unwrap());
 
@@ -42,7 +42,7 @@ namespace warbler::syntax
 			}
 
 			default:
-				#pragma message("Implement the ability to have other types as type definitions")
+				#pragma message "Implement the ability to have other types as type definitions"
 				print_parse_error(iter, "type definition or base type");
 				return {};
 		}

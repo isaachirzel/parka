@@ -24,7 +24,7 @@ namespace warbler::syntax
 		if (!lhs)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_THEN)
+		if (iter->type() != lexicon::TokenType::KeywordThen)
 			return lhs.unwrap();
 
 		iter += 1;
@@ -34,10 +34,9 @@ namespace warbler::syntax
 		if (!true_case)
 			return {};
 
-		if (iter->type() != lexicon::TOKEN_ELSE)
+		if (iter->type() != lexicon::TokenType::KeywordElse)
 		{
-			error_out(iter) << "expected 'else' for false case of conditional expression but got '" << *iter << '\'';
-			error_highlight(iter);
+			print_parse_error(iter, "'else' or false case");
 			return {};
 		}
 
@@ -53,32 +52,32 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool ConditionalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool ConditionalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		if (_true_case)
-		{
-			if (!_true_case->validate(mod_ctx, func_ctx) || !_false_case->validate(mod_ctx, func_ctx))
-				return false;
+	// 	if (_true_case)
+	// 	{
+	// 		if (!_true_case->validate(mod_ctx, func_ctx) || !_false_case->validate(mod_ctx, func_ctx))
+	// 			return false;
 
-			auto *true_type = _true_case->get_type();
-			auto *false_type = _false_case->get_type();
+	// 		auto *true_type = _true_case->get_type();
+	// 		auto *false_type = _false_case->get_type();
 
-			if (true_type != false_type)
-			{
-				#pragma message("TODO: implement type checking that allows for implicitly castable types")
+	// 		if (true_type != false_type)
+	// 		{
+	// 			#pragma message("TODO: implement type checking that allows for implicitly castable types")
 
-				print_error(_false_case->location(), "type of false case is '" + false_type->text() + "', which is incompatible with true case type '" + true_type->text() + "'");
-				print_note(_true_case->location(), "true case defined here");
+	// 			print_error(_false_case->location(), "type of false case is '" + false_type->location().text() + "', which is incompatible with true case type '" + true_type->location().text() + "'");
+	// 			print_note(_true_case->location(), "true case defined here");
 
-				return false;
-			}
-		}
+	// 			return false;
+	// 		}
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void ConditionalExpression::print_tree(u32 depth) const
 	{
@@ -86,20 +85,19 @@ namespace warbler::syntax
 
 		if (_true_case)
 		{
-			std::cout << tree_branch(depth + 1) << "?\n";
+			print_branch(depth + 1, "then");
 			_true_case->print_tree(depth + 2);
-
-			std::cout << tree_branch(depth + 1) << ":\n";
+			print_branch(depth + 1, "else");
 			_false_case->print_tree(depth + 2);
 		}
 	}
 
-	Type *ConditionalExpression::get_type()
-	{
-		return _true_case
-			? _true_case->get_type()
-			: _lhs->get_type();
-	}
+	// Type *ConditionalExpression::get_type()
+	// {
+	// 	return _true_case
+	// 		? _true_case->get_type()
+	// 		: _lhs->get_type();
+	// }
 
 	const source::Location& ConditionalExpression::location() const
 	{

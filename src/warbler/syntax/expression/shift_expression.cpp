@@ -30,12 +30,12 @@ namespace warbler::syntax
 
 			switch (iter->type())
 			{
-				case TOKEN_LSHIFT:
-					type = SHIFT_LEFT;
+				case lexicon::TokenType::LeftBitShift:
+					type = ShiftType::Left;
 					break;
 
-				case TOKEN_RSHIFT:
-					type = SHIFT_RIGHT;
+				case lexicon::TokenType::RightBitShift:
+					type = ShiftType::Right;
 					break;
 
 				default:
@@ -64,19 +64,19 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	bool ShiftExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		if (!_lhs->validate(mod_ctx, func_ctx))
-			return false;
+	// bool ShiftExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	if (!_lhs->validate(mod_ctx, func_ctx))
+	// 		return false;
 
-		for (auto& rhs : _rhs)
-		{
-			if (!rhs.expr->validate(mod_ctx, func_ctx))
-				return false;
-		}
+	// 	for (auto& rhs : _rhs)
+	// 	{
+	// 		if (!rhs.expr->validate(mod_ctx, func_ctx))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void ShiftExpression::print_tree(u32 depth) const
 	{
@@ -87,11 +87,11 @@ namespace warbler::syntax
 
 		for (const auto& rhs : _rhs)
 		{
-			const char *symbol = rhs.type == SHIFT_LEFT
+			const char *symbol = rhs.type == ShiftType::Left
 				? "<<\n"
 				: ">>\n";
 
-			std::cout << tree_branch(depth - 1) << symbol;
+			print_branch(depth - 1, symbol);
 			rhs.expr->print_tree(depth);
 		}
 	}

@@ -9,11 +9,10 @@ namespace warbler::source
 	{
 	private:
 
-		const File& _file;
-		usize _offset;
+		String _filename;
+		Array<String> _lines;
 		usize _start_pos;
 		usize _end_pos;
-		usize _length;
 		usize _line;
 		usize _col;
 
@@ -21,10 +20,8 @@ namespace warbler::source
 
 		Snippet(const File& file, usize pos, usize length);
 
-		char operator[](usize i) const { return _file[i - _offset]; }
-
-		const String& filename() const { return _file.filename(); }
-		usize length() const { return _length; }
+		const String& filename() const { return _filename; }
+		const Array<String>& lines() const { return _lines; }
 		usize start_pos() const { return _start_pos; }
 		usize end_pos() const { return _end_pos; }
 		usize line() const { return _line; }

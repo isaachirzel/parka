@@ -3,6 +3,8 @@
 
 #include <warbler/util/array.hpp>
 #include <warbler/util/result.hpp>
+#include <warbler/util/primitive.hpp>
+#include <warbler/util/string.hpp>
 
 #include <cassert>
 
@@ -23,6 +25,7 @@ namespace warbler::source
 		static Result<File> read(const String& filepath);
 		static File from(const char *text);
 
+		String get_text(usize pos, usize length) const;
 		char operator[](usize i) const { assert(i < _src.size()); return _src[i]; }
 
 		const String& filename() const { return _filename; }

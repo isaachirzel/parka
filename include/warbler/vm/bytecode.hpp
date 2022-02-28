@@ -3,7 +3,7 @@
 
 namespace warbler
 {
-	enum ByteCode
+	enum class ByteCode
 	{
 		BYTECODE_NOOP
 	};

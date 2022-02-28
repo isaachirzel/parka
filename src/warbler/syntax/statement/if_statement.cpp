@@ -7,21 +7,21 @@ namespace warbler::syntax
 	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
-	_type(IF_THEN)
+	_type(IfType::Then)
 	{}
 
 	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, BlockStatement&& else_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_body(std::move(else_body)),
-	_type(IF_THEN_ELSE)
+	_type(IfType::ThenElse)
 	{}
 
 	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, IfStatement *else_if) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_if(std::move(else_if)),
-	_type(IF_THEN_ELSE_IF)
+	_type(IfType::ThenElseIf)
 	{}
 
 	IfStatement::IfStatement(IfStatement&& other) :
@@ -31,14 +31,14 @@ namespace warbler::syntax
 	{
 		switch (_type)
 		{
-			case IF_THEN:
+			case IfType::Then:
 				break;
 
-			case IF_THEN_ELSE:
+			case IfType::ThenElse:
 				new(&_else_body) auto(std::move(other._else_body));
 				break;
 
-			case IF_THEN_ELSE_IF:
+			case IfType::ThenElseIf:
 				_else_if = other._else_if;
 				other._else_if = nullptr;
 				break;
@@ -47,11 +47,11 @@ namespace warbler::syntax
 
 	IfStatement::~IfStatement()
 	{
-		if (_type == IF_THEN_ELSE)
+		if (_type == IfType::ThenElse)
 		{
 			_else_body.~BlockStatement();
 		}
-		else if (_type == IF_THEN_ELSE_IF)
+		else if (_type == IfType::ThenElseIf)
 		{
 			delete _else_if;
 		}
@@ -71,11 +71,11 @@ namespace warbler::syntax
 		if (!then_body)
 			return {};
 
-		if (iter->type() == lexicon::TOKEN_ELSE)
+		if (iter->type() == lexicon::TokenType::KeywordElse)
 		{
 			iter += 1;
 
-			if (iter->type() == lexicon::TOKEN_IF)
+			if (iter->type() == lexicon::TokenType::KeywordIf)
 			{
 				auto else_if = IfStatement::parse(iter);
 
@@ -98,27 +98,28 @@ namespace warbler::syntax
 		return IfStatement(condition.unwrap(), then_body.unwrap());
 	}
 
-	bool IfStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
-	{
-		throw std::runtime_error("IfStatement::validate is not implemented yet");
-	}
+	// bool IfStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// {
+	// 	throw std::runtime_error("IfStatement::validate is not implemented yet");
+	// }
 
 	void IfStatement::print_tree(u32 depth) const
 	{
-		std::cout << tree_branch(depth) << "if\n";
+		print_branch(depth, "if");
 		_condition->print_tree(depth + 1);
+		print_branch(depth, "then");
 		_then_body.print_tree(depth + 1);
 
-		if (_type == IF_THEN)
+		if (_type == IfType::Then)
 			return;
 
-		std::cout << tree_branch(depth + 1) << "else\n";
+		print_branch(depth, "else");
 
-		if (_type == IF_THEN_ELSE)
+		if (_type == IfType::ThenElse)
 		{
 			_else_body.print_tree(depth + 1);
 		}
-		else if (_type == IF_THEN_ELSE_IF)
+		else if (_type == IfType::ThenElseIf)
 		{
 			_else_if->print_tree(depth + 2);
 		}

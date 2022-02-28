@@ -6,10 +6,10 @@
 
 namespace warbler::syntax
 {
-	enum EqualityType
+	enum class EqualityType
 	{
-		EQUALITY_EQUALS,
-		EQUALITY_NOT_EQUALS
+		Equals,
+		NotEquals
 	};
 
 	struct EqualityRhs
