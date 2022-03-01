@@ -12,74 +12,68 @@ namespace warbler::syntax
 	_body(std::move(body))
 	{}
 
-	static Result<Array<Declaration>> parse_parameters(lexicon::TokenIterator& iter)
+	static Result<Array<Declaration>> parse_parameters(lexicon::Token& token)
 	{
-		if (iter->type() != lexicon::TokenType::LeftParenthesis)
+		if (token.type() != lexicon::TokenType::LeftParenthesis)
 		{
-			print_parse_error(iter, "'(' after function name");
+			print_parse_error(token, "'(' after function name");
 			return {};
 		}
 
-		iter += 1;
-
 		Array<Declaration> parameters;
 
-		if (iter->type() != lexicon::TokenType::RightParenthesis)
+		if (token.next().type() != lexicon::TokenType::RightParenthesis)
 		{
 			while (true)
 			{
-				auto res = Declaration::parse_parameter(iter);
+				auto res = Declaration::parse_parameter(token);
 
 				if (!res)
 					return {};
 
 				parameters.emplace_back(res.unwrap());
 
-				if (iter->type() != lexicon::TokenType::Comma)
+				if (token.type() != lexicon::TokenType::Comma)
 					break;
 
-				iter += 1;
+				token.next();
 			}
 
-			if (iter->type() != lexicon::TokenType::RightParenthesis)
+			if (token.type() != lexicon::TokenType::RightParenthesis)
 			{
-				print_parse_error(iter, "')' after function parameters");
+				print_parse_error(token, "')' after function parameters");
 				return {};
 			}
 		}
 
-		iter += 1;
+		token.next();
 
 		return parameters;
 	}
 
-	Result<Function> Function::parse(lexicon::TokenIterator& iter)
+	Result<Function> Function::parse(lexicon::Token& token)
 	{
-		if (iter->type() != lexicon::TokenType::KeywordFunction)
+		if (token.type() != lexicon::TokenType::KeywordFunction)
 		{
-			print_parse_error(iter, "'function'");
+			print_parse_error(token, "'function'");
 			return {};
 		}
 
-		iter += 1;
-
-		auto name = Identifier::parse(iter);
+		auto name = Identifier::parse(token.next());
 
 		if (!name)
 			return {};
 
-		auto parameters = parse_parameters(iter);
+		auto parameters = parse_parameters(token);
 
 		if (!parameters)
 			return {};
 		
 		Optional<Type> type;
 
-		if (iter->type() == lexicon::TokenType::Colon)
+		if (token.type() == lexicon::TokenType::Colon)
 		{
-			iter += 1;
-
-			auto res = Type::parse(iter);
+			auto res = Type::parse(token.next());
 			
 			if (!res)
 				return {};
@@ -87,13 +81,13 @@ namespace warbler::syntax
 			type = res.unwrap();
 		}
 
-		if (iter->type() != lexicon::TokenType::LeftBrace)
+		if (token.type() != lexicon::TokenType::LeftBrace)
 		{
-			print_parse_error(iter, "function body starting with '{'");
+			print_parse_error(token, "function body starting with '{'");
 			return {};
 		}
 		
-		auto body = BlockStatement::parse(iter);
+		auto body = BlockStatement::parse(token.next());
 
 		if (!body)
 			return {};
@@ -116,7 +110,7 @@ namespace warbler::syntax
 
 	void Function::print_tree(u32 depth) const 
 	{
-		print_branch(depth, "function " + _name.location().text());
+		print_branch(depth, "function " + _name.token().text());
 		print_branch(depth + 1, "(");
 
 		for (const auto& parameter : _parameters)

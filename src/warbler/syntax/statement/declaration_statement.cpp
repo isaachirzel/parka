@@ -9,35 +9,31 @@ namespace warbler::syntax
 	_value(std::move(value))
 	{}
 
-	Result<DeclarationStatement> DeclarationStatement::parse(lexicon::TokenIterator& iter)
-	{		
-		iter += 1;
-
-		auto declaration = Declaration::parse_variable(iter);
+	Result<DeclarationStatement> DeclarationStatement::parse(lexicon::Token& token)
+	{
+		auto declaration = Declaration::parse_variable(token.next());
 
 		if (!declaration)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::Assign)
+		if (token.type() != lexicon::TokenType::Assign)
 		{
-			print_parse_error(iter, "expected '=' after declaration");
+			print_parse_error(token, "expected '=' after declaration");
 			return {};
 		}
 
-		iter += 1;
-
-		auto value = Expression::parse(iter);
+		auto value = Expression::parse(token.next());
 
 		if (!value)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::Semicolon)
+		if (token.type() != lexicon::TokenType::Semicolon)
 		{
-			print_parse_error(iter, "expected ';' after declaration");
+			print_parse_error(token, "expected ';' after declaration");
 			return {};
 		}
 
-		iter += 1;
+		token.next();
 
 		return DeclarationStatement { declaration.unwrap(), value.unwrap() };
 	}

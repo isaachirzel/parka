@@ -44,11 +44,11 @@ namespace warbler::syntax
 		PostfixExpression(const PostfixExpression& other) = delete;
 		~PostfixExpression();
 		
-		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& module, semantics::FunctionContext& function);
 		Type *get_type();
-		const source::Location& location() const;
+		const lexicon::Token& token() const;
 		void print_tree(u32 depth = 0) const;
 	};
 }

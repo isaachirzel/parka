@@ -24,7 +24,7 @@ namespace warbler::source
 		{
 			if (src[i] == '\n')
 			{
-				auto line_length = i - last_start_of_line;
+				auto line_length = i - last_start_of_line + 1;
 
 				line_lengths.push_back(line_length);
 				last_start_of_line = i + 1;
@@ -51,11 +51,42 @@ namespace warbler::source
 	{
 		assert(text != nullptr);
 
-		String filename("<in-memory-file");
+		String filename("<in-memory-file>");
 		String source(text);
 		auto line_lengths = get_line_lengths(source);
 
 		return File(std::move(filename), std::move(source), std::move(line_lengths));
+	}
+
+	usize File::get_line(usize pos) const
+	{
+		usize line = 0;
+
+		for (const auto& length : _line_lengths)
+		{
+			if (pos >= length)
+			{
+				line += 1;
+				pos -= length;
+			}
+		}
+
+		return line;
+	}
+	
+	usize File::get_col(const usize start_pos) const
+	{
+		usize pos = start_pos;
+
+		while (true)
+		{
+			if (pos == 0 || _src[pos - 1] == '\n')
+				break;
+
+			pos -= 1;
+		}
+
+		return start_pos - pos;
 	}
 
 	String File::get_text(usize pos, usize length) const

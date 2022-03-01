@@ -14,9 +14,9 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> ShiftExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> ShiftExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = AdditiveExpression::parse(iter);
+		auto lhs = AdditiveExpression::parse(token.next());
 
 		if (!lhs)
 			return {};
@@ -28,7 +28,7 @@ namespace warbler::syntax
 			bool should_break = false;
 			ShiftType type;
 
-			switch (iter->type())
+			switch (token.type())
 			{
 				case lexicon::TokenType::LeftBitShift:
 					type = ShiftType::Left;
@@ -46,9 +46,9 @@ namespace warbler::syntax
 			if (should_break)
 				break;
 			
-			iter += 1;
+			token.next();
 
-			auto res = AdditiveExpression::parse(iter);
+			auto res = AdditiveExpression::parse(token.next());
 
 			if (!res)
 				return {};
@@ -101,7 +101,7 @@ namespace warbler::syntax
 		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const source::Location& ShiftExpression::location() const
+	const lexicon::Token& ShiftExpression::token() const
 	{
 		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
 	}

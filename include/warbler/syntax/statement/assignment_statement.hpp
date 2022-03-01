@@ -35,7 +35,7 @@ namespace warbler::syntax
 
 		AssignmentStatement(Ptr<Expression>&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
 
-		static Result<AssignmentStatement> parse(lexicon::TokenIterator& iter);
+		static Result<AssignmentStatement> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;

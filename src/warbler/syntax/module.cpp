@@ -9,18 +9,18 @@ namespace warbler::syntax
 	_types(std::move(types))
 	{}
 
-	Result<Module> Module::parse(lexicon::TokenIterator& iter)
+	Result<Module> Module::parse(lexicon::Token& token)
 	{
 		Array<Function> functions;
 		Array<Ptr<TypeDefinition>> types;
 
 		while (true)
 		{
-			switch (iter->type())
+			switch (token.type())
 			{
 				case lexicon::TokenType::KeywordFunction:
 				{
-					auto function = Function::parse(iter);
+					auto function = Function::parse(token.next());
 
 					if (!function)
 						return {};
@@ -30,7 +30,7 @@ namespace warbler::syntax
 				}
 				case lexicon::TokenType::KeywordType:
 				{
-					auto type = TypeDefinition::parse(iter);
+					auto type = TypeDefinition::parse(token.next());
 
 					if (!type)
 						return {};
@@ -42,7 +42,7 @@ namespace warbler::syntax
 					break;
 
 				default:
-					print_parse_error(iter, "type or function definition");
+					print_parse_error(token, "type or function definition");
 					return {};
 			}
 
@@ -71,7 +71,7 @@ namespace warbler::syntax
 
 	// 		if (_context.types.find(type_name) != _context.types.end())
 	// 		{
-	// 			print_error(type->name().location(), "duplicate type " + type->name().text() + " in module '" + module_name + "'");
+	// 			print_error(type->name().token(), "duplicate type " + type->name().text() + " in module '" + module_name + "'");
 
 	// 			return false;
 	// 		}
@@ -93,7 +93,7 @@ namespace warbler::syntax
 
 	// 		if (_context.functions.find(function_name) != _context.functions.end())
 	// 		{
-	// 			print_error(function.name().location(), "function '" + function_name + "' is already defined in module '" + module_name + "'");
+	// 			print_error(function.name().token(), "function '" + function_name + "' is already defined in module '" + module_name + "'");
 
 	// 			return false;
 	// 		}

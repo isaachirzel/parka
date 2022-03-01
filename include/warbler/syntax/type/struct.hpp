@@ -20,7 +20,7 @@ namespace warbler::syntax
 
 		Struct(Identifier&& name, Array<Member>&& members);
 
-		static Result<Struct> parse(lexicon::TokenIterator& iter, Identifier&& name);
+		static Result<Struct> parse(lexicon::Token& token, Identifier&& name);
 
 		bool validate(semantics::ModuleContext& mod_ctx);
 		void print_tree(u32 depth = 0) const;

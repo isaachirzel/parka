@@ -22,7 +22,7 @@ namespace warbler::syntax
 
 	public:
 
-		static Result<Module> parse(lexicon::TokenIterator& iter);
+		static Result<Module> parse(lexicon::Token& token);
 
 		bool validate(const String& module_name);
 		void print_tree(u32 depth = 0) const;

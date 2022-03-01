@@ -2,6 +2,7 @@
 #define WARBLER_SOURCE_TEXT_HPP
 
 #include <warbler/source/file.hpp>
+#include <warbler/lexicon/token.hpp>
 
 namespace warbler::source
 {
@@ -9,7 +10,7 @@ namespace warbler::source
 	{
 	private:
 
-		String _filename;
+		const source::File& _file;
 		Array<String> _lines;
 		usize _start_pos;
 		usize _end_pos;
@@ -18,9 +19,11 @@ namespace warbler::source
 
 	public:
 
-		Snippet(const File& file, usize pos, usize length);
+		Snippet(const source::File& file, usize pos, usize length);
+		Snippet(const lexicon::Token& token);
+		Snippet(const lexicon::Token& first, const lexicon::Token& last);
 
-		const String& filename() const { return _filename; }
+		const String& filename() const { return _file.filename(); }
 		const Array<String>& lines() const { return _lines; }
 		usize start_pos() const { return _start_pos; }
 		usize end_pos() const { return _end_pos; }

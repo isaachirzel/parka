@@ -11,34 +11,34 @@ namespace warbler::syntax
 	_is_public(is_public)
 	{}
 
-	Result<Member> Member::parse(lexicon::TokenIterator& iter)
+	Result<Member> Member::parse(lexicon::Token& token)
 	{
 		auto is_public = false;
 
-		if (iter->type() == lexicon::TokenType::KeywordPublic)
+		if (token.type() == lexicon::TokenType::KeywordPublic)
 		{
 			is_public = true;
-			iter += 1;
+			token.next();
 		}
-		else if (iter->type() == lexicon::TokenType::KeywordPrivate)
+		else if (token.type() == lexicon::TokenType::KeywordPrivate)
 		{
-			iter += 1;
+			token.next();
 		}
 
-		auto name = Identifier::parse(iter);
+		auto name = Identifier::parse(token.next());
 
 		if (!name)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::Colon)
+		if (token.type() != lexicon::TokenType::Colon)
 		{
-			print_parse_error(iter, "':' after member name");
+			print_parse_error(token, "':' after member name");
 			return {};
 		}
 		
-		iter += 1;
+		token.next();
 
-		auto type = Type::parse(iter);
+		auto type = Type::parse(token.next());
 
 		if (!type)
 			return {};
@@ -48,12 +48,12 @@ namespace warbler::syntax
 
 	// bool Member::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
 	// {
-	// 	auto *member = type_ctx.get_member(_name.location().text());
+	// 	auto *member = type_ctx.get_member(_name.token().text());
 
 	// 	if (member != nullptr)
 	// 	{
-	// 		print_error(_name.location(), "member '" + _name.location().text() + "' already defined in type '" + type_ctx.name + "'");
-	// 		print_note(member->name().location(), "previous declaration here");
+	// 		print_error(_name.token(), "member '" + _name.token().text() + "' already defined in type '" + type_ctx.name + "'");
+	// 		print_note(member->name().token(), "previous declaration here");
 	// 		return false;
 	// 	}
 
@@ -64,6 +64,6 @@ namespace warbler::syntax
 
 	void Member::print_tree(u32 depth) const
 	{
-		print_branch(depth, (_is_public ? "public" : "private") + _name.location().text() + ": " + _type.base_type().text());
+		print_branch(depth, (_is_public ? "public" : "private") + _name.token().text() + ": " + _type.base_type().text());
 	}
 }

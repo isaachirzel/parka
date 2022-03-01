@@ -11,9 +11,9 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> AdditiveExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> AdditiveExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = MultiplicativeExpression::parse(iter);
+		auto lhs = MultiplicativeExpression::parse(token.next());
 
 		if (!lhs)
 			return {};
@@ -23,11 +23,11 @@ namespace warbler::syntax
 		while (true)
 		{
 			AdditiveType type;
-			if (iter->type() == lexicon::TokenType::Plus)
+			if (token.type() == lexicon::TokenType::Plus)
 			{
 				type = AdditiveType::Add;
 			}
-			else if (iter->type() == lexicon::TokenType::Minus)
+			else if (token.type() == lexicon::TokenType::Minus)
 			{
 				type = AdditiveType::Add;
 			}
@@ -36,9 +36,9 @@ namespace warbler::syntax
 				break;
 			}
 
-			iter += 1;			
+			token.next();			
 
-			auto res = MultiplicativeExpression::parse(iter);
+			auto res = MultiplicativeExpression::parse(token.next());
 
 			if (!res)
 				return {};
@@ -87,7 +87,7 @@ namespace warbler::syntax
 		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const source::Location& AdditiveExpression::location() const
+	const lexicon::Token& AdditiveExpression::token() const
 	{
 		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
 	}

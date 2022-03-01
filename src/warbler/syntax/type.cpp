@@ -6,25 +6,25 @@
 
 namespace warbler::syntax
 {
-	Type::Type(const source::Location& base_type, Array<PtrLocation>&& ptrs) :
+	Type::Type(const lexicon::Token& base_type, Array<PtrToken>&& ptrs) :
 	_base_type(base_type),
 	_ptrs(ptrs)
 	{}
 
-	Result<Type> Type::parse(lexicon::TokenIterator& iter)
+	Result<Type> Type::parse(lexicon::Token& token)
 	{
 		Array<bool> ptr_mutability;
 
-		const source::Location start_location = iter->location();
+		const lexicon::Token start_token = token;
 
-		while (iter->type() == lexicon::TokenType::Asterisk)
+		while (token.type() == lexicon::TokenType::Asterisk)
 		{
-			iter += 1;
+			token.next();
 
-			if (iter->type() == lexicon::TokenType::KeywordMut)
+			if (token.type() == lexicon::TokenType::KeywordMut)
 			{
 				ptr_mutability.push_back(true);
-				iter += 1;
+				token.next();
 			}
 			else
 			{
@@ -32,15 +32,15 @@ namespace warbler::syntax
 			}
 		}
 
-		if (iter->type() != lexicon::TokenType::Identifier)
+		if (token.type() != lexicon::TokenType::Identifier)
 		{
-			print_parse_error(iter, "type");
+			print_parse_error(token, "type");
 			return {};
 		}
 		
-		const auto& base_type = iter->location();
+		const auto& base_type = token;
 
-		iter += 1;
+		token.next();
 
 		#pragma message "fix parsing of Type"
 		return Type { base_type, {} };
@@ -54,7 +54,7 @@ namespace warbler::syntax
 
 	// 		if (_definition == nullptr)
 	// 		{
-	// 			print_error(_location, "'" + _base_name + "' is not an imported or locally defined type");
+	// 			print_error(_token, "'" + _base_name + "' is not an imported or locally defined type");
 	// 			return false;
 	// 		}
 	// 	}
@@ -72,20 +72,20 @@ namespace warbler::syntax
 
 	// 		if (primitive == nullptr || primitive->type() != other_primitive->type())
 	// 		{
-	// 			print_error(other->_location, "primitive '" + other->_base_name + "' cannot be cast to type '" + _base_name + "'");
+	// 			print_error(other->_token, "primitive '" + other->_base_name + "' cannot be cast to type '" + _base_name + "'");
 	// 			return false;
 	// 		}
 
 	// 		if (primitive->bytes() < other_primitive->bytes())
 	// 		{
-	// 			print_error(_location, "cast from '" + other->_base_name + "' to '" + _base_name + "' truncates value and may not fit");
+	// 			print_error(_token, "cast from '" + other->_base_name + "' to '" + _base_name + "' truncates value and may not fit");
 	// 			return false;
 	// 		}
 	// 	}
 	// 	else if (_definition != other->_definition)
 	// 	{
-	// 		print_error(_location, "type '" + _base_name + "' cannot be implicitly cast to type '" + other->_base_name + "'");
-	// 		print_note(other->_location, "type '" + other->_base_name + "' declared here");
+	// 		print_error(_token, "type '" + _base_name + "' cannot be implicitly cast to type '" + other->_base_name + "'");
+	// 		print_note(other->_token, "type '" + other->_base_name + "' declared here");
 	// 		return false;
 	// 	}
 

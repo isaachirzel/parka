@@ -8,37 +8,37 @@
 
 namespace warbler::syntax
 {
-	Constant::Constant(const source::Location& location, ConstantType type) :
-	_location(location),
+	Constant::Constant(const lexicon::Token& token, ConstantType type) :
+	_token(token),
 	_type(type)
 	{}
 
-	// Constant::Constant(const source::Location& location, i64 integer) :
-	// _location(location),
+	// Constant::Constant(const lexicon::Token& token, i64 integer) :
+	// _token(token),
 	// _integer(integer),
 	// _constant_type(ConstantINTEGER)
 	// {}
 
-	// Constant::Constant(const source::Location& location, f64 floating) :
-	// _location(location),
+	// Constant::Constant(const lexicon::Token& token, f64 floating) :
+	// _token(token),
 	// _floating(floating),
 	// _constant_type(ConstantFLOAT)
 	// {}
 
-	// Constant::Constant(const source::Location& location, u32 character) :
-	// _location(location),
+	// Constant::Constant(const lexicon::Token& token, u32 character) :
+	// _token(token),
 	// _character(character),
 	// _constant_type(ConstantCHARACTER)
 	// {}
 
-	// Constant::Constant(const source::Location& location, bool boolean) :
-	// _location(location),
+	// Constant::Constant(const lexicon::Token& token, bool boolean) :
+	// _token(token),
 	// _boolean(boolean),
 	// _constant_type(ConstantBOOLEAN)
 	// {}
 
 	// Constant::Constant(Constant&& other) :
-	// _location(other._location),
+	// _token(other._token),
 	// _constant_type(other._constant_type)
 	// {
 	// 	switch (_constant_type)
@@ -73,24 +73,24 @@ namespace warbler::syntax
 	// 		_string.~basic_string();
 	// }
 
-	// static Constant parse_character(lexicon::TokenIterator& iter)
+	// static Constant parse_character(const lexicon::Token& token)
 	// {
-	// 	const auto& location = iter->location();
-	// 	auto text = location.text();
+	// 	const auto& token = token;
+	// 	auto text = token.text();
 	// 	u32 character = (u32)text[0];
 
-	// 	iter += 1;
+	// 	token.next();
 
-	// 	return Constant(location, character);
+	// 	return Constant(token, character);
 	// }
 
 	// static f64 string_to_f64(const lexicon::Token& token)
 	// {
 	// 	f64 out = 0.0;
 
-	// 	const auto& location = token.location();
-	// 	const char *text = location.pos_ptr();
-	// 	usize length = location.length();
+	// 	const auto& token = token.token();
+	// 	const char *text = token.pos_ptr();
+	// 	usize length = token.length();
 
 	// 	for (size_t i = 0; i < length; ++i)
 	// 	{
@@ -123,9 +123,9 @@ namespace warbler::syntax
 	// static i64 string_to_i64(const lexicon::Token& token)
 	// {
 	// 	i64 out = 0;
-	// 	const auto& location = token.location();
-	// 	const char *text = location.pos_ptr();
-	// 	usize length = location.length();
+	// 	const auto& token = token.token();
+	// 	const char *text = token.pos_ptr();
+	// 	usize length = token.length();
 
 	// 	for (size_t i = 0; i < length; ++i)
 	// 		out = out * 10 + (text[i] - '0');
@@ -133,83 +133,83 @@ namespace warbler::syntax
 	// 	return out;
 	// }
 
-	// static Constant parse_integer_literal(lexicon::TokenIterator& iter, bool is_negative)
+	// static Constant parse_integer_literal(const lexicon::Token& token, bool is_negative)
 	// {
 	// 	i64 value = string_to_i64(*iter);
 
 	// 	if (is_negative)
 	// 		value = -value;
 
-	// 	const auto& location = iter->location();
+	// 	const auto& token = token;
 
-	// 	iter += 1;
+	// 	token.next();
 
-	// 	return Constant(location, value);
+	// 	return Constant(token, value);
 	// }
 
-	// static Constant parse_float_literal(lexicon::TokenIterator& iter, bool is_negative)
+	// static Constant parse_float_literal(const lexicon::Token& token, bool is_negative)
 	// {
 	// 	f64 value = string_to_f64(*iter);
 
 	// 	if (is_negative)
 	// 		value = -value;
 
-	// 	const auto& location = iter->location();
+	// 	const auto& token = token;
 
-	// 	iter += 1;
+	// 	token.next();
 
-	// 	return Constant(location, value);
+	// 	return Constant(token, value);
 	// }
 
-	static Result<Constant> parse_number(lexicon::TokenIterator& iter, bool is_negative)
+	static Result<Constant> parse_number(const lexicon::Token& token, bool is_negative)
 	{
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::IntegerLiteral:
-				return Constant(iter->location(), ConstantType::Integer);
+				return Constant(token, ConstantType::Integer);
 
 			case lexicon::TokenType::FloatLiteral:
-				return Constant(iter->location(), ConstantType::Float);
+				return Constant(token, ConstantType::Float);
 
 			default:
-				print_parse_error(iter, "number literal");
+				print_parse_error(token, "number literal");
 				return {};
 		}
 	}
 
-	Result<Constant> Constant::parse(lexicon::TokenIterator& iter)
+	Result<Constant> Constant::parse(lexicon::Token& token)
 	{
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::CharLiteral:
-				return Constant(iter->location(), ConstantType::Character);
+				return Constant(token, ConstantType::Character);
 
 			case lexicon::TokenType::StringLiteral:
-				return Constant(iter->location(), ConstantType::String);
+				return Constant(token, ConstantType::String);
 
 			case lexicon::TokenType::IntegerLiteral:
-				return Constant(iter->location(), ConstantType::Integer);
+				return Constant(token, ConstantType::Integer);
 
 			case lexicon::TokenType::BinaryLiteral:
-				return Constant(iter->location(), ConstantType::Integer);
+				return Constant(token, ConstantType::Integer);
 
 			case lexicon::TokenType::HexadecimalLiteral:
-				return Constant(iter->location(), ConstantType::Integer);
+				return Constant(token, ConstantType::Integer);
 
 			case lexicon::TokenType::OctalLiteral:
-				return Constant(iter->location(), ConstantType::Octal);
+				return Constant(token, ConstantType::Octal);
 
 			case lexicon::TokenType::FloatLiteral:
-				return Constant(iter->location(), ConstantType::Float);
+				return Constant(token, ConstantType::Float);
 
 			case lexicon::TokenType::KeywordTrue:
-				return Constant(iter->location(), ConstantType::BooleanTrue);
+				return Constant(token, ConstantType::BooleanTrue);
 
 			case lexicon::TokenType::KeywordFalse:
-				return Constant(iter->location(), ConstantType::BooleanFalse);
+				return Constant(token, ConstantType::BooleanFalse);
 
 			default:
-				print_parse_error(iter, "constant");
+				print_parse_error(token, "constant");
 				return {};
 		}
 	}
@@ -254,6 +254,6 @@ namespace warbler::syntax
 
 	void Constant::print_tree(u32 depth) const
 	{
-		print_branch(depth, _location.text());
+		print_branch(depth, _token.text());
 	}
 }

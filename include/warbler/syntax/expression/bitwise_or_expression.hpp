@@ -17,11 +17,11 @@ namespace warbler::syntax
 
 		BitwiseOrExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs);
 
-		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		Type *get_type();
-		const source::Location& location() const;
+		const lexicon::Token& token() const;
 		void print_tree(u32 depth = 0) const;
 	};
 }

@@ -6,32 +6,32 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<TypeDefinition>> TypeDefinition::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<TypeDefinition>> TypeDefinition::parse(lexicon::Token& token)
 	{
 		// skip 'type' keyword
-		iter += 1;
+		token.next();
 
-		auto name = Identifier::parse(iter);
+		auto name = Identifier::parse(token.next());
 
 		if (!name)
 		{
-			print_parse_error(iter, "type identifier");
+			print_parse_error(token, "type identifier");
 			return {};
 		}
 
-		if (iter->type() != lexicon::TokenType::Colon)
+		if (token.type() != lexicon::TokenType::Colon)
 		{
-			print_parse_error(iter, "':' after type name");
+			print_parse_error(token, "':' after type name");
 			return {};
 		}
 
-		iter += 1;
+		token.next();
 
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::KeywordStruct:
 			{
-				auto res = Struct::parse(iter, name.unwrap());
+				auto res = Struct::parse(token, name.unwrap());
 
 				if (!res)
 					return {};
@@ -43,7 +43,7 @@ namespace warbler::syntax
 
 			default:
 				#pragma message "Implement the ability to have other types as type definitions"
-				print_parse_error(iter, "type definition or base type");
+				print_parse_error(token, "type definition or base type");
 				return {};
 		}
 	}

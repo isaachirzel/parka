@@ -12,13 +12,13 @@ namespace warbler::syntax
 	{
 	private:
 
-		source::Location _location;
+		lexicon::Token _token;
 
 	public:
 
-		Label(const source::Location& location);
+		Label(const lexicon::Token& token);
 
-		static Result<Label> parse(lexicon::TokenIterator& iter);
+		static Result<Label> parse(lexicon::Token& token);
 
 		void print_tree(u32 depth = 0) const;
 	};

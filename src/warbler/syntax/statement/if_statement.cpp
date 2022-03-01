@@ -57,27 +57,27 @@ namespace warbler::syntax
 		}
 	}
 
-	Result<IfStatement> IfStatement::parse(lexicon::TokenIterator& iter)
+	Result<IfStatement> IfStatement::parse(lexicon::Token& token)
 	{
-		iter += 1;
+		token.next();
 		
-		auto condition = Expression::parse(iter);
+		auto condition = Expression::parse(token.next());
 
 		if (!condition)
 			return {};
 
-		auto then_body = BlockStatement::parse(iter);
+		auto then_body = BlockStatement::parse(token.next());
 
 		if (!then_body)
 			return {};
 
-		if (iter->type() == lexicon::TokenType::KeywordElse)
+		if (token.type() == lexicon::TokenType::KeywordElse)
 		{
-			iter += 1;
+			token.next();
 
-			if (iter->type() == lexicon::TokenType::KeywordIf)
+			if (token.type() == lexicon::TokenType::KeywordIf)
 			{
-				auto else_if = IfStatement::parse(iter);
+				auto else_if = IfStatement::parse(token.next());
 
 				if (!else_if)
 					return {};
@@ -86,7 +86,7 @@ namespace warbler::syntax
 			}
 			else
 			{
-				auto else_body = BlockStatement::parse(iter);
+				auto else_body = BlockStatement::parse(token.next());
 
 				if (!else_body)
 					return {};

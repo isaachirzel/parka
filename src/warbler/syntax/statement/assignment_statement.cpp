@@ -14,15 +14,15 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	Result<AssignmentStatement> AssignmentStatement::parse(lexicon::TokenIterator& iter)
+	Result<AssignmentStatement> AssignmentStatement::parse(lexicon::Token& token)
 	{
-		auto lhs = PrefixExpression::parse(iter);
+		auto lhs = PrefixExpression::parse(token.next());
 
 		if (!lhs)
 			return {};
 
 		AssignmentType type;
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::Assign:
 				type = AssignmentType::Become;
@@ -69,16 +69,22 @@ namespace warbler::syntax
 				break;
 
 			default:
-				print_parse_error(iter, "expected assignment operator after primary expression");
+				print_parse_error(token, "expected assignment operator after primary expression");
 				return {};
 		}
 
-		++iter;
-
-		auto rhs = Expression::parse(iter);
+		auto rhs = Expression::parse(token.next());
 
 		if (!rhs)
 			return {};
+
+		if (token.type() != lexicon::TokenType::Semicolon)
+		{
+			print_parse_error(token, "';' after assignment");
+			return {};
+		}
+
+		token.next();
 
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}

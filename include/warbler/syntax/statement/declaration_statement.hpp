@@ -21,7 +21,7 @@ namespace warbler::syntax
 		DeclarationStatement(DeclarationStatement&&) = default;
 		DeclarationStatement(const DeclarationStatement&) = delete;
 
-		static Result<DeclarationStatement> parse(lexicon::TokenIterator& iter);
+		static Result<DeclarationStatement> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;

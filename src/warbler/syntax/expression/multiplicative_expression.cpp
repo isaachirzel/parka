@@ -10,9 +10,9 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> MultiplicativeExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> MultiplicativeExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = PrefixExpression::parse(iter);
+		auto lhs = PrefixExpression::parse(token.next());
 
 		if (!lhs)
 			return {};
@@ -24,7 +24,7 @@ namespace warbler::syntax
 			bool should_break = false;
 
 			MultiplicativeType type;
-			switch (iter->type())
+			switch (token.type())
 			{
 				case lexicon::TokenType::Modulus:
 					type = MultiplicativeType::Modulus;
@@ -46,9 +46,9 @@ namespace warbler::syntax
 			if (should_break)
 				break;
 
-			iter += 1;
+			token.next();
 
-			auto res = PrefixExpression::parse(iter);
+			auto res = PrefixExpression::parse(token.next());
 
 			if (!res)
 				return {};
@@ -111,7 +111,7 @@ namespace warbler::syntax
 		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const source::Location& MultiplicativeExpression::location() const
+	const lexicon::Token& MultiplicativeExpression::token() const
 	{
 		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
 	}

@@ -11,9 +11,9 @@
 
 namespace warbler::syntax
 {
-	struct PtrLocation
+	struct PtrToken
 	{
-		source::Location location;
+		lexicon::Token token;
 		bool is_mutable;
 	};
 
@@ -21,21 +21,21 @@ namespace warbler::syntax
 	{
 	private:
 
-		source::Location _base_type;
-		Array<PtrLocation> _ptrs;
+		lexicon::Token _base_type;
+		Array<PtrToken> _ptrs;
 
 	public:
 
-		Type(const source::Location& base_type, Array<PtrLocation>&& ptrs);
+		Type(const lexicon::Token& base_type, Array<PtrToken>&& ptrs);
 
-		static Result<Type> parse(lexicon::TokenIterator& iter);
+		static Result<Type> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& context);
 		bool validate_cast_from(Type* other);
 		void print_tree(u32 depth = 0) const;
 
-		const source::Location& base_type() const { return _base_type; }
-		const Array<PtrLocation>& ptrs() const { return _ptrs; }
+		const lexicon::Token& base_type() const { return _base_type; }
+		const Array<PtrToken>& ptrs() const { return _ptrs; }
 	};
 }
 

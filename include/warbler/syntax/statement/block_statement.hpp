@@ -18,7 +18,7 @@ namespace warbler::syntax
 
 		BlockStatement(Array<Ptr<Statement>>&& statements);
 
-		static Result<BlockStatement> parse(lexicon::TokenIterator& iter);
+		static Result<BlockStatement> parse(lexicon::Token& token);
 		void print_tree(u32 depth = 0) const;
 	};
 }

@@ -27,21 +27,21 @@ namespace warbler::syntax
 	{
 	private:
 
-		source::Location _location;
+		lexicon::Token _token;
 		ConstantType _type;
 
 	public:
 
-		Constant(const source::Location& location, ConstantType);
+		Constant(const lexicon::Token& token, ConstantType);
 		Constant(Constant&& other) = default;
 		Constant(const Constant& other) = delete;
 
-		static Result<Constant> parse(lexicon::TokenIterator& iter);
+		static Result<Constant> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 
-		const source::Location& location() const { return _location; }
+		const lexicon::Token& token() const { return _token; }
 
 		Constant& operator=(Constant&& other) = default;
 		Constant& operator=(const Constant& other) = delete;

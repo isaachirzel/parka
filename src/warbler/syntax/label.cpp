@@ -5,36 +5,33 @@
 
 namespace warbler::syntax
 {
-	Label::Label(const source::Location& location) :
-	_location(location)
+	Label::Label(const lexicon::Token& token) :
+	_token(token)
 	{}
 
-	Result<Label> Label::parse(lexicon::TokenIterator& iter)
+	Result<Label> Label::parse(lexicon::Token& token)
 	{
-
-		if (iter->type() != lexicon::TokenType::Identifier)
+		if (token.type() != lexicon::TokenType::Identifier)
 		{
-			print_parse_error(iter, "label identifer");
+			print_parse_error(token, "label identifer");
 			return {};
 		}
 
-		const auto& location = iter->location();
+		auto label = token;
 
-		iter += 1;
-
-		if (iter->type() != lexicon::TokenType::Colon)
+		if (token.next().type() != lexicon::TokenType::Colon)
 		{
-			print_parse_error(iter, "':' after label");
+			print_parse_error(token, "':' after label");
 			return {};
 		}
 
-		iter += 1;
+		token.next();
 
-		return Label(location);
+		return Label(label);
 	}
 
 	void Label::print_tree(u32 depth) const
 	{
-		print_branch(depth, _location.text());
+		print_branch(depth, _token.text());
 	}
 }

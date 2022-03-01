@@ -10,9 +10,9 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> RelationalExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> RelationalExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = ShiftExpression::parse(iter);
+		auto lhs = ShiftExpression::parse(token.next());
 
 		if (!lhs)
 			return {};
@@ -24,7 +24,7 @@ namespace warbler::syntax
 			bool should_break = false;
 
 			RelationalType type;
-			switch (iter->type())
+			switch (token.type())
 			{
 				case lexicon::TokenType::GreaterThan:
 					type = RelationalType::GreaterThan;
@@ -50,9 +50,9 @@ namespace warbler::syntax
 			if (should_break)
 				break;
 
-			iter += 1;
+			token.next();
 
-			auto res = ShiftExpression::parse(iter);
+			auto res = ShiftExpression::parse(token.next());
 
 			if (!res)
 				return {};
@@ -120,15 +120,15 @@ namespace warbler::syntax
 	// 	throw std::runtime_error("RelationExpression::" + String(__func__) + " is not implemented yet");
 	// }
 
-	// const source::Location& RelationalExpression::location() const
+	// const lexicon::Token& RelationalExpression::token() const
 	// {
 	// 	if (!_rhs.empty())
 	// 	{
-	// 		return _lhs->location();
+	// 		return _lhs->token();
 	// 	}
 	// 	else
 	// 	{
-	// 		return _lhs->location() + _rhs.back().expr->location();
+	// 		return _lhs->token() + _rhs.back().expr->token();
 	// 	}
 	// }
 }

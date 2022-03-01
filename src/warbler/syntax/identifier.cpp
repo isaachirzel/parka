@@ -4,28 +4,24 @@
 
 namespace warbler::syntax
 {
-	using source::Location;
-	using lexicon::TokenIterator;
-
-	Identifier::Identifier(const source::Location& location) :
-	_location(location)
+	Identifier::Identifier(const lexicon::Token& token) :
+	_token(token)
 	{}
 
-	Result<Identifier> Identifier::parse(lexicon::TokenIterator& iter)
+	Result<Identifier> Identifier::parse(lexicon::Token& token)
 	{
-		if (iter->type() != lexicon::TokenType::Identifier)
+		if (token.type() != lexicon::TokenType::Identifier)
 			return {};
 
-		const auto& location = iter->location();
-		auto text = iter->get_string();
+		auto identifier = token;
 
-		iter += 1;
+		token.next();
 
-		return Identifier { location };
+		return Identifier { identifier };
 	}
 
 	void Identifier::print_tree(u32 depth) const
 	{
-		print_branch(depth, _location.text());
+		print_branch(depth, _token.text());
 	}
 }

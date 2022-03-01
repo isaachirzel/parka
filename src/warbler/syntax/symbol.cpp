@@ -9,23 +9,23 @@
 
 namespace warbler::syntax
 {
-	Symbol::Symbol(const source::Location& location) :
-	_location(location)
+	Symbol::Symbol(const lexicon::Token& token) :
+	_token(token)
 	{}
 
-	Result<Symbol> Symbol::parse(lexicon::TokenIterator& iter)
+	Result<Symbol> Symbol::parse(lexicon::Token& token)
 	{
-		if (iter->type() != lexicon::TokenType::Identifier)
+		if (token.type() != lexicon::TokenType::Identifier)
 		{
-			print_parse_error(iter, "symbol");
+			print_parse_error(token, "symbol");
 			return {};
 		}
 
-		const auto& location = iter->location();
+		auto symbol = token;
 
-		iter += 1;
+		token.next();
 
-		return Symbol { location };
+		return Symbol { symbol };
 	}
 
 	// bool Symbol::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
@@ -36,7 +36,7 @@ namespace warbler::syntax
 
 	// 	if (declaration == nullptr)
 	// 	{
-	// 		print_error(_location, "symbol '" + _text + "' is not declared in scope");
+	// 		print_error(_token, "symbol '" + _text + "' is not declared in scope");
 	// 		return false;
 	// 	}
 
@@ -47,6 +47,6 @@ namespace warbler::syntax
 
 	void Symbol::print_tree(u32 depth) const
 	{
-		print_branch(depth, _location.text());
+		print_branch(depth, _token.text());
 	}
 }

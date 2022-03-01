@@ -17,32 +17,32 @@ namespace warbler::syntax
 	_false_case(std::move(false_case))
 	{}
 
-	Result<Ptr<Expression>> ConditionalExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> ConditionalExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = BooleanOrExpression::parse(iter);
+		auto lhs = BooleanOrExpression::parse(token.next());
 
 		if (!lhs)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::KeywordThen)
+		if (token.type() != lexicon::TokenType::KeywordThen)
 			return lhs.unwrap();
 
-		iter += 1;
+		token.next();
 
-		auto true_case = BooleanOrExpression::parse(iter);
+		auto true_case = BooleanOrExpression::parse(token.next());
 
 		if (!true_case)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::KeywordElse)
+		if (token.type() != lexicon::TokenType::KeywordElse)
 		{
-			print_parse_error(iter, "'else' or false case");
+			print_parse_error(token, "'else' or false case");
 			return {};
 		}
 
-		iter += 1;
+		token.next();
 
-		auto false_case = ConditionalExpression::parse(iter);
+		auto false_case = ConditionalExpression::parse(token.next());
 
 		if (!false_case)
 			return {};
@@ -69,8 +69,8 @@ namespace warbler::syntax
 	// 		{
 	// 			#pragma message("TODO: implement type checking that allows for implicitly castable types")
 
-	// 			print_error(_false_case->location(), "type of false case is '" + false_type->location().text() + "', which is incompatible with true case type '" + true_type->location().text() + "'");
-	// 			print_note(_true_case->location(), "true case defined here");
+	// 			print_error(_false_case->token(), "type of false case is '" + false_type->token().text() + "', which is incompatible with true case type '" + true_type->token().text() + "'");
+	// 			print_note(_true_case->token(), "true case defined here");
 
 	// 			return false;
 	// 		}
@@ -99,7 +99,7 @@ namespace warbler::syntax
 	// 		: _lhs->get_type();
 	// }
 
-	const source::Location& ConditionalExpression::location() const
+	const lexicon::Token& ConditionalExpression::token() const
 	{
 		throw not_implemented();
 	}

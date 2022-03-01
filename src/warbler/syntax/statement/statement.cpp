@@ -8,13 +8,13 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<Statement>> Statement::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Statement>> Statement::parse(lexicon::Token& token)
 	{
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::KeywordVar:
 			{
-				auto res = DeclarationStatement::parse(iter);
+				auto res = DeclarationStatement::parse(token.next());
 
 				if (!res)
 					return {};
@@ -25,7 +25,7 @@ namespace warbler::syntax
 			//case lexicon::TokenType::MATCH:
 			case lexicon::TokenType::KeywordIf:
 			{
-				auto res = IfStatement::parse(iter);
+				auto res = IfStatement::parse(token.next());
 
 				if (!res)
 					return {};
@@ -47,7 +47,7 @@ namespace warbler::syntax
 				break;
 		}
 
-		auto res = ExpressionStatement::parse(iter);
+		auto res = ExpressionStatement::parse(token.next());
 
 		if (!res)
 			return {};

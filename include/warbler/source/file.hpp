@@ -25,12 +25,14 @@ namespace warbler::source
 		static Result<File> read(const String& filepath);
 		static File from(const char *text);
 
+		usize get_line(usize pos) const;
+		usize get_col(usize pos) const;
+
 		String get_text(usize pos, usize length) const;
 		char operator[](usize i) const { assert(i < _src.size()); return _src[i]; }
 
 		const String& filename() const { return _filename; }
 		const String& src() const { return _src; }
-		const Array<usize>& line_lengths() const { return _line_lengths; }
 	};
 }
 

@@ -1,11 +1,8 @@
-#ifndef WARBLER_TOKEN_HPP
-#define WARBLER_TOKEN_HPP
+#ifndef WARBLER_LEXICON_TOKEN_HPP
+#define WARBLER_LEXICON_TOKEN_HPP
 
 // local includes
-#include <warbler/util/array.hpp>
-#include <warbler/util/table.hpp>
-#include <warbler/source/snippet.hpp>
-#include <warbler/source/location.hpp>
+#include <warbler/source/file.hpp>
 
 namespace warbler::lexicon
 {
@@ -23,6 +20,7 @@ namespace warbler::lexicon
 		Colon,
 		Comma,
 		Dot,
+		Range,
 		Elipsis,
 		Ampersand,
 		Pipeline,
@@ -55,6 +53,8 @@ namespace warbler::lexicon
 		BitwiseAndAssign,
 		BitwiseOrAssign,
 		BitwiseXorAssign,
+		BooleanOrAssign,
+		BooleanAndAssign,
 		Modulus,
 		Slash,
 		Asterisk,
@@ -100,23 +100,23 @@ namespace warbler::lexicon
 	{
 	private:
 
-		source::Location _location;
+		const source::File& _file;
+		usize _pos;
+		usize _length;
 		TokenType _type;
+
+		usize get_next_pos();
 
 	public:
 
-		Token(const source::Location& location, TokenType type);
+		Token(const source::File& file, usize pos, usize length, TokenType type);
 
-		source::Snippet get_snippet() const { return _location.get_snippet(); }
-		String get_string() const { return _location.text(); }
+		Token& next();
 
-		bool is_keyword();
-
-		const source::Location& location() const { return _location; }
+		const source::File& file() const { return _file; }
 		TokenType type() const { return _type; }
+		String text() const{ return _file.get_text(_pos, _length); }
 	};
-
-	typedef Array<Token>::const_iterator TokenIterator;
 }
 
 #endif

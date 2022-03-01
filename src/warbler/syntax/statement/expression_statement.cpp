@@ -9,20 +9,20 @@ namespace warbler::syntax
 	_expression(std::move(expression))
 	{}
 
-	Result<ExpressionStatement> ExpressionStatement::parse(lexicon::TokenIterator& iter)
+	Result<ExpressionStatement> ExpressionStatement::parse(lexicon::Token& token)
 	{
-		auto expression = Expression::parse(iter);
+		auto expression = Expression::parse(token.next());
 
 		if (!expression)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::Semicolon)
+		if (token.type() != lexicon::TokenType::Semicolon)
 		{
-			print_parse_error(iter, "expected ';' after expression");
+			print_parse_error(token, "expected ';' after expression");
 			return {};
 		}
 
-		iter += 1;
+		token.next();
 
 		return ExpressionStatement { expression.unwrap() };
 	}

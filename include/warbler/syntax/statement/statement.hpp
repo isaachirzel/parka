@@ -13,7 +13,7 @@ namespace warbler::syntax
 		virtual ~Statement() = default;
 		virtual void print_tree(u32 depth = 0) const = 0;
 
-		static Result<Ptr<Statement>> parse(lexicon::TokenIterator& iter);
+		static Result<Ptr<Statement>> parse(lexicon::Token& token);
 	};
 }
 

@@ -16,7 +16,7 @@ namespace warbler::syntax
 
 	public:
 	
-		static Result<Ast> parse(const Array<lexicon::Token>& tokens);
+		static Result<Ast> parse(lexicon::Token& token);
 
 		void print_tree(u32 depth = 0) const;
 		bool validate();

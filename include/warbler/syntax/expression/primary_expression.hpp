@@ -10,7 +10,7 @@ namespace warbler::syntax
 {
 	struct PrimaryExpression
 	{
-		static Result<Ptr<Expression>> parse(lexicon::TokenIterator& iter);
+		static Result<Ptr<Expression>> parse(lexicon::Token& token);
 	};
 }
 

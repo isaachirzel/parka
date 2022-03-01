@@ -8,17 +8,17 @@
 
 namespace warbler::syntax
 {
-	PrefixExpression::PrefixExpression(const source::Location& location, Ptr<Expression>&& expression, PrefixType type) :
-	_location(location),
+	PrefixExpression::PrefixExpression(const lexicon::Token& token, Ptr<Expression>&& expression, PrefixType type) :
+	_token(token),
 	_expression(std::move(expression)),
 	_type(type)
 	{}
 
-	Result<Ptr<Expression>> PrefixExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> PrefixExpression::parse(lexicon::Token& token)
 	{
 		PrefixType type;
 
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::Ampersand:
 				type = PrefixType::Reference;
@@ -45,14 +45,11 @@ namespace warbler::syntax
 				break;
 
 			default:
-				return PostfixExpression::parse(iter);
+				return PostfixExpression::parse(token.next());
 		}
 
-		const auto& token = iter->location();
-
-		iter += 1;
-
-		auto res = parse(iter);
+		auto prefix = token;
+		auto res = parse(token.next());
 
 		if (!res)
 			return {};

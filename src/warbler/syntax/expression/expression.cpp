@@ -4,9 +4,9 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<Expression>> Expression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> Expression::parse(lexicon::Token& token)
 	{
-		auto res = ConditionalExpression::parse(iter);
+		auto res = ConditionalExpression::parse(token.next());
 
 		if (!res)
 			return {};

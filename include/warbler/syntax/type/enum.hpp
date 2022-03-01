@@ -16,7 +16,7 @@ namespace warbler::syntax
 
 		Enum(Array<Member>&& values);
 
-		static Result<Enum> parse(lexicon::TokenIterator& iter);
+		static Result<Enum> parse(lexicon::Token& token);
 
 		bool validate(semantics::ModuleContext& context);
 		void print_tree(u32 depth = 0) const;

@@ -29,7 +29,7 @@ namespace warbler::syntax
 
 		LoopStatement(Array<Statement>&& body, LoopCondition&& condition, LoopType type);
 
-		static Result<LoopStatement> parse(lexicon::TokenIterator& iter);
+		static Result<LoopStatement> parse(lexicon::Token& token);
 
 		void print_tree(u32 depth = 0) const;
 	};

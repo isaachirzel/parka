@@ -15,6 +15,7 @@
 namespace warbler::lexicon
 {
 	void init_tokenizer();
+	
 	Result<Array<Token>> tokenize(const source::File& file);
 }
 

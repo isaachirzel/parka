@@ -25,8 +25,7 @@
 namespace warbler
 {
 	using source::Snippet;
-	using source::Location;
-	using lexicon::TokenIterator;
+	using lexicon::Token;
 
 	std::ostream& output_stream = std::cout;
 	static bool is_color_enabled = true;
@@ -247,9 +246,9 @@ namespace warbler
 		return out;
 	}
 
-	void print_parse_error(TokenIterator& iter, const String& expected)
+	void print_parse_error(const Token& token, const String& expected)
 	{
-		print_error(iter->location(), "expected " + expected + ", found '" + iter->get_string() + '\'');
+		print_error(token, "expected " + expected + ", found '" + token.text() + '\'');
 	}
 
 	static inline void print_message(const LogContext& context, const String& msg)
@@ -283,19 +282,19 @@ namespace warbler
 		print_message(LogLevel::Error, snippet, msg);
 	}
 
-	void print_note(const Location& location, const String& msg)
+	void print_note(const Token& token, const String& msg)
 	{
-		print_message(LogLevel::Note, location.get_snippet(), msg);
+		print_message(LogLevel::Note, Snippet(token), msg);
 	}
 	
-	void print_warning(const Location& location, const String& msg)
+	void print_warning(const Token& token, const String& msg)
 	{
-		print_message(LogLevel::Warning, location.get_snippet(), msg);
+		print_message(LogLevel::Warning, Snippet(token), msg);
 	}
 
-	void print_error(const Location& location, const String& msg)
+	void print_error(const Token& token, const String& msg)
 	{
-		print_message(LogLevel::Error, location.get_snippet(), msg);
+		print_message(LogLevel::Error, Snippet(token), msg);
 	}
 
 	void print_note(const String& msg)

@@ -11,17 +11,17 @@ namespace warbler::syntax
 	{
 	private:
 
-		source::Location _location;
+		lexicon::Token _token;
 
-		Identifier(const source::Location& location);
+		Identifier(const lexicon::Token& token);
 
 	public:
 
-		static Result<Identifier> parse(lexicon::TokenIterator& iter);
+		static Result<Identifier> parse(lexicon::Token& token);
 
 		void print_tree(u32 depth = 0) const;
 
-		const source::Location& location() const { return _location; }
+		const lexicon::Token& token() const { return _token; }
 	};
 }
 

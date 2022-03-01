@@ -63,44 +63,44 @@ namespace warbler::syntax
 		}
 	}
 
-	static Result<Array<Ptr<Expression>>> parse_arguments(lexicon::TokenIterator& iter)
+	static Result<Array<Ptr<Expression>>> parse_arguments(lexicon::Token& token)
 	{
-		iter += 1;
+		token.next();
 
 		Array<Ptr<Expression>> arguments;
 
 	parse_argument:
 
-		if (iter->type() != lexicon::TokenType::RightParenthesis)
+		if (token.type() != lexicon::TokenType::RightParenthesis)
 		{
-			auto res = Expression::parse(iter);
+			auto res = Expression::parse(token.next());
 
 			if (!res)
 				return {};
 			
 			arguments.emplace_back(res.unwrap());
 
-			if (iter->type() == lexicon::TokenType::Comma)
+			if (token.type() == lexicon::TokenType::Comma)
 			{
-				iter += 1;
+				token.next();
 				goto parse_argument;
 			}
 
-			if (iter->type() != lexicon::TokenType::RightParenthesis)
+			if (token.type() != lexicon::TokenType::RightParenthesis)
 			{
-				print_parse_error(iter, "')' after function arguments");
+				print_parse_error(token, "')' after function arguments");
 				return {};
 			}
 		}
 
-		iter += 1;
+		token.next();
 
 		return arguments;
 	}
 	
-	Result<Ptr<Expression>> PostfixExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> PostfixExpression::parse(lexicon::Token& token)
 	{
-		auto primary_expression = PrimaryExpression::parse(iter);
+		auto primary_expression = PrimaryExpression::parse(token.next());
 
 		if (!primary_expression)
 			return {};
@@ -108,23 +108,23 @@ namespace warbler::syntax
 		Ptr<Expression> expression = primary_expression.unwrap();
 
 	parse_postfix:
-		switch (iter->type())
+		switch (token.type())
 		{
 			case lexicon::TokenType::LeftBracket:
 			{
-				iter += 1;
-				auto res = Expression::parse(iter);
+				token.next();
+				auto res = Expression::parse(token.next());
 
 				if (!res)
 					return {};
 
-				if (iter->type() != lexicon::TokenType::RightBracket)
+				if (token.type() != lexicon::TokenType::RightBracket)
 				{
-					print_parse_error(iter, "']' after index operation");
+					print_parse_error(token, "']' after index operation");
 					return {};
 				}
 
-				iter += 1;
+				token.next();
 
 				expression = new PostfixExpression(std::move(expression), res.unwrap());
 				goto parse_postfix;
@@ -132,7 +132,7 @@ namespace warbler::syntax
 
 			case lexicon::TokenType::LeftParenthesis:
 			{
-				auto res = parse_arguments(iter);
+				auto res = parse_arguments(token.next());
 
 				if (!res)
 					return {};
@@ -143,9 +143,9 @@ namespace warbler::syntax
 
 			case lexicon::TokenType::Dot:
 			{
-				iter += 1;
+				token.next();
 
-				auto res = Identifier::parse(iter);
+				auto res = Identifier::parse(token.next());
 
 				if (!res)
 					return {};
@@ -187,7 +187,7 @@ namespace warbler::syntax
 
 	// 			if (_member.definition == nullptr)
 	// 			{
-	// 				print_error(_member.name.location(), "'" + _member.name.text() + "' is not a member of type '" + expr_type->text() + "'");
+	// 				print_error(_member.name.token(), "'" + _member.name.text() + "' is not a member of type '" + expr_type->text() + "'");
 	// 				return false;
 	// 			}
 	// 			break;
@@ -215,7 +215,7 @@ namespace warbler::syntax
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const source::Location& PostfixExpression::location() const
+	const lexicon::Token& PostfixExpression::token() const
 	{
 		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
 	}
@@ -242,7 +242,7 @@ namespace warbler::syntax
 			break;
 
 			case PostfixType::Member:
-				print_branch(depth + 1, "." + _member.name.location().text());
+				print_branch(depth + 1, "." + _member.name.token().text());
 				break;
 		}
 	}

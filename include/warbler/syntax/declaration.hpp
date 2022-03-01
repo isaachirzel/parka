@@ -20,8 +20,8 @@ namespace warbler::syntax
 
 		Declaration(Identifier&& name, Optional<Type>&& type, bool is_mutable);
 
-		static Result<Declaration> parse_parameter(lexicon::TokenIterator& iter);
-		static Result<Declaration> parse_variable(lexicon::TokenIterator& iter);
+		static Result<Declaration> parse_parameter(lexicon::Token& token);
+		static Result<Declaration> parse_variable(lexicon::Token& token);
 
 		bool validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		bool validate_parameter(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);

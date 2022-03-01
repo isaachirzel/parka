@@ -19,15 +19,15 @@ namespace warbler
 	void print_warning(const source::Snippet& text, const String& msg);
 	void print_error(const source::Snippet& text, const String& msg);
 
-	inline void print_note(const source::Location& location, const String& msg);
-	inline void print_warning(const source::Location& location, const String& msg);
-	inline void print_error(const source::Location& location, const String& msg);
+	inline void print_note(const lexicon::Token& token, const String& msg);
+	inline void print_warning(const lexicon::Token& token, const String& msg);
+	inline void print_error(const lexicon::Token& token, const String& msg);
 
 	void print_note(const String& msg);
 	void print_warning(const String& msg);
 	void print_error(const String& msg);
 
-	void print_parse_error(lexicon::TokenIterator& iter, const String& expected);
+	void print_parse_error(const lexicon::Token& token, const String& expected);
 }
 
 #endif

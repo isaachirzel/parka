@@ -14,9 +14,9 @@ namespace warbler::syntax
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> EqualityExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> EqualityExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = RelationalExpression::parse(iter);
+		auto lhs = RelationalExpression::parse(token.next());
 		 
 		if (!lhs)
 			return {};
@@ -28,7 +28,7 @@ namespace warbler::syntax
 			bool should_break = false;
 
 			EqualityType type;
-			switch (iter->type())
+			switch (token.type())
 			{
 				case lexicon::TokenType::Equals:
 					type = EqualityType::Equals;
@@ -46,9 +46,9 @@ namespace warbler::syntax
 			if (should_break)
 				break;
 
-			iter += 1;
+			token.next();
 
-			auto res = RelationalExpression::parse(iter);
+			auto res = RelationalExpression::parse(token.next());
 
 			if (!res)
 				return {};
@@ -97,7 +97,7 @@ namespace warbler::syntax
 		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
 	}
 
-	const source::Location& EqualityExpression::location() const
+	const lexicon::Token& EqualityExpression::token() const
 	{
 		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
 	}

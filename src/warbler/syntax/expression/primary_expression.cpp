@@ -7,11 +7,11 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<Expression>> PrimaryExpression::parse(lexicon::TokenIterator& iter)
+	Result<Ptr<Expression>> PrimaryExpression::parse(lexicon::Token& token)
 	{
-		if (iter->type() == lexicon::TokenType::Identifier)
+		if (token.type() == lexicon::TokenType::Identifier)
 		{
-			auto symbol = Symbol::parse(iter);
+			auto symbol = Symbol::parse(token.next());
 
 			if (!symbol)
 				return {};
@@ -20,28 +20,28 @@ namespace warbler::syntax
 
 			return Ptr<Expression> (ptr);
 		}
-		else if (iter->type() == lexicon::TokenType::LeftParenthesis)
+		else if (token.type() == lexicon::TokenType::LeftParenthesis)
 		{
-			iter += 1;
+			token.next();
 
-			auto expression = Expression::parse(iter);
+			auto expression = Expression::parse(token.next());
 
 			if (!expression)
 				return {};
 
-			if (iter->type() != lexicon::TokenType::RightParenthesis)
+			if (token.type() != lexicon::TokenType::RightParenthesis)
 			{
-				print_parse_error(iter, "expected ')' after primary sub-expression");
+				print_parse_error(token, "expected ')' after primary sub-expression");
 				return {};
 			}
 
-			iter += 1;
+			token.next();
 
 			return expression.unwrap();
 		}
 		else
 		{
-			auto constant = Constant::parse(iter);
+			auto constant = Constant::parse(token.next());
 
 			if (!constant)
 				return {};

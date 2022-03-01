@@ -10,30 +10,27 @@ namespace warbler::syntax
 	_is_mutable(is_mutable)
 	{}
 
-	Result<Declaration> Declaration::parse_parameter(lexicon::TokenIterator& iter)
+	Result<Declaration> Declaration::parse_parameter(lexicon::Token& token)
 	{
 		auto is_mutable = false;
 
-		if (iter->type() == lexicon::TokenType::KeywordMut)
+		if (token.type() == lexicon::TokenType::KeywordMut)
 		{
 			is_mutable = true;
-			iter += 1;
 		}
 
-		auto name = Identifier::parse(iter);
+		auto name = Identifier::parse(token.next());
 
 		if (!name)
 			return {};
 
-		if (iter->type() != lexicon::TokenType::Colon)
+		if (token.type() != lexicon::TokenType::Colon)
 		{
-			print_error(iter->get_snippet(), "parameters may not be declared without a type");
+			print_error(token, "parameters may not be declared without a type");
 			return {};
 		}
 
-		iter += 1;
-
-		auto type = Type::parse(iter);
+		auto type = Type::parse(token.next());
 
 		if (!type)
 			return {};
@@ -41,28 +38,28 @@ namespace warbler::syntax
 		return Declaration { name.unwrap(), type.unwrap(), is_mutable };
 	}
 
-	Result<Declaration> Declaration::parse_variable(lexicon::TokenIterator& iter)
+	Result<Declaration> Declaration::parse_variable(lexicon::Token& token)
 	{
 		auto is_mutable = false;
 
-		if (iter->type() == lexicon::TokenType::KeywordMut)
+		if (token.type() == lexicon::TokenType::KeywordMut)
 		{
 			is_mutable = true;
-			iter += 1;
+			token.next();
 		}
 
-		auto name = Identifier::parse(iter);
+		auto name = Identifier::parse(token.next());
 		
 		if (!name)
 			return {};
 
 		Optional<Type> type;
 
-		if (iter->type() == lexicon::TokenType::Colon)
+		if (token.type() == lexicon::TokenType::Colon)
 		{
-			iter += 1;
+			token.next();
 
-			auto res = Type::parse(iter);
+			auto res = Type::parse(token.next());
 
 			if (!res)
 				return {};
@@ -79,8 +76,8 @@ namespace warbler::syntax
 
 	// 	if (previous_declaration)
 	// 	{
-	// 		print_error(_name.location(), "parameter '" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
-	// 		print_note(previous_declaration->name().location(), "previous declaration is here");
+	// 		print_error(_name.token(), "parameter '" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
+	// 		print_note(previous_declaration->name().token(), "previous declaration is here");
 	// 		return false;
 	// 	}
 
@@ -96,8 +93,8 @@ namespace warbler::syntax
 
 	// 	if (previous_declaration)
 	// 	{
-	// 		print_error(_name.location(), "'" + _name.text() + "' is previously declared as a variable in scope");
-	// 		print_note(previous_declaration->name().location(), "previous declaration here");
+	// 		print_error(_name.token(), "'" + _name.text() + "' is previously declared as a variable in scope");
+	// 		print_note(previous_declaration->name().token(), "previous declaration here");
 	// 		return false;
 	// 	}
 
@@ -109,8 +106,8 @@ namespace warbler::syntax
 
 	// 		if (previous_declaration)
 	// 		{
-	// 			print_error(_name.location(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
-	// 			print_note(previous_declaration->name().location(), "previous declaration here");
+	// 			print_error(_name.token(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
+	// 			print_note(previous_declaration->name().token(), "previous declaration here");
 	// 			return false;
 	// 		}
 	// 	}
@@ -127,7 +124,7 @@ namespace warbler::syntax
 			? "mut "
 			: "";
 
-		text += _name.location().text() + ": " + (_type.has_value() ? _type->base_type().text() : "<auto>");
+		text += _name.token().text() + ": " + (_type.has_value() ? _type->base_type().text() : "<auto>");
 
 		print_branch(depth, text);
 	}

@@ -9,45 +9,43 @@ namespace warbler::syntax
 	_members(std::move(members))
 	{}
 
-	Result<Struct> Struct::parse(lexicon::TokenIterator& iter, Identifier&& name)
+	Result<Struct> Struct::parse(lexicon::Token& token, Identifier&& name)
 	{
-		iter += 1;
-
-		if (iter->type() != lexicon::TokenType::LeftBrace)
+		if (token.next().type() != lexicon::TokenType::LeftBrace)
 		{
-			print_parse_error(iter, "'{' before struct body");
+			print_parse_error(token, "'{' before struct body");
 			return {};
 		}
 
-		iter += 1;
+		token.next();
 
 		Array<Member> members;
 
-		if (iter->type() != lexicon::TokenType::RightBrace)
+		if (token.type() != lexicon::TokenType::RightBrace)
 		{
 			while (true)
 			{
-				auto member = Member::parse(iter);
+				auto member = Member::parse(token.next());
 
 				if (!member)
 					return {};
 
 				members.emplace_back(member.unwrap());
 
-				if (iter->type() != lexicon::TokenType::Comma)
+				if (token.type() != lexicon::TokenType::Comma)
 					break;
 
-				iter += 1;
+				token.next();
 			}
 
-			if (iter->type() != lexicon::TokenType::RightBrace)
+			if (token.type() != lexicon::TokenType::RightBrace)
 			{
-				print_parse_error(iter, "'}' after struct body");
+				print_parse_error(token, "'}' after struct body");
 				return {};
 			}
 		}
 
-		iter += 1;
+		token.next();
 
 		return Struct { std::move(name), std::move(members) };
 	}
