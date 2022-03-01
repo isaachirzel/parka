@@ -4,6 +4,11 @@
 // local includes
 #include <warbler/source/file.hpp>
 
+namespace warbler::source
+{
+	class Snippet;
+}
+
 namespace warbler::lexicon
 {
 	enum class TokenType
@@ -105,17 +110,19 @@ namespace warbler::lexicon
 		usize _length;
 		TokenType _type;
 
-		usize get_next_pos();
-
 	public:
 
 		Token(const source::File& file, usize pos, usize length, TokenType type);
 
+		static Token get_initial(const source::File& file);
+
 		Token& next();
 
 		const source::File& file() const { return _file; }
+		usize pos() const { return _pos; }
+		usize length() const { return _length; }
 		TokenType type() const { return _type; }
-		String text() const{ return _file.get_text(_pos, _length); }
+		String text() const { return _file.get_text(_pos, _length); }
 	};
 }
 

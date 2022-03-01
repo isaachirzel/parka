@@ -81,47 +81,18 @@ using namespace warbler::syntax;
 
 int main()
 {
-	lexicon::init_tokenizer();
-	semantics::init_context();
-
-	auto token_res = lexicon::tokenize("<in-memory-file>", src);
-
-	if (!token_res)
-		return token_res;
-
-	auto tokens = token_res.unwrap();
-	
-	for (const auto& token : tokens)
-		std::cout << token.line() << ':' << token.col() << '\t' << token << "\t\ttype: " << token.type() << std::endl;;	
-
-	std::cout << std::endl;
-
-	TokenIterator iter = tokens.begin();
-	auto res = Module::parse(iter);
+	auto file = source::File::from(src);
+	auto res = Ast::parse(file);
 
 	if (!res)
 	{
-		error_out() << "failed to parse src" << std::endl;
-		return {};
-	}
-
-	if (iter->type() != source::TokenType::END_OF_FILE)
-	{
-		error_out(iter) << "current token is not EOF";
-		error_highlight(iter);
+		print_error("failed to parse src");
 		return 1;
 	}
 
 	auto ast = res.unwrap();
 
 	ast.print_tree();
-	std::cout << '\n';
-
-	if (!ast.validate({ "test" }))
-	{
-		print_error("errors during compilation");
-		return 1;
-	}
 	
 	print_note("successfully validated ast");
 

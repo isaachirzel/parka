@@ -16,10 +16,9 @@ namespace warbler::syntax
 
 	public:
 	
-		static Result<Ast> parse(lexicon::Token& token);
+		static Result<Ast> parse(const source::File& file);
 
 		void print_tree(u32 depth = 0) const;
-		bool validate();
 	};
 }
 

@@ -13,7 +13,7 @@ namespace warbler::source
 	}
 
 	Snippet::Snippet(const lexicon::Token& token) :
-	_file(token.file())
+	Snippet(token.file(), token.pos(), token.length())
 	{}
 
 	Snippet::Snippet(const lexicon::Token& first, const lexicon::Token& last) :

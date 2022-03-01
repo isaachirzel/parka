@@ -36,7 +36,7 @@ namespace warbler::syntax
 		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
-		const lexicon::Token& token() const;
+		//const lexicon::Token& token() const;
 	};
 
 }

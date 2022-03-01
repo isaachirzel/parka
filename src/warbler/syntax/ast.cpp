@@ -1,6 +1,8 @@
 #include <warbler/syntax/ast.hpp>
 
 #include <warbler/syntax/function.hpp>
+#include <warbler/lexicon/token.hpp>
+#include <warbler/util/print.hpp>
 
 namespace warbler::syntax
 {
@@ -8,12 +10,19 @@ namespace warbler::syntax
 	_module(std::move(module))
 	{}
 
-	Result<Ast> Ast::parse(lexicon::Token& token)
+	Result<Ast> Ast::parse(const source::File& file)
 	{
+		auto token = lexicon::Token::get_initial(file);
 		auto res = Module::parse(token.next());
 
 		if (!res)
 			return {};
+
+		if (token.type() != lexicon::TokenType::EndOfFile)
+		{
+			print_error(token, "stray token in source file");
+			return {};
+		}
 
 		return Ast(res.unwrap());
 	}
@@ -23,9 +32,9 @@ namespace warbler::syntax
 		_module.print_tree(depth);
 	}
 
-	bool Ast::validate()
-	{
-		#pragma message "actually implement passing scope to module"
-		return _module.validate({ "TEST_MODULE" });
-	}
+	// bool Ast::validate()
+	// {
+	// 	#pragma message "actually implement passing scope to module"
+	// 	return _module.validate({ "TEST_MODULE" });
+	// }
 }

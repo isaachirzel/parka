@@ -14,21 +14,19 @@ namespace warbler::lexicon
 	_type(type)
 	{}
 
-	usize Token::get_next_pos()
+	static usize get_next_pos(const File& file, usize pos)
 	{
-		usize next_pos = _pos + _length;
-
 		while (true)
 		{
-			auto character = _file[next_pos];
+			auto character = file[pos];
 
 			if (character == '\0' || character > ' ')
 				break;
 
-			next_pos += 1;
+			pos += 1;
 		}
 
-		return next_pos;
+		return pos;
 	}
 
 	static inline bool is_identifier_char(char c)
@@ -389,10 +387,17 @@ namespace warbler::lexicon
 
 	Token& Token::next()
 	{
-		auto next_token_pos = get_next_pos();
+		auto next_token_pos = get_next_pos(_file, _pos + _length);
 		auto next_token = get_next_token(_file, next_token_pos);
 
 		new (this) auto(next_token);
 		return *this;
+	}
+
+	Token Token::get_initial(const source::File& file)
+	{
+		auto pos = get_next_pos(file, 0);
+
+		return get_next_token(file, pos);
 	}
 }

@@ -63,7 +63,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new  RelationalExpression(lhs.unwrap(), std::move(rhs));
+		auto *ptr = new RelationalExpression(lhs.unwrap(), std::move(rhs));
 
 		return Ptr<Expression>(ptr);
 	}
