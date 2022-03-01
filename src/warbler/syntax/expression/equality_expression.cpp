@@ -16,7 +16,7 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> EqualityExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = RelationalExpression::parse(token.next());
+		auto lhs = RelationalExpression::parse(token);
 		 
 		if (!lhs)
 			return {};
@@ -45,8 +45,6 @@ namespace warbler::syntax
 
 			if (should_break)
 				break;
-
-			token.next();
 
 			auto res = RelationalExpression::parse(token.next());
 

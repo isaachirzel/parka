@@ -11,6 +11,12 @@ namespace warbler::syntax
 
 	Result<DeclarationStatement> DeclarationStatement::parse(lexicon::Token& token)
 	{
+		if (token.type() != lexicon::TokenType::KeywordVar)
+		{
+			print_parse_error(token, "var");
+			return {};
+		}
+		
 		auto declaration = Declaration::parse_variable(token.next());
 
 		if (!declaration)

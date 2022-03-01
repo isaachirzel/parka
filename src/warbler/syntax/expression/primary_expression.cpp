@@ -9,9 +9,10 @@ namespace warbler::syntax
 {
 	Result<Ptr<Expression>> PrimaryExpression::parse(lexicon::Token& token)
 	{
+		
 		if (token.type() == lexicon::TokenType::Identifier)
 		{
-			auto symbol = Symbol::parse(token.next());
+			auto symbol = Symbol::parse(token);
 
 			if (!symbol)
 				return {};
@@ -22,8 +23,6 @@ namespace warbler::syntax
 		}
 		else if (token.type() == lexicon::TokenType::LeftParenthesis)
 		{
-			token.next();
-
 			auto expression = Expression::parse(token.next());
 
 			if (!expression)
@@ -41,7 +40,7 @@ namespace warbler::syntax
 		}
 		else
 		{
-			auto constant = Constant::parse(token.next());
+			auto constant = Constant::parse(token);
 
 			if (!constant)
 				return {};

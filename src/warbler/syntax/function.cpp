@@ -86,8 +86,8 @@ namespace warbler::syntax
 			print_parse_error(token, "function body starting with '{'");
 			return {};
 		}
-		
-		auto body = BlockStatement::parse(token.next());
+	
+		auto body = BlockStatement::parse(token);
 
 		if (!body)
 			return {};

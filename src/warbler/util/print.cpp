@@ -187,44 +187,60 @@ namespace warbler
 
 		for (const auto& line : snippet.lines())
 		{
-			String line_text = line;
+			String line_text;
 			String underline_text;
 
-			line_text.reserve(line.size() + 8); // extra padding for color codes & newline
-			underline_text.reserve(line.capacity());
+			line_text.reserve(line.size() + 16);
+			underline_text.reserve(line.capacity() + 16);
 
 			line_text += get_margin(line_number_width, current_line_number);
 			underline_text += get_margin(line_number_width);
+
+			bool should_underline = false;
 
 			for (usize i = 0; i < line.size(); ++i)
 			{
 				auto is_first_line = &line == &snippet.lines().front();
 				auto is_last_line = &line == &snippet.lines().back();
 
-				if (is_first_line && i == snippet.start_pos())
+				if (is_first_line && i == snippet.col())
 				{
 					line_text += context.color;
 					underline_text += context.color;
+					should_underline = true;
 				}
 				else if (is_last_line && i == snippet.end_pos())
 				{	
 					line_text += context.reset;
 					underline_text += context.reset;
+					should_underline = false;
+				}
+
+				line_text += line[i];
+
+				if (should_underline)
+				{
+					underline_text += '~';
+				}
+				else
+				{
+					underline_text += line[i] == '\t'
+						? '\t'
+						: ' ';
 				}
 			}
 
-			String empty_line_text = get_margin(line_number_width);
-
-			empty_line_text += '\n';
 			line_text += '\n';
 			underline_text += '\n';
 
-			highlight += empty_line_text;
+			highlight += get_margin(line_number_width) + '\n';
 			highlight += line_text;
 			highlight += underline_text;
 
 			current_line_number += 1;
 		}
+
+		highlight += '\n';
 
 		return highlight;
 	}
@@ -248,7 +264,13 @@ namespace warbler
 
 	void print_parse_error(const Token& token, const String& expected)
 	{
-		print_error(token, "expected " + expected + ", found '" + token.text() + '\'');
+		const auto* prefix = token.prefix();
+
+		String token_text = prefix
+			? String(prefix) + " '" + token.text() + '\''
+			: "'" + token.text() + "'";
+
+		print_error(token, "expected " + expected + ", found " + token_text);
 	}
 
 	static inline void print_message(const LogContext& context, const String& msg)

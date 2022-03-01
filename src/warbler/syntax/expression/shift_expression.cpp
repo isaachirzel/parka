@@ -16,7 +16,7 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> ShiftExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = AdditiveExpression::parse(token.next());
+		auto lhs = AdditiveExpression::parse(token);
 
 		if (!lhs)
 			return {};
@@ -46,8 +46,6 @@ namespace warbler::syntax
 			if (should_break)
 				break;
 			
-			token.next();
-
 			auto res = AdditiveExpression::parse(token.next());
 
 			if (!res)

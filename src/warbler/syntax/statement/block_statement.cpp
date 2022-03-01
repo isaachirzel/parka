@@ -22,7 +22,8 @@ namespace warbler::syntax
 
 		while (token.type() != lexicon::TokenType::RightBrace)
 		{
-			auto res = Statement::parse(token.next());
+			auto res = Statement::parse(token);
+
 
 			if (!res)
 				return {};

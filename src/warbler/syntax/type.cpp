@@ -19,9 +19,7 @@ namespace warbler::syntax
 
 		while (token.type() == lexicon::TokenType::Asterisk)
 		{
-			token.next();
-
-			if (token.type() == lexicon::TokenType::KeywordMut)
+			if (token.next().type() == lexicon::TokenType::KeywordMut)
 			{
 				ptr_mutability.push_back(true);
 				token.next();

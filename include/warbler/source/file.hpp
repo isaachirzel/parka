@@ -29,7 +29,7 @@ namespace warbler::source
 		usize get_col(usize pos) const;
 
 		String get_text(usize pos, usize length) const;
-		char operator[](usize i) const { assert(i < _src.size()); return _src[i]; }
+		char operator[](usize i) const { assert(i <= _src.size()); return _src[i]; }
 
 		const String& filename() const { return _filename; }
 		const String& src() const { return _src; }

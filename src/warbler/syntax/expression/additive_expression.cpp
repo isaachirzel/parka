@@ -13,7 +13,7 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> AdditiveExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = MultiplicativeExpression::parse(token.next());
+		auto lhs = MultiplicativeExpression::parse(token);
 
 		if (!lhs)
 			return {};
@@ -35,8 +35,6 @@ namespace warbler::syntax
 			{
 				break;
 			}
-
-			token.next();			
 
 			auto res = MultiplicativeExpression::parse(token.next());
 

@@ -12,7 +12,7 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> RelationalExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = ShiftExpression::parse(token.next());
+		auto lhs = ShiftExpression::parse(token);
 
 		if (!lhs)
 			return {};
@@ -49,8 +49,6 @@ namespace warbler::syntax
 
 			if (should_break)
 				break;
-
-			token.next();
 
 			auto res = ShiftExpression::parse(token.next());
 

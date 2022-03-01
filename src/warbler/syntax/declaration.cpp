@@ -17,13 +17,13 @@ namespace warbler::syntax
 		if (token.type() == lexicon::TokenType::KeywordMut)
 		{
 			is_mutable = true;
+			token.next();
 		}
 
-		auto name = Identifier::parse(token.next());
+		auto name = Identifier::parse(token);
 
 		if (!name)
 			return {};
-
 		if (token.type() != lexicon::TokenType::Colon)
 		{
 			print_error(token, "parameters may not be declared without a type");
@@ -48,7 +48,7 @@ namespace warbler::syntax
 			token.next();
 		}
 
-		auto name = Identifier::parse(token.next());
+		auto name = Identifier::parse(token);
 		
 		if (!name)
 			return {};
@@ -57,8 +57,6 @@ namespace warbler::syntax
 
 		if (token.type() == lexicon::TokenType::Colon)
 		{
-			token.next();
-
 			auto res = Type::parse(token.next());
 
 			if (!res)

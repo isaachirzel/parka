@@ -16,7 +16,7 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> BitwiseAndExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = EqualityExpression::parse(token.next());
+		auto lhs = EqualityExpression::parse(token);
 
 		if (!lhs)
 			return {};
@@ -25,8 +25,6 @@ namespace warbler::syntax
 
 		while (token.type() == lexicon::TokenType::Ampersand)
 		{
-			token.next();
-
 			auto res = EqualityExpression::parse(token.next());
 
 			if (!res)

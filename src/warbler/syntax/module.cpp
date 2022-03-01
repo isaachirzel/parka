@@ -20,7 +20,7 @@ namespace warbler::syntax
 			{
 				case lexicon::TokenType::KeywordFunction:
 				{
-					auto function = Function::parse(token.next());
+					auto function = Function::parse(token);
 
 					if (!function)
 						return {};
@@ -30,7 +30,7 @@ namespace warbler::syntax
 				}
 				case lexicon::TokenType::KeywordType:
 				{
-					auto type = TypeDefinition::parse(token.next());
+					auto type = TypeDefinition::parse(token);
 
 					if (!type)
 						return {};

@@ -65,7 +65,7 @@ namespace warbler::lexicon
 		Asterisk,
 		Plus,
 		Minus,
-		Pow,
+		Scope,
 		IntegerLiteral,
 		FloatLiteral,
 		HexadecimalLiteral,
@@ -73,8 +73,6 @@ namespace warbler::lexicon
 		OctalLiteral,
 		CharLiteral,
 		StringLiteral,
-		Scope,
-
 		KeywordBreak,
 		KeywordCase,
 		KeywordContinue,
@@ -123,6 +121,8 @@ namespace warbler::lexicon
 		usize length() const { return _length; }
 		TokenType type() const { return _type; }
 		String text() const { return _file.get_text(_pos, _length); }
+		operator String() const;
+		const char *prefix() const;
 	};
 }
 

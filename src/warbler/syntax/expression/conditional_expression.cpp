@@ -19,15 +19,13 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> ConditionalExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = BooleanOrExpression::parse(token.next());
+		auto lhs = BooleanOrExpression::parse(token);
 
 		if (!lhs)
 			return {};
 
 		if (token.type() != lexicon::TokenType::KeywordThen)
 			return lhs.unwrap();
-
-		token.next();
 
 		auto true_case = BooleanOrExpression::parse(token.next());
 
@@ -39,8 +37,6 @@ namespace warbler::syntax
 			print_parse_error(token, "'else' or false case");
 			return {};
 		}
-
-		token.next();
 
 		auto false_case = ConditionalExpression::parse(token.next());
 

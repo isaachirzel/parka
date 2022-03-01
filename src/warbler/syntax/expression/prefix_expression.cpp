@@ -45,7 +45,7 @@ namespace warbler::syntax
 				break;
 
 			default:
-				return PostfixExpression::parse(token.next());
+				return PostfixExpression::parse(token);
 		}
 
 		auto prefix = token;
@@ -54,7 +54,9 @@ namespace warbler::syntax
 		if (!res)
 			return {};
 
-		return Ptr<Expression> { new PrefixExpression(token, res.unwrap(), type) };
+		auto *ptr = new PrefixExpression(prefix, res.unwrap(), type);
+
+		return Ptr<Expression>(ptr);
 	}
 
 	void PrefixExpression::print_tree(u32 depth) const

@@ -12,7 +12,7 @@ namespace warbler::syntax
 
 	Result<Ptr<Expression>> BooleanAndExpression::parse(lexicon::Token& token)
 	{
-		auto lhs = BitwiseOrExpression::parse(token.next());
+		auto lhs = BitwiseOrExpression::parse(token);
 
 		if (!lhs)
 			return {};
@@ -21,8 +21,6 @@ namespace warbler::syntax
 
 		while (token.type() == lexicon::TokenType::BooleanAnd)
 		{
-			token.next();
-
 			auto res = BitwiseOrExpression::parse(token.next());
 
 			if (!res)

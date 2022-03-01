@@ -179,39 +179,56 @@ namespace warbler::syntax
 
 	Result<Constant> Constant::parse(lexicon::Token& token)
 	{
+		ConstantType type;
+
 		switch (token.type())
 		{
 			case lexicon::TokenType::CharLiteral:
-				return Constant(token, ConstantType::Character);
+				type = ConstantType::Character;
+				break;
 
 			case lexicon::TokenType::StringLiteral:
-				return Constant(token, ConstantType::String);
+				type = ConstantType::String;
+				break;
 
 			case lexicon::TokenType::IntegerLiteral:
-				return Constant(token, ConstantType::Integer);
+				type = ConstantType::Integer;
+				break;
 
 			case lexicon::TokenType::BinaryLiteral:
-				return Constant(token, ConstantType::Integer);
+				type = ConstantType::Integer;
+				break;
 
 			case lexicon::TokenType::HexadecimalLiteral:
-				return Constant(token, ConstantType::Integer);
+				type = ConstantType::Integer;
+				break;
 
 			case lexicon::TokenType::OctalLiteral:
-				return Constant(token, ConstantType::Octal);
+				type = ConstantType::Octal;
+				break;
 
 			case lexicon::TokenType::FloatLiteral:
-				return Constant(token, ConstantType::Float);
+				type = ConstantType::Float;
+				break;
 
 			case lexicon::TokenType::KeywordTrue:
-				return Constant(token, ConstantType::BooleanTrue);
+				type = ConstantType::BooleanTrue;
+				break;
 
 			case lexicon::TokenType::KeywordFalse:
-				return Constant(token, ConstantType::BooleanFalse);
+				type = ConstantType::BooleanFalse;
+				break;
 
 			default:
 				print_parse_error(token, "constant");
 				return {};
 		}
+
+		auto constant = token;
+
+		token.next();
+
+		return Constant(constant, type);
 	}
 
 	// bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)

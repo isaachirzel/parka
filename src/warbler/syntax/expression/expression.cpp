@@ -6,7 +6,7 @@ namespace warbler::syntax
 {
 	Result<Ptr<Expression>> Expression::parse(lexicon::Token& token)
 	{
-		auto res = ConditionalExpression::parse(token.next());
+		auto res = ConditionalExpression::parse(token);
 
 		if (!res)
 			return {};

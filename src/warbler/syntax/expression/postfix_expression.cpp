@@ -100,7 +100,7 @@ namespace warbler::syntax
 	
 	Result<Ptr<Expression>> PostfixExpression::parse(lexicon::Token& token)
 	{
-		auto primary_expression = PrimaryExpression::parse(token.next());
+		auto primary_expression = PrimaryExpression::parse(token);
 
 		if (!primary_expression)
 			return {};
@@ -112,7 +112,6 @@ namespace warbler::syntax
 		{
 			case lexicon::TokenType::LeftBracket:
 			{
-				token.next();
 				auto res = Expression::parse(token.next());
 
 				if (!res)

@@ -14,7 +14,7 @@ namespace warbler::syntax
 		{
 			case lexicon::TokenType::KeywordVar:
 			{
-				auto res = DeclarationStatement::parse(token.next());
+				auto res = DeclarationStatement::parse(token);
 
 				if (!res)
 					return {};
@@ -25,7 +25,7 @@ namespace warbler::syntax
 			//case lexicon::TokenType::MATCH:
 			case lexicon::TokenType::KeywordIf:
 			{
-				auto res = IfStatement::parse(token.next());
+				auto res = IfStatement::parse(token);
 
 				if (!res)
 					return {};

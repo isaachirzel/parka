@@ -13,7 +13,7 @@ namespace warbler::syntax
 	Result<Ast> Ast::parse(const source::File& file)
 	{
 		auto token = lexicon::Token::get_initial(file);
-		auto res = Module::parse(token.next());
+		auto res = Module::parse(token);
 
 		if (!res)
 			return {};
