@@ -48,7 +48,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool ConditionalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool ConditionalExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -75,28 +75,28 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void ConditionalExpression::print_tree(u32 depth) const
-	{
-		_lhs->print_tree(depth);
-
-		if (_true_case)
-		{
-			print_branch(depth + 1, "then");
-			_true_case->print_tree(depth + 2);
-			print_branch(depth + 1, "else");
-			_false_case->print_tree(depth + 2);
-		}
-	}
-
-	// Type *ConditionalExpression::get_type()
+	// void ConditionalExpression::print_tree(u32 depth) const
 	// {
-	// 	return _true_case
-	// 		? _true_case->get_type()
-	// 		: _lhs->get_type();
+	// 	_lhs->print_tree(depth);
+
+	// 	if (_true_case)
+	// 	{
+	// 		print_branch(depth + 1, "then");
+	// 		_true_case->print_tree(depth + 2);
+	// 		print_branch(depth + 1, "else");
+	// 		_false_case->print_tree(depth + 2);
+	// 	}
 	// }
 
-	const lexicon::Token& ConditionalExpression::token() const
-	{
-		throw not_implemented();
-	}
+	// // Type *ConditionalExpression::get_type()
+	// // {
+	// // 	return _true_case
+	// // 		? _true_case->get_type()
+	// // 		: _lhs->get_type();
+	// // }
+
+	// const lexicon::Token& ConditionalExpression::token() const
+	// {
+	// 	throw not_implemented();
+	// }
 }

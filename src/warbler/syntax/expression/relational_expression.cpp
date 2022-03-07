@@ -66,7 +66,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool RelationalExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool RelationalExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -80,38 +80,38 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void RelationalExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void RelationalExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 
-		for (const auto& rhs : _rhs)
-		{
-			switch (rhs.type)
-			{
-				case RelationalType::GreaterThan:
-					print_branch(depth - 1, ">");
-					break;
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		switch (rhs.type)
+	// 		{
+	// 			case RelationalType::GreaterThan:
+	// 				print_branch(depth - 1, ">");
+	// 				break;
 
-				case RelationalType::LessThan:
-					print_branch(depth - 1, "<");
-					break;
+	// 			case RelationalType::LessThan:
+	// 				print_branch(depth - 1, "<");
+	// 				break;
 
-				case RelationalType::GreaterThanOrEqualTo:
-					print_branch(depth - 1, ">=");
-					break;
+	// 			case RelationalType::GreaterThanOrEqualTo:
+	// 				print_branch(depth - 1, ">=");
+	// 				break;
 
-				case RelationalType::LessThanOrEqualTo:
-					print_branch(depth - 1, "<=");
-					break;
+	// 			case RelationalType::LessThanOrEqualTo:
+	// 				print_branch(depth - 1, "<=");
+	// 				break;
 
-			}
+	// 		}
 
-			rhs.expr->print_tree(depth);
-		}
-	}
+	// 		rhs.expr->print_tree(depth);
+	// 	}
+	// }
 
 	// Type *RelationalExpression::get_type()
 	// {

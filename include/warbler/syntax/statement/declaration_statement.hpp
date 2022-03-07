@@ -2,7 +2,7 @@
 #define WARBLER_SYNTAX_STATEMENT_DECLARATION_STATEMENT_HPP
 
 // local headers
-#include <warbler/syntax/declaration.hpp>
+#include <warbler/syntax/statement/declaration.hpp>
 #include <warbler/syntax/expression/conditional_expression.hpp>
 #include <warbler/syntax/statement/statement.hpp>
 
@@ -23,7 +23,7 @@ namespace warbler::syntax
 
 		static Result<DeclarationStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
+		bool validate(semantics::SymbolTable& symbols);
 		void print_tree(u32 depth = 0) const;
 	};
 }

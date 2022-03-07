@@ -90,10 +90,10 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void Type::print_tree(u32 depth) const
-	{
-		print_branch(depth, ": " + _base_type.text());
-	}
+	// void Type::print_tree(u32 depth) const
+	// {
+	// 	print_branch(depth, ": " + _base_type.text());
+	// }
 
 	// String Type::text() const
 	// {

@@ -231,7 +231,7 @@ namespace warbler::syntax
 		return Constant(constant, type);
 	}
 
-	// bool Constant::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool Constant::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	#pragma message("Implement byte counting for each data type")
 
@@ -269,8 +269,8 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void Constant::print_tree(u32 depth) const
-	{
-		print_branch(depth, _token.text());
-	}
+	// void Constant::print_tree(u32 depth) const
+	// {
+	// 	print_branch(depth, _token.text());
+	// }
 }

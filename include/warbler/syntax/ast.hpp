@@ -3,6 +3,7 @@
 
 // local headers
 #include <warbler/syntax/module.hpp>
+#include <warbler/syntax/function.hpp>
 
 namespace warbler::syntax
 {
@@ -19,6 +20,7 @@ namespace warbler::syntax
 		static Result<Ast> parse(const source::File& file);
 
 		void print_tree(u32 depth = 0) const;
+		const Module& mod() const { return _module; }
 	};
 }
 

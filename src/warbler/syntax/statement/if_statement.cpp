@@ -98,32 +98,32 @@ namespace warbler::syntax
 		return IfStatement(condition.unwrap(), then_body.unwrap());
 	}
 
-	// bool IfStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool IfStatement::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	throw std::runtime_error("IfStatement::validate is not implemented yet");
 	// }
 
-	void IfStatement::print_tree(u32 depth) const
-	{
-		print_branch(depth, "if");
-		_condition->print_tree(depth + 1);
-		print_branch(depth, "then");
-		_then_body.print_tree(depth + 1);
+	// void IfStatement::print_tree(u32 depth) const
+	// {
+	// 	print_branch(depth, "if");
+	// 	_condition->print_tree(depth + 1);
+	// 	print_branch(depth, "then");
+	// 	_then_body.print_tree(depth + 1);
 
-		if (_type == IfType::Then)
-			return;
+	// 	if (_type == IfType::Then)
+	// 		return;
 
-		print_branch(depth, "else");
+	// 	print_branch(depth, "else");
 
-		if (_type == IfType::ThenElse)
-		{
-			_else_body.print_tree(depth + 1);
-		}
-		else if (_type == IfType::ThenElseIf)
-		{
-			_else_if->print_tree(depth + 2);
-		}
-	}
+	// 	if (_type == IfType::ThenElse)
+	// 	{
+	// 		_else_body.print_tree(depth + 1);
+	// 	}
+	// 	else if (_type == IfType::ThenElseIf)
+	// 	{
+	// 		_else_if->print_tree(depth + 2);
+	// 	}
+	// }
 
 	IfStatement& IfStatement::operator=(IfStatement&& other)
 	{

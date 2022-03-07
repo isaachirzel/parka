@@ -62,7 +62,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool ShiftExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool ShiftExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -76,31 +76,31 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void ShiftExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void ShiftExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 
-		for (const auto& rhs : _rhs)
-		{
-			const char *symbol = rhs.type == ShiftType::Left
-				? "<<\n"
-				: ">>\n";
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		const char *symbol = rhs.type == ShiftType::Left
+	// 			? "<<\n"
+	// 			: ">>\n";
 
-			print_branch(depth - 1, symbol);
-			rhs.expr->print_tree(depth);
-		}
-	}
+	// 		print_branch(depth - 1, symbol);
+	// 		rhs.expr->print_tree(depth);
+	// 	}
+	// }
 
-	Type *ShiftExpression::get_type()
-	{
-		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// Type *ShiftExpression::get_type()
+	// {
+	// 	throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	const lexicon::Token& ShiftExpression::token() const
-	{
-		throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// const lexicon::Token& ShiftExpression::token() const
+	// {
+	// 	throw std::runtime_error("ShiftExpression::" + String(__func__) + " is not implemented yet");
+	// }
 }

@@ -1,11 +1,7 @@
-#include <warbler/syntax/symbol.hpp>
+#include <warbler/syntax/expression/symbol.hpp>
 
 // local headers
 #include <warbler/util/print.hpp>
-#include <warbler/syntax/declaration.hpp>
-
-// standard headers
-#include <cstdlib>
 
 namespace warbler::syntax
 {
@@ -28,7 +24,7 @@ namespace warbler::syntax
 		return Symbol { symbol };
 	}
 
-	// bool Symbol::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool Symbol::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	#pragma message("Implement symbol checking for functions on validation")
 

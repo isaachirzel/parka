@@ -27,7 +27,7 @@ namespace warbler
 	void print_warning(const String& msg);
 	void print_error(const String& msg);
 
-	void print_parse_error(const lexicon::Token& token, const String& expected);
+	void print_parse_error(const lexicon::Token& token, const String& expected, const String& msg = "");
 }
 
 #endif

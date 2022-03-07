@@ -586,7 +586,7 @@ namespace warbler::lexicon
 		return get_next_token(file, pos);
 	}
 
-	const char *Token::prefix() const 
+	const char *Token::category() const 
 	{
 		switch (_type)
 		{
@@ -701,9 +701,9 @@ namespace warbler::lexicon
 	{
 		if (_type == TokenType::EndOfFile)
 		{
-			return prefix();
+			return category();
 		}
 		
-		return String(prefix()) + " '" + text() + '\'';
+		return String(category()) + " '" + text() + '\'';
 	}
 }

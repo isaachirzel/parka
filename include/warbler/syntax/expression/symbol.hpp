@@ -5,7 +5,8 @@
 #include <warbler/lexicon/token.hpp>
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
-#include <warbler/syntax/expression/primary_expression.hpp>
+#include <warbler/syntax/expression/expression.hpp>
+#include <warbler/semantics/symbol_table.hpp>
 
 namespace warbler::syntax
 {
@@ -21,10 +22,8 @@ namespace warbler::syntax
 
 		static Result<Symbol> parse(lexicon::Token& token);
 
-		bool validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
+		bool validate(semantics::SymbolTable& symbols);
 		void print_tree(u32 depth = 0) const;
-
-		const lexicon::Token& token() const { return _token; }
 	};
 
 }

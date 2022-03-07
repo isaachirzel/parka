@@ -27,7 +27,7 @@ namespace warbler::source
 			}
 		}
 
-		_end_pos = end - start_of_line;
+		_end_col = end - start_of_line - 1;
 
 		while (true)
 		{

@@ -62,7 +62,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool EqualityExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool EqualityExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -76,27 +76,27 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void EqualityExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void EqualityExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 
-		for (const auto& rhs : _rhs)
-		{
-			print_branch(depth - 1, rhs.type == EqualityType::Equals ? "==" : "!=");
-			rhs.expr->print_tree(depth);
-		}
-	}
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		print_branch(depth - 1, rhs.type == EqualityType::Equals ? "==" : "!=");
+	// 		rhs.expr->print_tree(depth);
+	// 	}
+	// }
 
-	Type *EqualityExpression::get_type()
-	{
-		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// Type *EqualityExpression::get_type()
+	// {
+	// 	throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	const lexicon::Token& EqualityExpression::token() const
-	{
-		throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// const lexicon::Token& EqualityExpression::token() const
+	// {
+	// 	throw std::runtime_error("EqualityExpression::" + String(__func__) + " is not implemented yet");
+	// }
 }

@@ -62,7 +62,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool MultiplicativeExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool MultiplicativeExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -76,41 +76,41 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void MultiplicativeExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void MultiplicativeExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 
-		for (const auto& rhs : _rhs)
-		{
-			switch (rhs.type)
-			{
-				case MultiplicativeType::Multiply:
-					print_branch(depth - 1, "*");
-					break;
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		switch (rhs.type)
+	// 		{
+	// 			case MultiplicativeType::Multiply:
+	// 				print_branch(depth - 1, "*");
+	// 				break;
 
-				case MultiplicativeType::Divide:
-					print_branch(depth - 1, "/");
-					break;
+	// 			case MultiplicativeType::Divide:
+	// 				print_branch(depth - 1, "/");
+	// 				break;
 
-				case MultiplicativeType::Modulus:
-					print_branch(depth - 1, "%");
-					break;
-			}
+	// 			case MultiplicativeType::Modulus:
+	// 				print_branch(depth - 1, "%");
+	// 				break;
+	// 		}
 
-			rhs.expr->print_tree(depth);
-		}
-	}
+	// 		rhs.expr->print_tree(depth);
+	// 	}
+	// }
 
-	Type *MultiplicativeExpression::get_type()
-	{
-		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// Type *MultiplicativeExpression::get_type()
+	// {
+	// 	throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	const lexicon::Token& MultiplicativeExpression::token() const
-	{
-		throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// const lexicon::Token& MultiplicativeExpression::token() const
+	// {
+	// 	throw std::runtime_error("MultiplicativeExpression::" + String(__func__) + " is not implemented yet");
+	// }
 }

@@ -41,7 +41,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool BitwiseAndExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool BitwiseAndExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -55,27 +55,27 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void BitwiseAndExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void BitwiseAndExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 
-		for (const auto& rhs : _rhs)
-		{
-			print_branch(depth - 1, "&");
-			rhs->print_tree(depth);
-		}
-	}
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		print_branch(depth - 1, "&");
+	// 		rhs->print_tree(depth);
+	// 	}
+	// }
 
-	Type *BitwiseAndExpression::get_type()
-	{
-		throw not_implemented();
-	}
+	// Type *BitwiseAndExpression::get_type()
+	// {
+	// 	throw not_implemented();
+	// }
 
-	const lexicon::Token& BitwiseAndExpression::token() const
-	{
-		throw not_implemented();
-	}
+	// const lexicon::Token& BitwiseAndExpression::token() const
+	// {
+	// 	throw not_implemented();
+	// }
 }

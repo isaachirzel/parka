@@ -89,62 +89,62 @@ namespace warbler::syntax
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}
 
-	// bool AssignmentStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool AssignmentStatement::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	throw std::runtime_error("AssignmentStatement::validate is not implemented yet");
 	// }
 
-	void AssignmentStatement::print_tree(u32 depth) const
-	{
-		_lhs->print_tree(depth);
+	// void AssignmentStatement::print_tree(u32 depth) const
+	// {
+	// 	_lhs->print_tree(depth);
 
-		switch (_type)
-		{
-			case AssignmentType::Become:
-				print_branch(depth, "=");
-				break;
+	// 	switch (_type)
+	// 	{
+	// 		case AssignmentType::Become:
+	// 			print_branch(depth, "=");
+	// 			break;
 
-			case AssignmentType::Multiply:
-				print_branch(depth, "*=");
-				break;
+	// 		case AssignmentType::Multiply:
+	// 			print_branch(depth, "*=");
+	// 			break;
 
-			case AssignmentType::Divide:
-				print_branch(depth, "/=");
-				break;
+	// 		case AssignmentType::Divide:
+	// 			print_branch(depth, "/=");
+	// 			break;
 
-			case AssignmentType::Modulus:
-				print_branch(depth, "%=");		
-				break;
+	// 		case AssignmentType::Modulus:
+	// 			print_branch(depth, "%=");		
+	// 			break;
 
-			case AssignmentType::Add:
-				print_branch(depth, "*=");
-				break;
+	// 		case AssignmentType::Add:
+	// 			print_branch(depth, "*=");
+	// 			break;
 
-			case AssignmentType::Subtract:
-				print_branch(depth, "-=");				
-				break;
+	// 		case AssignmentType::Subtract:
+	// 			print_branch(depth, "-=");				
+	// 			break;
 
-			case AssignmentType::LeftBitShift:
-				print_branch(depth, "<<=");
-				break;
+	// 		case AssignmentType::LeftBitShift:
+	// 			print_branch(depth, "<<=");
+	// 			break;
 
-			case AssignmentType::RightBitShift:
-				print_branch(depth, ">>=");
-				break;
+	// 		case AssignmentType::RightBitShift:
+	// 			print_branch(depth, ">>=");
+	// 			break;
 
-			case AssignmentType::BitwiseAnd:
-				print_branch(depth, "&=");
-				break;
+	// 		case AssignmentType::BitwiseAnd:
+	// 			print_branch(depth, "&=");
+	// 			break;
 
-			case AssignmentType::BitwiseOr:
-				print_branch(depth, "|=");
-				break;
+	// 		case AssignmentType::BitwiseOr:
+	// 			print_branch(depth, "|=");
+	// 			break;
 
-			case AssignmentType::BitwiseXor:
-				print_branch(depth, "^=");
-				break;
-		}
+	// 		case AssignmentType::BitwiseXor:
+	// 			print_branch(depth, "^=");
+	// 			break;
+	// 	}
 
-		_rhs->print_tree(depth + 1);
-	}
+	// 	_rhs->print_tree(depth + 1);
+	// }
 }

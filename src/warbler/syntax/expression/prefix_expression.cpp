@@ -59,37 +59,37 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	void PrefixExpression::print_tree(u32 depth) const
-	{
-		switch (_type)
-		{
-			case PrefixType::Reference:
-				print_branch(depth, "&");
-				break;
+	// void PrefixExpression::print_tree(u32 depth) const
+	// {
+	// 	switch (_type)
+	// 	{
+	// 		case PrefixType::Reference:
+	// 			print_branch(depth, "&");
+	// 			break;
 
-			case PrefixType::Dereference:
-				print_branch(depth, "*");
-				break;
+	// 		case PrefixType::Dereference:
+	// 			print_branch(depth, "*");
+	// 			break;
 
-			case PrefixType::Positive:
-				print_branch(depth, "+");
-				break;
+	// 		case PrefixType::Positive:
+	// 			print_branch(depth, "+");
+	// 			break;
 
-			case PrefixType::Negative:
-				print_branch(depth, "-");
-				break;
+	// 		case PrefixType::Negative:
+	// 			print_branch(depth, "-");
+	// 			break;
 
-			case PrefixType::BitwiseNot:
-				print_branch(depth, "~");
-				break;
+	// 		case PrefixType::BitwiseNot:
+	// 			print_branch(depth, "~");
+	// 			break;
 
-			case PrefixType::BooleanNot:
-				print_branch(depth, "!");
-				break;
-		}
+	// 		case PrefixType::BooleanNot:
+	// 			print_branch(depth, "!");
+	// 			break;
+	// 	}
 
-		_expression->print_tree(depth + 1);
-	}
+	// 	_expression->print_tree(depth + 1);
+	// }
 
 	// bool PrefixExpression::validate(semantics::ModuleContext& module, semantics::FunctionContext& function)
 	// {

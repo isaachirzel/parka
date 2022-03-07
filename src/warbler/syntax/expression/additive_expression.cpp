@@ -52,7 +52,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool AdditiveExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool AdditiveExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -66,27 +66,27 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void AdditiveExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void AdditiveExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 		
-		for (const auto& rhs : _rhs)
-		{
-			print_branch(depth - 1, rhs.type == AdditiveType::Add ? "+" : "-");
-			rhs.expr->print_tree(depth);
-		}
-	}
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		print_branch(depth - 1, rhs.type == AdditiveType::Add ? "+" : "-");
+	// 		rhs.expr->print_tree(depth);
+	// 	}
+	// }
 
-	Type *AdditiveExpression::get_type()
-	{
-		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// Type *AdditiveExpression::get_type()
+	// {
+	// 	throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	const lexicon::Token& AdditiveExpression::token() const
-	{
-		throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// const lexicon::Token& AdditiveExpression::token() const
+	// {
+	// 	throw std::runtime_error("AdditiveExpression::" + String(__func__) + " is not implemented yet");
+	// }
 }

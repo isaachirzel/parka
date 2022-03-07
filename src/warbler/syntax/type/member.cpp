@@ -62,8 +62,8 @@ namespace warbler::syntax
 	// 	return _type.validate(mod_ctx);
 	// }
 
-	void Member::print_tree(u32 depth) const
-	{
-		print_branch(depth, (_is_public ? "public" : "private") + _name.token().text() + ": " + _type.base_type().text());
-	}
+	// void Member::print_tree(u32 depth) const
+	// {
+	// 	print_branch(depth, (_is_public ? "public" : "private") + _name.token().text() + ": " + _type.base_type().text());
+	// }
 }

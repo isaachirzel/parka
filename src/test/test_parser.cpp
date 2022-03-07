@@ -1,7 +1,6 @@
-#include <warbler/lexicon/tokenizer.hpp>
-
 // local headers
 #include <warbler/syntax/ast.hpp>
+#include <warbler/semantics/validation.hpp>
 #include <warbler/util/print.hpp>
 
 // standard headers
@@ -77,22 +76,26 @@ const char *src = R"==(
 // )=====";
 
 using namespace warbler;
-using namespace warbler::syntax;
 
 int main()
 {
 	auto file = source::File::from(src);
-	auto res = Ast::parse(file);
+	auto parse_res = syntax::Ast::parse(file);
 
-	if (!res)
+	if (!parse_res)
 	{
 		print_error("failed to parse src");
 		return 1;
 	}
 
-	auto ast = res.unwrap();
+	auto parse_tree = parse_res.unwrap();
+	// auto ast = semantics::Ast::validate(parse_tree);
 
-	ast.print_tree();
+	// if (!ast)
+	// {
+	// 	print_error("error(s) when validating src");
+	// 	return 1;
+	// }
 	
 	print_note("successfully validated ast");
 

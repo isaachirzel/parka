@@ -203,17 +203,11 @@ namespace warbler
 				auto is_first_line = &line == &snippet.lines().front();
 				auto is_last_line = &line == &snippet.lines().back();
 
-				if (is_first_line && i == snippet.col())
+				if (is_first_line && i == snippet.start_col())
 				{
 					line_text += context.color;
 					underline_text += context.color;
 					should_underline = true;
-				}
-				else if (is_last_line && i == snippet.end_pos())
-				{	
-					line_text += context.reset;
-					underline_text += context.reset;
-					should_underline = false;
 				}
 
 				line_text += line[i];
@@ -227,6 +221,13 @@ namespace warbler
 					underline_text += line[i] == '\t'
 						? '\t'
 						: ' ';
+				}
+
+				if (is_last_line && i == snippet.end_col())
+				{
+					line_text += context.reset;
+					underline_text += context.reset;
+					should_underline = false;
 				}
 			}
 
@@ -262,15 +263,9 @@ namespace warbler
 		return out;
 	}
 
-	void print_parse_error(const Token& token, const String& expected)
+	void print_parse_error(const Token& token, const String& expected, const String& msg)
 	{
-		const auto* prefix = token.prefix();
-
-		String token_text = prefix
-			? String(prefix) + " '" + token.text() + '\''
-			: "'" + token.text() + "'";
-
-		print_error(token, "expected " + expected + ", found " + token_text);
+		print_error(token, "Expected " + expected + ", found " + String(token.category()) + " '" + token.text() + "'. " + msg);
 	}
 
 	static inline void print_message(const LogContext& context, const String& msg)
@@ -280,7 +275,7 @@ namespace warbler
 
 	static void print_message(LogLevel level, const Snippet& snippet, const String& msg)
 	{
-		output_stream << snippet.filename() << ':' << snippet.line() + 1 << ':' << snippet.col() + 1 << ' ';
+		output_stream << snippet.filename() << ':' << snippet.line() + 1 << ':' << snippet.start_col() + 1 << ' ';
 
 		auto context = get_log_context(level);
 

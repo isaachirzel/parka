@@ -14,12 +14,6 @@ namespace warbler::syntax
 		Member
 	};
 
-	struct MemberExpression
-	{
-		Identifier name;
-		Member *definition;
-	};
-
 	class PostfixExpression : public Expression
 	{
 	private:
@@ -30,7 +24,7 @@ namespace warbler::syntax
 		{
 			Ptr<Expression> _index;
 			Array<Ptr<Expression>> _arguments;
-			MemberExpression _member;
+			Identifier _member;
 		};
 
 		PostfixType _type;
@@ -39,14 +33,14 @@ namespace warbler::syntax
 
 		PostfixExpression(Ptr<Expression>&& expression, Ptr<Expression>&& index);
 		PostfixExpression(Ptr<Expression>&& expression, Array<Ptr<Expression>>&& arguments);
-		PostfixExpression(Ptr<Expression>&& expression, Identifier&& member_name);
+		PostfixExpression(Ptr<Expression>&& expression, Identifier&& member);
 		PostfixExpression(PostfixExpression&& other);
 		PostfixExpression(const PostfixExpression& other) = delete;
 		~PostfixExpression();
 		
 		static Result<Ptr<Expression>> parse(lexicon::Token& token);
 
-		bool validate(semantics::ModuleContext& module, semantics::FunctionContext& function);
+		bool validate(semantics::SymbolTable& symbols);
 		Type *get_type();
 		const lexicon::Token& token() const;
 		void print_tree(u32 depth = 0) const;

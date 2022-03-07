@@ -1,5 +1,5 @@
-#ifndef WARBLER_SYNTAX_TYPE_TYPE_HPP
-#define WARBLER_SYNTAX_TYPE_TYPE_HPP
+#ifndef WARBLER_SYNTAX_TYPE_TYPE_DEFINITION_HPP
+#define WARBLER_SYNTAX_TYPE_TYPE_DEFINITION_HPP
 
 
 #include <warbler/syntax/type/type_definition.hpp>
@@ -17,8 +17,8 @@ namespace warbler::syntax
 
 		static Result<Ptr<TypeDefinition>> parse(lexicon::Token& token);
 
-		//virtual bool validate(semantics::ModuleContext& mod_ctx) = 0;
-		virtual void print_tree(u32 depth = 0) const = 0;
+		virtual bool validate(semantics::ModuleContext& mod_ctx) = 0;
+		//virtual void print_tree(u32 depth = 0) const = 0;
 
 		// virtual Member *get_member(const String& member_name) = 0;
 		// virtual bool is_primitive() const = 0;

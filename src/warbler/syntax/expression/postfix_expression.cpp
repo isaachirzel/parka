@@ -20,9 +20,9 @@ namespace warbler::syntax
 	_type(PostfixType::FunctionCall)
 	{}
 
-	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member_name) :
+	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member) :
 	_expression(std::move(expression)),
-	_member(MemberExpression { std::move(member_name), nullptr }),
+	_member(std::move(member)),
 	_type(PostfixType::Member)
 	{}
  
@@ -58,7 +58,7 @@ namespace warbler::syntax
 				break;
 
 			case PostfixType::Member:
-				_member.~MemberExpression();
+				_member.~Identifier();
 				break;
 		}
 	}
@@ -160,7 +160,7 @@ namespace warbler::syntax
 		return expression;
 	}
 
-	// bool PostfixExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool PostfixExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_expression->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -196,53 +196,53 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	Type *PostfixExpression::get_type()
-	{
-		// switch (_type)
-		// {
-		// 	case PostfixType::Index:
-		// 		break;
+	// Type *PostfixExpression::get_type()
+	// {
+	// 	// switch (_type)
+	// 	// {
+	// 	// 	case PostfixType::Index:
+	// 	// 		break;
 
-		// 	case PostfixType::FunctionCall:
-		// 		return 
-		// 		break;
+	// 	// 	case PostfixType::FunctionCall:
+	// 	// 		return 
+	// 	// 		break;
 
-		// 	case PostfixType::Member:
+	// 	// 	case PostfixType::Member:
 				
-		// 		break;
-		// }
-		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// 	// 		break;
+	// 	// }
+	// 	throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	const lexicon::Token& PostfixExpression::token() const
-	{
-		throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
-	}
+	// const lexicon::Token& PostfixExpression::token() const
+	// {
+	// 	throw std::runtime_error("PostfixExpression::" + String(__func__) + " is not implemented yet");
+	// }
 
-	void PostfixExpression::print_tree(u32 depth) const
-	{
-		_expression->print_tree(depth);
+	// void PostfixExpression::print_tree(u32 depth) const
+	// {
+	// 	_expression->print_tree(depth);
 
-		switch (_type)
-		{
-			case PostfixType::Index:
-				print_branch(depth + 1, "[");
-				_index->print_tree(depth + 2);
-				print_branch(depth + 1, "]");
-				break;
+	// 	switch (_type)
+	// 	{
+	// 		case PostfixType::Index:
+	// 			print_branch(depth + 1, "[");
+	// 			_index->print_tree(depth + 2);
+	// 			print_branch(depth + 1, "]");
+	// 			break;
 
-			case PostfixType::FunctionCall:
-				print_branch(depth + 1, "(");
+	// 		case PostfixType::FunctionCall:
+	// 			print_branch(depth + 1, "(");
 
-				for (const auto& arg : _arguments)
-					arg->print_tree(depth + 2);
+	// 			for (const auto& arg : _arguments)
+	// 				arg->print_tree(depth + 2);
 
-				print_branch(depth + 1, ")");
-			break;
+	// 			print_branch(depth + 1, ")");
+	// 		break;
 
-			case PostfixType::Member:
-				print_branch(depth + 1, "." + _member.name.token().text());
-				break;
-		}
-	}
+	// 		case PostfixType::Member:
+	// 			print_branch(depth + 1, "." + _member.name.token().text());
+	// 			break;
+	// 	}
+	// }
 }

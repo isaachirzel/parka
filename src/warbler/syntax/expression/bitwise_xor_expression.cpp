@@ -37,7 +37,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool BitwiseXorExpression::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool BitwiseXorExpression::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -51,27 +51,27 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void BitwiseXorExpression::print_tree(u32 depth) const
-	{
-		if (_rhs.size() > 0)
-			depth += 1;
+	// void BitwiseXorExpression::print_tree(u32 depth) const
+	// {
+	// 	if (_rhs.size() > 0)
+	// 		depth += 1;
 
-		_lhs->print_tree(depth);
+	// 	_lhs->print_tree(depth);
 
-		for (const auto& rhs : _rhs)
-		{
-			print_branch(depth - 1, "^");
-			rhs->print_tree(depth);
-		}
-	}
+	// 	for (const auto& rhs : _rhs)
+	// 	{
+	// 		print_branch(depth - 1, "^");
+	// 		rhs->print_tree(depth);
+	// 	}
+	// }
 
-	Type *BitwiseXorExpression::get_type()
-	{
-		throw not_implemented();
-	}
+	// Type *BitwiseXorExpression::get_type()
+	// {
+	// 	throw not_implemented();
+	// }
 
-	const lexicon::Token& BitwiseXorExpression::token() const
-	{
-		throw not_implemented();
-	}
+	// const lexicon::Token& BitwiseXorExpression::token() const
+	// {
+	// 	throw not_implemented();
+	// }
 }

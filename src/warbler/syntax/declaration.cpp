@@ -1,4 +1,4 @@
-#include <warbler/syntax/declaration.hpp>
+#include <warbler/syntax/statement/declaration.hpp>
 
 #include <warbler/util/print.hpp>
 
@@ -118,12 +118,12 @@ namespace warbler::syntax
 
 	void Declaration::print_tree(u32 depth) const
 	{
-		String text = _is_mutable
-			? "mut "
-			: "";
+		// String text = _is_mutable
+		// 	? "mut "
+		// 	: "";
 
-		text += _name.token().text() + ": " + (_type.has_value() ? _type->base_type().text() : "<auto>");
+		// text += _name.token().text() + ": " + (_type.has_value() ? _type->base_type().text() : "<auto>");
 
-		print_branch(depth, text);
+		// print_branch(depth, text);
 	}
 }

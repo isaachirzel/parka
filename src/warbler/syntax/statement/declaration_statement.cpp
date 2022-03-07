@@ -44,7 +44,7 @@ namespace warbler::syntax
 		return DeclarationStatement { declaration.unwrap(), value.unwrap() };
 	}
 
-	// bool DeclarationStatement::validate(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool DeclarationStatement::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	if (!_declaration.validate_variable(mod_ctx, func_ctx) && _value->validate(mod_ctx, func_ctx))
 	// 		return false;
@@ -62,10 +62,10 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void DeclarationStatement::print_tree(u32 depth) const
-	{
-		_declaration.print_tree(depth);
-		print_branch(depth + 1, "=");
-		_value->print_tree(depth  + 2);
-	}
+	// void DeclarationStatement::print_tree(u32 depth) const
+	// {
+	// 	_declaration.print_tree(depth);
+	// 	print_branch(depth + 1, "=");
+	// 	_value->print_tree(depth  + 2);
+	// }
 }

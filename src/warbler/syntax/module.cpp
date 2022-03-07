@@ -52,14 +52,14 @@ namespace warbler::syntax
 		return Module(std::move(functions), std::move(types));
 	}
 
-	void Module::print_tree(u32 depth) const
-	{
-		for (const auto& type: _types)
-			type->print_tree(depth);
+	// void Module::print_tree(u32 depth) const
+	// {
+	// 	for (const auto& type: _types)
+	// 		type->print_tree(depth);
 
-		for (const auto& function : _functions)
-			function.print_tree(depth);
-	}
+	// 	for (const auto& function : _functions)
+	// 		function.print_tree(depth);
+	// }
 
 	// bool Module::validate(const String& module_name)
 	// {

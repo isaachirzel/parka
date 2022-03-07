@@ -1,6 +1,6 @@
 #include <warbler/syntax/ast.hpp>
 
-#include <warbler/syntax/function.hpp>
+#include <warbler/syntax/function/function.hpp>
 #include <warbler/lexicon/token.hpp>
 #include <warbler/util/print.hpp>
 
@@ -27,10 +27,10 @@ namespace warbler::syntax
 		return Ast(res.unwrap());
 	}
 
-	void Ast::print_tree(u32 depth) const
-	{
-		_module.print_tree(depth);
-	}
+	// void Ast::print_tree(u32 depth) const
+	// {
+	// 	_module.print_tree(depth);
+	// }
 
 	// bool Ast::validate()
 	// {

@@ -122,7 +122,7 @@ namespace warbler::lexicon
 		TokenType type() const { return _type; }
 		String text() const { return _file.get_text(_pos, _length); }
 		operator String() const;
-		const char *prefix() const;
+		const char *category() const;
 	};
 }
 
