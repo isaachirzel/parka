@@ -17,7 +17,7 @@ namespace warbler::syntax
 			return {};
 		}
 		
-		auto declaration = Declaration::parse_variable(token.next());
+		auto declaration = Declaration::parse(token.next());
 
 		if (!declaration)
 			return {};

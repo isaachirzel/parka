@@ -1,6 +1,5 @@
 // local headers
 #include <warbler/syntax/ast.hpp>
-#include <warbler/semantics/validation.hpp>
 #include <warbler/util/print.hpp>
 
 // standard headers

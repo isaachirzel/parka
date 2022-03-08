@@ -3,7 +3,6 @@
 
 // local headers
 #include <warbler/syntax/type/member.hpp>
-#include <warbler/semantics/context.hpp>
 #include <warbler/syntax/type/type_definition.hpp>
 
 namespace warbler::syntax
@@ -14,7 +13,7 @@ namespace warbler::syntax
 
 		Identifier _name;
 		Array<Member> _members;
-		semantics::TypeContext _context;
+		//semantics::TypeContext _context;
 
 	public:
 
@@ -22,10 +21,10 @@ namespace warbler::syntax
 
 		static Result<Struct> parse(lexicon::Token& token, Identifier&& name);
 
-		bool validate(semantics::ModuleContext& mod_ctx);
+		bool validate(semantics::SymbolTable& symbols);
 		void print_tree(u32 depth = 0) const;
 
-		Member *get_member(const String& member_name) { return _context.get_member(member_name); }
+		Member *get_member(const String& member_name);
 		bool is_primitive() const { return false; }
 		const Identifier& name() const { return _name; }
 	};

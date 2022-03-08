@@ -43,7 +43,7 @@ namespace warbler::syntax
 		return Function(name.unwrap(), signature.unwrap(), body.unwrap());
 	}
 
-	// bool Function::validate(semantics::ModuleContext& mod_ctx)
+	// bool Function::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	_context.blocks.push_back(&_body.context());
 
@@ -56,11 +56,11 @@ namespace warbler::syntax
 	// 	return _return_type.validate(mod_ctx) && _body.validate(mod_ctx, _context);
 	// }
 
-	void Function::print_tree(u32 depth) const 
-	{
-		print_branch(depth, "function " + _name.token().text());
-		print_branch(depth + 1, "function signature printing is not implemented");
+	// void Function::print_tree(u32 depth) const 
+	// {
+	// 	print_branch(depth, "function " + _name.token().text());
+	// 	print_branch(depth + 1, "function signature printing is not implemented");
 
-		_body.print_tree(depth + 1);
-	}
+	// 	_body.print_tree(depth + 1);
+	// }
 }

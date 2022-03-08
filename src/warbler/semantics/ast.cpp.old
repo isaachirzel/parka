@@ -1,9 +1,0 @@
-#ifndef WARBLER_SEMANTIC_AST_HPP
-#define WARBLER_SEMANTIC_AST_HPP
-
-namespace warbler::semantics
-{
-	
-}
-
-#endif

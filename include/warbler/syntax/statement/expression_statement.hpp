@@ -7,7 +7,6 @@
 #include <warbler/syntax/statement/statement.hpp>
 #include <warbler/syntax/expression/expression.hpp>
 #include <warbler/syntax/expression/conditional_expression.hpp>
-#include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax
 {

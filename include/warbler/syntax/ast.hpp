@@ -3,7 +3,6 @@
 
 // local headers
 #include <warbler/syntax/module.hpp>
-#include <warbler/syntax/function.hpp>
 
 namespace warbler::syntax
 {

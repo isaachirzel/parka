@@ -50,26 +50,15 @@ namespace warbler::syntax
 		return Struct { std::move(name), std::move(members) };
 	}
 	
-	// bool Struct::validate(semantics::ModuleContext& mod_ctx)
-	// {
-	// 	for (auto& member : _members)
-	// 	{
-	// 		if (!member.validate(mod_ctx, _context))
-	// 			return false;
-	// 	}
-
-	// 	return true;
-	// }
-
-	void Struct::print_tree(u32 depth) const
+	bool Struct::validate(semantics::SymbolTable& symbols)
 	{
+		throw not_implemented();
+		// for (auto& member : _members)
+		// {
+		// 	if (!member.validate(mod_ctx, _context))
+		// 		return false;
+		// }
 
-		print_branch(depth, "struct");
-		print_branch(depth, "{");
-
-		for (const auto& member: _members)
-			member.print_tree(depth + 1);
-
-		print_branch(depth, "}");
+		// return true;
 	}
 }

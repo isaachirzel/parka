@@ -50,16 +50,4 @@ namespace warbler::syntax
 
 	// 	return true;
 	// }
-
-	void BlockStatement::print_tree(u32 depth) const
-	{
-		print_branch(depth, "{");
-		
-		for (const auto& statement : _statements)
-		{
-			statement->print_tree(depth + 1);
-		}
-		
-		print_branch(depth, "}");
-	}
 }

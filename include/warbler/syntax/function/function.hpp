@@ -2,7 +2,6 @@
 #define WARBLER_SYNTAX_FUNCTION_HPP
 
 // local headers
-#include <warbler/semantics/context.hpp>
 #include <warbler/syntax/identifier.hpp>
 #include <warbler/syntax/expression/expression.hpp>
 #include <warbler/syntax/expression/conditional_expression.hpp>
@@ -15,8 +14,6 @@
 
 namespace warbler::syntax
 {
-	class Symbol;
-
 	class Function
 	{
 	private:
@@ -34,7 +31,7 @@ namespace warbler::syntax
 		static Result<Function> parse(lexicon::Token& token);
 
 		void print_tree(u32 depth = 0) const;
-		bool validate(semantics::ModuleContext& context);
+		bool validate(semantics::SymbolTable& symbols);
 
 		const Identifier& name() const { return _name; }
 

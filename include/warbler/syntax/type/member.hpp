@@ -4,7 +4,6 @@
 // local headers
 #include <warbler/syntax/identifier.hpp>
 #include <warbler/syntax/type.hpp>
-#include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax
 {
@@ -22,7 +21,7 @@ namespace warbler::syntax
 
 		static Result<Member> parse(lexicon::Token& token);
 
-		bool validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx);
+		bool validate(semantics::SymbolTable& symbols);
 		void print_tree(u32 depth = 0) const;
 
 		const Identifier& name() const { return _name; }

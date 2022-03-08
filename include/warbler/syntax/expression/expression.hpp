@@ -12,7 +12,7 @@ namespace warbler::syntax
 	struct Expression
 	{
 		virtual ~Expression() = default;
-		virtual bool validate(semantics::SymbolTable& symbols) = 0;
+		//virtual bool validate(semantics::SymbolTable& symbols) = 0;
 
 		static Result<Ptr<Expression>> parse(lexicon::Token& token);
 	};

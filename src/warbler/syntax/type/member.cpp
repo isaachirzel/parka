@@ -46,7 +46,7 @@ namespace warbler::syntax
 		return Member(name.unwrap(), type.unwrap(), is_public);
 	}
 
-	// bool Member::validate(semantics::ModuleContext& mod_ctx, semantics::TypeContext& type_ctx)
+	// bool Member::validate(semantics::SymbolTable& symbols)
 	// {
 	// 	auto *member = type_ctx.get_member(_name.token().text());
 

@@ -10,11 +10,10 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	// bool Primitive::validate(semantics::ModuleContext& mod_ctx)
-	// {
-	// 	print_note("Primitive::validate is not defined");
-	// 	return true;
-	// }
+	bool Primitive::validate(semantics::SymbolTable& symbols)
+	{
+		throw not_implemented();
+	}
 
 	void Primitive::print_tree(u32 depth) const
 	{

@@ -10,35 +10,7 @@ namespace warbler::syntax
 	_is_mutable(is_mutable)
 	{}
 
-	Result<Declaration> Declaration::parse_parameter(lexicon::Token& token)
-	{
-		auto is_mutable = false;
-
-		if (token.type() == lexicon::TokenType::KeywordMut)
-		{
-			is_mutable = true;
-			token.next();
-		}
-
-		auto name = Identifier::parse(token);
-
-		if (!name)
-			return {};
-		if (token.type() != lexicon::TokenType::Colon)
-		{
-			print_error(token, "parameters may not be declared without a type");
-			return {};
-		}
-
-		auto type = Type::parse(token.next());
-
-		if (!type)
-			return {};
-
-		return Declaration { name.unwrap(), type.unwrap(), is_mutable };
-	}
-
-	Result<Declaration> Declaration::parse_variable(lexicon::Token& token)
+	Result<Declaration> Declaration::parse(lexicon::Token& token)
 	{
 		auto is_mutable = false;
 
@@ -68,7 +40,7 @@ namespace warbler::syntax
 		return Declaration { name.unwrap(), std::move(type), is_mutable };
 	}
 
-	// bool Declaration::validate_parameter(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool Declaration::validate_parameter(semantics::SymbolTable& symbols, semantics::FunctionContext& func_ctx)
 	// {
 	// 	auto *previous_declaration = func_ctx.get_parameter(_name.text());
 
@@ -85,7 +57,7 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	// bool Declaration::validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx)
+	// bool Declaration::validate_variable(semantics::SymbolTable& symbols, semantics::FunctionContext& func_ctx)
 	// {
 	// 	auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
 
@@ -116,8 +88,8 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	void Declaration::print_tree(u32 depth) const
-	{
+	// void Declaration::print_tree(u32 depth) const
+	// {
 		// String text = _is_mutable
 		// 	? "mut "
 		// 	: "";
@@ -125,5 +97,5 @@ namespace warbler::syntax
 		// text += _name.token().text() + ": " + (_type.has_value() ? _type->base_type().text() : "<auto>");
 
 		// print_branch(depth, text);
-	}
+	// }
 }

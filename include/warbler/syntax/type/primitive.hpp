@@ -4,6 +4,7 @@
 #include <warbler/util/primitive.hpp>
 #include <warbler/syntax/identifier.hpp>
 #include <warbler/syntax/type/type_definition.hpp>
+#include <warbler/syntax/type/member.hpp>
 
 namespace warbler::syntax
 {
@@ -30,7 +31,7 @@ namespace warbler::syntax
 
 		Primitive(Identifier&& name, u32 bytes, PrimitiveType type);
 
-		bool validate(semantics::ModuleContext& mod_ctx);
+		bool validate(semantics::SymbolTable& symbols);
 		void print_tree(u32 depth = 0) const;
 
 		Member *get_member(const String&) { return nullptr; }

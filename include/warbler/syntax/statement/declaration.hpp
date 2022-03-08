@@ -3,7 +3,6 @@
 
 #include <warbler/syntax/identifier.hpp>
 #include <warbler/syntax/type.hpp>
-#include <warbler/semantics/context.hpp>
 #include <warbler/util/optional.hpp>
 
 namespace warbler::syntax
@@ -20,15 +19,13 @@ namespace warbler::syntax
 
 		Declaration(Identifier&& name, Optional<Type>&& type, bool is_mutable);
 
-		static Result<Declaration> parse_parameter(lexicon::Token& token);
-		static Result<Declaration> parse_variable(lexicon::Token& token);
+		static Result<Declaration> parse(lexicon::Token& token);
 
-		bool validate_variable(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
-		bool validate_parameter(semantics::ModuleContext& mod_ctx, semantics::FunctionContext& func_ctx);
-		void print_tree(u32 depth = 0) const;
+		bool validate_variable(semantics::SymbolTable& symbols);
 
 		bool is_mutable() const { return _is_mutable; }
 		bool is_auto_type() const { return _type.has_value(); }
+
 		const Identifier& name() const { return _name; }
 		Type& type() { return *_type; }
 	};

@@ -2,8 +2,9 @@
 #define WARBLER_SYNTAX_STATEMENT_COMPOUND_STATEMENT
 
 #include <warbler/util/array.hpp>
-#include <warbler/syntax/statement/statement.hpp>
 #include <warbler/util/ptr.hpp>
+#include <warbler/syntax/statement/statement.hpp>
+#include <warbler/semantics/symbol_table.hpp>
 
 namespace warbler::syntax
 {
@@ -11,7 +12,6 @@ namespace warbler::syntax
 	{
 	private:
 
-		semantics::BlockContext _context;
 		Array<Ptr<Statement>> _statements;
 
 	public:
@@ -19,7 +19,8 @@ namespace warbler::syntax
 		BlockStatement(Array<Ptr<Statement>>&& statements);
 
 		static Result<BlockStatement> parse(lexicon::Token& token);
-		void print_tree(u32 depth = 0) const;
+
+		bool validate(semantics::SymbolTable& symbols);
 	};
 }
 
