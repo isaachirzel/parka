@@ -98,7 +98,7 @@ namespace warbler::syntax
 		return IfStatement(condition.unwrap(), then_body.unwrap());
 	}
 
-	// bool IfStatement::validate(semantics::SymbolTable& symbols)
+	// bool IfStatement::validate(semantics::Context& context)
 	// {
 	// 	throw std::runtime_error("IfStatement::validate is not implemented yet");
 	// }

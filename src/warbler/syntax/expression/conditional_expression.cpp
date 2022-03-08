@@ -48,7 +48,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool ConditionalExpression::validate(semantics::SymbolTable& symbols)
+	// bool ConditionalExpression::validate(semantics::Context& context)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;

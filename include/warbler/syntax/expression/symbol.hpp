@@ -6,7 +6,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/syntax/expression/expression.hpp>
-#include <warbler/semantics/symbol_table.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax
 {
@@ -22,7 +22,7 @@ namespace warbler::syntax
 
 		static Result<Symbol> parse(lexicon::Token& token);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 	};
 

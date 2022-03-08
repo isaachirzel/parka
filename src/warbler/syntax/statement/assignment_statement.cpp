@@ -89,7 +89,7 @@ namespace warbler::syntax
 		return AssignmentStatement(lhs.unwrap(), rhs.unwrap(), type);
 	}
 
-	// bool AssignmentStatement::validate(semantics::SymbolTable& symbols)
+	// bool AssignmentStatement::validate(semantics::Context& context)
 	// {
 	// 	throw std::runtime_error("AssignmentStatement::validate is not implemented yet");
 	// }

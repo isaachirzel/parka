@@ -1,6 +1,8 @@
 #ifndef WARBLER_UTIL_OPTIONAL_HPP
 #define WARBLER_UTIL_OPTIONAL_HPP
 
+#include <cassert>
+
 namespace warbler
 {
 	template<typename T>

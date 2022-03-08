@@ -7,7 +7,7 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/syntax/type/type_definition.hpp>
-#include <warbler/semantics/symbol_table.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax
 {
@@ -27,7 +27,7 @@ namespace warbler::syntax
 	public:
 
 		static Result<Type> parse(lexicon::Token& token);
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 	};
 }
 

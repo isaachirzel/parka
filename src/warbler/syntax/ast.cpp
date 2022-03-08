@@ -27,14 +27,9 @@ namespace warbler::syntax
 		return Ast(res.unwrap());
 	}
 
-	// void Ast::print_tree(u32 depth) const
-	// {
-	// 	_module.print_tree(depth);
-	// }
-
-	// bool Ast::validate()
-	// {
-	// 	#pragma message "actually implement passing scope to module"
-	// 	return _module.validate({ "TEST_MODULE" });
-	// }
+	bool Ast::validate()
+	{
+		#pragma message "actually implement passing scope to module"
+		return _module.validate({ "TEST_MODULE" });
+	}
 }

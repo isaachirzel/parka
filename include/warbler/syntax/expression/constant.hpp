@@ -37,7 +37,7 @@ namespace warbler::syntax
 
 		static Result<Constant> parse(lexicon::Token& token);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 
 		const lexicon::Token& token() const { return _token; }

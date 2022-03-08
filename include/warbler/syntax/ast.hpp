@@ -18,7 +18,7 @@ namespace warbler::syntax
 	
 		static Result<Ast> parse(const source::File& file);
 
-		void print_tree(u32 depth = 0) const;
+		bool validate();
 		const Module& mod() const { return _module; }
 	};
 }

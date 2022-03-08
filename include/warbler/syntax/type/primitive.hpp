@@ -31,7 +31,7 @@ namespace warbler::syntax
 
 		Primitive(Identifier&& name, u32 bytes, PrimitiveType type);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 
 		Member *get_member(const String&) { return nullptr; }

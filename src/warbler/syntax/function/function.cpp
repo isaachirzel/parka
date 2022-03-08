@@ -43,7 +43,7 @@ namespace warbler::syntax
 		return Function(name.unwrap(), signature.unwrap(), body.unwrap());
 	}
 
-	// bool Function::validate(semantics::SymbolTable& symbols)
+	// bool Function::validate(semantics::Context& context)
 	// {
 	// 	_context.blocks.push_back(&_body.context());
 

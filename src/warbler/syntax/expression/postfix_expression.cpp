@@ -160,7 +160,7 @@ namespace warbler::syntax
 		return expression;
 	}
 
-	// bool PostfixExpression::validate(semantics::SymbolTable& symbols)
+	// bool PostfixExpression::validate(semantics::Context& context)
 	// {
 	// 	if (!_expression->validate(mod_ctx, func_ctx))
 	// 		return false;

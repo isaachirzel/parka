@@ -66,7 +66,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool RelationalExpression::validate(semantics::SymbolTable& symbols)
+	// bool RelationalExpression::validate(semantics::Context& context)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;

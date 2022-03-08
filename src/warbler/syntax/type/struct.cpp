@@ -50,7 +50,7 @@ namespace warbler::syntax
 		return Struct { std::move(name), std::move(members) };
 	}
 	
-	bool Struct::validate(semantics::SymbolTable& symbols)
+	bool Struct::validate(semantics::Context& context)
 	{
 		throw not_implemented();
 		// for (auto& member : _members)

@@ -5,6 +5,7 @@
 #include <warbler/syntax/function/function.hpp>
 #include <warbler/util/table.hpp>
 #include <warbler/syntax/type/type_definition.hpp>
+#include <warbler/semantics/attributes.hpp>
 
 namespace warbler::syntax
 {
@@ -14,6 +15,7 @@ namespace warbler::syntax
 
 		Array<Function> _functions;
 		Array<Ptr<TypeDefinition>> _types;
+		semantics::Scope _scope;
 
 	public:
 

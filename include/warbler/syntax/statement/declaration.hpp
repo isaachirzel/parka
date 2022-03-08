@@ -21,7 +21,7 @@ namespace warbler::syntax
 
 		static Result<Declaration> parse(lexicon::Token& token);
 
-		bool validate_variable(semantics::SymbolTable& symbols);
+		bool validate_variable(semantics::Context& context);
 
 		bool is_mutable() const { return _is_mutable; }
 		bool is_auto_type() const { return _type.has_value(); }

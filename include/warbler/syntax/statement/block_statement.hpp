@@ -4,7 +4,7 @@
 #include <warbler/util/array.hpp>
 #include <warbler/util/ptr.hpp>
 #include <warbler/syntax/statement/statement.hpp>
-#include <warbler/semantics/symbol_table.hpp>
+#include <warbler/semantics/context.hpp>
 
 namespace warbler::syntax
 {
@@ -20,7 +20,7 @@ namespace warbler::syntax
 
 		static Result<BlockStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 	};
 }
 

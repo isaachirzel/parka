@@ -79,15 +79,21 @@ using namespace warbler;
 int main()
 {
 	auto file = source::File::from(src);
-	auto parse_res = syntax::Ast::parse(file);
+	auto res = syntax::Ast::parse(file);
 
-	if (!parse_res)
+	if (!res)
 	{
 		print_error("failed to parse src");
 		return 1;
 	}
 
-	auto parse_tree = parse_res.unwrap();
+	auto ast = res.unwrap();
+
+	if (!ast.validate())
+	{
+		print_error("errors when validating source");
+		return 1;
+	}
 	// auto ast = semantics::Ast::validate(parse_tree);
 
 	// if (!ast)

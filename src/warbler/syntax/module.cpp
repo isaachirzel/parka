@@ -52,62 +52,53 @@ namespace warbler::syntax
 		return Module(std::move(functions), std::move(types));
 	}
 
-	// void Module::print_tree(u32 depth) const
-	// {
-	// 	for (const auto& type: _types)
-	// 		type->print_tree(depth);
-
-	// 	for (const auto& function : _functions)
-	// 		function.print_tree(depth);
-	// }
-
-	// bool Module::validate(const String& module_name)
-	// {
-	// 	_context.name = module_name;
+	bool Module::validate(const String& module_name)
+	{
+		semantics::Context context(module_name, &_scope);
 		
-	// 	for (auto& type : _types)
-	// 	{
-	// 		const auto& type_name = type->name().text();
+		for (auto& type : _types)
+		{
+			auto type_name = type->name().token().text();
 
-	// 		if (_context.types.find(type_name) != _context.types.end())
-	// 		{
-	// 			print_error(type->name().token(), "duplicate type " + type->name().text() + " in module '" + module_name + "'");
+			if (!context.has_symbol(type_name))
+			{
+				print_error(type->name().token(), "symbol '" + type->name().token().text() + "' is already defined in module '" + module_name + "'");
 
-	// 			return false;
-	// 		}
+				return false;
+			}
 
-	// 		_context.types[type_name] = type.raw_ptr();
-	// 	}
+			context.add_type(type_name, type.raw_ptr());
+		}
 
-	// 	// checking if members of types are valid
-	// 	for (auto& type : _types)
-	// 	{
-	// 		if (!type->validate(_context))
-	// 			return false;
-	// 	}
+		// checking if members of types are valid
+		for (auto& type : _types)
+		{
+			if (!type->validate(context))
+				return false;
+		}
 
-	// 	// checking for duplicate symbols
-	// 	for (auto& function : _functions)
-	// 	{
-	// 		const auto& function_name = function.name().text();
+		// checking for duplicate symbols
+		for (auto& function : _functions)
+		{
+			auto function_name = function.name().token().text();
 
-	// 		if (_context.functions.find(function_name) != _context.functions.end())
-	// 		{
-	// 			print_error(function.name().token(), "function '" + function_name + "' is already defined in module '" + module_name + "'");
+			if (!context.has_symbol(function_name))
+			{
+				print_error(function.name().token(), "symbol '" + function_name + "' is already defined in module '" + module_name + "'");
 
-	// 			return false;
-	// 		}
+				return false;
+			}
 
-	// 		_context.functions[function_name] = &function;
-	// 	}
+			context.add_function(function_name, &function);
+		}
 
-	// 	// validating functions
-	// 	for (auto& function : _functions)
-	// 	{
-	// 		if (!function.validate(_context))
-	// 			return false;
-	// 	}
+		// validating functions
+		for (auto& function : _functions)
+		{
+			if (!function.validate(context))
+				return false;
+		}
 
-	// 	return true;
-	// }
+		return true;
+	}
 }

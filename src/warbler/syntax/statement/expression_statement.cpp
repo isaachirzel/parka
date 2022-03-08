@@ -27,7 +27,7 @@ namespace warbler::syntax
 		return ExpressionStatement { expression.unwrap() };
 	}
 
-	// bool ExpressionStatement::validate(semantics::SymbolTable& symbols)
+	// bool ExpressionStatement::validate(semantics::Context& context)
 	// {
 	// 	return _expression->validate(mod_ctx, func_ctx);
 	// }

@@ -40,7 +40,7 @@ namespace warbler::syntax
 		return Declaration { name.unwrap(), std::move(type), is_mutable };
 	}
 
-	// bool Declaration::validate_parameter(semantics::SymbolTable& symbols, semantics::FunctionContext& func_ctx)
+	// bool Declaration::validate_parameter(semantics::Context& context, semantics::FunctionContext& func_ctx)
 	// {
 	// 	auto *previous_declaration = func_ctx.get_parameter(_name.text());
 
@@ -57,7 +57,7 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	// bool Declaration::validate_variable(semantics::SymbolTable& symbols, semantics::FunctionContext& func_ctx)
+	// bool Declaration::validate_variable(semantics::Context& context, semantics::FunctionContext& func_ctx)
 	// {
 	// 	auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
 

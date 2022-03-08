@@ -231,7 +231,7 @@ namespace warbler::syntax
 		return Constant(constant, type);
 	}
 
-	// bool Constant::validate(semantics::SymbolTable& symbols)
+	// bool Constant::validate(semantics::Context& context)
 	// {
 	// 	#pragma message("Implement byte counting for each data type")
 

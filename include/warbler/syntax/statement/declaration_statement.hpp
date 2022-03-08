@@ -23,7 +23,7 @@ namespace warbler::syntax
 
 		static Result<DeclarationStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 	};
 }

@@ -44,7 +44,7 @@ namespace warbler::syntax
 		return DeclarationStatement { declaration.unwrap(), value.unwrap() };
 	}
 
-	// bool DeclarationStatement::validate(semantics::SymbolTable& symbols)
+	// bool DeclarationStatement::validate(semantics::Context& context)
 	// {
 	// 	if (!_declaration.validate_variable(mod_ctx, func_ctx) && _value->validate(mod_ctx, func_ctx))
 	// 		return false;

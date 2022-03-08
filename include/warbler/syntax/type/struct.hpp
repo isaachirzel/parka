@@ -21,7 +21,7 @@ namespace warbler::syntax
 
 		static Result<Struct> parse(lexicon::Token& token, Identifier&& name);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 
 		Member *get_member(const String& member_name);

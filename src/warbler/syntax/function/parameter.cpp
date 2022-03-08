@@ -71,8 +71,6 @@ namespace warbler::syntax
 				print_parse_error(token, "')'", "Invalid tokens in parameter list");
 				return {};
 			}
-
-			return parameters;
 		}
 
 		token.next();

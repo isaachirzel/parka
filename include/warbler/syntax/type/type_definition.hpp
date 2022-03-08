@@ -1,7 +1,7 @@
 #ifndef WARBLER_SYNTAX_TYPE_TYPE_DEFINITION_HPP
 #define WARBLER_SYNTAX_TYPE_TYPE_DEFINITION_HPP
 
-#include <warbler/semantics/symbol_table.hpp>
+#include <warbler/semantics/context.hpp>
 #include <warbler/syntax/type/type_definition.hpp>
 #include <warbler/syntax/identifier.hpp>
 #include <warbler/lexicon/token.hpp>
@@ -16,7 +16,7 @@ namespace warbler::syntax
 
 		static Result<Ptr<TypeDefinition>> parse(lexicon::Token& token);
 
-		virtual bool validate(semantics::SymbolTable& symbols) = 0;
+		virtual bool validate(semantics::Context& context) = 0;
 		virtual const Identifier& name() const = 0;
 	};
 }

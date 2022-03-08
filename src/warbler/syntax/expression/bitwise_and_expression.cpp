@@ -41,7 +41,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool BitwiseAndExpression::validate(semantics::SymbolTable& symbols)
+	// bool BitwiseAndExpression::validate(semantics::Context& context)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;

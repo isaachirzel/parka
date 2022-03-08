@@ -24,7 +24,7 @@ namespace warbler::syntax
 		return Symbol { symbol };
 	}
 
-	// bool Symbol::validate(semantics::SymbolTable& symbols)
+	// bool Symbol::validate(semantics::Context& context)
 	// {
 	// 	#pragma message("Implement symbol checking for functions on validation")
 

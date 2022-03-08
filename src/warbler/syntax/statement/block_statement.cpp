@@ -36,7 +36,7 @@ namespace warbler::syntax
 		return BlockStatement { std::move(statements) };
 	}
 
-	// bool BlockStatement::validate(semantics::SymbolTable& symbols)
+	// bool BlockStatement::validate(semantics::Context& context)
 	// {
 	// 	func_ctx.blocks.push_back(&_context);
 

@@ -10,7 +10,7 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	bool Primitive::validate(semantics::SymbolTable& symbols)
+	bool Primitive::validate(semantics::Context& context)
 	{
 		throw not_implemented();
 	}

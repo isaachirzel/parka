@@ -62,7 +62,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool EqualityExpression::validate(semantics::SymbolTable& symbols)
+	// bool EqualityExpression::validate(semantics::Context& context)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;

@@ -31,7 +31,7 @@ namespace warbler::syntax
 
 		static Result<Ptr<Expression>> parse(lexicon::Token& token);
 
-		bool validate(semantics::SymbolTable& symbols);
+		bool validate(semantics::Context& context);
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
 		const lexicon::Token& token() const;

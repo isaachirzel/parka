@@ -52,7 +52,7 @@ namespace warbler::syntax
 		return Ptr<Expression>(ptr);
 	}
 
-	// bool AdditiveExpression::validate(semantics::SymbolTable& symbols)
+	// bool AdditiveExpression::validate(semantics::Context& context)
 	// {
 	// 	if (!_lhs->validate(mod_ctx, func_ctx))
 	// 		return false;
