@@ -4,13 +4,13 @@
 
 namespace warbler::syntax
 {
-	Declaration::Declaration(Identifier&& name, Optional<Type>&& type, bool is_mutable) :
+	Variable::Variable(Identifier&& name, Optional<Type>&& type, bool is_mutable) :
 	_name(std::move(name)),
 	_type(std::move(type)),
 	_is_mutable(is_mutable)
 	{}
 
-	Result<Declaration> Declaration::parse(lexicon::Token& token)
+	Result<Variable> Variable::parse(lexicon::Token& token)
 	{
 		auto is_mutable = false;
 
@@ -37,10 +37,10 @@ namespace warbler::syntax
 			type = res.unwrap();
 		}
 
-		return Declaration { name.unwrap(), std::move(type), is_mutable };
+		return Variable { name.unwrap(), std::move(type), is_mutable };
 	}
 
-	// bool Declaration::validate_parameter(semantics::Context& context, semantics::FunctionContext& func_ctx)
+	// bool Variable::validate_parameter(semantics::Context& context, semantics::FunctionContext& func_ctx)
 	// {
 	// 	auto *previous_declaration = func_ctx.get_parameter(_name.text());
 
@@ -57,7 +57,7 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	// bool Declaration::validate_variable(semantics::Context& context, semantics::FunctionContext& func_ctx)
+	// bool Variable::validate_variable(semantics::Context& context, semantics::FunctionContext& func_ctx)
 	// {
 	// 	auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
 
@@ -88,7 +88,7 @@ namespace warbler::syntax
 	// 	return true;
 	// }
 
-	// void Declaration::print_tree(u32 depth) const
+	// void Variable::print_tree(u32 depth) const
 	// {
 		// String text = _is_mutable
 		// 	? "mut "

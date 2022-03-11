@@ -6,11 +6,11 @@
 #include <warbler/util/result.hpp>
 #include <warbler/util/primitive.hpp>
 #include <warbler/syntax/expression/expression.hpp>
-#include <warbler/semantics/context.hpp>
+#include <warbler/semantics/symbol_table.hpp>
 
 namespace warbler::syntax
 {
-	class Symbol : public Expression
+	class Symbol
 	{
 	private:
 
@@ -22,7 +22,7 @@ namespace warbler::syntax
 
 		static Result<Symbol> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 	};
 

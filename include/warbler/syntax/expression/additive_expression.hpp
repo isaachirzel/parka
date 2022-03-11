@@ -14,24 +14,24 @@ namespace warbler::syntax
 
 	struct AdditiveRhs
 	{
-		Ptr<Expression> expr;
+		Expression expr;
 		AdditiveType type;
 	};
 
-	class AdditiveExpression : public Expression
+	class AdditiveExpression
 	{
 	private:
 
-		Ptr<Expression> _lhs;
+		Expression _lhs;
 		Array<AdditiveRhs> _rhs;
 	
 	public:
 
-		AdditiveExpression(Ptr<Expression>&& lhs, Array<AdditiveRhs>&& rhs);
+		AdditiveExpression(Expression&& lhs, Array<AdditiveRhs>&& rhs);
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		
 	};
 }

@@ -14,15 +14,15 @@ namespace warbler::syntax
 	{
 	private:
 
-		Ptr<Expression> _expression;
+		Expression _expression;
 
 	public:
 
-		ExpressionStatement(Ptr<Expression>&& expression);
+		ExpressionStatement(Expression&& expression);
 
 		static Result<ExpressionStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 	};
 }

@@ -52,53 +52,54 @@ namespace warbler::syntax
 		return Module(std::move(functions), std::move(types));
 	}
 
-	bool Module::validate(const String& module_name)
-	{
-		semantics::Context context(module_name, &_scope);
+	// bool Module::validate(const String& module_name)
+	// {
+	// 	Table<semantics::Symbol> scope;
+	// 	semantics::SymbolTable context(module_name, scope);
 		
-		for (auto& type : _types)
-		{
-			auto type_name = type->name().token().text();
+	// 	for (auto& type : _types)
+	// 	{
+	// 		auto type_name = type->name().token().text();
 
-			if (!context.has_symbol(type_name))
-			{
-				print_error(type->name().token(), "symbol '" + type->name().token().text() + "' is already defined in module '" + module_name + "'");
+	// 		if (!context.has_symbol(type_name))
+	// 		{
+	// 			print_error(type->name().token(), "symbol '" + type->name().token().text() + "' is already defined in module '" + module_name + "'");
 
-				return false;
-			}
+	// 			return false;
+	// 		}
 
-			context.add_type(type_name, type.raw_ptr());
-		}
+	// 		context.add_type(type_name, type.raw_ptr());
+	// 	}
 
-		// checking if members of types are valid
-		for (auto& type : _types)
-		{
-			if (!type->validate(context))
-				return false;
-		}
+	// 	// checking if members of types are valid
+	// 	for (auto& type : _types)
+	// 	{
+	// 		if (!type->validate(context))
+	// 			return false;
+	// 	}
 
-		// checking for duplicate symbols
-		for (auto& function : _functions)
-		{
-			auto function_name = function.name().token().text();
+	// 	// checking for duplicate symbols
+	// 	for (auto& function : _functions)
+	// 	{
+	// 		auto function_name = function.name().token().text();
 
-			if (!context.has_symbol(function_name))
-			{
-				print_error(function.name().token(), "symbol '" + function_name + "' is already defined in module '" + module_name + "'");
+	// 		if (!context.has_symbol(function_name))
+	// 		{
+	// 			print_error(function.name().token(), "symbol '" + function_name + "' is already defined in module '" + module_name + "'");
 
-				return false;
-			}
+	// 			return false;
+	// 		}
 
-			context.add_function(function_name, &function);
-		}
+	// 		context.add_function(function_name, &function);
+	// 	}
 
-		// validating functions
-		for (auto& function : _functions)
-		{
-			if (!function.validate(context))
-				return false;
-		}
+	// 	// validating functions
+	// 	for (auto& function : _functions)
+	// 	{
+	// 		if (!function.validate(context))
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 }

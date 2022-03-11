@@ -27,17 +27,17 @@ namespace warbler::syntax
 	{
 	private:
 
-		Ptr<Expression> _lhs;
-		Ptr<Expression> _rhs;
+		Expression _lhs;
+		Expression _rhs;
 		AssignmentType _type;
 
 	public:
 
-		AssignmentStatement(Ptr<Expression>&& lhs, Ptr<Expression> &&rhs, AssignmentType type);
+		AssignmentStatement(Expression&& lhs, Expression &&rhs, AssignmentType type);
 
 		static Result<AssignmentStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 	};
 }

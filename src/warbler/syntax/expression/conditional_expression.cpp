@@ -7,17 +7,17 @@
 
 namespace warbler::syntax
 {
-	ConditionalExpression::ConditionalExpression(Ptr<Expression>&& lhs) :
+	ConditionalExpression::ConditionalExpression(Expression&& lhs) :
 	_lhs(std::move(lhs))
 	{}
 
-	ConditionalExpression::ConditionalExpression(Ptr<Expression>&& lhs, Ptr<Expression>&& true_case, Ptr<Expression>&& false_case) :
+	ConditionalExpression::ConditionalExpression(Expression&& lhs, Expression&& true_case, Expression&& false_case) :
 	_lhs(std::move(lhs)),
 	_true_case(std::move(true_case)),
 	_false_case(std::move(false_case))
 	{}
 
-	Result<Ptr<Expression>> ConditionalExpression::parse(lexicon::Token& token)
+	Result<Expression> ConditionalExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = BooleanOrExpression::parse(token);
 
@@ -43,9 +43,7 @@ namespace warbler::syntax
 		if (!false_case)
 			return {};
 
-		auto *ptr = new ConditionalExpression(lhs.unwrap(), true_case.unwrap(), false_case.unwrap());
-
-		return Ptr<Expression>(ptr);
+		return Expression(ConditionalExpression(lhs.unwrap(), true_case.unwrap(), false_case.unwrap()));
 	}
 
 	// bool ConditionalExpression::validate(semantics::Context& context)

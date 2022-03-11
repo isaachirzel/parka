@@ -5,7 +5,7 @@
 
 namespace warbler::syntax
 {
-	ExpressionStatement::ExpressionStatement(Ptr<Expression>&& expression) :
+	ExpressionStatement::ExpressionStatement(Expression&& expression) :
 	_expression(std::move(expression))
 	{}
 

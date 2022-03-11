@@ -5,19 +5,19 @@
 
 namespace warbler::syntax
 {
-	BooleanOrExpression::BooleanOrExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs) :
+	BooleanOrExpression::BooleanOrExpression(Expression&& lhs, Array<Expression>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> BooleanOrExpression::parse(lexicon::Token& token)
+	Result<Expression> BooleanOrExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = BooleanAndExpression::parse(token);
 
 		if (!lhs)
 			return {};
 
-		Array<Ptr<Expression>> rhs;
+		Array<Expression> rhs;
 
 		while (token.type() == lexicon::TokenType::BooleanOr)
 		{
@@ -32,9 +32,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new BooleanOrExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(BooleanOrExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool BooleanOrExpression::validate(semantics::Context& context)

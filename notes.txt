@@ -1,11 +1,48 @@
-Primitive types:
+Type validation:
+	When validationg, store the temporary data as variables in function and only put the
+	constructed node into the tree once validated.
+	
+	When coming across a type that is not validated the function will be called
+	recursively for non-validated symbol, and so on. Because of this recursive searching, a stack of
+	type-symbols will be passed to each validation function to assure there is no circular
+	referencing. If in the situation of a child struct containing a reference to a parent struct,
+	the fact that the symbol is in the stack will also be used to show that the type indeed exists.
 
-The main types will have their bitwidth in the same but these will likely have
-built in typedef aliases to their c/c++ counterparts. As in i8 can be called 
-char or long can be i64. word will be a platform dependent choice that is the
-size of the computer's register
+	The semantics::SymbolTable structure will make use of a *reference* to the above Table<Symbol>
 
-var								Generic type
-i8, i16, i32, i64, word:		Integer types
-f32, f64, dec					Float types
-str								Char array
+Function validation:
+
+	Function struct stored in symbol table:
+
+		functions can be handled in the same way
+
+
+loop through each type in syntax tree
+validate each symbol
+upon reaching references to other types, check symbol table, if not in there, do linear search starting after current index
+if not found after linear search: unresolved symbol error
+
+Function::validate(syntax::Function& syntax, SymbolTable& symbols, 
+
+enum class ExpressionType
+{
+	Additive,
+	Multiplicative,
+	Primary
+};
+
+struct Expression
+{
+	union
+	{
+		AdditiveExpression _additive;
+		MultiplicativeExpression _multiplicative;
+		PrimaryExpression _primary;
+	};
+
+	ExpressionType _type;
+
+	
+};
+
+

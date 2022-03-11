@@ -6,20 +6,20 @@
 
 namespace warbler::syntax
 {
-	class BooleanOrExpression : public Expression
+	class BooleanOrExpression
 	{
 	private:
 
-		Ptr<Expression> _lhs;
-		Array<Ptr<Expression>> _rhs;
+		Expression _lhs;
+		Array<Expression> _rhs;
 
 	public:
 
-		BooleanOrExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs);
+		BooleanOrExpression(Expression&& lhs, Array<Expression>&& rhs);
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
 		const lexicon::Token& token() const;

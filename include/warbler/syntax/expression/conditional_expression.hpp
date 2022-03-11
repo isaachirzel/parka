@@ -7,24 +7,29 @@
 
 namespace warbler::syntax
 {
-	class ConditionalExpression : public Expression
+	struct ConditionalRhs
+	{
+		Expression _true_case;
+		Expression _false_case;
+	};
+
+	class ConditionalExpression
 	{
 	private: // members
 
-		Ptr<Expression> _lhs;
-		Ptr<Expression> _true_case;
-		Ptr<Expression> _false_case;
+		Expression _lhs;
+		Optional<ConditionalRhs> _rhs;
 
 	public: // methods
 
-		ConditionalExpression(Ptr<Expression>&& lhs);
-		ConditionalExpression(Ptr<Expression>&& lhs, Ptr<Expression>&& true_case, Ptr<Expression>&& false_case);
+		ConditionalExpression(Expression&& lhs);
+		ConditionalExpression(Expression&& lhs, Expression&& true_case, Expression&& false_case);
 		ConditionalExpression(ConditionalExpression&&) = default;
 		ConditionalExpression(const ConditionalExpression&) = delete;
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
 		const lexicon::Token& token() const;

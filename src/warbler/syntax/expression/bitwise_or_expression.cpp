@@ -5,19 +5,19 @@
 
 namespace warbler::syntax
 {
-	BitwiseOrExpression::BitwiseOrExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs) :
+	BitwiseOrExpression::BitwiseOrExpression(Expression&& lhs, Array<Expression>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> BitwiseOrExpression::parse(lexicon::Token& token)
+	Result<Expression> BitwiseOrExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = BitwiseXorExpression::parse(token);
 
 		if (!lhs)
 			return {};
 
-		Array<Ptr<Expression>> rhs;
+		Array<Expression> rhs;
 
 		while (token.type() == lexicon::TokenType::Pipeline)
 		{
@@ -32,9 +32,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new  BitwiseOrExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(BitwiseOrExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool BitwiseOrExpression::validate(semantics::Context& context)

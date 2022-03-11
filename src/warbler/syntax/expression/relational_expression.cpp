@@ -5,12 +5,12 @@
 
 namespace warbler::syntax
 {
-	RelationalExpression::RelationalExpression(Ptr<Expression>&& lhs, Array<RelationalRhs>&& rhs) :
+	RelationalExpression::RelationalExpression(Expression&& lhs, Array<RelationalRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> RelationalExpression::parse(lexicon::Token& token)
+	Result<Expression> RelationalExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = ShiftExpression::parse(token);
 
@@ -61,9 +61,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new RelationalExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(RelationalExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool RelationalExpression::validate(semantics::Context& context)

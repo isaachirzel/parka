@@ -6,12 +6,12 @@
 
 namespace warbler::syntax
 {
-	AdditiveExpression::AdditiveExpression(Ptr<Expression>&& lhs, Array<AdditiveRhs>&& rhs) :
+	AdditiveExpression::AdditiveExpression(Expression&& lhs, Array<AdditiveRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> AdditiveExpression::parse(lexicon::Token& token)
+	Result<Expression> AdditiveExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = MultiplicativeExpression::parse(token);
 
@@ -47,9 +47,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new AdditiveExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(AdditiveExpression {lhs.unwrap(), std::move(rhs) });
 	}
 
 	// bool AdditiveExpression::validate(semantics::Context& context)

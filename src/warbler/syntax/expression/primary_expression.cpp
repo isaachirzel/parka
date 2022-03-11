@@ -7,9 +7,8 @@
 
 namespace warbler::syntax
 {
-	Result<Ptr<Expression>> PrimaryExpression::parse(lexicon::Token& token)
+	Result<Expression> PrimaryExpression::parse(lexicon::Token& token)
 	{
-		
 		if (token.type() == lexicon::TokenType::Identifier)
 		{
 			auto symbol = Symbol::parse(token);
@@ -17,9 +16,7 @@ namespace warbler::syntax
 			if (!symbol)
 				return {};
 
-			auto *ptr = new Symbol { symbol.unwrap() };
-
-			return Ptr<Expression> (ptr);
+			return Expression (Symbol { symbol.unwrap() });
 		}
 		else if (token.type() == lexicon::TokenType::LeftParenthesis)
 		{
@@ -45,9 +42,7 @@ namespace warbler::syntax
 			if (!constant)
 				return {};
 
-			auto *ptr = new Constant(constant.unwrap());			
-
-			return Ptr<Expression>(ptr);
+			return Expression(Constant(constant.unwrap()));
 		}
 	}
 }

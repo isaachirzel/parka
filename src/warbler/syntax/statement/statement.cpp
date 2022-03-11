@@ -14,12 +14,12 @@ namespace warbler::syntax
 		{
 			case lexicon::TokenType::KeywordVar:
 			{
-				auto res = DeclarationStatement::parse(token);
+				auto res = VariableStatement::parse(token);
 
 				if (!res)
 					return {};
 
-				return Ptr<Statement> { new DeclarationStatement { res.unwrap() } };
+				return Ptr<Statement> { new VariableStatement { res.unwrap() } };
 			}
 
 			//case lexicon::TokenType::MATCH:

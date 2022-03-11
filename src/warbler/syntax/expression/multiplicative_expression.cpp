@@ -5,12 +5,12 @@
 
 namespace warbler::syntax
 {
-	MultiplicativeExpression::MultiplicativeExpression(Ptr<Expression>&& lhs, Array<MultiplicativeRhs>&& rhs) :
+	MultiplicativeExpression::MultiplicativeExpression(Expression&& lhs, Array<MultiplicativeRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> MultiplicativeExpression::parse(lexicon::Token& token)
+	Result<Expression> MultiplicativeExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = PrefixExpression::parse(token);
 
@@ -57,9 +57,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new MultiplicativeExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(MultiplicativeExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool MultiplicativeExpression::validate(semantics::Context& context)

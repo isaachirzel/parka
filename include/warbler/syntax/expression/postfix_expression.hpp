@@ -14,16 +14,16 @@ namespace warbler::syntax
 		Member
 	};
 
-	class PostfixExpression : public Expression
+	class PostfixExpression
 	{
 	private:
 
-		Ptr<Expression> _expression;
+		Expression _expression;
 
 		union
 		{
-			Ptr<Expression> _index;
-			Array<Ptr<Expression>> _arguments;
+			Expression _index;
+			Array<Expression> _arguments;
 			Identifier _member;
 		};
 
@@ -31,16 +31,16 @@ namespace warbler::syntax
 
 	public:
 
-		PostfixExpression(Ptr<Expression>&& expression, Ptr<Expression>&& index);
-		PostfixExpression(Ptr<Expression>&& expression, Array<Ptr<Expression>>&& arguments);
-		PostfixExpression(Ptr<Expression>&& expression, Identifier&& member);
+		PostfixExpression(Expression&& expression, Expression&& index);
+		PostfixExpression(Expression&& expression, Array<Expression>&& arguments);
+		PostfixExpression(Expression&& expression, Identifier&& member);
 		PostfixExpression(PostfixExpression&& other);
 		PostfixExpression(const PostfixExpression& other) = delete;
 		~PostfixExpression();
 		
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		Type *get_type();
 		const lexicon::Token& token() const;
 		void print_tree(u32 depth = 0) const;

@@ -9,12 +9,12 @@
 
 namespace warbler::syntax
 {
-	ShiftExpression::ShiftExpression(Ptr<Expression>&& lhs, Array<ShiftRhs>&& rhs) :
+	ShiftExpression::ShiftExpression(Expression&& lhs, Array<ShiftRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> ShiftExpression::parse(lexicon::Token& token)
+	Result<Expression> ShiftExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = AdditiveExpression::parse(token);
 
@@ -57,9 +57,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new ShiftExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(ShiftExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool ShiftExpression::validate(semantics::Context& context)

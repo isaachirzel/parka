@@ -15,21 +15,21 @@ namespace warbler::syntax
 		BooleanNot
 	};
 
-	class PrefixExpression : public Expression
+	class PrefixExpression
 	{
 	private:
 
 		lexicon::Token _token;
-		Ptr<Expression> _expression;
+		Expression _expression;
 		PrefixType _type;
 
 	public:
 
-		PrefixExpression(const lexicon::Token& token, Ptr<Expression>&& expression, PrefixType type);
+		PrefixExpression(const lexicon::Token& token, Expression&& expression, PrefixType type);
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		Type *get_type();
 		const lexicon::Token& token() const { return _token; }
 		void print_tree(u32 depth = 0) const;

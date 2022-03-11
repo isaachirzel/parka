@@ -14,24 +14,24 @@ namespace warbler::syntax
 
 	struct ShiftRhs
 	{
-		Ptr<Expression> expr;
+		Expression expr;
 		ShiftType type;
 	};
 
-	class ShiftExpression : public Expression
+	class ShiftExpression
 	{
 	private:
 
-		Ptr<Expression> _lhs;
+		Expression _lhs;
 		Array<ShiftRhs> _rhs;
 
 	public:
 
-		ShiftExpression(Ptr<Expression>&& lhs, Array<ShiftRhs>&& rhs);
+		ShiftExpression(Expression&& lhs, Array<ShiftRhs>&& rhs);
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 		Type *get_type();
 		const lexicon::Token& token() const;

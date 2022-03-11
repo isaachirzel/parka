@@ -8,13 +8,13 @@
 
 namespace warbler::syntax
 {
-	PrefixExpression::PrefixExpression(const lexicon::Token& token, Ptr<Expression>&& expression, PrefixType type) :
+	PrefixExpression::PrefixExpression(const lexicon::Token& token, Expression&& expression, PrefixType type) :
 	_token(token),
 	_expression(std::move(expression)),
 	_type(type)
 	{}
 
-	Result<Ptr<Expression>> PrefixExpression::parse(lexicon::Token& token)
+	Result<Expression> PrefixExpression::parse(lexicon::Token& token)
 	{
 		PrefixType type;
 
@@ -56,7 +56,7 @@ namespace warbler::syntax
 
 		auto *ptr = new PrefixExpression(prefix, res.unwrap(), type);
 
-		return Ptr<Expression>(ptr);
+		return Expression(ptr);
 	}
 
 	// void PrefixExpression::print_tree(u32 depth) const

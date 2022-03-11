@@ -18,7 +18,6 @@ namespace warbler::syntax
 
 		static Result<Enum> parse(lexicon::Token& token);
 
-		bool validate(semantics::ModuleContext& context);
 		void print_tree(u32 depth = 0) const;
 	};
 }

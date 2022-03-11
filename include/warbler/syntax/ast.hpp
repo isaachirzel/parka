@@ -18,7 +18,6 @@ namespace warbler::syntax
 	
 		static Result<Ast> parse(const source::File& file);
 
-		bool validate();
 		const Module& mod() const { return _module; }
 	};
 }

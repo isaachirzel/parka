@@ -8,19 +8,19 @@
 
 namespace warbler::syntax
 {
-	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Ptr<Expression>&& index) :
+	PostfixExpression::PostfixExpression(Expression&& expression, Expression&& index) :
 	_expression(std::move(expression)),
 	_index(std::move(index)),
 	_type(PostfixType::Index)
 	{}
 
-	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Array<Ptr<Expression>>&& arguments) :
+	PostfixExpression::PostfixExpression(Expression&& expression, Array<Expression>&& arguments) :
 	_expression(std::move(expression)),
 	_arguments(std::move(arguments)),
 	_type(PostfixType::FunctionCall)
 	{}
 
-	PostfixExpression::PostfixExpression(Ptr<Expression>&& expression, Identifier&& member) :
+	PostfixExpression::PostfixExpression(Expression&& expression, Identifier&& member) :
 	_expression(std::move(expression)),
 	_member(std::move(member)),
 	_type(PostfixType::Member)
@@ -63,11 +63,11 @@ namespace warbler::syntax
 		}
 	}
 
-	static Result<Array<Ptr<Expression>>> parse_arguments(lexicon::Token& token)
+	static Result<Array<Expression>> parse_arguments(lexicon::Token& token)
 	{
 		token.next();
 
-		Array<Ptr<Expression>> arguments;
+		Array<Expression> arguments;
 
 	parse_argument:
 
@@ -98,14 +98,14 @@ namespace warbler::syntax
 		return arguments;
 	}
 	
-	Result<Ptr<Expression>> PostfixExpression::parse(lexicon::Token& token)
+	Result<Expression> PostfixExpression::parse(lexicon::Token& token)
 	{
 		auto primary_expression = PrimaryExpression::parse(token);
 
 		if (!primary_expression)
 			return {};
 
-		Ptr<Expression> expression = primary_expression.unwrap();
+		Expression expression = primary_expression.unwrap();
 
 	parse_postfix:
 		switch (token.type())

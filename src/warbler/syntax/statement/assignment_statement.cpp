@@ -8,7 +8,7 @@
 
 namespace warbler::syntax
 {
-	AssignmentStatement::AssignmentStatement(Ptr<Expression>&& lhs, Ptr<Expression>&& rhs, AssignmentType type) :
+	AssignmentStatement::AssignmentStatement(Expression&& lhs, Expression&& rhs, AssignmentType type) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs)),
 	_type(type)

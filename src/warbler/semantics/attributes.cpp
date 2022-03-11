@@ -72,28 +72,4 @@ namespace warbler::semantics
 				break;
 		}
 	}
-
-	const VariableContext& Context::variable() const
-	{
-		assert(_type == SymbolType::Variable);
-		return _variable;
-	}
-
-	const ParameterContext& Context::attributes() const
-	{
-		assert(_type == SymbolType::Parameter);
-		return _variable;
-	}
-
-	const FunctionContext& Context::function() const
-	{
-		assert(_type == SymbolType::Function);
-		return _variable;
-	}
-
-	const syntax::TypeDefinition& Type::definition() const
-	{
-		assert(_definition != nullptr);
-		return *_definition;
-	}
 }

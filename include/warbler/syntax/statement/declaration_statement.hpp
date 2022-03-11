@@ -8,22 +8,22 @@
 
 namespace warbler::syntax
 {
-	class DeclarationStatement : public Statement
+	class VariableStatement : public Statement
 	{
 	private:
 
-		Declaration _declaration;
-		Ptr<Expression> _value;
+		Variable _declaration;
+		Expression _value;
 
 	public:
 
-		DeclarationStatement(Declaration&& declaration, Ptr<Expression>&& value);
-		DeclarationStatement(DeclarationStatement&&) = default;
-		DeclarationStatement(const DeclarationStatement&) = delete;
+		VariableStatement(Variable&& declaration, Expression&& value);
+		VariableStatement(VariableStatement&&) = default;
+		VariableStatement(const VariableStatement&) = delete;
 
-		static Result<DeclarationStatement> parse(lexicon::Token& token);
+		static Result<VariableStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 	};
 }

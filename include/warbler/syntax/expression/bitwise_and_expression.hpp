@@ -6,20 +6,20 @@
 
 namespace warbler::syntax
 {
-	class BitwiseAndExpression : public Expression
+	class BitwiseAndExpression
 	{
 	private:
 
-		Ptr<Expression> _lhs;
-		Array<Ptr<Expression>> _rhs;
+		Expression _lhs;
+		Array<Expression> _rhs;
 
 	public:
 
-		BitwiseAndExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs);
+		BitwiseAndExpression(Expression&& lhs, Array<Expression>&& rhs);
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		Type *get_type();
 		const lexicon::Token& token() const;
 	};

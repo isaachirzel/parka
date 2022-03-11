@@ -16,24 +16,24 @@ namespace warbler::syntax
 
 	struct RelationalRhs
 	{
-		Ptr<Expression> expr;
+		Expression expr;
 		RelationalType type;
 	};
 
-	class RelationalExpression : public Expression
+	class RelationalExpression
 	{
 	private:
 
-		Ptr<Expression> _lhs;
+		Expression _lhs;
 		Array<RelationalRhs> _rhs;
 
 	public:
 
-		RelationalExpression(Ptr<Expression>&& lhs, Array<RelationalRhs>&& rhs);
+		RelationalExpression(Expression&& lhs, Array<RelationalRhs>&& rhs);
 
-		static Result<Ptr<Expression>> parse(lexicon::Token& token);
+		static Result<Expression> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 	};
 
 }

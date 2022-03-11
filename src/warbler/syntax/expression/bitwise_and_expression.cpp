@@ -9,19 +9,19 @@
 
 namespace warbler::syntax
 {
-	BitwiseAndExpression::BitwiseAndExpression(Ptr<Expression>&& lhs, Array<Ptr<Expression>>&& rhs) :
+	BitwiseAndExpression::BitwiseAndExpression(Expression&& lhs, Array<Expression>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> BitwiseAndExpression::parse(lexicon::Token& token)
+	Result<Expression> BitwiseAndExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = EqualityExpression::parse(token);
 
 		if (!lhs)
 			return {};
 
-		Array<Ptr<Expression>> rhs;
+		Array<Expression> rhs;
 
 		while (token.type() == lexicon::TokenType::Ampersand)
 		{
@@ -36,9 +36,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new BitwiseAndExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(BitwiseAndExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool BitwiseAndExpression::validate(semantics::Context& context)

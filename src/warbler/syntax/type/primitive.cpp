@@ -10,16 +10,6 @@ namespace warbler::syntax
 	_type(type)
 	{}
 
-	bool Primitive::validate(semantics::Context& context)
-	{
-		throw not_implemented();
-	}
-
-	void Primitive::print_tree(u32 depth) const
-	{
-		_name.print_tree(depth);
-		#pragma message "TODO: Implement better tree printing for primitives"
-	}
 	// 	switch (_type)
 	// 	{
 	// 		case PrimitiveType::Integer:

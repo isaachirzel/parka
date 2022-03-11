@@ -9,12 +9,12 @@
 
 namespace warbler::syntax
 {
-	EqualityExpression::EqualityExpression(Ptr<Expression>&& lhs, Array<EqualityRhs>&& rhs) :
+	EqualityExpression::EqualityExpression(Expression&& lhs, Array<EqualityRhs>&& rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
 
-	Result<Ptr<Expression>> EqualityExpression::parse(lexicon::Token& token)
+	Result<Expression> EqualityExpression::parse(lexicon::Token& token)
 	{
 		auto lhs = RelationalExpression::parse(token);
 		 
@@ -57,9 +57,7 @@ namespace warbler::syntax
 		if (rhs.empty())
 			return lhs.unwrap();
 
-		auto *ptr = new EqualityExpression(lhs.unwrap(), std::move(rhs));
-
-		return Ptr<Expression>(ptr);
+		return Expression(EqualityExpression(lhs.unwrap(), std::move(rhs)));
 	}
 
 	// bool EqualityExpression::validate(semantics::Context& context)

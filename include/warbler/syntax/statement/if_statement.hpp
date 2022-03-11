@@ -20,7 +20,7 @@ namespace warbler::syntax
 	{
 	private:
 
-		Ptr<Expression> _condition;
+		Expression _condition;
 		BlockStatement _then_body;
 
 		union
@@ -33,16 +33,16 @@ namespace warbler::syntax
 
 	public:
 
-		IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body);
-		IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, BlockStatement&& else_body);
-		IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, IfStatement *else_if);
+		IfStatement(Expression&& condition, BlockStatement&& then_body);
+		IfStatement(Expression&& condition, BlockStatement&& then_body, BlockStatement&& else_body);
+		IfStatement(Expression&& condition, BlockStatement&& then_body, IfStatement *else_if);
 		IfStatement(IfStatement&& other);
 		IfStatement(const IfStatement& other) = delete;
 		~IfStatement();
 
 		static Result<IfStatement> parse(lexicon::Token& token);
 
-		bool validate(semantics::Context& context);
+		
 		void print_tree(u32 depth = 0) const;
 		
 		IfStatement& operator=(IfStatement&& other);

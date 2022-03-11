@@ -27,9 +27,9 @@ namespace warbler::syntax
 		return Ast(res.unwrap());
 	}
 
-	bool Ast::validate()
-	{
-		#pragma message "actually implement passing scope to module"
-		return _module.validate({ "TEST_MODULE" });
-	}
+	// bool Ast::validate()
+	// {
+	// 	#pragma message "actually implement passing scope to module"
+	// 	return _module.validate({ "TEST_MODULE" });
+	// }
 }

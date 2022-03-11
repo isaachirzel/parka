@@ -4,20 +4,20 @@
 
 namespace warbler::syntax
 {
-	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body) :
+	IfStatement::IfStatement(Expression&& condition, BlockStatement&& then_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_type(IfType::Then)
 	{}
 
-	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, BlockStatement&& else_body) :
+	IfStatement::IfStatement(Expression&& condition, BlockStatement&& then_body, BlockStatement&& else_body) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_body(std::move(else_body)),
 	_type(IfType::ThenElse)
 	{}
 
-	IfStatement::IfStatement(Ptr<Expression>&& condition, BlockStatement&& then_body, IfStatement *else_if) :
+	IfStatement::IfStatement(Expression&& condition, BlockStatement&& then_body, IfStatement *else_if) :
 	_condition(std::move(condition)),
 	_then_body(std::move(then_body)),
 	_else_if(std::move(else_if)),

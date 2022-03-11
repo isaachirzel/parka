@@ -7,7 +7,7 @@
 
 namespace warbler::syntax
 {
-	class Declaration
+	class Variable
 	{
 	private:
 
@@ -17,11 +17,9 @@ namespace warbler::syntax
 
 	public:
 
-		Declaration(Identifier&& name, Optional<Type>&& type, bool is_mutable);
+		Variable(Identifier&& name, Optional<Type>&& type, bool is_mutable);
 
-		static Result<Declaration> parse(lexicon::Token& token);
-
-		bool validate_variable(semantics::Context& context);
+		static Result<Variable> parse(lexicon::Token& token);
 
 		bool is_mutable() const { return _is_mutable; }
 		bool is_auto_type() const { return _type.has_value(); }
