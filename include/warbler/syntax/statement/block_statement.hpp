@@ -7,15 +7,15 @@
 
 namespace warbler::syntax
 {
-	class BlockStatement : public Statement
+	class BlockStatement
 	{
 	private:
 
-		Array<Ptr<Statement>> _statements;
+		Array<Statement> _statements;
 
 	public:
 
-		BlockStatement(Array<Ptr<Statement>>&& statements);
+		BlockStatement(Array<Statement>&& statements);
 
 		static Result<BlockStatement> parse(lexicon::Token& token);
 

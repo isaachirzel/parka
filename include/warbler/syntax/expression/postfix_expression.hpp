@@ -25,7 +25,7 @@ namespace warbler::syntax
 			Expression _index;
 			Array<Expression> _arguments;
 			Identifier _member;
-		};
+	};
 
 		PostfixType _type;
 
@@ -39,7 +39,6 @@ namespace warbler::syntax
 		~PostfixExpression();
 		
 		static Result<Expression> parse(lexicon::Token& token);
-
 		
 		Type *get_type();
 		const lexicon::Token& token() const;

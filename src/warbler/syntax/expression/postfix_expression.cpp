@@ -3,9 +3,6 @@
 #include <warbler/util/print.hpp>
 #include <warbler/syntax/expression/primary_expression.hpp>
 
-// call parse then check for type
-// not sure how to do this
-
 namespace warbler::syntax
 {
 	PostfixExpression::PostfixExpression(Expression&& expression, Expression&& index) :
@@ -27,6 +24,7 @@ namespace warbler::syntax
 	{}
  
 	PostfixExpression::PostfixExpression(PostfixExpression&& other) :
+	_expression(std::move(other._expression)),
 	_type(other._type)
 	{
 		switch (_type)
@@ -50,7 +48,7 @@ namespace warbler::syntax
 		switch (_type)
 		{
 			case PostfixType::Index:
-				_index.~Ptr();
+				_index.~Expression();
 				break;
 
 			case PostfixType::FunctionCall:
@@ -125,7 +123,7 @@ namespace warbler::syntax
 
 				token.next();
 
-				expression = new PostfixExpression(std::move(expression), res.unwrap());
+				expression = PostfixExpression(std::move(expression), res.unwrap());
 				goto parse_postfix;
 			}
 
@@ -136,7 +134,7 @@ namespace warbler::syntax
 				if (!res)
 					return {};
 
-				expression = new PostfixExpression(std::move(expression), res.unwrap());
+				expression = PostfixExpression(std::move(expression), res.unwrap());
 				goto parse_postfix;
 			}
 
@@ -149,7 +147,7 @@ namespace warbler::syntax
 				if (!res)
 					return {};
 				
-				expression = new PostfixExpression { std::move(expression), res.unwrap() };
+				expression = PostfixExpression { std::move(expression), res.unwrap() };
 				goto parse_postfix;
 			}
 			

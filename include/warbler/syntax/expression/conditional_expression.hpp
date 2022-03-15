@@ -4,6 +4,7 @@
 // local headers
 #include <warbler/syntax/expression/boolean_or_expression.hpp>
 #include <warbler/syntax/expression/expression.hpp>
+#include <warbler/util/optional.hpp>
 
 namespace warbler::syntax
 {
@@ -11,6 +12,8 @@ namespace warbler::syntax
 	{
 		Expression _true_case;
 		Expression _false_case;
+
+		ConditionalRhs(Expression&& true_case, Expression&& false_case);
 	};
 
 	class ConditionalExpression

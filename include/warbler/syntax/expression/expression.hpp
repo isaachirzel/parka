@@ -88,7 +88,9 @@ namespace warbler::syntax
 		Expression(Constant&&);
 		Expression(Symbol&&);
 		Expression(Expression&&);
+		Expression& operator=(Expression&&) = default;
 		Expression(const Expression&) = delete;
+		Expression& operator=(const Expression&) = delete;
 		~Expression();
 
 		static Result<Expression> parse(lexicon::Token& token);

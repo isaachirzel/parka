@@ -8,7 +8,7 @@
 
 namespace warbler::syntax
 {
-	class VariableStatement : public Statement
+	class VariableStatement
 	{
 	private:
 

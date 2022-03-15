@@ -16,7 +16,7 @@ namespace warbler::syntax
 		ThenElseIf
 	};
 
-	class IfStatement : public Statement
+	class IfStatement
 	{
 	private:
 

@@ -54,9 +54,7 @@ namespace warbler::syntax
 		if (!res)
 			return {};
 
-		auto *ptr = new PrefixExpression(prefix, res.unwrap(), type);
-
-		return Expression(ptr);
+		return Expression { PrefixExpression(prefix, res.unwrap(), type) };
 	}
 
 	// void PrefixExpression::print_tree(u32 depth) const

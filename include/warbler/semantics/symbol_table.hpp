@@ -15,24 +15,23 @@ namespace warbler::semantics
 	{
 	private:
 
-		String _module_name;
-		Array<Definition> _type_definitions;
+		Array<const String*> _lexical_scope;
 		Array<Table<Symbol>*> _scopes;
 	
 	public:
 
-		SymbolTable(const String& module_name, Table<Symbol>& module_scope);
+		SymbolTable(Table<Symbol>& module_scope);
 
 		void push_scope(Table<Symbol>& scope);
 		void pop_scope();
 
-		bool has_symbol(const String& symbol);
-		void add_parameter(const String& name, Parameter& parameter);
-		void add_function(const String& name, Function& function);
-		void add_variable(const String& name, Variable& declaration);
-		void add_type(const String& name, Definition& type);
+		void add_parameters(Array<Parameter>& parameter);
+		void add_function(Function&& function);
+		void add_variable(Variable&& declaration);
+		void add_type(Definition&& type);
 
 		Symbol *resolve(const String& symbol);
+		String get_symbol(const String& name);
 	};
 }
 

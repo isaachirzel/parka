@@ -24,6 +24,8 @@ namespace warbler::semantics
 	public:
 
 		Variable(String&& name, Type&& type, bool is_mutable);
+
+		const String& name() const { return _name; }
 	};
 }
 

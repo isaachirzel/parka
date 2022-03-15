@@ -1,7 +1,10 @@
 #ifndef WARBLER_SEMANTICS_MODULE_HPP
 #define WARBLER_SEMANTICS_MODULE_HPP
 
+#include <warbler/syntax/module.hpp>
 #include <warbler/util/string.hpp>
+#include <warbler/util/result.hpp>
+#include <warbler/semantics/symbol.hpp>
 
 namespace warbler::semantics
 {

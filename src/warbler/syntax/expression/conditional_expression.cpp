@@ -7,14 +7,18 @@
 
 namespace warbler::syntax
 {
+	ConditionalRhs::ConditionalRhs(Expression&& true_case, Expression&& false_case) :
+	_true_case(std::move(true_case)),
+	_false_case(std::move(false_case))
+	{}
+
 	ConditionalExpression::ConditionalExpression(Expression&& lhs) :
 	_lhs(std::move(lhs))
 	{}
 
 	ConditionalExpression::ConditionalExpression(Expression&& lhs, Expression&& true_case, Expression&& false_case) :
 	_lhs(std::move(lhs)),
-	_true_case(std::move(true_case)),
-	_false_case(std::move(false_case))
+	_rhs(ConditionalRhs { std::move(true_case), std::move(false_case) })
 	{}
 
 	Result<Expression> ConditionalExpression::parse(lexicon::Token& token)

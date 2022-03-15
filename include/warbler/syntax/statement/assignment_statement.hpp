@@ -23,7 +23,7 @@ namespace warbler::syntax
 		BitwiseXor
 	};
 
-	class AssignmentStatement : public Statement
+	class AssignmentStatement
 	{
 	private:
 
@@ -36,9 +36,6 @@ namespace warbler::syntax
 		AssignmentStatement(Expression&& lhs, Expression &&rhs, AssignmentType type);
 
 		static Result<AssignmentStatement> parse(lexicon::Token& token);
-
-		
-		void print_tree(u32 depth = 0) const;
 	};
 }
 #endif

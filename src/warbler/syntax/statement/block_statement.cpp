@@ -4,7 +4,7 @@
 
 namespace warbler::syntax
 {
-	BlockStatement::BlockStatement(Array<Ptr<Statement>>&& statements) :
+	BlockStatement::BlockStatement(Array<Statement>&& statements) :
 	_statements(std::move(statements))
 	{}
 
@@ -18,7 +18,7 @@ namespace warbler::syntax
 
 		token.next();
 
-		Array<Ptr<Statement>> statements;
+		Array<Statement> statements;
 
 		while (token.type() != lexicon::TokenType::RightBrace)
 		{

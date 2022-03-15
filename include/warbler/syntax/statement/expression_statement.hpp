@@ -10,7 +10,7 @@
 
 namespace warbler::syntax
 {
-	class ExpressionStatement : public Statement
+	class ExpressionStatement
 	{
 	private:
 

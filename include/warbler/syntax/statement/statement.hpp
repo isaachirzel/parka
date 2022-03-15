@@ -7,11 +7,46 @@
 
 namespace warbler::syntax
 {
-	struct Statement
-	{
-		virtual ~Statement() = default;
+	class AssignmentStatement;
+	class ExpressionStatement;
+	class BlockStatement;
+	class VariableStatement;
+	class IfStatement;
 
-		static Result<Ptr<Statement>> parse(lexicon::Token& token);
+	enum class StatementType
+	{
+		Assignment,
+		Expression,
+		Block,
+		Variable,
+		If
+	};
+	
+	class Statement
+	{
+		union
+		{
+			AssignmentStatement *_assignment;
+			ExpressionStatement *_expression;
+			BlockStatement *_block;
+			VariableStatement *_variable;
+			IfStatement *_if;
+		};
+
+		StatementType _type;
+
+	public:
+
+		Statement(AssignmentStatement&&);
+		Statement(ExpressionStatement&&);
+		Statement(BlockStatement&&);
+		Statement(VariableStatement&&);
+		Statement(IfStatement&&);
+		Statement(Statement&&);
+		Statement(const Statement&) = delete;
+		~Statement();
+		
+		static Result<Statement> parse(lexicon::Token& token);
 	};
 }
 

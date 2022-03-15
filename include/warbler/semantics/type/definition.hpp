@@ -1,6 +1,7 @@
 #ifndef WARBLER_SEMANTICS_DEFINITION_HPP
 #define WARBLER_SEMANTICS_DEFINITION_HPP
 
+#include <warbler/util/string.hpp>
 #include <warbler/semantics/type/struct.hpp>
 #include <warbler/semantics/type/primitive.hpp>
 
@@ -16,6 +17,7 @@ namespace warbler::semantics
 
 	class Definition
 	{
+		String _symbol;
 
 		union
 		{
@@ -33,6 +35,7 @@ namespace warbler::semantics
 		Definition(const Definition& other) = delete;
 		~Definition();
 
+		const String& symbol() const { return _symbol; }
 		DefinitionType type() const { return _type; }
 		Struct& struct_def() { assert(_type == DefinitionType::Struct); return _struct_def; }
 		Primitive& primitive_def() { assert(_type == DefinitionType::Primitive); return _primitive_def; }

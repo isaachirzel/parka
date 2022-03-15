@@ -5,9 +5,9 @@
 namespace warbler::syntax
 {
 	Parameter::Parameter(bool is_mutable, Identifier&& identifier, Type&& type) :
-	_is_mutable(is_mutable),
 	_identifier(identifier),
-	_type(type)
+	_type(type),
+	_is_mutable(is_mutable)
 	{}
 
 	Result<Parameter> Parameter::parse(lexicon::Token& token)

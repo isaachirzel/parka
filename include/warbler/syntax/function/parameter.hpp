@@ -1,6 +1,7 @@
 #ifndef WARBLER_SYNTAX_FUNCTION_PARAMETER_HPP
 #define WARBLER_SYNTAX_FUNCTION_PARAMETER_HPP
 
+#include <warbler/util/string.hpp>
 #include <warbler/syntax/identifier.hpp>
 #include <warbler/syntax/type.hpp>
 
@@ -10,9 +11,9 @@ namespace warbler::syntax
 	{
 	private:
 
-		bool _is_mutable;
 		Identifier _identifier;
 		Type _type;
+		bool _is_mutable;
 
 		Parameter(bool is_mutable, Identifier&& identifier, Type&& type);
 

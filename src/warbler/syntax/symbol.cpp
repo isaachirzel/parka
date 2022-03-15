@@ -40,9 +40,4 @@ namespace warbler::syntax
 
 	// 	return true;
 	// }
-
-	void Symbol::print_tree(u32 depth) const
-	{
-		print_branch(depth, _token.text());
-	}
 }
