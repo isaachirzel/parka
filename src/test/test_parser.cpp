@@ -1,17 +1,18 @@
 // local headers
-#include <warbler/syntax/ast.hpp>
+#include <warbler/parser.hpp>
+#include <warbler/validator.hpp>
 #include <warbler/util/print.hpp>
-#include <warbler/semantics/ast.hpp>
 
 // standard headers
 #include <stdio.h>
 #include <assert.h>
 
+
 const char *src = R"==(
 
-	function main(argc: i32)
+	type Person: struct
 	{
-		var value: i32 = 3;
+		age: u32
 	}
 
 )==";
@@ -20,33 +21,23 @@ using namespace warbler;
 
 int main()
 {
-	auto file = source::File::from(src);
-	auto syntax = syntax::Ast::parse(file);
+	auto file = File::from(src);
+	auto parse_res = parse(file);
 
-	if (!syntax)
+	if (!parse_res)
 	{
-		print_error("failed to parse src");
+		print_error("failed to parse source");
 		return 1;
 	}
 
-	auto syntax_tree = syntax.unwrap();
+	auto syntax = parse_res.unwrap();
+	auto context_res = validate(syntax);
 
-	auto context = semantics::Ast::validate(syntax_tree);
-
-	if (!context)
+	if (!context_res)
 	{
 		print_error("errors when validating source");
 		return 1;
 	}
-
-	auto ast = context.unwrap();
-	// auto ast = semantics::Ast::validate(parse_tree);
-
-	// if (!ast)
-	// {
-	// 	print_error("error(s) when validating src");
-	// 	return 1;
-	// }
 	
 	print_note("successfully validated ast");
 

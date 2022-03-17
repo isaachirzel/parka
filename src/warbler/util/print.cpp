@@ -24,9 +24,6 @@
 
 namespace warbler
 {
-	using source::Snippet;
-	using lexicon::Token;
-
 	std::ostream& output_stream = std::cout;
 	static bool is_color_enabled = true;
 

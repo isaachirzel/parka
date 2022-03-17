@@ -8,7 +8,7 @@ Type validation:
 	referencing. If in the situation of a child struct containing a reference to a parent struct,
 	the fact that the symbol is in the stack will also be used to show that the type indeed exists.
 
-	The semantics::SymbolTable structure will make use of a *reference* to the above Table<Symbol>
+	The SymbolTable structure will make use of a *reference* to the above Table<Symbol>
 
 Function validation:
 
@@ -22,9 +22,9 @@ validate each symbol
 upon reaching references to other types, check symbol table, if not in there, do linear search starting after current index
 if not found after linear search: unresolved symbol error
 
-Function::validate(syntax::Function& syntax, SymbolTable& symbols, 
+Function::validate(Function& syntax, SymbolTable& symbols, 
 
-enum class ExpressionType
+enum class Type
 {
 	Additive,
 	Multiplicative,
