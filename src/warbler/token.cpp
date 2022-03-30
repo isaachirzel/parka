@@ -1,4 +1,4 @@
-#include <warbler/lexicon/token.hpp>
+#include <warbler/token.hpp>
 
 #include <warbler/util/print.hpp>
 #include <cstring>

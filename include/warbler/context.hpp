@@ -155,13 +155,13 @@ namespace warbler
 
 	public:
 
+		StructContext(Table<MemberContext>& members) :
+		_members(std::move(members))
+		{}
 	};
 
 	class PrimitiveContext
 	{
-	public:
-
-		PrimitiveContext(TypeDefinitionContext& definition) {}
 	};
 
 	class TypeDefinitionContext

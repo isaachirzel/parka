@@ -330,27 +330,27 @@ namespace warbler
 	}
 
 	StatementSyntax::StatementSyntax(AssignmentSyntax&& assignment) :
-	_assignment(std::move(assignment)),
+	_assignment(new AssignmentSyntax(std::move(assignment))),
 	_type(StatementType::Assignment)
 	{}
 
 	StatementSyntax::StatementSyntax(ExpressionStatementSyntax&& statement) :
-	_expression(std::move(statement)),
+	_expression(new ExpressionStatementSyntax(std::move(statement))),
 	_type(StatementType::Expression)
 	{}
 
 	StatementSyntax::StatementSyntax(BlockStatementSyntax&& block) :
-	_block(Box<BlockStatementSyntax>(new BlockStatementSyntax(std::move(block)))),
+	_block(new BlockStatementSyntax(std::move(block))),
 	_type(StatementType::Block)
 	{}
 
 	StatementSyntax::StatementSyntax(DeclarationSyntax&& variable) :
-	_declaration(std::move(variable)),
+	_declaration(new DeclarationSyntax(std::move(variable))),
 	_type(StatementType::Declaration)
 	{}
 
 	StatementSyntax::StatementSyntax(IfStatementSyntax&& if_statement) :
-	_iff(std::move(if_statement)),
+	_iff(new IfStatementSyntax(std::move(if_statement))),
 	_type(StatementType::If)
 	{}
 
@@ -386,64 +386,25 @@ namespace warbler
 		switch (_type)
 		{
 			case StatementType::Assignment:
-				_assignment.~Box();
+				delete _assignment;
 				break;
 				
 			case StatementType::Expression:
-				_expression.~Box();
+				delete _expression;
 				break;
 				
 			case StatementType::Block:
-				_block.~Box();
+				delete _block;
 				break;
 				
 			case StatementType::Declaration:
-				_declaration.~Box();
+				delete _declaration;
 				break;
 				
 			case StatementType::If:
-				_iff.~Box();
+				delete _iff;
 				break;
 			}
-	}
-
-	StatementContext::StatementContext(BlockStatementContext&& block) :
-	_block(std::move(block)),
-	_type(StatementType::Block)
-	{}
-
-	StatementContext::StatementContext(DeclarationContext&& variable) :
-	_declaration(std::move(variable)),
-	_type(StatementType::Declaration)
-	{}
-
-	StatementContext::StatementContext(StatementContext&& other) :
-	_type()
-	{
-		switch (_type)
-		{
-			case StatementType::Block:
-				new (&_block) auto(std::move(other._block));
-				break;
-
-			case StatementType::Declaration:
-				new (&_declaration) auto(std::move(other._declaration));
-				break;
-		}
-	}
-
-	StatementContext::~StatementContext()
-	{
-		switch (_type)
-		{
-			case StatementType::Block:
-				_block.~Box();
-				break;
-
-			case StatementType::Declaration:
-				_declaration.~Box();
-				break;
-		}
 	}
 
 	IfStatementSyntax::IfStatementSyntax(ExpressionSyntax&& condition, BlockStatementSyntax&& then_body) :

@@ -114,14 +114,17 @@ namespace warbler
 	{}
 
 	SymbolContext::SymbolContext(FunctionContext& function) :
+	_function(&function),
 	_type(SymbolType::Function)
 	{}
 
 	SymbolContext::SymbolContext(ParameterContext& parameter) :
+	_parameter(&parameter),
 	_type(SymbolType::Parameter)
 	{}
 
 	SymbolContext::SymbolContext(TypeDefinitionContext& definition) :
+	_definition(&definition),
 	_type(SymbolType::TypeDefinition)
 	{}
 
@@ -144,6 +147,53 @@ namespace warbler
 
 			case SymbolType::TypeDefinition:
 				_definition = other._definition;
+				break;
+		}
+	}
+
+	StatementContext::StatementContext(BlockStatementContext&& block) :
+	_block(std::move(block)),
+	_type(StatementType::Block)
+	{}
+
+	StatementContext::StatementContext(DeclarationContext&& variable) :
+	_declaration(std::move(variable)),
+	_type(StatementType::Declaration)
+	{}
+
+	StatementContext::StatementContext(StatementContext&& other) :
+	_type()
+	{
+		switch (_type)
+		{
+			case StatementType::Block:
+				new (&_block) auto(std::move(other._block));
+				break;
+
+			case StatementType::Declaration:
+				new (&_declaration) auto(std::move(other._block));
+				break;
+
+			default:
+				assert(false && "invalid statement type");
+				break;
+		}
+	}
+
+	StatementContext::~StatementContext()
+	{
+		switch (_type)
+		{
+			case StatementType::Block:
+				_block.~Box();
+				break;
+
+			case StatementType::Declaration:
+				_declaration.~Box();
+				break;
+
+			default:
+				assert(false && "invalid statement type");
 				break;
 		}
 	}
