@@ -4,36 +4,48 @@
 #include <warbler/util/array.hpp>
 #include <warbler/util/string.hpp>
 #include <warbler/util/table.hpp>
+#include <warbler/util/primitive>
 
 namespace warbler
 {
-	// Forward declarations
-	class FunctionContext;
-	class ParameterContext;
-	class VariableContext;
-	class TypeDefinitionContext;
-	class SymbolContext;
+	enum class SymbolType
+	{
+		Function,
+		Parameter,
+		Variable,
+		TypeDefinition
+	}
+
+	struct SymbolContext
+	{
+		SymbolType type;
+		u32 index;
+		bool is_validated;
+	};
+
+	struct Scope
+	{
+		const String& package;
+		Table<SymbolContext>& symbols;
+	};
+
 
 	class SymbolTable
 	{
 	private:
 
-		Array<const String*> _package;
-		Array<Table<SymbolContext>*> _scope;
+		Array<Scope> _scope;
 	
 	public:
 
-		SymbolTable(Table<SymbolContext>& module_scope);
+		SymbolTable(Table<SymbolContext>& module_scope, const String& package);
 
-		void push_scope(Table<SymbolContext>& scope);
-		void pop_scope();
+		void push_scope(Table<SymbolContext>& symbols, const String& package);
+		void pop_scope();		
 
-		void add_parameters(Array<ParameterContext>& parameter);
-		void add_function(FunctionContext& function);
-		void add_variable(VariableContext& declaration);
-		void add_type(TypeDefinitionContext& type);
+		void add(const String& symbol, SymbolType type);
 
-		SymbolContext *resolve(const String& symbol);
+		SymbolContext& resolve(const String& symbol);
 
 		String get_symbol(const String& name);
 	};

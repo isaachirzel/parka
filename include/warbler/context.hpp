@@ -37,34 +37,6 @@ namespace warbler
 	class BlockStatementContext;
 	class DeclarationContext;
 
-	class SymbolContext
-	{
-		union
-		{
-			VariableContext *_variable;
-			ParameterContext *_parameter;
-			FunctionContext *_function;
-			TypeDefinitionContext *_definition;
-		};
-
-		SymbolType _type;
-
-	public:
-
-		SymbolContext(VariableContext& variable);
-		SymbolContext(FunctionContext& function);
-		SymbolContext(ParameterContext& parameter);
-		SymbolContext(TypeDefinitionContext& definition);
-		SymbolContext(const SymbolContext&);
-		~SymbolContext() = default;
-
-		const auto& type() const { return _type; }
-		const auto& variable() const { assert(_type == SymbolType::Variable); return _variable; }
-		const auto& parameter() const { assert(_type == SymbolType::Parameter); return *_parameter; }
-		const auto& function() const { assert(_type == SymbolType::Function); return _function; }
-		const auto& definition() const { assert(_type == SymbolType::TypeDefinition); return _definition; }
-	};
-
 	class IdentifierContext
 	{
 		String _symbol;
@@ -313,39 +285,16 @@ namespace warbler
 		const auto& body() const { return _body; }
 	};
 
-	class ModuleContext
+	struct ModuleContext
 	{
-		String _name;
-		Array<FunctionContext> _functions;
-		Array<TypeDefinitionContext> _types;
-		Table<SymbolContext> _symbols;
-
-	public:
-
-		ModuleContext(String& name, Array<FunctionContext>& functions, Array<TypeDefinitionContext>& types, Table<SymbolContext>& symbols) :
-		_name(std::move(name)),
-		_functions(std::move(functions)),
-		_types(std::move(types)),
-		_symbols(std::move(symbols))
-		{}
-
-		const auto& name() const { return _name; }
-		const auto& functions() const { return _functions; }
-		const auto& types() const { return _types; }
-		const auto& symbols() const { return _symbols; }
+		Table<SymbolContext> symbols;
+		Array<FunctionContext> functions;
+		Array<TypeDefinitionContext> types;
 	};
 
-	class AstContext
+	struct AstContext
 	{
-		ModuleContext _module;
-
-	public:
-
-		AstContext(ModuleContext&& module) :
-		_module(std::move(module))
-		{}
-
-		const auto& module() const { return _module; }
+		ModuleContext module;
 	};
 }
 

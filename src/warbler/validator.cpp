@@ -1,5 +1,7 @@
 #include <warbler/validator.hpp>
 
+#include <warbler/util/print.hpp>
+
 namespace warbler
 {
 	// Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax)
@@ -54,27 +56,29 @@ namespace warbler
 	{
 		#pragma message "TODO: implement module names"
 
-		String name = "test";
-		Table<SymbolContext> symbols;
-		Array<FunctionContext> functions;
-		Array<TypeDefinitionContext> types;
+		ModuleContext context;
+
+		SymbolTable symbol_table(context.symbols, context.package);
 
 		for (const auto& type : syntax.types())
 		{
-			
+			auto name = type.identifier().token().get_text();
+
+			context.symbols.add(
+			print("has type");
 		}
 
-
-		return ModuleContext(name, functions, types, symbols);
+		return context;
 	}
 
 	Result<AstContext> validate(const AstSyntax& syntax)
 	{
-		auto module = validate_module(syntax.module());
+
+		auto res = validate_module(syntax.module());
 
 		if (!module)
 			return {};
 
-		return AstContext(module.unwrap());
+		return AstContext { res.unwrap() };
 	}
 }

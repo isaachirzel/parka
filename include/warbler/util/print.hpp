@@ -12,8 +12,9 @@ namespace warbler
 	#define not_implemented() _not_implemented(__FILE__, __LINE__, __func__)
 
 	void print_enable_color(bool enabled);
-	
-	void print_branch(u32 depth, const String& text);
+
+	void _print(const char *file, u32 line, const String& msg);
+	#define print(msg) _print(__FILE__, __LINE__, msg)
 
 	void print_note(const Snippet& text, const String& msg);
 	void print_warning(const Snippet& text, const String& msg);

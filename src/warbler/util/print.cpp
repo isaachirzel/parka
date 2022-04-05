@@ -94,26 +94,6 @@ namespace warbler
 		is_color_enabled = enabled;
 	}
 
-	void print_branch(u32 depth, const String& text)
-	{
-		if (depth > 0)
-		{
-
-			for (u32 i = 0; i < depth - 1; ++i)
-				output_stream << "|   ";
-
-			output_stream << "| > ";
-		}
-
-		output_stream << text << '\n';
-	}
-
-	void print_spaces(unsigned count)
-	{
-		for (unsigned i = 0; i < count; ++i)
-			putchar(' ');
-	}
-
 	// static const char *get_shortened_file(const char *file)
 	// {
 
@@ -258,6 +238,11 @@ namespace warbler
 		out[out.size() - 2] = '>';
 
 		return out;
+	}
+
+	void _print(const char *file, u32 line, const String& msg)
+	{
+		std::cout << file << ':' << line << ": " << msg << std::endl;
 	}
 
 	void print_parse_error(const Token& token, const String& expected, const String& msg)
