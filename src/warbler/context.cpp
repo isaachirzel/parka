@@ -108,49 +108,6 @@ namespace warbler
 		}
 	}
 
-	SymbolContext::SymbolContext(VariableContext& variable) :
-	_variable(&variable),
-	_type(SymbolType::Variable)
-	{}
-
-	SymbolContext::SymbolContext(FunctionContext& function) :
-	_function(&function),
-	_type(SymbolType::Function)
-	{}
-
-	SymbolContext::SymbolContext(ParameterContext& parameter) :
-	_parameter(&parameter),
-	_type(SymbolType::Parameter)
-	{}
-
-	SymbolContext::SymbolContext(TypeDefinitionContext& definition) :
-	_definition(&definition),
-	_type(SymbolType::TypeDefinition)
-	{}
-
-	SymbolContext::SymbolContext(const SymbolContext& other) :
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case SymbolType::Variable:
-				_variable = other._variable;
-				break;
-				
-			case SymbolType::Function:
-				_function = other._function;
-				break;
-
-			case SymbolType::Parameter:
-				_parameter = other._parameter;
-				break;
-
-			case SymbolType::TypeDefinition:
-				_definition = other._definition;
-				break;
-		}
-	}
-
 	StatementContext::StatementContext(BlockStatementContext&& block) :
 	_block(std::move(block)),
 	_type(StatementType::Block)

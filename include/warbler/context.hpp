@@ -10,6 +10,7 @@
 #include <warbler/util/array.hpp>
 #include <warbler/util/optional.hpp>
 #include <warbler/util/box.hpp>
+#include <warbler/symbol_table.hpp>
 
 #include <cassert>
 
@@ -287,6 +288,7 @@ namespace warbler
 
 	struct ModuleContext
 	{
+		String package;
 		Table<SymbolContext> symbols;
 		Array<FunctionContext> functions;
 		Array<TypeDefinitionContext> types;

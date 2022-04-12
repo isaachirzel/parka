@@ -60,12 +60,15 @@ namespace warbler
 
 		SymbolTable symbol_table(context.symbols, context.package);
 
+		u32 i = 0;
+
 		for (const auto& type : syntax.types())
 		{
-			auto name = type.identifier().token().get_text();
+			auto name = type.name().token().text();
 
-			context.symbols.add(
-			print("has type");
+			context.symbols.emplace(name, SymbolContext(SymbolType::TypeDefinition, i, false));
+
+			++i;
 		}
 
 		return context;
@@ -76,7 +79,7 @@ namespace warbler
 
 		auto res = validate_module(syntax.module());
 
-		if (!module)
+		if (!res)
 			return {};
 
 		return AstContext { res.unwrap() };

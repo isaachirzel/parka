@@ -2,8 +2,9 @@
 
 namespace warbler
 {
-	SymbolTable::SymbolTable(Table<SymbolContext>& module_scope) :
-	_scope({ &module_scope })
+	SymbolTable::SymbolTable(Table<SymbolContext>& symbols, const String& package) :
+	_package(package),
+	_scope({ &symbols })
 	{}
 
 	void SymbolTable::push_scope(Table<SymbolContext>& scope)
@@ -16,10 +17,10 @@ namespace warbler
 		_scope.pop_back();
 	}
 
-	void SymbolTable::add(const String& symbol, SymbolType type)
+	void SymbolTable::add(const String& symbol, u32 index, SymbolType type)
 	{
-		auto current_scope = _scope.back();
+		auto& current_scope = *_scope.back();
 
-		current_scope.symbols.insert(SymbolContext { type, 0, false });
+		current_scope.emplace(symbol, SymbolContext(type, index, false));
 	}
 }
