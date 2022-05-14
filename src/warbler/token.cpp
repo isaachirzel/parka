@@ -567,13 +567,12 @@ namespace warbler
 		}
 	}
 
-	Token& Token::next()
+	void Token::increment()
 	{
 		auto next_token_pos = get_next_pos(_file, _pos + _length);
 		auto next_token = get_next_token(_file, next_token_pos);
 
 		new (this) auto(next_token);
-		return *this;
 	}
 
 	Token Token::get_initial(const File& file)
@@ -702,5 +701,19 @@ namespace warbler
 		}
 		
 		return String(category()) + " '" + text() + '\'';
+	}
+
+	bool Token::operator==(const String& text) const
+	{
+		if (text.size() != _length)
+			return false;
+
+		for (usize i = 0; i < _length; ++i)
+		{
+			if (_file[_pos + i] != text[i])
+				return false;
+		}
+
+		return true;
 	}
 }

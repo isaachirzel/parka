@@ -10,7 +10,6 @@
 #include <warbler/util/array.hpp>
 #include <warbler/util/optional.hpp>
 #include <warbler/util/box.hpp>
-#include <warbler/symbol_table.hpp>
 
 #include <cassert>
 
@@ -99,26 +98,26 @@ namespace warbler
 	class TypeContext
 	{
 		Array<bool> _ptr_mutability;
-		TypeDefinitionContext& _base_type;
+		const TypeDefinitionContext& _base_type;
 
 	public:
 
-		TypeContext(Array<bool>& ptr_info, TypeDefinitionContext& base_type) :
+		TypeContext(Array<bool>& ptr_info, const TypeDefinitionContext& base_type) :
 		_ptr_mutability(std::move(ptr_info)),
 		_base_type(base_type)
 		{}
 	};
 
-	class MemberContext
+	struct MemberContext
 	{
-		TypeContext _type;
-		bool _is_public;
+		String name;
+		TypeContext type;
+		bool is_public;
 
-	public:
-
-		MemberContext(TypeContext&& type, bool is_public) :
-		_type(std::move(type)),
-		_is_public(is_public)
+		MemberContext(String& name, TypeContext&& type, bool is_public) :
+		name(std::move(name)),
+		type(std::move(type)),
+		is_public(is_public)
 		{}
 	};
 
@@ -131,10 +130,15 @@ namespace warbler
 		StructContext(Table<MemberContext>& members) :
 		_members(std::move(members))
 		{}
+
+		const auto& members() const { return _members; }
 	};
 
-	class PrimitiveContext
+	struct PrimitiveContext
 	{
+		u8 _size;
+		// TODO: add table for properties
+		// TODO: add table for methods
 	};
 
 	class TypeDefinitionContext
@@ -144,15 +148,17 @@ namespace warbler
 		union
 		{
 			StructContext _struct_def;
+			PrimitiveContext _primitive;
 		};
 
 		TypeDefinitionType _type;
 
 	public:
-
+		
 		TypeDefinitionContext(String&& symbol, StructContext&& struct_def);
+		TypeDefinitionContext(const char *symbol, PrimitiveContext&& primitive);
 		TypeDefinitionContext(TypeDefinitionContext&& other);
-		TypeDefinitionContext(const TypeDefinitionContext& other) = delete;
+		TypeDefinitionContext(const TypeDefinitionContext& other);
 		~TypeDefinitionContext();
 
 
@@ -286,17 +292,16 @@ namespace warbler
 		const auto& body() const { return _body; }
 	};
 
-	struct ModuleContext
+	struct PackageContext
 	{
-		String package;
-		Table<SymbolContext> symbols;
+		String name;
 		Array<FunctionContext> functions;
-		Array<TypeDefinitionContext> types;
+		Array<TypeDefinitionContext> type_definitions;
 	};
 
-	struct AstContext
+	struct ProgramContext
 	{
-		ModuleContext module;
+		Table<PackageContext> _packages;
 	};
 }
 

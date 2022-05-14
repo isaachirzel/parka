@@ -48,10 +48,8 @@ namespace warbler
 	Result<LabelSyntax> parse_label(Token& token);
 	Result<TypeSyntax> parse_type(Token& token);
 	Result<VariableSyntax> parse_variable(Token& token);
-	Result<ModuleSyntax> parse_module(Token& token);
-	Result<AstSyntax> parse(const File& file);
-
-	// Statements
+	Result<PackageSyntax> parse_module(Token& token);
+	Result<ProgramSyntax> parse(const File& file); // TODO: make this a directory for module loading
 }
 
 #endif

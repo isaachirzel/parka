@@ -110,7 +110,7 @@ namespace warbler
 
 		static Token get_initial(const File& file);
 
-		Token& next();
+		void increment();
 
 		const File& file() const { return _file; }
 		usize pos() const { return _pos; }
@@ -120,6 +120,7 @@ namespace warbler
 		operator String() const;
 		const char *category() const;
 		char operator[](usize i) const { assert(i < _length); return _file[_pos + i]; }
+		bool operator==(const String& text) const;
 	};
 }
 

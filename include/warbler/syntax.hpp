@@ -5,6 +5,7 @@
 #include <warbler/type.hpp>
 #include <warbler/util/optional.hpp>
 #include <warbler/util/box.hpp>
+#include <warbler/util/table.hpp>
 
 namespace warbler
 {
@@ -445,6 +446,9 @@ namespace warbler
 		_base_type(base_type),
 		_ptrs(std::move(ptrs))
 		{}
+
+		const auto& base_type() const { return _base_type; }
+		const auto& ptrs() const { return _ptrs; }
 	};
 
 	class MemberSyntax
@@ -460,6 +464,10 @@ namespace warbler
 		_type(std::move(type)),
 		_is_public(is_public)
 		{}
+
+		const auto& name() const { return _name; }
+		const auto& type() const { return _type; }
+		const auto& is_public() const { return _is_public; }
 	};
 
 	class EnumSyntax
@@ -707,35 +715,59 @@ namespace warbler
 		const auto& signature() const { return _signature; }
 		const auto& body() const { return _body; }
 	};
-
-	class ModuleSyntax
+	
+	struct ModuleSyntax
 	{
-		Array<FunctionSyntax> _functions;
-		Array<TypeDefinitionSyntax> _types;
-
-	public:
-
-		ModuleSyntax(Array<FunctionSyntax>& functions, Array<TypeDefinitionSyntax>& types) :
-		_functions(std::move(functions)),
-		_types(std::move(types))
-		{}
-
-		const auto& functions() const { return _functions; }
-		const auto& types() const { return _types; }
+		Array<FunctionSyntax> functions;
+		Array<TypeDefinitionSyntax> type_definitions;
 	};
 
-	class AstSyntax
+	class PackageSyntax
 	{
-		ModuleSyntax _module;
+		String _name;
+		Array<FunctionSyntax> _functions;
+		Array<TypeDefinitionSyntax> _type_definitions;
+		// TODO: add globals
 
 	public:
 
-		AstSyntax(ModuleSyntax&& module) :
-		_module(std::move(module))
+		PackageSyntax(const String& name, Array<FunctionSyntax>&& functions, Array<TypeDefinitionSyntax>&& type_definitions) :
+		_name(name),
+		_functions(std::move(functions)),
+		_type_definitions(std::move(type_definitions))
+		{}
+		
+		const auto& name() const { return _name; }
+		const auto& functions() const { return _functions; }
+		const auto& type_definitions() const { return _type_definitions; }
+	};
+
+	class ProgramSyntax
+	{
+		Array<PackageSyntax> _packages;
+
+	public:
+
+		ProgramSyntax(Array<PackageSyntax>&& packages) :
+		_packages(std::move(packages))
 		{}
 
-		const auto& module() const { return _module; }
+		const auto& packages() const { return _packages; }
 	};
 }
+
+/*
+Array of symbols with pointers to syntax
+Table of 
+
+
+
+Current Location		Looking for
+a::b::c					b2::Doggy
+
+a::b::c::b2::Doggy	No
+a::b::b2::Doggy		No
+a::b2::Doggy		Yes
+*/
 
 #endif

@@ -487,4 +487,80 @@ namespace warbler
 				break;			
 		}
 	}
+
+	const TypeDefinitionSyntax *ProgramSyntax::find_type_definition(const String& symbol) const
+	{
+		for (const auto& type : _module.types())
+		{
+			if (type.name().token() == symbol)
+				return &type;
+		}
+
+		return nullptr;
+	}
+
+	DefinitionSyntax::DefinitionSyntax(FunctionSyntax *function) :
+	_function(function),
+	_type(SymbolType::Function)
+	{}
+
+	DefinitionSyntax::DefinitionSyntax(VariableSyntax *variable) :
+	_variable(variable),
+	_type(SymbolType::Variable)
+	{}
+
+	DefinitionSyntax::DefinitionSyntax(ParameterSyntax *parameter) :
+	_parameter(parameter),
+	_type(SymbolType::Parameter)
+	{}
+
+	DefinitionSyntax::DefinitionSyntax(TypeDefinitionSyntax *type_definition) :
+	_type_definition(type_definition),
+	_type(SymbolType::TypeDefinition)
+	{}
+
+	DefinitionSyntax::DefinitionSyntax(DefinitionSyntax&& other)
+	{
+		switch (_type)
+		{
+			case SymbolType::Function:
+				new (_function) auto(std::move(other._function));
+				break;
+
+			case SymbolType::Variable:
+				new (_variable) auto(std::move(other._variable));
+				break;
+
+			case SymbolType::Parameter:
+				new (_parameter) auto(std::move(other._parameter));
+				break;
+
+			case SymbolType::TypeDefinition:
+				new (_type_definition) auto(std::move(other._type_definition));
+				break;
+		}
+	}
+
+	DefinitionSyntax::~DefinitionSyntax()
+	{
+		switch (_type)
+		{
+			case SymbolType::Function:
+				delete _function;
+				break;
+
+			case SymbolType::Variable:
+				delete _variable;
+				break;
+
+			case SymbolType::Parameter:
+				delete _parameter;
+				break;
+				
+			case SymbolType::TypeDefinition:
+				delete _type_definition;
+				break;
+		}
+	}
+
 }

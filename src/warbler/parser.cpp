@@ -1,6 +1,7 @@
 #include <warbler/parser.hpp>
 
 #include <warbler/util/print.hpp>
+#include <warbler/directory.hpp>
 
 namespace warbler
 {
@@ -29,7 +30,9 @@ namespace warbler
 				break;
 			}
 
-			auto res = parse_multiplicative_expression(token.next());
+			token.increment();
+
+			auto res = parse_multiplicative_expression(token);
 
 			if (!res)
 				return {};
@@ -54,7 +57,9 @@ namespace warbler
 
 		while (token.type() == TokenType::Ampersand)
 		{
-			auto res = parse_equality_expression(token.next());
+			token.increment();
+
+			auto res = parse_equality_expression(token);
 
 			if (!res)
 				return {};
@@ -79,7 +84,8 @@ namespace warbler
 
 		while (token.type() == TokenType::Pipeline)
 		{
-			auto res = parse_bitwise_xor_expression(token.next());
+			token.increment();
+			auto res = parse_bitwise_xor_expression(token);
 			
 			if (!res)
 				return {};
@@ -104,7 +110,9 @@ namespace warbler
 
 		while (token.type() == TokenType::Carrot)
 		{
-			auto res = parse_bitwise_and_expression(token.next());
+			token.increment();
+
+			auto res = parse_bitwise_and_expression(token);
 			
 			if (!res)
 				return {};
@@ -129,7 +137,9 @@ namespace warbler
 
 		while (token.type() == TokenType::BooleanAnd)
 		{
-			auto res = parse_bitwise_or_expression(token.next());
+			token.increment();
+
+			auto res = parse_bitwise_or_expression(token);
 
 			if (!res)
 				return {};
@@ -154,7 +164,9 @@ namespace warbler
 
 		while (token.type() == TokenType::BooleanOr)
 		{
-			auto res = parse_boolean_and_expression(token.next());
+			token.increment();
+
+			auto res = parse_boolean_and_expression(token);
 
 			if (!res)
 				return {};
@@ -178,7 +190,9 @@ namespace warbler
 		if (token.type() != TokenType::KeywordThen)
 			return lhs.unwrap();
 
-		auto true_case = parse_boolean_or_expression(token.next());
+		token.increment();
+
+		auto true_case = parse_boolean_or_expression(token);
 
 		if (!true_case)
 			return {};
@@ -189,7 +203,9 @@ namespace warbler
 			return {};
 		}
 
-		auto false_case = parse_boolean_or_expression(token.next());
+		token.increment();
+
+		auto false_case = parse_boolean_or_expression(token);
 
 		if (!false_case)
 			return {};
@@ -229,7 +245,9 @@ namespace warbler
 			if (should_break)
 				break;
 
-			auto res = parse_relational_expression(token.next());
+			token.increment();
+
+			auto res = parse_relational_expression(token);
 
 			if (!res)
 				return {};
@@ -280,7 +298,9 @@ namespace warbler
 			if (should_break)
 				break;
 
-			auto res = parse_prefix_expression(token.next());
+			token.increment();
+
+			auto res = parse_prefix_expression(token);
 
 			if (!res)
 				return {};
@@ -296,7 +316,7 @@ namespace warbler
 
 	Result<Array<ExpressionSyntax>> parse_arguments(Token& token)
 	{
-		token.next();
+		token.increment();
 
 		Array<ExpressionSyntax> arguments;
 
@@ -304,7 +324,9 @@ namespace warbler
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			auto res = parse_expression(token.next());
+			token.increment();
+			
+			auto res = parse_expression(token);
 
 			if (!res)
 				return {};
@@ -313,7 +335,7 @@ namespace warbler
 
 			if (token.type() == TokenType::Comma)
 			{
-				token.next();
+				token.increment();
 				goto parse_argument;
 			}
 
@@ -324,7 +346,7 @@ namespace warbler
 			}
 		}
 
-		token.next();
+		token.increment();
 
 		return arguments;
 	}
@@ -343,7 +365,9 @@ namespace warbler
 		{
 			case TokenType::LeftBracket:
 			{
-				auto res = parse_expression(token.next());
+				token.increment();
+
+				auto res = parse_expression(token);
 
 				if (!res)
 					return {};
@@ -354,7 +378,7 @@ namespace warbler
 					return {};
 				}
 
-				token.next();
+				token.increment();
 
 				expression = PostfixExpressionSyntax(std::move(expression), res.unwrap());
 				goto parse_postfix;
@@ -362,7 +386,9 @@ namespace warbler
 
 			case TokenType::LeftParenthesis:
 			{
-				auto res = parse_arguments(token.next());
+				token.increment();
+
+				auto res = parse_arguments(token);
 
 				if (!res)
 					return {};
@@ -373,9 +399,9 @@ namespace warbler
 
 			case TokenType::Dot:
 			{
-				token.next();
+				token.increment();
 
-				auto res = parse_identifier(token.next());
+				auto res = parse_identifier(token);
 
 				if (!res)
 					return {};
@@ -426,7 +452,10 @@ namespace warbler
 		}
 
 		auto prefix = token;
-		auto res = parse_prefix_expression(token.next());
+
+		token.increment();
+
+		auto res = parse_prefix_expression(token);
 
 		if (!res)
 			return {};
@@ -447,7 +476,9 @@ namespace warbler
 		}
 		else if (token.type() == TokenType::LeftParenthesis)
 		{
-			auto expression = parse_expression(token.next());
+			token.increment();
+
+			auto expression = parse_expression(token);
 
 			if (!expression)
 				return {};
@@ -458,7 +489,7 @@ namespace warbler
 				return {};
 			}
 
-			token.next();
+			token.increment();
 
 			return expression.unwrap();
 		}
@@ -513,7 +544,9 @@ namespace warbler
 			if (should_break)
 				break;
 
-			auto res = parse_bit_shift_expression(token.next());
+			token.increment();
+
+			auto res = parse_bit_shift_expression(token);
 
 			if (!res)
 				return {};
@@ -559,7 +592,9 @@ namespace warbler
 			if (should_break)
 				break;
 			
-			auto res = parse_additive_expression(token.next());
+			token.increment();
+
+			auto res = parse_additive_expression(token);
 
 			if (!res)
 				return {};
@@ -583,7 +618,7 @@ namespace warbler
 
 		auto character = token[1];
 
-		token.next();
+		token.increment();
 
 		return ExpressionSyntax(ConstantSyntax(token, character));
 	}
@@ -617,18 +652,18 @@ namespace warbler
 			}
 		}
 		
-		const auto& t = token;
+		const auto t = token;
 
-		token.next();
+		token.increment();
 
 		return ExpressionSyntax(ConstantSyntax(t, value));
 	}
 
 	static ExpressionSyntax parse_string(Token& token)
 	{
-		const auto& t = token;
+		const auto t = token;
 
-		token.next();
+		token.increment();
 
 		auto text = token.file().get_text(token.pos() + 1, token.length() - 2);
 
@@ -644,9 +679,9 @@ namespace warbler
 		for (size_t i = 0; i < token.length(); ++i)
 			value = value * 10 + (token[i] - '0');
 
-		const auto& t = token;
+		const auto t = token;
 
-		token.next();
+		token.increment();
 
 		return ConstantSyntax(t, value);
 	}
@@ -675,15 +710,15 @@ namespace warbler
 
 			case TokenType::KeywordTrue:
 			{
-				const auto& t = token;
-				token.next();
+				const auto t = token;
+				token.increment();
 				return ExpressionSyntax(ConstantSyntax(t, true));
 			}
 
 			case TokenType::KeywordFalse:
 			{
-				const auto& t = token;
-				token.next();
+				const auto t = token;
+				token.increment();
 				return ExpressionSyntax(ConstantSyntax(t, false));
 			}
 
@@ -705,7 +740,7 @@ namespace warbler
 
 		auto symbol = token;
 
-		token.next();
+		token.increment();
 
 		return ExpressionSyntax(SymbolSyntax(symbol));
 	}
@@ -718,7 +753,9 @@ namespace warbler
 			return {};
 		}
 
-		auto name = parse_identifier(token.next());
+		token.increment();
+
+		auto name = parse_identifier(token);
 
 		if (!name)
 			return {};
@@ -749,7 +786,7 @@ namespace warbler
 		if (token.type() == TokenType::KeywordMut)
 		{
 			is_mutable = true;
-			token.next();
+			token.increment();
 		}
 
 		auto name = parse_identifier(token);
@@ -763,7 +800,9 @@ namespace warbler
 			return {};
 		}
 
-		auto type = parse_type(token.next());
+		token.increment();
+
+		auto type = parse_type(token);
 
 		if (!type)
 			return {};
@@ -781,7 +820,9 @@ namespace warbler
 
 		Array<ParameterSyntax> parameters;
 
-		if (token.next().type() != TokenType::RightParenthesis)
+		token.increment();
+
+		if (token.type() != TokenType::RightParenthesis)
 		{
 			while (true)
 			{
@@ -795,7 +836,7 @@ namespace warbler
 				if (token.type() != TokenType::Comma)
 					break;
 
-				token.next();
+				token.increment();
 			}
 
 			if (token.type() != TokenType::RightParenthesis)
@@ -805,7 +846,7 @@ namespace warbler
 			}
 		}
 
-		token.next();
+		token.increment();
 
 		return parameters;
 	}
@@ -822,7 +863,10 @@ namespace warbler
 			print_parse_error(token, "type", "Parameters cannot be declared without a type.");
 			return {};
 		}
-		auto type = parse_type(token.next());
+
+		token.increment();
+
+		auto type = parse_type(token);
 
 		if (!type)
 			return {};
@@ -832,7 +876,9 @@ namespace warbler
 
 	Result<AssignmentSyntax> parse_assignment(Token& token)
 	{
-		auto lhs = parse_expression(token.next());
+		token.increment();
+
+		auto lhs = parse_expression(token);
 
 		if (!lhs)
 			return {};
@@ -889,7 +935,9 @@ namespace warbler
 				return {};
 		}
 
-		auto RhsSyntax = parse_expression(token.next());
+		token.increment();
+
+		auto RhsSyntax = parse_expression(token);
 
 		if (!RhsSyntax)
 			return {};
@@ -900,7 +948,7 @@ namespace warbler
 			return {};
 		}
 
-		token.next();
+		token.increment();
 
 		return AssignmentSyntax(lhs.unwrap(), RhsSyntax.unwrap(), type);
 	}
@@ -913,7 +961,7 @@ namespace warbler
 			return {};
 		}
 
-		token.next();
+		token.increment();
 
 		Array<Box<StatementSyntax>> statements;
 
@@ -928,7 +976,7 @@ namespace warbler
 			statements.emplace_back(Box<StatementSyntax>(res.unwrap()));
 		}
 
-		token.next();
+		token.increment();
 
 		return BlockStatementSyntax(std::move(statements));
 	}
@@ -940,8 +988,10 @@ namespace warbler
 			print_parse_error(token, "var");
 			return {};
 		}
+
+		token.increment();
 		
-		auto declaration = parse_variable(token.next());
+		auto declaration = parse_variable(token);
 
 		if (!declaration)
 			return {};
@@ -952,7 +1002,9 @@ namespace warbler
 			return {};
 		}
 
-		auto value = parse_expression(token.next());
+		token.increment();
+
+		auto value = parse_expression(token);
 
 		if (!value)
 			return {};
@@ -963,14 +1015,16 @@ namespace warbler
 			return {};
 		}
 
-		token.next();
+		token.increment();
 
 		return DeclarationSyntax(declaration.unwrap(), value.unwrap());
 	}
 
 	Result<ExpressionStatementSyntax> parse_expression_statement(Token& token)
 	{
-		auto expression = parse_expression(token.next());
+		token.increment();
+
+		auto expression = parse_expression(token);
 
 		if (!expression)
 			return {};
@@ -981,32 +1035,36 @@ namespace warbler
 			return {};
 		}
 
-		token.next();
+		token.increment();
 
 		return ExpressionStatementSyntax(expression.unwrap());
 	}
 
 	Result<IfStatementSyntax> parse_if_statement(Token& token)
 	{
-		token.next();
+		token.increment();
 		
-		auto condition = parse_expression(token.next());
+		auto condition = parse_expression(token);
 
 		if (!condition)
 			return {};
 
-		auto then_body = parse_block_statement(token.next());
+		token.increment();
+
+		auto then_body = parse_block_statement(token);
 
 		if (!then_body)
 			return {};
 
 		if (token.type() == TokenType::KeywordElse)
 		{
-			token.next();
+			token.increment();
 
 			if (token.type() == TokenType::KeywordIf)
 			{
-				auto else_if = parse_if_statement(token.next());
+				token.increment();
+
+				auto else_if = parse_if_statement(token);
 
 				if (!else_if)
 					return {};
@@ -1015,7 +1073,9 @@ namespace warbler
 			}
 			else
 			{
-				auto else_body = parse_block_statement(token.next());
+				token.increment();
+
+				auto else_body = parse_block_statement(token);
 
 				if (!else_body)
 					return {};
@@ -1066,7 +1126,9 @@ namespace warbler
 				break;
 		}
 
-		auto res = parse_expression(token.next());
+		token.increment();
+
+		auto res = parse_expression(token);
 
 		if (!res)
 			return {};
@@ -1078,7 +1140,9 @@ namespace warbler
 	{
 		assert(token.type() == TokenType::KeywordType);
 
-		auto name = parse_identifier(token.next());
+		token.increment();
+
+		auto name = parse_identifier(token);
 
 		if (!name)
 		{
@@ -1092,7 +1156,9 @@ namespace warbler
 			return {};
 		}
 
-		switch (token.next().type())
+		token.increment();
+
+		switch (token.type())
 		{
 			case TokenType::KeywordStruct:
 			{
@@ -1118,11 +1184,11 @@ namespace warbler
 		if (token.type() == TokenType::KeywordPublic)
 		{
 			is_public = true;
-			token.next();
+			token.increment();
 		}
 		else if (token.type() == TokenType::KeywordPrivate)
 		{
-			token.next();
+			token.increment();
 		}
 
 		auto name = parse_identifier(token);
@@ -1135,8 +1201,10 @@ namespace warbler
 			print_parse_error(token, "':' after member name");
 			return {};
 		}
+		
+		token.increment();
 
-		auto type = parse_type(token.next());
+		auto type = parse_type(token);
 
 		if (!type)
 			return {};
@@ -1146,13 +1214,15 @@ namespace warbler
 
 	Result<StructSyntax> parse_struct(Token& token)
 	{
-		if (token.next().type() != TokenType::LeftBrace)
+		token.increment();
+
+		if (token.type() != TokenType::LeftBrace)
 		{
 			print_parse_error(token, "'{' before struct body");
 			return {};
 		}
 
-		token.next();
+		token.increment();
 
 		Array<MemberSyntax> members;
 
@@ -1170,7 +1240,7 @@ namespace warbler
 				if (token.type() != TokenType::Comma)
 					break;
 
-				token.next();
+				token.increment();
 			}
 
 			if (token.type() != TokenType::RightBrace)
@@ -1180,7 +1250,7 @@ namespace warbler
 			}
 		}
 
-		token.next();
+		token.increment();
 
 		return StructSyntax(members);
 	}
@@ -1192,7 +1262,7 @@ namespace warbler
 
 		auto identifier = token;
 
-		token.next();
+		token.increment();
 
 		return  IdentifierSyntax(identifier);
 	}
@@ -1207,13 +1277,15 @@ namespace warbler
 
 		auto label = token;
 
-		if (token.next().type() != TokenType::Colon)
+		token.increment();
+
+		if (token.type() != TokenType::Colon)
 		{
 			print_parse_error(token, "':' after label");
 			return {};
 		}
 
-		token.next();
+		token.increment();
 
 		return LabelSyntax(label);
 	}
@@ -1226,10 +1298,12 @@ namespace warbler
 
 		while (token.type() == TokenType::Asterisk)
 		{
-			if (token.next().type() == TokenType::KeywordMut)
+			token.increment();
+
+			if (token.type() == TokenType::KeywordMut)
 			{
 				ptr_mutability.emplace_back(PtrSyntax { token, true });
-				token.next();
+				token.increment();
 			}
 			else
 			{
@@ -1243,9 +1317,9 @@ namespace warbler
 			return {};
 		}
 		
-		const auto& base_type = token;
+		const auto base_type = token;
 
-		token.next();
+		token.increment();
 
 		#pragma message "fix parsing of Syntax"
 		return TypeSyntax(base_type, std::move(ptr_mutability));
@@ -1258,7 +1332,7 @@ namespace warbler
 		if (token.type() == TokenType::KeywordMut)
 		{
 			is_mutable = true;
-			token.next();
+			token.increment();
 		}
 
 		auto name = parse_identifier(token);
@@ -1270,7 +1344,9 @@ namespace warbler
 
 		if (token.type() == TokenType::Colon)
 		{
-			auto res = parse_type(token.next());
+			token.increment();
+
+			auto res = parse_type(token);
 
 			if (!res)
 				return {};
@@ -1281,10 +1357,11 @@ namespace warbler
 		return VariableSyntax(name.unwrap(), std::move(type), is_mutable);
 	}
 
-	Result<ModuleSyntax> parse_module(Token& token)
+	Result<ModuleSyntax> parse_module(const File& file)
 	{
 		Array<FunctionSyntax> functions;
 		Array<TypeDefinitionSyntax> types;
+		auto token = Token::get_initial(file);
 
 		while (true)
 		{
@@ -1310,6 +1387,7 @@ namespace warbler
 					types.emplace_back(type.unwrap());
 					continue;
 				}
+
 				case TokenType::EndOfFile:
 					break;
 
@@ -1317,27 +1395,65 @@ namespace warbler
 					print_parse_error(token, "type or function definition");
 					return {};
 			}
-
 			break;
 		}
 
-		return ModuleSyntax(functions, types);
+		return ModuleSyntax { std::move(functions), std::move(types) };
 	}
 
-	Result<AstSyntax> parse(const File& file)
+	Result<PackageSyntax> parse_package(const Directory& directory)
 	{
-		auto token = Token::get_initial(file);
-		auto res = parse_module(token);
+		Array<FunctionSyntax> functions;
+		Array<TypeDefinitionSyntax> types;
 
-		if (!res)
-			return {};
-
-		if (token.type() != TokenType::EndOfFile)
+		for (const auto& file : directory.files())
 		{
-			print_error(token, "stray token in source file");
+			auto res = parse_module(file);
+
+			if (!res)
+				return {};
+
+			auto mod = res.unwrap();
+
+			functions.reserve(functions.size() + mod.functions.size());
+
+			for (auto& function : mod.functions)
+			{
+				functions.emplace_back(std::move(function));
+			}
+
+			types.reserve(types.size() + mod.type_definitions.size());
+
+			for (auto& type : mod.type_definitions)
+			{
+				types.emplace_back(std::move(type));
+			}
+		}
+
+		return PackageSyntax(directory.path(), std::move(functions), std::move(types));
+	}
+
+	Result<ProgramSyntax> parse(const Array<Directory>& directories)
+	{
+		Table<PackageSyntax> packages;
+
+		for (const auto& directory : directories)
+		{
+			if (directory.is_empty())
+				continue;
+
+			auto package = parse_package(directory);
+
+			if (!package)
+				return {};
+		}
+
+		if (packages.size() == 0)
+		{
+			print_error("No source files passed to compiler.");
 			return {};
 		}
 
-		return AstSyntax(res.unwrap());
+		return ProgramSyntax(std::move(packages));
 	}
 }

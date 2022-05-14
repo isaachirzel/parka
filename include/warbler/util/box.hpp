@@ -36,6 +36,16 @@ namespace warbler
 
 		operator bool() const { return _value; }
 
+		void fill(T *value)
+		{
+			if (_value)
+			{
+				delete _value;
+			}
+
+			_value = value;
+		}
+
 		T* operator->() { return _value; }
 		const T* operator->() const { return _value; }
 		

@@ -86,6 +86,12 @@ namespace warbler
 	_type(TypeDefinitionType::Struct)
 	{}
 
+	TypeDefinitionContext::TypeDefinitionContext(const char *symbol, PrimitiveContext&& primitive) :
+	_symbol(String(symbol)),
+	_primitive(std::move(primitive)),
+	_type(TypeDefinitionType::Primitive)
+	{}
+
 	TypeDefinitionContext::TypeDefinitionContext(TypeDefinitionContext&& other) :
 	_symbol(std::move(other._symbol)),
 	_type(other._type)
@@ -94,6 +100,26 @@ namespace warbler
 		{
 			case TypeDefinitionType::Struct:
 				new (&_struct_def) auto(std::move(other._struct_def));
+				break;
+
+			case TypeDefinitionType::Primitive:
+				new (&_primitive) auto(std::move(other._primitive));
+				break;
+		}
+	}
+
+	TypeDefinitionContext::TypeDefinitionContext(const TypeDefinitionContext& other) :
+	_symbol(other._symbol),
+	_type(other._type)
+	{
+		switch (_type)
+		{
+			case TypeDefinitionType::Struct:
+				new (&_struct_def) auto(other._struct_def);
+				break;
+
+			case TypeDefinitionType::Primitive:
+				new (&_primitive) auto(other._primitive);
 				break;
 		}
 	}
@@ -104,6 +130,10 @@ namespace warbler
 		{
 			case TypeDefinitionType::Struct:
 				_struct_def.~StructContext();
+				break;
+
+			case TypeDefinitionType::Primitive:
+				_primitive.~PrimitiveContext();
 				break;
 		}
 	}

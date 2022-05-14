@@ -5,7 +5,8 @@ namespace warbler
 {
 	enum class TypeDefinitionType
 	{
-		Struct
+		Struct,
+		Primitive
 	};
 
 	enum class AssignmentType
@@ -146,10 +147,11 @@ namespace warbler
 
 	enum class SymbolType
 	{
+		Package,
+		TypeDefinition,
 		Function,
-		Variable,
 		Parameter,
-		TypeDefinition
+		Variable,
 	};
 }
 
