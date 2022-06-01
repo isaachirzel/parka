@@ -16,6 +16,7 @@ namespace warbler
 
         Directory() = default;
         Directory(const String& path);
+        static Directory from(const char *path, File&& file);
 
         static Result<Array<Directory>> read(const String& path);
 

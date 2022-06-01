@@ -3,12 +3,13 @@
 
 #include <warbler/syntax.hpp>
 #include <warbler/context.hpp>
+#include <warbler/symbol_table.hpp>
 
 namespace warbler
 {
 	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax);
 	Result<VariableContext> validate_variable(const VariableSyntax& syntax);
-	Result<TypeDefinitionContext> validate_type_definition(const TypeDefinitionSyntax& syntax, const SymbolTable& symbols);
+	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, const SymbolTable& symbols);
 	Result<PackageContext> validate_module(const ModuleSyntax& syntax);
 	Result<ProgramContext> validate(const ProgramSyntax& syntax);
 }

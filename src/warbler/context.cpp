@@ -80,19 +80,19 @@ namespace warbler
 		}
 	}
 
-	TypeDefinitionContext::TypeDefinitionContext(String&& symbol, StructContext&& struct_def) :
+	TypeContext::TypeContext(String&& symbol, StructContext&& struct_def) :
 	_symbol(std::move(symbol)),
 	_struct_def(std::move(struct_def)),
 	_type(TypeDefinitionType::Struct)
 	{}
 
-	TypeDefinitionContext::TypeDefinitionContext(const char *symbol, PrimitiveContext&& primitive) :
+	TypeContext::TypeContext(const char *symbol, PrimitiveContext&& primitive) :
 	_symbol(String(symbol)),
 	_primitive(std::move(primitive)),
 	_type(TypeDefinitionType::Primitive)
 	{}
 
-	TypeDefinitionContext::TypeDefinitionContext(TypeDefinitionContext&& other) :
+	TypeContext::TypeContext(TypeContext&& other) :
 	_symbol(std::move(other._symbol)),
 	_type(other._type)
 	{
@@ -108,7 +108,7 @@ namespace warbler
 		}
 	}
 
-	TypeDefinitionContext::TypeDefinitionContext(const TypeDefinitionContext& other) :
+	TypeContext::TypeContext(const TypeContext& other) :
 	_symbol(other._symbol),
 	_type(other._type)
 	{
@@ -124,7 +124,7 @@ namespace warbler
 		}
 	}
 
-	TypeDefinitionContext::~TypeDefinitionContext()
+	TypeContext::~TypeContext()
 	{
 		switch (_type)
 		{
@@ -184,4 +184,8 @@ namespace warbler
 				break;
 		}
 	}
+
+	ProgramContext::ProgramContext(Array<TypeContext>&& types):
+	types(std::move(types))
+	{}
 }

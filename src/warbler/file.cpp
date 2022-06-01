@@ -47,15 +47,15 @@ namespace warbler
 		return File(String(filepath), std::move(src), std::move(line_lengths));
 	}
 
-	File File::from(const char *text)
+	File File::from(const char *name, const char *text)
 	{
+		assert(name != nullptr);
 		assert(text != nullptr);
-
-		String filename("<in-memory-file>");
+		
 		String source(text);
 		auto line_lengths = get_line_lengths(source);
 
-		return File(std::move(filename), std::move(source), std::move(line_lengths));
+		return File(String(name), std::move(source), std::move(line_lengths));
 	}
 
 	usize File::get_line(usize pos) const

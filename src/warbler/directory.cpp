@@ -63,4 +63,14 @@ namespace warbler
 
         return directories;
     }
+
+    Directory Directory::from(const char *path, File&& file)
+    {
+        Directory dir;
+
+        dir._path = path;
+        dir._files.emplace_back(std::move(file));
+
+        return dir;
+    }
 }

@@ -58,12 +58,12 @@ namespace warbler
 		throw not_implemented();
 	}
 
-	Result<TypeContext> validate_type(const TypeSyntax& syntax, SymbolTable& symbol_table)
+	Result<TypeAnnotationContext> validate_type_annotation(const TypeAnnotationSyntax& syntax, SymbolTable& symbol_table)
 	{
 		// TODO: pointer validation
 		Array<bool> ptr_mutability;
 		auto type_name = syntax.base_type().text();
-		auto symbol = symbol_table.resolve(type_name);
+		auto symbol = symbol_table.resolve("", type_name);
 
 		if (!symbol)	// couldn't find symbol in context tree
 		{
@@ -75,8 +75,8 @@ namespace warbler
 
 		switch (symbol->type())
 		{
-			case SymbolType::TypeDefinition:
-				return TypeContext(ptr_mutability, symbol->type_definition());
+			case SymbolType::Type:
+				return TypeAnnotationContext(ptr_mutability, symbol->index());
 				break;
 
 			case SymbolType::Function:
@@ -95,8 +95,6 @@ namespace warbler
 
 	Result<StructContext> validate_struct(const StructSyntax& syntax, SymbolTable& symbol_table)
 	{
-
-
 		// TODO: pass in type name for better error messages
 		Table<MemberContext> members;
 
@@ -113,18 +111,18 @@ namespace warbler
 				return {};
 			}
 
-			auto type = validate_type(member_syntax.type(), symbol_table);
+			auto type_annotation = validate_type_annotation(member_syntax.type(), symbol_table);
 
-			if (!type)
+			if (!type_annotation)
 				return {};
 
-			members.emplace(member_name, MemberContext(member_name, type.unwrap(),member_syntax.is_public()));
+			members.emplace(member_name, MemberContext(member_name, type_annotation.unwrap(), member_syntax.is_public()));
 		}
 
 		return StructContext(members);
 	}
 
-	Result<TypeDefinitionContext> validate_type_definition(const TypeDefinitionSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation_stack)
+	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation_stack)
 	{
 		switch (syntax.type())
 		{
@@ -138,7 +136,7 @@ namespace warbler
 
 				auto symbol = syntax.name().token().text();
 
-				return TypeDefinitionContext(std::move(symbol), context.unwrap());
+				return TypeContext(std::move(symbol), context.unwrap());
 			}
 
 			case TypeDefinitionType::Primitive:
@@ -149,48 +147,50 @@ namespace warbler
 		throw not_implemented();
 	}
 
-	Result<PackageContext> validate_package(const ProgramSyntax& syntax)
+	bool validate_package(const PackageSyntax& syntax, SymbolTable& symbols)
 	{
-		#pragma message "TODO: implement module names"
+		auto package = syntax.name();
 
-		PackageContext context;
-
-		context.name = ""; // global
-
-		SymbolTable symbol_table(syntax) ;
 		Array<String> encapsulation_stack;
 
 		// validate types
+		auto success = true;
+
 		for (const auto& type : syntax.type_definitions())
 		{
-			auto res = validate_type_definition(type, symbol_table, encapsulation_stack);
+			auto res = validate_type_definition(type, symbols, encapsulation_stack);
 
 			if (!res)
-				return {};
+				return success = false;
 
 			encapsulation_stack.clear();
 
-			auto name = type.name().token().text();
-			auto &symbol = context.symbols.at(name);
+			auto index = symbols.add_validated_type(res.unwrap());
 			
-			symbol.set(res.unwrap());
 		}
 
-		return context;
+		return success;
 	}
 
 	Result<ProgramContext> validate(const ProgramSyntax& syntax)
 	{
+		Array<TypeContext> types;
 
-		auto res = validate_package(syntax);
+		SymbolTable symbols(types);
 
-		if (!res)
+		if (!symbols.add_symbols(syntax))
 			return {};
 
-		Table<PackageContext> packages;
+		auto success = true;
 
-		packages.emplace("", res.unwrap());
+		for (const auto& package : syntax.packages())
+		{
+			success = success && validate_package(package, symbols);
+		}
 
-		return ProgramContext { std::move(packages) };
+		if (!success)
+			return {};
+
+		return ProgramContext(std::move(types));
 	}
 }

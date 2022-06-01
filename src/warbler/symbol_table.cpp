@@ -2,50 +2,16 @@
 #include <warbler/context.hpp>
 #include <warbler/util/array.hpp>
 #include <warbler/syntax.hpp>
-#include <warbler/print.hpp>
+#include <warbler/util/print.hpp>
 
 namespace warbler
 {
-	Array<TypeDefinitionContext> _primitive_contexts =
+	Array<TypeContext> _primitive_contexts =
 	{
-		TypeDefinitionContext("u8", PrimitiveContext { 1 }),
-		TypeDefinitionContext("u16", PrimitiveContext { 2 }),
-		TypeDefinitionContext("u32", PrimitiveContext { 4 }),
-		TypeDefinitionContext("u64", PrimitiveContext { 8 }),
+		
 	};
 
-	SymbolContext::SymbolContext(const PackageSyntax& syntax) :
-	_package_syntax(&syntax),
-	_type(SymbolType::Package),
-	_context_index(-1)
-	{}
-
-	SymbolContext::SymbolContext(const FunctionSyntax& syntax) :
-	_function_syntax(&syntax),
-	_type(SymbolType::Function),
-	_context_index(-1)
-	{}
-
-	SymbolContext::SymbolContext(const VariableSyntax& syntax) :
-	_variable_syntax(&syntax),
-	_type(SymbolType::Variable),
-	_context_index(-1)
-	{}
-
-	SymbolContext::SymbolContext(const ParameterSyntax& syntax) :
-	_parameter_syntax(&syntax),
-	_type(SymbolType::Parameter),
-	_context_index(-1)
-	{}
-
-	SymbolContext::SymbolContext(const TypeDefinitionSyntax& syntax) :
-	_type_definition_syntax(&syntax),
-	_type(SymbolType::TypeDefinition),
-	_context_index(-1)
-	{}
-
-
-	// SymbolContext::SymbolContext(SymbolType type) :
+	// SymbolData::SymbolData(SymbolType type) :
 	// _type(type)
 	// {
 	// 	switch (_type)
@@ -68,7 +34,7 @@ namespace warbler
 	// 	}
 	// }
 
-	// SymbolContext::SymbolContext(SymbolContext&& other) :
+	// SymbolData::SymbolData(SymbolData&& other) :
 	// _type(other._type)
 	// {
 	// 	switch (_type)
@@ -91,7 +57,7 @@ namespace warbler
 	// 	}
 	// }
 
-	// SymbolContext::~SymbolContext()
+	// SymbolData::~SymbolData()
 	// {
 	// 	switch (_type)
 	// 	{
@@ -113,7 +79,7 @@ namespace warbler
 	// 	}
 	// }
 
-	static SymbolContext *get_symbol(Table<SymbolContext>& symbols, const String& symbol)
+	static SymbolData *get_symbol(Table<SymbolData>& symbols, const String& symbol)
 	{
 		auto iter = symbols.find(symbol);
 
@@ -128,7 +94,7 @@ namespace warbler
 		{
 			case SymbolType::Package:
 				return "package";
-			case SymbolType::TypeDefinition:
+			case SymbolType::Type:
 				return "type definition";
 			case SymbolType::Function:
 				return "function";
@@ -137,36 +103,37 @@ namespace warbler
 			case SymbolType::Variable:
 				return "variable";
 		}
+
+		return "symbol";
 	}
 
-	static bool add_type_definition_symbol(Table<SymbolContext>& symbols, const TypeDefinitionSyntax& syntax)
+	static bool add_type_symbol(Table<SymbolData>& symbols, const TypeSyntax& syntax, const String& current_scope)
 	{
-		auto symbol = syntax.name() + "::" + type_definition.name().token().text();
+		auto symbol = current_scope + "::" + syntax.name().token().text();
 		auto previous_declaration = get_symbol(symbols, symbol);
 
 		if (previous_declaration != nullptr)
 		{
 			// TODO: improve type name specification in error, and show location of previous declaration
-			auto message = "symbol '" + symbol + "' is already defined");
-			print_error(type_definition.name().token(), message);
+			auto message = "symbol '" + symbol + "' is already defined";
+			print_error(syntax.name().token(), message);
 			return false;
 		}
+
+		symbols.emplace(symbol, syntax);
 
 		return true;
 	}
 
-	static bool add_package_symbols(Table<SymbolContext>& symbols, const PackageSyntax& syntax)
+	static bool add_package_symbols(Table<SymbolData>& symbols, const PackageSyntax& syntax)
 	{
-		// this should never already be added, it is a programming mistake if so
-		assert(get_symbol(symbols, syntax.name()) != nullptr);
-
-		symbols.emplace(syntax.name(), syntax);
+		symbols.emplace(syntax.name(), SymbolData(syntax));
 
 		auto success = true;
 
 		for (const auto& type_definition : syntax.type_definitions())
 		{
-			if (!add_type_definition_symbol(symbols, type_definition))
+			if (!add_type_symbol(symbols, type_definition, syntax.name()))
 				success = false;
 		}
 
@@ -179,8 +146,6 @@ namespace warbler
 
 		for (const auto& package : syntax.packages())
 		{
-			_symbols.emplace(package.name(), package);
-
 			if (!add_package_symbols(_symbols, package))
 				success = false;
 		}
@@ -188,50 +153,124 @@ namespace warbler
 		return success;
 	}
 
-	SymbolTable::SymbolTable() :
-	_symbols()
+	SymbolTable::SymbolTable(Array<TypeContext>& types):
+	_symbols(),
+	_types(types)
 	{
-		// TODO: add predefined symbols
-		// _symbols.reserve(_primitive_contexts.size());
-		
-		// for (usize i = 0; i < _primitive_contexts.size(); ++i)
-		// {
-		// 	const auto& primitive = _primitive_contexts[i];
+		_types = Array<TypeContext>({
+			TypeContext("u8", PrimitiveContext { 1 }),
+			TypeContext("u16", PrimitiveContext { 2 }),
+			TypeContext("u32", PrimitiveContext { 4 }),
+			TypeContext("u64", PrimitiveContext { 8 }),
+		});
 
-		// 	_symbols.emplace(primitive.symbol(), SymbolContext(SymbolType::TypeDefinition));
-		// }
-	}
-
-	void SymbolTable::push_scope(Table<SymbolContext>& scope)
-	{
-		_scopes.push_back(&scope);
-	}
-
-	void SymbolTable::pop_scope()
-	{
-		_scopes.pop_back();
-	}
-
-	void SymbolTable::add(const String& symbol, SymbolType type)
-	{
-		auto& current_scope = *_scopes.back();
-
-		current_scope.emplace(symbol, SymbolContext(type));
-	}
-
-	SymbolContext *SymbolTable::resolve(const String& symbol)
-	{
-		// iterate from local scope to global scope
-		for (auto iter = _scopes.rbegin(); iter != _scopes.rend(); ++iter)
+		auto index = 0;
+		for (const auto& type : _types)
 		{
-			auto& scope = **iter;
-			auto context_location = scope.find(symbol);
-			auto symbol_exists = context_location != scope.end();
+			_symbols.emplace(type.symbol(), SymbolData(index, SymbolType::Type));
+			index += 1;
+		}
+	}
 
-			if (symbol_exists)
-				return &context_location->second;
+	void SymbolTable::add_symbol(const String& symbol, const SymbolData& data)
+	{
+		assert(_symbols.find(symbol) == _symbols.end());
+
+		_symbols.emplace(symbol, data);
+	}
+
+	static Array<String> get_packages_from_scope(const String& scope)
+	{
+		// TODO: optimize this and make it safe as this is very breakable if there is not two colons
+		String temp;
+
+		temp.reserve(256);
+
+		Array<String> packages;
+
+		for (usize i = 0; i < scope.size(); ++i)
+		{
+			if (scope[i] == ':')
+			{
+				i += 1;
+
+				if (!temp.empty())
+				{
+					packages.push_back(temp);
+					temp.clear();
+				}
+
+				continue;
+			}
+			
+			temp += scope[i];
+		}
+
+		return packages;
+	}
+
+	// TODO: make this safe
+	String create_symbol(const Array<String>& packages, usize package_count, String identifier)
+	{
+		String symbol;
+
+		symbol.reserve(128);
+
+		for (usize i = 0; i < package_count; ++i)
+		{
+			if (i > 0)
+			{
+				symbol += "::";
+			}
+
+			symbol += packages[i];
+		}
+
+		symbol += identifier;
+
+		return symbol;
+	}
+
+	SymbolData *SymbolTable::resolve(const String& current_scope, const String& identifier)
+	{
+		auto packages = get_packages_from_scope(current_scope);
+
+		for (i32 i = (i32)packages.size(); i >= 0; --i)
+		{
+			auto symbol = create_symbol(packages, i, identifier);
+			auto iter = _symbols.find(symbol);
+
+			if (iter != _symbols.end())
+				return &iter->second;
 		}
 
 		return nullptr;
 	}
+
+	// usize SymbolTable::validate_function(FunctionContext&& function)
+	// {
+	// 	auto index = _context.functions.size();
+
+	// 	_context.functions.emplace_back(std::move(function));
+
+	// 	return index;
+	// }
+
+	usize SymbolTable::add_validated_type(TypeContext&& type)
+	{
+		auto index = _types.size();
+		
+		_types.emplace_back(std::move(type));
+
+		return index;
+	}
+
+	// usize SymbolTable::validate_parameter(ParameterContext&& parameter)
+	// {
+	// }
+
+	// usize SymbolTable::validate_variable(VariableContext&& variable)
+	// {
+
+	// }
 }

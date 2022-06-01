@@ -21,8 +21,11 @@ using namespace warbler;
 
 int main()
 {
-	auto file = File::from(src);
-	auto parse_res = parse(file);
+	auto directories = Array<Directory>();
+
+	directories.emplace_back(Directory::from("mem", File::from("in-memory-file.wb", src)));
+
+	auto parse_res = parse(directories);
 
 	if (!parse_res)
 	{

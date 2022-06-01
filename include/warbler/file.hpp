@@ -23,7 +23,7 @@ namespace warbler
 	public:
 
 		static Result<File> read(const String& filepath);
-		static File from(const char *text);
+		static File from(const char *name, const char *text);
 
 		usize get_line(usize pos) const;
 		usize get_col(usize pos) const;

@@ -8,113 +8,93 @@
 #include <warbler/util/optional.hpp>
 #include <warbler/util/box.hpp>
 #include <warbler/type.hpp>
+#include <warbler/syntax.hpp>
 #include <warbler/context.hpp>
 #include <cassert>
 
 namespace warbler
 {
-	class DefinitionSyntax;
-	class ProgramSyntax;
-	class FunctionContext;
-	class VariableContext;
-	class ParameterContext;
-	class TypeDefinitionContext;
-
-	class SymbolReference
+	enum class SymbolState
 	{
-		union
-		{
-			Array<PackageContext> *_packages;
-			Array<TypeDefinitionContext> *_type_definitions;
-			Array<FunctionContext> *_functions;
-			Array<ParameterContext> _parameters;
-			Array<VariableContext> *_variables;
-		};
-
-		SymbolType _type;
-
-	public:
-
-		SymbolReference(Array<FunctionContext>& functions, usize index);
-		SymbolReference(Array<VariableContext>& variables, usize index);
-		SymbolReference(Array<ParameterContext>& parameters, usize index);
-		SymbolReference(Array<TypeDefinitionContext>& type_definitions, usize index);
-		SymbolReference(Array<TypeDefinitionContext>& type_definitions, usize index);
+		Initialized,
+		Destroyed
 	};
 
-	class SymbolContext
+	class SymbolData
 	{
-		union
-		{
-			Array<PackageContext> *_packages;
-			Array<TypeDefinitionContext> *_type_definitions;
-			Array<FunctionContext> *_functions;
-			Array<ParameterContext> *_parameters;
-			Array<VariableContext> *_variables;
-		};
-
 		union
 		{
 			const PackageSyntax *_package_syntax;
+			const TypeSyntax *_type_syntax;
 			const FunctionSyntax *_function_syntax;
-			const TypeDefinitionSyntax *_type_definition_syntax;
 			const ParameterSyntax *_parameter_syntax;
 			const VariableSyntax *_variable_syntax;
 		};
 
-		i32 _context_index;
+		usize _index = 0;
 		SymbolType _type;
-		
+		SymbolState _state = SymbolState::Destroyed;
+		bool _is_validated = false;
+
 	public:
 
-		SymbolContext(const PackageSyntax& syntax);
-		SymbolContext(const TypeDefinitionSyntax& syntax);
-		SymbolContext(const FunctionSyntax& syntax);
-		SymbolContext(const ParameterSyntax& syntax);
-		SymbolContext(const VariableSyntax& syntax);
-		SymbolContext(SymbolContext&& other) = default;
-		~SymbolContext() = default;
+		SymbolData(const PackageSyntax& syntax): _package_syntax(&syntax), _type(SymbolType::Package) {}
+		SymbolData(const TypeSyntax& syntax): _type_syntax(&syntax), _type(SymbolType::Type) {}
+		SymbolData(const FunctionSyntax& syntax): _function_syntax(&syntax), _type(SymbolType::Function) {}
+		SymbolData(const ParameterSyntax& syntax): _parameter_syntax(&syntax), _type(SymbolType::Parameter) {}
+		SymbolData(const VariableSyntax& syntax): _variable_syntax(&syntax), _type(SymbolType::Variable) {}
+		SymbolData(usize index, SymbolType symbol_type):
+		_index(index),
+		_type(symbol_type),
+		_state(SymbolState::Initialized),
+		_is_validated(true)
+		{}
+		SymbolData(SymbolData&&) = default;
+		SymbolData(const SymbolData&) = default;
+		~SymbolData() = default;
 
-		void set(Array<PackageContext>& packages, usize index);
-		void set(Array<TypeDefinitionContext>& type_definitions, usize index);
-		void set(Array<FunctionContext>& functions, usize index);
-		void set(Array<ParameterContext>& parameters, usize index);
-		void set(Array<VariableContext>& variables, usize index);
+		void validate(usize index)
+		{
+			_index = index;
+			_state = SymbolState::Initialized;
+			_is_validated = true;
+		}
 
+		auto& type() { return _type; }
+
+		const auto& index() const { return _index; }
 		const auto& type() const { return _type; }
+		const auto& state() const { return _state; }
+		const auto& is_validated() const { return _is_validated; }
 
-		const auto& function() const { assert(_type == SymbolType::Function && _context_index >= 0); return _functions[_context_index]; }
-		const auto& function_syntax() const { assert(_type == SymbolType::Function); return _function_syntax; }
+		const auto& type_syntax() const { assert(_type == SymbolType::Type); return *_type_syntax; }
+		const auto& function_syntax() const { assert(_type == SymbolType::Function); return *_function_syntax; }
+		const auto& parameter_syntax() const { assert(_type == SymbolType::Parameter); return *_parameter_syntax; }
+		const auto& variable_syntax() const { assert(_type == SymbolType::Variable); return *_variable_syntax; }
 
-		const auto& variable() const { assert(_type == SymbolType::Variable && _context_index >= 0); return _variables[_context_index]; }
-		const auto& variable_syntax() const { assert(_type == SymbolType::Variable); return _variable_syntax; }
-
-		const auto& parameter() const { assert(_type == SymbolType::Parameter && _context_index >= 0); return _parameters[_context_index]; }
-		const auto& parameter_syntax() const { assert(_type == SymbolType::Parameter); return _parameter_syntax; }
-
-		const auto& type_definition() const { assert(_type == SymbolType::TypeDefinition && _context_index >= 0); return _type_definitions[_context_index]; }
-		const auto& type_definition_syntax() const { assert(_type == SymbolType::TypeDefinition); return _type_definition_syntax; }
-
-		const auto& package() const { assert(_type == SymbolType::Package && _context_index >= 0); return _packages[_context_index]; }
-		const auto& package_syntax() const { assert(_type == SymbolType::Package); return _package_syntax; }
 	};
 
 	class SymbolTable
 	{
-		Table<SymbolContext> _symbols;
+		Table<SymbolData> _symbols;
+		Array<TypeContext>& _types;
 	
 	public:
-		SymbolTable();
+
+		SymbolTable(Array<TypeContext>& types);
 		
 		bool add_symbols(const ProgramSyntax& syntax);
+		void add_symbol(const String& symbol, const SymbolData& data);
 
-		void push_scope(Table<SymbolContext>& symbols);
-		void pop_scope();	
+		// usize validate_function(FunctionContext&& function);
+		usize add_validated_type(TypeContext&& type);
+		// usize validate_parameter(ParameterContext&& parameter);
+		// usize validate_variable(VariableContext&& variable);
 
-		void add(const String& symbol, SymbolType type);
+		SymbolData *resolve(const String& current_scope, const String& symbol);
+		SymbolData *resolve_relative(const String& symbol, const String& current_scope);
 
-		SymbolContext *resolve(const String& symbol);
-		SymbolContext *resolve_relative(const String& symbol, const String& current_scope);
+	
 	};
 }
 

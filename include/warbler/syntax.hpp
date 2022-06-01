@@ -434,7 +434,7 @@ namespace warbler
 		bool is_mutable;
 	};
 
-	class TypeSyntax
+	class TypeAnnotationSyntax
 	{
 
 		Token _base_type;
@@ -442,7 +442,7 @@ namespace warbler
 
 	public:
 
-		TypeSyntax(const Token& base_type, Array<PtrSyntax>&& ptrs) :
+		TypeAnnotationSyntax(const Token& base_type, Array<PtrSyntax>&& ptrs) :
 		_base_type(base_type),
 		_ptrs(std::move(ptrs))
 		{}
@@ -454,12 +454,12 @@ namespace warbler
 	class MemberSyntax
 	{
 		IdentifierSyntax _name;
-		TypeSyntax _type;
+		TypeAnnotationSyntax _type;
 		bool _is_public;
 
 	public:
 
-		MemberSyntax(IdentifierSyntax&& name, TypeSyntax&& type, bool is_public) :
+		MemberSyntax(IdentifierSyntax&& name, TypeAnnotationSyntax&& type, bool is_public) :
 		_name(std::move(name)),
 		_type(std::move(type)),
 		_is_public(is_public)
@@ -494,7 +494,7 @@ namespace warbler
 		const auto& members() const { return _members; }
 	};
 
-	class TypeDefinitionSyntax
+	class TypeSyntax
 	{
 		IdentifierSyntax _name;
 		
@@ -507,10 +507,10 @@ namespace warbler
 
 	public:
 
-		TypeDefinitionSyntax(IdentifierSyntax&& name, StructSyntax&& struct_def);
-		TypeDefinitionSyntax(TypeDefinitionSyntax&& other);
-		TypeDefinitionSyntax(const TypeDefinitionSyntax& other) = delete;
-		~TypeDefinitionSyntax();
+		TypeSyntax(IdentifierSyntax&& name, StructSyntax&& struct_def);
+		TypeSyntax(TypeSyntax&& other);
+		TypeSyntax(const TypeSyntax& other) = delete;
+		~TypeSyntax();
 
 
 		const auto& name() const { return _name; }
@@ -523,12 +523,12 @@ namespace warbler
 	private:
 
 		IdentifierSyntax _name;
-		Optional<TypeSyntax> _type;
+		Optional<TypeAnnotationSyntax> _type;
 		bool _is_mutable;
 
 	public:
 
-		VariableSyntax(IdentifierSyntax&& name, Optional<TypeSyntax>&& type, bool is_mutable) :
+		VariableSyntax(IdentifierSyntax&& name, Optional<TypeAnnotationSyntax>&& type, bool is_mutable) :
 		_name(std::move(name)),
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
@@ -538,7 +538,7 @@ namespace warbler
 		bool is_auto_type() const { return _type.has_value(); }
 
 		const IdentifierSyntax& name() const { return _name; }
-		TypeSyntax& type() { return *_type; }
+		TypeAnnotationSyntax& type() { return *_type; }
 	};
 
 	class StatementSyntax
@@ -672,12 +672,12 @@ namespace warbler
 	private:
 
 		IdentifierSyntax _identifier;
-		TypeSyntax _type;
+		TypeAnnotationSyntax _type;
 		bool _is_mutable;
 
 	public:
 
-		ParameterSyntax(IdentifierSyntax&& identifier, TypeSyntax&& type, bool is_mutable) :
+		ParameterSyntax(IdentifierSyntax&& identifier, TypeAnnotationSyntax&& type, bool is_mutable) :
 		_identifier(std::move(identifier)),
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
@@ -687,11 +687,11 @@ namespace warbler
 	class FunctionSignatureSyntax
 	{
 		Array<ParameterSyntax> _parameters;
-		TypeSyntax _return_type;
+		TypeAnnotationSyntax _return_type;
 	
 	public:
 
-		FunctionSignatureSyntax(Array<ParameterSyntax>&& parameters, TypeSyntax&& return_type) :
+		FunctionSignatureSyntax(Array<ParameterSyntax>&& parameters, TypeAnnotationSyntax&& return_type) :
 		_parameters(std::move(parameters)),
 		_return_type(std::move(return_type))
 		{}
@@ -719,19 +719,19 @@ namespace warbler
 	struct ModuleSyntax
 	{
 		Array<FunctionSyntax> functions;
-		Array<TypeDefinitionSyntax> type_definitions;
+		Array<TypeSyntax> type_definitions;
 	};
 
 	class PackageSyntax
 	{
 		String _name;
 		Array<FunctionSyntax> _functions;
-		Array<TypeDefinitionSyntax> _type_definitions;
+		Array<TypeSyntax> _type_definitions;
 		// TODO: add globals
 
 	public:
 
-		PackageSyntax(const String& name, Array<FunctionSyntax>&& functions, Array<TypeDefinitionSyntax>&& type_definitions) :
+		PackageSyntax(const String& name, Array<FunctionSyntax>&& functions, Array<TypeSyntax>&& type_definitions) :
 		_name(name),
 		_functions(std::move(functions)),
 		_type_definitions(std::move(type_definitions))

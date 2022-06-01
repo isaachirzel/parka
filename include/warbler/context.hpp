@@ -33,9 +33,26 @@ namespace warbler
 	class VariableContext;
 	class ParameterContext;
 	class FunctionContext;
-	class TypeDefinitionContext;
+	class TypeContext;
 	class BlockStatementContext;
 	class DeclarationContext;
+	class ProgramContext;
+
+	class SymbolContext
+	{
+		usize _index;
+		SymbolType _type;
+
+	public:
+
+		SymbolContext(SymbolType type, usize index):
+		_index(index),
+		_type(type)
+		{}
+
+		const auto& type() const { return _type; }
+		const auto& index() const { return _index; }
+	};
 
 	class IdentifierContext
 	{
@@ -93,28 +110,28 @@ namespace warbler
 
 	};
 
-	class TypeDefinitionContext;
+	class TypeContext;
 
-	class TypeContext
+	class TypeAnnotationContext
 	{
 		Array<bool> _ptr_mutability;
-		const TypeDefinitionContext& _base_type;
+		usize _index;
 
 	public:
 
-		TypeContext(Array<bool>& ptr_info, const TypeDefinitionContext& base_type) :
+		TypeAnnotationContext(Array<bool>& ptr_info, usize index) :
 		_ptr_mutability(std::move(ptr_info)),
-		_base_type(base_type)
+		_index(index)
 		{}
 	};
 
 	struct MemberContext
 	{
 		String name;
-		TypeContext type;
+		TypeAnnotationContext type;
 		bool is_public;
 
-		MemberContext(String& name, TypeContext&& type, bool is_public) :
+		MemberContext(String& name, TypeAnnotationContext&& type, bool is_public) :
 		name(std::move(name)),
 		type(std::move(type)),
 		is_public(is_public)
@@ -141,7 +158,7 @@ namespace warbler
 		// TODO: add table for methods
 	};
 
-	class TypeDefinitionContext
+	class TypeContext
 	{
 		String _symbol;
 
@@ -155,11 +172,11 @@ namespace warbler
 
 	public:
 		
-		TypeDefinitionContext(String&& symbol, StructContext&& struct_def);
-		TypeDefinitionContext(const char *symbol, PrimitiveContext&& primitive);
-		TypeDefinitionContext(TypeDefinitionContext&& other);
-		TypeDefinitionContext(const TypeDefinitionContext& other);
-		~TypeDefinitionContext();
+		TypeContext(String&& symbol, StructContext&& struct_def);
+		TypeContext(const char *symbol, PrimitiveContext&& primitive);
+		TypeContext(TypeContext&& other);
+		TypeContext(const TypeContext& other);
+		~TypeContext();
 
 
 		const auto& symbol() const { return _symbol; }
@@ -170,13 +187,13 @@ namespace warbler
 	class VariableContext
 	{
 		String _name;
-		Optional<TypeContext> _type;
+		Optional<TypeAnnotationContext> _type;
 		VariableState _state;
 		bool _is_mutable;
 
 	public:
 
-		VariableContext(String&& name, TypeContext&& type, bool is_mutable) :
+		VariableContext(String&& name, TypeAnnotationContext&& type, bool is_mutable) :
 		_name(std::move(name)),
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
@@ -200,15 +217,11 @@ namespace warbler
 
 	public:
 
-		// Context(Assignment::Context&&);
-		// Context(Expression::Context&&);
 		StatementContext(BlockStatementContext&&);
 		StatementContext(DeclarationContext&&);
-		// Context(If::Context&&);
 		StatementContext(StatementContext&&);
 		StatementContext(const StatementContext&) = delete;
 		~StatementContext();
-
 	};
 
 	class ExpressionStatementContext
@@ -242,11 +255,11 @@ namespace warbler
 	class FunctionSignatureContext
 	{
 		Array<ParameterContext> _parameters;
-		TypeContext _return_type;
+		TypeAnnotationContext _return_type;
 
 	public:
 
-		FunctionSignatureContext(Array<ParameterContext>&& parameters, TypeContext&& return_type) :
+		FunctionSignatureContext(Array<ParameterContext>&& parameters, TypeAnnotationContext&& return_type) :
 		_parameters(std::move(parameters)),
 		_return_type(std::move(return_type))
 		{}
@@ -255,14 +268,14 @@ namespace warbler
 	class ParameterContext
 	{
 		String _symbol;
-		TypeContext _type;
+		TypeAnnotationContext _type;
 		bool _is_valid;
 		bool _is_mutable;
 
 
 	public:
 	
-		ParameterContext(String&& symbol, TypeContext&& type, bool is_valid, bool is_mutable) :
+		ParameterContext(String&& symbol, TypeAnnotationContext&& type, bool is_valid, bool is_mutable) :
 		_symbol(std::move(symbol)),
 		_type(std::move(type)),
 		_is_valid(is_valid),
@@ -295,13 +308,13 @@ namespace warbler
 	struct PackageContext
 	{
 		String name;
-		Array<FunctionContext> functions;
-		Array<TypeDefinitionContext> type_definitions;
 	};
 
 	struct ProgramContext
 	{
-		Table<PackageContext> _packages;
+		Array<TypeContext> types;
+
+		ProgramContext(Array<TypeContext>&& types);
 	};
 }
 

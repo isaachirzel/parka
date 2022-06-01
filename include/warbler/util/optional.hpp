@@ -28,7 +28,12 @@ namespace warbler
 		_has_value(false)
 		{}
 
-		Optional(T&& value) :
+		Optional(const T& value):
+		_value(value),
+		_has_value(true)
+		{}
+
+		Optional(T&& value):
 		_value(std::move(value)),
 		_has_value(true)
 		{}

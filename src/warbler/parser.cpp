@@ -1136,7 +1136,7 @@ namespace warbler
 		return StatementSyntax(res.unwrap());
 	}
 
-	Result<TypeDefinitionSyntax> parse_type_definition(Token& token)
+	Result<TypeSyntax> parse_type_definition(Token& token)
 	{
 		assert(token.type() == TokenType::KeywordType);
 
@@ -1167,7 +1167,7 @@ namespace warbler
 				if (!res)
 					return {};
 
-				return TypeDefinitionSyntax(name.unwrap(), res.unwrap());
+				return TypeSyntax(name.unwrap(), res.unwrap());
 			}
 
 			default:
@@ -1290,7 +1290,7 @@ namespace warbler
 		return LabelSyntax(label);
 	}
 
-	Result<TypeSyntax> parse_type(Token& token)
+	Result<TypeAnnotationSyntax> parse_type(Token& token)
 	{
 		Array<PtrSyntax> ptr_mutability;
 
@@ -1322,7 +1322,7 @@ namespace warbler
 		token.increment();
 
 		#pragma message "fix parsing of Syntax"
-		return TypeSyntax(base_type, std::move(ptr_mutability));
+		return TypeAnnotationSyntax(base_type, std::move(ptr_mutability));
 	}
 
 	Result<VariableSyntax> parse_variable(Token& token)
@@ -1340,7 +1340,7 @@ namespace warbler
 		if (!name)
 			return {};
 
-		Optional<TypeSyntax> type;
+		Optional<TypeAnnotationSyntax> type;
 
 		if (token.type() == TokenType::Colon)
 		{
@@ -1360,7 +1360,7 @@ namespace warbler
 	Result<ModuleSyntax> parse_module(const File& file)
 	{
 		Array<FunctionSyntax> functions;
-		Array<TypeDefinitionSyntax> types;
+		Array<TypeSyntax> types;
 		auto token = Token::get_initial(file);
 
 		while (true)
@@ -1404,7 +1404,7 @@ namespace warbler
 	Result<PackageSyntax> parse_package(const Directory& directory)
 	{
 		Array<FunctionSyntax> functions;
-		Array<TypeDefinitionSyntax> types;
+		Array<TypeSyntax> types;
 
 		for (const auto& file : directory.files())
 		{
@@ -1435,21 +1435,21 @@ namespace warbler
 
 	Result<ProgramSyntax> parse(const Array<Directory>& directories)
 	{
-		Table<PackageSyntax> packages;
+		Array<PackageSyntax> packages;
 
 		for (const auto& directory : directories)
 		{
-			if (directory.is_empty())
-				continue;
-
 			auto package = parse_package(directory);
 
 			if (!package)
 				return {};
+
+			packages.emplace_back(package.unwrap());
 		}
 
 		if (packages.size() == 0)
 		{
+			// TODO: update this error
 			print_error("No source files passed to compiler.");
 			return {};
 		}
