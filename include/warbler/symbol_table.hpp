@@ -33,8 +33,9 @@ namespace warbler
 
 		usize _index = 0;
 		SymbolType _type;
-		SymbolState _state = SymbolState::Destroyed;
 		bool _is_validated = false;
+		SymbolState _state = SymbolState::Destroyed;
+		String _symbol;
 
 	public:
 
@@ -71,12 +72,29 @@ namespace warbler
 		const auto& function_syntax() const { assert(_type == SymbolType::Function); return *_function_syntax; }
 		const auto& parameter_syntax() const { assert(_type == SymbolType::Parameter); return *_parameter_syntax; }
 		const auto& variable_syntax() const { assert(_type == SymbolType::Variable); return *_variable_syntax; }
+		const auto& symbol() const { return _symbol; }
+	};
 
+	class SymbolResolution
+	{
+		SymbolData& _data;
+		String _symbol;
+
+	public:
+
+		SymbolResolution(SymbolData& data, const String& symbol):
+		_data(data),
+		_symbol(symbol)
+		{}
+
+		const auto& data() const { return _data; }
+		const auto& symbol() const { return _symbol; }
 	};
 
 	class SymbolTable
 	{
 		Table<SymbolData> _symbols;
+		Array<String> _current_scope;
 		Array<TypeContext>& _types;
 	
 	public:
@@ -85,16 +103,16 @@ namespace warbler
 		
 		bool add_symbols(const ProgramSyntax& syntax);
 		void add_symbol(const String& symbol, const SymbolData& data);
+		void push_package(const String& package) { _current_scope.push_back(package); }
+		void pop_package() { _current_scope.pop_back(); }
+		String get_symbol(const String& identifier);
 
 		// usize validate_function(FunctionContext&& function);
 		usize add_validated_type(TypeContext&& type);
 		// usize validate_parameter(ParameterContext&& parameter);
 		// usize validate_variable(VariableContext&& variable);
 
-		SymbolData *resolve(const String& current_scope, const String& symbol);
-		SymbolData *resolve_relative(const String& symbol, const String& current_scope);
-
-	
+		Result<SymbolResolution> resolve(const String& symbol);
 	};
 }
 

@@ -6,11 +6,6 @@
 
 namespace warbler
 {
-	Array<TypeContext> _primitive_contexts =
-	{
-		
-	};
-
 	// SymbolData::SymbolData(SymbolType type) :
 	// _type(type)
 	// {
@@ -115,12 +110,12 @@ namespace warbler
 		if (previous_declaration != nullptr)
 		{
 			// TODO: improve type name specification in error, and show location of previous declaration
-			auto message = "symbol '" + symbol + "' is already defined";
+			auto message = "Symbol '" + symbol + "' is already defined";
 			print_error(syntax.name().token(), message);
 			return false;
 		}
 
-		symbols.emplace(symbol, syntax);
+		symbols.emplace(symbol, SymbolData(syntax));
 
 		return true;
 	}
@@ -209,21 +204,16 @@ namespace warbler
 		return packages;
 	}
 
-	// TODO: make this safe
-	String create_symbol(const Array<String>& packages, usize package_count, String identifier)
+	static String create_symbol(const Array<String>& packages, usize count, const String& identifier)
 	{
 		String symbol;
 
 		symbol.reserve(128);
 
-		for (usize i = 0; i < package_count; ++i)
+		for (usize i = 0; i < count; ++i)
 		{
-			if (i > 0)
-			{
-				symbol += "::";
-			}
-
 			symbol += packages[i];
+			symbol += "::";
 		}
 
 		symbol += identifier;
@@ -231,20 +221,24 @@ namespace warbler
 		return symbol;
 	}
 
-	SymbolData *SymbolTable::resolve(const String& current_scope, const String& identifier)
+	// TODO: make this safe
+	String SymbolTable::get_symbol(const String& identifier)
 	{
-		auto packages = get_packages_from_scope(current_scope);
+		return create_symbol(_current_scope, _current_scope.size(), identifier);
+	}
 
-		for (i32 i = (i32)packages.size(); i >= 0; --i)
+	Result<SymbolResolution> SymbolTable::resolve(const String& identifier)
+	{
+		for (i32 i = (i32)_current_scope.size(); i >= 0; --i)
 		{
-			auto symbol = create_symbol(packages, i, identifier);
+			auto symbol = create_symbol(_current_scope, i, identifier);
 			auto iter = _symbols.find(symbol);
 
 			if (iter != _symbols.end())
-				return &iter->second;
+				return SymbolResolution(iter->second, symbol);
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	// usize SymbolTable::validate_function(FunctionContext&& function)

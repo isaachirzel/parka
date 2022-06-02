@@ -58,25 +58,68 @@ namespace warbler
 		throw not_implemented();
 	}
 
-	Result<TypeAnnotationContext> validate_type_annotation(const TypeAnnotationSyntax& syntax, SymbolTable& symbol_table)
+	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, SymbolTable& symbols, Array<String>& encapsulation);
+
+	Result<TypeAnnotationContext> validate_member_type_annotation(const TypeAnnotationSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation)
 	{
 		// TODO: pointer validation
 		Array<bool> ptr_mutability;
 		auto type_name = syntax.base_type().text();
-		auto symbol = symbol_table.resolve("", type_name);
+		auto symbol_res = symbol_table.resolve(type_name);
 
-		if (!symbol)	// couldn't find symbol in context tree
+		if (!symbol_res)	// couldn't find symbol in context tree
 		{
-			print_error(syntax.base_type(), "type '" + type_name + "' does not exist in this scope");
+			print_error(syntax.base_type(), "Type '" + type_name + "' does not exist in this scope");
 			return {};
+		}
+
+
+		auto resolution = symbol_res.unwrap();
+		auto& symbol_data = resolution.data();
+
+		if (symbol_data.type() != SymbolType::Type)
+		{
+			print_error(syntax.base_type(), "Symbol '" + type_name + "' is not a type and cannot be used as such");
+			return {};
+		}
+
+
+		if (!resolution.data().is_validated())
+		{
+			bool is_containing_type = false;
+
+			for (const auto& containing_type : encapsulation)
+			{
+				if (resolution.symbol() == containing_type)
+				{
+					is_containing_type = true;
+					break;
+				}
+			}
+
+			if (!is_containing_type)
+			{
+				if (!validate_type_definition(symbol_data.type_syntax(), symbol_table, encapsulation))
+					return {};
+			}
+		}
+
+		for (const auto& previous_type_symbol : encapsulation)
+		{
+			if (previous_type_symbol == resolution.symbol())
+			{
+				// TODO: improve this error by printing parent type name
+				print_error(syntax.base_type(), "The type '" + resolution.symbol() + "' may not be used as a member of type '" + encapsulation.back() + "' as it creates a recursive type. Try using a reference to avoid this.");
+				return {};
+			}
 		}
 
 		// TODO: update errors to be better
 
-		switch (symbol->type())
+		switch (resolution.data().type())
 		{
 			case SymbolType::Type:
-				return TypeAnnotationContext(ptr_mutability, symbol->index());
+				return TypeAnnotationContext(ptr_mutability, resolution.data().index());
 				break;
 
 			case SymbolType::Function:
@@ -93,7 +136,7 @@ namespace warbler
 		}
 	}
 
-	Result<StructContext> validate_struct(const StructSyntax& syntax, SymbolTable& symbol_table)
+	Result<StructContext> validate_struct(const StructSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation)
 	{
 		// TODO: pass in type name for better error messages
 		Table<MemberContext> members;
@@ -111,37 +154,41 @@ namespace warbler
 				return {};
 			}
 
-			auto type_annotation = validate_type_annotation(member_syntax.type(), symbol_table);
+			auto type_annotation = validate_member_type_annotation(member_syntax.type(), symbol_table, encapsulation);
 
 			if (!type_annotation)
 				return {};
 
-			members.emplace(member_name, MemberContext(member_name, type_annotation.unwrap(), member_syntax.is_public()));
+			auto key = member_name; // This is done as consuming the member name int MemberContext causes problem with the emplacement
+
+			members.emplace(key, MemberContext(member_name, type_annotation.unwrap(), member_syntax.is_public()));
 		}
 
 		return StructContext(members);
 	}
 
-	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation_stack)
+	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, SymbolTable& symbols, Array<String>& encapsulation)
 	{
 		switch (syntax.type())
 		{
 			case TypeDefinitionType::Struct:
 			{
 				const auto& struct_syntax = syntax.struct_syntax();
-				auto context = validate_struct(struct_syntax, symbol_table);
+				auto symbol = symbols.get_symbol(syntax.name().token().text());
+
+				encapsulation.push_back(symbol);
+
+				auto context = validate_struct(struct_syntax, symbols, encapsulation);
 
 				if (!context)
 					return {};
 
-				auto symbol = syntax.name().token().text();
 
 				return TypeContext(std::move(symbol), context.unwrap());
 			}
 
 			case TypeDefinitionType::Primitive:
 				throw not_implemented();
-				break;
 		}
 
 		throw not_implemented();
@@ -149,25 +196,29 @@ namespace warbler
 
 	bool validate_package(const PackageSyntax& syntax, SymbolTable& symbols)
 	{
-		auto package = syntax.name();
+		symbols.push_package(syntax.name());
 
-		Array<String> encapsulation_stack;
+		Array<String> type_encapsulation;
 
 		// validate types
 		auto success = true;
 
 		for (const auto& type : syntax.type_definitions())
 		{
-			auto res = validate_type_definition(type, symbols, encapsulation_stack);
+			auto res = validate_type_definition(type, symbols, type_encapsulation);
+
+			type_encapsulation.clear();
 
 			if (!res)
-				return success = false;
-
-			encapsulation_stack.clear();
+			{
+				success = false;
+				continue;
+			}
 
 			auto index = symbols.add_validated_type(res.unwrap());
-			
 		}
+
+		symbols.pop_package();
 
 		return success;
 	}
@@ -178,10 +229,11 @@ namespace warbler
 
 		SymbolTable symbols(types);
 
-		if (!symbols.add_symbols(syntax))
-			return {};
 
 		auto success = true;
+
+		if (!symbols.add_symbols(syntax))
+			success = false;
 
 		for (const auto& package : syntax.packages())
 		{

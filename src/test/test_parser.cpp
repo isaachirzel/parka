@@ -7,14 +7,20 @@
 #include <stdio.h>
 #include <assert.h>
 
+// TODO
 
-const char *src = R"==(
+const char *src =
+R"==(
+	type House: struct
+	{
+		owner: String
+	}
 
 	type Person: struct
 	{
-		age: u32
+		age: u32,
+		home: House
 	}
-
 )==";
 
 using namespace warbler;
