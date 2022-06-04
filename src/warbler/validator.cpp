@@ -5,62 +5,12 @@
 
 namespace warbler
 {
-	// Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax)
-	// {
-	// 	auto *previous_declaration = func_ctx.get_parameter(_name.text());
-
-	// 	if (previous_declaration)
-	// 	{
-	// 		print_error(_name.token(), "parameter '" + _name.text() + "' is previously declared in function '" + func_ctx.name + "'");
-	// 		print_note(previous_declaration->name().token(), "previous declaration is here");
-	// 		return false;
-	// 	}
-
-	// 	func_ctx.parameters[_name.text()] = this;
-	// 	_type.validate(mod_ctx);
-
-	// 	return true;
-	// }
-
-	// Result<VariableContext> validate_variable(const VariableSyntax& syntax)
-	// {
-	// 	auto *previous_declaration = func_ctx.current_block().get_variable(_name.text());
-
-	// 	if (previous_declaration)
-	// 	{
-	// 		print_error(_name.token(), "'" + _name.text() + "' is previously declared as a variable in scope");
-	// 		print_note(previous_declaration->name().token(), "previous declaration here");
-	// 		return false;
-	// 	}
-
-	// 	auto is_base_scope = func_ctx.blocks.size() == 1;
-
-	// 	if (is_base_scope)
-	// 	{
-	// 		previous_declaration = func_ctx.get_parameter(_name.text());
-
-	// 		if (previous_declaration)
-	// 		{
-	// 			print_error(_name.token(), "'" + _name.text() + "' is previously declared as a parameter in function '" + func_ctx.name + "'");
-	// 			print_note(previous_declaration->name().token(), "previous declaration here");
-	// 			return false;
-	// 		}
-	// 	}
-
-	// 	func_ctx.current_block().variables[_name.text()] = this;
-	// 	_type.validate(mod_ctx);eEEE
-
-	// 	return true;
-	// }
-
-	Result<IdentifierContext> validate_identifier(const IdentifierSyntax& syntax, SymbolTable& symbol_table)
+	Result<IdentifierContext> validate_identifier(const Token& syntax, SymbolTable& symbol_table)
 	{
 		throw not_implemented();
 	}
 
-	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, SymbolTable& symbols, Array<String>& encapsulation);
-
-	Result<TypeAnnotationContext> validate_member_type_annotation(const TypeAnnotationSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation)
+	Result<TypeAnnotationContext> validate_member_type_annotation(const TypeAnnotationSyntax& syntax, SymbolTable& symbol_table, Array<String>& containing_types)
 	{
 		// TODO: pointer validation
 		Array<bool> ptr_mutability;
@@ -73,176 +23,140 @@ namespace warbler
 			return {};
 		}
 
-
 		auto resolution = symbol_res.unwrap();
 		auto& symbol_data = resolution.data();
 
-		if (symbol_data.type() != SymbolType::Type)
+		auto symbol_type = resolution.data().type();
+
+		switch (symbol_type)
 		{
-			print_error(syntax.base_type(), "Symbol '" + type_name + "' is not a type and cannot be used as such");
-			return {};
-		}
-
-
-		if (!resolution.data().is_validated())
-		{
-			bool is_containing_type = false;
-
-			for (const auto& containing_type : encapsulation)
-			{
-				if (resolution.symbol() == containing_type)
+			case SymbolType::Struct:
+				// Check for recursive type members
+				for (const auto& containing_type : containing_types)
 				{
-					is_containing_type = true;
-					break;
+					if (resolution.symbol() == containing_type)
+					{
+						// TODO: improve this error by printing parent type name
+						print_error(syntax.base_type(), "The type '" + resolution.symbol() + "' may not be used as a member of type '" + containing_types.back() + "' as it creates a recursive type. Try using a reference to avoid this.");
+						return {};
+					}
 				}
-			}
 
-			if (!is_containing_type)
-			{
-				if (!validate_type_definition(symbol_data.type_syntax(), symbol_table, encapsulation))
-					return {};
-			}
-		}
-
-		for (const auto& previous_type_symbol : encapsulation)
-		{
-			if (previous_type_symbol == resolution.symbol())
-			{
-				// TODO: improve this error by printing parent type name
-				print_error(syntax.base_type(), "The type '" + resolution.symbol() + "' may not be used as a member of type '" + encapsulation.back() + "' as it creates a recursive type. Try using a reference to avoid this.");
-				return {};
-			}
-		}
-
-		// TODO: update errors to be better
-
-		switch (resolution.data().type())
-		{
-			case SymbolType::Type:
-				return TypeAnnotationContext(ptr_mutability, resolution.data().index());
+				if (symbol_data.is_not_yet_validated())
+				{
+					// TODO: Add a flag to check if a type has failed validation as an invalid type getting used as a member of another type will cause it to be valdiated twice
+					if (!validate_struct(symbol_data.struct_syntax(), symbol_table, containing_types))
+						return {};
+				}
 				break;
 
-			case SymbolType::Function:
-				print_error(syntax.base_type(), "expected type, found function '" + type_name +"'");
-				return {};
+			case SymbolType::Primitive:
+				break;
 
-			case SymbolType::Parameter:
-				print_error(syntax.base_type(), "expected type, found parameter '" + type_name +"'");
-				return {};
+			default:
+				print_error(syntax.base_type(), "expected member type, found "
+					+ get_symbol_type_name(resolution.data().type())
+					+ " '" + type_name + "'");
 
-			case SymbolType::Variable:
-				print_error(syntax.base_type(), "expected type, found variable '" + type_name +"'");
 				return {};
 		}
+
+		return TypeAnnotationContext(ptr_mutability, resolution.data().index());
 	}
 
-	Result<StructContext> validate_struct(const StructSyntax& syntax, SymbolTable& symbol_table, Array<String>& encapsulation)
+	bool validate_struct(const StructSyntax& syntax, SymbolTable& symbols, Array<String>& containing_types)
 	{
-		// TODO: pass in type name for better error messages
+		auto identifier = syntax.name().text();
+		auto symbol = symbols.get_symbol(identifier);
+
+		containing_types.push_back(symbol);
+
 		Table<MemberContext> members;
+
+		bool success = true;
 
 		for (const auto& member_syntax : syntax.members())
 		{
-			auto member_name = member_syntax.name().token().text();
+			// TODO: add validate_member function
+			auto member_name = member_syntax.name().text();
 			const auto& previous_declaration = members.find(member_name);
 			auto name_already_exists = previous_declaration != members.end();
 
 			if (name_already_exists)
 			{
 				// TODO: Search for previous declaration syntax for better diagnostics
-				print_error(member_syntax.name().token(), "Member '" + member_name + "' is already declared in struct.");
+				print_error(member_syntax.name(), "Member '" + member_name + "' is already declared in struct.");
 				return {};
 			}
 
-			auto type_annotation = validate_member_type_annotation(member_syntax.type(), symbol_table, encapsulation);
+			auto type_annotation = validate_member_type_annotation(member_syntax.type(), symbols, containing_types);
 
 			if (!type_annotation)
-				return {};
+			{
+				success = false;
+				continue;
+			}
 
 			auto key = member_name; // This is done as consuming the member name int MemberContext causes problem with the emplacement
 
 			members.emplace(key, MemberContext(member_name, type_annotation.unwrap(), member_syntax.is_public()));
 		}
 
-		return StructContext(members);
-	}
+		containing_types.pop_back();
 
-	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, SymbolTable& symbols, Array<String>& encapsulation)
-	{
-		switch (syntax.type())
+		auto& data = symbols.get(symbol);
+
+		if (success)
 		{
-			case TypeDefinitionType::Struct:
-			{
-				const auto& struct_syntax = syntax.struct_syntax();
-				auto symbol = symbols.get_symbol(syntax.name().token().text());
+			auto index = symbols.add_validated_type(StructContext(std::move(symbol), std::move(members)));
 
-				encapsulation.push_back(symbol);
-
-				auto context = validate_struct(struct_syntax, symbols, encapsulation);
-
-				if (!context)
-					return {};
-
-
-				return TypeContext(std::move(symbol), context.unwrap());
-			}
-
-			case TypeDefinitionType::Primitive:
-				throw not_implemented();
+			data.validate(index);
 		}
-
-		throw not_implemented();
-	}
-
-	bool validate_package(const PackageSyntax& syntax, SymbolTable& symbols)
-	{
-		symbols.push_package(syntax.name());
-
-		Array<String> type_encapsulation;
-
-		// validate types
-		auto success = true;
-
-		for (const auto& type : syntax.type_definitions())
+		else
 		{
-			auto res = validate_type_definition(type, symbols, type_encapsulation);
-
-			type_encapsulation.clear();
-
-			if (!res)
-			{
-				success = false;
-				continue;
-			}
-
-			auto index = symbols.add_validated_type(res.unwrap());
+			data.invalidate();
 		}
-
-		symbols.pop_package();
 
 		return success;
 	}
 
 	Result<ProgramContext> validate(const ProgramSyntax& syntax)
 	{
-		Array<TypeContext> types;
-
-		SymbolTable symbols(types);
-
-
-		auto success = true;
+		Array<StructContext> structs;
+		Array<PrimitiveContext> primitives;
+		Array<String> containing_types;
+		SymbolTable symbols(structs, primitives);
 
 		if (!symbols.add_symbols(syntax))
-			success = false;
+			return {};
 
-		for (const auto& package : syntax.packages())
+		bool success = true;
+
+		for (auto& pair : symbols)
 		{
-			success = success && validate_package(package, symbols);
-		}
+			const auto& symbol = pair.first;
+			auto& data = pair.second;
+
+			if (data.is_already_validated())
+				continue;
+
+
+			symbols.set_scope_from_symbol(symbol);
+
+			switch (data.type())
+			{
+				case SymbolType::Struct:
+					success = success && validate_struct(data.struct_syntax(), symbols, containing_types);
+					break;
+
+				default:
+					break;
+			}
+		}		
 
 		if (!success)
 			return {};
 
-		return ProgramContext(std::move(types));
+		return ProgramContext(std::move(structs), std::move(primitives));
 	}
 }

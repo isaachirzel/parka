@@ -184,8 +184,4 @@ namespace warbler
 				break;
 		}
 	}
-
-	ProgramContext::ProgramContext(Array<TypeContext>&& types):
-	types(std::move(types))
-	{}
 }

@@ -83,14 +83,16 @@ namespace warbler
 			: &iter->second;
 	}
 
-	static String symbol_type_name(SymbolType type)
+	String get_symbol_type_name(SymbolType type)
 	{
 		switch (type)
 		{
 			case SymbolType::Package:
 				return "package";
-			case SymbolType::Type:
+			case SymbolType::Struct:
 				return "type definition";
+			case SymbolType::Primitive:
+				return "primitive";
 			case SymbolType::Function:
 				return "function";
 			case SymbolType::Parameter:
@@ -102,16 +104,16 @@ namespace warbler
 		return "symbol";
 	}
 
-	static bool add_type_symbol(Table<SymbolData>& symbols, const TypeSyntax& syntax, const String& current_scope)
+	static bool add_type_symbol(Table<SymbolData>& symbols, const StructSyntax& syntax, const String& current_scope)
 	{
-		auto symbol = current_scope + "::" + syntax.name().token().text();
+		auto symbol = current_scope + "::" + syntax.name().text();
 		auto previous_declaration = get_symbol(symbols, symbol);
 
 		if (previous_declaration != nullptr)
 		{
 			// TODO: improve type name specification in error, and show location of previous declaration
 			auto message = "Symbol '" + symbol + "' is already defined";
-			print_error(syntax.name().token(), message);
+			print_error(syntax.name(), message);
 			return false;
 		}
 
@@ -126,9 +128,9 @@ namespace warbler
 
 		auto success = true;
 
-		for (const auto& type_definition : syntax.type_definitions())
+		for (const auto& struct_def : syntax.structs())
 		{
-			if (!add_type_symbol(symbols, type_definition, syntax.name()))
+			if (!add_type_symbol(symbols, struct_def, syntax.name()))
 				success = false;
 		}
 
@@ -148,21 +150,32 @@ namespace warbler
 		return success;
 	}
 
-	SymbolTable::SymbolTable(Array<TypeContext>& types):
+	SymbolTable::SymbolTable(Array<StructContext>& structs, Array<PrimitiveContext>& primitives):
 	_symbols(),
-	_types(types)
+	_current_scope(),
+	_structs(structs),
+	_primitives(primitives)
 	{
-		_types = Array<TypeContext>({
-			TypeContext("u8", PrimitiveContext { 1 }),
-			TypeContext("u16", PrimitiveContext { 2 }),
-			TypeContext("u32", PrimitiveContext { 4 }),
-			TypeContext("u64", PrimitiveContext { 8 }),
+		_primitives = Array<PrimitiveContext>({
+			PrimitiveContext("u8", 1),
+			PrimitiveContext("u16", 2),
+			PrimitiveContext("u32", 4),
+			PrimitiveContext("u64", 8),
 		});
 
 		auto index = 0;
-		for (const auto& type : _types)
+
+		for (const auto& primitive : _primitives)
 		{
-			_symbols.emplace(type.symbol(), SymbolData(index, SymbolType::Type));
+			_symbols.emplace(primitive.symbol(), SymbolData(index, SymbolType::Primitive));
+			index += 1;
+		}
+	
+		index = 0;
+
+		for (const auto& type : _structs)
+		{
+			_symbols.emplace(type.symbol(), SymbolData(index, SymbolType::Struct));
 			index += 1;
 		}
 	}
@@ -221,6 +234,32 @@ namespace warbler
 		return symbol;
 	}
 
+	void SymbolTable::set_scope_from_symbol(const String& symbol)
+	{
+		assert(!symbol.empty());
+
+		_current_scope.clear();
+
+		String tmp;
+
+		tmp.reserve(64);
+
+		// split symbol by '::'
+		for (usize i = 0; i < symbol.size(); ++i)
+		{
+			if (symbol[i] == ':')
+			{
+				assert(symbol[i + 1] == ':');
+				_current_scope.push_back(tmp);
+				tmp.clear();
+				i += 1;
+				continue;
+			}
+
+			tmp += symbol[i];
+		}
+	}
+
 	// TODO: make this safe
 	String SymbolTable::get_symbol(const String& identifier)
 	{
@@ -250,11 +289,11 @@ namespace warbler
 	// 	return index;
 	// }
 
-	usize SymbolTable::add_validated_type(TypeContext&& type)
+	usize SymbolTable::add_validated_type(StructContext&& type)
 	{
-		auto index = _types.size();
+		auto index = _structs.size();
 		
-		_types.emplace_back(std::move(type));
+		_structs.emplace_back(std::move(type));
 
 		return index;
 	}

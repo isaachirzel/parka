@@ -9,7 +9,7 @@ namespace warbler
 {
 	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax);
 	Result<VariableContext> validate_variable(const VariableSyntax& syntax);
-	Result<TypeContext> validate_type_definition(const TypeSyntax& syntax, const SymbolTable& symbols);
+	bool validate_struct(const StructSyntax& syntax, SymbolTable& symbols, Array<String>& containing_types);
 	Result<PackageContext> validate_module(const ModuleSyntax& syntax);
 	Result<ProgramContext> validate(const ProgramSyntax& syntax);
 }

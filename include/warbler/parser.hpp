@@ -42,12 +42,11 @@ namespace warbler
 	Result<StatementSyntax> parse_statement(Token& token);
 
 	// Type
-	Result<TypeSyntax> parse_type_definition(Token& token);
+	Result<TypeSyntax> parse_type(Token& token);
 	Result<MemberSyntax> parse_member(Token& token);
 	Result<StructSyntax> parse_struct(Token& token);
-	Result<IdentifierSyntax> parse_identifier(Token& token);
 	Result<LabelSyntax> parse_label(Token& token);
-	Result<TypeAnnotationSyntax> parse_type(Token& token);
+	Result<TypeAnnotationSyntax> parse_type_annotation(Token& token);
 	Result<VariableSyntax> parse_variable(Token& token);
 	Result<PackageSyntax> parse_module(Token& token);
 	Result<ProgramSyntax> parse(const Array<Directory>& directories);

@@ -285,9 +285,9 @@ namespace warbler
 	_type(PostfixType::FunctionCall)
 	{}
 
-	PostfixExpressionSyntax::PostfixExpressionSyntax(ExpressionSyntax&& expression, IdentifierSyntax&& member) :
+	PostfixExpressionSyntax::PostfixExpressionSyntax(ExpressionSyntax&& expression, const Token& member) :
 	_expression(std::move(expression)),
-	_member(std::move(member)),
+	_member(member),
 	_type(PostfixType::Member)
 	{}
  
@@ -324,7 +324,7 @@ namespace warbler
 				break;
 
 			case PostfixType::Member:
-				_member.~IdentifierSyntax();
+				_member.~Token();
 				break;
 		}
 	}
@@ -460,7 +460,7 @@ namespace warbler
 		}
 	}
 
-	TypeSyntax::TypeSyntax(IdentifierSyntax&& name, StructSyntax&& struct_def) :
+	TypeSyntax::TypeSyntax(const Token& name, StructSyntax&& struct_def) :
 	_name(std::move(name)),
 	_struct(std::move(struct_def)),
 	_type(TypeDefinitionType::Struct)

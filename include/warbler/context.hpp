@@ -140,22 +140,32 @@ namespace warbler
 
 	class StructContext
 	{
+		String _symbol;
 		Table<MemberContext> _members;
 
 	public:
 
-		StructContext(Table<MemberContext>& members) :
+		StructContext(String&& symbol, Table<MemberContext>&& members) :
+		_symbol(std::move(symbol)),
 		_members(std::move(members))
 		{}
 
+		const auto& symbol() const { return _symbol; }
 		const auto& members() const { return _members; }
 	};
 
 	struct PrimitiveContext
 	{
-		u8 _size;
-		// TODO: add table for properties
-		// TODO: add table for methods
+		const char * _symbol;
+		u32 _size;
+
+		PrimitiveContext(const char *symbol, u32 size):
+		_symbol(symbol),
+		_size(size)
+		{}
+
+		const char *symbol() const { return _symbol; }
+		const auto& size() const { return _size; }
 	};
 
 	class TypeContext
@@ -312,9 +322,13 @@ namespace warbler
 
 	struct ProgramContext
 	{
-		Array<TypeContext> types;
+		Array<StructContext> structs;
+		Array<PrimitiveContext> primitives;
 
-		ProgramContext(Array<TypeContext>&& types);
+		ProgramContext(Array<StructContext>&& structs, Array<PrimitiveContext>&& primitives):
+		structs(std::move(structs)),
+		primitives(std::move(primitives))
+		{}
 	};
 }
 

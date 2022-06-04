@@ -148,7 +148,8 @@ namespace warbler
 	enum class SymbolType
 	{
 		Package,
-		Type,
+		Struct,
+		Primitive,
 		Function,
 		Parameter,
 		Variable,

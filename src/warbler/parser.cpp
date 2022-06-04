@@ -2,6 +2,7 @@
 
 #include <warbler/util/print.hpp>
 #include <warbler/directory.hpp>
+#include <cassert>
 
 namespace warbler
 {
@@ -400,13 +401,18 @@ namespace warbler
 			case TokenType::Dot:
 			{
 				token.increment();
-
-				auto res = parse_identifier(token);
-
-				if (!res)
+			
+				if (token.type() != TokenType::Identifier)
+				{
+					print_parse_error(token, "member, method, or property name");
 					return {};
+				}
+
+				auto name = token;
+
+				token.increment();
 				
-				expression = PostfixExpressionSyntax { std::move(expression), res.unwrap() };
+				expression = PostfixExpressionSyntax { std::move(expression), name };
 				goto parse_postfix;
 			}
 			
@@ -755,10 +761,15 @@ namespace warbler
 
 		token.increment();
 
-		auto name = parse_identifier(token);
-
-		if (!name)
+		if (token.type() != TokenType::Identifier)
+		{
+			print_parse_error(token, "function name");
 			return {};
+		}
+
+		auto name = token;
+
+		token.increment();
 
 		auto signature = parse_function_signature(token);
 
@@ -776,7 +787,7 @@ namespace warbler
 		if (!body)
 			return {};
 
-		return FunctionSyntax(name.unwrap(), signature.unwrap(), body.unwrap());
+		return FunctionSyntax(name, signature.unwrap(), body.unwrap());
 	}
 
 	Result<ParameterSyntax> parse_parameter(Token& token)
@@ -789,10 +800,15 @@ namespace warbler
 			token.increment();
 		}
 
-		auto name = parse_identifier(token);
-		
-		if (!name)
+		if (token.type() != TokenType::Identifier)
+		{
+			print_parse_error(token, "parameter name");
 			return {};
+		}
+
+		auto name = token;
+
+		token.increment();
 
 		if (token.type() != TokenType::Colon)
 		{
@@ -802,12 +818,12 @@ namespace warbler
 
 		token.increment();
 
-		auto type = parse_type(token);
+		auto type = parse_type_annotation(token);
 
 		if (!type)
 			return {};
 
-		return ParameterSyntax(name.unwrap(), type.unwrap(), is_mutable);
+		return ParameterSyntax(name, type.unwrap(), is_mutable);
 	}
 
 	Result<Array<ParameterSyntax>> parse_parameter_list(Token& token)
@@ -866,7 +882,7 @@ namespace warbler
 
 		token.increment();
 
-		auto type = parse_type(token);
+		auto type = parse_type_annotation(token);
 
 		if (!type)
 			return {};
@@ -1136,19 +1152,21 @@ namespace warbler
 		return StatementSyntax(res.unwrap());
 	}
 
-	Result<TypeSyntax> parse_type_definition(Token& token)
+	Result<TypeSyntax> parse_type(Token& token)
 	{
 		assert(token.type() == TokenType::KeywordType);
 
 		token.increment();
 
-		auto name = parse_identifier(token);
-
-		if (!name)
+		if (token.type() != TokenType::Identifier)
 		{
-			print_parse_error(token, "type identifier");
+			print_parse_error(token, "type name");
 			return {};
 		}
+
+		auto name_token = token;
+
+		token.increment();
 
 		if (token.type() != TokenType::Colon)
 		{
@@ -1167,7 +1185,7 @@ namespace warbler
 				if (!res)
 					return {};
 
-				return TypeSyntax(name.unwrap(), res.unwrap());
+				return TypeSyntax(name_token, res.unwrap());
 			}
 
 			default:
@@ -1191,10 +1209,16 @@ namespace warbler
 			token.increment();
 		}
 
-		auto name = parse_identifier(token);
-
-		if (!name)
+		if (token.type() != TokenType::Identifier)
+		{
+			print_parse_error(token, "member name");
+			print_note("Trailing commas are not allowed.");
 			return {};
+		}
+
+		auto name_token = token;
+
+		token.increment();
 
 		if (token.type() != TokenType::Colon)
 		{
@@ -1204,16 +1228,28 @@ namespace warbler
 		
 		token.increment();
 
-		auto type = parse_type(token);
+		auto type = parse_type_annotation(token);
 
 		if (!type)
 			return {};
 
-		return MemberSyntax(name.unwrap(), type.unwrap(), is_public);
+		return MemberSyntax(name_token, type.unwrap(), is_public);
 	}
 
 	Result<StructSyntax> parse_struct(Token& token)
 	{
+		assert(token.type() == TokenType::KeywordStruct);
+
+		token.increment();
+
+		if (token.type() != TokenType::Identifier)
+		{
+			print_parse_error(token, "struct name");
+			return {};
+		}
+
+		auto name = token;
+
 		token.increment();
 
 		if (token.type() != TokenType::LeftBrace)
@@ -1252,19 +1288,7 @@ namespace warbler
 
 		token.increment();
 
-		return StructSyntax(members);
-	}
-
-	Result<IdentifierSyntax> parse_identifier(Token& token)
-	{
-		if (token.type() != TokenType::Identifier)
-			return {};
-
-		auto identifier = token;
-
-		token.increment();
-
-		return  IdentifierSyntax(identifier);
+		return StructSyntax(name, members);
 	}
 
 	Result<LabelSyntax> parse_label(Token& token)
@@ -1290,7 +1314,7 @@ namespace warbler
 		return LabelSyntax(label);
 	}
 
-	Result<TypeAnnotationSyntax> parse_type(Token& token)
+	Result<TypeAnnotationSyntax> parse_type_annotation(Token& token)
 	{
 		Array<PtrSyntax> ptr_mutability;
 
@@ -1335,10 +1359,15 @@ namespace warbler
 			token.increment();
 		}
 
-		auto name = parse_identifier(token);
-		
-		if (!name)
+		if (token.type() != TokenType::Identifier)
+		{
+			print_parse_error(token, "variable name");
 			return {};
+		}
+
+		auto name = token;
+
+		token.increment();
 
 		Optional<TypeAnnotationSyntax> type;
 
@@ -1346,7 +1375,7 @@ namespace warbler
 		{
 			token.increment();
 
-			auto res = parse_type(token);
+			auto res = parse_type_annotation(token);
 
 			if (!res)
 				return {};
@@ -1354,13 +1383,13 @@ namespace warbler
 			type = res.unwrap();
 		}
 
-		return VariableSyntax(name.unwrap(), std::move(type), is_mutable);
+		return VariableSyntax(name, std::move(type), is_mutable);
 	}
 
 	Result<ModuleSyntax> parse_module(const File& file)
 	{
 		Array<FunctionSyntax> functions;
-		Array<TypeSyntax> types;
+		Array<StructSyntax> structs;
 		auto token = Token::get_initial(file);
 
 		while (true)
@@ -1377,14 +1406,14 @@ namespace warbler
 					functions.emplace_back(function.unwrap());
 					continue;
 				}
-				case TokenType::KeywordType:
+				case TokenType::KeywordStruct:
 				{
-					auto type = parse_type_definition(token);
+					auto res = parse_struct(token);
 
-					if (!type)
+					if (!res)
 						return {};
 
-					types.emplace_back(type.unwrap());
+					structs.emplace_back(res.unwrap());
 					continue;
 				}
 
@@ -1398,13 +1427,13 @@ namespace warbler
 			break;
 		}
 
-		return ModuleSyntax { std::move(functions), std::move(types) };
+		return ModuleSyntax { std::move(functions), std::move(structs) };
 	}
 
 	Result<PackageSyntax> parse_package(const Directory& directory)
 	{
 		Array<FunctionSyntax> functions;
-		Array<TypeSyntax> types;
+		Array<StructSyntax> structs;
 
 		for (const auto& file : directory.files())
 		{
@@ -1422,15 +1451,15 @@ namespace warbler
 				functions.emplace_back(std::move(function));
 			}
 
-			types.reserve(types.size() + mod.type_definitions.size());
+			structs.reserve(structs.size() + mod.structs.size());
 
-			for (auto& type : mod.type_definitions)
+			for (auto& type : mod.structs)
 			{
-				types.emplace_back(std::move(type));
+				structs.emplace_back(std::move(type));
 			}
 		}
 
-		return PackageSyntax(directory.path(), std::move(functions), std::move(types));
+		return PackageSyntax(directory.path(), std::move(functions), std::move(structs));
 	}
 
 	Result<ProgramSyntax> parse(const Array<Directory>& directories)

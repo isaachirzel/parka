@@ -11,15 +11,22 @@
 
 const char *src =
 R"==(
-	type House: struct
+
+	struct String
+	{
+		length: u64
+	}
+	
+	struct House
 	{
 		owner: String
 	}
 
-	type Person: struct
+	struct Person
 	{
 		age: u32,
-		home: House
+		home: House,
+		sq_footage: String
 	}
 )==";
 
