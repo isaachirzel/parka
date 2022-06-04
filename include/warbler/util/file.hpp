@@ -7,6 +7,7 @@
 namespace warbler
 {
 	Result<String> read_file(const String& filepath);
+	bool write_file(const String& filepath, const String& content);
 }
 
 #endif

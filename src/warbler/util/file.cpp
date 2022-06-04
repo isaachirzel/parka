@@ -38,7 +38,7 @@ namespace warbler
 		
 		if (!file)
 		{
-			print_error("failed to open file '" + filepath + "'");
+			print_error("Failed to open file '" + filepath + "' for reading.");
 			return {};
 		}
 
@@ -48,7 +48,7 @@ namespace warbler
 
 		if (!res)
 		{
-			print_error("failed to read file '" + filepath + "'");
+			print_error("Failed to read file '" + filepath + "'.");
 			return {};
 		}
 
@@ -61,5 +61,28 @@ namespace warbler
 		}
 
 		return text;
+	}
+
+	bool write_file(const String& filepath, const String& content)
+	{
+		FILE * file = fopen(filepath.c_str(), "w");
+
+		if (!file)
+		{
+			print_error("Failed to open file '" + filepath + "' for writing.");
+			return false;
+		}
+
+		auto bytes_written = fwrite(content.c_str(), sizeof(char), content.size(), file);
+
+		fclose(file);
+
+		if (bytes_written != content.size())
+		{
+			print_error("Failed to write content to file '" + filepath + "'.");
+			return false;
+		}
+
+		return true;
 	}
 }

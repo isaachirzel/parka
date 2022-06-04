@@ -116,13 +116,19 @@ namespace warbler
 	{
 		Array<bool> _ptr_mutability;
 		usize _index;
+		SymbolType _type;
 
 	public:
 
-		TypeAnnotationContext(Array<bool>& ptr_info, usize index) :
+		TypeAnnotationContext(Array<bool>& ptr_info, SymbolType type, usize index) :
 		_ptr_mutability(std::move(ptr_info)),
+		_type(type),
 		_index(index)
 		{}
+
+		const auto& ptr_mutability() const { return _ptr_mutability; }
+		const auto& index() const { return _index; }
+		const auto& type() const { return _type; }
 	};
 
 	struct MemberContext
@@ -154,17 +160,22 @@ namespace warbler
 		const auto& members() const { return _members; }
 	};
 
-	struct PrimitiveContext
+	class PrimitiveContext
 	{
 		const char * _symbol;
+		PrimitiveType _type;
 		u32 _size;
 
-		PrimitiveContext(const char *symbol, u32 size):
+	public:
+
+		PrimitiveContext(const char *symbol, PrimitiveType type, u32 size):
 		_symbol(symbol),
+		_type(type),
 		_size(size)
 		{}
 
 		const char *symbol() const { return _symbol; }
+		const auto& type() const { return _type; }
 		const auto& size() const { return _size; }
 	};
 
@@ -320,15 +331,20 @@ namespace warbler
 		String name;
 	};
 
-	struct ProgramContext
+	class ProgramContext
 	{
-		Array<StructContext> structs;
-		Array<PrimitiveContext> primitives;
+		Array<StructContext> _structs;
+		Array<PrimitiveContext> _primitives;
+
+	public:
 
 		ProgramContext(Array<StructContext>&& structs, Array<PrimitiveContext>&& primitives):
-		structs(std::move(structs)),
-		primitives(std::move(primitives))
+		_structs(std::move(structs)),
+		_primitives(std::move(primitives))
 		{}
+
+		const auto& structs() const { return _structs; }
+		const auto& primitives() const { return _primitives; }
 	};
 }
 

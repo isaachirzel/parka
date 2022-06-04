@@ -61,7 +61,7 @@ namespace warbler
 				return {};
 		}
 
-		return TypeAnnotationContext(ptr_mutability, resolution.data().index());
+		return TypeAnnotationContext(ptr_mutability, symbol_type, symbol_data.index());
 	}
 
 	bool validate_struct(const StructSyntax& syntax, SymbolTable& symbols, Array<String>& containing_types)

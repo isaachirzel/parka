@@ -157,10 +157,10 @@ namespace warbler
 	_primitives(primitives)
 	{
 		_primitives = Array<PrimitiveContext>({
-			PrimitiveContext("u8", 1),
-			PrimitiveContext("u16", 2),
-			PrimitiveContext("u32", 4),
-			PrimitiveContext("u64", 8),
+			PrimitiveContext("u8", PrimitiveType::UnsignedInteger, 1),
+			PrimitiveContext("u16", PrimitiveType::UnsignedInteger, 2),
+			PrimitiveContext("u32", PrimitiveType::UnsignedInteger, 4),
+			PrimitiveContext("u64", PrimitiveType::UnsignedInteger, 8),
 		});
 
 		auto index = 0;

@@ -57,8 +57,8 @@ namespace warbler
 
 	enum class PrimitiveType
 	{
-		Integer,
-		Unsigned,
+		SignedInteger,
+		UnsignedInteger,
 		Binary,
 		Float,
 		Bool,
