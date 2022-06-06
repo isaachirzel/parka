@@ -41,11 +41,11 @@ namespace warbler
 	class SymbolContext
 	{
 		usize _index;
-		SymbolType _type;
+		GlobalSymbolType _type;
 
 	public:
 
-		SymbolContext(SymbolType type, usize index):
+		SymbolContext(GlobalSymbolType type, usize index):
 		_index(index),
 		_type(type)
 		{}
@@ -116,14 +116,14 @@ namespace warbler
 	{
 		Array<bool> _ptr_mutability;
 		usize _index;
-		SymbolType _type;
+		GlobalSymbolType _type;
 
 	public:
 
-		TypeAnnotationContext(Array<bool>& ptr_info, SymbolType type, usize index) :
+		TypeAnnotationContext(Array<bool>&& ptr_info, GlobalSymbolType type, usize index) :
 		_ptr_mutability(std::move(ptr_info)),
-		_type(type),
-		_index(index)
+		_index(index),
+		_type(type)
 		{}
 
 		const auto& ptr_mutability() const { return _ptr_mutability; }
@@ -137,7 +137,7 @@ namespace warbler
 		TypeAnnotationContext type;
 		bool is_public;
 
-		MemberContext(String& name, TypeAnnotationContext&& type, bool is_public) :
+		MemberContext(String&& name, TypeAnnotationContext&& type, bool is_public) :
 		name(std::move(name)),
 		type(std::move(type)),
 		is_public(is_public)
@@ -276,11 +276,11 @@ namespace warbler
 	class FunctionSignatureContext
 	{
 		Array<ParameterContext> _parameters;
-		TypeAnnotationContext _return_type;
+		Optional<TypeAnnotationContext> _return_type;
 
 	public:
 
-		FunctionSignatureContext(Array<ParameterContext>&& parameters, TypeAnnotationContext&& return_type) :
+		FunctionSignatureContext(Array<ParameterContext>&& parameters, Optional<TypeAnnotationContext>&& return_type) :
 		_parameters(std::move(parameters)),
 		_return_type(std::move(return_type))
 		{}
@@ -309,19 +309,19 @@ namespace warbler
 	class FunctionContext
 	{
 
-		IdentifierContext _name;
+		String _symbol;
 		FunctionSignatureContext _signature;
 		BlockStatementContext _body;
 
 	public:
 
-		FunctionContext(IdentifierContext&& name, FunctionSignatureContext&& signature, BlockStatementContext&& body) :
-		_name(std::move(name)),
+		FunctionContext(String&& symbol, FunctionSignatureContext&& signature, BlockStatementContext&& body) :
+		_symbol(std::move(symbol)),
 		_signature(std::move(signature)),
 		_body(std::move(body))
 		{}
 
-		const auto& name() const { return _name; }
+		const auto& name() const { return _symbol; }
 		const auto& signature() const { return _signature; }
 		const auto& body() const { return _body; }
 	};

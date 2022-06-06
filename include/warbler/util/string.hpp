@@ -7,7 +7,6 @@
 namespace warbler
 {
 	using String = std::string;
-	using StringView = std::string_view;
 }
 
 #endif

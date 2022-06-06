@@ -1,105 +1,106 @@
 #include <stdexcept>
 #include <warbler/validator.hpp>
-
 #include <warbler/util/print.hpp>
 
 namespace warbler
 {
-	Result<IdentifierContext> validate_identifier(const Token& syntax, SymbolTable& symbol_table)
+	bool validate_unique_symbol(const Token& token, const String& symbol, GlobalSymbolTable& symbols)
 	{
-		throw not_implemented();
+		auto *previous_declaration = symbols.find(symbol);
+
+		if (previous_declaration)
+		{
+			print_error(token, "The symbol '" + symbol + "' is already in use.");
+			// TODO: show previous declaration
+			return false;
+		}
+
+		return true;
 	}
 
-	Result<TypeAnnotationContext> validate_member_type_annotation(const TypeAnnotationSyntax& syntax, SymbolTable& symbol_table, Array<String>& containing_types)
+	Result<TypeAnnotationContext> validate_type_annotation(const TypeAnnotationSyntax& syntax, GlobalSymbolTable& symbol_table)
 	{
-		// TODO: pointer validation
-		Array<bool> ptr_mutability;
-		auto type_name = syntax.base_type().text();
-		auto symbol_res = symbol_table.resolve(type_name);
+		auto name = syntax.name().text();
+		auto *symbol = symbol_table.resolve(name);
 
-		if (!symbol_res)	// couldn't find symbol in context tree
+		if (symbol == nullptr)	// couldn't find symbol in context tree
 		{
-			print_error(syntax.base_type(), "Type '" + type_name + "' does not exist in this scope");
+			print_error(syntax.name(), "Type '" + name + "' does not exist in this scope");
 			return {};
 		}
 
-		auto resolution = symbol_res.unwrap();
-		auto& symbol_data = resolution.data();
-
-		auto symbol_type = resolution.data().type();
-
-		switch (symbol_type)
+		switch (symbol->type())
 		{
-			case SymbolType::Struct:
-				// Check for recursive type members
-				for (const auto& containing_type : containing_types)
-				{
-					if (resolution.symbol() == containing_type)
-					{
-						// TODO: improve this error by printing parent type name
-						print_error(syntax.base_type(), "The type '" + resolution.symbol() + "' may not be used as a member of type '" + containing_types.back() + "' as it creates a recursive type. Try using a reference to avoid this.");
-						return {};
-					}
-				}
-
-				if (symbol_data.is_not_yet_validated())
-				{
-					// TODO: Add a flag to check if a type has failed validation as an invalid type getting used as a member of another type will cause it to be valdiated twice
-					if (!validate_struct(symbol_data.struct_syntax(), symbol_table, containing_types))
-						return {};
-				}
-				break;
-
-			case SymbolType::Primitive:
+			case GlobalSymbolType::Struct:
+			case GlobalSymbolType::Primitive:
 				break;
 
 			default:
-				print_error(syntax.base_type(), "expected member type, found "
-					+ get_symbol_type_name(resolution.data().type())
-					+ " '" + type_name + "'");
-
+				print_error(syntax.name(), "Expected type name, found "
+					+ get_symbol_type_name(symbol->type())
+					+ " '" + name + "'");
 				return {};
 		}
 
-		return TypeAnnotationContext(ptr_mutability, symbol_type, symbol_data.index());
+		return TypeAnnotationContext(Array<bool>(), symbol->type(), symbol->index());
 	}
 
-	bool validate_struct(const StructSyntax& syntax, SymbolTable& symbols, Array<String>& containing_types)
+	Result<MemberContext> validate_struct_member(const MemberSyntax& syntax, GlobalSymbolTable& globals, Array<String>& containing_types)
+	{
+		auto name = syntax.name().text();
+		auto type_name = syntax.type().name().text();
+		auto *symbol = globals.resolve(type_name);
+
+		if (symbol != nullptr)
+		{
+			if (symbol->type() == GlobalSymbolType::Struct && symbol->is_not_yet_validated())
+			{
+				if (!validate_struct(symbol->struct_syntax(), globals, containing_types))
+					return {};
+			}
+		}
+
+		auto type_annotation = validate_type_annotation(syntax.type(), globals);
+
+		if (!type_annotation)
+			return {};
+
+		return MemberContext(syntax.name().text(), type_annotation.unwrap(), syntax.is_public());
+	}
+
+	bool validate_struct(const StructSyntax& syntax, GlobalSymbolTable& symbols, Array<String>& containing_types)
 	{
 		auto identifier = syntax.name().text();
 		auto symbol = symbols.get_symbol(identifier);
+		bool success = true;
+
+		// TODO: potentially have this return false immediately as it could cause false positives with the other previously declared symbol
+		// Example: the containing types could be incorrectly flagged as an error due to same names
+		if (!validate_unique_symbol(syntax.name(), symbol, symbols))
+			success = false;
 
 		containing_types.push_back(symbol);
 
 		Table<MemberContext> members;
 
-		bool success = true;
-
 		for (const auto& member_syntax : syntax.members())
 		{
-			// TODO: add validate_member function
-			auto member_name = member_syntax.name().text();
-			const auto& previous_declaration = members.find(member_name);
-			auto name_already_exists = previous_declaration != members.end();
+			auto res = validate_struct_member(member_syntax, symbols, containing_types);
 
-			if (name_already_exists)
+			if (!res)
+				success = false;
+
+			auto member = res.unwrap();
+			auto previous_declaration = members.find(member.name);
+
+			if (previous_declaration != members.end())
 			{
-				// TODO: Search for previous declaration syntax for better diagnostics
-				print_error(member_syntax.name(), "Member '" + member_name + "' is already declared in struct.");
-				return {};
-			}
-
-			auto type_annotation = validate_member_type_annotation(member_syntax.type(), symbols, containing_types);
-
-			if (!type_annotation)
-			{
+				print_error(syntax.name(), "Member '" + member.name + "' is already declared in struct.");
 				success = false;
 				continue;
 			}
 
-			auto key = member_name; // This is done as consuming the member name int MemberContext causes problem with the emplacement
-
-			members.emplace(key, MemberContext(member_name, type_annotation.unwrap(), member_syntax.is_public()));
+			members.emplace(member.name, std::move(member));
 		}
 
 		containing_types.pop_back();
@@ -108,7 +109,7 @@ namespace warbler
 
 		if (success)
 		{
-			auto index = symbols.add_validated_type(StructContext(std::move(symbol), std::move(members)));
+			auto index = symbols.add_validated_struct(StructContext(std::move(symbol), std::move(members)));
 
 			data.validate(index);
 		}
@@ -120,19 +121,107 @@ namespace warbler
 		return success;
 	}
 
+	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		throw not_implemented();
+	}
+
+	Result<FunctionSignatureContext> validate_function_signature(const FunctionSignatureSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		auto success = true;
+
+		Array<ParameterContext> parameters;
+
+		for (const auto& parameter_syntax : syntax.parameters())
+		{
+			auto parameter = validate_parameter(parameter_syntax, globals, locals);
+
+			if (!parameter)
+			{
+				success = false;
+				continue;
+			}
+
+			parameters.emplace_back(parameter.unwrap());
+		}
+
+		Optional<TypeAnnotationContext> return_type;
+
+		if (syntax.return_type().has_value())
+		{
+			auto res = validate_type_annotation(syntax.return_type().value(), globals);
+
+			if (!res)
+			{
+				success = false;
+			}
+			else
+			{
+				return_type = res.unwrap();
+			}
+		}
+
+		if (!success)
+			return {};		
+
+		return FunctionSignatureContext(std::move(parameters), std::move(return_type));
+	}
+
+	Result<BlockStatementContext> validate_block_statement(const BlockStatementSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		throw not_implemented();
+	}
+
+	bool validate_function(const FunctionSyntax& syntax, GlobalSymbolTable& globals)
+	{
+		auto name = syntax.name().text();
+		auto symbol = globals.get_symbol(name);
+
+		auto locals_res = LocalSymbolTable::generate(syntax);
+
+		if (!locals_res)
+			return {};
+
+		auto locals = locals_res.unwrap();
+
+		auto success = true;
+
+		// TODO: potentially return false immediately as it could cause false positives with function signature of same name
+		if (!validate_unique_symbol(syntax.name(), symbol, globals))
+			success = false;
+
+		auto signature = validate_function_signature(syntax.signature(), globals, locals);
+
+		if (!signature)
+			success = false;
+
+		auto body = validate_block_statement(syntax.body(), globals, locals);
+
+		if (!body)
+			success = false;
+
+		if (!success)
+			return {};
+
+		auto& data = globals.get(symbol);
+		auto index = globals.add_validated_function(FunctionContext(std::move(symbol), signature.unwrap(), body.unwrap()));
+		data.validate(index);
+	}
+
 	Result<ProgramContext> validate(const ProgramSyntax& syntax)
 	{
-		Array<StructContext> structs;
-		Array<PrimitiveContext> primitives;
 		Array<String> containing_types;
-		SymbolTable symbols(structs, primitives);
 
-		if (!symbols.add_symbols(syntax))
+		auto globals_res = GlobalSymbolTable::generate(syntax);
+		
+		if (!globals_res)
 			return {};
+
+		auto globals = globals_res.unwrap();
 
 		bool success = true;
 
-		for (auto& pair : symbols)
+		for (auto& pair : globals)
 		{
 			const auto& symbol = pair.first;
 			auto& data = pair.second;
@@ -141,12 +230,12 @@ namespace warbler
 				continue;
 
 
-			symbols.set_scope_from_symbol(symbol);
+			globals.set_scope_from_symbol(symbol);
 
 			switch (data.type())
 			{
-				case SymbolType::Struct:
-					success = success && validate_struct(data.struct_syntax(), symbols, containing_types);
+				case GlobalSymbolType::Struct:
+					success = success && validate_struct(data.struct_syntax(), globals, containing_types);
 					break;
 
 				default:
@@ -157,6 +246,6 @@ namespace warbler
 		if (!success)
 			return {};
 
-		return ProgramContext(std::move(structs), std::move(primitives));
+		return ProgramContext(globals.take_structs(), globals.take_primitives());
 	}
 }

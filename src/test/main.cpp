@@ -31,6 +31,11 @@ R"==(
 		home: House,
 		sq_footage: String
 	}
+
+	function do_it()
+	{
+		var i = 0;
+	}
 )==";
 
 using namespace warbler;
@@ -49,7 +54,7 @@ int main()
 		return 1;
 	}
 
-	print_note("successfully parsed ast");
+	print_note("successfully parsed source");
 
 	auto syntax = parse_res.unwrap();
 	auto context_res = validate(syntax);
@@ -62,7 +67,7 @@ int main()
 	
 	auto context = context_res.unwrap();
 
-	print_note("successfully validated ast");
+	print_note("successfully validated source");
 
 	auto c = generate_c_program(context);
 	

@@ -32,7 +32,10 @@ namespace warbler
 
 		Box(const Box&) = delete;
 
-		~Box() { delete _value; }
+		~Box()
+		{
+			delete _value;
+		}
 
 		operator bool() const { return _value; }
 

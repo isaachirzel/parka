@@ -39,14 +39,14 @@ namespace warbler
         // TODO: generate pointers
         switch (context.type())
         {
-            case SymbolType::Struct:
+            case GlobalSymbolType::Struct:
             {
                 const auto& def = program.structs().at(context.index());
                 auto symbol = mangle_symbol(def.symbol());
                 return symbol;
             }
 
-            case SymbolType::Primitive:
+            case GlobalSymbolType::Primitive:
             {
                 const auto& def = program.primitives().at(context.index());
                 auto symbol = mangle_symbol(def.symbol());

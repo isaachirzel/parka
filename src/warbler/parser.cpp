@@ -753,11 +753,7 @@ namespace warbler
 
 	Result<FunctionSyntax> parse_function(Token& token)
 	{
-		if (token.type() != TokenType::KeywordFunction)
-		{
-			print_parse_error(token, "'function'");
-			return {};
-		}
+		assert(token.type() == TokenType::KeywordFunction);
 
 		token.increment();
 
@@ -778,7 +774,7 @@ namespace warbler
 
 		if (token.type() != TokenType::LeftBrace)
 		{
-			print_parse_error(token, "function body");
+			print_parse_error(token, "'{' after function signature");
 			return {};
 		}
 	
@@ -875,10 +871,7 @@ namespace warbler
 			return {};
 
 		if (token.type() != TokenType::Colon)
-		{
-			print_parse_error(token, "type", "Parameters cannot be declared without a type.");
-			return {};
-		}
+			return FunctionSignatureSyntax(parameters.unwrap());
 
 		token.increment();
 
@@ -971,11 +964,7 @@ namespace warbler
 
 	Result<BlockStatementSyntax> parse_block_statement(Token& token)
 	{
-		if (token.type() != TokenType::LeftBrace)
-		{
-			print_parse_error(token, "compound statement starting with '{'");
-			return {};
-		}
+		assert(token.type() == TokenType::LeftBrace);
 
 		token.increment();
 
@@ -985,11 +974,10 @@ namespace warbler
 		{
 			auto res = parse_statement(token);
 
-
 			if (!res)
 				return {};
 
-			statements.emplace_back(Box<StatementSyntax>(res.unwrap()));
+			statements.emplace_back(res.unwrap());
 		}
 
 		token.increment();
@@ -999,12 +987,7 @@ namespace warbler
 
 	Result<DeclarationSyntax> parse_declaration(Token& token)
 	{
-		if (token.type() != TokenType::KeywordVar)
-		{
-			print_parse_error(token, "var");
-			return {};
-		}
-
+		assert(token.type() == TokenType::KeywordVar);
 		token.increment();
 		
 		auto declaration = parse_variable(token);
@@ -1118,15 +1101,15 @@ namespace warbler
 			}
 
 			//case TokenType::MATCH:
-			case TokenType::KeywordIf:
-			{
-				auto res = parse_if_statement(token);
+			// case TokenType::KeywordIf:
+			// {
+			// 	auto res = parse_if_statement(token);
 
-				if (!res)
-					return {};
+			// 	if (!res)
+			// 		return {};
 
-				return StatementSyntax(res.unwrap());
-			}
+			// 	return StatementSyntax(res.unwrap());
+			// }
 
 			// case TokenType::LOOP:
 			// case TokenType::WHILE:
@@ -1353,11 +1336,11 @@ namespace warbler
 	{
 		auto is_mutable = false;
 
-		if (token.type() == TokenType::KeywordMut)
-		{
-			is_mutable = true;
-			token.increment();
-		}
+		// if (token.type() == TokenType::KeywordMut)
+		// {
+		// 	is_mutable = true;
+		// 	token.increment();
+		// }
 
 		if (token.type() != TokenType::Identifier)
 		{

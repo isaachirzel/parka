@@ -145,14 +145,18 @@ namespace warbler
 		Right
 	};
 
-	enum class SymbolType
+	enum class GlobalSymbolType
 	{
 		Package,
 		Struct,
 		Primitive,
 		Function,
-		Parameter,
+	};
+
+	enum class LocalSymbolType
+	{
 		Variable,
+		Parameter
 	};
 }
 

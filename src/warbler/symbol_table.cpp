@@ -6,215 +6,129 @@
 
 namespace warbler
 {
-	// SymbolData::SymbolData(SymbolType type) :
-	// _type(type)
-	// {
-	// 	switch (_type)
-	// 	{
-	// 		case SymbolType::Function:
-	// 			new (&_function) Box<FunctionContext>();
-	// 			break;
-
-	// 		case SymbolType::Parameter:
-	// 			new (&_parameter) Box<ParameterContext>();
-	// 			break;
-
-	// 		case SymbolType::Variable:
-	// 			new (&_variable) Box<VariableContext>();
-	// 			break;
-
-	// 		case SymbolType::TypeDefinition:
-	// 			new (&_type_definition) Box<TypeDefinitionContext>();				
-	// 			break;
-	// 	}
-	// }
-
-	// SymbolData::SymbolData(SymbolData&& other) :
-	// _type(other._type)
-	// {
-	// 	switch (_type)
-	// 	{
-	// 		case SymbolType::Function:
-	// 			new (&_function) auto(std::move(other._function));
-	// 			break;
-
-	// 		case SymbolType::Parameter:
-	// 			new (&_parameter) auto(std::move(other._parameter));
-	// 			break;
-
-	// 		case SymbolType::Variable:
-	// 			new (&_variable) auto(std::move(other._variable));
-	// 			break;
-
-	// 		case SymbolType::TypeDefinition:
-	// 			new (&_type_definition) auto(std::move(other._type_definition));
-	// 			break;
-	// 	}
-	// }
-
-	// SymbolData::~SymbolData()
-	// {
-	// 	switch (_type)
-	// 	{
-	// 		case SymbolType::Function:
-	// 			_function.~Box();
-	// 			break;
-
-	// 		case SymbolType::Parameter:
-	// 			_parameter.~Box();
-	// 			break;
-
-	// 		case SymbolType::Variable:
-	// 			_variable.~Box();
-	// 			break;
-
-	// 		case SymbolType::TypeDefinition:
-	// 			_type_definition.~Box();
-	// 			break;
-	// 	}
-	// }
-
-	static SymbolData *get_symbol(Table<SymbolData>& symbols, const String& symbol)
-	{
-		auto iter = symbols.find(symbol);
-
-		return iter == symbols.end()
-			? nullptr
-			: &iter->second;
-	}
-
-	String get_symbol_type_name(SymbolType type)
+	String get_symbol_type_name(LocalSymbolType type)
 	{
 		switch (type)
 		{
-			case SymbolType::Package:
-				return "package";
-			case SymbolType::Struct:
-				return "type definition";
-			case SymbolType::Primitive:
-				return "primitive";
-			case SymbolType::Function:
-				return "function";
-			case SymbolType::Parameter:
+			case LocalSymbolType::Parameter:
 				return "parameter";
-			case SymbolType::Variable:
+			case LocalSymbolType::Variable:
 				return "variable";
 		}
 
 		return "symbol";
 	}
 
-	static bool add_type_symbol(Table<SymbolData>& symbols, const StructSyntax& syntax, const String& current_scope)
+	String get_symbol_type_name(GlobalSymbolType type)
 	{
-		auto symbol = current_scope + "::" + syntax.name().text();
-		auto previous_declaration = get_symbol(symbols, symbol);
+		switch (type)
+		{
+			case GlobalSymbolType::Package:
+				return "package";
+			case GlobalSymbolType::Struct:
+				return "type";
+			case GlobalSymbolType::Primitive:
+				return "primitive";
+			case GlobalSymbolType::Function:
+				return "function";
+		}
+
+		return "symbol";
+	}
+
+	bool GlobalSymbolTable::add_symbol(GlobalSymbolData&& data)
+	{
+		auto previous_declaration = find(data.symbol());
 
 		if (previous_declaration != nullptr)
 		{
-			// TODO: improve type name specification in error, and show location of previous declaration
-			auto message = "Symbol '" + symbol + "' is already defined";
-			print_error(syntax.name(), message);
+			auto message = get_symbol_type_name(data.type()) + " '" + data.symbol() + "' is already defined as a "
+				+ get_symbol_type_name(previous_declaration->type());
+
+			switch (data.type())
+			{
+				case GlobalSymbolType::Package:
+					print_error(message);
+					break;
+
+				case GlobalSymbolType::Struct:
+					print_error(data.struct_syntax().name(), message);
+					break;
+
+				case GlobalSymbolType::Primitive:
+					print_error(message);
+					break;
+
+				case GlobalSymbolType::Function:
+					print_error(data.function_syntax().name(), message);
+					break;
+			}
+
+			switch (previous_declaration->type())
+			{
+				case GlobalSymbolType::Struct:
+					print_note(previous_declaration->struct_syntax().name(), "Previous declaration here.");
+					break;
+
+				case GlobalSymbolType::Function:
+					print_note(previous_declaration->function_syntax().name(), "Previous declaration here.");
+					break;
+
+				default:
+					break;
+			}
+
 			return false;
 		}
 
-		symbols.emplace(symbol, SymbolData(syntax));
-
+		_symbols.emplace(data.symbol(), data);
 		return true;
 	}
 
-	static bool add_package_symbols(Table<SymbolData>& symbols, const PackageSyntax& syntax)
+	Result<GlobalSymbolTable> GlobalSymbolTable::generate(const ProgramSyntax& syntax)
 	{
-		symbols.emplace(syntax.name(), SymbolData(syntax));
+		GlobalSymbolTable table;
 
-		auto success = true;
-
-		for (const auto& struct_def : syntax.structs())
-		{
-			if (!add_type_symbol(symbols, struct_def, syntax.name()))
-				success = false;
-		}
-
-		return success;
-	}
-
-	bool SymbolTable::add_symbols(const ProgramSyntax& syntax)
-	{
-		bool success = true;
-
-		for (const auto& package : syntax.packages())
-		{
-			if (!add_package_symbols(_symbols, package))
-				success = false;
-		}
-
-		return success;
-	}
-
-	SymbolTable::SymbolTable(Array<StructContext>& structs, Array<PrimitiveContext>& primitives):
-	_symbols(),
-	_current_scope(),
-	_structs(structs),
-	_primitives(primitives)
-	{
-		_primitives = Array<PrimitiveContext>({
+		table._primitives = {
 			PrimitiveContext("u8", PrimitiveType::UnsignedInteger, 1),
 			PrimitiveContext("u16", PrimitiveType::UnsignedInteger, 2),
 			PrimitiveContext("u32", PrimitiveType::UnsignedInteger, 4),
 			PrimitiveContext("u64", PrimitiveType::UnsignedInteger, 8),
-		});
+		};
 
 		auto index = 0;
 
-		for (const auto& primitive : _primitives)
+		for (const auto& primitive : table._primitives)
 		{
-			_symbols.emplace(primitive.symbol(), SymbolData(index, SymbolType::Primitive));
+			table._symbols.emplace(primitive.symbol(), GlobalSymbolData(primitive.symbol(), index, GlobalSymbolType::Primitive));
 			index += 1;
 		}
-	
-		index = 0;
 
-		for (const auto& type : _structs)
+		bool success = true;
+
+		for (const auto& package : syntax.packages())
 		{
-			_symbols.emplace(type.symbol(), SymbolData(index, SymbolType::Struct));
-			index += 1;
-		}
-	}
-
-	void SymbolTable::add_symbol(const String& symbol, const SymbolData& data)
-	{
-		assert(_symbols.find(symbol) == _symbols.end());
-
-		_symbols.emplace(symbol, data);
-	}
-
-	static Array<String> get_packages_from_scope(const String& scope)
-	{
-		// TODO: optimize this and make it safe as this is very breakable if there is not two colons
-		String temp;
-
-		temp.reserve(256);
-
-		Array<String> packages;
-
-		for (usize i = 0; i < scope.size(); ++i)
-		{
-			if (scope[i] == ':')
+			for (const auto& struct_def : package.structs())
 			{
-				i += 1;
+				auto struct_name = struct_def.name().text();
 
-				if (!temp.empty())
-				{
-					packages.push_back(temp);
-					temp.clear();
-				}
+				String symbol;
 
-				continue;
+				symbol.reserve(package.name().size() + 2 + struct_name.size());
+
+				symbol += package.name();
+				symbol += "::";
+				symbol += struct_name;
+
+				if (!table.add_symbol(GlobalSymbolData(symbol, struct_def)))
+					success = false;
 			}
-			
-			temp += scope[i];
 		}
 
-		return packages;
+		if (!success)
+			return {};
+
+		return table;
 	}
 
 	static String create_symbol(const Array<String>& packages, usize count, const String& identifier)
@@ -234,11 +148,11 @@ namespace warbler
 		return symbol;
 	}
 
-	void SymbolTable::set_scope_from_symbol(const String& symbol)
+	void GlobalSymbolTable::set_scope_from_symbol(const String& symbol)
 	{
 		assert(!symbol.empty());
 
-		_current_scope.clear();
+		_current_package.clear();
 
 		String tmp;
 
@@ -250,7 +164,7 @@ namespace warbler
 			if (symbol[i] == ':')
 			{
 				assert(symbol[i + 1] == ':');
-				_current_scope.push_back(tmp);
+				_current_package.push_back(tmp);
 				tmp.clear();
 				i += 1;
 				continue;
@@ -261,35 +175,26 @@ namespace warbler
 	}
 
 	// TODO: make this safe
-	String SymbolTable::get_symbol(const String& identifier)
+	String GlobalSymbolTable::get_symbol(const String& identifier)
 	{
-		return create_symbol(_current_scope, _current_scope.size(), identifier);
+		return create_symbol(_current_package, _current_package.size(), identifier);
 	}
 
-	Result<SymbolResolution> SymbolTable::resolve(const String& identifier)
+	GlobalSymbolData *GlobalSymbolTable::resolve(const String& identifier)
 	{
-		for (i32 i = (i32)_current_scope.size(); i >= 0; --i)
+		for (i32 i = (i32)_current_package.size(); i >= 0; --i)
 		{
-			auto symbol = create_symbol(_current_scope, i, identifier);
+			auto symbol = create_symbol(_current_package, i, identifier);
 			auto iter = _symbols.find(symbol);
 
 			if (iter != _symbols.end())
-				return SymbolResolution(iter->second, symbol);
+				return &iter->second;
 		}
 
-		return {};
+		return nullptr;
 	}
 
-	// usize SymbolTable::validate_function(FunctionContext&& function)
-	// {
-	// 	auto index = _context.functions.size();
-
-	// 	_context.functions.emplace_back(std::move(function));
-
-	// 	return index;
-	// }
-
-	usize SymbolTable::add_validated_type(StructContext&& type)
+	usize GlobalSymbolTable::add_validated_struct(StructContext&& type)
 	{
 		auto index = _structs.size();
 		
@@ -298,12 +203,136 @@ namespace warbler
 		return index;
 	}
 
-	// usize SymbolTable::validate_parameter(ParameterContext&& parameter)
-	// {
-	// }
+	usize GlobalSymbolTable::add_validated_function(FunctionContext&& function)
+	{
+		auto index = _functions.size();
 
-	// usize SymbolTable::validate_variable(VariableContext&& variable)
-	// {
+		_functions.emplace_back(std::move(function));
 
-	// }
+		return index;
+	}
+
+	bool LocalSymbolTable::add_parameter(const ParameterSyntax& parameter)
+	{
+		auto parameter_name = parameter.name().text();
+
+		auto iter = _symbols.find(parameter_name);
+
+		if (iter != _symbols.end())
+		{
+			print_error(parameter.name(), "The parameter name '" + parameter_name + "' is already being used in this parameter list");
+			print_note(iter->second.parameter_syntax().name(), "Previous usage here.");
+			return false;
+		}
+
+		_symbols.emplace(parameter_name, parameter);
+		return true;
+	}
+
+	Result<LocalSymbolTable> LocalSymbolTable::generate(const FunctionSyntax& syntax)
+	{
+		auto success = true;
+
+		LocalSymbolTable locals;
+
+		for (const auto& parameter : syntax.signature().parameters())
+		{
+			success = success && locals.add_parameter(parameter);
+		}
+
+		Array<BlockSymbolTable*> scope;
+
+		auto block = BlockSymbolTable::generate(syntax.body(), locals, scope);
+
+		success = success && block;
+
+		if (block)
+		{
+			locals._block_symbols = block.unwrap();
+		}
+
+		if (!success)
+			return {};
+
+		return locals;
+	}
+
+	bool BlockSymbolTable::add_variable(const VariableSyntax& variable, LocalSymbolTable& locals, Array<BlockSymbolTable*>& scope)
+	{
+		auto variable_name = variable.name().text();
+
+		assert(!scope.empty());
+
+		for (auto iter = scope.rbegin(); iter != scope.rend(); ++iter)
+		{
+			auto& block = **iter;
+
+			auto *symbol = block.at(variable_name);
+
+			if (symbol != nullptr)
+			{
+				print_error(variable.name(), "The declaration of variable '" + variable_name + "' shadows a previous declaration.");
+				print_note(symbol->variable_syntax().name(), "Previous declaration here.");
+				return false;
+			}
+		}
+
+		auto parameter = locals.find_parameter(variable_name);
+
+		if (parameter != nullptr)
+		{
+			print_error(variable.name(), "The declaration of variable '" + variable_name + "' shadows a parameter.");
+			print_note(parameter->parameter_syntax().name(), "Previous declaration here.");
+			return false;
+		}
+
+		_symbols.emplace(variable_name, LocalSymbolData(variable));
+		return true;
+	}
+
+	Result<BlockSymbolTable> BlockSymbolTable::generate(const BlockStatementSyntax& syntax, LocalSymbolTable& locals, Array<BlockSymbolTable*>& scope)
+	{
+		BlockSymbolTable table;
+
+		scope.push_back(&table);
+
+		auto success = true;
+
+		for (const auto& statement : syntax.statements())
+		{
+			switch (statement->type())
+			{
+				case StatementType::Declaration:
+				{
+					const auto& declaration = statement->declaration();
+					success = success && table.add_variable(declaration.variable(), locals, scope);
+					break;
+				}
+
+				case StatementType::Block:
+				{
+					auto block = generate(statement->block(), locals, scope);
+
+					success = success & block;
+
+					if (block)
+					{
+						table.add_block(block.unwrap());
+					}
+
+					break;
+				}
+
+				default:
+					break;
+			}
+		}
+
+		scope.pop_back();
+
+		if (!success)
+			return {};
+
+		return table;
+	}
 }

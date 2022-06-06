@@ -360,23 +360,28 @@ namespace warbler
 		switch (_type)
 		{
 			case StatementType::Assignment:
-				new (&_assignment) auto(std::move(other._assignment));
+				_assignment = other._assignment;
+				other._assignment = nullptr;
 				break;
 
 			case StatementType::Expression:
-				new (&_expression) auto(std::move(other._expression));
+				_expression = other._expression;
+				other._expression = nullptr;
 				break;
 
 			case StatementType::Block:
-				new (&_block) auto(std::move(other._block));
+				_block = other._block;
+				other._block = nullptr;
 				break;
 
 			case StatementType::Declaration:
-				new (&_declaration) auto(std::move(other._declaration));
+				_declaration = other._declaration;
+				other._declaration = nullptr;
 				break;
 
 			case StatementType::If:
-				new (&_iff) auto(std::move(other._iff));
+				_iff = other._iff;
+				other._iff = nullptr;
 				break;
 		}
 	}

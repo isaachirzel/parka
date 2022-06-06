@@ -417,18 +417,17 @@ namespace warbler
 
 	class TypeAnnotationSyntax
 	{
-
-		Token _base_type;
+		Token _name;
 		Array<PtrSyntax> _ptrs;
 
 	public:
 
-		TypeAnnotationSyntax(const Token& base_type, Array<PtrSyntax>&& ptrs) :
-		_base_type(base_type),
+		TypeAnnotationSyntax(const Token& name, Array<PtrSyntax>&& ptrs) :
+		_name(name),
 		_ptrs(std::move(ptrs))
 		{}
 
-		const auto& base_type() const { return _base_type; }
+		const auto& name() const { return _name; }
 		const auto& ptrs() const { return _ptrs; }
 	};
 
@@ -549,6 +548,9 @@ namespace warbler
 		StatementSyntax(const StatementSyntax&) = delete;
 		~StatementSyntax();
 		
+		const auto& type() const { return _type; }
+		const auto& declaration() const { assert(_type == StatementType::Declaration); return *_declaration; }
+		const auto& block() const { assert(_type == StatementType::Block); return *_block; }
 	};
 
 	class BlockStatementSyntax
@@ -560,6 +562,8 @@ namespace warbler
 		BlockStatementSyntax(Array<Box<StatementSyntax>>&& statements) :
 		_statements(std::move(statements))
 		{}
+
+		const auto& statements() const { return _statements; }
 	};
 
 	class JumpStatementSyntax
@@ -612,15 +616,18 @@ namespace warbler
 
 	class DeclarationSyntax
 	{
-		VariableSyntax _declaration;
+		VariableSyntax _variable;
 		ExpressionSyntax _value;
 
 	public:
 
-		DeclarationSyntax(VariableSyntax&& declaration, ExpressionSyntax&& value) :
-		_declaration(std::move(declaration)),
+		DeclarationSyntax(VariableSyntax&& variable, ExpressionSyntax&& value) :
+		_variable(std::move(variable)),
 		_value(std::move(value))
 		{}
+
+		const auto& variable() const { return _variable; }
+		const auto& value() const { return _value; }
 	};
 
 	class AssignmentSyntax
@@ -653,8 +660,6 @@ namespace warbler
 
 	class ParameterSyntax
 	{
-	private:
-
 		Token _name;
 		TypeAnnotationSyntax _type;
 		bool _is_mutable;
@@ -666,19 +671,31 @@ namespace warbler
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
 		{}
+
+		const auto& name() const { return _name; }
+		const auto& type() const { return _type; }
+		const auto& is_mutable() const { return _is_mutable; }
 	};
 
 	class FunctionSignatureSyntax
 	{
 		Array<ParameterSyntax> _parameters;
-		TypeAnnotationSyntax _return_type;
+		Optional<TypeAnnotationSyntax> _return_type;
 	
 	public:
+
+		FunctionSignatureSyntax(Array<ParameterSyntax>&& parameters):
+		_parameters(std::move(parameters)),
+		_return_type()
+		{}
 
 		FunctionSignatureSyntax(Array<ParameterSyntax>&& parameters, TypeAnnotationSyntax&& return_type) :
 		_parameters(std::move(parameters)),
 		_return_type(std::move(return_type))
 		{}
+
+		const auto& parameters() const { return _parameters; }
+		const auto& return_type() const { return _return_type; }
 	};
 
 	class FunctionSyntax
