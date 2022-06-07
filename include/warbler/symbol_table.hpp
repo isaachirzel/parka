@@ -273,11 +273,24 @@ namespace warbler
 			return ptr;
 		}
 
+		const auto& get_struct(usize index)
+		{
+			assert(index < _structs.size());
+			return _structs[index];
+		}
+
+		const auto& get_primitive(usize index)
+		{
+			assert(index < _primitives.size());
+			return _primitives[index];
+		}
+
 		auto begin() { return _symbols.begin(); }
 		auto end() { return _symbols.end(); }
 
 		auto&& take_structs() { return std::move(_structs); }
 		auto&& take_primitives() { return std::move(_primitives); }
+		auto&& take_functions() { return std::move(_functions); }
 	};
 
 	String get_symbol_type_name(GlobalSymbolType type);

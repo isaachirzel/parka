@@ -82,6 +82,9 @@ namespace warbler
 		ExpressionContext(ExpressionContext&& other);
 		ExpressionContext(const ExpressionContext&) = delete;
 		~ExpressionContext() = default;
+
+		const auto& type() const { return _type; }
+		const auto& constant() const { assert(_type == ExpressionType::Constant); return *_constant; }
 	};
 
 	class ConstantContext
@@ -100,7 +103,7 @@ namespace warbler
 	public:
 
 		ConstantContext(char character);
-		ConstantContext(String&& string);
+		ConstantContext(const String& string);
 		ConstantContext(u64 integer);
 		ConstantContext(double floating);
 		ConstantContext(bool boolean);
@@ -108,6 +111,12 @@ namespace warbler
 		ConstantContext(const ConstantContext&) = delete;
 		~ConstantContext();
 
+		const auto& type() const { return _type; }
+		const auto& character() const { return _character; }
+		const auto& string() const { return _string; }
+		const auto& integer() const { return _integer; }
+		const auto& floating() const { return _floating; }
+		const auto& boolean() const { return _boolean; }
 	};
 
 	class TypeContext;
@@ -116,11 +125,11 @@ namespace warbler
 	{
 		Array<bool> _ptr_mutability;
 		usize _index;
-		GlobalSymbolType _type;
+		AnnotationType _type;
 
 	public:
 
-		TypeAnnotationContext(Array<bool>&& ptr_info, GlobalSymbolType type, usize index) :
+		TypeAnnotationContext(Array<bool>&& ptr_info, AnnotationType type, usize index) :
 		_ptr_mutability(std::move(ptr_info)),
 		_index(index),
 		_type(type)
@@ -179,48 +188,29 @@ namespace warbler
 		const auto& size() const { return _size; }
 	};
 
-	class TypeContext
-	{
-		String _symbol;
-
-		union
-		{
-			StructContext _struct_def;
-			PrimitiveContext _primitive;
-		};
-
-		TypeDefinitionType _type;
-
-	public:
-		
-		TypeContext(String&& symbol, StructContext&& struct_def);
-		TypeContext(const char *symbol, PrimitiveContext&& primitive);
-		TypeContext(TypeContext&& other);
-		TypeContext(const TypeContext& other);
-		~TypeContext();
-
-
-		const auto& symbol() const { return _symbol; }
-		const auto& type() const { return _type; }
-		const auto& struct_def() const { assert(_type == TypeDefinitionType::Struct); return _struct_def; }
-	};
-
 	class VariableContext
 	{
 		String _name;
 		Optional<TypeAnnotationContext> _type;
-		VariableState _state;
 		bool _is_mutable;
 
 	public:
 
-		VariableContext(String&& name, TypeAnnotationContext&& type, bool is_mutable) :
+		VariableContext(String&& name, bool is_mutable):
+		_name(std::move(name)),
+		_type(),
+		_is_mutable(is_mutable)
+		{}
+
+		VariableContext(String&& name, Optional<TypeAnnotationContext>&& type, bool is_mutable) :
 		_name(std::move(name)),
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
 		{}
 
 		const auto& name() const { return _name; }
+		bool is_auto_type() const { return !_type.has_value(); }
+		const auto& type() const { assert(_type.has_value()); return *_type; }
 	};
 
 	class StatementContext
@@ -243,6 +233,10 @@ namespace warbler
 		StatementContext(StatementContext&&);
 		StatementContext(const StatementContext&) = delete;
 		~StatementContext();
+
+		const auto& type() const { return _type; }
+		const auto& block() const { assert(_type == StatementType::Block); return *_block; }
+		const auto& declaration() const { assert(_type == StatementType::Declaration); return *_declaration; }
 	};
 
 	class ExpressionStatementContext
@@ -256,6 +250,13 @@ namespace warbler
 
 	public:
 
+		DeclarationContext(VariableContext&& variable, ExpressionContext&& value):
+		_variable(std::move(variable)),
+		_value(std::move(value))
+		{}
+
+		const auto& variable() const { return _variable; }
+		const auto& value() const { return _value; }
 	};
 
 	class AssignmentContext
@@ -264,13 +265,15 @@ namespace warbler
 
 	class BlockStatementContext
 	{
-		Array<Box<StatementContext>> _statements;
+		Array<StatementContext> _statements;
 
 	public:
 
-		BlockStatementContext(Array<Box<StatementContext>>&& statements) :
+		BlockStatementContext(Array<StatementContext>&& statements) :
 		_statements(std::move(statements))
 		{}
+
+		const auto& statements() const { return _statements; }
 	};
 
 	class FunctionSignatureContext
@@ -284,26 +287,29 @@ namespace warbler
 		_parameters(std::move(parameters)),
 		_return_type(std::move(return_type))
 		{}
+
+		const auto& parameters() const { return _parameters; }
+		const auto& return_type() const { return _return_type; }		
 	};
 
 	class ParameterContext
 	{
-		String _symbol;
+		String _name;
 		TypeAnnotationContext _type;
-		bool _is_valid;
 		bool _is_mutable;
 
 
 	public:
 	
-		ParameterContext(String&& symbol, TypeAnnotationContext&& type, bool is_valid, bool is_mutable) :
-		_symbol(std::move(symbol)),
+		ParameterContext(String&& name, TypeAnnotationContext&& type, bool is_mutable) :
+		_name(std::move(name)),
 		_type(std::move(type)),
-		_is_valid(is_valid),
 		_is_mutable(is_mutable)
 		{}
 
-		const String& symbol() const { return _symbol; }
+		const auto& name() const { return _name; }
+		const auto& type() const { return _type; }
+		const auto& is_mutable() const { return _is_mutable; }
 	};
 
 	class FunctionContext
@@ -335,16 +341,19 @@ namespace warbler
 	{
 		Array<StructContext> _structs;
 		Array<PrimitiveContext> _primitives;
+		Array<FunctionContext> _functions;
 
 	public:
 
-		ProgramContext(Array<StructContext>&& structs, Array<PrimitiveContext>&& primitives):
+		ProgramContext(Array<StructContext>&& structs, Array<PrimitiveContext>&& primitives, Array<FunctionContext>&& functions):
 		_structs(std::move(structs)),
-		_primitives(std::move(primitives))
+		_primitives(std::move(primitives)),
+		_functions(std::move(functions))
 		{}
 
 		const auto& structs() const { return _structs; }
 		const auto& primitives() const { return _primitives; }
+		const auto& functions() const { return _functions; }
 	};
 }
 

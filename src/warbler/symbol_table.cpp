@@ -26,7 +26,7 @@ namespace warbler
 			case GlobalSymbolType::Package:
 				return "package";
 			case GlobalSymbolType::Struct:
-				return "type";
+				return "struct";
 			case GlobalSymbolType::Primitive:
 				return "primitive";
 			case GlobalSymbolType::Function:
@@ -108,19 +108,22 @@ namespace warbler
 
 		for (const auto& package : syntax.packages())
 		{
+			auto scope = package.name() + "::";
 			for (const auto& struct_def : package.structs())
 			{
 				auto struct_name = struct_def.name().text();
-
-				String symbol;
-
-				symbol.reserve(package.name().size() + 2 + struct_name.size());
-
-				symbol += package.name();
-				symbol += "::";
-				symbol += struct_name;
+				auto symbol = scope + struct_name;
 
 				if (!table.add_symbol(GlobalSymbolData(symbol, struct_def)))
+					success = false;
+			}
+
+			for (const auto& function : package.functions())
+			{
+				auto name = function.name().text();
+				auto symbol = scope + name;
+
+				if (!table.add_symbol(GlobalSymbolData(symbol, function)))
 					success = false;
 			}
 		}
@@ -300,18 +303,18 @@ namespace warbler
 
 		for (const auto& statement : syntax.statements())
 		{
-			switch (statement->type())
+			switch (statement.type())
 			{
 				case StatementType::Declaration:
 				{
-					const auto& declaration = statement->declaration();
+					const auto& declaration = statement.declaration();
 					success = success && table.add_variable(declaration.variable(), locals, scope);
 					break;
 				}
 
 				case StatementType::Block:
 				{
-					auto block = generate(statement->block(), locals, scope);
+					auto block = generate(statement.block(), locals, scope);
 
 					success = success & block;
 
@@ -319,7 +322,6 @@ namespace warbler
 					{
 						table.add_block(block.unwrap());
 					}
-
 					break;
 				}
 

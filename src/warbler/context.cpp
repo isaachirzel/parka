@@ -1,5 +1,7 @@
 #include <warbler/context.hpp>
 
+#include <stdexcept>
+
 namespace warbler
 {
 	ConstantContext::ConstantContext(char character) :
@@ -7,8 +9,8 @@ namespace warbler
 	_type(ConstantType::Character)
 	{}
 
-	ConstantContext::ConstantContext(String&& string) :
-	_string(std::move(string)),
+	ConstantContext::ConstantContext(const String& string) :
+	_string(string),
 	_type(ConstantType::String)
 	{}
 
@@ -80,64 +82,6 @@ namespace warbler
 		}
 	}
 
-	TypeContext::TypeContext(String&& symbol, StructContext&& struct_def) :
-	_symbol(std::move(symbol)),
-	_struct_def(std::move(struct_def)),
-	_type(TypeDefinitionType::Struct)
-	{}
-
-	TypeContext::TypeContext(const char *symbol, PrimitiveContext&& primitive) :
-	_symbol(String(symbol)),
-	_primitive(std::move(primitive)),
-	_type(TypeDefinitionType::Primitive)
-	{}
-
-	TypeContext::TypeContext(TypeContext&& other) :
-	_symbol(std::move(other._symbol)),
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case TypeDefinitionType::Struct:
-				new (&_struct_def) auto(std::move(other._struct_def));
-				break;
-
-			case TypeDefinitionType::Primitive:
-				new (&_primitive) auto(std::move(other._primitive));
-				break;
-		}
-	}
-
-	TypeContext::TypeContext(const TypeContext& other) :
-	_symbol(other._symbol),
-	_type(other._type)
-	{
-		switch (_type)
-		{
-			case TypeDefinitionType::Struct:
-				new (&_struct_def) auto(other._struct_def);
-				break;
-
-			case TypeDefinitionType::Primitive:
-				new (&_primitive) auto(other._primitive);
-				break;
-		}
-	}
-
-	TypeContext::~TypeContext()
-	{
-		switch (_type)
-		{
-			case TypeDefinitionType::Struct:
-				_struct_def.~StructContext();
-				break;
-
-			case TypeDefinitionType::Primitive:
-				_primitive.~PrimitiveContext();
-				break;
-		}
-	}
-
 	StatementContext::StatementContext(BlockStatementContext&& block) :
 	_block(std::move(block)),
 	_type(StatementType::Block)
@@ -149,7 +93,7 @@ namespace warbler
 	{}
 
 	StatementContext::StatementContext(StatementContext&& other) :
-	_type()
+	_type(other._type)
 	{
 		switch (_type)
 		{
@@ -162,7 +106,7 @@ namespace warbler
 				break;
 
 			default:
-				assert(false && "invalid statement type");
+				throw std::runtime_error("Construction of statement context does not yet support this type of statement");
 				break;
 		}
 	}
@@ -180,8 +124,7 @@ namespace warbler
 				break;
 
 			default:
-				assert(false && "invalid statement type");
-				break;
+				throw std::runtime_error("Statement destruction does not yet support this type of statement");
 		}
 	}
 }

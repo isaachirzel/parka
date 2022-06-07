@@ -968,7 +968,7 @@ namespace warbler
 
 		token.increment();
 
-		Array<Box<StatementSyntax>> statements;
+		Array<StatementSyntax> statements;
 
 		while (token.type() != TokenType::RightBrace)
 		{
@@ -1352,21 +1352,19 @@ namespace warbler
 
 		token.increment();
 
-		Optional<TypeAnnotationSyntax> type;
 
-		if (token.type() == TokenType::Colon)
-		{
+		if (token.type() != TokenType::Colon)
+			return VariableSyntax(name, is_mutable);
+		
 			token.increment();
 
-			auto res = parse_type_annotation(token);
+		auto type = parse_type_annotation(token);
 
-			if (!res)
-				return {};
+		if (!type)
+			return {};
 
-			type = res.unwrap();
-		}
 
-		return VariableSyntax(name, std::move(type), is_mutable);
+		return VariableSyntax(name, type.unwrap(), is_mutable);
 	}
 
 	Result<ModuleSyntax> parse_module(const File& file)

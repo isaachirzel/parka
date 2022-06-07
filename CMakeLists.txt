@@ -13,7 +13,7 @@ else()
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		add_compile_options(-fdiagnostics-color=always)
 	endif()
-	add_compile_options(-Wall -Wextra -pedantic)
+	add_compile_options(-Wall -Wextra -pedantic -Werror=return-type)
 endif()
 
 if (WIN32)

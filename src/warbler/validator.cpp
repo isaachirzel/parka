@@ -4,20 +4,6 @@
 
 namespace warbler
 {
-	bool validate_unique_symbol(const Token& token, const String& symbol, GlobalSymbolTable& symbols)
-	{
-		auto *previous_declaration = symbols.find(symbol);
-
-		if (previous_declaration)
-		{
-			print_error(token, "The symbol '" + symbol + "' is already in use.");
-			// TODO: show previous declaration
-			return false;
-		}
-
-		return true;
-	}
-
 	Result<TypeAnnotationContext> validate_type_annotation(const TypeAnnotationSyntax& syntax, GlobalSymbolTable& symbol_table)
 	{
 		auto name = syntax.name().text();
@@ -29,10 +15,16 @@ namespace warbler
 			return {};
 		}
 
+		AnnotationType type;
+
 		switch (symbol->type())
 		{
 			case GlobalSymbolType::Struct:
+				type = AnnotationType::Struct;
+				break;
+
 			case GlobalSymbolType::Primitive:
+				type = AnnotationType::Primitive;
 				break;
 
 			default:
@@ -42,7 +34,7 @@ namespace warbler
 				return {};
 		}
 
-		return TypeAnnotationContext(Array<bool>(), symbol->type(), symbol->index());
+		return TypeAnnotationContext(Array<bool>(), type, symbol->index());
 	}
 
 	Result<MemberContext> validate_struct_member(const MemberSyntax& syntax, GlobalSymbolTable& globals, Array<String>& containing_types)
@@ -73,11 +65,6 @@ namespace warbler
 		auto identifier = syntax.name().text();
 		auto symbol = symbols.get_symbol(identifier);
 		bool success = true;
-
-		// TODO: potentially have this return false immediately as it could cause false positives with the other previously declared symbol
-		// Example: the containing types could be incorrectly flagged as an error due to same names
-		if (!validate_unique_symbol(syntax.name(), symbol, symbols))
-			success = false;
 
 		containing_types.push_back(symbol);
 
@@ -123,7 +110,12 @@ namespace warbler
 
 	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
 	{
-		throw not_implemented();
+		auto type = validate_type_annotation(syntax.type(), globals);
+
+		if (!type)
+			return {};
+
+		return ParameterContext(syntax.name().text(), type.unwrap(), syntax.is_mutable());
 	}
 
 	Result<FunctionSignatureContext> validate_function_signature(const FunctionSignatureSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
@@ -167,9 +159,131 @@ namespace warbler
 		return FunctionSignatureContext(std::move(parameters), std::move(return_type));
 	}
 
+	Result<ExpressionContext> validate_constant(const ConstantSyntax& syntax)
+	{
+		switch (syntax.type())
+		{
+			case ConstantType::Character:
+				return ExpressionContext(ConstantContext(syntax.character()));
+
+			case ConstantType::String:
+				return ExpressionContext(ConstantContext(syntax.string()));
+
+			case ConstantType::Integer:
+				return ExpressionContext(ConstantContext(syntax.integer()));
+
+			case ConstantType::Float:
+				return ExpressionContext(ConstantContext(syntax.floating()));
+
+			case ConstantType::Boolean:
+				return ExpressionContext(ConstantContext(syntax.boolean()));
+		}
+
+		throw std::runtime_error("Invalid constant type");
+	}
+
+	Result<ExpressionContext> validate_expression(const ExpressionSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		switch (syntax.type())
+		{
+			case ExpressionType::Constant:
+				return validate_constant(syntax.constant());
+
+			default:
+				throw std::runtime_error("Validation of this type of expression is not implemented yet");
+		}
+	}
+
+	Result<VariableContext> validate_variable(const VariableSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		auto name = syntax.name().text();
+
+		if (syntax.is_auto_type())
+		{
+			return VariableContext(std::move(name), syntax.is_mutable());
+		}
+
+		auto type = validate_type_annotation(syntax.type(), globals);
+
+		if (!type)
+			return {};
+
+		return VariableContext(std::move(name), type.unwrap(), syntax.is_mutable());
+	}
+
+	Result<StatementContext> validate_declaration_statement(const DeclarationSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		auto var_res = validate_variable(syntax.variable(), globals, locals);
+
+		if (!var_res)
+			return {};
+
+		auto value_res = validate_expression(syntax.value(), globals, locals);
+		
+		if (!value_res)
+			return {};
+
+		auto var = var_res.unwrap();
+
+		if (var.is_auto_type())
+			return StatementContext(DeclarationContext(std::move(var), value_res.unwrap()));
+
+		auto value = value_res.unwrap();
+
+		// TODO: improve this lol
+		const auto& vartype = var.type();
+		const auto& constant = value.constant();
+	
+		if (vartype.type() == AnnotationType::Struct)
+		{				
+			print_error(syntax.variable().name(), "Cannot assign constant to struct.");
+			return {};
+		}
+
+		switch (constant.type())
+		{
+			case ConstantType::Integer:
+				break;
+
+			default:
+				print_error(syntax.variable().name(), "Cannot assign this constant value to integer");
+				return {};
+		}
+
+		return StatementContext(DeclarationContext(std::move(var), std::move(value)));
+	}
+
+
 	Result<BlockStatementContext> validate_block_statement(const BlockStatementSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
 	{
-		throw not_implemented();
+		// TODO: add validation for other things
+
+		auto success = true;
+
+		Array<StatementContext> statements;
+
+		for (const auto& statement : syntax.statements())
+		{
+			if (statement.type() == StatementType::Declaration)
+			{
+				const auto& declaration = statement.declaration();
+
+				auto res = validate_declaration_statement(declaration, globals, locals);
+
+				if (res)
+				{
+					statements.emplace_back(res.unwrap());
+					continue;
+				}
+				
+				success = false;
+			}
+		}
+
+		if (!success)
+			return {};
+
+		return BlockStatementContext(std::move(statements));
 	}
 
 	bool validate_function(const FunctionSyntax& syntax, GlobalSymbolTable& globals)
@@ -183,13 +297,7 @@ namespace warbler
 			return {};
 
 		auto locals = locals_res.unwrap();
-
 		auto success = true;
-
-		// TODO: potentially return false immediately as it could cause false positives with function signature of same name
-		if (!validate_unique_symbol(syntax.name(), symbol, globals))
-			success = false;
-
 		auto signature = validate_function_signature(syntax.signature(), globals, locals);
 
 		if (!signature)
@@ -206,6 +314,7 @@ namespace warbler
 		auto& data = globals.get(symbol);
 		auto index = globals.add_validated_function(FunctionContext(std::move(symbol), signature.unwrap(), body.unwrap()));
 		data.validate(index);
+		return true;
 	}
 
 	Result<ProgramContext> validate(const ProgramSyntax& syntax)
@@ -229,13 +338,17 @@ namespace warbler
 			if (data.is_already_validated())
 				continue;
 
-
 			globals.set_scope_from_symbol(symbol);
 
 			switch (data.type())
 			{
 				case GlobalSymbolType::Struct:
 					success = success && validate_struct(data.struct_syntax(), globals, containing_types);
+					containing_types.clear();
+					break;
+
+				case GlobalSymbolType::Function:
+					success = success && validate_function(data.function_syntax(), globals);
 					break;
 
 				default:
@@ -246,6 +359,6 @@ namespace warbler
 		if (!success)
 			return {};
 
-		return ProgramContext(globals.take_structs(), globals.take_primitives());
+		return ProgramContext(globals.take_structs(), globals.take_primitives(), globals.take_functions());
 	}
 }

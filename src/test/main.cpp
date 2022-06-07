@@ -17,7 +17,8 @@ R"==(
 
 	struct String
 	{
-		length: u64
+		length: u64,
+		data: u8
 	}
 	
 	struct House
@@ -34,7 +35,8 @@ R"==(
 
 	function do_it()
 	{
-		var i = 0;
+		var i: u32 = 0;
+		var wow: u16 = 12;
 	}
 )==";
 

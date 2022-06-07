@@ -153,6 +153,12 @@ namespace warbler
 		Function,
 	};
 
+	enum class AnnotationType
+	{
+		Struct,
+		Primitive
+	};
+
 	enum class LocalSymbolType
 	{
 		Variable,

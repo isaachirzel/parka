@@ -149,6 +149,12 @@ namespace warbler
 		~ConstantSyntax();
 
 		const Token& token() const { return _token; }
+		const auto& character() const { return _character; }
+		const auto& string() const { return _string; }
+		const auto& integer() const { return _integer; }
+		const auto& floating() const { return _floating; }
+		const auto& boolean() const { return _boolean; }
+		const auto& type() const { return _type; }
 
 		ConstantSyntax& operator=(ConstantSyntax&& other);
 		ConstantSyntax& operator=(const ConstantSyntax& other) = delete;
@@ -511,17 +517,23 @@ namespace warbler
 
 	public:
 
-		VariableSyntax(const Token& name, Optional<TypeAnnotationSyntax>&& type, bool is_mutable) :
+		VariableSyntax(const Token& name, bool is_mutable):
+		_name(name),
+		_type(),
+		_is_mutable(is_mutable)
+		{}
+
+		VariableSyntax(const Token& name, TypeAnnotationSyntax&& type, bool is_mutable) :
 		_name(name),
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
 		{}
 
 		bool is_mutable() const { return _is_mutable; }
-		bool is_auto_type() const { return _type.has_value(); }
+		bool is_auto_type() const { return !_type.has_value(); }
 
-		const Token& name() const { return _name; }
-		TypeAnnotationSyntax& type() { return *_type; }
+		const auto& name() const { return _name; }
+		const auto& type() const { assert(_type.has_value()); return *_type; }
 	};
 
 	class StatementSyntax
@@ -555,11 +567,11 @@ namespace warbler
 
 	class BlockStatementSyntax
 	{
-		Array<Box<StatementSyntax>> _statements;
+		Array<StatementSyntax> _statements;
 
 	public:
 
-		BlockStatementSyntax(Array<Box<StatementSyntax>>&& statements) :
+		BlockStatementSyntax(Array<StatementSyntax>&& statements) :
 		_statements(std::move(statements))
 		{}
 
