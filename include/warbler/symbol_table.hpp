@@ -242,8 +242,7 @@ namespace warbler
 	{
 		Table<GlobalSymbolData> _symbols;
 		Array<StructContext> _structs;
-		Array<FunctionContext> _functions;
-		Array<PrimitiveContext> _primitives;
+		Array<FunctionContext> _functions; 
 		Array<String> _current_package;
 	
 		GlobalSymbolTable() = default;
@@ -281,15 +280,14 @@ namespace warbler
 
 		const auto& get_primitive(usize index)
 		{
-			assert(index < _primitives.size());
-			return _primitives[index];
+			assert(index < primitive_count);
+			return primitives[index];
 		}
 
 		auto begin() { return _symbols.begin(); }
 		auto end() { return _symbols.end(); }
 
 		auto&& take_structs() { return std::move(_structs); }
-		auto&& take_primitives() { return std::move(_primitives); }
 		auto&& take_functions() { return std::move(_functions); }
 	};
 

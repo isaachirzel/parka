@@ -130,7 +130,8 @@ namespace warbler
 		{
 			char _character;
 			String _string;
-			u64 _integer;
+			i64 _integer;
+			u64 _uinteger;
 			double _floating;
 			bool _boolean;
 		};
@@ -141,7 +142,8 @@ namespace warbler
 
 		ConstantSyntax(const Token& token, String&& string);
 		ConstantSyntax(const Token& token, char character);
-		ConstantSyntax(const Token& token, u64 integer);
+		ConstantSyntax(const Token& token, i64 integer);
+		ConstantSyntax(const Token& token, u64 uinteger);
 		ConstantSyntax(const Token& token, double floating);
 		ConstantSyntax(const Token& token, bool boolean);
 		ConstantSyntax(ConstantSyntax&&);
@@ -152,6 +154,7 @@ namespace warbler
 		const auto& character() const { return _character; }
 		const auto& string() const { return _string; }
 		const auto& integer() const { return _integer; }
+		const auto& uinteger() const { return _uinteger; }
 		const auto& floating() const { return _floating; }
 		const auto& boolean() const { return _boolean; }
 		const auto& type() const { return _type; }

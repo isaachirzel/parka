@@ -78,16 +78,16 @@ namespace warbler
 				success = false;
 
 			auto member = res.unwrap();
-			auto previous_declaration = members.find(member.name);
+			auto previous_declaration = members.find(member.name());
 
 			if (previous_declaration != members.end())
 			{
-				print_error(syntax.name(), "Member '" + member.name + "' is already declared in struct.");
+				print_error(syntax.name(), "Member '" + member.name() + "' is already declared in struct.");
 				success = false;
 				continue;
 			}
 
-			members.emplace(member.name, std::move(member));
+			members.emplace(member.name(), std::move(member));
 		}
 
 		containing_types.pop_back();
@@ -166,20 +166,24 @@ namespace warbler
 			case ConstantType::Character:
 				return ExpressionContext(ConstantContext(syntax.character()));
 
-			case ConstantType::String:
+			case ConstantType::StringLiteral:
 				return ExpressionContext(ConstantContext(syntax.string()));
 
-			case ConstantType::Integer:
+			case ConstantType::SignedInteger:
 				return ExpressionContext(ConstantContext(syntax.integer()));
+
+			case ConstantType::UnsignedInteger:
+				return ExpressionContext(ConstantContext(syntax.uinteger()));
 
 			case ConstantType::Float:
 				return ExpressionContext(ConstantContext(syntax.floating()));
 
 			case ConstantType::Boolean:
 				return ExpressionContext(ConstantContext(syntax.boolean()));
-		}
 
-		throw std::runtime_error("Invalid constant type");
+			default:
+				throw std::runtime_error("Invalid constant type");
+		}
 	}
 
 	Result<ExpressionContext> validate_expression(const ExpressionSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
@@ -230,24 +234,60 @@ namespace warbler
 
 		auto value = value_res.unwrap();
 
-		// TODO: improve this lol
-		const auto& vartype = var.type();
-		const auto& constant = value.constant();
+		const auto& variable_type = var.type();
+		auto expression_type = value.type_annotation();
 	
-		if (vartype.type() == AnnotationType::Struct)
-		{				
-			print_error(syntax.variable().name(), "Cannot assign constant to struct.");
+		// TODO: Account for primitives
+
+		if (variable_type.type() != expression_type.type())
+		{
+			// TODO: Add syntax hooks to context structs
+			print_error(syntax.variable().name(), "Cannot assign between primitive and struct");
 			return {};
 		}
 
-		switch (constant.type())
+
+		switch (variable_type.type())
 		{
-			case ConstantType::Integer:
+			case AnnotationType::Struct:
+			{
+				auto is_not_same_type = variable_type.index() != expression_type.index();
+
+				if (is_not_same_type)
+				{
+					auto lstruct = globals.get_struct(variable_type.index());
+					auto rstruct = globals.get_struct(expression_type.index());
+
+					print_error(syntax.variable().name(), "Cannot initialize variable of type '" + lstruct.symbol()
+						+ "' with value of type '" + rstruct.symbol() + "'");
+					return {};
+				}
 				break;
+			}
+
+			case AnnotationType::Primitive:
+			{
+				auto left = globals.get_primitive(variable_type.index());
+				auto right = globals.get_primitive(variable_type.index());
+
+				if (left.type() != right.type())
+				{
+					print_error(syntax.variable().name(), "Cannot assign variable of type '" + String(left.type_name())
+						+ "' value of type '" + right.type_name() + "'.");
+					return {};
+				}
+
+				if (right.size() > left.size())
+				{
+					print_error("Assignment of value type '" + String(right.type_name())
+						+ "' to variable of type '" + left.type_name() + "' reduces precision.");
+					return {};
+				}
+				break;
+			}
 
 			default:
-				print_error(syntax.variable().name(), "Cannot assign this constant value to integer");
-				return {};
+				throw std::runtime_error("Invalid type");
 		}
 
 		return StatementContext(DeclarationContext(std::move(var), std::move(value)));
@@ -359,6 +399,6 @@ namespace warbler
 		if (!success)
 			return {};
 
-		return ProgramContext(globals.take_structs(), globals.take_primitives(), globals.take_functions());
+		return ProgramContext(globals.take_structs(), globals.take_functions());
 	}
 }

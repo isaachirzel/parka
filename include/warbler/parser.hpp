@@ -8,7 +8,6 @@ namespace warbler
 {
 	// Expression
 	Result<ExpressionSyntax> parse_additive_expression(Token& token);
-	Result<ExpressionSyntax> parse_additive_expression(Token& token);
 	Result<ExpressionSyntax> parse_bitwise_and_expression(Token& token);
 	Result<ExpressionSyntax> parse_bitwise_or_expression(Token& token);
 	Result<ExpressionSyntax> parse_bitwise_xor_expression(Token& token);

@@ -34,28 +34,96 @@ namespace warbler
         return mangled_symbol;
     }
 
-    String generate_c_type_annotation(const ProgramContext& program, const TypeAnnotationContext& context)
+    String generate_c_primitive_annotation(const PrimitiveContext& primitive)
     {
-        // TODO: generate pointers
-        switch (context.type())
+        switch (primitive.type())
         {
-            case AnnotationType::Struct:
-            {
-                const auto& def = program.structs().at(context.index());
-                auto symbol = mangle_symbol(def.symbol());
-                return symbol;
-            }
+            case PrimitiveType::SignedInteger:
+                switch (primitive.size())
+                {
+                    case 1:
+                        return "int8_t";
+                    case 2:
+                        return "int16_t";
+                    case 4:
+                        return "int32_t";
+                    case 8:
+                        return "int64_t";
+                    default:
+                        break;
+                }
+                throw std::runtime_error("Invalid size for integer literal: "
+                    + std::to_string(primitive.size()));
 
+            case PrimitiveType::UnsignedInteger:
+                switch (primitive.size())
+                {
+                    case 1:
+                        return "uint8_t";
+                    case 2:
+                        return "uint16_t";
+                    case 4:
+                        return "uint32_t";
+                    case 8:
+                        return "uint64_t";
+                    default:
+                        break;
+                }
+                throw std::runtime_error("Invalid size for usigned integer literal: "
+                    + std::to_string(primitive.size()));
+
+            case PrimitiveType::FloatingPoint:
+                switch (primitive.size())
+                {
+                    case 4:
+                        return "float";
+                    case 8:
+                        return "double";
+                    default:
+                        break;
+                }
+                throw std::runtime_error("Invalid size for float literal: "
+                    + std::to_string(primitive.size()));
+
+            case PrimitiveType::Boolean:
+                return "bool";
+
+            case PrimitiveType::Character:
+                return "char";
+
+            default:
+                break;
+        }
+
+        throw std::runtime_error("Primitive annotation generation is not implemented for this type");
+    }
+
+    String generate_c_type_annotation(const TypeAnnotationContext& type_annotation, const ProgramContext& program)
+    {
+        switch (type_annotation.type())
+        {
             case AnnotationType::Primitive:
             {
-                const auto& def = program.primitives().at(context.index());
-                auto symbol = mangle_symbol(def.symbol());
+                assert(type_annotation.index() < primitive_count);
+
+                const auto& primitive = primitives[type_annotation.index()];
+
+                return generate_c_primitive_annotation(primitive);
+            }
+
+            case AnnotationType::Struct:
+            {
+                const auto& strct = program.structs()[type_annotation.index()];
+                auto symbol = mangle_symbol(strct.symbol());
+
                 return symbol;
             }
 
             default:
-                throw std::invalid_argument("Invalid type given to TypeAnnotationContext");
+                break;
         }
+
+        throw std::invalid_argument("Invalid type given to TypeAnnotationContext");
     }
 
     String generate_c_struct_member(const ProgramContext& program, const MemberContext& context)
@@ -65,23 +133,34 @@ namespace warbler
         output.reserve(64);
 
         output += "\n\t";
-        output += generate_c_type_annotation(program, context.type);
+        output += generate_c_type_annotation(context.type(), program);
         output += ' ';
-        output += context.name;
+        output += context.name();
         output += ';';
+
+        return output;
+    }
+
+    String generate_c_struct_declaration(const StructContext& context)
+    {
+        String output;
+
+        output.reserve(32);
+
+        output += "struct ";
+        output += mangle_symbol(context.symbol());
 
         return output;
     }
 
     String generate_c_struct(const StructContext& context, const ProgramContext& program)
     {
-        auto symbol = mangle_symbol(context.symbol());
+        
         String output;
 
         output.reserve(512);
 
-        output += "typedef struct ";
-        output += symbol;
+        output += generate_c_struct_declaration(context);
         output += "\n{";
 
         for (const auto& member : context.members())
@@ -89,68 +168,7 @@ namespace warbler
             output += generate_c_struct_member(program, member.second);
         }
 
-        output += "\n} ";
-        output += symbol;
-        output += ";\n\n";
-
-        return output;
-    }
-
-    String generate_c_primitive(const PrimitiveContext& context)
-    {
-        String output;
-
-        output.reserve(32);
-
-        auto size_text = std::to_string(context.size() * 8);
-
-        switch (context.type())
-        {
-            case PrimitiveType::UnsignedInteger:
-                output += "typedef uint";
-                output += size_text;
-                output += "_t u";
-                output += size_text;
-                output += ";\n";
-                break;
-
-            case PrimitiveType::SignedInteger:
-                output += "typedef int";
-                output += size_text;
-                output += "_t i";
-                output += size_text;
-                output += ";\n";
-                break;
-
-            default:
-                throw std::runtime_error("generation of this type of primitive is not supported yet");
-        }
-
-        return output;
-    }
-
-    String generate_c_type_annotation(const TypeAnnotationContext& type_annotation, const ProgramContext& program)
-    {
-        String output;
-
-        output.reserve(32);
-
-        switch (type_annotation.type())
-        {
-            case AnnotationType::Primitive:
-            {
-                const auto& primitive = program.primitives()[type_annotation.index()];
-
-                output += primitive.symbol();
-                break;
-            }
-
-            case AnnotationType::Struct:
-                const auto& strct = program.structs()[type_annotation.index()];
-
-                output += generate_c_struct(strct, program);
-                break;
-        }
+        output += "\n};\n\n";
 
         return output;
     }
@@ -179,7 +197,7 @@ namespace warbler
             : "void";
 
         output += ' ';
-        output += name;
+        output += mangle_symbol(name);
         output += '(';
 
         bool is_first = true;
@@ -207,7 +225,7 @@ namespace warbler
 
         switch (constant.type())
         {
-            case ConstantType::Integer:
+            case ConstantType::SignedInteger:
                 output += std::to_string(constant.integer());
                 break;
 
@@ -309,20 +327,26 @@ namespace warbler
 
     String generate_c_program(const ProgramContext& program)
     {
-        String output = "#include <stdint.h>\n\n";
+        String output = "#include <stdint.h>\n#include <stdbool.h>\n\n";
 
-        for (const auto& primitive : program.primitives())
+        output += "// Type forward-declarations\n";
+        for (const auto& def : program.structs())
         {
-            output += generate_c_primitive(primitive);
+            output += generate_c_struct_declaration(def);
+            output += ";\n";
         }
 
         output += '\n';
+        
+        output += "// Type definitions\n";
 
         for (const auto& def : program.structs())
         {
             output += generate_c_struct(def, program);
         }
 
+
+        output += "// Function forward-declarations\n";
         // generate forward declarations
         for (const auto& function : program.functions())
         {
@@ -331,6 +355,7 @@ namespace warbler
         }
 
         output += '\n';
+        output += "// Function definitions\n";
 
         for (const auto& function : program.functions())
         {

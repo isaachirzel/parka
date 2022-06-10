@@ -14,6 +14,8 @@ namespace warbler
 				return "parameter";
 			case LocalSymbolType::Variable:
 				return "variable";
+			default:
+				throw std::runtime_error("Invalid local symbol type for type name");
 		}
 
 		return "symbol";
@@ -31,9 +33,10 @@ namespace warbler
 				return "primitive";
 			case GlobalSymbolType::Function:
 				return "function";
-		}
 
-		return "symbol";
+			default:
+				return "symbol";
+		}
 	}
 
 	bool GlobalSymbolTable::add_symbol(GlobalSymbolData&& data)
@@ -62,6 +65,9 @@ namespace warbler
 				case GlobalSymbolType::Function:
 					print_error(data.function_syntax().name(), message);
 					break;
+
+				default:
+					throw std::runtime_error("Invalid type");
 			}
 
 			switch (previous_declaration->type())
@@ -89,26 +95,31 @@ namespace warbler
 	{
 		GlobalSymbolTable table;
 
-		table._primitives = {
-			PrimitiveContext("u8", PrimitiveType::UnsignedInteger, 1),
-			PrimitiveContext("u16", PrimitiveType::UnsignedInteger, 2),
-			PrimitiveContext("u32", PrimitiveType::UnsignedInteger, 4),
-			PrimitiveContext("u64", PrimitiveType::UnsignedInteger, 8),
-		};
+		auto& symbols = table._symbols;
 
-		auto index = 0;
 
-		for (const auto& primitive : table._primitives)
-		{
-			table._symbols.emplace(primitive.symbol(), GlobalSymbolData(primitive.symbol(), index, GlobalSymbolType::Primitive));
-			index += 1;
-		}
+		symbols.emplace("u8", GlobalSymbolData("u8", U8_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("u16", GlobalSymbolData("u16", U16_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("u32", GlobalSymbolData("u32", U32_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("u64", GlobalSymbolData("u64", U64_INDEX, GlobalSymbolType::Primitive));
+
+		symbols.emplace("i8", GlobalSymbolData("i8", I8_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("i16", GlobalSymbolData("i16", I16_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("i32", GlobalSymbolData("i32", I32_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("i64", GlobalSymbolData("i64", I64_INDEX, GlobalSymbolType::Primitive));
+
+		symbols.emplace("f32", GlobalSymbolData("f32", F32_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("f64", GlobalSymbolData("f64", F64_INDEX, GlobalSymbolType::Primitive));
+
+		symbols.emplace("bool", GlobalSymbolData("bool", BOOL_INDEX, GlobalSymbolType::Primitive));
+		symbols.emplace("char", GlobalSymbolData("char", CHAR_INDEX, GlobalSymbolType::Primitive));
 
 		bool success = true;
 
 		for (const auto& package : syntax.packages())
 		{
 			auto scope = package.name() + "::";
+
 			for (const auto& struct_def : package.structs())
 			{
 				auto struct_name = struct_def.name().text();
@@ -185,7 +196,7 @@ namespace warbler
 
 	GlobalSymbolData *GlobalSymbolTable::resolve(const String& identifier)
 	{
-		for (i32 i = (i32)_current_package.size(); i >= 0; --i)
+		for (i32 i = static_cast<i32>(_current_package.size()); i >= 0; --i)
 		{
 			auto symbol = create_symbol(_current_package, i, identifier);
 			auto iter = _symbols.find(symbol);

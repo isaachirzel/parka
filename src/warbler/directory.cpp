@@ -18,18 +18,18 @@ namespace warbler
 
         for (const auto& entry : std::filesystem::directory_iterator(path))
         {
-            const auto& path = entry.path().string();
+            const auto& entrypath = entry.path().string();
 
             if (entry.is_regular_file())
             {
-                if (path.size() >= 5) // at least length of extension + 1 letter e.g. a.wbl
+                if (entrypath.size() >= 5) // at least length of extension + 1 letter e.g. a.wbl
                 {
-                    const char *file_extension = &path[path.size() - 4];
+                    const char *file_extension = &entrypath[entrypath.size() - 4];
 
                     if (strcmp(file_extension, ".wbl"))
                         continue;
 
-                    auto file = File::read(path);
+                    auto file = File::read(entrypath);
 
                     if (!file)
                     {
@@ -42,7 +42,7 @@ namespace warbler
             }
             else if (entry.is_directory())
             {
-                auto res = read(path);
+                auto res = read(entrypath);
 
                 if (!res)
                 {

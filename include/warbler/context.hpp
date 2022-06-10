@@ -15,6 +15,25 @@
 
 namespace warbler
 {
+	enum PrimitiveIndex
+	{
+		UINT_LITERAL_INDEX,
+		U8_INDEX,
+		U16_INDEX,
+		U32_INDEX,
+		U64_INDEX,
+		INT_LITERAL_INDEX,
+		I8_INDEX,
+		I16_INDEX,
+		I32_INDEX,
+		I64_INDEX,
+		FLOAT_LITERAL_INDEX,
+		F32_INDEX,
+		F64_INDEX,
+		BOOL_INDEX,
+		CHAR_INDEX
+	};
+
 	class ConditionalExpressionContext;
 	class BooleanOrExpressionContext;
 	class BooleanAndExpressionContext;
@@ -54,73 +73,6 @@ namespace warbler
 		const auto& index() const { return _index; }
 	};
 
-	class IdentifierContext
-	{
-		String _symbol;
-
-	public:
-
-		IdentifierContext(String && symbol) :
-		_symbol(std::move(symbol))
-		{}
-
-		const auto& symbol() const { return _symbol; }
-	};
-
-	class ExpressionContext
-	{
-		union
-		{
-			ConstantContext *_constant;
-		};
-
-		ExpressionType _type;
-
-	public:
-		
-		ExpressionContext(ConstantContext&& constant);
-		ExpressionContext(ExpressionContext&& other);
-		ExpressionContext(const ExpressionContext&) = delete;
-		~ExpressionContext() = default;
-
-		const auto& type() const { return _type; }
-		const auto& constant() const { assert(_type == ExpressionType::Constant); return *_constant; }
-	};
-
-	class ConstantContext
-	{
-		union
-		{
-			char _character;
-			String _string;
-			u64 _integer;
-			double _floating;
-			bool _boolean;
-		};
-
-		ConstantType _type;
-
-	public:
-
-		ConstantContext(char character);
-		ConstantContext(const String& string);
-		ConstantContext(u64 integer);
-		ConstantContext(double floating);
-		ConstantContext(bool boolean);
-		ConstantContext(ConstantContext&&);
-		ConstantContext(const ConstantContext&) = delete;
-		~ConstantContext();
-
-		const auto& type() const { return _type; }
-		const auto& character() const { return _character; }
-		const auto& string() const { return _string; }
-		const auto& integer() const { return _integer; }
-		const auto& floating() const { return _floating; }
-		const auto& boolean() const { return _boolean; }
-	};
-
-	class TypeContext;
-
 	class TypeAnnotationContext
 	{
 		Array<bool> _ptr_mutability;
@@ -128,6 +80,11 @@ namespace warbler
 		AnnotationType _type;
 
 	public:
+
+		TypeAnnotationContext(usize index):
+		_index(index),
+		_type(AnnotationType::Primitive)
+		{}
 
 		TypeAnnotationContext(Array<bool>&& ptr_info, AnnotationType type, usize index) :
 		_ptr_mutability(std::move(ptr_info)),
@@ -140,17 +97,81 @@ namespace warbler
 		const auto& type() const { return _type; }
 	};
 
+	class ExpressionContext
+	{
+		union
+		{
+			Box<ConstantContext> _constant;
+		};
+
+		ExpressionType _type;
+
+	public:
+		
+		ExpressionContext(ConstantContext&& constant);
+		ExpressionContext(ExpressionContext&& other);
+		ExpressionContext(const ExpressionContext&) = delete;
+		~ExpressionContext();
+
+		const auto& type() const { return _type; }
+		const auto& constant() const { assert(_type == ExpressionType::Constant); return *_constant; }
+		TypeAnnotationContext type_annotation() const;
+	};
+
+	class ConstantContext
+	{
+		union
+		{
+			char _character;
+			String _string;
+			i64 _integer;
+			u64 _uinteger;
+			double _floating;
+			bool _boolean;
+		};
+
+		ConstantType _type;
+
+	public:
+
+		ConstantContext(char character);
+		ConstantContext(const String& string);
+		ConstantContext(i64 integer);
+		ConstantContext(u64 uinteger);
+		ConstantContext(double floating);
+		ConstantContext(bool boolean);
+		ConstantContext(ConstantContext&&);
+		ConstantContext(const ConstantContext&) = delete;
+		~ConstantContext();
+
+		const auto& type() const { return _type; }
+		const auto& character() const { return _character; }
+		const auto& string() const { return _string; }
+		const auto& integer() const { return _integer; }
+		const auto& uinteger() const { return _uinteger; }
+		const auto& floating() const { return _floating; }
+		const auto& boolean() const { return _boolean; }
+		TypeAnnotationContext type_annotation() const;
+		usize index() const;
+	};
+
 	struct MemberContext
 	{
-		String name;
-		TypeAnnotationContext type;
-		bool is_public;
+		String _name;
+		TypeAnnotationContext _type;
+		bool _is_public;
+
+	public:
 
 		MemberContext(String&& name, TypeAnnotationContext&& type, bool is_public) :
-		name(std::move(name)),
-		type(std::move(type)),
-		is_public(is_public)
+		_name(std::move(name)),
+		_type(std::move(type)),
+		_is_public(is_public)
 		{}
+
+		const auto& name() const { return _name; }
+		const auto& type() const { return _type; }
+		const auto& is_public() const { return _is_public; }
 	};
 
 	class StructContext
@@ -171,21 +192,20 @@ namespace warbler
 
 	class PrimitiveContext
 	{
-		const char * _symbol;
 		PrimitiveType _type;
 		u32 _size;
 
 	public:
 
-		PrimitiveContext(const char *symbol, PrimitiveType type, u32 size):
-		_symbol(symbol),
+		PrimitiveContext(PrimitiveType type, usize size = 0):
 		_type(type),
 		_size(size)
 		{}
 
-		const char *symbol() const { return _symbol; }
 		const auto& type() const { return _type; }
 		const auto& size() const { return _size; }
+		const char *type_name() const;
+		bool is_literal() const { return _size == 0; }
 	};
 
 	class VariableContext
@@ -340,21 +360,21 @@ namespace warbler
 	class ProgramContext
 	{
 		Array<StructContext> _structs;
-		Array<PrimitiveContext> _primitives;
 		Array<FunctionContext> _functions;
 
 	public:
 
-		ProgramContext(Array<StructContext>&& structs, Array<PrimitiveContext>&& primitives, Array<FunctionContext>&& functions):
+		ProgramContext(Array<StructContext>&& structs, Array<FunctionContext>&& functions):
 		_structs(std::move(structs)),
-		_primitives(std::move(primitives)),
 		_functions(std::move(functions))
 		{}
 
 		const auto& structs() const { return _structs; }
-		const auto& primitives() const { return _primitives; }
 		const auto& functions() const { return _functions; }
 	};
+
+	extern PrimitiveContext primitives[];
+	extern usize primitive_count;
 }
 
 #endif

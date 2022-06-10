@@ -34,29 +34,35 @@ namespace warbler
 		Error
 	};
 
-	struct LogContext
+	class LogContext
 	{
-		const char * const prompt;
-		const char * const color;
-		const char * const reset;
+		const char* _prompt;
+		const char* _color;
+		const char* _reset;
+
+	public:
 
 		LogContext() :
-		prompt(""),
-		color(""),
-		reset("")
+		_prompt(""),
+		_color(""),
+		_reset("")
 		{}
 
 		LogContext(const char *prompt) :
-		prompt(prompt),
-		color(""),
-		reset("")
+		_prompt(prompt),
+		_color(""),
+		_reset("")
 		{}
 
 		LogContext(const char *prompt, const char *color) :
-		prompt(prompt),
-		color(color),
-		reset(COLOR_RESET)
+		_prompt(prompt),
+		_color(color),
+		_reset(COLOR_RESET)
 		{}
+
+		const char *prompt() const { return _prompt; }
+		const char *color() const { return _color; }
+		const char *reset() const { return _reset; }
 	};
 
 	LogContext get_log_context(LogLevel level)
@@ -71,6 +77,9 @@ namespace warbler
 					return { PROMPT_WARNING, COLOR_PURPLE };
 				case LogLevel::Error:
 					return { PROMPT_ERROR, COLOR_RED };
+
+				default:
+					throw std::runtime_error("Invalid type");
 			}
 		}
 		else
@@ -83,10 +92,10 @@ namespace warbler
 					return { PROMPT_WARNING };
 				case LogLevel::Error:
 					return { PROMPT_ERROR };
+				default:
+					throw std::runtime_error("Invalid type");
 			} 
 		}
-
-		return {};
 	}
 
 	void print_enable_color(bool enabled)
@@ -182,8 +191,8 @@ namespace warbler
 
 				if (is_first_line && i == snippet.start_col())
 				{
-					line_text += context.color;
-					underline_text += context.color;
+					line_text += context.color();
+					underline_text += context.color();
 					should_underline = true;
 				}
 
@@ -202,8 +211,8 @@ namespace warbler
 
 				if (is_last_line && i == snippet.end_col())
 				{
-					line_text += context.reset;
-					underline_text += context.reset;
+					line_text += context.reset();
+					underline_text += context.reset();
 					should_underline = false;
 				}
 			}
@@ -252,7 +261,7 @@ namespace warbler
 
 	static inline void print_message(const LogContext& context, const String& msg)
 	{
-		output_stream << context.color << context.prompt << context.reset << msg << '\n';
+		output_stream << context.color() << context.prompt() << context.reset() << msg << '\n';
 	}
 
 	static void print_message(LogLevel level, const Snippet& snippet, const String& msg)

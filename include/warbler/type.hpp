@@ -5,8 +5,7 @@ namespace warbler
 {
 	enum class TypeDefinitionType
 	{
-		Struct,
-		Primitive
+		Struct
 	};
 
 	enum class AssignmentType
@@ -59,11 +58,10 @@ namespace warbler
 	{
 		SignedInteger,
 		UnsignedInteger,
-		Binary,
-		Float,
-		Bool,
-		Char,
-		Str
+		FloatingPoint,
+		Boolean,
+		Character,
+		StringLiteral
 	};
 
 	enum class ExpressionType
@@ -95,8 +93,9 @@ namespace warbler
 	enum class ConstantType
 	{
 		Character,
-		String,
-		Integer,
+		StringLiteral,
+		SignedInteger,
+		UnsignedInteger,
 		Float,
 		Boolean
 	};

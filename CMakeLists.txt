@@ -2,10 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project("warbler")
 
 set(MAIN_PROGRAM "warble")
-set(INCLUDE_DIRS
-	"include"
-	"lib/c-utils/include"
-)
+set(INCLUDE_DIRS "include")
 
 if (MSVC)
 	add_compile_options(/W4)
@@ -13,7 +10,7 @@ else()
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		add_compile_options(-fdiagnostics-color=always)
 	endif()
-	add_compile_options(-Wall -Wextra -pedantic -Werror=return-type)
+	add_compile_options(-Wall -Wextra -pedantic -Werror=return-type -Wstrict-aliasing -fmax-errors=5 -Wunreachable-code -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option)
 endif()
 
 if (WIN32)

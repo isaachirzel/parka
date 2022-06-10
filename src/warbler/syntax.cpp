@@ -1,5 +1,7 @@
 #include <warbler/syntax.hpp>
 
+#include <stdexcept>
+
 namespace warbler
 {
 	ConstantSyntax::ConstantSyntax(const Token& token, char character) :
@@ -11,13 +13,19 @@ namespace warbler
 	ConstantSyntax::ConstantSyntax(const Token& token, String&& string) :
 	_token(token),
 	_string(std::move(string)),
-	_type(ConstantType::String)
+	_type(ConstantType::StringLiteral)
 	{}
 
-	ConstantSyntax::ConstantSyntax(const Token& token, u64 integer) :
+	ConstantSyntax::ConstantSyntax(const Token& token, i64 integer) :
 	_token(token),
 	_integer(integer),
-	_type(ConstantType::Integer)
+	_type(ConstantType::SignedInteger)
+	{}
+
+	ConstantSyntax::ConstantSyntax(const Token& token, u64 uinteger) :
+	_token(token),
+	_uinteger(uinteger),
+	_type(ConstantType::SignedInteger)
 	{}
 
 	ConstantSyntax::ConstantSyntax(const Token& token, double floating) :
@@ -42,12 +50,16 @@ namespace warbler
 				_character = other._character;
 				break;
 
-			case ConstantType::String:
+			case ConstantType::StringLiteral:
 				new(&_string) auto(std::move(other._string));
 				break;
 
-			case ConstantType::Integer:
+			case ConstantType::SignedInteger:
 				_integer = other._integer;
+				break;
+
+			case ConstantType::UnsignedInteger:
+				_uinteger = other._uinteger;
 				break;
 
 			case ConstantType::Float:
@@ -57,12 +69,15 @@ namespace warbler
 			case ConstantType::Boolean:
 				_boolean = other._boolean;
 				break;
+
+			default:
+				throw std::runtime_error("Invalid type");
 		}
 	}
 
 	ConstantSyntax::~ConstantSyntax()
 	{
-		if (_type == ConstantType::String)
+		if (_type == ConstantType::StringLiteral)
 			_string.~basic_string();
 	}
 
@@ -215,6 +230,9 @@ namespace warbler
 			_symbol = other._symbol;
 			other._symbol = nullptr;
 			break;
+
+		default:
+			throw std::runtime_error("Invalid type");
 		}
 	}
 
@@ -270,6 +288,9 @@ namespace warbler
 		case ExpressionType::Symbol:
 			delete _symbol;
 			break;
+
+		default:
+			break;
 		}
 	}
 
@@ -308,6 +329,8 @@ namespace warbler
 			case PostfixType::Member:
 				new (&_member) auto(std::move(other._member));
 				break;
+			default:
+				throw std::runtime_error("Invalid type");
 		}
 	}
 
@@ -325,6 +348,9 @@ namespace warbler
 
 			case PostfixType::Member:
 				_member.~Token();
+				break;
+
+			default:
 				break;
 		}
 	}
@@ -383,6 +409,9 @@ namespace warbler
 				_iff = other._iff;
 				other._iff = nullptr;
 				break;
+
+			default:
+				throw std::runtime_error("Invalid type");
 		}
 	}
 
@@ -409,7 +438,9 @@ namespace warbler
 			case StatementType::If:
 				delete _iff;
 				break;
-			}
+			default:
+				break;
+		}
 	}
 
 	IfStatementSyntax::IfStatementSyntax(ExpressionSyntax&& condition, BlockStatementSyntax&& then_body) :
@@ -450,6 +481,9 @@ namespace warbler
 				_else_if = other._else_if;
 				other._else_if = nullptr;
 				break;
+
+			default:
+				throw std::runtime_error("Invalid type");
 		}
 	}
 
@@ -480,6 +514,9 @@ namespace warbler
 			case TypeDefinitionType::Struct:
 				new (&_struct) auto(std::move(other._struct));
 				break;
+
+			default:
+				throw std::runtime_error("Invalid type");
 		}
 	}
 
@@ -490,6 +527,9 @@ namespace warbler
 			case TypeDefinitionType::Struct:
 				_struct.~StructSyntax();
 				break;			
+
+			default:
+				break;
 		}
 	}
 }

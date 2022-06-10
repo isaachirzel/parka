@@ -238,6 +238,9 @@ namespace warbler
 						if (match_str(text + 2, "pe"))
 							return TokenType::KeywordType;
 						break;
+
+					default:
+						break;
 				}
 				break;
 
@@ -687,10 +690,10 @@ namespace warbler
 			case TokenType::KeywordVar:
 			case TokenType::KeywordWhile:
 				return "keyword";
-		}
 
-		assert(false && "invalid prefix type");
-		return nullptr;
+			default:
+				throw std::runtime_error("Invalid type");
+		}
 	}
 
 	Token::operator String() const

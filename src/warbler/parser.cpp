@@ -1301,8 +1301,6 @@ namespace warbler
 	{
 		Array<PtrSyntax> ptr_mutability;
 
-		const Token start_token = token;
-
 		while (token.type() == TokenType::Asterisk)
 		{
 			token.increment();
@@ -1356,7 +1354,7 @@ namespace warbler
 		if (token.type() != TokenType::Colon)
 			return VariableSyntax(name, is_mutable);
 		
-			token.increment();
+		token.increment();
 
 		auto type = parse_type_annotation(token);
 
