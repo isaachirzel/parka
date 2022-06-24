@@ -81,9 +81,14 @@ namespace warbler
 			_string.~basic_string();
 	}
 
+	ExpressionSyntax::ExpressionSyntax(AssignmentSyntax&& e) :
+	_assignment(new AssignmentSyntax(std::move(e))),
+	_type(ExpressionType::Assignment)
+	{}
+
 	ExpressionSyntax::ExpressionSyntax(ConditionalExpressionSyntax&& conditional) :
 	_conditional(new ConditionalExpressionSyntax(std::move(conditional))),
-	_type(ExpressionType::conditional)
+	_type(ExpressionType::Conditional)
 	{}
 
 	ExpressionSyntax::ExpressionSyntax(BooleanOrExpressionSyntax&& boolean_or) :
@@ -166,7 +171,11 @@ namespace warbler
 	{
 		switch (_type)
 		{
-		case ExpressionType::conditional:
+		case ExpressionType::Assignment:
+			_assignment = other._assignment;
+			other._assignment = nullptr;
+			break;
+		case ExpressionType::Conditional:
 			_conditional = other._conditional;
 			other._conditional = nullptr;
 			break;
@@ -240,7 +249,10 @@ namespace warbler
 	{
 		switch (_type)
 		{
-		case ExpressionType::conditional:
+		case ExpressionType::Assignment:
+			delete _assignment;
+			break;
+		case ExpressionType::Conditional:
 			delete _conditional;
 			break;
 		case ExpressionType::BooleanOr:
@@ -355,11 +367,6 @@ namespace warbler
 		}
 	}
 
-	StatementSyntax::StatementSyntax(AssignmentSyntax&& assignment) :
-	_assignment(new AssignmentSyntax(std::move(assignment))),
-	_type(StatementType::Assignment)
-	{}
-
 	StatementSyntax::StatementSyntax(ExpressionStatementSyntax&& statement) :
 	_expression(new ExpressionStatementSyntax(std::move(statement))),
 	_type(StatementType::Expression)
@@ -375,39 +382,22 @@ namespace warbler
 	_type(StatementType::Declaration)
 	{}
 
-	StatementSyntax::StatementSyntax(IfStatementSyntax&& if_statement) :
-	_iff(new IfStatementSyntax(std::move(if_statement))),
-	_type(StatementType::If)
-	{}
 
 	StatementSyntax::StatementSyntax(StatementSyntax&& other) :
 	_type(other._type)
 	{
 		switch (_type)
 		{
-			case StatementType::Assignment:
-				_assignment = other._assignment;
-				other._assignment = nullptr;
-				break;
-
 			case StatementType::Expression:
-				_expression = other._expression;
-				other._expression = nullptr;
+				new (&_expression) auto(std::move(other._expression));
 				break;
 
 			case StatementType::Block:
-				_block = other._block;
-				other._block = nullptr;
+				new (&_block) auto(std::move(other._block));
 				break;
 
 			case StatementType::Declaration:
-				_declaration = other._declaration;
-				other._declaration = nullptr;
-				break;
-
-			case StatementType::If:
-				_iff = other._iff;
-				other._iff = nullptr;
+				new (&_declaration) auto(std::move(other._declaration));
 				break;
 
 			default:
@@ -419,25 +409,18 @@ namespace warbler
 	{
 		switch (_type)
 		{
-			case StatementType::Assignment:
-				delete _assignment;
-				break;
-				
 			case StatementType::Expression:
-				delete _expression;
+				_expression.~Box();
 				break;
 				
 			case StatementType::Block:
-				delete _block;
+				_block.~Box();
 				break;
 				
 			case StatementType::Declaration:
-				delete _declaration;
+				_declaration.~Box();
 				break;
-				
-			case StatementType::If:
-				delete _iff;
-				break;
+			
 			default:
 				break;
 		}

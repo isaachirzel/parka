@@ -215,7 +215,7 @@ namespace warbler
 		return VariableContext(std::move(name), type.unwrap(), syntax.is_mutable());
 	}
 
-	Result<StatementContext> validate_declaration_statement(const DeclarationSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<DeclarationContext> validate_declaration_statement(const DeclarationSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
 	{
 		auto var_res = validate_variable(syntax.variable(), globals, locals);
 
@@ -230,7 +230,7 @@ namespace warbler
 		auto var = var_res.unwrap();
 
 		if (var.is_auto_type())
-			return StatementContext(DeclarationContext(std::move(var), value_res.unwrap()));
+			return DeclarationContext(std::move(var), value_res.unwrap());
 
 		auto value = value_res.unwrap();
 
@@ -290,9 +290,18 @@ namespace warbler
 				throw std::runtime_error("Invalid type");
 		}
 
-		return StatementContext(DeclarationContext(std::move(var), std::move(value)));
+		return DeclarationContext(std::move(var), std::move(value));
 	}
 
+	Result<ExpressionStatementContext> validate_expression_statement(const ExpressionStatementSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		auto res = validate_expression(syntax.expression(), globals, locals);
+
+		if (!res)
+			return {};
+
+		return ExpressionStatementContext(res.unwrap());
+	}
 
 	Result<BlockStatementContext> validate_block_statement(const BlockStatementSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
 	{
@@ -304,26 +313,57 @@ namespace warbler
 
 		for (const auto& statement : syntax.statements())
 		{
-			if (statement.type() == StatementType::Declaration)
-			{
-				const auto& declaration = statement.declaration();
+			auto res = validate_statement(statement, globals, locals);
+			
+			success = success && res;
 
-				auto res = validate_declaration_statement(declaration, globals, locals);
-
-				if (res)
-				{
-					statements.emplace_back(res.unwrap());
-					continue;
-				}
-				
-				success = false;
-			}
+			if (res)
+				statements.emplace_back(res.unwrap());
 		}
 
 		if (!success)
 			return {};
 
 		return BlockStatementContext(std::move(statements));
+	}
+
+	Result<StatementContext> validate_statement(const StatementSyntax& statement, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	{
+		switch (statement.type())
+		{
+			case StatementType::Declaration:
+			{
+				auto res = validate_declaration_statement(statement.declaration(), globals, locals);
+
+				if (!res)
+					return {};
+
+				return StatementContext(res.unwrap());
+			}
+
+			case StatementType::Expression:
+			{
+				auto res = validate_expression_statement(statement.expression(), globals, locals);
+
+				if (!res)
+					return {};
+
+				return StatementContext(res.unwrap());
+			}
+
+			case StatementType::Block:
+			{
+				auto res = validate_block_statement(statement.block(), globals, locals);
+
+				if (!res)
+					return {};
+
+				return StatementContext(res.unwrap());
+			}
+
+			default:
+				throw std::runtime_error("Validation for this type of statement is not implemented yet");
+		}
 	}
 
 	bool validate_function(const FunctionSyntax& syntax, GlobalSymbolTable& globals)

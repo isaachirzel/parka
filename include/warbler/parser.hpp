@@ -23,7 +23,8 @@ namespace warbler
 	Result<ExpressionSyntax> parse_bit_shift_expression(Token& token);
 	Result<ExpressionSyntax> parse_symbol(Token& token);
 	Result<ExpressionSyntax> parse_constant(Token& token);
-	inline Result<ExpressionSyntax> parse_expression(Token& token) { return parse_conditional_expression(token); }
+	Result<ExpressionSyntax> parse_assignment(Token& token);
+	inline Result<ExpressionSyntax> parse_expression(Token& token) { return parse_assignment(token); }
 
 	// Function
 	Result<FunctionSyntax> parse_function(Token& token);
@@ -33,7 +34,6 @@ namespace warbler
 	Result<FunctionSignatureSyntax> parse_function_signature(Token& token);
 
 	// Statement
-	Result<AssignmentSyntax> parse_assignment(Token& token);
 	Result<BlockStatementSyntax> parse_block_statement(Token& token);
 	Result<DeclarationSyntax> parse_declaration(Token& token);
 	Result<ExpressionStatementSyntax> parse_expression_statement(Token& token);

@@ -7,6 +7,7 @@
 
 namespace warbler
 {
+	Result<StatementContext> validate_statement(const StatementSyntax& statement, GlobalSymbolTable& globals, LocalSymbolTable& locals);
 	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals);
 	Result<VariableContext> validate_variable(const VariableSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals);
 	bool validate_struct(const StructSyntax& syntax, GlobalSymbolTable& symbols, Array<String>& containing_types);

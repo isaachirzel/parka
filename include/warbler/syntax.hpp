@@ -57,6 +57,7 @@ namespace warbler
 	{
 		union
 		{
+			AssignmentSyntax *_assignment;
 			ConditionalExpressionSyntax *_conditional;
 			BooleanOrExpressionSyntax *_boolean_or;
 			BooleanAndExpressionSyntax *_boolean_and;
@@ -79,6 +80,7 @@ namespace warbler
 	
 	public:
 
+		ExpressionSyntax(AssignmentSyntax&&);
 		ExpressionSyntax(ConditionalExpressionSyntax&&);
 		ExpressionSyntax(BooleanOrExpressionSyntax&&);
 		ExpressionSyntax(BooleanAndExpressionSyntax&&);
@@ -102,7 +104,7 @@ namespace warbler
 		~ExpressionSyntax();
 
 		ExpressionType type() const { return _type; }
-		const ConditionalExpressionSyntax& conditional() const { assert(_type == ExpressionType::conditional); return *_conditional; }
+		const ConditionalExpressionSyntax& conditional() const { assert(_type == ExpressionType::Conditional); return *_conditional; }
 		const BooleanOrExpressionSyntax& boolean_or() const { assert(_type == ExpressionType::BooleanOr); return *_boolean_or; }
 		const BooleanAndExpressionSyntax& boolean_and() const { assert(_type == ExpressionType::BooleanAnd); return *_boolean_and; }
 		const BitwiseOrExpressionSyntax& bitwise_or() const { assert(_type == ExpressionType::BitwiseOr); return *_bitwise_or; }
@@ -543,27 +545,24 @@ namespace warbler
 	{
 		union
 		{
-			AssignmentSyntax *_assignment;
-			ExpressionStatementSyntax *_expression;
-			BlockStatementSyntax *_block;
-			DeclarationSyntax *_declaration;
-			IfStatementSyntax *_iff;
+			Box<ExpressionStatementSyntax> _expression;
+			Box<BlockStatementSyntax> _block;
+			Box<DeclarationSyntax> _declaration;
 		};
 
 		StatementType _type;
 
 	public:
 
-		StatementSyntax(AssignmentSyntax&&);
 		StatementSyntax(ExpressionStatementSyntax&&);
 		StatementSyntax(BlockStatementSyntax&&);
 		StatementSyntax(DeclarationSyntax&&);
-		StatementSyntax(IfStatementSyntax&&);
 		StatementSyntax(StatementSyntax&&);
 		StatementSyntax(const StatementSyntax&) = delete;
 		~StatementSyntax();
 		
 		const auto& type() const { return _type; }
+		const auto& expression() const { assert(_type == StatementType::Expression); return *_expression; }
 		const auto& declaration() const { assert(_type == StatementType::Declaration); return *_declaration; }
 		const auto& block() const { assert(_type == StatementType::Block); return *_block; }
 	};
@@ -627,6 +626,8 @@ namespace warbler
 		ExpressionStatementSyntax(ExpressionSyntax&& expression) :
 		_expression(std::move(expression))
 		{}
+
+		const auto& expression() const { return _expression; }
 	};
 
 	class DeclarationSyntax
@@ -647,17 +648,15 @@ namespace warbler
 
 	class AssignmentSyntax
 	{
-	private:
-
 		ExpressionSyntax _lhs;
-		ExpressionSyntax _RhsSyntax;
+		ExpressionSyntax _rhs;
 		AssignmentType _type;
 
 	public:
 
-		AssignmentSyntax(ExpressionSyntax&& lhs, ExpressionSyntax &&RhsSyntax, AssignmentType type) :
+		AssignmentSyntax(ExpressionSyntax&& lhs, ExpressionSyntax&& rhs, AssignmentType type) :
 		_lhs(std::move(lhs)),
-		_RhsSyntax(std::move(RhsSyntax)),
+		_rhs(std::move(rhs)),
 		_type(type)
 		{}
 	};

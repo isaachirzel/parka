@@ -47,11 +47,9 @@ namespace warbler
 
 	enum class StatementType
 	{
-		Assignment,
 		Expression,
-		Block,
 		Declaration,
-		If
+		Block
 	};
 
 	enum class PrimitiveType
@@ -66,7 +64,8 @@ namespace warbler
 
 	enum class ExpressionType
 	{
-		conditional,
+		Assignment,
+		Conditional,
 		BooleanOr,
 		BooleanAnd,
 		BitwiseOr,

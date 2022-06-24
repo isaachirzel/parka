@@ -5,6 +5,8 @@
 
 namespace warbler
 {
+    String generate_c_statement(const StatementContext& statement, const ProgramContext& program);
+
     static String mangle_symbol(const String& symbol)
     {
         String mangled_symbol;
@@ -114,9 +116,10 @@ namespace warbler
             case AnnotationType::Struct:
             {
                 const auto& strct = program.structs()[type_annotation.index()];
+
                 auto symbol = mangle_symbol(strct.symbol());
 
-                return symbol;
+                return "struct " + symbol;
             }
 
             default:
@@ -263,8 +266,6 @@ namespace warbler
         return output;
     }
 
-    String generate_c_statement(const StatementContext& statement, const ProgramContext& program);
-
     String generate_c_declaration(const DeclarationContext& declaration, const ProgramContext& program)
     {
         String output;
@@ -298,6 +299,19 @@ namespace warbler
         return output;
     }
 
+    String generate_c_expression_statement(const ExpressionStatementContext& statement, const ProgramContext& program)
+    {
+        String output;
+
+        output.reserve(128);
+
+        output += generate_c_expression(statement.expression(), program);
+
+        output += ";\n";
+
+        return output;
+    }
+
     String generate_c_statement(const StatementContext& statement, const ProgramContext& program)
     {
         switch (statement.type())
@@ -307,6 +321,9 @@ namespace warbler
 
             case StatementType::Declaration:
                 return generate_c_declaration(statement.declaration(), program);
+
+            case StatementType::Expression:
+                return generate_c_expression_statement(statement.expression(), program);
 
             default:
                 throw std::runtime_error("Statement generation for this type is not implemented yet");

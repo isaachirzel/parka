@@ -56,6 +56,9 @@ namespace warbler
 	class BlockStatementContext;
 	class DeclarationContext;
 	class ProgramContext;
+	class ExpressionStatementContext;
+	class BlockStatementContext;
+	class DeclarationContext;
 
 	class SymbolContext
 	{
@@ -237,30 +240,26 @@ namespace warbler
 	{
 		union
 		{
-			//Box<AssignmentContext> _assignment;
-			//Box<ExpressionStatementContext> _expression;
+			Box<ExpressionStatementContext> _expression;
 			Box<BlockStatementContext> _block;
 			Box<DeclarationContext> _declaration;
-			// If::Context *_if;
 		};
 
 		StatementType _type;
 
 	public:
 
-		StatementContext(BlockStatementContext&&);
+		StatementContext(BlockStatementContext&& );
 		StatementContext(DeclarationContext&&);
+		StatementContext(ExpressionStatementContext&&);
 		StatementContext(StatementContext&&);
 		StatementContext(const StatementContext&) = delete;
 		~StatementContext();
 
 		const auto& type() const { return _type; }
 		const auto& block() const { assert(_type == StatementType::Block); return *_block; }
+		const auto& expression() const { assert(_type == StatementType::Expression); return *_expression; }
 		const auto& declaration() const { assert(_type == StatementType::Declaration); return *_declaration; }
-	};
-
-	class ExpressionStatementContext
-	{
 	};
 
 	class DeclarationContext
@@ -279,8 +278,17 @@ namespace warbler
 		const auto& value() const { return _value; }
 	};
 
-	class AssignmentContext
+	class ExpressionStatementContext
 	{
+		ExpressionContext _expression;
+
+	public:
+
+		ExpressionStatementContext(ExpressionContext&& expression):
+		_expression(std::move(expression))
+		{}
+
+		const auto& expression() const { return _expression; }
 	};
 
 	class BlockStatementContext

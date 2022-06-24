@@ -199,6 +199,11 @@ namespace warbler
 	_type(StatementType::Declaration)
 	{}
 
+	StatementContext::StatementContext(ExpressionStatementContext&& expression):
+	_expression(std::move(expression)),
+	_type(StatementType::Expression)
+	{}
+
 	StatementContext::StatementContext(StatementContext&& other) :
 	_type(other._type)
 	{
@@ -212,9 +217,12 @@ namespace warbler
 				new (&_declaration) auto(std::move(other._block));
 				break;
 
+			case StatementType::Expression:
+				new (&_expression) auto(std::move(other._expression));
+				break;
+
 			default:
 				throw std::runtime_error("Construction of statement context does not yet support this type of statement");
-				break;
 		}
 	}
 
@@ -228,6 +236,10 @@ namespace warbler
 
 			case StatementType::Declaration:
 				_declaration.~Box();
+				break;
+
+			case StatementType::Expression:
+				_expression.~Box();
 				break;
 
 			default:

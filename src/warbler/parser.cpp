@@ -362,6 +362,7 @@ namespace warbler
 		ExpressionSyntax expression = primary_expression.unwrap();
 
 	parse_postfix:
+
 		switch (token.type())
 		{
 			case TokenType::LeftBracket:
@@ -612,6 +613,74 @@ namespace warbler
 			return lhs.unwrap();
 
 		return ExpressionSyntax(BitShiftExpressionSyntax(lhs.unwrap(), std::move(RhsSyntax)));
+	}
+
+	Result<ExpressionSyntax> parse_assignment(Token& token)
+	{
+		auto lhs = parse_conditional_expression(token);
+
+		if (!lhs)
+			return {};
+
+		AssignmentType type;
+		switch (token.type())
+		{
+			case TokenType::Assign:
+				type = AssignmentType::Become;
+				break;
+
+			case TokenType::MultiplyAssign:
+				type = AssignmentType::Multiply;
+				break;
+
+			case TokenType::DivideAssign:
+				type = AssignmentType::Divide;
+				break;
+
+			case TokenType::ModulusAssign:
+				type = AssignmentType::Modulus;
+				break;
+
+			case TokenType::AddAssign:
+				type = AssignmentType::Add;
+				break;
+
+			case TokenType::SubtractAssign:
+				type = AssignmentType::Subtract;
+				break;
+
+			case TokenType::LeftBitShiftAssign:
+				type = AssignmentType::LeftBitShift;
+				break;
+
+			case TokenType::RightBitShiftAssign:
+				type = AssignmentType::RightBitShift;
+				break;
+
+			case TokenType::BitwiseAndAssign:
+				type = AssignmentType::BitwiseAnd;
+				break;
+
+			case TokenType::BitwiseOrAssign:
+				type = AssignmentType::BitwiseOr;
+				break;
+
+			case TokenType::BitwiseXorAssign:
+				type = AssignmentType::BitwiseXor;
+				break;
+			
+			default:
+				return lhs;
+		}
+
+		token.increment();
+
+		auto rhs = parse_conditional_expression(token);
+
+		if (!rhs)
+			return {};
+
+		return ExpressionSyntax(AssignmentSyntax(lhs.unwrap(), rhs.unwrap(), type));
 	}
 
 	static Result<ExpressionSyntax> parse_character(Token& token)
@@ -883,85 +952,6 @@ namespace warbler
 		return FunctionSignatureSyntax(parameters.unwrap(), type.unwrap());
 	}
 
-	Result<AssignmentSyntax> parse_assignment(Token& token)
-	{
-		token.increment();
-
-		auto lhs = parse_expression(token);
-
-		if (!lhs)
-			return {};
-
-		AssignmentType type;
-		switch (token.type())
-		{
-			case TokenType::Assign:
-				type = AssignmentType::Become;
-				break;
-
-			case TokenType::MultiplyAssign:
-				type = AssignmentType::Multiply;
-				break;
-
-			case TokenType::DivideAssign:
-				type = AssignmentType::Divide;
-				break;
-
-			case TokenType::ModulusAssign:
-				type = AssignmentType::Modulus;
-				break;
-
-			case TokenType::AddAssign:
-				type = AssignmentType::Add;
-				break;
-
-			case TokenType::SubtractAssign:
-				type = AssignmentType::Subtract;
-				break;
-
-			case TokenType::LeftBitShiftAssign:
-				type = AssignmentType::LeftBitShift;
-				break;
-
-			case TokenType::RightBitShiftAssign:
-				type = AssignmentType::RightBitShift;
-				break;
-
-			case TokenType::BitwiseAndAssign:
-				type = AssignmentType::BitwiseAnd;
-				break;
-
-			case TokenType::BitwiseOrAssign:
-				type = AssignmentType::BitwiseOr;
-				break;
-
-			case TokenType::BitwiseXorAssign:
-				type = AssignmentType::BitwiseXor;
-				break;
-
-			default:
-				print_parse_error(token, "expected assignment operator after primary expression");
-				return {};
-		}
-
-		token.increment();
-
-		auto RhsSyntax = parse_expression(token);
-
-		if (!RhsSyntax)
-			return {};
-
-		if (token.type() != TokenType::Semicolon)
-		{
-			print_parse_error(token, "';' after assignment");
-			return {};
-		}
-
-		token.increment();
-
-		return AssignmentSyntax(lhs.unwrap(), RhsSyntax.unwrap(), type);
-	}
-
 	Result<BlockStatementSyntax> parse_block_statement(Token& token)
 	{
 		assert(token.type() == TokenType::LeftBrace);
@@ -1021,8 +1011,6 @@ namespace warbler
 
 	Result<ExpressionStatementSyntax> parse_expression_statement(Token& token)
 	{
-		token.increment();
-
 		auto expression = parse_expression(token);
 
 		if (!expression)
@@ -1030,12 +1018,12 @@ namespace warbler
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			print_parse_error(token, "expected ';' after expression");
+			print_parse_error(token, "';'");
 			return {};
 		}
 
 		token.increment();
-
+		
 		return ExpressionStatementSyntax(expression.unwrap());
 	}
 
@@ -1122,7 +1110,12 @@ namespace warbler
 			// 	return parse_statement<JumpStatementSyntax>(iter);
 
 			default:
-				break;
+				auto res = parse_expression_statement(token);
+
+				if (!res)
+					return {};
+
+				return StatementSyntax(res.unwrap());
 		}
 
 		token.increment();
