@@ -34,6 +34,8 @@ namespace warbler
 		CHAR_INDEX
 	};
 
+	// Expression forward declarations
+	class AssignmentContext;
 	class ConditionalExpressionContext;
 	class BooleanOrExpressionContext;
 	class BooleanAndExpressionContext;
@@ -49,6 +51,7 @@ namespace warbler
 	class PostfixExpressionContext;
 	class PrimaryExpressionContext;
 	class ConstantContext;
+
 	class VariableContext;
 	class ParameterContext;
 	class FunctionContext;
@@ -63,17 +66,17 @@ namespace warbler
 	class SymbolContext
 	{
 		usize _index;
-		GlobalSymbolType _type;
+		SymbolType _type;
 
 	public:
 
-		SymbolContext(GlobalSymbolType type, usize index):
+		SymbolContext(SymbolType type, usize index):
 		_index(index),
 		_type(type)
 		{}
 
-		const auto& type() const { return _type; }
 		const auto& index() const { return _index; }
+		const auto& type() const { return _type; }
 	};
 
 	class TypeAnnotationContext
@@ -105,13 +108,17 @@ namespace warbler
 		union
 		{
 			Box<ConstantContext> _constant;
+			Box<SymbolContext> _symbol;
+			Box<AssignmentContext> _assignment;
 		};
 
 		ExpressionType _type;
 
 	public:
 		
+		ExpressionContext(AssignmentContext&& assignment);
 		ExpressionContext(ConstantContext&& constant);
+		ExpressionContext(SymbolContext&& symbol);
 		ExpressionContext(ExpressionContext&& other);
 		ExpressionContext(const ExpressionContext&) = delete;
 		~ExpressionContext();
@@ -119,6 +126,25 @@ namespace warbler
 		const auto& type() const { return _type; }
 		const auto& constant() const { assert(_type == ExpressionType::Constant); return *_constant; }
 		TypeAnnotationContext type_annotation() const;
+	};
+
+	class AssignmentContext
+	{
+		ExpressionContext _lhs;
+		ExpressionContext _rhs;
+		AssignmentType _type;
+
+	public:
+
+		AssignmentContext(ExpressionContext&& lhs, ExpressionContext&& rhs, AssignmentType type):
+		_lhs(std::move(lhs)),
+		_rhs(std::move(rhs)),
+		_type(type)
+		{}
+
+		const auto& lhs() const { return _lhs; }
+		const auto& rhs() const { return _rhs; }
+		const auto& type() const { return _type; }
 	};
 
 	class ConstantContext
@@ -140,7 +166,7 @@ namespace warbler
 		ConstantContext(char character);
 		ConstantContext(const String& string);
 		ConstantContext(i64 integer);
-		ConstantContext(u64 uinteger);
+		ConstantContext(u64 uinteger);	
 		ConstantContext(double floating);
 		ConstantContext(bool boolean);
 		ConstantContext(ConstantContext&&);
@@ -219,14 +245,14 @@ namespace warbler
 
 	public:
 
-		VariableContext(String&& name, bool is_mutable):
-		_name(std::move(name)),
+		VariableContext(const String& name, bool is_mutable):
+		_name(name),
 		_type(),
 		_is_mutable(is_mutable)
 		{}
 
-		VariableContext(String&& name, Optional<TypeAnnotationContext>&& type, bool is_mutable) :
-		_name(std::move(name)),
+		VariableContext(const String& name, TypeAnnotationContext&& type, bool is_mutable) :
+		_name(name),
 		_type(std::move(type)),
 		_is_mutable(is_mutable)
 		{}
@@ -264,17 +290,17 @@ namespace warbler
 
 	class DeclarationContext
 	{
-		VariableContext _variable;
+		usize _variable_index;
 		ExpressionContext _value;
 
 	public:
 
-		DeclarationContext(VariableContext&& variable, ExpressionContext&& value):
-		_variable(std::move(variable)),
+		DeclarationContext(usize variable_index, ExpressionContext&& value):
+		_variable_index(variable_index),
 		_value(std::move(value))
 		{}
 
-		const auto& variable() const { return _variable; }
+		const auto& variable_index() const { return _variable_index; }
 		const auto& value() const { return _value; }
 	};
 
@@ -306,17 +332,17 @@ namespace warbler
 
 	class FunctionSignatureContext
 	{
-		Array<ParameterContext> _parameters;
+		Array<usize> _parameter_indeces;
 		Optional<TypeAnnotationContext> _return_type;
 
 	public:
 
-		FunctionSignatureContext(Array<ParameterContext>&& parameters, Optional<TypeAnnotationContext>&& return_type) :
-		_parameters(std::move(parameters)),
+		FunctionSignatureContext(Array<usize>&& parameter_indeces, Optional<TypeAnnotationContext>&& return_type) :
+		_parameter_indeces(std::move(parameter_indeces)),
 		_return_type(std::move(return_type))
 		{}
 
-		const auto& parameters() const { return _parameters; }
+		const auto& parameter_indeces() const { return _parameter_indeces; }
 		const auto& return_type() const { return _return_type; }		
 	};
 
@@ -346,6 +372,8 @@ namespace warbler
 		String _symbol;
 		FunctionSignatureContext _signature;
 		BlockStatementContext _body;
+		Array<VariableContext> _variables;
+		Array<ParameterContext> _parameters;
 
 	public:
 
@@ -355,9 +383,14 @@ namespace warbler
 		_body(std::move(body))
 		{}
 
+		const auto& parameter_at(usize index) const { return _parameters[index]; }
+		const auto& variable_at(usize index) const { return _variables[index]; }
+
 		const auto& name() const { return _symbol; }
 		const auto& signature() const { return _signature; }
 		const auto& body() const { return _body; }
+		const auto& variables() const { return _variables; }
+		const auto& parameters() const { return _parameters; }
 	};
 
 	struct PackageContext

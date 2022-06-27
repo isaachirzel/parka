@@ -143,6 +143,16 @@ namespace warbler
 		}
 	}
 
+	ExpressionContext::ExpressionContext(AssignmentContext&& assignment):
+	_assignment(std::move(assignment)),
+	_type(ExpressionType::Assignment)
+	{}
+
+	ExpressionContext::ExpressionContext(SymbolContext&& symbol):
+	_symbol(std::move(symbol)),
+	_type(ExpressionType::Symbol)
+	{}
+
 	ExpressionContext::ExpressionContext(ConstantContext&& constant) :
 	_constant(std::move(constant)),
 	_type(ExpressionType::Constant)
@@ -153,8 +163,16 @@ namespace warbler
 	{
 		switch (_type)
 		{
+			case ExpressionType::Assignment:
+				new (&_assignment) auto(std::move(other._assignment));
+				break;
+				
 			case ExpressionType::Constant:
 				new (&_constant) auto(std::move(other._constant));
+				break;
+
+			case ExpressionType::Symbol:
+				new (&_symbol) auto(std::move(other._symbol));
 				break;
 
 			default:
@@ -166,12 +184,20 @@ namespace warbler
 	{
 		switch (_type)
 		{
+			case ExpressionType::Assignment:
+				_assignment.~Box();
+				break;
+
 			case ExpressionType::Constant:
 				_constant.~Box();
 				break;
 
-			default:
+			case ExpressionType::Symbol:
+				_symbol.~Box();
 				break;
+
+			default:
+				throw std::invalid_argument("~ExpressionContext() is not implemented for this type");
 		}
 	}
 
@@ -183,10 +209,8 @@ namespace warbler
 				return _constant->type_annotation();
 
 			default:
-				break;
+				throw std::runtime_error("Type annotation is not implemented for this type");
 		}
-
-		throw std::runtime_error("Type annotation is not implemented for this type");
 	}
 
 	StatementContext::StatementContext(BlockStatementContext&& block) :

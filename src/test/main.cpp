@@ -14,30 +14,11 @@
 
 const char *src =
 R"==(
-
-	struct String
-	{
-		length: u64,
-		data: u8
-	}
-	
-	struct House
-	{
-		owner: String
-	}
-
-	struct Person
-	{
-		age: u32,
-		home: House,
-		sq_footage: String
-	}
-
 	function do_it()
 	{
 		var i: u32 = 0;
 		var wow: u16 = 12;
-		12;
+		i = 12;
 	}
 )==";
 

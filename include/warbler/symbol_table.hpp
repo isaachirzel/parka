@@ -21,199 +21,71 @@ namespace warbler
 		Invalid
 	};
 
-	enum class LocalSymbolState
-	{
-		Initialized,
-		Destroyed
-	};
-
-	class LocalSymbolData
-	{
-		union
-		{
-			const VariableSyntax *_variable_syntax;
-			const ParameterSyntax *_parameter_syntax;
-		};
-
-		String _name;
-		usize _index = 0;
-		LocalSymbolType _type;
-		LocalSymbolState _state = LocalSymbolState::Initialized;
-		ValidationStatus _validation = ValidationStatus::NotYetValidated;
-
-	public:
-
-		LocalSymbolData(const VariableSyntax& syntax):
-		_variable_syntax(&syntax),
-		_name(syntax.name().text()),
-		_type(LocalSymbolType::Variable)
-		{}
-
-		LocalSymbolData(const ParameterSyntax& syntax):
-		_parameter_syntax(&syntax),
-		_name(syntax.name().text()),
-		_type(LocalSymbolType::Parameter)
-		{}
-
-		void validate(usize index)
-		{
-			_index = index;
-			_validation = ValidationStatus::Valid;
-		}
-		
-		void invalidate()
-		{
-			_validation = ValidationStatus::Invalid;
-		}
-
-		const auto& name() const { return _name; }
-		const auto& parameter_syntax() const { assert(_type == LocalSymbolType::Parameter); return *_parameter_syntax; }
-		const auto& variable_syntax() const { assert(_type == LocalSymbolType::Variable); return *_variable_syntax; }
-
-		bool is_already_validated() const { return _validation != ValidationStatus::NotYetValidated; }
-		bool is_not_yet_validated() const { return _validation == ValidationStatus::NotYetValidated; }
-		bool is_valid() const { return _validation == ValidationStatus::Valid; }
-		bool is_invalid() const { return _validation == ValidationStatus::Invalid; }
-	};
-
-	class LocalSymbolTable;
-
-	class BlockSymbolTable
-	{
-		Array<Box<BlockSymbolTable>> _blocks;
-		Table<LocalSymbolData> _symbols;
-
-		bool add_variable(const VariableSyntax& variable, LocalSymbolTable& locals, Array<BlockSymbolTable*>& scope);
-		
-		void add_block(BlockSymbolTable&& table)
-		{
-			_blocks.emplace_back(std::move(table));
-		};
-
-	public:
-
-		BlockSymbolTable() = default;
-		BlockSymbolTable(BlockSymbolTable&& other) = default;
-		BlockSymbolTable(const BlockSymbolTable&) = delete;
-
-		static Result<BlockSymbolTable> generate(const BlockStatementSyntax& syntax, LocalSymbolTable& locals, Array<BlockSymbolTable*>& scope);
-
-		LocalSymbolData *at(const String& name)
-		{
-			auto iter = _symbols.find(name);
-
-			return iter != _symbols.end()
-				? &iter->second
-				: nullptr;
-		}
-
-		BlockSymbolTable& at(usize index)
-		{
-			assert(index < _blocks.size());
-			return *_blocks[index];
-		}
-
-		BlockSymbolTable& operator=(const BlockSymbolTable&) = delete;
-		BlockSymbolTable& operator=(BlockSymbolTable&&) = default;
-	};
-
-	class LocalSymbolTable
-	{
-		Table<LocalSymbolData> _symbols; // Parameters
-		BlockSymbolTable _block_symbols;
-		Array<usize> _scope;
-		Array<VariableContext> _variables;
-		Array<ParameterContext> _parameters;
-
-		LocalSymbolTable() = default;
-
-		bool add_parameter(const ParameterSyntax& parameter);
-
-	public:
-
-		static Result<LocalSymbolTable> generate(const FunctionSyntax& syntax);
-
-		void push_scope(usize scope_index) { _scope.push_back(scope_index); }
-		void pop_scope() { _scope.pop_back(); }
-
-		usize add_validated_variable(VariableContext&& variable)
-		{
-			auto index = _variables.size();
-			_variables.emplace_back(std::move(variable));
-			return index;
-		}
-
-		usize add_validated_parameter(ParameterContext&& parameter)
-		{
-			auto index = _parameters.size();
-			_parameters.emplace_back(std::move(parameter));
-			return index;
-		}
-
-		LocalSymbolData *resolve(const String& name);
-		LocalSymbolData *find_parameter(const String& name)
-		{
-			auto iter = _symbols.find(name);
-
-			return iter != _symbols.end()
-				? &iter->second
-				: nullptr;
-		}
-		LocalSymbolData& get(const String& symbol) { return _symbols.at(symbol); }
-
-		auto begin() { return _symbols.begin(); }
-		auto end() { return _symbols.end(); }
-
-		auto&& take_parameters() { return std::move(_parameters); }
-		auto&& take_variables() { return std::move(_variables); }
-	};
-
-	class GlobalSymbolData
+	class SymbolData
 	{
 		union
 		{
 			const StructSyntax *_struct_syntax;
 			const FunctionSyntax *_function_syntax;
+			const VariableSyntax *_variable_syntax;
+			const ParameterSyntax *_parameter_syntax;
 		};
 
 		String _symbol;
 		usize _index = 0;
-		GlobalSymbolType _type;
+		SymbolType _type;
 		ValidationStatus _validation = ValidationStatus::NotYetValidated;
+		bool _is_destroyed = false;
+
+	private:
+
+		SymbolData(const String& symbol):
+		_symbol(symbol),
+		_type(SymbolType::Package),
+		_validation(ValidationStatus::Valid)
+		{}
 
 	public:
 
-		static GlobalSymbolData package(const String& symbol)
+		static SymbolData package(const String& symbol)
 		{
-			return GlobalSymbolData(symbol, 0, GlobalSymbolType::Package);
+			return SymbolData(symbol);
 		}
 
-		GlobalSymbolData(const String& symbol, const StructSyntax& syntax): _struct_syntax(&syntax), _symbol(symbol), _type(GlobalSymbolType::Struct) {}
-		GlobalSymbolData(const String& symbol, const FunctionSyntax& syntax): _function_syntax(&syntax), _symbol(symbol), _type(GlobalSymbolType::Function) {}
-		GlobalSymbolData(const String& symbol, usize index, GlobalSymbolType symbol_type):
+		SymbolData(const String& symbol, const StructSyntax& syntax):
+		_struct_syntax(&syntax),
+		_symbol(symbol),
+		_type(SymbolType::Struct)
+		{}
+
+		SymbolData(const String& symbol, const FunctionSyntax& syntax):
+		_function_syntax(&syntax),
+		_symbol(symbol),
+		_type(SymbolType::Function)
+		{}
+
+		SymbolData(const VariableSyntax& syntax):
+		_variable_syntax(&syntax),
+		_symbol(syntax.name().text()),
+		_type(SymbolType::Variable)
+		{}
+
+		SymbolData(const ParameterSyntax& syntax):
+		_parameter_syntax(&syntax),
+		_symbol(syntax.name().text()),
+		_type(SymbolType::Parameter)
+		{}
+
+		SymbolData(const char *symbol, usize index, SymbolType type):
 		_symbol(symbol),
 		_index(index),
-		_type(symbol_type),
+		_type(type),
 		_validation(ValidationStatus::Valid)
-		{
-			switch (symbol_type)
-			{
-				case GlobalSymbolType::Struct:
-					_struct_syntax = nullptr;
-					break;
+		{}
 
-				case GlobalSymbolType::Function:
-					_function_syntax = nullptr;
-					break;
-
-				default:
-					break;
-			}
-		}
-
-		GlobalSymbolData(GlobalSymbolData&&) = default;
-		GlobalSymbolData(const GlobalSymbolData&) = default;
-		~GlobalSymbolData() = default;
+		SymbolData(SymbolData&&) = default;
+		SymbolData(const SymbolData&) = default;
+		~SymbolData() = default;
 
 		void invalidate() { _validation = ValidationStatus::Invalid; }
 
@@ -223,31 +95,42 @@ namespace warbler
 			_validation = ValidationStatus::Valid;
 		}
 
-		auto& type() { return _type; }
+		void destroy() { _is_destroyed = true; }
+		void reinitialize() { _is_destroyed = false; }
 
+		const auto& type() { return _type; }
 		const auto& symbol() const { return _symbol; }
-		const auto& index() const { return _index; }
+		const auto& index() const {assert(_validation == ValidationStatus::Valid); return _index; }
 		const auto& type() const { return _type; }
 		const auto& validation_status() const { return _validation; }
 		bool is_already_validated() const { return _validation != ValidationStatus::NotYetValidated; }
 		bool is_not_yet_validated() const { return _validation == ValidationStatus::NotYetValidated; }
 		bool is_valid() const { return _validation == ValidationStatus::Valid; }
 		bool is_invalid() const { return _validation == ValidationStatus::Invalid; }
+		bool is_destroyed() const { return _is_destroyed; }
 
-		const auto& struct_syntax() const { assert(_type == GlobalSymbolType::Struct); return *_struct_syntax; }
-		const auto& function_syntax() const { assert(_type == GlobalSymbolType::Function); return *_function_syntax; }
+		const auto& struct_syntax() const { assert(_type == SymbolType::Struct); return *_struct_syntax; }
+		const auto& function_syntax() const { assert(_type == SymbolType::Function); return *_function_syntax; }
+		const auto& variable_syntax() const { assert(_type == SymbolType::Variable); return *_variable_syntax; }
+		const auto& parameter_syntax() const { assert(_type == SymbolType::Parameter); return *_parameter_syntax; }
+	};
+
+	struct AddSymbolResult
+	{
+		bool success;
+		SymbolData& data;
 	};
 
 	class GlobalSymbolTable
 	{
-		Table<GlobalSymbolData> _symbols;
+		Table<SymbolData> _symbols;
 		Array<StructContext> _structs;
 		Array<FunctionContext> _functions; 
 		Array<String> _current_package;
 	
 		GlobalSymbolTable() = default;
 
-		bool add_symbol(GlobalSymbolData&& data);
+		bool add_symbol(SymbolData&& data);
 
 	public:
 
@@ -260,9 +143,10 @@ namespace warbler
 		String get_symbol(const String& identifier);
 		usize add_validated_struct(StructContext&& struct_def);
 		usize add_validated_function(FunctionContext&& function);
-		GlobalSymbolData *resolve(const String& symbol);
-		GlobalSymbolData& get(const String& symbol) { return _symbols.at(symbol); }
-		GlobalSymbolData *find(const String& symbol)
+
+		SymbolData *resolve(const String& symbol);
+		SymbolData& get(const String& symbol) { return _symbols.at(symbol); }
+		SymbolData *find(const String& symbol)
 		{
 			auto iter = _symbols.find(symbol);
 			auto *ptr = iter != _symbols.end()
@@ -291,7 +175,99 @@ namespace warbler
 		auto&& take_functions() { return std::move(_functions); }
 	};
 
-	String get_symbol_type_name(GlobalSymbolType type);
+	class BlockSymbolTable
+	{		
+	private:
+
+		Table<SymbolData> _symbols;
+
+	public:
+
+		BlockSymbolTable() = default;
+		BlockSymbolTable(BlockSymbolTable&& other) = default;
+		BlockSymbolTable(const BlockSymbolTable&) = delete;
+
+		SymbolData *at(const String& name)
+		{
+			auto iter = _symbols.find(name);
+
+			return iter != _symbols.end()
+				? &iter->second
+				: nullptr;
+		}
+
+		AddSymbolResult add_variable(const VariableSyntax& variable);
+
+		BlockSymbolTable& operator=(const BlockSymbolTable&) = delete;
+		BlockSymbolTable& operator=(BlockSymbolTable&&) = default;
+	};
+
+	class FunctionSymbolTable
+	{
+		Table<SymbolData> _symbols;
+		Array<BlockSymbolTable> _blocks;
+		Array<VariableContext> _variables;
+		Array<ParameterContext> _parameters;
+		GlobalSymbolTable *_globals;
+
+	public:
+
+		FunctionSymbolTable(GlobalSymbolTable& globals):
+		_globals(&globals)
+		{}
+
+		AddSymbolResult add_parameter(const ParameterSyntax& parameter);
+		AddSymbolResult add_variable(const VariableSyntax& syntax)
+		{
+			assert(!_blocks.empty());
+			return _blocks.back().add_variable(syntax);
+		};
+
+		usize add_validated_variable(VariableContext&& variable)
+		{
+			auto index = _variables.size();
+
+			_variables.emplace_back(std::move(variable));
+
+			return index;
+		}
+
+		usize add_validated_parameter(ParameterContext&& parameter)
+		{
+			auto index = _parameters.size();
+
+			_parameters.emplace_back(std::move(parameter));
+
+			return index;
+		}
+
+		SymbolData *find_variable(const String& name);
+		SymbolData *find_parameter(const String& name)
+		{
+			auto iter = _symbols.find(name);
+
+			return iter != _symbols.end()
+				? &iter->second
+				: nullptr;
+		}
+
+		SymbolData *resolve(const String& identifier);
+
+		void push_block() { _blocks.push_back({}); }
+		void pop_block() { _blocks.pop_back(); }
+
+		SymbolData& get(const String& symbol) { return _symbols.at(symbol); }
+
+		auto begin() { return _symbols.begin(); }
+		auto end() { return _symbols.end(); }
+
+		auto&& take_parameters() { return std::move(_parameters); }
+		auto&& take_variables() { return std::move(_variables); }
+
+		GlobalSymbolTable& globals() const { return *_globals; }
+	};
+
+	String get_symbol_type_name(SymbolType type);
 }
 
 #endif

@@ -5,7 +5,7 @@
 
 namespace warbler
 {
-    String generate_c_statement(const StatementContext& statement, const ProgramContext& program);
+    String generate_c_statement(const StatementContext& statement, const ProgramContext& program, const FunctionContext& function);
 
     static String mangle_symbol(const String& symbol)
     {
@@ -189,8 +189,9 @@ namespace warbler
         return output;
     }
 
-    String generate_c_function_signature(const String& name, const FunctionSignatureContext& signature, const ProgramContext& program)
+    String generate_c_function_signature(const FunctionContext& function, const ProgramContext& program)
     {
+        const auto& signature = function.signature();
         String output;
 
         output.reserve(256);
@@ -200,17 +201,20 @@ namespace warbler
             : "void";
 
         output += ' ';
-        output += mangle_symbol(name);
+        output += mangle_symbol(function.name());
         output += '(';
 
         bool is_first = true;
-        for (const auto& parameter : signature.parameters())
+        for (const auto& index : signature.parameter_indeces())
         {
+            auto parameter = function.parameter_at(index);
+
             if (is_first)
             {
                 output += ", ";
                 is_first = false;
             }
+
             output += generate_c_parameter(parameter, program);
         }
 
@@ -239,7 +243,7 @@ namespace warbler
         return output;
     }
 
-    String generate_c_expression(const ExpressionContext& expression, const ProgramContext& program)
+    String generate_c_expression(const ExpressionContext& expression, const ProgramContext& program, const FunctionContext& function)
     {
         switch (expression.type())
         {
@@ -266,21 +270,23 @@ namespace warbler
         return output;
     }
 
-    String generate_c_declaration(const DeclarationContext& declaration, const ProgramContext& program)
+    String generate_c_declaration(const DeclarationContext& declaration, const ProgramContext& program, const FunctionContext& function)
     {
         String output;
 
         output.reserve(127);
 
-        output += generate_c_variable(declaration.variable(), program);
+        const auto& variable = function.variables()[declaration.variable_index()];
+
+        output += generate_c_variable(variable, program);
         output += " = ";
-        output += generate_c_expression(declaration.value(), program);
+        output += generate_c_expression(declaration.value(), program, function);
         output += ";\n";
 
         return output;
     }
 
-    String generate_c_block_statement(const BlockStatementContext& block, const ProgramContext& program)
+    String generate_c_block_statement(const BlockStatementContext& block, const ProgramContext& program, const FunctionContext& function)
     {
         String output;
 
@@ -291,7 +297,7 @@ namespace warbler
         for (const auto& statement : block.statements())
         {
             output += '\t';
-            output += generate_c_statement(statement, program);
+            output += generate_c_statement(statement, program, function);
         }
 
         output += "}\n\n";
@@ -299,31 +305,31 @@ namespace warbler
         return output;
     }
 
-    String generate_c_expression_statement(const ExpressionStatementContext& statement, const ProgramContext& program)
+    String generate_c_expression_statement(const ExpressionStatementContext& statement, const ProgramContext& program, const FunctionContext& function)
     {
         String output;
 
         output.reserve(128);
 
-        output += generate_c_expression(statement.expression(), program);
+        output += generate_c_expression(statement.expression(), program, function);
 
         output += ";\n";
 
         return output;
     }
 
-    String generate_c_statement(const StatementContext& statement, const ProgramContext& program)
+    String generate_c_statement(const StatementContext& statement, const ProgramContext& program, const FunctionContext& function)
     {
         switch (statement.type())
         {
             case StatementType::Block:
-                return generate_c_block_statement(statement.block(), program);
+                return generate_c_block_statement(statement.block(), program, function);
 
             case StatementType::Declaration:
-                return generate_c_declaration(statement.declaration(), program);
+                return generate_c_declaration(statement.declaration(), program, function);
 
             case StatementType::Expression:
-                return generate_c_expression_statement(statement.expression(), program);
+                return generate_c_expression_statement(statement.expression(), program, function);
 
             default:
                 throw std::runtime_error("Statement generation for this type is not implemented yet");
@@ -336,8 +342,8 @@ namespace warbler
 
         output.reserve(1024);
 
-        output += generate_c_function_signature(function.name(), function.signature(), program);
-        output += generate_c_block_statement(function.body(), program);
+        output += generate_c_function_signature(function, program);
+        output += generate_c_block_statement(function.body(), program, function);
 
         return output;
     }
@@ -367,7 +373,7 @@ namespace warbler
         // generate forward declarations
         for (const auto& function : program.functions())
         {
-            output += generate_c_function_signature(function.name(), function.signature(), program);
+            output += generate_c_function_signature(function, program);
             output += ";\n";
         }
 

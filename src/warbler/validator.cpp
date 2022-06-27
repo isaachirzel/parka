@@ -4,6 +4,8 @@
 
 namespace warbler
 {
+	Result<ExpressionContext> validate_expression(const ExpressionSyntax& syntax, FunctionSymbolTable& symbols);
+
 	Result<TypeAnnotationContext> validate_type_annotation(const TypeAnnotationSyntax& syntax, GlobalSymbolTable& symbol_table)
 	{
 		auto name = syntax.name().text();
@@ -11,26 +13,29 @@ namespace warbler
 
 		if (symbol == nullptr)	// couldn't find symbol in context tree
 		{
-			print_error(syntax.name(), "Type '" + name + "' does not exist in this scope");
+			print_error(syntax.name(), "The type '" + symbol->symbol() + "' does not exist this scope.");
 			return {};
 		}
+
+		if (symbol->is_invalid())
+			return {};
 
 		AnnotationType type;
 
 		switch (symbol->type())
 		{
-			case GlobalSymbolType::Struct:
+			case SymbolType::Struct:
 				type = AnnotationType::Struct;
 				break;
 
-			case GlobalSymbolType::Primitive:
+			case SymbolType::Primitive:
 				type = AnnotationType::Primitive;
 				break;
 
 			default:
 				print_error(syntax.name(), "Expected type name, found "
 					+ get_symbol_type_name(symbol->type())
-					+ " '" + name + "'");
+					+ " '" + name + "'.");
 				return {};
 		}
 
@@ -45,7 +50,7 @@ namespace warbler
 
 		if (symbol != nullptr)
 		{
-			if (symbol->type() == GlobalSymbolType::Struct && symbol->is_not_yet_validated())
+			if (symbol->type() == SymbolType::Struct && symbol->is_not_yet_validated())
 			{
 				if (!validate_struct(symbol->struct_syntax(), globals, containing_types))
 					return {};
@@ -74,20 +79,18 @@ namespace warbler
 		{
 			auto res = validate_struct_member(member_syntax, symbols, containing_types);
 
-			if (!res)
-				success = false;
+			success = success && res;
 
 			auto member = res.unwrap();
-			auto previous_declaration = members.find(member.name());
+			auto result = members.emplace(member.name(), std::move(member));
 
-			if (previous_declaration != members.end())
+			success = success && result.second;
+
+			if (!result.second)
 			{
-				print_error(syntax.name(), "Member '" + member.name() + "' is already declared in struct.");
-				success = false;
-				continue;
+				print_error(syntax.name(), "A member with name '" + member.name() + "' is already declared in struct '" + symbol + "'.");
+				// TODO: Show previous declaration
 			}
-
-			members.emplace(member.name(), std::move(member));
 		}
 
 		containing_types.pop_back();
@@ -108,9 +111,9 @@ namespace warbler
 		return success;
 	}
 
-	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<ParameterContext> validate_parameter(const ParameterSyntax& syntax, FunctionSymbolTable& symbols)
 	{
-		auto type = validate_type_annotation(syntax.type(), globals);
+		auto type = validate_type_annotation(syntax.type(), symbols.globals());
 
 		if (!type)
 			return {};
@@ -118,45 +121,51 @@ namespace warbler
 		return ParameterContext(syntax.name().text(), type.unwrap(), syntax.is_mutable());
 	}
 
-	Result<FunctionSignatureContext> validate_function_signature(const FunctionSignatureSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<FunctionSignatureContext> validate_function_signature(const FunctionSignatureSyntax& syntax, FunctionSymbolTable& symbols)
 	{
 		auto success = true;
 
-		Array<ParameterContext> parameters;
+		Array<usize> parameter_indeces;
 
 		for (const auto& parameter_syntax : syntax.parameters())
 		{
-			auto parameter = validate_parameter(parameter_syntax, globals, locals);
+			auto result = symbols.add_parameter(parameter_syntax);
+
+			success = success && result.success;
+
+			auto parameter = validate_parameter(parameter_syntax, symbols);
+
+			success = success && parameter;
 
 			if (!parameter)
 			{
-				success = false;
+				result.data.invalidate();
+
 				continue;
 			}
 
-			parameters.emplace_back(parameter.unwrap());
+			auto index = symbols.add_validated_parameter(parameter.unwrap());
+
+			result.data.validate(index);
+			parameter_indeces.push_back(index);
 		}
 
 		Optional<TypeAnnotationContext> return_type;
 
 		if (syntax.return_type().has_value())
 		{
-			auto res = validate_type_annotation(syntax.return_type().value(), globals);
+			auto res = validate_type_annotation(syntax.return_type().value(), symbols.globals());
 
-			if (!res)
-			{
-				success = false;
-			}
-			else
-			{
+			success = success && res;
+
+			if (res)
 				return_type = res.unwrap();
-			}
 		}
 
 		if (!success)
 			return {};		
 
-		return FunctionSignatureContext(std::move(parameters), std::move(return_type));
+		return FunctionSignatureContext(std::move(parameter_indeces), std::move(return_type));
 	}
 
 	Result<ExpressionContext> validate_constant(const ConstantSyntax& syntax)
@@ -182,120 +191,123 @@ namespace warbler
 				return ExpressionContext(ConstantContext(syntax.boolean()));
 
 			default:
-				throw std::runtime_error("Invalid constant type");
+				throw std::invalid_argument("Invalid constant type");
 		}
 	}
 
-	Result<ExpressionContext> validate_expression(const ExpressionSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<ExpressionContext> validate_symbol(const SymbolSyntax& syntax, FunctionSymbolTable& symbols)
+	{
+		auto symbol = syntax.token().text();
+		auto *symbol_data = symbols.resolve(symbol);
+
+		if (!symbol_data)
+		{
+			print_error(syntax.token(), "The symbol '" + symbol + "' could not be found in this scope.");
+			return {};
+		}
+
+		if (symbol_data->type() == SymbolType::Package)
+		{
+			print_error("Expected valid symbol, got package '" + symbol_data->symbol() + "'.");
+			return {};
+		}
+
+		return ExpressionContext(SymbolContext(symbol_data->type(), symbol_data->index()));
+	}
+
+	Result<ExpressionContext> validate_assignment(const AssignmentSyntax& syntax, FunctionSymbolTable& symbols)
+	{
+		auto lhs = validate_expression(syntax.lhs(), symbols);
+
+		auto success = true;
+
+		success = success && lhs;
+
+		auto rhs = validate_expression(syntax.rhs(), symbols);
+		
+		success = success && rhs;
+
+		if (!success)
+			return {};
+
+		// TODO: validate type of assignment
+
+		return ExpressionContext(AssignmentContext(lhs.unwrap(), rhs.unwrap(), syntax.type()));
+	}
+
+	Result<ExpressionContext> validate_expression(const ExpressionSyntax& syntax, FunctionSymbolTable& symbols)
 	{
 		switch (syntax.type())
 		{
 			case ExpressionType::Constant:
 				return validate_constant(syntax.constant());
 
+			case ExpressionType::Symbol:
+				return validate_symbol(syntax.symbol(), symbols);
+
+			case ExpressionType::Assignment:
+				return validate_assignment(syntax.assignment(), symbols);
+
 			default:
 				throw std::runtime_error("Validation of this type of expression is not implemented yet");
 		}
 	}
 
-	Result<VariableContext> validate_variable(const VariableSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	SymbolData& validate_variable(const VariableSyntax& syntax, FunctionSymbolTable& symbols)
 	{
-		auto name = syntax.name().text();
+		auto result = symbols.add_variable(syntax);
+		auto& symbol_data = result.data;
+
+		if (!result.success)
+		{
+			symbol_data.invalidate();
+			
+			return symbol_data;
+		}
 
 		if (syntax.is_auto_type())
 		{
-			return VariableContext(std::move(name), syntax.is_mutable());
-		}
+			auto index = symbols.add_validated_variable(VariableContext(symbol_data.symbol(), syntax.is_mutable()));
 
-		auto type = validate_type_annotation(syntax.type(), globals);
+			symbol_data.validate(index);
+
+			return symbol_data;
+		}
+			
+		auto type = validate_type_annotation(syntax.type(), symbols.globals());
 
 		if (!type)
-			return {};
+		{
+			symbol_data.invalidate();
+		}
+		else
+		{
+			auto index = symbols.add_validated_variable(VariableContext(symbol_data.symbol(), type.unwrap(), syntax.is_mutable()));
 
-		return VariableContext(std::move(name), type.unwrap(), syntax.is_mutable());
+			symbol_data.validate(index);
+		}
+
+		return symbol_data;
 	}
 
-	Result<DeclarationContext> validate_declaration_statement(const DeclarationSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<DeclarationContext> validate_declaration_statement(const DeclarationSyntax& syntax, FunctionSymbolTable& symbols)
 	{
-		auto var_res = validate_variable(syntax.variable(), globals, locals);
+		auto& variable = validate_variable(syntax.variable(), symbols);
 
-		if (!var_res)
+		if (variable.is_invalid())
 			return {};
 
-		auto value_res = validate_expression(syntax.value(), globals, locals);
+		auto value = validate_expression(syntax.value(), symbols);
 		
-		if (!value_res)
+		if (!value)
 			return {};
 
-		auto var = var_res.unwrap();
-
-		if (var.is_auto_type())
-			return DeclarationContext(std::move(var), value_res.unwrap());
-
-		auto value = value_res.unwrap();
-
-		const auto& variable_type = var.type();
-		auto expression_type = value.type_annotation();
-	
-		// TODO: Account for primitives
-
-		if (variable_type.type() != expression_type.type())
-		{
-			// TODO: Add syntax hooks to context structs
-			print_error(syntax.variable().name(), "Cannot assign between primitive and struct");
-			return {};
-		}
-
-
-		switch (variable_type.type())
-		{
-			case AnnotationType::Struct:
-			{
-				auto is_not_same_type = variable_type.index() != expression_type.index();
-
-				if (is_not_same_type)
-				{
-					auto lstruct = globals.get_struct(variable_type.index());
-					auto rstruct = globals.get_struct(expression_type.index());
-
-					print_error(syntax.variable().name(), "Cannot initialize variable of type '" + lstruct.symbol()
-						+ "' with value of type '" + rstruct.symbol() + "'");
-					return {};
-				}
-				break;
-			}
-
-			case AnnotationType::Primitive:
-			{
-				auto left = globals.get_primitive(variable_type.index());
-				auto right = globals.get_primitive(variable_type.index());
-
-				if (left.type() != right.type())
-				{
-					print_error(syntax.variable().name(), "Cannot assign variable of type '" + String(left.type_name())
-						+ "' value of type '" + right.type_name() + "'.");
-					return {};
-				}
-
-				if (right.size() > left.size())
-				{
-					print_error("Assignment of value type '" + String(right.type_name())
-						+ "' to variable of type '" + left.type_name() + "' reduces precision.");
-					return {};
-				}
-				break;
-			}
-
-			default:
-				throw std::runtime_error("Invalid type");
-		}
-
-		return DeclarationContext(std::move(var), std::move(value));
+		return DeclarationContext(variable.index(), value.unwrap());
 	}
 
-	Result<ExpressionStatementContext> validate_expression_statement(const ExpressionStatementSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<ExpressionStatementContext> validate_expression_statement(const ExpressionStatementSyntax& syntax, FunctionSymbolTable& symbols)
 	{
-		auto res = validate_expression(syntax.expression(), globals, locals);
+		auto res = validate_expression(syntax.expression(), symbols);
 
 		if (!res)
 			return {};
@@ -303,9 +315,9 @@ namespace warbler
 		return ExpressionStatementContext(res.unwrap());
 	}
 
-	Result<BlockStatementContext> validate_block_statement(const BlockStatementSyntax& syntax, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<BlockStatementContext> validate_block_statement(const BlockStatementSyntax& syntax, FunctionSymbolTable& symbols)
 	{
-		// TODO: add validation for other things
+		symbols.push_block();
 
 		auto success = true;
 
@@ -313,7 +325,7 @@ namespace warbler
 
 		for (const auto& statement : syntax.statements())
 		{
-			auto res = validate_statement(statement, globals, locals);
+			auto res = validate_statement(statement, symbols);
 			
 			success = success && res;
 
@@ -321,19 +333,21 @@ namespace warbler
 				statements.emplace_back(res.unwrap());
 		}
 
+		symbols.pop_block();
+
 		if (!success)
 			return {};
 
 		return BlockStatementContext(std::move(statements));
 	}
 
-	Result<StatementContext> validate_statement(const StatementSyntax& statement, GlobalSymbolTable& globals, LocalSymbolTable& locals)
+	Result<StatementContext> validate_statement(const StatementSyntax& statement, FunctionSymbolTable& symbols)
 	{
 		switch (statement.type())
 		{
 			case StatementType::Declaration:
 			{
-				auto res = validate_declaration_statement(statement.declaration(), globals, locals);
+				auto res = validate_declaration_statement(statement.declaration(), symbols);
 
 				if (!res)
 					return {};
@@ -343,7 +357,7 @@ namespace warbler
 
 			case StatementType::Expression:
 			{
-				auto res = validate_expression_statement(statement.expression(), globals, locals);
+				auto res = validate_expression_statement(statement.expression(), symbols);
 
 				if (!res)
 					return {};
@@ -353,7 +367,7 @@ namespace warbler
 
 			case StatementType::Block:
 			{
-				auto res = validate_block_statement(statement.block(), globals, locals);
+				auto res = validate_block_statement(statement.block(), symbols);
 
 				if (!res)
 					return {};
@@ -371,19 +385,15 @@ namespace warbler
 		auto name = syntax.name().text();
 		auto symbol = globals.get_symbol(name);
 
-		auto locals_res = LocalSymbolTable::generate(syntax);
+		FunctionSymbolTable symbols(globals);
 
-		if (!locals_res)
-			return {};
-
-		auto locals = locals_res.unwrap();
 		auto success = true;
-		auto signature = validate_function_signature(syntax.signature(), globals, locals);
+		auto signature = validate_function_signature(syntax.signature(), symbols);
 
 		if (!signature)
 			success = false;
 
-		auto body = validate_block_statement(syntax.body(), globals, locals);
+		auto body = validate_block_statement(syntax.body(), symbols);
 
 		if (!body)
 			success = false;
@@ -393,7 +403,9 @@ namespace warbler
 
 		auto& data = globals.get(symbol);
 		auto index = globals.add_validated_function(FunctionContext(std::move(symbol), signature.unwrap(), body.unwrap()));
+
 		data.validate(index);
+
 		return true;
 	}
 
@@ -422,12 +434,12 @@ namespace warbler
 
 			switch (data.type())
 			{
-				case GlobalSymbolType::Struct:
+				case SymbolType::Struct:
 					success = success && validate_struct(data.struct_syntax(), globals, containing_types);
 					containing_types.clear();
 					break;
 
-				case GlobalSymbolType::Function:
+				case SymbolType::Function:
 					success = success && validate_function(data.function_syntax(), globals);
 					break;
 

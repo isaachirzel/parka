@@ -63,7 +63,7 @@ namespace warbler
 		const T& operator*() const { return _value; }
 		T* operator->() { return &_value; }
 		const T* operator->() const { return &_value; }
-		bool has_value() const { return _has_value; }
+		const auto& has_value() const { return _has_value; }
 		operator bool() const { return _has_value; }
 	};
 }

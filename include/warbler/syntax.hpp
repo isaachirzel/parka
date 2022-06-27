@@ -40,6 +40,8 @@ namespace warbler
 		SymbolSyntax(const Token& token) :
 		_token(token)
 		{}
+
+		const auto& token() const { return _token; }
 	};
 
 	class LabelSyntax
@@ -104,22 +106,23 @@ namespace warbler
 		~ExpressionSyntax();
 
 		ExpressionType type() const { return _type; }
-		const ConditionalExpressionSyntax& conditional() const { assert(_type == ExpressionType::Conditional); return *_conditional; }
-		const BooleanOrExpressionSyntax& boolean_or() const { assert(_type == ExpressionType::BooleanOr); return *_boolean_or; }
-		const BooleanAndExpressionSyntax& boolean_and() const { assert(_type == ExpressionType::BooleanAnd); return *_boolean_and; }
-		const BitwiseOrExpressionSyntax& bitwise_or() const { assert(_type == ExpressionType::BitwiseOr); return *_bitwise_or; }
-		const BitwiseXorExpressionSyntax& bitwise_xor() const { assert(_type == ExpressionType::BitwiseXor); return *_bitwise_xor; }
-		const BitwiseAndExpressionSyntax& bitwise_and() const { assert(_type == ExpressionType::BitwiseAnd); return *_bitwise_and; }
-		const EqualityExpressionSyntax& equality() const { assert(_type == ExpressionType::Equality); return *_equality; }
-		const RelationalExpressionSyntax& relational() const { assert(_type == ExpressionType::Relational); return *_relational; }
-		const BitShiftExpressionSyntax& bit_shift() const { assert(_type == ExpressionType::Shift); return *_shift; }
-		const AdditiveExpressionSyntax& additive() const { assert(_type == ExpressionType::Additive); return *_additive; }
-		const MultiplicativeExpressionSyntax& multiplicative() const { assert(_type == ExpressionType::Multiplicative); return *_multiplicative; }
-		const PrefixExpressionSyntax& prefix() const { assert(_type == ExpressionType::Prefix); return *_prefix; }
-		const PostfixExpressionSyntax& postfix() const { assert(_type == ExpressionType::Postfix); return *_postfix; }
-		const PrimaryExpressionSyntax& primary() const { assert(_type == ExpressionType::Primary); return *_primary; }
-		const ConstantSyntax& constant() const { assert(_type == ExpressionType::Constant); return *_constant; }
-		const SymbolSyntax& symbol() const { assert(_type == ExpressionType::Symbol); return *_symbol; }
+		const auto& assignment() const { assert(_type == ExpressionType::Assignment); return *_assignment; }
+		const auto& conditional() const { assert(_type == ExpressionType::Conditional); return *_conditional; }
+		const auto& boolean_or() const { assert(_type == ExpressionType::BooleanOr); return *_boolean_or; }
+		const auto& boolean_and() const { assert(_type == ExpressionType::BooleanAnd); return *_boolean_and; }
+		const auto& bitwise_or() const { assert(_type == ExpressionType::BitwiseOr); return *_bitwise_or; }
+		const auto& bitwise_xor() const { assert(_type == ExpressionType::BitwiseXor); return *_bitwise_xor; }
+		const auto& bitwise_and() const { assert(_type == ExpressionType::BitwiseAnd); return *_bitwise_and; }
+		const auto& equality() const { assert(_type == ExpressionType::Equality); return *_equality; }
+		const auto& relational() const { assert(_type == ExpressionType::Relational); return *_relational; }
+		const auto& bit_shift() const { assert(_type == ExpressionType::Shift); return *_shift; }
+		const auto& additive() const { assert(_type == ExpressionType::Additive); return *_additive; }
+		const auto& multiplicative() const { assert(_type == ExpressionType::Multiplicative); return *_multiplicative; }
+		const auto& prefix() const { assert(_type == ExpressionType::Prefix); return *_prefix; }
+		const auto& postfix() const { assert(_type == ExpressionType::Postfix); return *_postfix; }
+		const auto& primary() const { assert(_type == ExpressionType::Primary); return *_primary; }
+		const auto& constant() const { assert(_type == ExpressionType::Constant); return *_constant; }
+		const auto& symbol() const { assert(_type == ExpressionType::Symbol); return *_symbol; }
 	};
 
 	class ConstantSyntax
@@ -659,6 +662,10 @@ namespace warbler
 		_rhs(std::move(rhs)),
 		_type(type)
 		{}
+
+		const auto& lhs() const { return _lhs; }
+		const auto& rhs() const { return _rhs; }
+		const auto& type() const { return _type; }
 	};
 
 	class LoopStatementSyntax

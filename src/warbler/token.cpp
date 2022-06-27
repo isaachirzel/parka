@@ -565,7 +565,7 @@ namespace warbler
 				return get_quote_token(file, start_pos);
 
 			default:
-				print_error(Snippet(file, start_pos, 1), "invalid character in text file: '" + file.get_text(start_pos, 1) + "'");
+				print_error(Snippet(file, start_pos, 1), "An invalid character was found in the text file: '" + file.get_text(start_pos, 1) + "'.");
 				abort();
 		}
 	}

@@ -143,22 +143,18 @@ namespace warbler
 		Right
 	};
 
-	enum class GlobalSymbolType
-	{
-		Package,
-		Struct,
-		Primitive,
-		Function,
-	};
-
 	enum class AnnotationType
 	{
 		Struct,
 		Primitive
 	};
 
-	enum class LocalSymbolType
+	enum class SymbolType
 	{
+		Package,
+		Struct,
+		Primitive,
+		Function,
 		Variable,
 		Parameter
 	};
