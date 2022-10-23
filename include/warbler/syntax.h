@@ -112,6 +112,7 @@ typedef struct AdditiveRhsSyntax
 	ExpressionSyntax expr;
 	AdditiveType type;
 } AdditiveRhsSyntax;
+
 typedef struct AdditiveExpressionSyntax
 {
 	ExpressionSyntax lhs;

@@ -167,3 +167,188 @@ void freeProgramSyntax(ProgramSyntax *self)
 
 	deallocate(self->packages);
 }
+
+void freeAdditiveExpressionSyntax(AdditiveExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(&syntax->rhs[i].expr);
+
+	deallocate(syntax->rhs);
+}
+
+void freeBitwiseAndExpressionSyntax(BitwiseAndExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(syntax-> rhs + i);
+
+	deallocate(syntax->rhs);
+}
+
+void freeBitwiseOrExpressionSyntax(BitwiseOrExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(syntax-> rhs + i);
+
+	deallocate(syntax->rhs);
+}
+
+void freeBitwiseXorExpressionSyntax(BitwiseXorExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(syntax-> rhs + i);
+
+	deallocate(syntax->rhs);
+}
+
+void freeBooleanAndExpressionSyntax(BooleanAndExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(syntax-> rhs + i);
+
+	deallocate(syntax->rhs);
+}
+
+void freeBooleanOrExpressionSyntax(BooleanOrExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(syntax-> rhs + i);
+
+	deallocate(syntax->rhs);
+}
+
+void freeConditionalRhsSyntax(ConditionalRhsSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->trueCase);
+	freeExpressionSyntax(&syntax->falseCase);
+}
+
+void freeConditionalExpressionSyntax(ConditionalExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->expression);
+
+	if (syntax->hasRhs)
+		freeConditionalRhsSyntax(&syntax->rhs);
+}
+
+void freeEqualityExpressionSyntax(EqualityExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(&syntax->rhs[i].expr);
+
+	deallocate(syntax->rhs);
+}
+
+void freeMultiplicativeExpressionSyntax(MultiplicativeExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(&syntax->rhs[i].expr);
+
+	deallocate(syntax->rhs);
+}
+
+void freeRelationalExpressionSyntax(RelationalExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(&syntax->rhs[i].expr);
+
+	deallocate(syntax->rhs);
+}
+
+void freeBitShiftExpressionSyntax(BitShiftExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+
+	for (usize i = 0; i < syntax->rhsCount; ++i)
+		freeExpressionSyntax(&syntax->rhs[i].expr);
+
+	deallocate(syntax->rhs);
+}
+
+void freePrefixExpressionSyntax(PrefixExpressionSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->expression);
+}
+
+void freeParameterSyntax(ParameterSyntax *syntax)
+{
+	freeTypeSyntax(&syntax->type);
+}
+
+void freeParameterListSyntax(ParameterListSyntax *syntax)
+{
+	for (usize i = 0; i < syntax->count; ++i)
+		freeParameterSyntax(syntax->data + i);
+		
+	deallocate(syntax->data);
+}
+
+void freeFunctionSyntax(FunctionSyntax *syntax)
+{
+	freeFunctionSignatureSyntax(&syntax->signature);
+	freeBlockStatementSyntax(&syntax->body);
+}
+
+void freeFunctionSignatureSyntax(FunctionSignatureSyntax *syntax)
+{
+	freeParameterListSyntax(&syntax->parameters);
+
+	if (syntax->hasReturnType)
+		freeTypeSyntax(&syntax->returnType);
+}
+
+void freeBlockStatementSyntax(BlockStatementSyntax *syntax)
+{
+	for (usize i = 0; i< syntax->count; ++i)
+		freeStatementSyntax(&syntax->statements[i]);
+}
+
+void freeDeclarationSyntax(DeclarationSyntax *syntax)
+{
+	freeVariableSyntax(&syntax->variable);
+	freeExpressionSyntax(&syntax->value);
+}
+
+void freeVariableSyntax(VariableSyntax *syntax)
+{
+	freeTypeSyntax(&syntax->type);
+}
+
+void freeAssignmentSyntax(AssignmentSyntax *syntax)
+{
+	freeExpressionSyntax(&syntax->lhs);
+	freeExpressionSyntax(&syntax->rhs);
+}
+
+void freeStructSyntax(StructSyntax *syntax)
+{
+	for (usize i = 0; i < syntax->memberCount; ++i)
+		freeMemberSyntax(&syntax->members[i]);
+}
+
+void freeMemberSyntax(MemberSyntax *syntax)
+{
+	freeTypeSyntax(&syntax->type);
+}
+
+void freeTypeSyntax(TypeSyntax *syntax)
+{
+	deallocate(syntax->ptrs);
+}

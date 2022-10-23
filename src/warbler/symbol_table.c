@@ -452,3 +452,10 @@ void symbolTableValidateFunction(SymbolTable *table, SymbolData *data, FunctionC
 
 	symbolDataValidate(data, index);
 }
+
+const StructContext *programStructAt(const ProgramContext *program, usize index)
+{
+	assert(index < program->structCount);
+
+	return program->structs + index;
+}

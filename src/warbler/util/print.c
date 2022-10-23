@@ -293,7 +293,7 @@ void printTokenNote(const Token *token, const char *format, ...)
 
 	printMessage(LOG_NOTE, &snippet, format, args);
 
-	vaEnd(args);
+	va_end(args);
 }
 
 void printTokenWarning(const Token *token, const char *format, ...)
@@ -305,7 +305,7 @@ void printTokenWarning(const Token *token, const char *format, ...)
 
 	printMessage(LOG_WARNING, &snippet, format, args);
 
-	vaEnd(args);
+	va_end(args);
 }
 
 void printTokenError(const Token *token, const char *format, ...)
@@ -317,7 +317,7 @@ void printTokenError(const Token *token, const char *format, ...)
 	
 	printMessage(LOG_ERROR, &snippet, format, args);
 
-	vaEnd(args);
+	va_end(args);
 }
 
 void printNote(const char *format, ...)
@@ -327,7 +327,7 @@ void printNote(const char *format, ...)
 
 	printMessage(LOG_NOTE, NULL, format, args);
 
-	vaEnd(args);
+	va_end(args);
 }
 
 void printWarning(const char *format, ...)
@@ -337,7 +337,7 @@ void printWarning(const char *format, ...)
 
 	printMessage(LOG_WARNING, NULL, format, args);
 
-	vaEnd(args);
+	va_end(args);
 }
 
 void printError(const char *format, ...)
@@ -347,5 +347,25 @@ void printError(const char *format, ...)
 
 	printMessage(LOG_ERROR, NULL, format, args);
 	
-	vaEnd(args);
+	va_end(args);
+}
+
+noreturn void _exitWithError(const char *file, usize line, const char *format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+
+	printf("%s:%zu " COLOR_RED "fatal" COLOR_RESET ": ", file, line);
+	vprintf(format, args);
+
+	va_end(args);
+
+	exit(1);
+}
+
+noreturn void _exitNotImplemented(const char *file, usize line, const char *func)
+{
+	printf("%s:%zu " COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", file, line, func);
+	exit(1);
 }

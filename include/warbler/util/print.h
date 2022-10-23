@@ -9,7 +9,7 @@
 noreturn void _exitWithError(const char *file, usize line, const char *fmt, ...);
 #define exitWithError(fmt, ...) _exitWithError(__FILE__, __LINE__, fmt, __VA_ARGS__)
 
-noreturn void _exitNotImplemented(const char *file, int line, const char *func);
+noreturn void _exitNotImplemented(const char *file, usize line, const char *func);
 #define exitNotImplemented() _exitNotImplemented(__FILE__, __LINE__, __func__)
 
 void enableColorPrinting(bool enabled);
