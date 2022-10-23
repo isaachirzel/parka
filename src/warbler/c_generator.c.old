@@ -1,0 +1,373 @@
+#include <warbler/c_generator.h>
+#include <warbler/type.h>
+#include <warbler/util/print.h>
+#include <warbler/symbol_table.h>
+#include <stdio.h>
+
+void generateCStatement(String *output, const StatementContext *statement, const ProgramContext *program, const FunctionContext *function);
+
+static void stringPushMangledSymbol(String* output, const char *symbol)
+{
+    static char symbolBuffer[1024];
+    usize length = 0;
+
+    for (const char * restrict iter = symbol; *iter; ++iter)
+    {
+        switch (*iter)
+        {
+            case '_':
+                symbolBuffer[length] = '_';
+                symbolBuffer[length + 1] = '_';
+                length += 2;
+                break;
+
+            case ':':
+                iter += 1; // Assuming it's always going to be '::'
+                symbolBuffer[length] = '_';
+                length += 1;
+                break;
+
+            default:
+                symbolBuffer[length] = *iter;
+                length += 1;
+                break;
+        }
+    }
+
+    symbolBuffer[length] = '\0';
+
+    stringPush(output, symbolBuffer);
+}
+
+void generateCPrimitiveAnnotation(String *output, const PrimitiveContext *primitive)
+{
+    switch (primitive->type)
+    {
+        case PRIMITIVE_UNSIGNED_INTEGER:
+            switch (primitive->size)
+            {
+                case 1:
+                    stringPush(output, "uint8T");
+                    break;
+                case 2:
+                    stringPush(output, "uint16T");
+                    break;
+                case 4:
+                    stringPush(output, "uint32T");
+                    break;
+                case 8:
+                    stringPush(output, "uint64T");
+                    break;
+                default:
+                    exitWithError("Invalid size for unsigned integer: %zu", primitive->size);
+            }
+            break;
+
+        case PRIMITIVE_SIGNED_INTEGER:
+            switch (primitive->size)
+            {
+                case 1:
+                    stringPush(output, "int8T");
+                    break;
+                case 2:
+                    stringPush(output, "int16T");
+                    break;
+                case 4:
+                    stringPush(output, "int32T");
+                    break;
+                case 8:
+                    stringPush(output, "int64T");
+                    break;
+                default:
+                    exitWithError("Invalid size for signed integer: %zu", primitive->size);
+            }
+            break;
+
+        case PRIMITIVE_FLOATING_POINT:
+            switch (primitive->size)
+            {
+                case 4:
+                    stringPush(output, "float");
+                    break;
+                case 8:
+                    stringPush(output, "double");
+                    break;
+                default:
+                    exitWithError("Invalid size for float: %zu", primitive->size);
+            }
+            break;
+
+        case PRIMITIVE_BOOLEAN:
+            stringPush(output, "bool");
+            break;
+
+        case PRIMITIVE_CHARACTER:
+            stringPush(output, "char");
+            break;
+
+        case PRIMITIVE_VOID:
+            stringPush(output, "void");
+            break;
+
+        default:
+            exitWithError("Primitive type generation not implemented for PrimitiveType: %d", primitive->type);
+    }
+}
+
+void generateCTypeAnnotation(String *output, const TypeContext *type, const ProgramContext *program)
+{
+    switch (type->type)
+    {
+        case ANNOTATION_PRIMITIVE:
+            assert(type->index < primitiveCount);
+
+            const PrimitiveContext *primitive = primitives + type->index;
+
+            generateCPrimitiveAnnotation(output, primitive);
+            break;
+
+        case ANNOTATION_STRUCT:
+            assert(type->index < program->structCount);
+
+            const StructContext *strct = program->structs + type->index;
+
+            stringPushMangledSymbol(output, strct->symbol);
+            break;
+
+
+        case ANNOTATION_CONSTANT:
+        default:
+            exitWithError("Invalid TypeAnnotationType: %d", type->type);
+    }
+}
+
+void generateCStructMember(String *output, const ProgramContext *program, const MemberContext *member)
+{
+    stringPush(output, "\n\t");
+    generateCTypeAnnotation(output, &member->type, program);
+    stringPushChar(output, ' ');
+    stringPush(output, member->name);
+    stringPushChar(output, ';');
+}
+
+void generateCStructDeclaration(String *output, const StructContext *context)
+{
+    stringPush(output, "struct ");
+    stringPushMangledSymbol(output, context->symbol);
+}
+
+void generateCStruct(String *output, const StructContext *context, const ProgramContext *program)
+{
+    generateCStructDeclaration(output, context);
+    stringPush(output, "\n{");
+
+    for (usize i = 0; i < context->memberCount; ++i)
+    {
+        generateCStructMember(output, program, context->members + i);
+    }
+
+    for (usize i = 0; i < context->memberCount; ++i)
+    {
+        generateCStructMember(output, program, context->members + i);
+    }
+
+    stringPush(output, "\n};\n\n");
+}
+
+void generateCParameter(String *output, const ParameterContext *parameter, const ProgramContext *program)
+{
+    generateCTypeAnnotation(output, &parameter->type, program);
+    stringPushChar(output, ' ');
+    stringPush(output, parameter->name);
+}
+
+void generateCFunctionSignature(String *output, const FunctionContext *function, const ProgramContext *program)
+{
+
+    const FunctionSignatureContext *signature = &function->signature;
+
+    if (signature->hasReturnType)
+    {
+        generateCTypeAnnotation(output, &signature->returnType, program);
+    }
+    else
+    {
+        stringPush(output, "void");
+    }
+
+    stringPushChar(output, ' ');
+    stringPushMangledSymbol(output, function->symbol);
+    stringPushChar(output, '(');
+
+    bool isFirst = true;
+    for (usize i = 0; i < signature->parameterCount; ++i)
+    {
+        usize index = signature->parameterIndeces[i];
+
+        const ParameterContext *parameter = parameterAt(program, index);
+
+        if (isFirst)
+        {
+            stringPush(output, ", ");
+            isFirst = false;
+        }
+
+        generateCParameter(output, parameter, program);
+    }
+
+    stringPushChar(output, ')');
+}
+
+void generateCConstant(String *output, const ConstantContext *constant)
+{
+    static char constantBuffer[256];
+
+    switch (constant->type)
+    {
+        case CONSTANT_INTEGER:
+            sprintf(constantBuffer, "%llu", (unsigned long long)constant->integer);
+            break;
+
+        case CONSTANT_CHARACTER:
+        case CONSTANT_STRING:
+        case CONSTANT_FLOAT:
+        case CONSTANT_BOOLEAN:
+        default:
+            exitWithError("Invalid ConstantType: %d", constant->type);
+    }
+
+    stringPush(output, constantBuffer);
+}
+
+void generateCExpression(String *output, const ExpressionContext *expression, const ProgramContext *program)
+{
+    switch (expression->type)
+    {
+        case EXPRESSION_CONSTANT:
+            generateCConstant(output, expression->constant);
+            break;
+
+        case EXPRESSION_ASSIGNMENT:
+        case EXPRESSION_CONDITIONAL:
+        case EXPRESSION_BOOLEAN_OR:
+        case EXPRESSION_BOOLEAN_AND:
+        case EXPRESSION_BITWISE_OR:
+        case EXPRESSION_BITWISE_XOR:
+        case EXPRESSION_BITWISE_AND:
+        case EXPRESSION_EQUALITY:
+        case EXPRESSION_RELATIONAL:
+        case EXPRESSION_SHIFT:
+        case EXPRESSION_ADDITIVE:
+        case EXPRESSION_MULTIPLICATIVE:
+        case EXPRESSION_POSTFIX:
+        case EXPRESSION_PREFIX:
+        case EXPRESSION_SYMBOL:
+        default:
+            exitWithError("Invalid ExpressionType: %d", expression->type);
+    }
+}
+
+void generateCVariable(String *output, const VariableContext *variable, const ProgramContext *program)
+{
+    generateCTypeAnnotation(output, &variable->type, program);
+    stringPushChar(output, ' ');
+    stringPush(output, variable->name);
+}
+
+void generateCDeclaration(String *output, const DeclarationContext *declaration, const ProgramContext *program)
+{
+    const VariableContext *variable = program->variables + declaration->variableIndex;
+
+    generateCVariable(output, variable, program);
+    stringPush(output, " + ");
+    generateCExpression(output, &declaration->value, program);
+    stringPush(output, ";\n");
+}
+
+void generateCBlockStatement(String *output, const BlockStatementContext *block, const ProgramContext *program, const FunctionContext *function)
+{
+    stringPush(output, "\n{\n");
+
+    for (usize i = 0; i < block->count; ++i)
+    {
+        const StatementContext *statement = block->statements + i;
+
+        stringPushChar(output, '\t');
+        generateCStatement(output, statement, program, function);
+
+    }
+
+    stringPush(output, "}\n\n");
+}
+
+void generateCExpressionStatement(String *output, const ExpressionStatementContext *statement, const ProgramContext *program, const FunctionContext *function)
+{
+    generateCExpression(output, &statement->expression, program);
+    stringPush(output, ";\n");
+}
+
+void generateCStatement(String *output, const StatementContext *statement, const ProgramContext *program, const FunctionContext *function)
+{
+    switch (statement->type)
+    {
+        case STATEMENT_BLOCK:
+            generateCBlockStatement(output, statement->block, program, function);
+            break;
+
+        case STATEMENT_DECLARATION:
+            generateCDeclaration(output, statement->declaration, program);
+            break;
+
+        case STATEMENT_EXPRESSION:
+            generateCExpressionStatement(output, statement->expression, program, function);
+            break;
+
+        default:
+            exitWithError("Invalid StatementType: %d", statement->type);
+    }
+}
+
+void generateCFunction(String *output, const FunctionContext *function, const ProgramContext *program)
+{
+    generateCFunctionSignature(output, function, program);
+    generateCBlockStatement(output, &function->body, program, function);
+}
+
+char *generateCProgram(const ProgramContext *program)
+{
+    String src = stringFrom("#include <stdint.h>\n#include <stdbool.h>\n\n");
+
+    stringPush(&src, "// Type forward-declarations\n");
+
+    for (usize i = 0; i < program->structCount; ++i)
+    {
+        generateCStructDeclaration(&src, program->structs + i);
+        stringPush(&src, ";\n");
+    }
+
+    stringPush(&src, "\n// Type definitions\n");
+
+    for (usize i = 0; i < program->structCount; ++i)
+    {
+        generateCStruct(&src, program->structs + i, program);
+    }
+
+    stringPush(&src, "// Function forward-declarations\n");
+
+    // generate forward declarations
+    for (usize i = 0; i < program->functionCount; ++i)
+    {
+        generateCFunctionSignature(&src, program->functions + i, program);
+        stringPush(&src, ";\n");
+    }
+
+    stringPushChar(&src, '\n');
+    stringPush(&src, "// Function definitions\n");
+
+    for (usize i = 0; i < program->functionCount; ++i)
+    {
+        generateCFunction(&src, program->functions + i, program);
+    }
+
+    return src.data;
+}
