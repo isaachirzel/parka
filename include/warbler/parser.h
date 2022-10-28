@@ -22,17 +22,17 @@ bool parseBitShiftExpression(ExpressionSyntax *out, Token *token);
 bool parseSymbol(ExpressionSyntax *out, Token *token);
 bool parseConstant(ExpressionSyntax *out, Token *token);
 bool parseAssignment(ExpressionSyntax *out, Token *token);
-static inline bool parseExpression(ExpressionSyntax *out, Token *token) { return parseAssignment(out, token); }
+bool parseBlock(ExpressionSyntax *out, Token *token);
+bool parseExpression(ExpressionSyntax *out, Token *token);
 
 // Function
 bool parseFunction(FunctionSyntax *out, Token *token);
-bool parseArguments(ArgumentListSyntax* out, Token *token);
+bool parseArgumentList(ArgumentListSyntax* out, Token *token);
 bool parseParameter(ParameterSyntax *out, Token *token);
 bool parseParameterList(ParameterListSyntax *out, Token *token);
 bool parseFunctionSignature(FunctionSignatureSyntax *out, Token *token);
 
 // Statement
-bool parseBlockStatement(BlockStatementSyntax *out, Token *token);
 bool parseDeclaration(DeclarationSyntax *out, Token *token);
 bool parseIfStatement(IfStatementSyntax *out, Token *token);
 bool parseStatement(StatementSyntax *out, Token *token);

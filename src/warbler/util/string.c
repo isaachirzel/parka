@@ -61,3 +61,24 @@ void stringPushChar(String *string, char c)
     string->data[string->length - 1] = c;
     string->data[string->length] = '\0';
 }
+
+StringView stringViewFrom(const char *str, usize pos, usize length)
+{
+    StringView text =
+    {
+        .data = str + pos,
+        length = length
+    };
+
+    return text;
+}
+
+void stringClear(String *string)
+{
+    string->length = 0;
+}
+
+void stringConcat(String *string, const String *text)
+{
+    stringPushCStringN(string, text->data, text->length);
+}

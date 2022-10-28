@@ -20,7 +20,8 @@ File fileRead(const char *filepath);
 File fileFrom(const char *name, const char *text);
 usize fileGetLine(const File *file, usize pos);
 usize fileGetCol(const File *file, usize pos);
-struct StringView getFileText(const File *file, usize pos, usize length);
+char *fileGetText(const File *file, usize pos, usize length);
 char fileGetChar(const File *file, usize index);
+void fileCopyText(const File *file, char *out, usize pos, usize length);
 
 #endif

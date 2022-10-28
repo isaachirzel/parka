@@ -43,6 +43,7 @@ typedef struct SymbolTable
 	usize localSymbolCount;
 	usize localSymbolCapacity;
 	char **packages;
+	usize packageCapacity;
 	usize packageCount;
 
 	StructContext *structs;
@@ -61,6 +62,7 @@ typedef struct AddSymbolResult
 	SymbolData *data;
 } AddSymbolResult;
 
+bool symbolTableGenerateGlobals(SymbolTable *table, const ProgramSyntax *program);
 SymbolData *symbolTableFind(SymbolTable *table, const char *symbol);
 SymbolData *symbolTableFindGlobal(SymbolTable *table, const char *symbol);
 SymbolData *symbolTableFindLocal(SymbolTable *table, const char *symbol);
@@ -69,12 +71,12 @@ char *generateSymbol(const SymbolTable *table, AnnotationType type, usize index)
 const char *getSymbolTypeName(SymbolType type);
 bool addGlobalSymbols(SymbolTable *table, const ProgramSyntax *syntax);
 
-AddSymbolResult symbolTableAddGlobal(SymbolTable *table, SymbolData *data);
-AddSymbolResult symbolTableAddLocal(SymbolTable *table, SymbolData *data);
-AddSymbolResult symbolTableAddFunction(SymbolTable *table, const FunctionSyntax *syntax);
-AddSymbolResult symbolTableAddStruct(SymbolTable *table, const StructSyntax *syntax);
-AddSymbolResult symbolTableAddVariable(SymbolTable *table, const VariableSyntax *syntax);
-AddSymbolResult symbolTableAddParameter(SymbolTable *table, const ParameterSyntax *syntax);
+SymbolData *symbolTableAddGlobal(SymbolTable *table, SymbolData *data);
+SymbolData *symbolTableAddLocal(SymbolTable *table, SymbolData *data);
+SymbolData *symbolTableAddFunction(SymbolTable *table, const FunctionSyntax *syntax);
+SymbolData *symbolTableAddStruct(SymbolTable *table, const StructSyntax *syntax);
+SymbolData *symbolTableAddVariable(SymbolTable *table, const VariableSyntax *syntax);
+SymbolData *symbolTableAddParameter(SymbolTable *table, const ParameterSyntax *syntax);
 
 void symbolTableValidateVariable(SymbolTable *table, SymbolData *data, VariableContext *context);
 void symbolTableValidateParameter(SymbolTable *table, SymbolData *data, ParameterContext *context);
@@ -82,7 +84,7 @@ void symbolTableValidateStruct(SymbolTable *table, SymbolData *data, StructConte
 void symbolTableValidateFunction(SymbolTable *table, SymbolData *data, FunctionContext *context);
 
 bool symbolTableFromProgramSyntax(SymbolTable *out, const ProgramSyntax *program);
-void symbolTableSetPackagesFromSymbol(SymbolTable *table, char *symbol);
+void symbolTableSetScopeFromSymbol(SymbolTable *table, const char *symbol);
 char *symbolTableGetSymbol(AnnotationType type, usize index);
 
 static inline SymbolData createPackageSymbol(const char *symbol)
@@ -102,9 +104,9 @@ void symbolDataInvalidate(SymbolData *symbol);
 void symbolDataDestroy(SymbolData *symbol);
 void symbolDataReinitialize(SymbolData *symol);
 
-static inline bool isSymbolValiated(SymbolData *symbol) { return symbol->status == VALIDATION_VALID; }
-static inline bool isSymbolInvalid(SymbolData *symbol) { return symbol->status == VALIDATION_INVALID; }
-static inline bool isSymbolNotYetValidated(SymbolData *symbol) { return symbol->status == VALIDATION_NOT_YET; }
+static inline bool isSymbolValidated(const SymbolData *symbol) { return symbol->status == VALIDATION_VALID; }
+static inline bool isSymbolInvalid(const SymbolData *symbol) { return symbol->status == VALIDATION_INVALID; }
+static inline bool isSymbolNotYetValidated(const SymbolData *symbol) { return symbol->status == VALIDATION_NOT_YET; }
 
 const StructContext *programStructAt(const ProgramContext *program, usize index);
 const FunctionContext *programFunctionAt(const ProgramContext *program, usize index);

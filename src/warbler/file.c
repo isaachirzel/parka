@@ -161,9 +161,37 @@ usize fileGetCol(const File *file, usize startPos)
 	return startPos - pos;
 }
 
-StringView getFileText(const File *file, usize pos, usize length)
-{		
+char fileGetChar(const File *file, usize pos)
+{
+	assert(pos < file->length);
+
+	return file->src[pos];
+}
+
+char *fileGetText(const File *file, usize pos, usize length)
+{
 	assert(pos + length < file->length);
 
-	return (StringView) { file->src + pos, length };
+	char *text = allocate(length + 1);
+	const usize end = pos + length;
+	usize textIndex = 0;
+
+	for (usize fileIndex = pos; fileIndex < end; ++fileIndex)
+		text[textIndex++] = file->src[fileIndex];
+
+	text[textIndex] = 0;
+
+	return text;
+}
+
+void fileCopyText(const File *file, char *out, usize pos, usize length)
+{
+	assert(pos + length < file->length);
+
+	char *iter = out;
+	usize end = pos + length;
+	usize textIndex = 0;
+
+	for (usize i = pos; i < end; ++i)
+		out[textIndex] = file->src[i];
 }

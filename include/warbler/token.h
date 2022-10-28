@@ -102,10 +102,9 @@ typedef struct Token
 Token getInitialToken(const File *file);
 void incrementToken(Token *token);
 const char *tokenCategory(const Token *token);
-char *getTokenText(const Token *token);
-char getTokenChar(const Token *token, usize index);
-usize copyToken(char *out, const Token *token);
-String stringFromToken(const Token *token);
+char *tokenGetText(const Token *token);
+char tokenGetChar(const Token *token, usize index);
+usize tokenCopyText(char *out, const Token *token);
 void stringPushToken(String *string, const Token *token);
 
 #endif

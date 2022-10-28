@@ -39,10 +39,16 @@ void deallocate(void *ptr)
 
 char *duplicateString(const char *string)
 {
-    usize len = strlen(string);
-    char *data = allocate(len + 1);
+    usize n = strlen(string);
 
-    strcpy(data, string);
+    return duplicateStringN(string, n);
+}
+
+char *duplicateStringN(const char *string, usize n)
+{
+    char *data = allocate(n + 1);
+
+    memcpy(data, string, n);
 
     return data;
 }

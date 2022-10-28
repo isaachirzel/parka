@@ -62,6 +62,7 @@ typedef enum PrimitiveType
 
 typedef enum ExpressionType
 {
+	EXPRESSION_BLOCK,
 	EXPRESSION_ASSIGNMENT,
 	EXPRESSION_CONDITIONAL,
 	EXPRESSION_BOOLEAN_OR,

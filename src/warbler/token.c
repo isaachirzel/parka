@@ -680,3 +680,20 @@ const char *tokenCategory(const Token *token)
 			exitWithError("Invalid TokenType: %d", token->type);
 	}
 }
+
+char tokenGetChar(const Token *token, usize index)
+{
+	return fileGetChar(token->file, index);
+}
+
+char *tokenGetText(const Token *token)
+{
+	return fileGetText(token->file, token->pos, token->length);
+}
+
+usize tokenCopyText(char *out, const Token *token)
+{
+	fileCopyText(token->file, out, token->pos, token->length);
+
+	return token->length;
+}

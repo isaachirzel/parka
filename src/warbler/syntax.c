@@ -59,7 +59,6 @@ void freeExpressionSyntax(ExpressionSyntax *self)
 		freeConstantSyntax(self->constant);
 		break;
 	case EXPRESSION_SYMBOL:
-		freeSymbolSyntax(self->symbol);
 		break;
 
 	default:
@@ -101,28 +100,16 @@ void freePostfixExpressionSyntax(PostfixExpressionSyntax *self)
 
 void freeStatementSyntax(StatementSyntax *self)
 {
-	switch (self->type)
+	if (self->isDeclaration)
 	{
-		case STATEMENT_EXPRESSION:
-			freeExpressionSyntax(self->expression);
-			deallocate(self->block);
-			break;
-			
-		case STATEMENT_BLOCK:
-			freeBlockStatementSyntax(self->block);
-			deallocate(self->block);
-			break;
-			
-		case STATEMENT_DECLARATION:
-			freeDeclarationSyntax(self->declaration);
-			deallocate(self->declaration);
-			break;
-		
-		default:
-			exitWithError("Invalid StatementType: %d", self->type);
+		freeDeclarationSyntax(self->declaration);
+		deallocate(self->declaration);
 	}
-
-	deallocate(self->expression); // Deallocate pointer of union
+	else
+	{
+		freeExpressionSyntax(self->expression);
+		deallocate(self->expression);
+	}
 }
 
 void freeIfStatementSyntax(IfStatementSyntax *self)
@@ -131,7 +118,7 @@ void freeIfStatementSyntax(IfStatementSyntax *self)
 
 	if (self->type == IF_THEN_ELSE)
 	{
-		freeBlockStatementSyntax(&self->elseBody);
+		freeBlockSyntax(&self->elseBody);
 	}
 	else if (self->type == IF_THEN_ELSE)
 	{
@@ -303,7 +290,7 @@ void freeParameterListSyntax(ParameterListSyntax *syntax)
 void freeFunctionSyntax(FunctionSyntax *syntax)
 {
 	freeFunctionSignatureSyntax(&syntax->signature);
-	freeBlockStatementSyntax(&syntax->body);
+	freeExpressionSyntax(&syntax->body);
 }
 
 void freeFunctionSignatureSyntax(FunctionSignatureSyntax *syntax)
@@ -314,7 +301,7 @@ void freeFunctionSignatureSyntax(FunctionSignatureSyntax *syntax)
 		freeTypeSyntax(&syntax->returnType);
 }
 
-void freeBlockStatementSyntax(BlockStatementSyntax *syntax)
+void freeBlockSyntax(BlockSyntax *syntax)
 {
 	for (usize i = 0; i< syntax->count; ++i)
 		freeStatementSyntax(&syntax->statements[i]);
@@ -351,4 +338,16 @@ void freeMemberSyntax(MemberSyntax *syntax)
 void freeTypeSyntax(TypeSyntax *syntax)
 {
 	deallocate(syntax->ptrs);
+}
+
+void freeModuleSyntax(ModuleSyntax *syntax)
+{
+	for (usize i = 0; i < syntax->functionCount; ++i)
+		freeFunctionSyntax(&syntax->functions[i]);
+
+	for (usize i = 0; i < syntax->structCount; ++i)
+		freeStructSyntax(&syntax->structs[i]);
+
+	deallocate(syntax->functions);
+	deallocate(syntax->structs);
 }

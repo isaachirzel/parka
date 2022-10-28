@@ -18,7 +18,7 @@ const char *annotationTypeName(AnnotationType type)
 
 bool validateType(TypeContext *out, const TypeSyntax *syntax, SymbolTable *symbolTable)
 {
-	char *name = getTokenText(&syntax->name);
+	char *name = tokenGetText(&syntax->name);
 	SymbolData *symbol = symbolTableFind(symbolTable, name);
 
 	if (!symbol)
@@ -61,11 +61,11 @@ bool validateStructMember(MemberContext *out, const MemberSyntax *syntax, Symbol
 {
 	MemberContext context =
 	{
-		.name = getTokenText(&syntax->name),
+		.name = tokenGetText(&syntax->name),
 		.isPublic = syntax->isPublic
 	};
 
-	char *typeName = getTokenText(&syntax->type.name);
+	char *typeName = tokenGetText(&syntax->type.name);
 	SymbolData *symbol = symbolTableFindGlobal(symbols, typeName);
 
 	if (symbol && symbol->type == SYMBOL_STRUCT && isSymbolNotYetValidated(symbol))
@@ -92,7 +92,7 @@ error:
 
 bool validateStruct(StructContext *out, const StructSyntax *syntax, SymbolTable *symbols, ContainingTypes *containingTypes)
 {
-	char *identifier = getTokenText(&syntax->name);
+	char *identifier = tokenGetText(&syntax->name);
 	SymbolData *data = symbolTableFindGlobal(symbols, identifier);
 	bool success = true;
 
@@ -115,7 +115,7 @@ bool validateStruct(StructContext *out, const StructSyntax *syntax, SymbolTable 
 
 		if (!success)
 		{
-			char *name = getTokenText(&memberSyntax->name);
+			char *name = tokenGetText(&memberSyntax->name);
 
 			printTokenError(&syntax->name, "A member with name '%s' is already declared in struct '%s'.", name, data->symbol);
 			deallocate(name);
@@ -159,7 +159,7 @@ bool validateParameter(ParameterContext *out, const ParameterSyntax *syntax, Sym
 	if (!validateType(&context, &syntax->type, symbols))
 		return false;
 
-	char *name = getTokenText(&syntax->name);
+	char *name = tokenGetText(&syntax->name);
 	ParameterContext parameter =
 	{
 		.name = name,
@@ -185,9 +185,9 @@ bool validateParameterList(ParameterListContext *out, const ParameterListSyntax 
 	for (usize i = 0; i < syntax->count; ++i)
 	{
 		const ParameterSyntax *parameter = syntax->data + i;
-		AddSymbolResult add = symbolTableAddParameter(symbols, parameter);
+		SymbolData *data = symbolTableAddParameter(symbols, parameter);
 
-		success = success && add.success;
+		success = success && data;
 
 		ParameterContext context;
 
@@ -196,9 +196,9 @@ bool validateParameterList(ParameterListContext *out, const ParameterListSyntax 
 		if (!success)
 			continue;
 
-		symbolTableValidateParameter(symbols, add.data, &context);
+		symbolTableValidateParameter(symbols, data, &context);
 
-		parameters.data[i] = add.data->index;
+		parameters.data[i] = data->index;
 	}
 
 	if (!success)
@@ -276,7 +276,7 @@ bool validateConstant(ExpressionContext *out, const ConstantSyntax *syntax)
 bool validateSymbol(ExpressionContext *out, const SymbolSyntax *syntax, SymbolTable *symbols)
 {
 	bool success = true;
-	char *symbol = getTokenText(&syntax->token);
+	char *symbol = tokenGetText(&syntax->token);
 	SymbolData *data = symbolTableFind(symbols, symbol);
 
 	if (!data)
@@ -621,13 +621,12 @@ static bool validateExpressionConversion(TypeContext *out, SymbolTable *symbols,
 
 bool validateVariable(usize *out, const VariableSyntax *syntax, const ExpressionContext *value, SymbolTable *symbols)
 {
-	AddSymbolResult addResult = symbolTableAddVariable(symbols, syntax);
-	SymbolData *data = addResult.data;
-	bool success = addResult.success;
+	SymbolData *data = symbolTableAddVariable(symbols, syntax);
+	bool success = data;
 
 	VariableContext context =
 	{
-		.name = getTokenText(&syntax->name),
+		.name = tokenGetText(&syntax->name),
 		.isExplicitlyTyped = syntax->isExplicitlyTyped,
 		.isMutable = syntax->isMutable
 	};
@@ -675,9 +674,9 @@ error:
 	return false;
 }
 
-bool validateBlockStatement(BlockStatementContext *out, const BlockStatementSyntax *syntax, SymbolTable *symbols)
+bool validateBlock(BlockContext *out, const BlockSyntax *syntax, SymbolTable *symbols)
 {
-	BlockStatementContext context = { 0 };
+	BlockContext context = { 0 };
 	bool success = true;
 
 	for (usize i = 0; i < syntax->count; ++i)
@@ -699,7 +698,7 @@ bool validateBlockStatement(BlockStatementContext *out, const BlockStatementSynt
 
 	if (!success)
 	{
-		freeBlockStatementContext(&context);
+		freeBlockContext(&context);
 		return false;
 	}
 
@@ -710,85 +709,65 @@ bool validateBlockStatement(BlockStatementContext *out, const BlockStatementSynt
 
 bool validateStatement(StatementContext *out, const StatementSyntax *syntax, SymbolTable *symbols)
 {
-	switch (syntax->type)
+	if (syntax->isDeclaration)
 	{
-		case STATEMENT_DECLARATION:
-			DeclarationContext declaration;
-			
-			if (!validateDeclarationStatement(&declaration, syntax->declaration, symbols))
-				return false;
+		DeclarationContext declaration;
+		
+		if (!validateDeclarationStatement(&declaration, syntax->declaration, symbols))
+			return false;
 
-			*makeNew(out->declaration) = declaration;
-			break;
+		*makeNew(out->declaration) = declaration;
+	}
+	else
+	{
+		ExpressionContext expression;
 
-		case STATEMENT_EXPRESSION:
-			ExpressionContext expression;
+		if (!validateExpression(&expression, syntax->expression, symbols))
+			return false;
 
-			if (!validateExpressionStatement(&expression, syntax->expression, symbols))
-				return false;
-
-			*makeNew(out->expression) = expression;
-			break;
-
-		case STATEMENT_BLOCK:
-			BlockStatementContext block;
-
-			if (!validateBlockStatement(&block, syntax->block, symbols))
-				return false;
-
-			*makeNew(out->block) = block;
-			break;
-
-		default:
-			exitWithError("Invalid StatementType: %d", syntax->type);
+		*makeNew(out->expression) = expression;
 	}
 
-	out->type = syntax->type;
+	out->isDeclaration = syntax->isDeclaration;
 
 	return true;
 }
 
 bool validateFunction(FunctionContext *out, const FunctionSyntax *syntax, SymbolTable *symbols)
 {
-	FunctionContext context = { 0 };
-	
 	bool success = true;
+	FunctionContext context = { 0 };
+	char *name = tokenGetText(&syntax->name);
+	SymbolData *data = symbolTableAddFunction(symbols, syntax);
 
-	char *name = getTokenText(&syntax->name);
-	AddSymbolResult result = symbolTableAddFunction(symbols, syntax);
+	success = success && data;
 
-	success = success && result.success;
-
-	FunctionSignatureContext signature;
-
-	if (!validateFunctionSignature(&signature, &syntax->signature, symbols))
+	if (!validateFunctionSignature(&context.signature, &syntax->signature, symbols))
 		success = false;
 
-	BlockStatementContext body;
-
-	if (!validateBlockStatement(&body, &syntax->body, symbols))
+	if (!validateExpression(&context.body, &syntax->body, symbols))
 		success = false;
 
 	if (!success)
-	{
-		freeFunctionContext(&context);
-		return false;
-	}
+		goto error;
 
-	symbolTableValidateFunction(symbols, result.data, &context);
+	symbolTableValidateFunction(symbols, data, &context);
 
 	*out = context;
-
 	return true;
+
+error:
+
+	freeFunctionContext(&context);
+	return false;
 }
 
 bool validate(ProgramContext *out, const ProgramSyntax *syntax)
 {
 	ProgramContext context = { 0 };
-
 	SymbolTable symbols;
 
-	if (!symbolTableFromProgramSyntax(&symbols, syntax))
+	if (!symbolTableGenerateGlobals(&symbols, syntax))
 		return false;
 
 	bool success = true;
@@ -802,7 +781,7 @@ bool validate(ProgramContext *out, const ProgramSyntax *syntax)
 		if (isSymbolValidated(global))
 			continue;
 
-		symbolTableSetPackagesFromSymbol(&symbols, global->symbol);
+		symbolTableSetScopeFromSymbol(&symbols, global->symbol);
 
 		switch (global->type)
 		{

@@ -21,7 +21,7 @@ struct PostfixExpressionSyntax;
 struct ConstantSyntax;
 struct SymbolSyntax;
 struct AssignmentSyntax;
-struct BlockStatementSyntax;
+struct BlockSyntax;
 struct DeclarationSyntax;
 struct IfStatementSyntax;
 
@@ -34,6 +34,7 @@ typedef struct ExpressionSyntax
 {
 	union
 	{
+		struct BlockSyntax *block;
 		struct AssignmentSyntax *assignment;
 		struct ConditionalExpressionSyntax *conditional;
 		struct BooleanOrExpressionSyntax *booleanOr;
@@ -247,25 +248,25 @@ typedef struct StatementSyntax
 	union
 	{
 		struct ExpressionSyntax *expression;
-		struct BlockStatementSyntax *block;
 		struct DeclarationSyntax *declaration;
 	};
-	StatementType type;
+
+	bool isDeclaration;
 } StatementSyntax;
 
-typedef struct BlockStatementSyntax
+typedef struct BlockSyntax
 {
 	StatementSyntax* statements;
 	usize count;
-} BlockStatementSyntax;
+} BlockSyntax;
 
 typedef struct IfStatementSyntax
 {
 	ExpressionSyntax condition;
-	BlockStatementSyntax thenBody;
+	BlockSyntax thenBody;
 	union
 	{
-		BlockStatementSyntax elseBody;
+		BlockSyntax elseBody;
 		struct IfStatementSyntax *elseIf;
 	};
 	IfType type;
@@ -308,7 +309,7 @@ typedef struct FunctionSyntax
 {
 	Token name;
 	FunctionSignatureSyntax signature;
-	BlockStatementSyntax body;
+	ExpressionSyntax body;
 } FunctionSyntax;
 
 typedef struct ModuleSyntax
@@ -334,7 +335,7 @@ typedef struct ProgramSyntax
 	usize packageCount;
 } ProgramSyntax;
 
-void freeSymbolSyntax(SymbolSyntax *syntax);
+// void freeSymbolSyntax(SymbolSyntax *syntax);
 void freeExpressionSyntax(ExpressionSyntax *syntax);
 void freeConstantSyntax(ConstantSyntax *syntax);
 void freeArgumentListSyntax(ArgumentListSyntax *syntax);
@@ -354,7 +355,7 @@ void freeMemberSyntax(MemberSyntax *syntax);
 void freeStructSyntax(StructSyntax *syntax);
 void freeVariableSyntax(VariableSyntax *syntax);
 void freeStatementSyntax(StatementSyntax *syntax);
-void freeBlockStatementSyntax(BlockStatementSyntax *syntax);
+void freeBlockSyntax(BlockSyntax *syntax);
 void freeIfStatementSyntax(IfStatementSyntax *syntax);
 void freeDeclarationSyntax(DeclarationSyntax *syntax);
 void freeAssignmentSyntax(AssignmentSyntax *syntax);

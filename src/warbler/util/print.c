@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <warbler/util/primitives.h>
 #include <warbler/util/string.h>
+#include <warbler/util/memory.h>
 
 #define COLOR_RED		"\033[91m"
 #define COLOR_YELLOW	"\033[93m"
@@ -142,7 +143,7 @@ void stringPushMargin(String *string, usize line)
 	stringPush(string, tempBuffer);
 }
 
-String getSnippetHighlight(const Snippet *snippet, const LogContext *context)
+char *getSnippetHighlight(const Snippet *snippet, const LogContext *context)
 {
 	assert(snippet->lineCount > 0);
 
@@ -217,7 +218,7 @@ String getSnippetHighlight(const Snippet *snippet, const LogContext *context)
 
 	stringPushChar(&highlight, '\n');
 
-	return highlight;
+	return highlight.data;
 }
 
 static const char *getPrompt(LogLevel level)
@@ -250,23 +251,24 @@ void printParseError(const Token *token, const char *expected, const char *messa
 	printTokenError(token, "Expected %s, found %s '%.*s'. %s", expected, tokenCategory(token), token->length, text);
 }
 
-// static inline void printMessage(LogLevel level, const String *format, va_list args)
-// {
-// 	outputStream << context.color() << context.prompt() << context.reset() << msg << '\n';
-// }
-
 static void printMessage(LogLevel level, const Snippet *snippet, const char *format, va_list args)
 {
 	if (snippet)
 		printf("%s:%zu:%zu ", snippet->file->name, snippet->line + 1, snippet->col + 1);
 
 	LogContext log = createLogContext(level);
-
-	printf("%s%s%s", log.color, log.prompt, log.reset);
+	
+	printf("%s%s%s: ", log.color, log.prompt, log.reset);
 	vprintf(format, args);
-	String str = getSnippetHighlight(snippet, &log);
-	puts(str.data);
-	stringFree(&str);
+	putchar('\n');
+
+	if (!snippet)
+		return;
+
+	char* highlight = getSnippetHighlight(snippet, &log);
+
+	puts(highlight);
+	deallocate(&highlight);
 }
 
 void printSnippetNote(const Snippet *snippet, const char *format, va_list args)

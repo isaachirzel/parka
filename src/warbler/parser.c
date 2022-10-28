@@ -423,7 +423,7 @@ error:
 	return false;
 }
 
-bool parseArgumentsList(ArgumentListSyntax* out, Token *token)
+bool parseArgumentList(ArgumentListSyntax* out, Token *token)
 {
 	assert(token->type == TOKEN_LEFT_PARENTHESIS);
 	incrementToken(token);
@@ -506,7 +506,7 @@ parsePostfix:
 
 			ArgumentListSyntax arguments;
 
-			if (!parseArguments(&arguments, token))
+			if (!parseArgumentList(&arguments, token))
 				goto error;
 
 			syntax.type = POSTFIX_FUNCTION_CALL;
@@ -867,6 +867,14 @@ error:
 	return false;
 }
 
+bool parseExpression(ExpressionSyntax *out, Token *token)
+{
+	if (token->type == TOKEN_LEFT_BRACE)
+		return parseBlock(out, token);
+
+	return parseAssignment(out, token);
+}
+
 static bool parseCharacterConstant(ExpressionSyntax *out, Token *token)
 {
 	if (token->length != 3)
@@ -879,7 +887,7 @@ static bool parseCharacterConstant(ExpressionSyntax *out, Token *token)
 	*makeNew(out->constant) = (ConstantSyntax)
 	{
 		.token = *token,
-		.character = getTokenChar(token, 1),
+		.character = tokenGetChar(token, 1),
 		.type = CONSTANT_CHARACTER
 	};
 
@@ -895,9 +903,9 @@ static bool parseFloatConstant(ExpressionSyntax *out, Token *token)
 	f64 value = 0.0;
 	for (usize i = 0; i < token->length; ++i)
 	{
-		if (getTokenChar(token, i) != '.')
+		if (tokenGetChar(token, i) != '.')
 		{
-			value = value * 10.0 + (getTokenChar(token, i) - '0');
+			value = value * 10.0 + (tokenGetChar(token, i) - '0');
 		}
 		else
 		{
@@ -908,7 +916,7 @@ static bool parseFloatConstant(ExpressionSyntax *out, Token *token)
 
 			while (i < token->length)
 			{
-				decimal = decimal * 10.0 + (getTokenChar(token, i) - '0');
+				decimal = decimal * 10.0 + (tokenGetChar(token, i) - '0');
 				place *= 10.0;
 				++i;
 			}
@@ -937,7 +945,7 @@ static bool parseStringConstant(ExpressionSyntax *out, Token *token)
 	*makeNew(out->constant) = (ConstantSyntax)
 	{
 		.token = *token,
-		.string = getTokenText(token),
+		.string = tokenGetText(token),
 		.type = CONSTANT_STRING
 	};
 
@@ -954,7 +962,7 @@ static bool parseIntegerConstant(ExpressionSyntax *out, Token *token)
 	u64 value = 0;
 
 	for (usize i = 0; i < token->length; ++i)
-		value = value * 10 + (getTokenChar(token, i) - '0');
+		value = value * 10 + (tokenGetChar(token, i) - '0');
 
 	out->type = EXPRESSION_CONSTANT;
 	*makeNew(out->constant) = (ConstantSyntax)
@@ -1060,7 +1068,7 @@ bool parseFunction(FunctionSyntax *out, Token *token)
 		goto error;
 	}
 
-	if (!parseBlockStatement(&syntax.body, token))
+	if (!parseBlock(&syntax.body, token))
 		goto error;
 
 	*out = syntax;
@@ -1187,13 +1195,13 @@ error:
 	return false;
 }
 
-bool parseBlockStatement(BlockStatementSyntax *out, Token *token)
+bool parseBlock(ExpressionSyntax *out, Token *token)
 {
 	assert(token->type == TOKEN_LEFT_BRACE);
 
 	incrementToken(token);
 
-	BlockStatementSyntax syntax = { 0 };
+	BlockSyntax syntax = { 0 };
 
 	while (token->type != TOKEN_RIGHT_BRACE)
 	{
@@ -1208,11 +1216,14 @@ bool parseBlockStatement(BlockStatementSyntax *out, Token *token)
 
 	incrementToken(token);
 
+	*makeNew(out->block) = syntax;
+	out->type = EXPRESSION_BLOCK;
+
 	return true;
 
 error:
 
-	freeBlockStatementSyntax(&syntax);
+	freeBlockSyntax(&syntax);
 	return false;
 }
 
@@ -1264,25 +1275,11 @@ bool parseStatement(StatementSyntax *out, Token *token)
 		if (!parseDeclaration(&declaration, token))
 			return false;
 
-		out->type = STATEMENT_DECLARATION;
 		*makeNew(out->declaration) = declaration;
+		out->isDeclaration = true;
 
 		return true;
 	}
-	else if (token->type == TOKEN_LEFT_BRACE)
-	{
-		BlockStatementSyntax block;
-
-		if (!parseBlockStatement(&block, token))
-			return false;
-
-		out->type = STATEMENT_BLOCK;
-		*makeNew(out->block) = block;
-
-		return true;
-	}
-
-	// Expression statement
 
 	ExpressionSyntax expression;
 
@@ -1298,8 +1295,8 @@ bool parseStatement(StatementSyntax *out, Token *token)
 
 	incrementToken(token);
 
-	out->type = STATEMENT_EXPRESSION;
 	*makeNew(out->expression) = expression;
+	out->isDeclaration = false;
 
 	return true;
 }
@@ -1539,8 +1536,6 @@ parse:
 			goto error;
 	}
 
-	// TODO: Check if it was truly the end of the module
-
 	*out = syntax;
 	return true;
 
@@ -1595,34 +1590,43 @@ error:
 
 bool parse(ProgramSyntax *out, const Directory *directories, usize directoryCount)
 {
+	if (directoryCount == 0)
+	{
+		printError("No directories to compile.");
+		return false;
+	}
+
 	ProgramSyntax syntax = { 0 };
+	usize fileCount = 0;
 
 	for (usize i = 0; i < directoryCount; ++i)
 	{
 		const Directory *directory = directories + i;
+
+		fileCount += directory->fileCount;
 
 		PackageSyntax package;
 
 		if (!parsePackage(&package, directory))
 			goto error;
 
-		syntax.packages = resizeArray(syntax.packages, ++syntax.packageCount);
+		resizeArray(syntax.packages, ++syntax.packageCount);
 		syntax.packages[syntax.packageCount - 1] = package;
 	}
 
-	if (syntax.packageCount == 0)
+	if (fileCount == 0)
 	{
-		// TODO: update this error
 		printError("No source files passed to compiler.");
 		return false;
 	}
 
-	// *out =
+	*out = syntax;
 
 	return true;
 
 error:
 
+	print("A");
 	freeProgramSyntax(&syntax);
 	return false;
 }

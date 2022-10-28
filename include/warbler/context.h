@@ -30,10 +30,10 @@ struct VariableContext;
 struct ParameterContext;
 struct FunctionContext;
 struct TypeContext;
-struct BlockStatementContext;
+struct BlockContext;
 struct DeclarationContext;
 struct ProgramContext;
-struct BlockStatementContext;
+struct BlockContext;
 struct DeclarationContext;
 
 enum PrimitiveIndex
@@ -90,6 +90,7 @@ typedef struct ExpressionContext
 		ConstantContext *constant;
 		SymbolContext *symbol;
 		struct AssignmentContext *assignment;
+		struct BlockContext *block;
 	};
 	ExpressionType type;
 } ExpressionContext;
@@ -135,11 +136,10 @@ typedef struct StatementContext
 	union
 	{
 		ExpressionContext *expression;
-		struct BlockStatementContext *block;
 		struct DeclarationContext *declaration;
 	};
 
-	StatementType type;
+	bool isDeclaration;
 } StatementContext;
 
 typedef struct DeclarationContext
@@ -148,11 +148,11 @@ typedef struct DeclarationContext
 	ExpressionContext value;
 } DeclarationContext;
 
-typedef struct BlockStatementContext
+typedef struct BlockContext
 {
 	StatementContext *statements;
 	usize count;
-} BlockStatementContext;
+} BlockContext;
 
 typedef struct ParameterListContext
 {
@@ -162,7 +162,7 @@ typedef struct ParameterListContext
 
 typedef struct FunctionSignatureContext
 {
-	ParameterListContext parameter;
+	ParameterListContext parameters;
 	TypeContext returnType;
 	bool hasReturnType;
 } FunctionSignatureContext;
@@ -178,7 +178,7 @@ typedef struct FunctionContext
 {
 	char *symbol;
 	FunctionSignatureContext signature;
-	BlockStatementContext body;
+	ExpressionContext body;
 	ParameterContext *parameters;
 	usize parameterCount;
 	VariableContext *variables;
@@ -209,11 +209,15 @@ const char *typeAnnotationSymbol(const TypeContext *type, const ProgramContext *
 extern const PrimitiveContext primitives[];
 extern const usize primitiveCount;
 
-void freeBlockStatementContext(BlockStatementContext *context);
+void freeBlockContext(BlockContext *context);
 void freeDeclarationContext(DeclarationContext *context);
+void freeParameterContext(ParameterContext *context);
 void freeVariableContext(VariableContext *context);
+void freeExpressionContext(ExpressionContext *context);
 void freeAssignmentContext(AssignmentContext *context);
 void freeFunctionSignatureContext(FunctionSignatureContext *context);
-void freeMemberContext(MemberContext *member);
+void freeFunctionContext(FunctionContext *context);
+void freeMemberContext(MemberContext *context);
+void freeParameterListContext(ParameterListContext *context);
 
 #endif
