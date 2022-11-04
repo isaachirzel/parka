@@ -209,7 +209,10 @@ const char *typeAnnotationSymbol(const TypeContext *type, const ProgramContext *
 extern const PrimitiveContext primitives[];
 extern const usize primitiveCount;
 
+void freeConstantContext(ConstantContext *context);
+void freeTypeContext(TypeContext *context);
 void freeBlockContext(BlockContext *context);
+void freeStructContext(StructContext *context);
 void freeDeclarationContext(DeclarationContext *context);
 void freeParameterContext(ParameterContext *context);
 void freeVariableContext(VariableContext *context);
@@ -218,6 +221,8 @@ void freeAssignmentContext(AssignmentContext *context);
 void freeFunctionSignatureContext(FunctionSignatureContext *context);
 void freeFunctionContext(FunctionContext *context);
 void freeMemberContext(MemberContext *context);
+void freePackageContext(PackageContext *context);
 void freeParameterListContext(ParameterListContext *context);
+void freeProgramContext(ProgramContext *context);
 
 #endif

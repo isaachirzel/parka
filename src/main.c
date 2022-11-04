@@ -4,15 +4,17 @@
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
 
-#define BAR "\n###########################################################\n"
-
-#define SOURCE ""
+#define SOURCE "function main()\n"\
+"{\n"\
+"	var i: i32 = 0;\n"\
+"	var i: i32 = 0;\n"\
+"}\n"
 #define FILENAME "file.wb"
 #define FILEPATH "src"
 
 int main(void)
 {
-	File file = fileFrom(SOURCE, FILENAME);
+	File file = fileFrom(FILENAME, SOURCE);
 	Directory directory = directoryFrom(FILEPATH, &file);
 
 	ProgramSyntax syntax;
@@ -20,12 +22,14 @@ int main(void)
 	if (!parse(&syntax, &directory, 1))
 		return 1;
 
+	print("Successfully parsed.");
+
 	ProgramContext context;
 
 	if (!validate(&context, &syntax))
 		return 2;
 
-	print("Successfully parsed.");
+	print("Successfully validated.");
 
 	return 0;
 }

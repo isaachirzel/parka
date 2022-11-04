@@ -1,20 +1,20 @@
 #include <warbler/snippet.h>
 #include <warbler/util/memory.h>
+#include <warbler/util/string.h>
 
-Snippet getSnippet(const File *file, usize pos, usize length)
+Snippet getSnippet(const File *file, const usize startPos, usize length)
 {
-	assert(pos + length < file->length);
-
 	Snippet snippet =
 	{
-		.file = file,
-		.line = fileGetLine(file, pos),
-		.col = fileGetCol(file, pos)
+		.filename = duplicateString(file->name),
+		.line = fileGetLine(file, startPos),
+		.col = fileGetCol(file, startPos)
 	};
 
-	usize startOfLine = pos - snippet.col;
-	usize end = pos + length;
+	usize startOfLine = startPos - snippet.col;
+	usize end = startPos + length;
 	usize currentLine = snippet.line;
+	usize pos = startPos;
 
 	for (pos; pos < end; ++pos)
 	{
@@ -23,6 +23,7 @@ Snippet getSnippet(const File *file, usize pos, usize length)
 		if (character == '\n')
 		{
 			StringView substr = stringViewFrom(file->src, startOfLine, pos - startOfLine);
+
 			resizeArray(snippet.lines, ++snippet.lineCount);
 			snippet.lines[snippet.lineCount - 1] = substr;
 

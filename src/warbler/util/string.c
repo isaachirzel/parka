@@ -11,10 +11,19 @@ String stringCreate()
 String stringFrom(const char *text)
 {
     usize length = strlen(text);
-
     char *data = allocate(length + 1);
+
+    memcpy(data, text, length);
+    data[length] = 0;
     
-    return (String) { data, length, length };
+    String string =
+    {
+        .data = data,
+        .length = length,
+        .capacity = length
+    };
+
+    return string;
 }
 
 void stringFree(String *string)
@@ -34,20 +43,20 @@ void stringReserve(String *string, usize capacity)
 void stringPushCString(String *string, const char* text)
 {
     usize textLength = strlen(text);
-    char *end = string->data + string->length;
 
-    string->data = reallocate(string->data, string->length + textLength + 1);
-    string->length += textLength;
-
-    strcpy(end, text);
+    stringPushCStringN(string, text, textLength);
 }
 
 void stringPushCStringN(String *string, const char *text, usize n)
 {
+    usize newLength = string->length + n;
+
+    string->data = reallocate(string->data, newLength + 1);
+
     char *end = string->data + string->length;
 
-    string->data = reallocate(string->data, string->length + n + 1);
-    string->length += n;
+    string->length = newLength;
+    string->capacity = newLength;
 
     memcpy(end, text, n);
 

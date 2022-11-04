@@ -150,11 +150,9 @@ char *getSnippetHighlight(const Snippet *snippet, const LogContext *context)
 	usize length = 0;
 
 	for (usize i = 0; i < snippet->lineCount; ++i)
-	{
 		length += snippet->lines[i].length;
-	}
 
-	String highlight;
+	String highlight = { 0 };
 	usize lineNumberWidth = getNumberWidth(snippet->line + snippet->lineCount - 1);
 	usize currentLineNumber = snippet->line;
 
@@ -162,8 +160,8 @@ char *getSnippetHighlight(const Snippet *snippet, const LogContext *context)
 	{
 		const StringView *line = snippet->lines + i;
 
-		String lineText;
-		String underlineText;
+		String lineText = { 0 };
+		String underlineText = { 0 };
 
 		stringReserve(&lineText, line->length + 16);
 		stringReserve(&underlineText, line->length + 16);
@@ -207,7 +205,6 @@ char *getSnippetHighlight(const Snippet *snippet, const LogContext *context)
 
 		stringPushChar(&lineText, '\n');
 		stringPushChar(&underlineText, '\n');
-
 		stringPushMargin(&highlight, 0);
 		stringPushChar(&highlight, '\n');
 		stringConcat(&highlight, &lineText);
@@ -241,20 +238,44 @@ void _print(const char *file, u32 line, const char *msg)
 	printf("%s:%u: %s\n", file, line, msg);
 }
 
+void _printFmt(const char *file, u32 line, const char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+
+	printf("%s:%u: ", file, line);
+	vprintf(fmt, args);
+	putchar('\n');
+
+	va_end(args);
+}
+
 void printParseError(const Token *token, const char *expected, const char *message)
 {
 	if (!message)
 		message = "";
-	
-	const char *text = token->file->src + token->pos;
 
-	printTokenError(token, "Expected %s, found %s '%.*s'. %s", expected, tokenCategory(token), token->length, text);
+	printf("Length: %zu\n", token->length);
+
+	
+
+	if (token->type == TOKEN_END_OF_FILE)
+	{
+		printTokenError(token, "Expected %s, found end of file. %s", expected, message);
+	}
+	else
+	{
+		const char *text = token->file->src + token->pos;
+		const char *category = tokenCategory(token);
+
+		printTokenError(token, "Expected %s, found %s '%.*s'. %s", expected, category, token->length, text, message);
+	}
 }
 
 static void printMessage(LogLevel level, const Snippet *snippet, const char *format, va_list args)
 {
 	if (snippet)
-		printf("%s:%zu:%zu ", snippet->file->name, snippet->line + 1, snippet->col + 1);
+		printf("%s:%zu:%zu ", snippet->filename, snippet->line + 1, snippet->col + 1);
 
 	LogContext log = createLogContext(level);
 	
@@ -268,7 +289,7 @@ static void printMessage(LogLevel level, const Snippet *snippet, const char *for
 	char* highlight = getSnippetHighlight(snippet, &log);
 
 	puts(highlight);
-	deallocate(&highlight);
+	deallocate(highlight);
 }
 
 void printSnippetNote(const Snippet *snippet, const char *format, va_list args)
@@ -360,6 +381,7 @@ noreturn void _exitWithError(const char *file, usize line, const char *format, .
 
 	printf("%s:%zu " COLOR_RED "fatal" COLOR_RESET ": ", file, line);
 	vprintf(format, args);
+	putchar('\n');
 
 	va_end(args);
 

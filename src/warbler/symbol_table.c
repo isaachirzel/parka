@@ -3,6 +3,7 @@
 #include <warbler/util/array.h>
 #include <warbler/syntax.h>
 #include <warbler/util/print.h>
+#include <warbler/util/memory.h>
 
 #include <string.h>
 
@@ -46,22 +47,54 @@ SymbolData *symbolTableFindGlobal(SymbolTable *table, const char *symbol)
 	return NULL;
 }
 
-SymbolData *symbolTableFindLocal(SymbolTable *table, const char *symbol)
+static SymbolData *symbolTableFindLocalFromIndex(SymbolTable *table, usize index, const char *symbol)
 {
-	for (i32 i = (i32)table->localSymbolCount; i >= 0; --i)
+	if (table->localSymbolCount == 0)
+		return NULL;
+
+	usize i = table->localSymbolCount - 1;
+
+	while (true)
 	{
 		SymbolData *data = table->localSymbols + i;
 
 		if (!strcmp(symbol, data->symbol))
 			return data;
+
+		if (i == index)
+			break;
+
+		i -= 1;
 	}
 
 	return NULL;
 }
 
+static inline usize symbolTableGetCurrentBlockIndex(SymbolTable *table)
+{
+	if (table->blockCount == 0)
+		return 0;
+
+	usize index = table->blocks[table->blockCount - 1];
+
+	return index;
+}
+
+SymbolData *symbolTableFindFunctionLocal(SymbolTable *table, const char *symbol)
+{
+	return symbolTableFindLocalFromIndex(table, 0, symbol);
+}
+
+SymbolData *symbolTableFindBlockLocal(SymbolTable *table, const char *symbol)
+{
+	usize blockIndex = symbolTableGetCurrentBlockIndex(table);
+
+	return symbolTableFindLocalFromIndex(table, blockIndex, symbol);
+}
+
 SymbolData *symbolTableFind(SymbolTable *table, const char *symbol)
 {
-	SymbolData *functionSymbol = symbolTableFindLocal(table, symbol);
+	SymbolData *functionSymbol = symbolTableFindFunctionLocal(table, symbol);
 
 	if (functionSymbol)
 		return functionSymbol;
@@ -71,140 +104,25 @@ SymbolData *symbolTableFind(SymbolTable *table, const char *symbol)
 	return globalSymbol;
 }
 
-SymbolData *symbolTableAddLocal(SymbolTable *table, SymbolData *data)
+SymbolData *symbolTableAddLocal(SymbolTable *table, const char *symbol)
 {
-	SymbolData *previous = symbolTableFindLocal(table, data->symbol);
-
-	// TODO: Highlight errors
-	// TODO: Soft allow adding the symbol
+	SymbolData *previous = symbolTableFindBlockLocal(table, symbol);
 
 	if (previous)
 	{
-		// Token *token;
-
-		// // switch (
-
-		// // const char *typeName = getSymbolTypeName(previous->type);
-
-		printError("'%s' is already declared in this function.", data->symbol);
+		printError("'%s' is already declared in this block.", symbol);
 		// printNote("Previous declaration here.");
 		return NULL;
 	}
 
-	if (table->localSymbolCapacity == table->localSymbolCount)
-	{
-		// TODO: resize in bigger chunks
-		resizeArray(table->localSymbols, ++table->localSymbolCapacity);
-	}
-
 	usize index = table->localSymbolCount;
 
-	table->localSymbols[index] = *data;
-	++table->localSymbolCount;
+	incrementArray(table->localSymbols, &table->localSymbolCount, &table->localSymbolCapacity);
 
 	SymbolData *ptr = table->localSymbols + index;
-
-	return ptr;
 }
 
-static SymbolData createPrimitiveSymbol(const PrimitiveContext *primitive, usize index)
-{
-	SymbolData data =
-	{
-		.symbol = duplicateString(primitive->symbol),
-		.index = index,
-		.type = SYMBOL_PRIMITIVE,
-		.status = VALIDATION_VALID
-	};
-
-	return data;
-}
-
-static SymbolData createStructSymbol(const StructSyntax *syntax, const char *scope)
-{
-	// TODO: Safety check
-	static char name[256];
-	String symbol = stringFrom(scope);
-
-	tokenCopyText(name, &syntax->name);
-	stringPush(&symbol, name);
-
-	SymbolData data =
-	{
-		.symbol = symbol.data,
-		.type = SYMBOL_STRUCT,
-		.status = VALIDATION_NOT_YET
-	};
-
-	return data;
-}
-
-static SymbolData createFunctionSymbol(const FunctionSyntax *syntax, const char *scope)
-{
-	// TODO: Safety check
-	static char name[256];
-	String symbol = stringFrom(scope);
-	
-	tokenCopyText(name, &syntax->name);
-	stringPush(&symbol, name);
-
-	SymbolData data =
-	{
-		.symbol = symbol.data,
-		.type = SYMBOL_FUNCTION,
-		.status = VALIDATION_NOT_YET
-	};
-
-	return data;
-}
-
-bool addGlobalSymbols(SymbolTable *table, const ProgramSyntax *syntax)
-{
-	SymbolData *symbols = table->globalSymbols;
-
-	resizeArray(table->globalSymbols, primitiveCount);
-
-	table->globalSymbolCount = primitiveCount;
-
-	for (usize i = 0; i < primitiveCount; ++i)
-	{
-		const PrimitiveContext *context = primitives + i;
-
-		table->globalSymbols[i] = createPrimitiveSymbol(primitives + i, i);
-	}
-
-	bool success = true;
-
-	for (usize i = 0; i < syntax->packageCount; ++i)
-	{
-		const PackageSyntax *package = syntax->packages + i;
-
-		static char scope[256];
-		static char name[256];
-
-		// TODO: Optimize string copy and safety check
-		strcpy(scope, package->name);
-		strcat(scope, "::");
-
-		for (usize j = 0; j < package->structCount; ++j)
-		{
-			SymbolData data = createStructSymbol(package->structs + j, scope);
-
-			success = success && symbolTableAddGlobal(table, &data);
-		}
-
-		for (usize j = 0; j < package->functionCount; ++j)
-		{
-			SymbolData data = createFunctionSymbol(package->functions + j, scope);
-
-			success = success && symbolTableAddGlobal(table, &data);
-		}
-	}
-
-	return success;
-}
-
-static char *createSymbol(char **packages, usize count, const char *identifier)
+static char *createSymbol(const Scope *scope, usize count, const char *identifier)
 {
 	String symbol;
 
@@ -212,7 +130,7 @@ static char *createSymbol(char **packages, usize count, const char *identifier)
 
 	for (usize i = 0; i < count; ++i)
 	{
-		const char *package = packages[i];
+		const char *package = scope->names[i];
 
 		stringPush(&symbol, package);
 		stringPush(&symbol, "::");
@@ -273,15 +191,24 @@ const char *symbolTableGet(const SymbolTable *table, AnnotationType type, usize 
 
 char *symbolTableGetSymbolForIdentifier(const SymbolTable *table, const char *identifier)
 {
-	return createSymbol(table->packages, table->packageCount, identifier);
+	return createSymbol(&table->scope, table->context->packageCount, identifier);
 }
 
 SymbolData *symbolTableResolve(SymbolTable *table, const char *identifier)
 {
-	for (i32 i = (i32)table->packageCount; i >= 0; --i)
+	ProgramContext *program = table->context;
+	
+	SymbolData *local = symbolTableFindFunctionLocal(table, identifier);
+
+	if (local)
+		return local;
+
+	for (i32 i = (i32)program->packageCount; i >= 0; --i)
 	{
-		char *symbol = createSymbol(table->packages, i, identifier);
-		SymbolData *iter = symbolTableFind(table, symbol);
+		// TODO: Optimize with stack symbol
+		char *symbol = createSymbol(&table->scope, i, identifier);
+
+		SymbolData *iter = symbolTableFindGlobal(table, symbol);
 
 		deallocate(symbol);
 
@@ -292,116 +219,124 @@ SymbolData *symbolTableResolve(SymbolTable *table, const char *identifier)
 	return NULL;
 }
 
-SymbolData *symbolTableAddGlobal(SymbolTable *table, SymbolData *data)
+SymbolData *symbolTableAddGlobal(SymbolTable *table, const char *symbol)
 {
-	SymbolData *previousDeclaration = symbolTableFindGlobal(table, data->symbol);
+	SymbolData *previous = symbolTableFindGlobal(table, symbol);
 
-	if (previousDeclaration)
-	{
-		const Token *token;
-
-		switch (data->type)
-		{
-			case SYMBOL_PACKAGE:
-			case SYMBOL_PRIMITIVE:
-				exitWithError("Duplicate symbol in table: %s", data->symbol);
-
-			case SYMBOL_STRUCT:
-				token = &data->structSyntax->name;
-				break;
-
-			case SYMBOL_FUNCTION:
-				token = &data->functionSyntax->name;
-				break;
-
-			default:
-				exitWithError("Invalid SymbolType: %d", data->type);
-		}
-
-		printTokenError(&data->functionSyntax->name, "%s '%s' is previously declared in this package.", getSymbolTypeName(data->type), data->symbol);
-
-		switch (previousDeclaration->type)
-		{
-			case SYMBOL_STRUCT:
-				printTokenNote(&previousDeclaration->structSyntax->name, "Previous declaration here.");
-				break;
-
-			case SYMBOL_FUNCTION:
-				printTokenNote(&previousDeclaration->functionSyntax->name, "Previous declaration here.");
-				break;
-
-			default:
-				break;
-		}
-
+	if (previous)
 		return NULL;
-	}
 
 	usize index = table->globalSymbolCount;
 
 	resizeArray(table->globalSymbols, ++table->globalSymbolCount);
-
-	table->globalSymbols[index] = *data;
 
 	SymbolData *ptr = table->globalSymbols + index;
 
 	return ptr;
 }
 
-SymbolData *symbolTableAddStruct(SymbolTable *table, const StructSyntax *syntax)
+usize symbolTableAddStruct(SymbolTable *table, const StructContext *context)
 {
+	SymbolData *ptr = symbolTableAddGlobal(table, context->symbol);
+
+	if (!ptr)
+		return SIZE_MAX;
+
+	ProgramContext *program = table->context;
+	usize index = program->structCount;
+
+	resizeArray(program->structs, ++program->structCount);
+
+	program->structs[index] = *context;
+
 	SymbolData data =
 	{
-		.structSyntax = syntax,
-		.symbol = tokenGetText(&syntax->name),
+		.symbol = duplicateString(context->symbol),
+		.index = index,
 		.type = SYMBOL_STRUCT,
-		.status = VALIDATION_NOT_YET,
+		.isValid = true,
 		.isDestroyed = false
 	};
 
-	return symbolTableAddGlobal(table, &data);
+	return index;
 }
 
-SymbolData *symbolTableAddFunction(SymbolTable *table, const FunctionSyntax *syntax)
+usize symbolTableAddFunction(SymbolTable *table, const FunctionContext *context)
 {
-	SymbolData data =
+	SymbolData *ptr = symbolTableAddGlobal(table, context->symbol);
+
+	if (!ptr)
+		return SIZE_MAX;
+
+	ProgramContext *program = table->context;
+	usize index = program->functionCount;
+
+	resizeArray(program->functions, ++program->functionCount);
+
+	program->functions[index] = *context;
+
+	*ptr = (SymbolData)
 	{
-		.functionSyntax = syntax,
-		.symbol = tokenGetText(&syntax->name),
+		.symbol = duplicateString(context->symbol),
+		.index = index,
 		.type = SYMBOL_FUNCTION,
-		.status = VALIDATION_NOT_YET,
+		.isValid = true,
 		.isDestroyed = false
 	};
 
-	return symbolTableAddGlobal(table, &data);
+	return index;
 }
 
-SymbolData *symbolTableAddParameter(SymbolTable *table, const ParameterSyntax *syntax)
+usize symbolTableAddParameter(SymbolTable *table, const ParameterContext *context)
 {
-	SymbolData data =
+	SymbolData *ptr = symbolTableAddLocal(table, context->name);
+
+	if (!ptr)
+		return SIZE_MAX;
+
+	ProgramContext *program = table->context;
+	usize index = program->parameterCount;
+
+	resizeArray(program->parameters, ++program->parameterCount);
+
+	program->parameters[index] = *context;
+
+	*ptr = (SymbolData)
 	{
-		.parameterSyntax = syntax,
-		.symbol = tokenGetText(&syntax->name),
+		.symbol = duplicateString(context->name),
+		.index = index,
 		.type = SYMBOL_PARAMETER,
-		.status = VALIDATION_NOT_YET,
+		.isValid = true,
 		.isDestroyed = false
 	};
 
-	return symbolTableAddLocal(table, &data);
+	return index;
 }
 
-SymbolData *symbolTableAddVariable(SymbolTable *table, const VariableSyntax *syntax)
+usize symbolTableAddVariable(SymbolTable *table, const VariableContext *context)
 {
-	SymbolData data =
+	SymbolData *ptr = symbolTableAddLocal(table, context->name);
+
+	if (!ptr)
+		return SIZE_MAX;
+
+	ProgramContext *program = table->context;
+	usize index = program->variableCount;
+
+	resizeArray(program->variables, ++program->variableCount);
+
+	program->variables[index] = *context;
+
+	*ptr = (SymbolData)
 	{
-		.variableSyntax = syntax,
-		.symbol = tokenGetText(&syntax->name),
+		.symbol = duplicateString(context->name),
+		.index = index,
 		.type = SYMBOL_VARIABLE,
-		.status = VALIDATION_NOT_YET,
+		.isValid = true,
 		.isDestroyed = false
 	};
 
-	return symbolTableAddLocal(table, &data);
+	return index;
 }
 
 static bool containsSemicolon(const char * const identifier)
@@ -413,67 +348,6 @@ static bool containsSemicolon(const char * const identifier)
 	}
 
 	return false;
-}
-
-void symbolDataValidate(SymbolData *symbol, usize index)
-{
-	symbol->index = index;
-	symbol->status = VALIDATION_VALID;
-}
-
-void symbolDataInvalidate(SymbolData *symbol)
-{
-	symbol->status = VALIDATION_INVALID;
-}
-
-void symbolDataDestroy(SymbolData *symbol)
-{
-	symbol->isDestroyed = true;
-}
-
-void symbolDataReinitialize(SymbolData *symbol)
-{
-	symbol->isDestroyed = false;
-}
-
-void symbolTableValidateVariable(SymbolTable *table, SymbolData *data, VariableContext *context)
-{
-	usize index = table->variableCount;
-
-	resizeArray(table->variables, ++table->variableCount);
-	table->variables[index] = *context;
-
-	symbolDataValidate(data, index);
-}
-
-void symbolTableValidateParameter(SymbolTable *table, SymbolData *data, ParameterContext *context)
-{
-	usize index = table->parameterCount;
-
-	resizeArray(table->parameters, ++table->parameterCount);
-	table->parameters[index] = *context;
-
-	symbolDataValidate(data, index);
-}
-
-void symbolTableValidateStruct(SymbolTable *table, SymbolData *data, StructContext *context)
-{
-	usize index = table->structCount;
-
-	resizeArray(table->structs, ++table->structCount);
-	table->structs[index] = *context;
-
-	symbolDataValidate(data, index);
-}
-
-void symbolTableValidateFunction(SymbolTable *table, SymbolData *data, FunctionContext *context)
-{
-	usize index = table->functionCount;
-
-	resizeArray(table->functions, ++table->functionCount);
-	table->functions[index] = *context;
-
-	symbolDataValidate(data, index);
 }
 
 const StructContext *programStructAt(const ProgramContext *program, usize index)
@@ -502,58 +376,43 @@ const ParameterContext *programParameterAt(const ProgramContext *program, usize 
 
 const StructContext *tableStructAt(const SymbolTable *table, usize index)
 {
-	assert(index < table->structCount);
-	return table->structs + index;
+	return programStructAt(table->context, index);
 }
 
 const FunctionContext *tableFunctionAt(const SymbolTable *table, usize index)
 {
-	assert(index < table->functionCount);
-	return table->functions + index;
+	return programFunctionAt(table->context, index);
 }
 
 const VariableContext *tableVariableAt(const SymbolTable *table, usize index)
 {
-	assert(index < table->variableCount);
-	return table->variables + index;
+	return programVariableAt(table->context, index);
 }
 
 const ParameterContext *tableParameterAt(const SymbolTable *table, usize index)
 {
-	assert(index < table->parameterCount);
-	return table->parameters + index;
+	return programParameterAt(table->context, index);
 }
 
-static bool symbolTableGeneratePackageGlobals(SymbolTable *table, const PackageSyntax *package)
+char *symbolTableCreateSymbol(SymbolTable *table, const char *identifier)
 {
-	bool success = true;
+	String symbol = { 0 };
+	Scope *scope = &table->scope;
 
-	for (usize i = 0; i < table->structCount; ++i)
-		success = success && symbolTableAddStruct(table, package->structs + i);
-
-	for (usize i = 0; i < table->functionCount; ++i)
-		success = success && symbolTableAddFunction(table, package->functions + i);
-	
-	return success;
-}
-
-bool symbolTableGenerateGlobals(SymbolTable *table, const ProgramSyntax *program)
-{
-	bool success = true;
-
-	for (usize i = 0; i < program->packageCount; ++i)
+	for (usize i = 0; i < scope->count; ++i)
 	{
-		const PackageSyntax *package = program->packages + i;
+		if (i > 0)
+			stringPushCString(&symbol, "::");
 
-		success = success && symbolTableGeneratePackageGlobals(table, package);
+		stringPushCString(&symbol, scope->names[i]);
 	}
 
-	return success;
+	return symbol.data;
 }
 
 void symbolTableSetScopeFromSymbol(SymbolTable *table, const char *symbol)
 {
-	table->packageCount = 0;
+	table->scope.count = 0;
 
 	static char buffer[256];
 	usize size = 0;
@@ -566,15 +425,90 @@ void symbolTableSetScopeFromSymbol(SymbolTable *table, const char *symbol)
 			iter += 1;
 			assert(*iter == ':');
 
-			char *package = duplicateStringN(buffer, size);
+			buffer[size] = 0;
+			size = 0;
 
-			if (table->packageCount >= table->packageCapacity)
-				resizeArray(table->packages, table->packageCapacity += 8);
+			scopePush(&table->scope, buffer);
 
-			table->packages[table->packageCount++] = package;			
 			continue;
 		}
 
 		buffer[size++] = *iter;
 	}
 }
+
+void symbolDataDestroy(SymbolData *data)
+{
+	deallocate(data->symbol);
+}
+
+SymbolTable symbolTableCreate(ProgramContext *context, const ProgramSyntax *syntax)
+{
+	SymbolTable table =
+	{
+		.context = context,
+		.syntax = syntax,
+		.globalSymbolCount = primitiveCount,
+		.globalSymbolCapacity = primitiveCount
+	};
+
+	makeArray(table.globalSymbols, table.globalSymbolCount);
+
+	for (usize i = 0; i < primitiveCount; ++i)
+	{
+		SymbolData data =
+		{
+			.symbol = duplicateString(primitives[i].symbol),
+			.index = i,
+			.type = SYMBOL_PRIMITIVE,
+			.isValid = true,
+			.isDestroyed = false
+		};
+
+		table.globalSymbols[i] = data;
+	}
+
+	return table;
+}
+
+void symbolTableDestroy(SymbolTable *table)
+{
+	for (usize i = 0; i < table->globalSymbolCount; ++i)
+		symbolDataDestroy(&table->globalSymbols[i]);
+
+	deallocate(table->globalSymbols);
+
+	for (usize i = 0; i < table->localSymbolCount; ++i)
+		symbolDataDestroy(&table->localSymbols[i]);
+
+	deallocate(table->localSymbols);
+
+	scopeDestroy(&table->scope);
+	deallocate(table->blocks);
+}
+
+void symbolTablePushBlock(SymbolTable *table)
+{
+	assert(table);
+
+	usize index = table->blockCount;
+
+	incrementArray(table->blocks, &table->blockCount, &table->blockCapacity);
+
+	table->blocks[index] = table->localSymbolCount;
+}
+
+void symbolTablePopBlock(SymbolTable *table)
+{
+	assert(table);
+	assert(table->blockCount > 0);
+	
+	usize blockIndex = table->blocks[table->blockCount - 1];
+
+	for (usize i = blockIndex; i < table->localSymbolCount; ++i)
+		symbolDataDestroy(table->localSymbols + i);
+
+	table->blockCount -= 1;
+	table->localSymbolCount = blockIndex;
+}
+

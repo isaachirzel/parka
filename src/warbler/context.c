@@ -52,11 +52,6 @@ const char *typeAnnotationSymbol(const TypeContext *type, const ProgramContext *
 	}
 }
 
-void freeMemberContext(MemberContext *member)
-{
-	deallocate(member->name);
-}
-
 void freeConstantContext(ConstantContext *context)
 {
 	if (context->type == CONSTANT_STRING)
@@ -65,28 +60,20 @@ void freeConstantContext(ConstantContext *context)
 
 void freeTypeContext(TypeContext *context)
 {
-	
-	switch (context->type)
-	{
-		case ANNOTATION_STRUCT:
-		case ANNOTATION_PRIMITIVE:
-			break;
+	if (context->type == ANNOTATION_CONSTANT)
+		freeConstantContext(&context->constant);
+}
 
-		case ANNOTATION_CONSTANT:
-			freeConstantContext(&context->constant);
-			break;
-	}
+void freeMemberContext(MemberContext *context)
+{
+	freeTypeContext(&context->type);
+	deallocate(context->name);
 }
 
 void freeFunctionSignatureContext(FunctionSignatureContext *context)
 {
 	freeParameterListContext(&context->parameters);
 	freeTypeContext(&context->returnType);
-}
-
-void freeParameterListContext(ParameterListContext *context)
-{
-	deallocate(context->data);
 }
 
 void freeAssignmentContext(AssignmentContext *context)
@@ -119,6 +106,9 @@ void freeFunctionContext(FunctionContext *context)
 
 void freeExpressionContext(ExpressionContext *context)
 {
+	if (!context)
+		return;
+	
 	switch (context->type)
 	{
 		case EXPRESSION_ASSIGNMENT:
@@ -164,15 +154,22 @@ void freeVariableContext(VariableContext *context)
 
 void freeDeclarationContext(DeclarationContext *context)
 {
+	if (!context)
+		return;
+		
 	freeExpressionContext(&context->value);
 }
 
 void freeStatementContext(StatementContext *context)
 {
 	if (context->isDeclaration)
-		return freeDeclarationContext(context->declaration);
-
-	freeExpressionContext(context->expression);
+	{
+		freeDeclarationContext(context->declaration);
+	}
+	else
+	{
+		freeExpressionContext(context->expression);
+	}
 }
 
 void freeBlockContext(BlockContext* context)
@@ -181,4 +178,57 @@ void freeBlockContext(BlockContext* context)
 		freeStatementContext(context->statements + i);
 
 	deallocate(context->statements);
+}
+
+void freeParameterListContext(ParameterListContext *context)
+{
+	// Freeing individual parameters not necessary as it is a list of indeces
+	deallocate(context->data);
+}
+
+void freePackageContext(PackageContext *context)
+{
+	deallocate(context->name);
+}
+
+void freeStructContext(StructContext *context)
+{
+	for (usize i = 0; i < context->memberCount; ++i)
+		freeMemberContext(context->members + i);
+
+	deallocate(context->members);
+	deallocate(context->symbol);
+}
+
+void freeProgramContext(ProgramContext *context)
+{
+	// Structs
+	for (usize i = 0; i < context->structCount; ++i)
+		freeStructContext(context->structs + i);
+	
+	deallocate(context->structs);
+
+	// Functions
+	for (usize i = 0; i < context->functionCount; ++i)
+		freeFunctionContext(context->functions + i);
+
+	deallocate(context->functions);
+
+	// Variables
+	for (usize i = 0; i < context->variableCount; ++i)
+		freeVariableContext(context->variables + i);
+
+	deallocate(context->variables);
+
+	// Parameters
+	for (usize i = 0; i < context->parameterCount; ++i)
+		freeParameterContext(context->parameters + i);
+
+	deallocate(context->parameters);
+
+	// Packages
+	for (usize i = 0; i < context->packageCount; ++i)
+		freePackageContext(context->packages + i);
+
+	deallocate(context->packages);
 }

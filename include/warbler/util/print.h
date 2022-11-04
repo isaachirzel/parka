@@ -15,7 +15,10 @@ noreturn void _exitNotImplemented(const char *file, usize line, const char *func
 void enableColorPrinting(bool enabled);
 
 void _print(const char *file, u32 line, const char *msg);
+void _printFmt(const char *file, u32 line, const char *msg, ...);
 #define print(msg) _print(__FILE__, __LINE__, msg)
+
+#define printFmt(msg, ...) _printFmt(__FILE__, __LINE__, msg, __VA_ARGS__)
 
 // void printNote(const Snippet *text, const String *msg);
 // void printWarning(const Snippet *text, const String *msg);

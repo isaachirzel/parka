@@ -1013,7 +1013,8 @@ bool parseConstant(ExpressionSyntax *out, Token *token)
 			return parseBooleanConstant(out, token);
 
 		default:
-			exitWithError("Invalid TokenType for constant: %d", token->type);
+			printParseError(token, "constant", NULL);
+			return false;
 	}
 }
 
@@ -1052,12 +1053,12 @@ bool parseFunction(FunctionSyntax *out, Token *token)
 		return false;
 	}
 
-	FunctionSyntax syntax;
-	
-	syntax.name = *token;
+	FunctionSyntax syntax =
+	{
+		.name = *token,
+	};
 
 	incrementToken(token);
-
 
 	if (!parseFunctionSignature(&syntax.signature, token))
 		goto error;
@@ -1203,8 +1204,17 @@ bool parseBlock(ExpressionSyntax *out, Token *token)
 
 	BlockSyntax syntax = { 0 };
 
-	while (token->type != TOKEN_RIGHT_BRACE)
+	while (true)
 	{
+		if (token->type == TOKEN_RIGHT_BRACE)
+			break;
+
+		if (token->type == TOKEN_END_OF_FILE)
+		{
+			printParseError(token, "'}'", NULL);
+			return false;
+		}
+
 		StatementSyntax statement = { 0 };
 
 		if (!parseStatement(&statement, token))
@@ -1229,9 +1239,6 @@ error:
 
 bool parseDeclaration(DeclarationSyntax *out, Token *token)
 {
-	assert(token->type == TOKEN_KEYWORD_VAR);
-	incrementToken(token);
-	
 	DeclarationSyntax syntax = { 0 };
 
 	if (!parseVariable(&syntax.variable, token))
@@ -1459,9 +1466,9 @@ error:
 
 bool parseVariable(VariableSyntax *out, Token *token)
 {
-	VariableSyntax syntax = { 0 };
-
 	assert(token->type == TOKEN_KEYWORD_VAR);
+
+	VariableSyntax syntax = { 0 };
 
 	incrementToken(token);
 
@@ -1545,9 +1552,48 @@ error:
 	return true;
 }
 
+usize getPathSize(const char *path)
+{
+	usize size = 0;
+
+	for (const char *iter = path; *iter; ++iter)
+	{
+		if (*iter == '/' || *iter == '\\')
+			size += 1;
+
+		size += 1;
+	}
+}
+
+char *getPackageFromDirectory(const Directory *directory)
+{
+	String symbol = { 0 };
+	usize capacity = getPathSize(directory->path);
+
+	stringReserve(&symbol, capacity);
+
+	const char *path = directory->path;
+
+	for (const char *iter = path; *iter; ++iter)
+	{
+		if (*iter == '/')
+		{
+			stringPushCString(&symbol, "::");
+			continue;
+		}
+
+		stringPushChar(&symbol, *iter);
+	}
+
+	return symbol.data;
+}
+
 bool parsePackage(PackageSyntax *out, const Directory *directory)
 {
-	PackageSyntax syntax = { 0 };
+	PackageSyntax syntax =
+	{
+		.name = getPackageFromDirectory(directory)
+	};
 
 	for (usize i = 0; i < directory->fileCount; ++i)
 	{
@@ -1563,18 +1609,16 @@ bool parsePackage(PackageSyntax *out, const Directory *directory)
 		resizeArray(syntax.functions, newFunctionCount);
 
 		for (usize j = 0; j < module.functionCount; ++j)
-		{
 			syntax.functions[syntax.functionCount + j] = module.functions[j];
-		}
+
+		syntax.functionCount = newFunctionCount;
 
 		usize newStructCount = syntax.structCount + module.structCount;
 
 		resizeArray(syntax.structs, newStructCount);
 
 		for (usize j = 0; j < module.structCount; ++j)
-		{
 			syntax.structs[syntax.structCount + j] = module.structs[j];
-		}
 
 		syntax.structCount = newStructCount;
 	}

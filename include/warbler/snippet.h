@@ -6,7 +6,7 @@
 
 typedef struct Snippet
 {
-	const File *file;
+	char *filename;
 	StringView* lines;
 	usize lineCount;
 	usize endCol;
@@ -17,5 +17,6 @@ typedef struct Snippet
 Snippet snippetFromFile(const File *file, usize pos, usize length);
 Snippet snippetFromToken(const Token *token);
 Snippet snippetFromTokens(const Token *left, const Token *right);
+void freeSnippet(Snippet *snippet);
 
 #endif

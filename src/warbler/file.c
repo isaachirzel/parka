@@ -76,24 +76,35 @@ bool writeFileText(const char *filepath, const String *content)
 	return true;
 }
 
+static void addLine(File *file, usize length)
+{
+	file->lineCount += 1;
+	file->lineLengths = resizeArray(file->lineLengths, file->lineCount);
+	file->lineLengths[file->lineCount - 1] = length;
+}
+
 static void getLineLengths(File *file)
 {
-	usize estimatedLineCount = file->length / 80 + 1;
 	usize lastStartOfLine = 0;
+	usize end = file->length + 1;
 
 	for (usize i = 0; i < file->length; ++i)
 	{
-		if (file->src[i] == '\n')
-		{
-			usize lineLength = i - lastStartOfLine + 1;
+		char character = file->src[i];
 
-			file->lineCount += 1;
-			file->lineLengths = resizeArray(file->lineLengths, file->lineCount);
-			file->lineLengths[file->lineCount - 1] = lineLength;
+		if (character == '\n')
+		{
+			usize length = (i + 1) - lastStartOfLine;
+
+			addLine(file, length);
 
 			lastStartOfLine = i + 1;
 		}
 	}
+
+	usize length = (file->length + 1) - lastStartOfLine;
+
+	addLine(file, length);
 }
 
 File fileRead(const char *filepath)
@@ -112,7 +123,7 @@ File fileRead(const char *filepath)
 	return file;
 }
 
-struct File fileFrom(const char *name, const char *text)
+File fileFrom(const char *name, const char *text)
 {
 	String str = stringFrom(text);
 
@@ -163,13 +174,15 @@ usize fileGetCol(const File *file, usize startPos)
 
 char fileGetChar(const File *file, usize pos)
 {
-	assert(pos < file->length);
+	assert(file);
+	assert(pos <= file->length);
 
 	return file->src[pos];
 }
 
 char *fileGetText(const File *file, usize pos, usize length)
 {
+	assert(file);
 	assert(pos + length < file->length);
 
 	char *text = allocate(length + 1);

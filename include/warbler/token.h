@@ -99,6 +99,7 @@ typedef struct Token
 	TokenType type;
 } Token;
 
+bool tokenIsSame(const Token *a, const Token *b);
 Token getInitialToken(const File *file);
 void incrementToken(Token *token);
 const char *tokenCategory(const Token *token);

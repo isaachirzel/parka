@@ -9,6 +9,7 @@
 #include <warbler/util/memory.h>
 #include <warbler/syntax.h>
 #include <warbler/context.h>
+#include <warbler/scope.h>
 #include <assert.h>
 
 typedef enum ValidationStatus
@@ -20,18 +21,10 @@ typedef enum ValidationStatus
 
 typedef struct SymbolData
 {
-	union
-	{
-		const StructSyntax *structSyntax;
-		const FunctionSyntax *functionSyntax;
-		const VariableSyntax *variableSyntax;
-		const ParameterSyntax *parameterSyntax;
-	};
-
 	char *symbol;
 	usize index;
 	SymbolType type;
-	ValidationStatus status;
+	bool isValid;
 	bool isDestroyed;
 } SymbolData;
 
@@ -39,74 +32,51 @@ typedef struct SymbolTable
 {
 	SymbolData *globalSymbols;
 	usize globalSymbolCount;
+	usize globalSymbolCapacity;
+	
+	// Local symbols
 	SymbolData *localSymbols;
 	usize localSymbolCount;
 	usize localSymbolCapacity;
-	char **packages;
-	usize packageCapacity;
-	usize packageCount;
 
-	StructContext *structs;
-	FunctionContext *functions;
-	VariableContext *variables;
-	ParameterContext *parameters;
-	usize structCount;
-	usize functionCount;
-	usize variableCount;
-	usize parameterCount;
+	// Packages
+	Scope scope;
+
+	// Blocks
+	usize *blocks;
+	usize blockCount;
+	usize blockCapacity;
+
+	// Context
+	ProgramContext *context;
+	const ProgramSyntax *syntax;
 } SymbolTable;
 
-typedef struct AddSymbolResult
-{
-	bool success;
-	SymbolData *data;
-} AddSymbolResult;
-
-bool symbolTableGenerateGlobals(SymbolTable *table, const ProgramSyntax *program);
+SymbolTable symbolTableCreate(ProgramContext *context, const ProgramSyntax *syntax);
+void symbolTableDestroy(SymbolTable *table);
+SymbolData *symbolTableResolve(SymbolTable *table, const char *identifier);
 SymbolData *symbolTableFind(SymbolTable *table, const char *symbol);
 SymbolData *symbolTableFindGlobal(SymbolTable *table, const char *symbol);
-SymbolData *symbolTableFindLocal(SymbolTable *table, const char *symbol);
+SymbolData *symbolTableFindFunctionLocal(SymbolTable *table, const char *symbol);
 void popSymbols(SymbolTable *table, usize index);
 char *generateSymbol(const SymbolTable *table, AnnotationType type, usize index);
-const char *getSymbolTypeName(SymbolType type);
-bool addGlobalSymbols(SymbolTable *table, const ProgramSyntax *syntax);
-
-SymbolData *symbolTableAddGlobal(SymbolTable *table, SymbolData *data);
-SymbolData *symbolTableAddLocal(SymbolTable *table, SymbolData *data);
-SymbolData *symbolTableAddFunction(SymbolTable *table, const FunctionSyntax *syntax);
-SymbolData *symbolTableAddStruct(SymbolTable *table, const StructSyntax *syntax);
-SymbolData *symbolTableAddVariable(SymbolTable *table, const VariableSyntax *syntax);
-SymbolData *symbolTableAddParameter(SymbolTable *table, const ParameterSyntax *syntax);
-
-void symbolTableValidateVariable(SymbolTable *table, SymbolData *data, VariableContext *context);
-void symbolTableValidateParameter(SymbolTable *table, SymbolData *data, ParameterContext *context);
-void symbolTableValidateStruct(SymbolTable *table, SymbolData *data, StructContext *context);
-void symbolTableValidateFunction(SymbolTable *table, SymbolData *data, FunctionContext *context);
-
-bool symbolTableFromProgramSyntax(SymbolTable *out, const ProgramSyntax *program);
+char *symbolTableCreateSymbol(SymbolTable *table, const char *identifier);
+SymbolData *symbolTableAddGlobal(SymbolTable *table, const char *symbol);
+SymbolData *symbolTableAddLocal(SymbolTable *table, const char *symbol);
+usize symbolTableAddFunction(SymbolTable *table, const FunctionContext *context);
+usize symbolTableAddStruct(SymbolTable *table, const StructContext *context);
+usize symbolTableAddVariable(SymbolTable *table, const VariableContext *context);
+usize symbolTableAddParameter(SymbolTable *table, const ParameterContext *context);
+void symbolTablePushBlock(SymbolTable *table);
+void symbolTablePopBlock(SymbolTable *table);
 void symbolTableSetScopeFromSymbol(SymbolTable *table, const char *symbol);
-char *symbolTableGetSymbol(AnnotationType type, usize index);
-
-static inline SymbolData createPackageSymbol(const char *symbol)
-{
-	SymbolData data =
-	{
-		.symbol = duplicateString(symbol),
-		.type = SYMBOL_PACKAGE,
-		.status = VALIDATION_VALID
-	};
-
-	return data;
-}
+const char *getSymbolTypeName(SymbolType type);
+const char *symbolTableGetSymbol(AnnotationType type, usize index);
 
 void symbolDataValidate(SymbolData *symbol, usize index);
 void symbolDataInvalidate(SymbolData *symbol);
 void symbolDataDestroy(SymbolData *symbol);
 void symbolDataReinitialize(SymbolData *symol);
-
-static inline bool isSymbolValidated(const SymbolData *symbol) { return symbol->status == VALIDATION_VALID; }
-static inline bool isSymbolInvalid(const SymbolData *symbol) { return symbol->status == VALIDATION_INVALID; }
-static inline bool isSymbolNotYetValidated(const SymbolData *symbol) { return symbol->status == VALIDATION_NOT_YET; }
 
 const StructContext *programStructAt(const ProgramContext *program, usize index);
 const FunctionContext *programFunctionAt(const ProgramContext *program, usize index);

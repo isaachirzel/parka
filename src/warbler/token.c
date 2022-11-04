@@ -697,3 +697,15 @@ usize tokenCopyText(char *out, const Token *token)
 
 	return token->length;
 }
+
+bool tokenIsSame(const Token *a, const Token *b)
+{
+	// TODO: Do this? return memcmp(a, b, sizeof(Token)) == 0;
+
+	bool isEqual = a->file == b->file
+		&& a->pos == b->pos
+		&& a->length == b->length
+		&& a->type == b->type;
+
+	return isEqual;
+}

@@ -1,5 +1,7 @@
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
+#include <warbler/scope.h>
+#include <string.h>
 
 const char *annotationTypeName(AnnotationType type)
 {
@@ -27,7 +29,7 @@ bool validateType(TypeContext *out, const TypeSyntax *syntax, SymbolTable *symbo
 		return false;
 	}
 
-	if (isSymbolInvalid(symbol))
+	if (!symbol->isValid)
 		return false;
 
 	AnnotationType annotationType;
@@ -57,7 +59,7 @@ bool validateType(TypeContext *out, const TypeSyntax *syntax, SymbolTable *symbo
 	return true;
 }
 
-bool validateStructMember(MemberContext *out, const MemberSyntax *syntax, SymbolTable *symbols, ContainingTypes *containingTypes)
+bool validateStructMember(MemberContext *out, const MemberSyntax *syntax, SymbolTable *symbols, Scope *scope)
 {
 	MemberContext context =
 	{
@@ -66,14 +68,19 @@ bool validateStructMember(MemberContext *out, const MemberSyntax *syntax, Symbol
 	};
 
 	char *typeName = tokenGetText(&syntax->type.name);
-	SymbolData *symbol = symbolTableFindGlobal(symbols, typeName);
+	SymbolData *data = symbolTableFindGlobal(symbols, typeName);
 
-	if (symbol && symbol->type == SYMBOL_STRUCT && isSymbolNotYetValidated(symbol))
+	if (!data)
 	{
-		StructContext strct;
+		// TODO: Search syntax tree
+		printTokenError(&syntax->type.name, "Unable to find type: %s", typeName);
+		goto error;
+	}
 
-		if (!validateStruct(&strct, symbol->structSyntax, symbols, containingTypes))
-			goto error;
+	if (scopeContains(scope, data->symbol))
+	{
+		printTokenError(&syntax->type.name, "Member creates infinite size struct. Try using a reference or pointer.");
+		goto error;
 	}
 
 	if (!validateType(&context.type, &syntax->type, symbols))
@@ -86,125 +93,119 @@ bool validateStructMember(MemberContext *out, const MemberSyntax *syntax, Symbol
 error:
 
 	freeMemberContext(&context);
-
 	return false;
 }
 
-bool validateStruct(StructContext *out, const StructSyntax *syntax, SymbolTable *symbols, ContainingTypes *containingTypes)
+bool validateStruct(StructContext *out, const StructSyntax *syntax, SymbolTable *symbols, Scope *scope)
 {
+	// TODO: Think about implications of allowing this struct to validate if there is a duplicate named struct
+	// TODO: Stack-based identifier string
 	char *identifier = tokenGetText(&syntax->name);
-	SymbolData *data = symbolTableFindGlobal(symbols, identifier);
+	char *symbol = symbolTableCreateSymbol(symbols, identifier);
+
+	scopePush(scope, symbol);
+	deallocate(identifier);
+
 	bool success = true;
 
-	// FIXME: Push to pointer
-	// containingTypes.pushBack(symbol);
+	StructContext context =
+	{
+		.symbol = symbol,
+		.memberCount = syntax->memberCount
+	};
 
-	MemberContext *members;
-	usize memberCount = 0;
-
-	makeArray(members, syntax->memberCount);
+	makeArray(context.members, context.memberCount);
 
 	for (usize i = 0; i < syntax->memberCount; ++i)
 	{
 		MemberSyntax *memberSyntax = syntax->members + i;
-		MemberContext context;
+		MemberContext *memberContext = context.members + i;
 
-		success = success && validateStructMember(&context, memberSyntax, symbols, containingTypes);
+		success = success && validateStructMember(memberContext, memberSyntax, symbols, scope);
 
-		members[memberCount++] = context;
-
-		if (!success)
+		for (usize j = 0; j < i; ++j)
 		{
-			char *name = tokenGetText(&memberSyntax->name);
-
-			printTokenError(&syntax->name, "A member with name '%s' is already declared in struct '%s'.", name, data->symbol);
-			deallocate(name);
-			// TODO: Show previous declaration
+			if (tokenIsSame(&memberSyntax->name, &syntax->members[j].name))
+			{
+				success = false;
+				// TODO: Stack based string
+				char *name = tokenGetText(&memberSyntax->name);
+				printTokenError(&syntax->name, "A member with name '%s' is already declared in struct '%s'.", name, context.symbol);
+				// TODO: Show previous declaration
+				deallocate(name);
+				// Break to avoid showing duplicate, incorrect errors
+				break;
+			}
 		}
 	}
 
-	// FIXME: Pop pointer
-	// containingTypes.popBack();
+	scopePop(scope);
 
 	if (success)
-	{
-		char *symbol = duplicateString(data->symbol);
+		success = symbolTableAddStruct(symbols, &context);
 
-		StructContext context =
-		{
-			.symbol = symbol,
-			.members = members,
-			.memberCount = memberCount
-		};
-		
-		symbolTableValidateStruct(symbols, data, &context);
-	}
-	else
-	{
-		for (usize i = 0; i < memberCount; ++i)
-			freeMemberContext(members + i);
+	if (!success)
+		goto error;
 
-		deallocate(members);
+	*out = context;
 
-		symbolDataInvalidate(data);
-	}
+	return true;
 
-	return success;
+error:
+	freeStructContext(&context);
+	return false;
 }
 
-bool validateParameter(ParameterContext *out, const ParameterSyntax *syntax, SymbolTable *symbols)
+bool validateParameter(usize *out, const ParameterSyntax *syntax, SymbolTable *symbols)
 {
-	TypeContext context;
-
-	if (!validateType(&context, &syntax->type, symbols))
-		return false;
-
-	char *name = tokenGetText(&syntax->name);
-	ParameterContext parameter =
+	ParameterContext context =
 	{
-		.name = name,
-		.type = context,
+		.name = tokenGetText(&syntax->name),
 		.isMutable = syntax->isMutable
 	};
 
-	*out = parameter;
+	if (!validateType(&context.type, &syntax->type, symbols))
+		goto error;
 
+	usize index = symbolTableAddParameter(symbols, &context);
+
+	if (index == SIZE_MAX)
+		goto error;
+
+	*out = index;
 	return true;
+
+error:
+
+	freeParameterContext(&context);
+	return false;
 }
 
 bool validateParameterList(ParameterListContext *out, const ParameterListSyntax *syntax, SymbolTable *symbols)
 {
-	ParameterListContext parameters;
+	ParameterListContext context =
+	{
+		.count = syntax->count
+	};
 	
-	parameters.count = syntax->count;
-
-	makeArray(parameters.data, parameters.count);
+	makeArray(context.data, context.count);	
 
 	bool success = true;
 
 	for (usize i = 0; i < syntax->count; ++i)
-	{
-		const ParameterSyntax *parameter = syntax->data + i;
-		SymbolData *data = symbolTableAddParameter(symbols, parameter);
-
-		success = success && data;
-
-		ParameterContext context;
-
-		success = success && validateParameter(&context, parameter, symbols);
-
-		if (!success)
-			continue;
-
-		symbolTableValidateParameter(symbols, data, &context);
-
-		parameters.data[i] = data->index;
-	}
+		success = success && validateParameter(&context.data[i], &syntax->data[i], symbols);
 
 	if (!success)
-		deallocate(parameters.data);
+		goto error;
 
-	return success;
+	*out = context;
+
+	return true;
+
+error:
+
+	freeParameterListContext(&context);
+	return false;
 }
 
 bool validateFunctionSignature(FunctionSignatureContext *out, const FunctionSignatureSyntax *syntax, SymbolTable *symbols)
@@ -327,10 +328,40 @@ bool validateAssignment(ExpressionContext *out, const AssignmentSyntax *syntax, 
 	return true;
 }
 
+bool validateBlock(ExpressionContext *out, const BlockSyntax *syntax, SymbolTable *symbols)
+{
+	bool success = true;
+	BlockContext context =
+	{
+		.count = syntax->count
+	};
+
+	makeArray(context.statements, syntax->count);
+
+	for (usize i = 0; i < syntax->count; ++i)
+		success = success && validateStatement(&context.statements[i], &syntax->statements[i], symbols);
+
+	if (!success)
+		goto error;
+
+	*makeNew(out->block) = context;
+	out->type = EXPRESSION_BLOCK;
+
+	return true;
+
+error:
+
+	freeBlockContext(&context);
+	return false;
+}
+
 bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax, SymbolTable *symbols)
 {
 	switch (syntax->type)
 	{
+		case EXPRESSION_BLOCK:
+			return validateBlock(out, syntax->block, symbols);
+
 		case EXPRESSION_CONSTANT:
 			return validateConstant(out, syntax->constant);
 
@@ -344,20 +375,6 @@ bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax, 
 			exitWithError("Invalid expression type: %d.", syntax->type);
 	}
 }
-
-// void printInvalidConversionError(const char *left, const char *right)
-// {
-// 	printError("Expected value of type '%s', but got '%s'.", left, right);
-// }
-
-// void printInvalidConversionError(const TypeContext *to, const TypeContext *from, const SymbolTable *globals)
-// {
-// 	char *toSymbol = symbolTableGetSymbol(to->type, to->index);
-// 	char *fromSymbol = symbolTableGetSymbol(from->type, from->index);
-
-// 	printInvalidConversionError(toSymbol, fromSymbol);
-// }
-
 
 static bool validateStructConversion(const Token *token, const TypeContext *to, const TypeContext *from, const SymbolTable *globals)
 {
@@ -621,8 +638,7 @@ static bool validateExpressionConversion(TypeContext *out, SymbolTable *symbols,
 
 bool validateVariable(usize *out, const VariableSyntax *syntax, const ExpressionContext *value, SymbolTable *symbols)
 {
-	SymbolData *data = symbolTableAddVariable(symbols, syntax);
-	bool success = data;
+	bool success = true;
 
 	VariableContext context =
 	{
@@ -633,26 +649,28 @@ bool validateVariable(usize *out, const VariableSyntax *syntax, const Expression
 
 	if (syntax->isExplicitlyTyped)
 	{
-		if (!validateType(&context.type, &syntax->type, symbols))
-			success = false;
+		success = success && validateType(&context.type, &syntax->type, symbols);
 	}
 	else
 	{
 		context.type = getExpressionType(value, symbols);
 	}
 
-	if (success)
-	{
-		symbolTableValidateVariable(symbols, data, &context);
-		*out = data->index;
-	}
-	else
-	{
-		freeVariableContext(&context);
-		symbolDataInvalidate(data);
-	}
+	usize index = symbolTableAddVariable(symbols, &context);
 
-	return success;
+	success = success && index != SIZE_MAX;
+
+	if (!success)
+		goto error;
+
+	*out = index;
+
+	return true;
+
+error:
+
+	freeVariableContext(&context);
+	return false;
 }
 
 bool validateDeclarationStatement(DeclarationContext *out, const DeclarationSyntax *syntax, SymbolTable *symbols)
@@ -672,39 +690,6 @@ error:
 
 	freeDeclarationContext(&context);
 	return false;
-}
-
-bool validateBlock(BlockContext *out, const BlockSyntax *syntax, SymbolTable *symbols)
-{
-	BlockContext context = { 0 };
-	bool success = true;
-
-	for (usize i = 0; i < syntax->count; ++i)
-	{
-		const StatementSyntax *statementSyntax = syntax->statements + i;
-
-		StatementContext statement;
-
-		if (!validateStatement(&statement, statementSyntax, symbols))
-		{
-			success = false;
-			continue;
-		}
-
-		usize index = context.count;
-
-		resizeArray(context.statements, ++context.count)[index] = statement; 
-	}
-
-	if (!success)
-	{
-		freeBlockContext(&context);
-		return false;
-	}
-
-	*out = context;
-
-	return true;
 }
 
 bool validateStatement(StatementContext *out, const StatementSyntax *syntax, SymbolTable *symbols)
@@ -733,12 +718,12 @@ bool validateStatement(StatementContext *out, const StatementSyntax *syntax, Sym
 	return true;
 }
 
-bool validateFunction(FunctionContext *out, const FunctionSyntax *syntax, SymbolTable *symbols)
+bool validateFunction(const FunctionSyntax *syntax, SymbolTable *symbols)
 {
 	bool success = true;
 	FunctionContext context = { 0 };
 	char *name = tokenGetText(&syntax->name);
-	SymbolData *data = symbolTableAddFunction(symbols, syntax);
+	SymbolData *data = symbolTableFindGlobal(symbols, name);
 
 	success = success && data;
 
@@ -751,9 +736,11 @@ bool validateFunction(FunctionContext *out, const FunctionSyntax *syntax, Symbol
 	if (!success)
 		goto error;
 
-	symbolTableValidateFunction(symbols, data, &context);
+	usize index = symbolTableAddFunction(symbols, &context);
 
-	*out = context;
+	if (index == SIZE_MAX)
+		goto error;
+
 	return true;
 
 error:
@@ -762,49 +749,56 @@ error:
 	return false;
 }
 
-bool validate(ProgramContext *out, const ProgramSyntax *syntax)
+bool validatePackage(const PackageSyntax *syntax, SymbolTable *symbols)
 {
-	ProgramContext context = { 0 };
-	SymbolTable symbols;
-
-	if (!symbolTableGenerateGlobals(&symbols, syntax))
-		return false;
-
 	bool success = true;
-
-	ContainingTypes containingTypes = { 0 };
-
-	for (usize i = 0; i < symbols.globalSymbolCount; ++i)
+	PackageContext context =
 	{
-		const SymbolData *global = symbols.globalSymbols + i;
+		.name = duplicateString(syntax->name)
+	};
 
-		if (isSymbolValidated(global))
-			continue;
-
-		symbolTableSetScopeFromSymbol(&symbols, global->symbol);
-
-		switch (global->type)
-		{
-			case SYMBOL_STRUCT:
-				StructContext strct;
-				success = success && validateStruct(&strct, global->structSyntax, &symbols, &containingTypes);
-				containingTypes.count = 0;
-				break;
-
-			case SYMBOL_FUNCTION:
-				FunctionContext function;
-				success = success && validateFunction(&function, global->functionSyntax, &symbols);
-				break;
-
-			default:
-				break;
-		}
-	}		
+	for (usize i = 0; i < syntax->functionCount; ++i)
+		success = success && validateFunction(syntax->functions + i, symbols);
 
 	if (!success)
-		return false;
+		goto error;
 
-	*out = context;
+	ProgramContext *program = symbols->context;
+	usize index = program->packageCount;
+
+	resizeArray(program->packages, ++program->packageCount);
+
+	program->packages[index] = context;
 
 	return true;
+
+error:
+
+	freePackageContext(&context);
+	return false;
+}
+
+bool validate(ProgramContext *out, const ProgramSyntax *syntax)
+{
+	bool success = true;
+
+	ProgramContext context = { 0 };
+	Scope scope = { 0 };
+	SymbolTable symbols = symbolTableCreate(&context, syntax);
+
+	for (usize i = 0; i < syntax->packageCount; ++i)
+		success = success && validatePackage(syntax->packages + i, &symbols);
+
+	scopeDestroy(&scope);
+
+	if (!success)
+		goto error;
+
+	*out = context;
+	return true;
+
+error:
+
+	freeProgramContext(&context);
+	return false;
 }
