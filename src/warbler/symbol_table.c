@@ -56,7 +56,7 @@ static SymbolData *symbolTableFindLocalFromIndex(SymbolTable *table, usize index
 
 	while (true)
 	{
-		SymbolData *data = table->locals + i;
+		SymbolData *data = &table->locals[i];
 
 		if (!strcmp(symbol, data->symbol))
 			return data;
@@ -104,16 +104,16 @@ SymbolData *symbolTableFind(SymbolTable *table, const char *symbol)
 	return globalSymbol;
 }
 
-SymbolData *symbolTableDeclareLocal(SymbolTable *table, const char *symbol)
+SymbolData *symbolTableDeclareLocal(SymbolTable *table, const Token *name)
 {
-	assert(symbol);
-	
+	char *symbol = tokenGetText(name);
 	SymbolData *previous = symbolTableFindBlockLocal(table, symbol);
 
 	if (previous)
 	{
-		printError("'%s' is already declared in this block.", symbol);
-		// printNote("Previous declaration here.");
+		printTokenError(name, "'%s' is already declared in this block.", symbol);
+		printTokenNote(&previous->name, "Previous declaration here.");
+		deallocate(symbol);
 		return NULL;
 	}
 
@@ -126,6 +126,7 @@ SymbolData *symbolTableDeclareLocal(SymbolTable *table, const char *symbol)
 	*ptr = (SymbolData)
 	{
 		.symbol = duplicateString(symbol),
+		.name = *name,
 		.isValid = true
 	};
 

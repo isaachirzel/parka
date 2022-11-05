@@ -114,6 +114,8 @@ bool validateStructDeclaration(StructContext *out, const StructSyntax *syntax, S
 
 	SymbolData *data = symbolTableDeclareGlobal(table, out->symbol);
 
+	success = success && data;
+
 	if (data)
 	{
 		data-> id = (SymbolId)
@@ -123,11 +125,6 @@ bool validateStructDeclaration(StructContext *out, const StructSyntax *syntax, S
 			.module = table->moduleIndex,
 			.global = table->globalIndex
 		};
-	}
-	else
-	{
-		printError("'%s' is already declared.", out->symbol);
-		success = false;
 	}
 
 	return success;
@@ -445,7 +442,9 @@ bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *val
 		context->type = getExpressionType(value, table);
 	}
 
-	SymbolData *data = symbolTableDeclareLocal(table, context->name);
+	SymbolData *data = symbolTableDeclareLocal(table, &syntax->name);
+
+	success = success && data;
 
 	if (data)
 	{
@@ -457,11 +456,6 @@ bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *val
 			.global = table->globalIndex,
 			.local = table->localIndex
 		};
-	}
-	else
-	{
-		printError("'%' is already declared.", context->name);
-		success = false;
 	}
 
 	return success;
@@ -520,14 +514,11 @@ bool validateParameter(ParameterContext *out, const ParameterSyntax *syntax, Sym
 
 	success = success && validateType(&out->type, &syntax->type, table);
 
-	SymbolData *data = symbolTableDeclareLocal(table, out->name);
+	SymbolData *data = symbolTableDeclareLocal(table, &syntax->name);
 
-	if (!data)
-	{
-		printError("'%' is already declared.", out->name);
-		success = false;
-	}
-	else
+	success = success && data;
+	
+	if (data)
 	{
 		data->id = (SymbolId)
 		{
@@ -576,6 +567,7 @@ bool validateFunctionDeclaration(FunctionContext *out, const FunctionSyntax *syn
 
 	SymbolData *data = symbolTableDeclareGlobal(table, out->symbol);
 
+	success = success && data;
 	success = success && validateParameterList(&syntax->parameters, table);
 
 	if (syntax->hasReturnType)
@@ -603,10 +595,6 @@ bool validateFunctionDeclaration(FunctionContext *out, const FunctionSyntax *syn
 			.module = table->moduleIndex,
 			.global = table->globalIndex
 		};
-	}
-	else
-	{
-		printError("'%s' already declared.", out->symbol);
 	}
 
 	return success;

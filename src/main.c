@@ -7,7 +7,7 @@
 #define SOURCE "function main()\n"\
 "{\n"\
 "	var i: i32 = 0;\n"\
-"	var j: i32 = 1;\n"\
+"	var i: i32 = 1;\n"\
 "}\n"
 #define FILENAME "file.wb"
 #define FILEPATH "src"

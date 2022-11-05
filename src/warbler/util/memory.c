@@ -52,6 +52,8 @@ char *duplicateStringN(const char *string, usize n)
 
     memcpy(data, string, n);
 
+    data[n] = '\0';
+
     return data;
 }
 

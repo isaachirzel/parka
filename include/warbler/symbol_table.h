@@ -18,6 +18,7 @@ typedef struct SymbolData
 	SymbolId id;
 	bool isValid;
 	bool isDefined;
+	Token name;
 } SymbolData;
 
 typedef struct SymbolTable
@@ -57,7 +58,7 @@ char *generateSymbol(const SymbolTable *table, AnnotationType type, usize index)
 char *symbolTableCreateSymbol(SymbolTable *table, const char *identifier);
 
 SymbolData *symbolTableDeclareGlobal(SymbolTable *table, const char *symbol);
-SymbolData *symbolTableDeclareLocal(SymbolTable *table, const char *symbol);
+SymbolData *symbolTableDeclareLocal(SymbolTable *table, const Token *name);
 
 void symbolTablePushBlock(SymbolTable *table);
 void symbolTablePopBlock(SymbolTable *table);
