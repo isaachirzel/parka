@@ -106,6 +106,8 @@ SymbolData *symbolTableFind(SymbolTable *table, const char *symbol)
 
 SymbolData *symbolTableDeclareLocal(SymbolTable *table, const char *symbol)
 {
+	assert(symbol);
+	
 	SymbolData *previous = symbolTableFindBlockLocal(table, symbol);
 
 	if (previous)
@@ -120,6 +122,14 @@ SymbolData *symbolTableDeclareLocal(SymbolTable *table, const char *symbol)
 	incrementArray(table->locals, &table->localCount, &table->localCapacity);
 
 	SymbolData *ptr = table->locals + index;
+
+	*ptr = (SymbolData)
+	{
+		.symbol = duplicateString(symbol),
+		.isValid = true
+	};
+
+	return ptr;
 }
 
 void symbolTableSetScope(const char *symbol)
@@ -156,16 +166,16 @@ char *symbolTableGetSymbolForIdentifier(const SymbolTable *table, const char *id
 SymbolData *symbolTableResolve(SymbolTable *table, const char *identifier)
 {
 	ProgramContext *program = table->program;
-	
 	SymbolData *local = symbolTableFindFunctionLocal(table, identifier);
+	Scope *package = &table->package;
 
 	if (local)
 		return local;
 
-	for (i32 i = (i32)program->packageCount; i >= 0; --i)
+	for (i32 i = (i32)package->count; i >= 0; --i)
 	{
 		// TODO: Optimize with stack symbol
-		char *symbol = scopeCreateSymbolN(&table->package, identifier, i);
+		char *symbol = scopeCreateSymbolN(package, identifier, i);
 		SymbolData *iter = symbolTableFindGlobal(table, symbol);
 
 		deallocate(symbol);
@@ -220,11 +230,11 @@ char *symbolTableCreateSymbol(SymbolTable *table, const char *identifier)
 
 	for (usize i = 0; i < scope->count; ++i)
 	{
-		if (i > 0)
-			stringPushCString(&symbol, "::");
-
 		stringPushCString(&symbol, scope->names[i]);
+		stringPushCString(&symbol, "::");
 	}
+
+	stringPushCString(&symbol, identifier);
 
 	return symbol.data;
 }

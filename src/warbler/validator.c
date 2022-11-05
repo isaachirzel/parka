@@ -423,13 +423,18 @@ bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *val
 	PackageContext *package = &program->packages[table->packageIndex];
 	ModuleContext *module = &package->modules[table->moduleIndex];
 	FunctionContext *function = &module->functions[table->globalIndex];
-	VariableContext *context = &function->variables[table->localIndex];
 
 	table->localIndex = function->variableCount;
+	resizeArray(function->variables, ++function->variableCount);
 
-	context->name = tokenGetText(&syntax->name);
-	context->isExplicitlyTyped = syntax->isExplicitlyTyped;
-	context->isMutable = syntax->isMutable;
+	VariableContext *context = &function->variables[table->localIndex];
+
+	*context = (VariableContext)
+	{
+		.name = tokenGetText(&syntax->name),
+		.isExplicitlyTyped = syntax->isExplicitlyTyped,
+		.isMutable = syntax->isMutable
+	};
 
 	if (syntax->isExplicitlyTyped)
 	{
@@ -545,6 +550,9 @@ bool validateParameterList(const ParameterListSyntax *syntax, SymbolTable *table
 	PackageContext *package = &program->packages[table->packageIndex];
 	ModuleContext *module = &package->modules[table->moduleIndex];
 	FunctionContext *function = &module->functions[table->globalIndex];
+
+	function->parameterCount = syntax->count;
+	makeArray(function->parameters, function->parameterCount);
 
 	for (usize i = 0; i < syntax->count; ++i)
 	{

@@ -51,7 +51,7 @@ void scopeClear(Scope *scope)
 
 char *scopeCreateSymbolN(const Scope *scope, const char *identifier, usize n)
 {
-	String symbol;
+	String symbol = { 0 };
 
 	stringReserve(&symbol, 128);
 
