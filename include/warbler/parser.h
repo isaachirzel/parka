@@ -30,7 +30,6 @@ bool parseFunction(FunctionSyntax *out, Token *token);
 bool parseArgumentList(ArgumentListSyntax* out, Token *token);
 bool parseParameter(ParameterSyntax *out, Token *token);
 bool parseParameterList(ParameterListSyntax *out, Token *token);
-bool parseFunctionSignature(FunctionSignatureSyntax *out, Token *token);
 
 // Statement
 bool parseDeclaration(DeclarationSyntax *out, Token *token);

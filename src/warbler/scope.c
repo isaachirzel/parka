@@ -1,5 +1,5 @@
 #include <warbler/scope.h>
-
+#include <warbler/util/string.h>
 #include <warbler/util/memory.h>
 #include <string.h>
 #include <assert.h>
@@ -39,4 +39,36 @@ void scopeDestroy(Scope *scope)
 		deallocate(scope->names[i]);
 
 	deallocate(scope->names);
+}
+
+void scopeClear(Scope *scope)
+{
+	for (usize i = 0; i < scope->count; ++i)
+		deallocate(scope->names[i]);
+
+	scope->count = 0;
+}
+
+char *scopeCreateSymbolN(const Scope *scope, const char *identifier, usize n)
+{
+	String symbol;
+
+	stringReserve(&symbol, 128);
+
+	for (usize i = 0; i < n; ++i)
+	{
+		const char *package = scope->names[i];
+
+		stringPush(&symbol, package);
+		stringPush(&symbol, "::");
+	}
+
+	stringPush(&symbol, identifier);
+
+	return symbol.data;
+}
+
+char *scopeCreateSymbol(const Scope *scope, const char *identifier)
+{
+	return scopeCreateSymbolN(scope, identifier, scope->count);
 }

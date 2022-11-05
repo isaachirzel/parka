@@ -7,7 +7,8 @@
 #include <stdnoreturn.h>
 
 noreturn void _exitWithError(const char *file, usize line, const char *fmt, ...);
-#define exitWithError(fmt, ...) _exitWithError(__FILE__, __LINE__, fmt, __VA_ARGS__)
+#define exitWithErrorFmt(fmt, ...) _exitWithError(__FILE__, __LINE__, fmt, __VA_ARGS__)
+#define exitWithError(message) _exitWithError(__FILE__, __LINE__, message)
 
 noreturn void _exitNotImplemented(const char *file, usize line, const char *func);
 #define exitNotImplemented() _exitNotImplemented(__FILE__, __LINE__, __func__)

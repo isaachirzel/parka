@@ -1041,47 +1041,6 @@ bool parseSymbol(ExpressionSyntax *out, Token *token)
 	return true;
 }
 
-bool parseFunction(FunctionSyntax *out, Token *token)
-{
-	assert(token->type == TOKEN_KEYWORD_FUNCTION);
-
-	incrementToken(token);
-
-	if (token->type != TOKEN_IDENTIFIER)
-	{
-		printParseError(token, "function name", NULL);
-		return false;
-	}
-
-	FunctionSyntax syntax =
-	{
-		.name = *token,
-	};
-
-	incrementToken(token);
-
-	if (!parseFunctionSignature(&syntax.signature, token))
-		goto error;
-
-	if (token->type != TOKEN_LEFT_BRACE)
-	{
-		printParseError(token, "'{' after function signature", NULL);
-		goto error;
-	}
-
-	if (!parseBlock(&syntax.body, token))
-		goto error;
-
-	*out = syntax;
-
-	return true;
-
-error:
-
-	freeFunctionSyntax(&syntax);
-	return false;
-}
-
 bool parseParameter(ParameterSyntax *out, Token *token)
 {
 	ParameterSyntax syntax = { 0 };
@@ -1170,29 +1129,54 @@ error:
 	return false;
 }
 
-bool parseFunctionSignature(FunctionSignatureSyntax *out, Token *token)
+bool parseFunction(FunctionSyntax *out, Token *token)
 {
-	FunctionSignatureSyntax syntax = { 0 };
+	assert(token->type == TOKEN_KEYWORD_FUNCTION);
+
+	incrementToken(token);
+
+	if (token->type != TOKEN_IDENTIFIER)
+	{
+		printParseError(token, "function name", NULL);
+		return false;
+	}
+
+	FunctionSyntax syntax =
+	{
+		.name = *token
+	};
+
+	incrementToken(token);
 
 	if (!parseParameterList(&syntax.parameters, token))
 		goto error;
 
-	if (token->type != TOKEN_COLON)
-		return true;
+	if (token->type == TOKEN_COLON)
+	{
+		incrementToken(token);
 
-	incrementToken(token);
+		if (!parseType(&syntax.returnType, token))
+			goto error;
 
-	if (!parseType(&syntax.returnType, token))
+		syntax.hasReturnType = true;
+	}
+
+	if (token->type != TOKEN_LEFT_BRACE)
+	{
+		printParseError(token, "'{' after function signature", NULL);
+		goto error;
+	}
+
+	if (!parseBlock(&syntax.body, token))
 		goto error;
 
-	syntax.hasReturnType = true;
-
 	*out = syntax;
+
 	return true;
 
 error:
 
-	freeFunctionSignatureSyntax(&syntax);
+	freeFunctionSyntax(&syntax);
 	return false;
 }
 
@@ -1592,35 +1576,20 @@ bool parsePackage(PackageSyntax *out, const Directory *directory)
 {
 	PackageSyntax syntax =
 	{
-		.name = getPackageFromDirectory(directory)
+		.name = getPackageFromDirectory(directory),
+		.moduleCount = directory->fileCount
 	};
+
+	makeArray(syntax.modules, syntax.moduleCount);
 
 	for (usize i = 0; i < directory->fileCount; ++i)
 	{
-		ModuleSyntax module = { 0 };
+		syntax.modules[i] = (ModuleSyntax) { 0 };
 
 		Token token = getInitialToken(directory->files + i);
 
-		if (!parseModule(&module, &token))
+		if (!parseModule(&syntax.modules[i], &token))
 			goto error;
-
-		usize newFunctionCount = syntax.functionCount + module.functionCount;
-
-		resizeArray(syntax.functions, newFunctionCount);
-
-		for (usize j = 0; j < module.functionCount; ++j)
-			syntax.functions[syntax.functionCount + j] = module.functions[j];
-
-		syntax.functionCount = newFunctionCount;
-
-		usize newStructCount = syntax.structCount + module.structCount;
-
-		resizeArray(syntax.structs, newStructCount);
-
-		for (usize j = 0; j < module.structCount; ++j)
-			syntax.structs[syntax.structCount + j] = module.structs[j];
-
-		syntax.structCount = newStructCount;
 	}
 
 	*out = syntax;

@@ -558,7 +558,7 @@ static Token getNextToken(const File *file, usize startPos)
 			return getQuoteToken(file, startPos);
 
 		default:
-			exitWithError("An invalid character was found in the source file: '%c'.", fileGetChar(file, startPos));
+			exitWithErrorFmt("An invalid character was found in the source file: '%c'.", fileGetChar(file, startPos));
 	}
 }
 
@@ -677,7 +677,7 @@ const char *tokenCategory(const Token *token)
 			return "keyword";
 
 		default:
-			exitWithError("Invalid TokenType: %d", token->type);
+			exitWithErrorFmt("Invalid TokenType: %d", token->type);
 	}
 }
 

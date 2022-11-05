@@ -6,7 +6,6 @@
 #include <warbler/symbol_table.h>
 
 bool validateStatement(StatementContext *out, const StatementSyntax *syntax, SymbolTable *symbols);
-bool validateStruct(StructContext *out, const StructSyntax *syntax, SymbolTable *symbols, Scope *containingTypes);
 bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax, SymbolTable *symbols);
 bool validate(ProgramContext *out, const ProgramSyntax *syntax);
 

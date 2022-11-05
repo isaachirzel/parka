@@ -298,18 +298,13 @@ typedef struct ParameterListSyntax
 	usize count;
 } ParameterListSyntax;
 
-typedef struct FunctionSignatureSyntax
-{
-	ParameterListSyntax parameters;
-	TypeSyntax returnType;
-	bool hasReturnType;
-} FunctionSignatureSyntax;
-
 typedef struct FunctionSyntax
 {
 	Token name;
-	FunctionSignatureSyntax signature;
+	ParameterListSyntax parameters;
+	TypeSyntax returnType;
 	ExpressionSyntax body;
+	bool hasReturnType;
 } FunctionSyntax;
 
 typedef struct ModuleSyntax
@@ -323,10 +318,8 @@ typedef struct ModuleSyntax
 typedef struct PackageSyntax
 {
 	char *name;
-	FunctionSyntax* functions;
-	usize functionCount;
-	StructSyntax* structs;
-	usize structCount;
+	ModuleSyntax *modules;
+	usize moduleCount;
 } PackageSyntax;
 
 typedef struct ProgramSyntax
@@ -361,7 +354,6 @@ void freeDeclarationSyntax(DeclarationSyntax *syntax);
 void freeAssignmentSyntax(AssignmentSyntax *syntax);
 void freeParameterListSyntax(ParameterListSyntax * syntax);
 void freeParameterSyntax(ParameterSyntax *syntax);
-void freeFunctionSignatureSyntax(FunctionSignatureSyntax *syntax);
 void freeFunctionSyntax(FunctionSyntax *syntax);
 void freeModuleSyntax(ModuleSyntax *syntax);
 void freePackageSyntax(PackageSyntax *syntax);

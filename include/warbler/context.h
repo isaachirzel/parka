@@ -54,11 +54,14 @@ enum PrimitiveIndex
 	STRING_INDEX
 };
 
-typedef struct SymbolContext
+typedef struct SymbolId
 {
-	usize index;
 	SymbolType type;
-} SymbolContext;
+	u32 package;
+	u32 module;
+	u32 global;
+	u32 local;
+} SymbolId;
 
 typedef struct ConstantContext
 {
@@ -77,7 +80,7 @@ typedef struct TypeContext
 {
 	union
 	{
-		usize index;
+		SymbolId id;
 		ConstantContext constant;
 	};
 	AnnotationType type;
@@ -88,7 +91,7 @@ typedef struct ExpressionContext
 	union
 	{
 		ConstantContext *constant;
-		SymbolContext *symbol;
+		SymbolId *symbolId;
 		struct AssignmentContext *assignment;
 		struct BlockContext *block;
 	};
@@ -160,13 +163,6 @@ typedef struct ParameterListContext
 	usize count;
 } ParameterListContext;
 
-typedef struct FunctionSignatureContext
-{
-	ParameterListContext parameters;
-	TypeContext returnType;
-	bool hasReturnType;
-} FunctionSignatureContext;
-
 typedef struct ParameterContext
 {
 	char *name;
@@ -177,7 +173,7 @@ typedef struct ParameterContext
 typedef struct FunctionContext
 {
 	char *symbol;
-	FunctionSignatureContext signature;
+	TypeContext returnType;
 	ExpressionContext body;
 	ParameterContext *parameters;
 	usize parameterCount;
@@ -185,26 +181,26 @@ typedef struct FunctionContext
 	usize variableCount;
 } FunctionContext;
 
+typedef struct ModuleContext
+{
+	StructContext *structs;
+	usize structCount;
+	FunctionContext* functions;
+	usize functionCount;
+} ModuleContext;
+
 typedef struct PackageContext
 {
-	char *name;
+	char *symbol;
+	ModuleContext *modules;
+	usize moduleCount;
 } PackageContext;
 
 typedef struct ProgramContext
 {
-	StructContext* structs;
-	usize structCount;
-	FunctionContext* functions;
-	usize functionCount;
-	VariableContext *variables;
-	usize variableCount;
-	ParameterContext *parameters;
-	usize parameterCount;
 	PackageContext *packages;
 	usize packageCount;
 } ProgramContext;
-
-const char *typeAnnotationSymbol(const TypeContext *type, const ProgramContext *program);
 
 extern const PrimitiveContext primitives[];
 extern const usize primitiveCount;
@@ -218,7 +214,6 @@ void freeParameterContext(ParameterContext *context);
 void freeVariableContext(VariableContext *context);
 void freeExpressionContext(ExpressionContext *context);
 void freeAssignmentContext(AssignmentContext *context);
-void freeFunctionSignatureContext(FunctionSignatureContext *context);
 void freeFunctionContext(FunctionContext *context);
 void freeMemberContext(MemberContext *context);
 void freePackageContext(PackageContext *context);

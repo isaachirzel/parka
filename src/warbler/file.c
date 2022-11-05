@@ -33,21 +33,21 @@ static String readFileText(const char *filepath)
 	
 	if (!file)
 	{
-		exitWithError("Failed to open file '%s'.", filepath);
+		exitWithErrorFmt("Failed to open file '%s'.", filepath);
 	}
 
 	String out;
 
 	if (!readStreamText(&out, file))
 	{
-		exitWithError("Failed to read file '%s'.", filepath);
+		exitWithErrorFmt("Failed to read file '%s'.", filepath);
 	}
 
 	fclose(file);
 
 	if (out.length == 0)
 	{
-		exitWithError("File '%s' was empty.", filepath);
+		exitWithErrorFmt("File '%s' was empty.", filepath);
 	}
 
 	return out;

@@ -69,3 +69,8 @@ void *_incrementArray(void *array, usize size, usize * restrict length, usize * 
 
     return reallocate(array, size * *capacity);
 }
+
+void *allocateArray(usize size, usize length)
+{
+    return calloc(length, size);
+}

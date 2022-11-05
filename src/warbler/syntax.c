@@ -62,7 +62,7 @@ void freeExpressionSyntax(ExpressionSyntax *self)
 		break;
 
 	default:
-		exitWithError("Invalid ExpressionType: %d", self->type);
+		exitWithErrorFmt("Invalid ExpressionType: %d", self->type);
 	}
 }
 
@@ -94,7 +94,7 @@ void freePostfixExpressionSyntax(PostfixExpressionSyntax *self)
 			break;
 
 		default:
-			exitWithError("Invalid ExpressionType: %d", self->type);
+			exitWithErrorFmt("Invalid ExpressionType: %d", self->type);
 	}
 }
 
@@ -127,30 +127,19 @@ void freeIfStatementSyntax(IfStatementSyntax *self)
 	}
 }
 
-void freePackageSyntax(PackageSyntax *self)
+void freePackageSyntax(PackageSyntax *syntax)
 {
-	deallocate(self->name);
+	for (usize i = 0; i < syntax->moduleCount; ++i)
+		freeModuleSyntax(&syntax->modules[i]);
 
-	for (usize i = 0; i < self->functionCount; ++i)
-	{
-		freeFunctionSyntax(self->functions + i);
-	}
-
-	for (usize i = 0; i < self->structCount; ++i)
-	{
-		freeStructSyntax(self->structs + i);
-	}
-
-	deallocate(self->functions);
-	deallocate(self->structs);
+	deallocate(syntax->name);
+	deallocate(syntax->modules);
 }
 
 void freeProgramSyntax(ProgramSyntax *self)
 {
 	for (usize i = 0; i < self->packageCount; ++i)
-	{
-		freePackageSyntax(self->packages + i);
-	}
+		freePackageSyntax(&self->packages[i]);
 
 	deallocate(self->packages);
 }
@@ -289,12 +278,7 @@ void freeParameterListSyntax(ParameterListSyntax *syntax)
 
 void freeFunctionSyntax(FunctionSyntax *syntax)
 {
-	freeFunctionSignatureSyntax(&syntax->signature);
 	freeExpressionSyntax(&syntax->body);
-}
-
-void freeFunctionSignatureSyntax(FunctionSignatureSyntax *syntax)
-{
 	freeParameterListSyntax(&syntax->parameters);
 
 	if (syntax->hasReturnType)

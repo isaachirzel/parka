@@ -78,7 +78,7 @@ static LogContext createLogContext(LogLevel level)
 			break;
 
 		default:
-			exitWithError("Invalid LogLevel: %d", level);
+			exitWithErrorFmt("Invalid LogLevel: %d", level);
 	}
 
 	return (LogContext)
@@ -229,7 +229,7 @@ static const char *getPrompt(LogLevel level)
 		case LOG_ERROR:
 			return "error";
 		default:
-			exitWithError("Invalid LogLevel: %d", level);
+			exitWithErrorFmt("Invalid LogLevel: %d", level);
 	}
 }
 

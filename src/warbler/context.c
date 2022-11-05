@@ -28,30 +28,6 @@ const PrimitiveContext *primitiveAt(usize index)
 	return primitives + index;
 }
 
-const char *typeAnnotationSymbol(const TypeContext *type, const ProgramContext *program)
-{
-	switch (type->type)
-	{
-		case ANNOTATION_STRUCT:
-		{
-			const StructContext *context = structAt(program, type->index);
-
-			return context->symbol;
-		}
-
-		case ANNOTATION_PRIMITIVE:
-		{
-			const PrimitiveContext *context = primitiveAt(type->index);
-
-			return context->symbol;
-		}
-
-		case ANNOTATION_CONSTANT:
-		default:
-			exitWithError("Invalid TypeAnnotationType: %d", type->type);
-	}
-}
-
 void freeConstantContext(ConstantContext *context)
 {
 	if (context->type == CONSTANT_STRING)
@@ -70,12 +46,6 @@ void freeMemberContext(MemberContext *context)
 	deallocate(context->name);
 }
 
-void freeFunctionSignatureContext(FunctionSignatureContext *context)
-{
-	freeParameterListContext(&context->parameters);
-	freeTypeContext(&context->returnType);
-}
-
 void freeAssignmentContext(AssignmentContext *context)
 {
 	freeExpressionContext(&context->lhs);
@@ -90,9 +60,8 @@ void freeParameterContext(ParameterContext *context)
 
 void freeFunctionContext(FunctionContext *context)
 {
-	deallocate(context->symbol);
+	freeTypeContext(&context->returnType);
 	freeExpressionContext(&context->body);
-	freeFunctionSignatureContext(&context->signature);
 
 	for (usize i = 0; i < context->parameterCount; ++i)
 		freeParameterContext(context->parameters + i);
@@ -100,6 +69,7 @@ void freeFunctionContext(FunctionContext *context)
 	for (usize i = 0; i < context->variableCount; ++i)
 		freeVariableContext(context->variables + i);
 
+	deallocate(context->symbol);
 	deallocate(context->parameters);
 	deallocate(context->variables);
 }
@@ -156,20 +126,16 @@ void freeDeclarationContext(DeclarationContext *context)
 {
 	if (!context)
 		return;
-		
+
 	freeExpressionContext(&context->value);
 }
 
 void freeStatementContext(StatementContext *context)
 {
 	if (context->isDeclaration)
-	{
-		freeDeclarationContext(context->declaration);
-	}
-	else
-	{
-		freeExpressionContext(context->expression);
-	}
+		return freeDeclarationContext(context->declaration);
+	
+	freeExpressionContext(context->expression);
 }
 
 void freeBlockContext(BlockContext* context)
@@ -186,11 +152,6 @@ void freeParameterListContext(ParameterListContext *context)
 	deallocate(context->data);
 }
 
-void freePackageContext(PackageContext *context)
-{
-	deallocate(context->name);
-}
-
 void freeStructContext(StructContext *context)
 {
 	for (usize i = 0; i < context->memberCount; ++i)
@@ -200,35 +161,31 @@ void freeStructContext(StructContext *context)
 	deallocate(context->symbol);
 }
 
+void freeModuleContext(ModuleContext *context)
+{
+	for (usize i = 0; i < context->structCount; ++i)
+		freeStructContext(&context->structs[i]);
+
+	for (usize i = 0; i < context->functionCount; ++i)
+		freeFunctionContext(&context->functions[i]);
+
+	deallocate(context->structs);
+	deallocate(context->functions);
+}
+
+void freePackageContext(PackageContext *context)
+{
+	for (usize i = 0; i < context->moduleCount; ++i)
+		freeModuleContext(&context->modules[i]);
+
+	deallocate(context->modules);
+	deallocate(context->symbol);
+}
+
 void freeProgramContext(ProgramContext *context)
 {
-	// Structs
-	for (usize i = 0; i < context->structCount; ++i)
-		freeStructContext(context->structs + i);
-	
-	deallocate(context->structs);
-
-	// Functions
-	for (usize i = 0; i < context->functionCount; ++i)
-		freeFunctionContext(context->functions + i);
-
-	deallocate(context->functions);
-
-	// Variables
-	for (usize i = 0; i < context->variableCount; ++i)
-		freeVariableContext(context->variables + i);
-
-	deallocate(context->variables);
-
-	// Parameters
-	for (usize i = 0; i < context->parameterCount; ++i)
-		freeParameterContext(context->parameters + i);
-
-	deallocate(context->parameters);
-
-	// Packages
 	for (usize i = 0; i < context->packageCount; ++i)
-		freePackageContext(context->packages + i);
+		freePackageContext(&context->packages[i]);
 
 	deallocate(context->packages);
 }
