@@ -4,10 +4,10 @@
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
 
-#define SOURCE "function main()\n"\
+#define SOURCE "function main(a: i32, a: i32)\n"\
 "{\n"\
 "	var i: u32 = 1;\n"\
-"	main();\n"\
+"	var i: u32 = 1;\n"\
 "}\n"
 #define FILENAME "file.wb"
 #define FILEPATH "src"

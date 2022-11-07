@@ -235,23 +235,23 @@ SymbolId *symbolTableDeclareStruct(const StructSyntax *syntax)
 	char *symbol = getSymbolFromToken(&syntax->name);
 	SymbolId *id = addGlobal(SYMBOL_STRUCT, table.structCount, symbol, &syntax->name);
 
-	if (!id)
-		return NULL;
-	
-	resizeArray(table.structs, ++table.structCount);
-
-	table.structs[id->index] = (StructContext)
+	if (id)
 	{
-		.symbol = symbol
-	};
+		resizeArray(table.structs, ++table.structCount);
 
-	resizeArray(table.validations, ++table.validationCount);
+		table.structs[id->index] = (StructContext)
+		{
+			.symbol = symbol
+		};
 
-	table.validations[table.validationCount - 1] = (Validation)
-	{
-		.structSyntax = syntax,
-		.id = *id
-	};
+		resizeArray(table.validations, ++table.validationCount);
+
+		table.validations[table.validationCount - 1] = (Validation)
+		{
+			.structSyntax = syntax,
+			.id = *id
+		};
+	}
 
 	return id;
 }
@@ -261,23 +261,23 @@ SymbolId *symbolTableDeclareFunction(const FunctionSyntax *syntax)
 	char *symbol = getSymbolFromToken(&syntax->name);
 	SymbolId *id = addGlobal(SYMBOL_FUNCTION, table.functionCount, symbol, &syntax->name);
 
-	if (!id)
-		return NULL;
-
-	resizeArray(table.functions, ++table.functionCount);
-
-	table.functions[id->index] = (FunctionContext)
+	if (id)
 	{
-		.symbol = symbol
-	};
+		resizeArray(table.functions, ++table.functionCount);
 
-	resizeArray(table.validations, ++table.validationCount);
+		table.functions[id->index] = (FunctionContext)
+		{
+			.symbol = symbol
+		};
 
-	table.validations[table.validationCount - 1] = (Validation)
-	{
-		.functionSyntax = syntax,
-		.id = *id
-	};
+		resizeArray(table.validations, ++table.validationCount);
+
+		table.validations[table.validationCount - 1] = (Validation)
+		{
+			.functionSyntax = syntax,
+			.id = *id
+		};
+	}
 
 	return id;
 }
@@ -314,12 +314,15 @@ SymbolId *symbolTableDeclareVariable(const VariableSyntax *syntax)
 	char *symbol = tokenGetText(&syntax->name);
 	SymbolId *id = addLocal(SYMBOL_VARIABLE, table.variableCount, symbol, &syntax->name);
 
-	resizeArray(table.variables, ++table.variableCount);
-
-	table.variables[id->index] = (VariableContext)
+	if (id)
 	{
-		.symbol = symbol
-	};
+		resizeArray(table.variables, ++table.variableCount);
+
+		table.variables[id->index] = (VariableContext)
+		{
+			.symbol = symbol
+		};
+	}
 
 	return id;
 }
@@ -329,12 +332,15 @@ SymbolId *symbolTableDeclareParameter(const ParameterSyntax *syntax)
 	char *symbol = tokenGetText(&syntax->name);
 	SymbolId *id = addLocal(SYMBOL_PARAMETER, table.parameterCount, symbol, &syntax->name);
 
-	resizeArray(table.variables, ++table.variableCount);
-
-	table.parameters[id->index] = (ParameterContext)
+	if (id)
 	{
-		.symbol = symbol
-	};
+		resizeArray(table.parameters, ++table.parameterCount);
+
+		table.parameters[id->index] = (ParameterContext)
+		{
+			.symbol = symbol
+		};
+	}
 
 	return id;
 }
@@ -455,7 +461,7 @@ void symbolDataDestroy(SymbolData *data)
 
 void symbolTableInitialize()
 {
-	SymbolTable table =
+	table = (SymbolTable)
 	{
 		.globalCount = primitiveCount,
 		.globalCapacity = primitiveCount
@@ -484,21 +490,63 @@ void symbolTableDestroy()
 	for (usize i = 0; i < table.globalCount; ++i)
 		symbolDataDestroy(&table.globals[i]);
 
-	deallocate(table.globals);
-
 	for (usize i = 0; i < table.localCount; ++i)
 		symbolDataDestroy(&table.locals[i]);
 
-	deallocate(table.locals);
+	for (usize i = 0; i < table.packageCount; ++i)
+		freePackageContext(&table.packages[i]);
+
+	for (usize i = 0; i < table.structCount; ++i)
+		freeStructContext(&table.structs[i]);
+
+	for (usize i = 0; i < table.functionCount; ++i)
+		freeFunctionContext(&table.functions[i]);
+
+	for (usize i = 0; i < table.parameterCount; ++i)
+		freeParameterContext(&table.parameters[i]);
+
+	for (usize i = 0; i < table.variableCount; ++i)
+		freeVariableContext(&table.variables[i]);
 
 	scopeDestroy(&table.package);
+
+	deallocate(table.globals);
+	deallocate(table.locals);
+	deallocate(table.validations);
 	deallocate(table.blocks);
+
+	table = (SymbolTable) { 0 };
 }
 
 ProgramContext symbolTableExport()
 {
-	exitNotImplemented();
-	ProgramContext context = { 0 };
+	ProgramContext context =
+	{
+		.packages = table.packages,
+		.packageCount = table.packageCount,
+		.structs = table.structs,
+		.structCount = table.structCount,
+		.functions = table.functions,
+		.functionCount = table.functionCount,
+		.parameters = table.parameters,
+		.parameterCount = table.parameterCount,
+		.variables = table.variables,
+		.variableCount = table.variableCount
+	};
+
+	table.packages = NULL;
+	table.structs = NULL;
+	table.functions = NULL;
+	table.parameters = NULL;
+	table.variables = NULL;
+
+	table.packageCount = 0;
+	table.structCount = 0;
+	table.functionCount = 0;
+	table.parameterCount = 0;
+	table.variableCount = 0;
+
+	symbolTableDestroy();
 
 	return context;
 }

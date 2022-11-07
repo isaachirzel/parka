@@ -346,11 +346,10 @@ static bool validateExpressionConversion(TypeContext *out, const ExpressionConte
 
 bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *value)
 {
-	bool success = true;
-
 	SymbolId *id = symbolTableDeclareVariable(syntax);
 
-	success = success && id;
+	if (!id)
+		return false;
 
 	VariableContext *context = symbolTableVariableAt(id->index);
 
@@ -358,15 +357,11 @@ bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *val
 	context->isMutable = syntax->isMutable;
 
 	if (syntax->isExplicitlyTyped)
-	{
-		success = success && validateType(&context->type, &syntax->type);
-	}
-	else
-	{
-		context->type = getExpressionType(value);
-	}
+		return validateType(&context->type, &syntax->type);
+	
+	context->type = getExpressionType(value);
 
-	return success;
+	return true;
 }
 
 bool validateDeclaration(DeclarationContext *out, const DeclarationSyntax *syntax)
