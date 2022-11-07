@@ -23,8 +23,8 @@ struct RelationalExpressionContext;
 struct BitShiftExpressionContext;
 struct AdditiveExpressionContext;
 struct MultiplicativeExpressionContext;
-struct PrefixExpressionContext;
-struct PostfixExpressionContext;
+struct PrefixContext;
+struct PostfixContext;
 struct ConstantContext;
 struct VariableContext;
 struct ParameterContext;
@@ -57,11 +57,15 @@ enum PrimitiveIndex
 typedef struct SymbolId
 {
 	SymbolType type;
-	u32 package;
-	u32 module;
-	u32 global;
-	u32 local;
+	usize index;
 } SymbolId;
+
+typedef struct SymbolIdList
+{
+	SymbolType type;
+	usize *indeces;
+	usize count;
+} SymbolIdList;
 
 typedef struct ConstantContext
 {
@@ -90,6 +94,8 @@ typedef struct ExpressionContext
 {
 	union
 	{
+		struct PostfixContext *postfix;
+		struct PrefixContext *prefix;
 		ConstantContext *constant;
 		SymbolId *symbolId;
 		struct AssignmentContext *assignment;
@@ -97,6 +103,23 @@ typedef struct ExpressionContext
 	};
 	ExpressionType type;
 } ExpressionContext;
+
+typedef struct ArgumentListContext
+{
+
+} ArgumentListContext;
+
+typedef struct PostfixContext
+{
+	ExpressionContext expression;
+
+	union
+	{
+		ArgumentListContext arguments;
+	};
+	
+	PostfixType type;
+} PostfixContext;
 
 typedef struct AssignmentContext
 {
@@ -128,7 +151,7 @@ typedef struct PrimitiveContenxt
 
 typedef struct VariableContext
 {
-	char *name;
+	char *symbol;
 	TypeContext type;
 	bool isExplicitlyTyped;
 	bool isMutable;
@@ -165,7 +188,7 @@ typedef struct ParameterListContext
 
 typedef struct ParameterContext
 {
-	char *name;
+	char *symbol;
 	TypeContext type;
 	bool isMutable;
 } ParameterContext;
@@ -173,38 +196,36 @@ typedef struct ParameterContext
 typedef struct FunctionContext
 {
 	char *symbol;
+	SymbolIdList parameters;
 	TypeContext returnType;
 	ExpressionContext body;
-	ParameterContext *parameters;
-	usize parameterCount;
-	VariableContext *variables;
-	usize variableCount;
 } FunctionContext;
-
-typedef struct ModuleContext
-{
-	StructContext *structs;
-	usize structCount;
-	FunctionContext* functions;
-	usize functionCount;
-} ModuleContext;
 
 typedef struct PackageContext
 {
 	char *symbol;
-	ModuleContext *modules;
-	usize moduleCount;
 } PackageContext;
 
 typedef struct ProgramContext
 {
+	// TODO: Make these arenas
 	PackageContext *packages;
 	usize packageCount;
+	StructContext *structs;
+	usize structCount;
+	FunctionContext* functions;
+	usize functionCount;
+	ParameterContext *parameters;
+	usize parameterCount;
+	VariableContext *variables;
+	usize variableCount;
 } ProgramContext;
 
 extern const PrimitiveContext primitives[];
 extern const usize primitiveCount;
 
+void freeSymbolIdList(SymbolIdList *context);
+void freePostfixContext(PostfixContext *context);
 void freeConstantContext(ConstantContext *context);
 void freeTypeContext(TypeContext *context);
 void freeBlockContext(BlockContext *context);

@@ -76,7 +76,7 @@ void freeArgumentListSyntax(ArgumentListSyntax *self)
 	deallocate(self->expressions);
 }
 
-void freePostfixExpressionSyntax(PostfixExpressionSyntax *self)
+void freePostfixExpressionSyntax(PostfixSyntax *self)
 {
 	freeExpressionSyntax(&self->expression);
 
@@ -258,7 +258,7 @@ void freeBitShiftExpressionSyntax(BitShiftExpressionSyntax *syntax)
 	deallocate(syntax->rhs);
 }
 
-void freePrefixExpressionSyntax(PrefixExpressionSyntax *syntax)
+void freePrefixExpressionSyntax(PrefixSyntax *syntax)
 {
 	freeExpressionSyntax(&syntax->expression);
 }

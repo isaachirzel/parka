@@ -18,24 +18,25 @@ const char *annotationTypeName(AnnotationType type)
 	}
 }
 
-bool validateType(TypeContext *out, const TypeSyntax *syntax, SymbolTable *table)
+bool validateType(TypeContext *out, const TypeSyntax *syntax)
 {
 	// TODO: Optimize name
 	char *name = tokenGetText(&syntax->name);
-	SymbolData *data = symbolTableResolve(table, name);
+	SymbolId *id = symbolTableResolve(name);
 
-	if (!data)
+	if (!id)
 	{
 		printTokenError(&syntax->name, "The type '%s' does not exist this scope.", name);
 		return false;
 	}
 
-	if (!data->isValid)
-		return false;
+	// TODO: Figure out how to handle invalid symbols
+	// if (!data->isValid)
+	// 	return false;
 
 	AnnotationType annotationType;
 
-	switch (data->id.type)
+	switch (id->type)
 	{
 		case SYMBOL_STRUCT:
 			annotationType = ANNOTATION_STRUCT;
@@ -47,7 +48,7 @@ bool validateType(TypeContext *out, const TypeSyntax *syntax, SymbolTable *table
 
 		default:
 		{
-			const char *typeName = getSymbolTypeName(data->id.type);
+			const char *typeName = symbolTypeGetName(id->type);
 			printTokenError(&syntax->name, "Expected type name, found %s '%s'.", typeName, name);
 			return false;
 		}
@@ -56,87 +57,41 @@ bool validateType(TypeContext *out, const TypeSyntax *syntax, SymbolTable *table
 	TypeContext type =
 	{
 		.type = annotationType,
-		.id = data->id
+		.id = *id
 	};
 
 	*out = type;
 	return true;
 }
 
-bool validateStructMember(MemberContext *out, const MemberSyntax *syntax, SymbolTable *symbols, Scope *scope)
+bool validateStructMember(MemberContext *out, const MemberSyntax *syntax)
 {
-	MemberContext context =
-	{
-		.name = tokenGetText(&syntax->name),
-		.isPublic = syntax->isPublic
-	};
+	out->name = tokenGetText(&syntax->name);
+	out->isPublic = syntax->isPublic;
 
-	char *typeName = tokenGetText(&syntax->type.name);
-	SymbolData *data = symbolTableFindGlobal(symbols, typeName);
-
-	if (!data)
-	{
-		// TODO: Search syntax tree
-		printTokenError(&syntax->type.name, "Unable to find type: %s", typeName);
-		goto error;
-	}
-
-	if (scopeContains(scope, data->symbol))
-	{
-		printTokenError(&syntax->type.name, "Member creates infinite size struct. Try using a reference or pointer.");
-		goto error;
-	}
-
-	if (!validateType(&context.type, &syntax->type, symbols))
-		goto error;
-
-	*out = context;
+	if (!validateType(&out->type, &syntax->type))
+		return false;
 
 	return true;
-
-error:
-
-	freeMemberContext(&context);
-	return false;
 }
 
-bool validateStructDeclaration(StructContext *out, const StructSyntax *syntax, SymbolTable *table)
+bool validateStructDeclaration(const StructSyntax *syntax)
 {
-	bool success = true;
-	// TODO: Stack-based identifier string
-	char *identifier = tokenGetText(&syntax->name);
-
-	out->symbol = symbolTableCreateSymbol(table, identifier);
-	out->memberCount = syntax->memberCount;
-
-	makeArray(out->members, out->memberCount);
-	deallocate(identifier);
-
-	SymbolData *data = symbolTableDeclareGlobal(table, out->symbol);
-
-	success = success && data;
-
-	if (data)
-	{
-		data-> id = (SymbolId)
-		{
-			.type = SYMBOL_STRUCT,
-			.package = table->packageIndex,
-			.module = table->moduleIndex,
-			.global = table->globalIndex
-		};
-	}
-
-	return success;
+	return !!symbolTableDeclareStruct(syntax);
 }
 
-bool validateStructDefinition(StructContext *out, const StructSyntax *syntax, SymbolTable *symbols, Scope *scope)
+bool validateStructDefinition(const SymbolId *id, const StructSyntax *syntax)
 {
 	bool success = true;
 
-	scopePush(scope, out->symbol);
+	// TODO: Validate recursive types
 
-	for (usize i = 0; i < syntax->memberCount; ++i)
+	StructContext *context = symbolTableStructAt(id->index);
+
+	context->memberCount = syntax->memberCount;
+	makeArray(context->members, context->memberCount);
+
+	for (usize i = 0; i < context->memberCount; ++i)
 	{
 		const MemberSyntax *memberSyntax = &syntax->members[i];
 
@@ -147,7 +102,7 @@ bool validateStructDefinition(StructContext *out, const StructSyntax *syntax, Sy
 				success = false;
 				// TODO: Stack based string
 				char *name = tokenGetText(&memberSyntax->name);
-				printTokenError(&syntax->name, "A member with name '%s' is already declared in struct '%s'.", name, out->symbol);
+				printTokenError(&syntax->name, "A member with name '%s' is already declared in struct '%s'.", name, context->symbol);
 				// TODO: Show previous declaration
 				deallocate(name);
 				// Break to avoid showing duplicate, incorrect errors
@@ -155,10 +110,8 @@ bool validateStructDefinition(StructContext *out, const StructSyntax *syntax, Sy
 			}
 		}
 
-		success = success && validateStructMember(&out->members[i], memberSyntax, symbols, scope);
+		success = success && validateStructMember(&context->members[i], memberSyntax);
 	}
-
-	scopePop(scope);
 
 	return success;
 }
@@ -199,20 +152,21 @@ bool validateConstant(ExpressionContext *out, const ConstantSyntax *syntax)
 	return true;
 }
 
-bool validateSymbol(ExpressionContext *out, const SymbolSyntax *syntax, SymbolTable *symbols)
+bool validateSymbol(ExpressionContext *out, const SymbolSyntax *syntax)
 {
 	bool success = true;
 	char *symbol = tokenGetText(&syntax->token);
-	SymbolData *data = symbolTableFind(symbols, symbol);
+	SymbolId *id = symbolTableFind(symbol);
 
-	if (!data)
+	success = success && id;
+
+	if (!id)
 	{
 		printTokenError(&syntax->token, "The symbol '%s' could not be found in this scope.", symbol);
-		success = false;
 	}
 	else
 	{
-		*makeNew(out->symbolId) = data->id;
+		*makeNew(out->symbolId) = *id;
 		out->type = EXPRESSION_SYMBOL;
 	}
 
@@ -221,7 +175,7 @@ bool validateSymbol(ExpressionContext *out, const SymbolSyntax *syntax, SymbolTa
 	return success;
 }
 
-bool validateAssignment(ExpressionContext *out, const AssignmentSyntax *syntax, SymbolTable *symbols)
+bool validateAssignment(ExpressionContext *out, const AssignmentSyntax *syntax)
 {
 	AssignmentContext context =
 	{
@@ -230,8 +184,8 @@ bool validateAssignment(ExpressionContext *out, const AssignmentSyntax *syntax, 
 
 	bool success = true;
 
-	success = success && validateExpression(&context.lhs, &syntax->lhs, symbols);
-	success = success && validateExpression(&context.rhs, &syntax->rhs, symbols);
+	success = success && validateExpression(&context.lhs, &syntax->lhs);
+	success = success && validateExpression(&context.rhs, &syntax->rhs);
 
 	// TODO: validate type of assignment
 
@@ -247,7 +201,7 @@ bool validateAssignment(ExpressionContext *out, const AssignmentSyntax *syntax, 
 	return true;
 }
 
-bool validateBlock(ExpressionContext *out, const BlockSyntax *syntax, SymbolTable *symbols)
+bool validateBlock(ExpressionContext *out, const BlockSyntax *syntax)
 {
 	bool success = true;
 	BlockContext context =
@@ -258,7 +212,7 @@ bool validateBlock(ExpressionContext *out, const BlockSyntax *syntax, SymbolTabl
 	makeArray(context.statements, syntax->count);
 
 	for (usize i = 0; i < syntax->count; ++i)
-		success = success && validateStatement(&context.statements[i], &syntax->statements[i], symbols);
+		success = success && validateStatement(&context.statements[i], &syntax->statements[i]);
 
 	if (!success)
 		goto error;
@@ -274,28 +228,76 @@ error:
 	return false;
 }
 
-bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax, SymbolTable *symbols)
+bool validatePrefix(ExpressionContext *out, const PrefixSyntax *syntax)
+{
+	exitNotImplemented();
+}
+
+bool validateArgumentList(ArgumentListContext *out, const ArgumentListSyntax *syntax)
+{
+	exitNotImplemented();
+}
+
+bool validatePostfix(ExpressionContext *out, const PostfixSyntax *syntax)
+{
+	PostfixContext context = { 0 };
+
+	if (!validateExpression(&context.expression, &syntax->expression))
+		goto error;
+	
+	switch (syntax->type)
+	{
+		case POSTFIX_INDEX:
+			exitWithError("Postfix indexing not implemented");
+			break;
+
+		case POSTFIX_FUNCTION_CALL:
+			exitWithError("Postfix function call not implemented");
+			break;
+
+		case POSTFIX_MEMBER:
+			exitWithError("Postfix member validation not implemented");
+			break;
+	}
+
+	*makeNew(out->postfix) = context;
+	out->type = EXPRESSION_POSTFIX;
+	return true;
+
+error:
+
+	freePostfixContext(&context);
+	return false;
+}
+
+bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax)
 {
 	switch (syntax->type)
 	{
 		case EXPRESSION_BLOCK:
-			return validateBlock(out, syntax->block, symbols);
+			return validateBlock(out, syntax->block);
 
 		case EXPRESSION_CONSTANT:
 			return validateConstant(out, syntax->constant);
 
 		case EXPRESSION_SYMBOL:
-			return validateSymbol(out, syntax->symbol, symbols);
+			return validateSymbol(out, syntax->symbol);
 
 		case EXPRESSION_ASSIGNMENT:
-			return validateAssignment(out, syntax->assignment, symbols);
+			return validateAssignment(out, syntax->assignment);
+
+		case EXPRESSION_PREFIX:
+			return validatePrefix(out, syntax->prefix);
+
+		case EXPRESSION_POSTFIX:
+			return validatePostfix(out, syntax->postfix);
 
 		default:
 			exitWithErrorFmt("Invalid expression type: %d.", syntax->type);
 	}
 }
 
-static bool validateStructConversion(const Token *token, const TypeContext *to, const TypeContext *from, const SymbolTable *globals)
+static bool validateStructConversion(const Token *token, const TypeContext *to, const TypeContext *from)
 {
 	exitNotImplemented();
 
@@ -303,78 +305,9 @@ static bool validateStructConversion(const Token *token, const TypeContext *to, 
 	// assert(from->type == ANNOTATION_STRUCT);
 }
 
-static bool validateConstantToPrimitiveConversion(const TypeContext *to, const TypeContext *from, const SymbolTable *globals)
+static bool validateConstantToPrimitiveConversion(const TypeContext *to, const TypeContext *from)
 {
 	exitNotImplemented();
-}
-
-static bool validatePrimitiveConversion(const TypeContext *to, const TypeContext *from, const SymbolTable *globals)
-{
-	exitNotImplemented();
-	// assert(to.type() == ANNOTATION_PRIMITIVE);
-	
-	// if (from.type() == ANNOTATION_STRUCT)
-	// {
-	// 	printError("Unable to convert from struct to primitive");
-	// 	return false;
-	// }
-
-	// if (from.type() == ANNOTATION_CONSTANT)
-	// 	return validateConstantToPrimitiveConversion(to, from, globals);
-
-	// const auto *left = globals.primitiveAt(to.index());
-	// const auto *right = globals.primitiveAt(from.index());
-
-	// if (left.type() != right.type())
-	// {
-	// 	printInvalidConversionError(to, from, globals);
-
-	// 	return false;
-	// }
-
-	// // TODO: Figure out how the interactions would work if 'to' is a literal, or how that would even happen
-	// // Assumedly 1 = 1; or something like that
-
-	// switch (left.type())
-	// {
-	// 	case PRIMITIVE_UNSIGNED_INTEGER:
-
-	// 		if (left.integer().isSigned() != right.integer().isSigned()  *right.size() != 0)
-	// 		{
-	// 			const char *leftSigned = getSignedLabel(left.integer());
-	// 			const char *rightSigned = getSignedLabel(right.integer());
-
-	// 			printError("Unable to assign " + rightSigned + " integer to " + leftSigned + " integer");
-	// 			return false;
-	// 		}
-
-	// 	case PRIMITIVE_FLOATING_POINT:
-	// 		if (left.size() == 0)
-	// 		{
-	// 			printError("Unable to assign to '" + left.symbol() + "' as it is a temporary value.");
-	// 			return false;
-	// 		}
-
-	// 		if (right.size() == 0)
-	// 			return true;
-
-	// 		if (left.size() != right.size())
-	// 		{
-	// 			printError("Unable to assign value of type '" + right.symbol() + "' to a value of type '" + left.symbol() + "' as it reduces precision.");
-	// 			return false;
-	// 		}
-
-	// 		return true;
-
-	// 	case PRIMITIVE_BOOLEAN:
-	// 	case PRIMITIVE_CHARACTER:
-			
-
-	// 		return true;
-
-	// 	default:
-	// 		throw std::invalidArgument("Invalid primitive type for conversion");
-	// }
 }
 
 static const char *getConstantTypeName(ConstantType type)
@@ -401,74 +334,49 @@ static const char *getConstantTypeName(ConstantType type)
 	}
 }
 
-static TypeContext getExpressionType(const ExpressionContext *expression, SymbolTable *symbols)
+static TypeContext getExpressionType(const ExpressionContext *expression)
 {
 	exitNotImplemented();
 }
 
-static bool validateExpressionConversion(TypeContext *out, SymbolTable *symbols, const ExpressionContext *from, const TypeContext *to)
+static bool validateExpressionConversion(TypeContext *out, const ExpressionContext *from, const TypeContext *to)
 {
 	exitNotImplemented();
 }
 
-bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *value, SymbolTable *table)
+bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *value)
 {
 	bool success = true;
 
-	// TODO: maybe optimize
-	ProgramContext *program = table->program;
-	PackageContext *package = &program->packages[table->packageIndex];
-	ModuleContext *module = &package->modules[table->moduleIndex];
-	FunctionContext *function = &module->functions[table->globalIndex];
+	SymbolId *id = symbolTableDeclareVariable(syntax);
 
-	table->localIndex = function->variableCount;
-	resizeArray(function->variables, ++function->variableCount);
+	success = success && id;
 
-	VariableContext *context = &function->variables[table->localIndex];
+	VariableContext *context = symbolTableVariableAt(id->index);
 
-	*context = (VariableContext)
-	{
-		.name = tokenGetText(&syntax->name),
-		.isExplicitlyTyped = syntax->isExplicitlyTyped,
-		.isMutable = syntax->isMutable
-	};
+	context->isExplicitlyTyped = syntax->isExplicitlyTyped;
+	context->isMutable = syntax->isMutable;
 
 	if (syntax->isExplicitlyTyped)
 	{
-		success = success && validateType(&context->type, &syntax->type, table);
+		success = success && validateType(&context->type, &syntax->type);
 	}
 	else
 	{
-		context->type = getExpressionType(value, table);
-	}
-
-	SymbolData *data = symbolTableDeclareLocal(table, &syntax->name);
-
-	success = success && data;
-
-	if (data)
-	{
-		data->id = (SymbolId)
-		{
-			.type = SYMBOL_VARIABLE,
-			.package = table->packageIndex,
-			.module = table->moduleIndex,
-			.global = table->globalIndex,
-			.local = table->localIndex
-		};
+		context->type = getExpressionType(value);
 	}
 
 	return success;
 }
 
-bool validateDeclaration(DeclarationContext *out, const DeclarationSyntax *syntax, SymbolTable *symbols)
+bool validateDeclaration(DeclarationContext *out, const DeclarationSyntax *syntax)
 {
 	DeclarationContext context = { 0 };
 	
-	if (!validateExpression(&context.value, &syntax->value, symbols))
+	if (!validateExpression(&context.value, &syntax->value))
 		goto error;
 
-	if (!validateVariable(&syntax->variable, &context.value, symbols))
+	if (!validateVariable(&syntax->variable, &context.value))
 		goto error;
 
 	*out = context;
@@ -480,13 +388,13 @@ error:
 	return false;
 }
 
-bool validateStatement(StatementContext *out, const StatementSyntax *syntax, SymbolTable *symbols)
+bool validateStatement(StatementContext *out, const StatementSyntax *syntax)
 {
 	if (syntax->isDeclaration)
 	{
 		DeclarationContext declaration;
 		
-		if (!validateDeclaration(&declaration, syntax->declaration, symbols))
+		if (!validateDeclaration(&declaration, syntax->declaration))
 			return false;
 
 		*makeNew(out->declaration) = declaration;
@@ -495,7 +403,7 @@ bool validateStatement(StatementContext *out, const StatementSyntax *syntax, Sym
 	{
 		ExpressionContext expression;
 
-		if (!validateExpression(&expression, syntax->expression, symbols))
+		if (!validateExpression(&expression, syntax->expression))
 			return false;
 
 		*makeNew(out->expression) = expression;
@@ -506,201 +414,124 @@ bool validateStatement(StatementContext *out, const StatementSyntax *syntax, Sym
 	return true;
 }
 
-bool validateParameter(ParameterContext *out, const ParameterSyntax *syntax, SymbolTable *table)
-{
-	bool success = true;
-	out->name = tokenGetText(&syntax->name);
-	out->isMutable = syntax->isMutable;
+bool validateParameter(SymbolId *out, const ParameterSyntax *syntax)
+{	
+	SymbolId *id = symbolTableDeclareParameter(syntax);
 
-	success = success && validateType(&out->type, &syntax->type, table);
+	if (!id)
+		return false;
 
-	SymbolData *data = symbolTableDeclareLocal(table, &syntax->name);
+	ParameterContext *context = symbolTableParameterAt(id->index);
 
-	success = success && data;
-	
-	if (data)
-	{
-		data->id = (SymbolId)
-		{
-			.type = SYMBOL_PARAMETER,
-			.package = table->packageIndex,
-			.module = table->moduleIndex,
-			.global = table->globalIndex,
-			.local = table->localIndex
-		};
-	}
+	context->isMutable = syntax->isMutable;
 
-	return success;
+	if (!validateType(&context->type, &syntax->type))
+		return false;
+
+	*out = *id;
+
+	return true;
 }
 
-bool validateParameterList(const ParameterListSyntax *syntax, SymbolTable *table)
+bool validateParameterList(SymbolIdList *out, const ParameterListSyntax *syntax)
 {
 	bool success = true;
+	SymbolIdList ids =
+	{
+		.type = SYMBOL_PARAMETER,
+		.count = syntax->count
+	};
 
-	ProgramContext *program = table->program;
-	PackageContext *package = &program->packages[table->packageIndex];
-	ModuleContext *module = &package->modules[table->moduleIndex];
-	FunctionContext *function = &module->functions[table->globalIndex];
-
-	function->parameterCount = syntax->count;
-	makeArray(function->parameters, function->parameterCount);
+	makeArray(ids.indeces, ids.count);
 
 	for (usize i = 0; i < syntax->count; ++i)
 	{
-		ParameterContext *context = &function->parameters[table->localIndex];
+		SymbolId parameterId;
 
-		success = success && validateParameter(context, &syntax->data[i], table);
+		success = success && validateParameter(&parameterId, &syntax->data[i]);
+
+		// Ok to do whether or not failure
+		ids.indeces[i] = parameterId.index;
+	}
+
+	if (success)
+	{
+		*out = ids;
+	}
+	else
+	{
+		freeSymbolIdList(&ids);
 	}
 
 	return success;
 }
 
-bool validateFunctionDeclaration(FunctionContext *out, const FunctionSyntax *syntax, SymbolTable *table)
+bool validateFunctionDeclaration(const FunctionSyntax *syntax)
 {
 	bool success = true;
 
-	char *name = tokenGetText(&syntax->name);
+	SymbolId *id = symbolTableDeclareFunction(syntax);
 
-	out->symbol = symbolTableCreateSymbol(table, name);
+	success = success && id;
 
-	deallocate(name);
+	if (!id)
+		return false;
 
-	SymbolData *data = symbolTableDeclareGlobal(table, out->symbol);
+	FunctionContext *context = symbolTableFunctionAt(id->index);
 
-	success = success && data;
-	success = success && validateParameterList(&syntax->parameters, table);
+	success = success && validateParameterList(&context->parameters, &syntax->parameters);
 
 	if (syntax->hasReturnType)
 	{
-		success = success && validateType(&out->returnType, &syntax->returnType, table);
+		success = success && validateType(&context->returnType, &syntax->returnType);
 	}
 	else
 	{
-		out->returnType = (TypeContext)
+		context->returnType = (TypeContext)
 		{
 			.type = ANNOTATION_PRIMITIVE,
 			.id = {
 				.type = SYMBOL_PRIMITIVE,
-				.global = VOID_INDEX
+				.index = VOID_INDEX
 			}
 		};
 	}
-	
-	if (data)
-	{
-		data->id = (SymbolId)
-		{
-			.type = SYMBOL_FUNCTION,
-			.package = table->packageIndex,
-			.module = table->moduleIndex,
-			.global = table->globalIndex
-		};
-	}
 
 	return success;
 }
 
-bool validateFunctionDefinition(FunctionContext *out, const FunctionSyntax *syntax, SymbolTable *table, const Scope *scope)
+bool validateFunctionDefinition(const SymbolId *id, const FunctionSyntax *syntax)
 {
 	bool success = true;
 
-	success = success && validateExpression(&out->body, &syntax->body, table);
+	FunctionContext *context = symbolTableFunctionAt(id->index);
+
+	success = success && validateExpression(&context->body, &syntax->body);
 
 	return success;
 }
 
-bool validateModuleDeclarations(ModuleContext *out, const ModuleSyntax *syntax, SymbolTable *table)
+bool validateModuleDeclarations(const ModuleSyntax *syntax)
 {
 	bool success = true;
-
-	out->functionCount = syntax->functionCount;
-	out->structCount = syntax->structCount;
-
-	makeArray(out->functions, out->functionCount);
-	makeArray(out->structs, out->structCount);
-
-	for (usize i = 0; i < out->functionCount; ++i)
-	{
-		table->globalIndex = i;
-		success = success && validateFunctionDeclaration(&out->functions[i], &syntax->functions[i], table);
-	}
-
-	for (usize i = 0; i < out->structCount; ++i)
-	{
-		table->globalIndex = i;
-		success = success && validateStructDeclaration(&out->structs[i], &syntax->structs[i], table);
-	}
-
-	return success;
-}
-
-bool validateModuleDefinitions(ModuleContext *out, const ModuleSyntax *syntax, SymbolTable *table)
-{
-	bool success = true;
-
-	Scope scope = { 0 };
 
 	for (usize i = 0; i < syntax->functionCount; ++i)
-	{
-		table->globalIndex = i;
-		success = success && validateFunctionDefinition(&out->functions[i], &syntax->functions[i], table, &scope);
-	}
-
-	scopeClear(&scope);
+		success = success && validateFunctionDeclaration(&syntax->functions[i]);
 
 	for (usize i = 0; i < syntax->structCount; ++i)
-	{
-		table->globalIndex = i;
-		success = success && validateStructDefinition(&out->structs[i], &syntax->structs[i], table, &scope);
-	}
-
-	scopeDestroy(&scope);
+		success = success && validateStructDeclaration(&syntax->structs[i]);
 
 	return success;
 }
 
-bool validatePackageDeclarations(PackageContext *out, const PackageSyntax *syntax, SymbolTable *table)
+bool validatePackageDeclarations(const PackageSyntax *syntax)
 {
 	bool success = true;
 
-	out->symbol = duplicateString(syntax->name);
-	out->moduleCount = syntax->moduleCount;
-
-	makeArray(out->modules, out->moduleCount);
-	
-	SymbolData *data = symbolTableDeclareGlobal(table, out->symbol);
-
-	if (!data)
-	{
-		printError("'%s' has already been declared.", out->symbol);
-	}
-	else
-	{
-		data->id = (SymbolId)
-		{
-			.type = SYMBOL_PACKAGE,
-			.package = table->packageIndex
-		};
-	}
+	symbolTableDeclarePackage(syntax->name);
 
 	for (usize i = 0; i < syntax->moduleCount; ++i)
-	{
-		table->moduleIndex = i;
-		success = success && validateModuleDeclarations(&out->modules[i], &syntax->modules[i], table);
-	}
-
-	return success;
-}
-
-bool validatePackageDefinitions(PackageContext *out, const PackageSyntax *syntax, SymbolTable *table)
-{
-	bool success = true;
-
-	for (usize i = 0; i < out->moduleCount; ++i)
-	{
-		table->moduleIndex = i;
-		success = success && validateModuleDefinitions(&out->modules[i], &syntax->modules[i], table);
-	}
+		success = success && validateModuleDeclarations(&syntax->modules[i]);
 
 	return success;
 }
@@ -709,36 +540,39 @@ bool validate(ProgramContext *out, const ProgramSyntax *syntax)
 {
 	bool success = true;
 
-	ProgramContext context =
-	{
-		.packageCount = syntax->packageCount
-	};
-
-	makeArray(context.packages, context.packageCount);
-
-	SymbolTable table = symbolTableCreate(&context, syntax);
-
-	// success = success & generateProgramSymbols(&table, syntax);
+	symbolTableInitialize();
 
 	for (usize i = 0; i < syntax->packageCount; ++i)
-	{
-		table.packageIndex = i;
-		success = success && validatePackageDeclarations(&context.packages[i], &syntax->packages[i], &table);
-	}
+		success = success && validatePackageDeclarations(&syntax->packages[i]);
 
-	for (usize i = 0; i < syntax->packageCount; ++i)
+	usize count = symbolTableGetValidationCount();
+
+	for (usize i = 0; i < count; ++i)
 	{
-		table.packageIndex = i;
-		success = success && validatePackageDefinitions(&context.packages[i], &syntax->packages[i], &table);
+		const Validation *validation = symbolTableValidationAt(i);
+
+		switch (validation->id.type)
+		{
+			case SYMBOL_STRUCT:
+				validateStructDefinition(&validation->id, validation->structSyntax);
+				break;
+
+			case SYMBOL_FUNCTION:
+				validateFunctionDefinition(&validation->id, validation->functionSyntax);
+				break;
+
+			default:
+				exitWithErrorFmt("Invalid validation symbol type: %d", validation->id.type);
+		}
 	}
 
 	if (success)
 	{
-		*out = context;
+		*out = symbolTableExport();
 	}
 	else
 	{
-		freeProgramContext(&context);
+		symbolTableDestroy();
 	}
 
 	return success;

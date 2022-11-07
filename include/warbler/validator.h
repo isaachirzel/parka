@@ -5,8 +5,8 @@
 #include <warbler/context.h>
 #include <warbler/symbol_table.h>
 
-bool validateStatement(StatementContext *out, const StatementSyntax *syntax, SymbolTable *symbols);
-bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax, SymbolTable *symbols);
+bool validateStatement(StatementContext *out, const StatementSyntax *syntax);
+bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax);
 bool validate(ProgramContext *out, const ProgramSyntax *syntax);
 
 #endif

@@ -12,65 +12,47 @@
 #include <warbler/scope.h>
 #include <assert.h>
 
-typedef struct SymbolData
+typedef struct Validation
 {
-	char *symbol;
+	union
+	{
+		const StructSyntax *structSyntax;
+		const FunctionSyntax *functionSyntax;
+	};
+
 	SymbolId id;
-	bool isValid;
-	bool isDefined;
-	Token name;
-} SymbolData;
+} Validation;
 
-typedef struct SymbolTable
-{
-	// Globals
-	SymbolData *globals;
-	usize globalCount;
-	usize globalCapacity;
+void symbolTableInitialize();
+ProgramContext symbolTableExport();
+void symbolTableDestroy();
 
-	// Locals
-	SymbolData *locals;
-	usize localCount;
-	usize localCapacity;
-	
-	usize *blocks;
-	usize blockCount;
-	usize blockCapacity;
+SymbolId *symbolTableDeclarePackage(const char *symbol);
+SymbolId *symbolTableDeclareStruct(const StructSyntax *syntax);
+SymbolId *symbolTableDeclareFunction(const FunctionSyntax *syntax);
+SymbolId *symbolTableDeclareVariable(const VariableSyntax *syntax);
+SymbolId *symbolTableDeclareParameter(const ParameterSyntax *syntax);
 
-	usize packageIndex;
-	usize moduleIndex;
-	usize globalIndex;
-	usize localIndex;
+SymbolId *symbolTableResolve(const char *identifier);
+SymbolId *symbolTableFind(const char *symbol);
+SymbolId *symbolTableFindGlobal(const char *symbol);
+SymbolId *symbolTableFindLocal(const char *symbol);
+char *symbolTableCreateSymbol(const char *identifier);
 
-	Scope package;
+void symbolTablePushBlock();
+void symbolTablePopBlock();
 
-	ProgramContext *program;
-} SymbolTable;
+void symbolTableSetScopeFromSymbol(const char *symbol);
+const char *symbolTypeGetName(SymbolType type);
 
-SymbolTable symbolTableCreate(ProgramContext *context, const ProgramSyntax *syntax);
-void symbolTableDestroy(SymbolTable *table);
-SymbolData *symbolTableResolve(SymbolTable *table, const char *identifier);
-SymbolData *symbolTableFind(SymbolTable *table, const char *symbol);
-SymbolData *symbolTableFindGlobal(SymbolTable *table, const char *symbol);
-SymbolData *symbolTableFindFunctionLocal(SymbolTable *table, const char *symbol);
-void popSymbols(SymbolTable *table, usize index);
-char *generateSymbol(const SymbolTable *table, AnnotationType type, usize index);
-char *symbolTableCreateSymbol(SymbolTable *table, const char *identifier);
+const char *symbolTableGetSymbol(SymbolId *id);
 
-SymbolData *symbolTableDeclareGlobal(SymbolTable *table, const char *symbol);
-SymbolData *symbolTableDeclareLocal(SymbolTable *table, const Token *name);
-
-void symbolTablePushBlock(SymbolTable *table);
-void symbolTablePopBlock(SymbolTable *table);
-void symbolTableSetScopeFromSymbol(SymbolTable *table, const char *symbol);
-const char *getSymbolTypeName(SymbolType type);
-const char *symbolTableGetSymbol(AnnotationType type, usize index);
-
-void symbolDataValidate(SymbolData *symbol, usize index);
-void symbolDataInvalidate(SymbolData *symbol);
-void symbolDataDestroy(SymbolData *symbol);
-void symbolDataReinitialize(SymbolData *symol);
-
-const PrimitiveContext *primitiveAt(usize index);
+usize symbolTableGetValidationCount();
+const Validation *symbolTableValidationAt(usize index);
+VariableContext *symbolTableVariableAt(usize index);
+ParameterContext *symbolTableParameterAt(usize index);
+FunctionContext *symbolTableFunctionAt(usize index);
+StructContext *symbolTableStructAt(usize index);
+const PrimitiveContext *symbolTablePrimitiveAt(usize index);
 
 #endif

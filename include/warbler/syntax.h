@@ -16,8 +16,8 @@ struct RelationalExpressionSyntax;
 struct BitShiftExpressionSyntax;
 struct AdditiveExpressionSyntax;
 struct MultiplicativeExpressionSyntax;
-struct PrefixExpressionSyntax;
-struct PostfixExpressionSyntax;
+struct PrefixSyntax;
+struct PostfixSyntax;
 struct ConstantSyntax;
 struct SymbolSyntax;
 struct AssignmentSyntax;
@@ -47,8 +47,8 @@ typedef struct ExpressionSyntax
 		struct BitShiftExpressionSyntax *shift;
 		struct AdditiveExpressionSyntax *additive;
 		struct MultiplicativeExpressionSyntax *multiplicative;
-		struct PrefixExpressionSyntax *prefix;
-		struct PostfixExpressionSyntax *postfix;
+		struct PrefixSyntax *prefix;
+		struct PostfixSyntax *postfix;
 		struct ConstantSyntax *constant;
 		struct SymbolSyntax *symbol;
 	};
@@ -76,7 +76,7 @@ typedef struct ArgumentListSyntax
 	usize count;
 } ArgumentListSyntax;
 
-typedef struct PostfixExpressionSyntax
+typedef struct PostfixSyntax
 {
 	ExpressionSyntax expression;
 	union
@@ -86,14 +86,14 @@ typedef struct PostfixExpressionSyntax
 		Token member;
 	};
 	PostfixType type;
-} PostfixExpressionSyntax;
+} PostfixSyntax;
 
-typedef struct PrefixExpressionSyntax
+typedef struct PrefixSyntax
 {
 	Token token;
 	ExpressionSyntax expression;
 	PrefixType type;
-} PrefixExpressionSyntax;
+} PrefixSyntax;
 
 typedef struct MultiplicativeRhsSyntax
 {
@@ -332,8 +332,8 @@ typedef struct ProgramSyntax
 void freeExpressionSyntax(ExpressionSyntax *syntax);
 void freeConstantSyntax(ConstantSyntax *syntax);
 void freeArgumentListSyntax(ArgumentListSyntax *syntax);
-void freePostfixExpressionSyntax(PostfixExpressionSyntax *syntax);
-void freePrefixExpressionSyntax(PrefixExpressionSyntax *syntax);
+void freePostfixExpressionSyntax(PostfixSyntax *syntax);
+void freePrefixExpressionSyntax(PrefixSyntax *syntax);
 void freeMultiplicativeExpressionSyntax(MultiplicativeExpressionSyntax *syntax);
 void freeAdditiveExpressionSyntax(AdditiveExpressionSyntax *syntax);
 void freeBitShiftExpressionSyntax(BitShiftExpressionSyntax *syntax);

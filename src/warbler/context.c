@@ -28,6 +28,36 @@ const PrimitiveContext *primitiveAt(usize index)
 	return primitives + index;
 }
 
+void freeSymbolIdList(SymbolIdList *list)
+{
+	deallocate(list->indeces);
+}
+
+void freeArgumentListContext(ArgumentListContext *context)
+{
+	exitNotImplemented();
+}
+
+void freePostfixContext(PostfixContext *context)
+{
+	freeExpressionContext(&context->expression);
+	
+	switch (context->type)
+	{
+		case POSTFIX_INDEX:
+		exitNotImplemented();
+			break;
+
+		case POSTFIX_FUNCTION_CALL:
+			freeArgumentListContext(&context->arguments);
+			break;
+
+		case POSTFIX_MEMBER:
+			exitNotImplemented();
+			break;
+	}
+}
+
 void freeConstantContext(ConstantContext *context)
 {
 	if (context->type == CONSTANT_STRING)
@@ -54,7 +84,7 @@ void freeAssignmentContext(AssignmentContext *context)
 
 void freeParameterContext(ParameterContext *context)
 {
-	deallocate(context->name);
+	deallocate(context->symbol);
 	freeTypeContext(&context->type);
 }
 
@@ -63,15 +93,7 @@ void freeFunctionContext(FunctionContext *context)
 	freeTypeContext(&context->returnType);
 	freeExpressionContext(&context->body);
 
-	for (usize i = 0; i < context->parameterCount; ++i)
-		freeParameterContext(context->parameters + i);
-
-	for (usize i = 0; i < context->variableCount; ++i)
-		freeVariableContext(context->variables + i);
-
 	deallocate(context->symbol);
-	deallocate(context->parameters);
-	deallocate(context->variables);
 }
 
 void freeExpressionContext(ExpressionContext *context)
@@ -118,7 +140,7 @@ void freeExpressionContext(ExpressionContext *context)
 
 void freeVariableContext(VariableContext *context)
 {
-	deallocate(context->name);
+	deallocate(context->symbol);
 	freeTypeContext(&context->type);
 }
 
@@ -155,30 +177,14 @@ void freeParameterListContext(ParameterListContext *context)
 void freeStructContext(StructContext *context)
 {
 	for (usize i = 0; i < context->memberCount; ++i)
-		freeMemberContext(context->members + i);
+		freeMemberContext(&context->members[i]);
 
 	deallocate(context->members);
 	deallocate(context->symbol);
 }
 
-void freeModuleContext(ModuleContext *context)
-{
-	for (usize i = 0; i < context->structCount; ++i)
-		freeStructContext(&context->structs[i]);
-
-	for (usize i = 0; i < context->functionCount; ++i)
-		freeFunctionContext(&context->functions[i]);
-
-	deallocate(context->structs);
-	deallocate(context->functions);
-}
-
 void freePackageContext(PackageContext *context)
 {
-	for (usize i = 0; i < context->moduleCount; ++i)
-		freeModuleContext(&context->modules[i]);
-
-	deallocate(context->modules);
 	deallocate(context->symbol);
 }
 
@@ -187,5 +193,21 @@ void freeProgramContext(ProgramContext *context)
 	for (usize i = 0; i < context->packageCount; ++i)
 		freePackageContext(&context->packages[i]);
 
+	for (usize i = 0; i < context->structCount; ++i)
+		freeStructContext(&context->structs[i]);
+
+	for (usize i = 0; i < context->functionCount; ++i)
+		freeFunctionContext(&context->functions[i]);
+		
+	for (usize i = 0; i < context->parameterCount; ++i)
+		freeParameterContext(context->parameters + i);
+
+	for (usize i = 0; i < context->variableCount; ++i)
+		freeVariableContext(context->variables + i);
+
+	deallocate(context->parameters);
+	deallocate(context->variables);
+	deallocate(context->structs);
+	deallocate(context->functions);
 	deallocate(context->packages);
 }

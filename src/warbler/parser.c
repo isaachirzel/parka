@@ -472,7 +472,7 @@ error:
 
 bool parsePostfixExpression(ExpressionSyntax *out, Token *token)
 {
-	PostfixExpressionSyntax syntax = { 0 };
+	PostfixSyntax syntax = { 0 };
 
 	if (!parsePrimaryExpression(&syntax.expression, token))
 		goto error;
@@ -502,8 +502,6 @@ parsePostfix:
 			break;
 
 		case TOKEN_LEFT_PARENTHESIS: // Function call
-			incrementToken(token);
-
 			ArgumentListSyntax arguments;
 
 			if (!parseArgumentList(&arguments, token))
@@ -511,14 +509,6 @@ parsePostfix:
 
 			syntax.type = POSTFIX_FUNCTION_CALL;
 			syntax.arguments = arguments;
-
-			if (token->type != TOKEN_RIGHT_PARENTHESIS)
-			{
-				printParseError(token, "')' after function call", NULL);
-				goto error;
-			}
-
-			incrementToken(token);
 			break;
 
 		case TOKEN_DOT: // Member
@@ -545,12 +535,12 @@ parsePostfix:
 	ExpressionSyntax inner =
 	{
 		.type = EXPRESSION_POSTFIX,
-		.postfix = new(PostfixExpressionSyntax)
+		.postfix = new(PostfixSyntax)
 	};
 
 	*inner.postfix = syntax;
 
-	syntax = (PostfixExpressionSyntax)
+	syntax = (PostfixSyntax)
 	{
 		.expression = inner
 	};
@@ -571,7 +561,7 @@ error:
 
 bool parsePrefixExpression(ExpressionSyntax *out, Token *token)
 {
-	PrefixExpressionSyntax syntax = { 0 };
+	PrefixSyntax syntax = { 0 };
 
 	switch (token->type)
 	{
@@ -609,6 +599,9 @@ bool parsePrefixExpression(ExpressionSyntax *out, Token *token)
 
 	if (!parsePrefixExpression(&syntax.expression, token))
 		goto error;
+
+	*makeNew(out->prefix) = syntax;
+	out->type = EXPRESSION_PREFIX;
 
 	return true;
 	
