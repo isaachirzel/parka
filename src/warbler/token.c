@@ -3,13 +3,75 @@
 #include <warbler/util/print.h>
 #include <string.h>
 
-static usize getNextPos(const File *file, usize pos)
+static usize getEndOfLinePos(const char *src, usize pos)
 {
 	while (true)
 	{
-		char character = file->src[pos];
+		char c = src[pos];
 
-		if (character == '\0' || character > ' ')
+		if (c == '\0')
+			break;
+
+		if (c == '\n')
+		{
+			pos += 1;
+			break;
+		}
+
+		pos += 1;
+	}
+
+	return pos;
+}
+
+static usize getEndOfBlockCommentPos(const char *src, usize pos)
+{
+	while (true)
+	{
+		char c = src[pos];
+
+		if (c == '\0')
+			break;
+
+		if (c == '*' && src[pos + 1] == '/')
+		{
+			pos += 2;
+			break;
+		}
+
+		pos += 1;
+	}
+
+	return pos;
+}
+
+static usize getNextPos(const char *src, usize pos)
+{
+	while (true)
+	{
+		char c = src[pos];
+
+		if (c == '\0')
+			break;
+
+		if (c == '/')
+		{
+			switch (src[pos + 1])
+			{
+				case '/': // Line comment
+					pos = getEndOfLinePos(src, pos + 2);
+					continue;
+
+				case '*': // Block comment
+					pos = getEndOfBlockCommentPos(src, pos + 2);
+					continue;
+
+				default:
+					return pos;
+			}
+		}
+
+		if (c > ' ')
 			break;
 
 		pos += 1;
@@ -574,21 +636,21 @@ static Token getNextToken(const File *file, usize startPos)
 		.type = TOKEN_END_OF_FILE
 	};
 
-	printTokenError(&token, "An invalid character was found in the source file:");
+	printTokenError(&token, "An invalid character was found in the source file");
 
 	return token;
 }
 
 void incrementToken(Token *token)
 {
-	usize nextTokenPos = getNextPos(token->file, token->pos + token->length);
+	usize nextTokenPos = getNextPos(token->file->src, token->pos + token->length);
 
 	*token = getNextToken(token->file, nextTokenPos);
 }
 
 Token getInitialToken(const File *file)
 {
-	usize pos = getNextPos(file, 0);
+	usize pos = getNextPos(file->src, 0);
 
 	return getNextToken(file, pos);
 }
