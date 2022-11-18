@@ -7,37 +7,28 @@
 #include <warbler/util/primitives.h>
 #include <warbler/type.h>
 #include <warbler/util/memory.h>
-#include <warbler/syntax.h>
-#include <warbler/context.h>
 #include <warbler/scope.h>
+#include <warbler/ast.h>
 #include <assert.h>
 
-typedef struct Validation
-{
-	union
-	{
-		const StructSyntax *structSyntax;
-		const FunctionSyntax *functionSyntax;
-	};
-
-	SymbolId id;
-} Validation;
-
 void symbolTableInitialize();
-ProgramContext symbolTableExport();
 void symbolTableDestroy();
 
-SymbolId *symbolTableDeclarePackage(const char *symbol);
-SymbolId *symbolTableDeclareStruct(const StructSyntax *syntax);
-SymbolId *symbolTableDeclareFunction(const FunctionSyntax *syntax);
-SymbolId *symbolTableDeclareVariable(const VariableSyntax *syntax);
-SymbolId *symbolTableDeclareParameter(const ParameterSyntax *syntax);
+SymbolId symbolTableAddPackage();
+SymbolId symbolTableAddStruct();
+SymbolId symbolTableAddFunction();
+SymbolId symbolTableAddVariable();
+SymbolId symbolTableAddParameter();
+
+bool symbolTableDeclareGlobal(const SymbolId *id);
+bool symbolTableDeclareLocal(const SymbolId *id);
 
 SymbolId *symbolTableResolve(const char *identifier);
 SymbolId *symbolTableFind(const char *symbol);
 SymbolId *symbolTableFindGlobal(const char *symbol);
 SymbolId *symbolTableFindLocal(const char *symbol);
 char *symbolTableCreateSymbol(const char *identifier);
+char *symbolTableCreateTokenSymbol(const Token *token);
 
 void symbolTablePushBlock();
 void symbolTablePopBlock();
@@ -45,14 +36,15 @@ void symbolTablePopBlock();
 void symbolTableSetScopeFromSymbol(const char *symbol);
 const char *symbolTypeGetName(SymbolType type);
 
-const char *symbolTableGetSymbol(SymbolId *id);
+const char *symbolTableGetSymbol(const SymbolId *id);
 
-usize symbolTableGetValidationCount();
-const Validation *symbolTableValidationAt(usize index);
-VariableContext *symbolTableVariableAt(usize index);
-ParameterContext *symbolTableParameterAt(usize index);
-FunctionContext *symbolTableFunctionAt(usize index);
-StructContext *symbolTableStructAt(usize index);
-const PrimitiveContext *symbolTablePrimitiveAt(usize index);
+usize symbolTablePackageCount();
+
+Package *symbolTableGetPackage(const SymbolId *id);
+Variable *symbolTableGetVariable(const SymbolId *id);
+Parameter *symbolTableGetParameter(const SymbolId *id);
+Function *symbolTableGetFunction(const SymbolId *id);
+Struct *symbolTableGetStruct(const SymbolId *id);
+const Primitive *symbolTableGetPrimitive(const SymbolId *id);
 
 #endif

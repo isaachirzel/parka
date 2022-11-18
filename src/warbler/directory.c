@@ -2,72 +2,125 @@
 #include <string.h>
 #include <warbler/util/print.h>
 #include <warbler/util/memory.h>
+#include <warbler/util/string.h>
+#include <warbler/util/path.h>
+#include <stdio.h>
 
-Directory *readDirectory(const char *path)
+#if defined (_WIN32) || defined(_WIN64)
+
+#else
+
+#include <dirent.h>
+
+static Directory readSubdirectory(const char *base, const char *name)
 {
-    exitNotImplemented();
-    // Directory* directories = allocate(sizeof;
+	Directory directory =
+	{
+		.path = pathJoin(base, name)
+	};
 
-    // directories.emplaceBack(path);
+	DIR *dir = opendir(directory.path);
 
-    // for (const auto *entry : std::filesystem::directoryIterator(path))
-    // {
-    //     const auto *entrypath = entry.path().string();
+	if (!dir)
+		exitWithErrorFmt("Unable to open directory: %s", directory.path);
 
-    //     if (entry.isRegularFile())
-    //     {
-    //         if (entrypath.size() >= 5) // at least length of extension + 1 letter e.g. a.wbl
-    //         {
-    //             const char *fileExtension = &entrypath[entrypath.size() - 4];
+	while (true)
+	{
+		struct dirent *entry = readdir(dir);
+		
+		if (!entry)
+			break;
 
-    //             if (strcmp(fileExtension, ".wbl"))
-    //                 continue;
+		// Skip hidden files
+		if (entry->d_name[0] == '.')
+			continue;
 
-    //             auto file = File::read(entrypath);
+		if (entry->d_type == DT_REG)
+		{
+			File file = fileReadRelative(directory.path, entry->d_name);
+			usize index = directory.entryCount;
 
-    //             if (!file)
-    //             {
-    //                 printError("Not all directory items could be read.");
-    //                 return false;
-    //             }
+			resizeArray(directory.entries, ++directory.entryCount);
 
-    //             directories[0].addDirectoryFile(file.unwrap());
-    //         }
-    //     }
-    //     else if (entry.isDirectory())
-    //     {
-    //         auto res = read(entrypath);
+			directory.entries[index] = (Entry) { .file = file };
+		}
+		else if (entry->d_type == DT_DIR)
+		{
+			Directory subDirectory = readSubdirectory(directory.path, entry->d_name);
 
-    //         if (!res)
-    //         {
-    //             printError("Not all directory items could be read.");
-    //             return false;
-    //         }
+			resizeArray(directory.entries, ++directory.entryCount);
 
-    //         auto subdirs = res.unwrap();
+			Entry *dirEntry = &directory.entries[directory.entryCount - 1];
 
-    //         directories.reserve(directories.size() + subdirs.size());
+			dirEntry->isDirectory = true;
+			*makeNew(dirEntry->directory) = subDirectory;
+		}
+	}
 
-    //         for (auto *dir : subdirs)
-    //         {
-    //             directories.emplaceBack(std::move(dir));
-    //         }
-    //     }
-    // }
+	closedir(dir);
 
-    // return directories;
+	return directory;
 }
 
-Directory directoryFrom(const char *path, File *file)
+Directory directoryRead(const char *path)
 {
-    Directory dir =
-    {
-        .path = duplicateString(path),
-        .files = allocate(sizeof(File)),
-        .fileCount = 1
-    };
-
-    dir.files[0] = *file;
-
-    return dir;
+	return readSubdirectory(path, NULL);
 }
+
+
+static void printTabbed(const char *text, usize tabs)
+{
+	if (tabs > 0)
+	{
+		for (usize i = 0; i < tabs - 1; ++i)
+			fputs("    ", stdout);
+
+		fputs("  > ", stdout);
+	}
+
+	puts(text);
+}
+
+static void listSubdirectory(const Directory *dir, usize depth)
+{
+	printTabbed(dir->path, depth);
+
+	for (usize i = 0; i < dir->entryCount; ++i)
+	{
+		const Entry *entry = &dir->entries[i];
+
+		if (entry->isDirectory)
+		{
+			listSubdirectory(entry->directory, depth + 1);
+			continue;
+		}
+
+		printTabbed(entry->file.path, depth + 1);
+	}
+}
+
+void directoryList(const Directory *dir)
+{
+	listSubdirectory(dir, 0);
+}
+
+Directory *directoryGetSrcDir(Directory *projectDirectory)
+{
+	for (usize i = 0; i < projectDirectory->entryCount; ++i)
+	{
+		Entry *entry = &projectDirectory->entries[i];
+
+		if (!entry->isDirectory)
+			continue;
+
+		Directory *dir = entry->directory;
+		const char *dirname = pathGetFilenameComponent(dir->path);
+
+		if (!strcmp(dirname, "src"))
+			return dir;
+	}
+
+	return NULL;
+}
+
+#endif

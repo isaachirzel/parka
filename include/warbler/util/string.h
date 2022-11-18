@@ -3,12 +3,12 @@
 
 #include <warbler/util/primitives.h>
 
-typedef struct String
+typedef struct StringBuilder
 {
 	char *data;
 	usize length;
 	usize capacity;
-} String;
+} StringBuilder;
 
 typedef struct StringView
 {
@@ -16,17 +16,23 @@ typedef struct StringView
 	usize length;
 } StringView;
 
-String stringCreate();
-String stringFrom(const char *text);
-void stringClear(String *string);
-void stringFree(String *string);
-void stringReserve(String *string, usize capacity);
-void stringConcat(String *string, const String *text);
-void stringPushCString(String *string, const char *text);
-void stringPushCStringN(String *string, const char *text, usize n);
-void stringPushChar(String *string, char c);
+StringBuilder sbCreate(usize length);
+StringBuilder stringFrom(const char *text);
+void sbClear(StringBuilder *string);
+void sbDestroy(StringBuilder *string);
+void sbReserve(StringBuilder *string, usize capacity);
+void sbConcat(StringBuilder *string, const StringBuilder *text);
+const char *sbPushLine(StringBuilder *sb, const char *text);
+void sbPushString(StringBuilder *string, const char *text);
+void sbPushStringN(StringBuilder *string, const char *text, usize n);
+void sbPushStringInvisible(StringBuilder *sb, const char *text);
+void sbPushStringInvisibleN(StringBuilder *sb, const char *text, usize n);
+void sbPushChar(StringBuilder *string, char c);
+void sbPushCharN(StringBuilder *string, char c, usize n);
+char *stringDuplicate(const char *string);
+char *stringDuplicateN(const char *string, usize n);
 
-#define stringPush(stringPtr, obj) ((_Generic((obj), const char *: stringPushCString, char *: stringPushCString, char: stringPushChar))(stringPtr, obj))
+#define sbPush(stringBuilder, obj) ((_Generic((obj), const char *: sbPushString, char *: sbPushString, int: sbPushChar, char: sbPushChar ))(stringBuilder, obj))
 
 StringView stringViewFrom(const char *str, usize pos, usize length);
 

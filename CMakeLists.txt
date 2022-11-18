@@ -10,7 +10,7 @@ else()
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		add_compile_options(-fdiagnostics-color=always)
 	endif()
-	# add_compile_options(-pedantic -fanalyzer -Wall -Wextra -Werror -Wswitch-enum -Wreturn-type -Wstrict-aliasing -Wunreachable-code -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2  -Winit-self -Wlogical-op -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option)
+	# add_compile_options(-pedantic -fanalyzer -Wall -Wextra -Werror -Wreturn-type -Wstrict-aliasing -Wunreachable-code -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2  -Winit-self -Wlogical-op -Wmissing-include-dirs -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option)
 endif()
 
 if (WIN32)
@@ -19,15 +19,15 @@ if (WIN32)
 endif()
 
 file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.c")
-add_library(common_objects OBJECT ${COMMON_SOURCES})
-add_executable(warble "src/main.c" $<TARGET_OBJECTS:common_objects>)
-list(APPEND TARGETS ${MAIN_PROGRAM} common_objects)
+add_library(common OBJECT ${COMMON_SOURCES})
+add_executable(warble "src/main.c" $<TARGET_OBJECTS:common>)
+list(APPEND TARGETS ${MAIN_PROGRAM} common)
 
 # creating targets for all test sources
 file(GLOB TEST_SOURCES "src/test/*.c")
 foreach(TEST ${TEST_SOURCES})
 	get_filename_component(TEST_TARGET_NAME ${TEST} NAME_WE)
-	add_executable(${TEST_TARGET_NAME} ${TEST} $<TARGET_OBJECTS:common_objects>)
+	add_executable(${TEST_TARGET_NAME} ${TEST} $<TARGET_OBJECTS:common>)
 	list(APPEND TARGETS ${TEST_TARGET_NAME})
 endforeach()
 

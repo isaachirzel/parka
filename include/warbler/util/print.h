@@ -21,10 +21,6 @@ void _printFmt(const char *file, u32 line, const char *msg, ...);
 
 #define printFmt(msg, ...) _printFmt(__FILE__, __LINE__, msg, __VA_ARGS__)
 
-// void printNote(const Snippet *text, const String *msg);
-// void printWarning(const Snippet *text, const String *msg);
-// void printError(const Snippet *text, const String *msg);
-
 void printTokenNote(const Token *token, const char *format, ...);
 void printTokenWarning(const Token *token, const char *format, ...);
 void printTokenError(const Token *token, const char *format, ...);

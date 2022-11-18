@@ -21,7 +21,7 @@ void scopePush(Scope *scope, const char *name)
 
 	incrementArray(scope->names, &scope->count, &scope->capacity);
 
-	scope->names[index] = duplicateString(name);
+	scope->names[index] = stringDuplicate(name);
 }
 
 void scopePop(Scope *scope)
@@ -51,19 +51,19 @@ void scopeClear(Scope *scope)
 
 char *scopeCreateSymbolN(const Scope *scope, const char *identifier, usize n)
 {
-	String symbol = { 0 };
+	StringBuilder symbol = { 0 };
 
-	stringReserve(&symbol, 128);
+	sbReserve(&symbol, 128);
 
 	for (usize i = 0; i < n; ++i)
 	{
 		const char *package = scope->names[i];
 
-		stringPush(&symbol, package);
-		stringPush(&symbol, "::");
+		sbPushString(&symbol, package);
+		sbPushString(&symbol, "::");
 	}
 
-	stringPush(&symbol, identifier);
+	sbPushString(&symbol, identifier);
 
 	return symbol.data;
 }

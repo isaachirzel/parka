@@ -1,251 +1,177 @@
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
+#include <warbler/conversion.h>
 #include <warbler/scope.h>
 #include <string.h>
 
-const char *annotationTypeName(AnnotationType type)
-{
-	switch (type)
-	{
-		case ANNOTATION_STRUCT:
-			return "struct";
-
-		case ANNOTATION_PRIMITIVE:
-			return "primitive";
-
-		default:
-			return "type";
-	}
-}
-
-bool validateType(TypeContext *out, const TypeSyntax *syntax)
+bool validateType(TypeAnnotation *node)
 {
 	// TODO: Optimize name
-	char *name = tokenGetText(&syntax->name);
+	char *name = tokenGetText(&node->token);
 	SymbolId *id = symbolTableResolve(name);
 
 	if (!id)
 	{
-		printTokenError(&syntax->name, "The type '%s' does not exist this scope.", name);
+		printTokenError(&node->token, "The type '%s' does not exist this scope.", name);
 		return false;
 	}
 
-	// TODO: Figure out how to handle invalid symbols
-	// if (!data->isValid)
-	// 	return false;
-
-	AnnotationType annotationType;
+	node->type.id = *id;
 
 	switch (id->type)
 	{
-		case SYMBOL_STRUCT:
-			annotationType = ANNOTATION_STRUCT;
-			break;
-
+		case SYMBOL_PACKAGE:
 		case SYMBOL_PRIMITIVE:
-			annotationType = ANNOTATION_PRIMITIVE;
 			break;
 
 		default:
 		{
 			const char *typeName = symbolTypeGetName(id->type);
-			printTokenError(&syntax->name, "Expected type name, found %s '%s'.", typeName, name);
+			printTokenError(&node->token, "Expected type name, found %s '%s'.", typeName, name);
 			return false;
 		}
 	}
 
-	TypeContext type =
-	{
-		.type = annotationType,
-		.id = *id
-	};
-
-	*out = type;
 	return true;
 }
 
-bool validateStructMember(MemberContext *out, const MemberSyntax *syntax)
+bool validateStructMember(Member *node)
 {
-	out->name = tokenGetText(&syntax->name);
-	out->isPublic = syntax->isPublic;
-
-	if (!validateType(&out->type, &syntax->type))
-		return false;
-
-	return true;
+	return validateType(&node->type);
 }
 
-bool validateStructDeclaration(const StructSyntax *syntax)
+bool validateStructDeclaration(const SymbolId *id)
 {
-	return !!symbolTableDeclareStruct(syntax);
+	return symbolTableDeclareGlobal(id);
 }
 
-bool validateStructDefinition(const SymbolId *id, const StructSyntax *syntax)
+static bool isRecursiveType(const char *symbol, const Struct *node)
+{
+	printFmt("TODO: Implement %s", __func__);
+	// exitNotImplemented();
+	// TODO: Implement this
+	// for (usize i = 0; i < node->memberCount; ++i)
+	// {
+	// 	const Member *member = &node->members[i];
+	// 	char *identifier = tokenGetText(&member->name);
+	// 	SymbolId *typeId = symbolTableResolve(identifier);
+
+	// 	deallocate(identifier);
+
+	// 	if (typeIf->type != SYMBOL_STRUCT)
+	// 		continue;
+
+	// 	const Str
+	// }
+
+	return false;
+}
+
+bool validateStructDefinition(const SymbolId *id)
 {
 	bool success = true;
 
 	// TODO: Validate recursive types
 
-	StructContext *context = symbolTableStructAt(id->index);
+	Struct *node = symbolTableGetStruct(id);
 
-	context->memberCount = syntax->memberCount;
-	makeArray(context->members, context->memberCount);
+	if (isRecursiveType(node->symbol, node))
+		success = false;
 
-	for (usize i = 0; i < context->memberCount; ++i)
+	for (usize i = 0; i < node->memberCount; ++i)
 	{
-		const MemberSyntax *memberSyntax = &syntax->members[i];
+		const Member *member = &node->members[i];
 
 		for (usize j = 0; j < i; ++j)
 		{
-			if (tokenIsSame(&memberSyntax->name, &syntax->members[j].name))
+			const Member *previous = &node->members[j];
+
+			if (tokenIsSame(&member->name, &previous->name))
 			{
 				success = false;
 				// TODO: Stack based string
-				char *name = tokenGetText(&memberSyntax->name);
-				printTokenError(&syntax->name, "A member with name '%s' is already declared in struct '%s'.", name, context->symbol);
-				// TODO: Show previous declaration
+				char *name = tokenGetText(&member->name);
+
+				printTokenError(&member->name, "A member with name '%s' is already declared in struct '%s'.", name, node->symbol);
+				printTokenNote(&previous->name, "Previous delcaration here.");
 				deallocate(name);
-				// Break to avoid showing duplicate, incorrect errors
 				break;
 			}
 		}
 
-		success = success && validateStructMember(&context->members[i], memberSyntax);
+		if (!validateStructMember(&node->members[i]))
+			success = false;
 	}
 
 	return success;
 }
 
-bool validateConstant(ExpressionContext *out, const ConstantSyntax *syntax)
+bool validateLiteral(Literal *node)
 {
-	ConstantContext context =
+	return true;
+}
+
+bool validateSymbol(Symbol *node)
+{
+	char *symbol = tokenGetText(&node->token);
+
+	SymbolId *id = symbolTableResolve(symbol);
+
+	if (id)
 	{
-		.type = syntax->type
-	};
-
-	switch (syntax->type)
-	{
-		case CONSTANT_CHARACTER:
-			context.character = syntax->character;
-			break;
-
-		case CONSTANT_STRING:
-			context.string = duplicateString(syntax->string);
-			break;
-
-		case CONSTANT_INTEGER:
-			context.integer = syntax->integer;
-			break;
-
-		case CONSTANT_FLOAT:
-			context.floating = syntax->floating;
-			break;
-
-		case CONSTANT_BOOLEAN:
-			context.boolean = syntax->boolean;
-			break;
-
-		default:
-			exitWithErrorFmt("Invalid constant type: %d.", syntax->type);
+		printTokenError(&node->token, "The symbol '%s' could not be found in this scope.", symbol);
+		return false;
 	}
+	
+	node->id = *id;
 
 	return true;
 }
 
-bool validateSymbol(ExpressionContext *out, const SymbolSyntax *syntax)
+bool validateAssignment(Assignment *node)
 {
 	bool success = true;
-	char *symbol = tokenGetText(&syntax->token);
-	SymbolId *id = symbolTableFind(symbol);
 
-	success = success && id;
+	if (!validateExpression(&node->lhs))
+		success = false;
 
-	if (!id)
-	{
-		printTokenError(&syntax->token, "The symbol '%s' could not be found in this scope.", symbol);
-	}
-	else
-	{
-		*makeNew(out->symbolId) = *id;
-		out->type = EXPRESSION_SYMBOL;
-	}
-
-	deallocate(symbol);
-	
-	return success;
-}
-
-bool validateAssignment(ExpressionContext *out, const AssignmentSyntax *syntax)
-{
-	AssignmentContext context =
-	{
-		.type = syntax->type
-	};
-
-	bool success = true;
-
-	success = success && validateExpression(&context.lhs, &syntax->lhs);
-	success = success && validateExpression(&context.rhs, &syntax->rhs);
+	if (!validateExpression(&node->rhs))
+		success = false;
 
 	// TODO: validate type of assignment
 
-	if (!success)
-	{
-		freeAssignmentContext(&context);
-		return false;
-	}
-
-	*makeNew(out->assignment) = context;
-	out->type = EXPRESSION_ASSIGNMENT;
-
-	return true;
+	return success;
 }
 
-bool validateBlock(ExpressionContext *out, const BlockSyntax *syntax)
+bool validateBlock(Block *node)
 {
 	bool success = true;
-	BlockContext context =
+
+	for (usize i = 0; i < node->count; ++i)
 	{
-		.count = syntax->count
-	};
+		if (!validateStatement(&node->statements[i]))
+			success = false;
+	}
 
-	makeArray(context.statements, syntax->count);
-
-	for (usize i = 0; i < syntax->count; ++i)
-		success = success && validateStatement(&context.statements[i], &syntax->statements[i]);
-
-	if (!success)
-		goto error;
-
-	*makeNew(out->block) = context;
-	out->type = EXPRESSION_BLOCK;
-
-	return true;
-
-error:
-
-	freeBlockContext(&context);
-	return false;
+	return success;
 }
 
-bool validatePrefix(ExpressionContext *out, const PrefixSyntax *syntax)
+bool validatePrefix(Prefix *node)
 {
 	exitNotImplemented();
 }
 
-bool validateArgumentList(ArgumentListContext *out, const ArgumentListSyntax *syntax)
+bool validateArgumentList(ArgumentList *node)
 {
 	exitNotImplemented();
 }
 
-bool validatePostfix(ExpressionContext *out, const PostfixSyntax *syntax)
+bool validatePostfix(Postfix *node)
 {
-	PostfixContext context = { 0 };
-
-	if (!validateExpression(&context.expression, &syntax->expression))
-		goto error;
+	if (!validateExpression(&node->expression))
+		return false;
 	
-	switch (syntax->type)
+	switch (node->type)
 	{
 		case POSTFIX_INDEX:
 			exitWithError("Postfix indexing not implemented");
@@ -260,315 +186,326 @@ bool validatePostfix(ExpressionContext *out, const PostfixSyntax *syntax)
 			break;
 	}
 
-	*makeNew(out->postfix) = context;
-	out->type = EXPRESSION_POSTFIX;
 	return true;
-
-error:
-
-	freePostfixContext(&context);
-	return false;
 }
 
-bool validateExpression(ExpressionContext *out, const ExpressionSyntax *syntax)
+bool validateMultiplicativeExpression(MultiplicativeExpression *node)
 {
-	switch (syntax->type)
+	bool success = true;
+
+	if (!validateExpression(&node->lhs))
+		success = false;
+
+	for (usize i = 0; i < node->rhsCount; ++i)
+	{
+		if (!validateExpression(&node->rhs[i].expr))
+			success = false;
+	}
+
+	return success;
+}
+
+bool validateAdditiveExpression(AdditiveExpression *node)
+{
+	bool success = true;
+
+	if (!validateExpression(&node->lhs))
+		success = false;
+
+	for (usize i = 0; i < node->rhsCount; ++i)
+	{
+		if (!validateExpression(&node->rhs[i].expr))
+			success = false;
+	}
+
+	return success;
+}
+
+bool validateExpression(Expression *node)
+{
+	switch (node->type)
 	{
 		case EXPRESSION_BLOCK:
-			return validateBlock(out, syntax->block);
-
-		case EXPRESSION_CONSTANT:
-			return validateConstant(out, syntax->constant);
-
-		case EXPRESSION_SYMBOL:
-			return validateSymbol(out, syntax->symbol);
+			return validateBlock(node->block);
 
 		case EXPRESSION_ASSIGNMENT:
-			return validateAssignment(out, syntax->assignment);
+			return validateAssignment(node->assignment);
 
-		case EXPRESSION_PREFIX:
-			return validatePrefix(out, syntax->prefix);
+		case EXPRESSION_CONDITIONAL:
+			// evaluate types of both branch, confirm are the same and return that
+			break;
+
+		case EXPRESSION_BOOLEAN_OR:
+			break;
+
+		case EXPRESSION_BOOLEAN_AND:
+			break;
+
+		case EXPRESSION_BITWISE_OR:
+			break;
+
+		case EXPRESSION_BITWISE_XOR:
+			break;
+
+		case EXPRESSION_BITWISE_AND:
+			break;
+
+		case EXPRESSION_EQUALITY:
+			break;
+
+		case EXPRESSION_RELATIONAL:
+			break;
+
+		case EXPRESSION_SHIFT:
+			break;
+
+		case EXPRESSION_ADDITIVE:
+			return validateAdditiveExpression(node->additive);
+
+		case EXPRESSION_MULTIPLICATIVE:
+			return validateMultiplicativeExpression(node->multiplicative);
 
 		case EXPRESSION_POSTFIX:
-			return validatePostfix(out, syntax->postfix);
+			return validatePostfix(node->postfix);
 
-		default:
-			exitWithErrorFmt("Invalid expression type: %d.", syntax->type);
-	}
-}
-
-static bool validateStructConversion(const Token *token, const TypeContext *to, const TypeContext *from)
-{
-	exitNotImplemented();
-
-	// assert(to->type == ANNOTATION_STRUCT);
-	// assert(from->type == ANNOTATION_STRUCT);
-}
-
-static bool validateConstantToPrimitiveConversion(const TypeContext *to, const TypeContext *from)
-{
-	exitNotImplemented();
-}
-
-static const char *getConstantTypeName(ConstantType type)
-{
-	switch (type)
-	{
-		case CONSTANT_CHARACTER:
-			return "char";
-
-		case CONSTANT_STRING:
-			return "string literal";
-			
-		case CONSTANT_INTEGER:
-			return "integer";
-
-		case CONSTANT_FLOAT:
-			return "float";
-
-		case CONSTANT_BOOLEAN:
-			return "bool";
-
-		default:
-			exitWithErrorFmt("Invalid constant type: %d.", type);
-	}
-}
-
-static TypeContext getExpressionType(const ExpressionContext *expression)
-{
-	exitNotImplemented();
-}
-
-static bool validateExpressionConversion(TypeContext *out, const ExpressionContext *from, const TypeContext *to)
-{
-	exitNotImplemented();
-}
-
-bool validateVariable(const VariableSyntax *syntax, const ExpressionContext *value)
-{
-	SymbolId *id = symbolTableDeclareVariable(syntax);
-
-	if (!id)
-		return false;
-
-	VariableContext *context = symbolTableVariableAt(id->index);
-
-	context->isExplicitlyTyped = syntax->isExplicitlyTyped;
-	context->isMutable = syntax->isMutable;
-
-	if (syntax->isExplicitlyTyped)
-		return validateType(&context->type, &syntax->type);
-	
-	context->type = getExpressionType(value);
-
-	return true;
-}
-
-bool validateDeclaration(DeclarationContext *out, const DeclarationSyntax *syntax)
-{
-	DeclarationContext context = { 0 };
-	
-	if (!validateExpression(&context.value, &syntax->value))
-		goto error;
-
-	if (!validateVariable(&syntax->variable, &context.value))
-		goto error;
-
-	*out = context;
-	return true;
-
-error:
-
-	freeDeclarationContext(&context);
-	return false;
-}
-
-bool validateStatement(StatementContext *out, const StatementSyntax *syntax)
-{
-	if (syntax->isDeclaration)
-	{
-		DeclarationContext declaration;
+		case EXPRESSION_PREFIX:
+			return validatePrefix(node->prefix);
 		
-		if (!validateDeclaration(&declaration, syntax->declaration))
-			return false;
+		case EXPRESSION_LITERAL:
+			return validateLiteral(node->literal);
 
-		*makeNew(out->declaration) = declaration;
-	}
-	else
-	{
-		ExpressionContext expression;
+		case EXPRESSION_SYMBOL:
+			return validateSymbol(&node->symbol);
 
-		if (!validateExpression(&expression, syntax->expression))
-			return false;
-
-		*makeNew(out->expression) = expression;
+		default:
+			break;
 	}
 
-	out->isDeclaration = syntax->isDeclaration;
+	exitWithErrorFmt("Invalid expression type: %d.", node->type);
+}
+
+bool validateVariable(const SymbolId *id)
+{
+	if (!symbolTableDeclareLocal(id))
+		return false;
+	
+	Variable *node = symbolTableGetVariable(id);
+
+	if (node->isExplicitlyTyped)
+		return validateType(&node->type);
 
 	return true;
 }
 
-bool validateParameter(SymbolId *out, const ParameterSyntax *syntax)
+bool validateDeclaration(Declaration *node)
+{
+	bool success = true;
+
+	if (!validateVariable(&node->variableId))
+		success = false;
+
+	if (!validateExpression(&node->value))
+		success = false;
+
+	if (!success)
+		return false;
+
+	// TODO: Validate expression types
+	// Variable *variable = symbolTableGetVariable(&node->variableId);
+	// if (!variable->isExplicityTyped)
+	// 	variable->type = getExpressionType(&node->value);
+
+	return true;
+}
+
+bool validateStatement(Statement *node)
+{
+	if (node->isDeclaration)
+	{		
+		if (!validateDeclaration(node->declaration))
+			return false;
+	}
+	else
+	{
+		if (!validateExpression(node->expression))
+			return false;
+	}
+
+	return true;
+}
+
+bool validateParameter(SymbolId *id)
 {	
-	SymbolId *id = symbolTableDeclareParameter(syntax);
+	Parameter *node = symbolTableGetParameter(id);
 
-	if (!id)
+	if (!validateType(&node->type))
 		return false;
-
-	ParameterContext *context = symbolTableParameterAt(id->index);
-
-	context->isMutable = syntax->isMutable;
-
-	if (!validateType(&context->type, &syntax->type))
-		return false;
-
-	*out = *id;
 
 	return true;
 }
 
-bool validateParameterList(SymbolIdList *out, const ParameterListSyntax *syntax)
+bool validateParameterList(SymbolIdList *ids)
 {
 	bool success = true;
-	SymbolIdList ids =
+
+	for (usize i = 0; i < ids->count; ++i)
 	{
-		.type = SYMBOL_PARAMETER,
-		.count = syntax->count
-	};
+		SymbolId id = { ids->type, ids->indeces[i] };
 
-	makeArray(ids.indeces, ids.count);
-
-	for (usize i = 0; i < syntax->count; ++i)
-	{
-		SymbolId parameterId;
-
-		success = success && validateParameter(&parameterId, &syntax->data[i]);
-
-		// Ok to do whether or not failure
-		ids.indeces[i] = parameterId.index;
-	}
-
-	if (success)
-	{
-		*out = ids;
-	}
-	else
-	{
-		freeSymbolIdList(&ids);
+		if (!validateParameter(&id))
+			success = false;
 	}
 
 	return success;
 }
 
-bool validateFunctionDeclaration(const FunctionSyntax *syntax)
+bool validateFunctionDeclaration(SymbolId *id)
 {
 	bool success = true;
+	Function *node = symbolTableGetFunction(id);
 
-	SymbolId *id = symbolTableDeclareFunction(syntax);
+	if (!symbolTableDeclareGlobal(id))
+		success = false;
 
-	success = success && id;
+	if (!validateParameterList(&node->parameterIds))
+		success = false;
 
-	if (!id)
-		return false;
-
-	FunctionContext *context = symbolTableFunctionAt(id->index);
-
-	success = success && validateParameterList(&context->parameters, &syntax->parameters);
-
-	if (syntax->hasReturnType)
+	if (node->hasReturnType)
 	{
-		success = success && validateType(&context->returnType, &syntax->returnType);
-	}
-	else
-	{
-		context->returnType = (TypeContext)
-		{
-			.type = ANNOTATION_PRIMITIVE,
-			.id = {
-				.type = SYMBOL_PRIMITIVE,
-				.index = VOID_INDEX
-			}
-		};
+		if (!validateType(&node->returnType))
+			success = false;
 	}
 
 	return success;
 }
 
-bool validateFunctionDefinition(const SymbolId *id, const FunctionSyntax *syntax)
+bool validateFunctionDefinition(const SymbolId *id)
 {
-	bool success = true;
+	Function *node = symbolTableGetFunction(id);
 
-	FunctionContext *context = symbolTableFunctionAt(id->index);
-
-	success = success && validateExpression(&context->body, &syntax->body);
-
-	return success;
+	return validateExpression(&node->body);
 }
 
-bool validateModuleDeclarations(const ModuleSyntax *syntax)
+static bool validateModuleDeclarations(Module *node)
 {
 	bool success = true;
 
-	for (usize i = 0; i < syntax->functionCount; ++i)
-		success = success && validateFunctionDeclaration(&syntax->functions[i]);
-
-	for (usize i = 0; i < syntax->structCount; ++i)
-		success = success && validateStructDeclaration(&syntax->structs[i]);
-
-	return success;
-}
-
-bool validatePackageDeclarations(const PackageSyntax *syntax)
-{
-	bool success = true;
-
-	symbolTableDeclarePackage(syntax->name);
-
-	for (usize i = 0; i < syntax->moduleCount; ++i)
-		success = success && validateModuleDeclarations(&syntax->modules[i]);
-
-	return success;
-}
-
-bool validate(ProgramContext *out, const ProgramSyntax *syntax)
-{
-	bool success = true;
-
-	symbolTableInitialize();
-
-	for (usize i = 0; i < syntax->packageCount; ++i)
-		success = success && validatePackageDeclarations(&syntax->packages[i]);
-
-	usize count = symbolTableGetValidationCount();
-
-	for (usize i = 0; i < count; ++i)
+	for (usize i = 0; i < node->functionIds.count; ++i)
 	{
-		const Validation *validation = symbolTableValidationAt(i);
+		SymbolId id = { node->functionIds.type, node->functionIds.indeces[i] };
 
-		switch (validation->id.type)
-		{
-			case SYMBOL_STRUCT:
-				validateStructDefinition(&validation->id, validation->structSyntax);
-				break;
-
-			case SYMBOL_FUNCTION:
-				validateFunctionDefinition(&validation->id, validation->functionSyntax);
-				break;
-
-			default:
-				exitWithErrorFmt("Invalid validation symbol type: %d", validation->id.type);
-		}
+		if (!validateFunctionDeclaration(&id))
+			success = false;
 	}
 
-	if (success)
+	for (usize i = 0; i < node->structIds.count; ++i)
 	{
-		*out = symbolTableExport();
+		SymbolId id = { node->structIds.type, node->structIds.indeces[i] };
+
+		if (!validateStructDeclaration(&id))
+			success = false;
 	}
-	else
+
+	return success;
+}
+
+static bool validateModuleDefinitions(const Module *node)
+{
+	bool success = true;
+
+	for (usize i = 0; i < node->functionIds.count; ++i)
 	{
+		SymbolId id = { node->functionIds.type, node->functionIds.indeces[i] };
+
+		if (!validateFunctionDefinition(&id))
+			success = false;
+	}
+
+	for (usize i = 0; i < node->structIds.count; ++i)
+	{
+		SymbolId id = { node->structIds.type, node->structIds.indeces[i] };
+
+		if (!validateStructDefinition(&id))
+			success = false;
+	}
+
+	return success;
+}
+
+static bool validatePackageDeclarations(const Package *node)
+{
+	printFmt("packagedeclarations: %s", node->symbol);
+	bool success = true;
+
+	for (usize i = 0; i < node->moduleCount; ++i)
+	{
+		if (!validateModuleDeclarations(&node->modules[i]))
+			success = false;
+	}
+
+	return success;
+}
+
+static bool validatePackageDefinitions(const Package *node)
+{
+	bool success = true;
+
+	for (usize i = 0; i < node->moduleCount; ++i)
+	{
+		if (!validateModuleDefinitions(&node->modules[i]))
+			success = false;
+	}
+
+	return success;
+}
+
+bool validate()
+{
+	bool success = true;
+
+	usize packageCount = symbolTablePackageCount();
+
+	for (usize i = 0; i < packageCount; ++i)
+	{
+		SymbolId packageId = { SYMBOL_PACKAGE, i };
+		Package *package = symbolTableGetPackage(&packageId);
+
+		if (!validatePackageDeclarations(package))
+			success = false;
+	}
+
+	for (usize i = 0; i < packageCount; ++i)
+	{
+		SymbolId packageId = { SYMBOL_PACKAGE, i };
+		Package *package = symbolTableGetPackage(&packageId);
+
+		if (!validatePackageDefinitions(package))
+			success = false;
+	}
+
+	// TODO: Validate
+
+	// for (usize i = 0; i < count; ++i)
+	// {
+	// 	const Validation *validation = symbolTableValidationAt(i);
+
+	// 	switch (validation->id.type)
+	// 	{
+	// 		case SYMBOL_STRUCT:
+	// 			validateStructDefinition(&validation->id, validation->struct);
+	// 			break;
+
+	// 		case SYMBOL_FUNCTION:
+	// 			validateFunctionDefinition(&validation->id, validation->function);
+	// 			break;
+
+	// 		default:
+	// 			exitWithErrorFmt("Invalid validation symbol type: %d", validation->id.type);
+	// 	}
+	// }
+
+	if (!success)
 		symbolTableDestroy();
-	}
 
 	return success;
 }

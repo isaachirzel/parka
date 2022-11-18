@@ -2,3 +2,4 @@
 .vscode/
 *.sublime-project
 *.sublime-workspace
+test/

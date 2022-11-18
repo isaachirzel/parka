@@ -1,10 +1,12 @@
 #ifndef WARBLER_TYPE_H
 #define WARBLER_TYPE_H
 
-typedef enum TypeDefinitionType
+
+
+typedef enum OperatorType
 {
-	TYPE_DEFINITION_STRUCT
-} TypeDefinitionType;
+	OPERATOR_PLUS
+} OperatorType;
 
 typedef enum AssignmentType
 {
@@ -77,7 +79,7 @@ typedef enum ExpressionType
 	EXPRESSION_MULTIPLICATIVE,
 	EXPRESSION_POSTFIX,
 	EXPRESSION_PREFIX,
-	EXPRESSION_CONSTANT,
+	EXPRESSION_LITERAL,
 	EXPRESSION_SYMBOL
 } ExpressionType;
 
@@ -87,14 +89,15 @@ typedef enum AdditiveType
 	ADDITIVE_SUBTRACT
 } AdditiveType;
 
-typedef enum ConstantType
+typedef enum LiteralType
 {
-	CONSTANT_INTEGER,
-	CONSTANT_CHARACTER,
-	CONSTANT_STRING,
-	CONSTANT_FLOAT,
-	CONSTANT_BOOLEAN
-} ConstantType;
+	LITERAL_INTEGER,
+	LITERAL_CHARACTER,
+	LITERAL_STRING,
+	LITERAL_FLOAT,
+	LITERAL_BOOLEAN
+	// TODO: add LITERAL_OBJECT
+} LiteralType;
 
 typedef enum EqualityType
 {
@@ -140,13 +143,6 @@ typedef enum BitShiftType
 	BIT_SHIFT_RIGHT
 } BitShiftType;
 
-typedef enum AnnotationType
-{
-	ANNOTATION_STRUCT,
-	ANNOTATION_PRIMITIVE,
-	ANNOTATION_CONSTANT
-} AnnotationType;
-
 typedef enum SymbolType
 {
 	SYMBOL_PACKAGE,
@@ -156,5 +152,7 @@ typedef enum SymbolType
 	SYMBOL_VARIABLE,
 	SYMBOL_PARAMETER
 } SymbolType;
+
+const char *constantTypeName(LiteralType type);
 
 #endif

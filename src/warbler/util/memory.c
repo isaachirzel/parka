@@ -8,71 +8,71 @@ static const char *allocationError = "The process ran out of memory";
 
 void *allocate(usize bytes)
 {
-    void *ptr = malloc(bytes);
+	void *ptr = malloc(bytes);
 
-    if (!ptr)
-    {
-        printError(allocationError);
-        exit(EXIT_FAILURE);
-    }
+	if (!ptr)
+	{
+		printError(allocationError);
+		exit(EXIT_FAILURE);
+	}
 
-    return ptr;
+	return ptr;
 }
 
 void *reallocate(void *ptr, usize bytes)
 {
-    void *tmp = realloc(ptr, bytes);
+	void *tmp = realloc(ptr, bytes);
 
-    if (!tmp)
-    {
-        printError(allocationError);
-        exit(EXIT_FAILURE);
-    }
+	if (!tmp)
+	{
+		printError(allocationError);
+		exit(EXIT_FAILURE);
+	}
 
-    return tmp;
+	return tmp;
 }
 
 void deallocate(void *ptr)
 {
-    free(ptr);
+	free(ptr);
 }
 
-char *duplicateString(const char *string)
+char *stringDuplicate(const char *string)
 {
-    assert(string);
-    usize n = strlen(string);
+	assert(string);
+	usize n = strlen(string);
 
-    return duplicateStringN(string, n);
+	return stringDuplicateN(string, n);
 }
 
-char *duplicateStringN(const char *string, usize n)
+char *stringDuplicateN(const char *string, usize n)
 {
-    assert(string);
-    char *data = allocate(n + 1);
+	assert(string);
+	char *data = allocate(n + 1);
 
-    memcpy(data, string, n);
+	memcpy(data, string, n);
 
-    data[n] = '\0';
+	data[n] = '\0';
 
-    return data;
+	return data;
 }
 
 void *_incrementArray(void *array, usize size, usize * restrict length, usize * restrict capacity)
 {
-    if (*length < *capacity)
-    {
-        *length += 1;
+	if (*length < *capacity)
+	{
+		*length += 1;
 
-        return array;
-    }
+		return array;
+	}
 
-    *capacity = *length + 1;
-    *length += 1;
+	*capacity = *length + 1;
+	*length += 1;
 
-    return reallocate(array, size * *capacity);
+	return reallocate(array, size * *capacity);
 }
 
 void *allocateArray(usize size, usize length)
 {
-    return calloc(length, size);
+	return calloc(length, size);
 }

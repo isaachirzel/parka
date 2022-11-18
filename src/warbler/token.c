@@ -20,94 +20,83 @@ static usize getNextPos(const File *file, usize pos)
 
 static inline bool isIdentifierChar(char c)
 {
-	switch (c)
-	{
-		case '_':
-		case 'a': case 'A':
-		case 'b': case 'B':
-		case 'c': case 'C':
-		case 'd': case 'D':
-		case 'e': case 'E':
-		case 'f': case 'F':
-		case 'g': case 'G':
-		case 'h': case 'H':
-		case 'i': case 'I':
-		case 'j': case 'J':
-		case 'k': case 'K':
-		case 'l': case 'L':
-		case 'm': case 'M':
-		case 'n': case 'N':
-		case 'o': case 'O':
-		case 'p': case 'P':
-		case 'q': case 'Q':
-		case 'r': case 'R':
-		case 's': case 'S':
-		case 't': case 'T':
-		case 'u': case 'U':
-		case 'v': case 'V':
-		case 'w': case 'W':
-		case 'x': case 'X':
-		case 'y': case 'Y':
-		case 'z': case 'Z':
-			return true;
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+	// switch (c)
+	// {
+	// 	case '_':
+	// 	case 'a': case 'A':
+	// 	case 'b': case 'B':
+	// 	case 'c': case 'C':
+	// 	case 'd': case 'D':
+	// 	case 'e': case 'E':
+	// 	case 'f': case 'F':
+	// 	case 'g': case 'G':
+	// 	case 'h': case 'H':
+	// 	case 'i': case 'I':
+	// 	case 'j': case 'J':
+	// 	case 'k': case 'K':
+	// 	case 'l': case 'L':
+	// 	case 'm': case 'M':
+	// 	case 'n': case 'N':
+	// 	case 'o': case 'O':
+	// 	case 'p': case 'P':
+	// 	case 'q': case 'Q':
+	// 	case 'r': case 'R':
+	// 	case 's': case 'S':
+	// 	case 't': case 'T':
+	// 	case 'u': case 'U':
+	// 	case 'v': case 'V':
+	// 	case 'w': case 'W':
+	// 	case 'x': case 'X':
+	// 	case 'y': case 'Y':
+	// 	case 'z': case 'Z':
+	// 		return true;
 
-		default:
-			return false;
-	}
+	// 	default:
+	// 		return false;
+	// }
 }
 
 static inline bool isDigitChar(char c)
 {
-	switch (c)
-	{
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			return true;
+	return (c >= '0' && c <= '9');
+	// switch (c)
+	// {
+	// 	case '0':
+	// 	case '1':
+	// 	case '2':
+	// 	case '3':
+	// 	case '4':
+	// 	case '5':
+	// 	case '6':
+	// 	case '7':
+	// 	case '8':
+	// 	case '9':
+	// 		return true;
 
-		default:
-			return false;
-	}
+	// 	default:
+	// 		return false;
+	// }
 }
-
-static inline bool MatchStr(const char * const text, const char * const compare, const usize size)
-{
-	for (usize i = 0; i < size; ++i)
-	{
-		if (text[i] != compare[i])
-			return false;
-	}
-
-	return true;
-}
-
-#define matchStr(text, compare) MatchStr(text, compare, sizeof(compare))
 
 TokenType getIdentifierType(const char *text)
 {
 	switch (text[0])
 	{
 		case 'b':
-			if (matchStr(text + 1, "reak"))
+			if (!strcmp(text + 1, "reak"))
 				return TOKEN_KEYWORD_BREAK;
 			break;
 
 		case 'c':
 			if (text[1] == 'a')
 			{
-				if (matchStr(text + 2, "se"))
+				if (!strcmp(text + 2, "se"))
 					return TOKEN_KEYWORD_CASE;
 			}
 			else if (text[1] == 'o')
 			{
-				if (matchStr(text + 2, "ntinue"))
+				if (!strcmp(text + 2, "ntinue"))
 					return TOKEN_KEYWORD_CONTINUE;
 			}
 			break;
@@ -116,17 +105,17 @@ TokenType getIdentifierType(const char *text)
 			switch (text[1])
 			{
 				case 'l':
-					if (matchStr(text + 2, "se"))
+					if (!strcmp(text + 2, "se"))
 						return TOKEN_KEYWORD_ELSE;
 					break;
 
 				case 'n':
-					if (matchStr(text + 2, "um"))
+					if (!strcmp(text + 2, "um"))
 						return TOKEN_KEYWORD_ENUM;
 					break;
 
 				case 'x':
-					if (matchStr(text + 2, "port"))
+					if (!strcmp(text + 2, "port"))
 						return TOKEN_KEYWORD_EXPORT;
 					break;
 
@@ -139,7 +128,7 @@ TokenType getIdentifierType(const char *text)
 			switch (text[1])
 			{
 				case 'a':
-					if (matchStr(text + 2, "lse"))
+					if (!strcmp(text + 2, "lse"))
 						return TOKEN_KEYWORD_FALSE;
 					break;
 					
@@ -149,7 +138,7 @@ TokenType getIdentifierType(const char *text)
 					break;
 
 				case 'u':
-					if (matchStr(text + 2, "nction"))
+					if (!strcmp(text + 2, "nction"))
 						return TOKEN_KEYWORD_FUNCTION;
 					break;
 
@@ -166,25 +155,25 @@ TokenType getIdentifierType(const char *text)
 			}
 			else if (text[1] == 'm')
 			{
-				if (matchStr(text + 2, "port"))
+				if (!strcmp(text + 2, "port"))
 					return TOKEN_KEYWORD_IMPORT;
 			}
 			break;
 
 		case 'l':
-			if (matchStr(text + 1, "oop"))
+			if (!strcmp(text + 1, "oop"))
 				return TOKEN_KEYWORD_LOOP;
 			break;
 
 		case 'm':
 			if (text[1] == 'a')
 			{
-				if (matchStr(text + 2, "tch"))
+				if (!strcmp(text + 2, "tch"))
 					return TOKEN_KEYWORD_MATCH;
 			}
 			else if (text[1] == 'u')
 			{
-				if (matchStr(text + 2, "t"))
+				if (!strcmp(text + 2, "t"))
 					return TOKEN_KEYWORD_MUT;
 			}
 			break;
@@ -192,23 +181,23 @@ TokenType getIdentifierType(const char *text)
 		case 'p':
 			if (text[1] == 'r')
 			{
-				if (matchStr(text + 2, "ivate"))
+				if (!strcmp(text + 2, "ivate"))
 					return TOKEN_KEYWORD_PRIVATE;
 			}
 			else if (text[1] == 'u')
 			{
-				if (matchStr(text + 2, "blic"))
+				if (!strcmp(text + 2, "blic"))
 					return TOKEN_KEYWORD_PUBLIC;
 			}
 			break;
 
 		case 'r':
-			if (matchStr(text + 1, "eturn"))
+			if (!strcmp(text + 1, "eturn"))
 				return TOKEN_KEYWORD_RETURN;
 			break;
 
 		case 's':
-			if (matchStr(text + 1, "truct"))
+			if (!strcmp(text + 1, "truct"))
 				return TOKEN_KEYWORD_STRUCT;
 			break;
 
@@ -216,17 +205,17 @@ TokenType getIdentifierType(const char *text)
 			switch (text[1])
 			{
 				case 'h':
-					if (matchStr(text + 2, "en"))
+					if (!strcmp(text + 2, "en"))
 						return TOKEN_KEYWORD_THEN;
 					break;
 
 				case 'r':
-					if (matchStr(text + 2, "ue"))
+					if (!strcmp(text + 2, "ue"))
 						return TOKEN_KEYWORD_TRUE;
 					break;
 
 				case 'y':
-					if (matchStr(text + 2, "pe"))
+					if (!strcmp(text + 2, "pe"))
 						return TOKEN_KEYWORD_TYPE;
 					break;
 
@@ -236,17 +225,17 @@ TokenType getIdentifierType(const char *text)
 			break;
 
 		case 'u':
-			if (matchStr(text + 1, "nion"))
+			if (!strcmp(text + 1, "nion"))
 				return TOKEN_KEYWORD_UNION;
 			break;
 
 		case 'v':
-			if (matchStr(text + 1, "ar"))
+			if (!strcmp(text + 1, "ar"))
 				return TOKEN_KEYWORD_VAR;
 			break;
 
 		case 'w':
-			if (matchStr(text + 1, "hile"))
+			if (!strcmp(text + 1, "hile"))
 				return TOKEN_KEYWORD_WHILE;
 			break;
 			
@@ -259,24 +248,51 @@ TokenType getIdentifierType(const char *text)
 
 static Token getQuoteToken(const File *file, const usize startPos)
 {
-	char terminalCharacter = fileGetChar(file, startPos);
-	usize pos = startPos + 1;
+	char terminal = fileGetChar(file, startPos);
+	TokenType type = terminal == '\''
+		? TOKEN_CHARACTER_LITERAL
+		: TOKEN_STRING_LITERAL;
+
+	Token token =
+	{
+		.file = file,
+		.pos = startPos,
+		.type = type,
+		.length = 1
+	};
+
+	bool isEscaped = false;
+	usize pos = token.pos;
 
 	while (true)
 	{
-		char currentCharacter = file->src[pos]; 
+		char c = file->src[token.pos + token.length]; 
 
-		if (currentCharacter == '\0' || (currentCharacter == terminalCharacter && file->src[pos - 1] != '\\'))
+		// TODO: This should be an error
+		if (!c)
+		{
+			const char *typeName = terminal == '\''
+				? "Character"
+				: "String";
+
+			printTokenError(&token, "%s literal is unterminated.", typeName);
+			token.type = TOKEN_END_OF_FILE;
 			break;
+		}
 
-		pos += 1;
-	}
-
-	TokenType type = terminalCharacter == '\''
-		? TOKEN_CHARACTER_LITERAL
-		: TOKEN_STRING_LITERAL;
+		if (c == '\\')
+		{
+			isEscaped = !isEscaped;
+			continue;
+		}
 		
-	return (Token) { file, startPos, pos - startPos, type };
+		token.length += 1;
+
+		if (c == terminal && !isEscaped)
+			break;
+	}
+	
+	return token;
 }
 
 static Token getIdentifierToken(const File *file, const usize startPos)
@@ -332,7 +348,9 @@ static Token getDigitToken(const File *file, const usize startPos)
 
 static Token getNextToken(const File *file, usize startPos)
 {
-	switch (fileGetChar(file, startPos))
+	char c = fileGetChar(file, startPos);
+
+	switch (c)
 	{
 		case '\0':
 			return (Token) { file, startPos, 0, TOKEN_END_OF_FILE };
@@ -404,68 +422,55 @@ static Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TOKEN_SEMICOLON };
 
 		case ':':
-			if (fileGetChar(file, startPos + 1) == ':')
-			{
-				return (Token) { file, startPos, 1, TOKEN_SEMICOLON };
-			}
-			
-			return (Token) { file, startPos, 1, TOKEN_COLON };
+			return fileGetChar(file, startPos + 1) == ':'
+				? (Token) { file, startPos, 1, TOKEN_SEMICOLON }
+				: (Token) { file, startPos, 1, TOKEN_COLON };
 
 		case '.':
-			switch (fileGetChar(file, startPos + 1))
-			{
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-					return getDigitToken(file, startPos);
+		{
+			char c1 = fileGetChar(file, startPos + 1);
 
-				case '.':
-					if (fileGetChar(file, startPos + 2) == '.')
-					{
-						return (Token) { file, startPos, 3, TOKEN_ELIPSIS };
-					}
-					return (Token) { file, startPos, 2, TOKEN_RANGE };
-				
-				default:
-					return (Token) { file, startPos, 1, TOKEN_DOT };
+			if (isDigitChar(c1))
+			{
+				return getDigitToken(file, startPos);
 			}
+			else if (c1 == '.')
+			{
+				return fileGetChar(file, startPos + 2) == '.'
+					? (Token) { file, startPos, 3, TOKEN_ELIPSIS }
+					: (Token) { file, startPos, 2, TOKEN_RANGE };
+			}
+			
+			return (Token) { file, startPos, 1, TOKEN_DOT };
+		}
 
 		// Operators
 		case '<':
 			if (fileGetChar(file, startPos + 1) == '<')
 			{
-				if (fileGetChar(file, startPos + 2) == '=')
-				{
-					return (Token) { file, startPos, 3, TOKEN_LEFT_BIT_SHIFT_ASSIGN };
-				}
-				return (Token) { file, startPos, 2, TOKEN_LEFT_BIT_SHIFT };
+				return fileGetChar(file, startPos + 2) == '='
+					? (Token) { file, startPos, 3, TOKEN_LEFT_BIT_SHIFT_ASSIGN }
+					: (Token) { file, startPos, 2, TOKEN_LEFT_BIT_SHIFT };
 			}
 			else if (fileGetChar(file, startPos + 1) == '=')
 			{
 				return (Token) { file, startPos, 2, TOKEN_LESS_THAN_OR_EQUAL_TO };
 			}
+
 			return (Token) { file, startPos, 1, TOKEN_LESS_THAN };
 
 		case '>':
 			if (fileGetChar(file, startPos + 1) == '>')
 			{
-				if (fileGetChar(file, startPos + 2) == '=')
-				{
-					return (Token) { file, startPos, 3, TOKEN_RIGHT_BIT_SHIFT_ASSIGN };
-				}
-				return (Token) { file, startPos, 2, TOKEN_RIGHT_BIT_SHIFT };
+				return fileGetChar(file, startPos + 2) == '='
+					? (Token) { file, startPos, 3, TOKEN_RIGHT_BIT_SHIFT_ASSIGN }
+					: (Token) { file, startPos, 2, TOKEN_RIGHT_BIT_SHIFT };
 			}
 			else if (fileGetChar(file, startPos + 1) == '=')
 			{
 				return (Token) { file, startPos, 2, TOKEN_GREATER_THAN_OR_EQUAL_TO };
 			}
+
 			return (Token) { file, startPos, 1, TOKEN_GREATER_THAN };
 
 		case '%':
@@ -481,16 +486,15 @@ static Token getNextToken(const File *file, usize startPos)
 		case '&':
 			if (fileGetChar(file, startPos + 1) == '&')
 			{
-				if (fileGetChar(file, startPos + 2) == '=')
-				{
-					return (Token) { file, startPos, 3, TOKEN_BOOLEAN_AND_ASSIGN };
-				}
-				return (Token) { file, startPos, 2, TOKEN_BOOLEAN_AND };
+				return fileGetChar(file, startPos + 2) == '='
+					? (Token) { file, startPos, 3, TOKEN_BOOLEAN_AND_ASSIGN }
+					: (Token) { file, startPos, 2, TOKEN_BOOLEAN_AND };
 			}
 			else if (fileGetChar(file, startPos + 1) == '=')
 			{
 				return (Token) { file, startPos, 2, TOKEN_BITWISE_AND_ASSIGN };
 			}
+
 			return (Token) { file, startPos, 1, TOKEN_AMPERSAND };
 
 		case '*':
@@ -507,6 +511,7 @@ static Token getNextToken(const File *file, usize startPos)
 			{
 				return (Token) { file, startPos, 2, TOKEN_SINGLE_ARROW };
 			}
+
 			return (Token) { file, startPos, 1, TOKEN_MINUS };
 
 		case '=':
@@ -518,21 +523,21 @@ static Token getNextToken(const File *file, usize startPos)
 			{
 				return (Token) { file, startPos, 2, TOKEN_DOUBLE_ARROW };
 			}
+
 			return (Token) { file, startPos, 1, TOKEN_ASSIGN };
 
 		case '|':
 			if (fileGetChar(file, startPos + 1) == '|')
 			{
-				if (fileGetChar(file, startPos + 2) == '=')
-				{
-					return (Token) { file, startPos, 3, TOKEN_BOOLEAN_OR_ASSIGN };
-				}
-				return (Token) { file, startPos, 2, TOKEN_BOOLEAN_OR };
+				return fileGetChar(file, startPos + 2) == '='
+					? (Token) { file, startPos, 3, TOKEN_BOOLEAN_OR_ASSIGN }
+					: (Token) { file, startPos, 2, TOKEN_BOOLEAN_OR };
 			}
 			else if (fileGetChar(file, startPos + 1) == '=')
 			{
 				return (Token) { file, startPos, 2, TOKEN_BITWISE_OR_ASSIGN };
 			}
+			
 			return (Token) { file, startPos, 1, TOKEN_PIPE };
 
 		case '+':
@@ -558,8 +563,20 @@ static Token getNextToken(const File *file, usize startPos)
 			return getQuoteToken(file, startPos);
 
 		default:
-			exitWithErrorFmt("An invalid character was found in the source file: '%c'.", fileGetChar(file, startPos));
+			break;
 	}
+
+	Token token =
+	{
+		.file = file,
+		.pos = startPos,
+		.length = 1,
+		.type = TOKEN_END_OF_FILE
+	};
+
+	printTokenError(&token, "An invalid character was found in the source file:");
+
+	return token;
 }
 
 void incrementToken(Token *token)
@@ -700,12 +717,24 @@ usize tokenCopyText(char *out, const Token *token)
 
 bool tokenIsSame(const Token *a, const Token *b)
 {
-	// TODO: Do this? return memcmp(a, b, sizeof(Token)) == 0;
+	if (a->file != b->file || a->length != b->length || a->type != b->type)
+		return false;
 
-	bool isEqual = a->file == b->file
-		&& a->pos == b->pos
-		&& a->length == b->length
-		&& a->type == b->type;
+	const File *file = a->file;
+	usize length = a->length;
+	usize aPos = a->pos;
+	usize bPos = b->pos;
 
-	return isEqual;
+	for (usize i = 0; i < length; ++i)
+	{
+		if (fileGetChar(file, aPos + i) != fileGetChar(file, bPos + i))
+			return false;
+	}
+
+	return true;
+}
+
+const char *tokenGetIterator(const Token *token)
+{
+	return &token->file->src[token->pos];
 }

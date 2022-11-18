@@ -6,7 +6,7 @@ Snippet getSnippet(const File *file, const usize startPos, usize length)
 {
 	Snippet snippet =
 	{
-		.filename = duplicateString(file->name),
+		.filename = stringDuplicate(file->path),
 		.line = fileGetLine(file, startPos),
 		.col = fileGetCol(file, startPos)
 	};

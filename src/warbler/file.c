@@ -1,11 +1,12 @@
 #include <warbler/file.h>
 #include <warbler/util/memory.h>
 #include <warbler/util/print.h>
+#include <warbler/util/path.h>
 
 #include <stdio.h>
 #include <assert.h>
 
-static bool readStreamText(String *out, FILE *file)
+static bool readStreamText(StringBuilder *out, FILE *file)
 {
 	if (fseek(file, 0, SEEK_END))
 		return false;
@@ -23,37 +24,28 @@ static bool readStreamText(String *out, FILE *file)
 
 	buffer[bytesRead] = '\0';
 
-	*out = (String) { buffer, bytesRead, bytesRead };
+	*out = (StringBuilder) { buffer, bytesRead, bytesRead };
 	return true;
 }
 
-static String readFileText(const char *filepath)
+static StringBuilder readFileText(const char *filepath)
 {
 	FILE *file = fopen(filepath, "r");
 	
 	if (!file)
-	{
 		exitWithErrorFmt("Failed to open file '%s'.", filepath);
-	}
 
-	String out;
+	StringBuilder out;
 
 	if (!readStreamText(&out, file))
-	{
 		exitWithErrorFmt("Failed to read file '%s'.", filepath);
-	}
 
 	fclose(file);
-
-	if (out.length == 0)
-	{
-		exitWithErrorFmt("File '%s' was empty.", filepath);
-	}
 
 	return out;
 }
 
-bool writeFileText(const char *filepath, const String *content)
+bool writeFileText(const char *filepath, const StringBuilder *content)
 {
 	FILE *file = fopen(filepath, "w");
 
@@ -78,8 +70,8 @@ bool writeFileText(const char *filepath, const String *content)
 
 static void addLine(File *file, usize length)
 {
-	file->lineCount += 1;
-	file->lineLengths = resizeArray(file->lineLengths, file->lineCount);
+	resizeArray(file->lineLengths, ++file->lineCount);
+	
 	file->lineLengths[file->lineCount - 1] = length;
 }
 
@@ -107,13 +99,29 @@ static void getLineLengths(File *file)
 	addLine(file, length);
 }
 
-File fileRead(const char *filepath)
+File fileReadRelative(const char *directory, const char *filename)
 {
-	String text = readFileText(filepath);
-
+	// TODO: Optimize
+	char *path = pathJoin(directory, filename);
+	StringBuilder text = readFileText(path);
 	File file =
 	{
-		.name = duplicateString(filepath),
+		.path = path,
+		.src = text.data,
+		.length = text.length
+	};
+
+	getLineLengths(&file);
+
+	return file;
+}
+
+File fileRead(const char *path)
+{
+	StringBuilder text = readFileText(path);
+	File file =
+	{
+		.path = pathDuplicate(path),
 		.src = text.data,
 		.length = text.length
 	};
@@ -125,11 +133,10 @@ File fileRead(const char *filepath)
 
 File fileFrom(const char *name, const char *text)
 {
-	String str = stringFrom(text);
-
+	StringBuilder str = stringFrom(text);
 	File file =
 	{
-		.name = duplicateString(name),
+		.path = stringDuplicate(name),
 		.src = str.data,
 		.length = str.length
 	};
@@ -183,7 +190,7 @@ char fileGetChar(const File *file, usize pos)
 char *fileGetText(const File *file, usize pos, usize length)
 {
 	assert(file);
-	assert(pos + length < file->length);
+	assert(pos + length <= file->length);
 
 	char *text = allocate(length + 1);
 	const usize end = pos + length;
@@ -207,4 +214,32 @@ void fileCopyText(const File *file, char *out, usize pos, usize length)
 
 	for (usize i = pos; i < end; ++i)
 		out[textIndex] = file->src[i];
+}
+
+FilePosition fileGetPosition(const File *file, usize pos)
+{
+	assert(pos < file->length);
+
+	FilePosition position =
+	{
+		.line = 1,
+		.col = 1
+	};
+	usize filePos = 0;
+	const char *src = file->src;
+
+	for (usize i = 0; i < file->lineCount; ++i)
+	{
+		if (filePos + file->lineLengths[i] > pos)
+		{
+			position.line = i + 1;
+			position.col = pos - filePos + 1;
+
+			break;
+		}
+
+		filePos += file->lineLengths[i];
+	}
+
+	return position;
 }

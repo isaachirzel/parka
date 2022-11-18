@@ -6,8 +6,6 @@
 void *allocate(usize bytes);
 void *reallocate(void *ptr, usize bytes);
 void deallocate(void *ptr);
-char *duplicateString(const char *string);
-char *duplicateStringN(const char *string, usize n);
 void *allocateArray(usize size, usize n);
 
 #define makeArray(array, length) ((array) = allocateArray(sizeof(*(array)), (length)))

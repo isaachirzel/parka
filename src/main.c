@@ -1,36 +1,35 @@
 #include <warbler/file.h>
-#include <warbler/preprocessor.h>
 #include <warbler/parser.h>
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
 
-#define SOURCE "function main(a: i32, a: i32)\n"\
-"{\n"\
-"	var i: u32 = 1;\n"\
-"	var i: u32 = 1;\n"\
-"}\n"
-#define FILENAME "file.wb"
-#define FILEPATH "src"
-
-int main(void)
+int main(int argc, const char *argv[])
 {
-	File file = fileFrom(FILENAME, SOURCE);
-	Directory directory = directoryFrom(FILEPATH, &file);
+	if (argc != 2)
+		exitWithError("Please supply only path to src folder");
 
-	ProgramSyntax syntax;
+	Directory projectDir = directoryRead(argv[1]);
+	Directory *srcDir = directoryGetSrcDir(&projectDir);
 
-	if (!parse(&syntax, &directory, 1))
+	if (!srcDir)
+	{
+		printError("Unable to find 'src' directory.");
+		return 1;
+	}
+
+	symbolTableInitialize();
+
+	if (!parse(srcDir))
 		return 1;
 
 	print("Successfully parsed.");
 
-	ProgramContext context;
-
-	if (!validate(&context, &syntax))
+	if (!validate())
 		return 2;
 
 	print("Successfully validated.");
 
+	symbolTableDestroy();
+
 	return 0;
 }
-

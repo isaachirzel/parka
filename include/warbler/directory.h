@@ -3,16 +3,28 @@
 
 #include <warbler/file.h>
 
+struct Directory;
+
+typedef struct Entry
+{
+    union
+    {
+        File file;
+        struct Directory *directory;
+    };
+    bool isDirectory;
+} Entry;
+
 typedef struct Directory
 {
     char *path;
-    File *files;
-    usize fileCount;
+    Entry *entries;
+    usize entryCount;
 } Directory;
 
-Directory directoryFrom(const char *path, File *file);
-Directory *readDirectory(const char *path);
-
-void addDirectoryFile(Directory *dir, File *file);
+Directory directoryRead(const char *path);
+Directory *directoryGetSrcDir(Directory *projectDirectory);
+void directoryAddFile(Directory *dir, File *file);
+void directoryList(const Directory *dir);
 
 #endif

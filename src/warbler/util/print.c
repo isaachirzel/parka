@@ -32,14 +32,14 @@ typedef enum LogLevel
 	LOG_ERROR
 } LogLevel;
 
-typedef struct LogContext
+typedef struct Log
 {
 	const char* prompt;
 	const char* color;
 	const char* reset;
-} LogContext;
+} Log;
 
-static LogContext createLogContext(LogLevel level)
+static Log createLog(LogLevel level)
 {
 	const char *prompt = "";
 	const char *color = "";
@@ -81,7 +81,7 @@ static LogContext createLogContext(LogLevel level)
 			exitWithErrorFmt("Invalid LogLevel: %d", level);
 	}
 
-	return (LogContext)
+	return (Log)
 	{
 		.prompt = prompt,
 		.color = color,
@@ -93,18 +93,6 @@ void enableColorPrinting(bool enabled)
 {
 	isColorEnabled = enabled;
 }
-
-// static const char *getShortenedFile(const char *file)
-// {
-
-// 	for (const char *pos = file; *pos; pos += 1)
-// 	{
-// 		if (!strncmp(pos, "warbler/", 8))
-// 			return pos + 8;
-// 	}
-
-// 	return file;
-// }
 
 usize getNumberWidth(usize number)
 {
@@ -119,7 +107,7 @@ usize getNumberWidth(usize number)
 	return out;
 }
 
-void stringPushMargin(String *string, usize line)
+void sbPushMargin(StringBuilder *builder, usize line)
 {
 	const usize numberWidth = 5;
 
@@ -140,80 +128,75 @@ void stringPushMargin(String *string, usize line)
 	tempBuffer[numberWidth + 2] = ' ';
 	tempBuffer[numberWidth + 3] = '\0';
 
-	stringPush(string, tempBuffer);
+	sbPush(builder, tempBuffer);
 }
 
-char *getSnippetHighlight(const Snippet *snippet, const LogContext *context)
+static usize getStartOfLine(const char *text, usize pos)
 {
-	assert(snippet->lineCount > 0);
-
-	usize length = 0;
-
-	for (usize i = 0; i < snippet->lineCount; ++i)
-		length += snippet->lines[i].length;
-
-	String highlight = { 0 };
-	usize lineNumberWidth = getNumberWidth(snippet->line + snippet->lineCount - 1);
-	usize currentLineNumber = snippet->line;
-
-	for (usize i = 0; i < snippet->lineCount; ++i)
+	while (pos > 1)
 	{
-		const StringView *line = snippet->lines + i;
+		if (text[pos - 1] == '\n')
+			return pos;
 
-		String lineText = { 0 };
-		String underlineText = { 0 };
-
-		stringReserve(&lineText, line->length + 16);
-		stringReserve(&underlineText, line->length + 16);
-
-		stringPushMargin(&lineText, currentLineNumber);
-		stringPushMargin(&underlineText, 0);
-
-		bool shouldUnderline = false;
-
-		for (usize i = 0; i < line->length; ++i)
-		{
-			bool isFirstLine = line->data == snippet->lines[0].data;
-			bool isLastLine = line->data == snippet->lines[snippet->lineCount - 1].data;
-
-			if (isFirstLine *i == snippet->col)
-			{
-				stringPush(&lineText, context->color);
-				stringPush(&underlineText, context->color);
-		
-				shouldUnderline = true;
-			}
-
-			stringPushChar(&lineText, line->data[i]);
-
-			char space = shouldUnderline
-				? '~'
-				: line->data[i] == '\t'
-					? '\t'
-					: ' ';
-
-			stringPushChar(&underlineText, space);
-
-			if (isLastLine *i == snippet->endCol)
-			{
-				stringPush(&lineText, context->reset);
-				stringPush(&underlineText, context->reset);
-			
-				shouldUnderline = false;
-			}
-		}
-
-		stringPushChar(&lineText, '\n');
-		stringPushChar(&underlineText, '\n');
-		stringPushMargin(&highlight, 0);
-		stringPushChar(&highlight, '\n');
-		stringConcat(&highlight, &lineText);
-		stringConcat(&highlight, &underlineText);
-
-		currentLineNumber += 1;
+		--pos;
 	}
 
-	stringPushChar(&highlight, '\n');
+	return 0;
+}
+
+char *getTokenHighlight(const Token *token, const FilePosition *position, const Log *context)
+{
+	// TODO: Handle multiline tokens
+	// TODO: Handle tabs
+	const File *file = token->file;
+
+	StringBuilder highlight = sbCreate(256);
+	StringBuilder line = sbCreate(128);
+	StringBuilder underline = sbCreate(128);
+
+	usize pos = getStartOfLine(file->src, token->pos);
+
+	sbPushMargin(&line, position->line);
+	sbPushMargin(&underline, 0);
+
+	const char *start = file->src + pos;
+	usize startLength = token->pos - pos;
+
+	// Start of Line
+	sbPushStringN(&line, start, startLength);
+	sbPushStringInvisibleN(&underline, start, startLength);
+
+	// Color
+	if (*context->color)
+	{
+		sbPushString(&line, context->color);
+		sbPushString(&underline, context->color);
+	}
+
+	// Token
+	const char *text  = file->src + token->pos;
+
+	sbPushStringN(&line, text, token->length);
+	sbPushCharN(&underline, '~', token->length);
+
+	// Reset
+	if (*context->color)
+	{
+		sbPushString(&line, context->reset);
+		sbPushString(&underline, context->reset);
+	}
+
+	const char *end = text + token->length;
+	const char *endPos = sbPushLine(&line, end);
+
+	sbPushStringInvisibleN(&underline, end, endPos - end);
+
+	sbPushChar(&line, '\n');
+	sbPushChar(&underline, '\n');
+
+	sbPushString(&highlight, line.data);
+	sbPushString(&highlight, underline.data);
+	sbPushChar(&highlight, '\n');
 
 	return highlight.data;
 }
@@ -257,54 +240,41 @@ void printParseError(const Token *token, const char *expected, const char *messa
 
 	printf("Length: %zu\n", token->length);
 
-	
-
 	if (token->type == TOKEN_END_OF_FILE)
 	{
 		printTokenError(token, "Expected %s, found end of file. %s", expected, message);
 	}
 	else
 	{
-		const char *text = token->file->src + token->pos;
 		const char *category = tokenCategory(token);
 
-		printTokenError(token, "Expected %s, found %s '%.*s'. %s", expected, category, token->length, text, message);
+		printTokenError(token, "Expected %s, found %s. %s", expected, category, message);
 	}
 }
 
-static void printMessage(LogLevel level, const Snippet *snippet, const char *format, va_list args)
+static void printMessage(LogLevel level, const Token *token, const char *format, va_list args)
 {
-	if (snippet)
-		printf("%s:%zu:%zu ", snippet->filename, snippet->line + 1, snippet->col + 1);
+	FilePosition position;
 
-	LogContext log = createLogContext(level);
+	if (token)
+	{
+		position = fileGetPosition(token->file, token->pos);
+		printf("%s:%zu:%zu: ", token->file->path, position.line, position.col);
+	}
+
+	Log log = createLog(level);
 	
 	printf("%s%s%s: ", log.color, log.prompt, log.reset);
 	vprintf(format, args);
 	putchar('\n');
 
-	if (!snippet)
-		return;
+	if (token)
+	{
+		char* highlight = getTokenHighlight(token, &position, &log);
 
-	char* highlight = getSnippetHighlight(snippet, &log);
-
-	puts(highlight);
-	deallocate(highlight);
-}
-
-void printSnippetNote(const Snippet *snippet, const char *format, va_list args)
-{
-	printMessage(LOG_NOTE, snippet, format, args);
-}
-
-void printSnippetWarning(const Snippet *snippet, const char *format, va_list args)
-{
-	printMessage(LOG_WARNING, snippet, format, args);
-}
-
-void printSnippetError(const Snippet *snippet, const char *format, va_list args)
-{
-	printMessage(LOG_ERROR, snippet, format, args);
+		puts(highlight);
+		deallocate(highlight);
+	}
 }
 
 void printTokenNote(const Token *token, const char *format, ...)
@@ -312,9 +282,7 @@ void printTokenNote(const Token *token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	Snippet snippet = snippetFromToken(token);
-
-	printMessage(LOG_NOTE, &snippet, format, args);
+	printMessage(LOG_NOTE, token, format, args);
 
 	va_end(args);
 }
@@ -323,10 +291,8 @@ void printTokenWarning(const Token *token, const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	
-	Snippet snippet = snippetFromToken(token);
 
-	printMessage(LOG_WARNING, &snippet, format, args);
+	printMessage(LOG_WARNING, token, format, args);
 
 	va_end(args);
 }
@@ -336,9 +302,7 @@ void printTokenError(const Token *token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	Snippet snippet = snippetFromToken(token);
-	
-	printMessage(LOG_ERROR, &snippet, format, args);
+	printMessage(LOG_ERROR, token, format, args);
 
 	va_end(args);
 }

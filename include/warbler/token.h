@@ -93,7 +93,7 @@ typedef enum TokenType
 
 typedef struct Token
 {
-	const struct File *file;
+	const File *file;
 	usize pos;
 	usize length;
 	TokenType type;
@@ -106,6 +106,7 @@ const char *tokenCategory(const Token *token);
 char *tokenGetText(const Token *token);
 char tokenGetChar(const Token *token, usize index);
 usize tokenCopyText(char *out, const Token *token);
-void stringPushToken(String *string, const Token *token);
+void stringPushToken(StringBuilder *string, const Token *token);
+const char *tokenGetIterator(const Token *token);
 
 #endif
