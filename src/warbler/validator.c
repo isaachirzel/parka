@@ -7,14 +7,10 @@
 bool validateType(TypeAnnotation *node)
 {
 	// TODO: Optimize name
-	char *name = tokenGetText(&node->token);
-	SymbolId *id = symbolTableResolve(name);
+	SymbolId *id = symbolTableResolve(&node->token);
 
 	if (!id)
-	{
-		printTokenError(&node->token, "The type '%s' does not exist this scope.", name);
 		return false;
-	}
 
 	node->type.id = *id;
 
@@ -27,7 +23,7 @@ bool validateType(TypeAnnotation *node)
 		default:
 		{
 			const char *typeName = symbolTypeGetName(id->type);
-			printTokenError(&node->token, "Expected type name, found %s '%s'.", typeName, name);
+			printTokenError(&node->token, "Expected type name, found %s.", typeName);
 			return false;
 		}
 	}
@@ -113,15 +109,10 @@ bool validateLiteral(Literal *node)
 
 bool validateSymbol(Symbol *node)
 {
-	char *symbol = tokenGetText(&node->token);
+	SymbolId *id = symbolTableResolve(&node->token);
 
-	SymbolId *id = symbolTableResolve(symbol);
-
-	if (id)
-	{
-		printTokenError(&node->token, "The symbol '%s' could not be found in this scope.", symbol);
+	if (!id)
 		return false;
-	}
 	
 	node->id = *id;
 

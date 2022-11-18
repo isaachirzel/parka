@@ -23,7 +23,7 @@ SymbolId symbolTableAddParameter();
 bool symbolTableDeclareGlobal(const SymbolId *id);
 bool symbolTableDeclareLocal(const SymbolId *id);
 
-SymbolId *symbolTableResolve(const char *identifier);
+SymbolId *symbolTableResolve(const Token *token);
 SymbolId *symbolTableFind(const char *symbol);
 SymbolId *symbolTableFindGlobal(const char *symbol);
 SymbolId *symbolTableFindLocal(const char *symbol);

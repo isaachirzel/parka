@@ -339,8 +339,10 @@ const char *symbolTableGetSymbol(const SymbolId *id)
 	}
 }
 
-SymbolId *symbolTableResolve(const char *identifier)
+SymbolId *symbolTableResolve(const Token *token)
 {
+	// TODO: Stack
+	char *identifier = tokenGetText(token);
 	SymbolId *localId = symbolTableFindLocal(identifier);
 
 	if (localId)
@@ -359,6 +361,8 @@ SymbolId *symbolTableResolve(const char *identifier)
 		if (globalId)
 			return globalId;
 	}
+
+	printTokenError(token, "Unable to find '%s' in this scope.", identifier);
 
 	return NULL;
 }
