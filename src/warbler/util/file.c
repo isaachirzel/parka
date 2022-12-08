@@ -1,4 +1,4 @@
-#include <warbler/file.h>
+#include <warbler/util/file.h>
 #include <warbler/util/memory.h>
 #include <warbler/util/print.h>
 #include <warbler/util/path.h>
@@ -78,7 +78,6 @@ static void addLine(File *file, usize length)
 static void getLineLengths(File *file)
 {
 	usize lastStartOfLine = 0;
-	usize end = file->length + 1;
 
 	for (usize i = 0; i < file->length; ++i)
 	{
@@ -146,6 +145,13 @@ File fileFrom(const char *name, const char *text)
 	return file;
 }
 
+void fileDestroy(File *file)
+{
+	deallocate(file->path);
+	deallocate(file->src);
+	deallocate(file->lineLengths);
+}
+
 usize fileGetLine(const File *file, usize pos)
 {
 	usize line = 0;
@@ -208,7 +214,6 @@ void fileCopyText(const File *file, char *out, usize pos, usize length)
 {
 	assert(pos + length < file->length);
 
-	char *iter = out;
 	usize end = pos + length;
 	usize textIndex = 0;
 
@@ -226,7 +231,6 @@ FilePosition fileGetPosition(const File *file, usize pos)
 		.col = 1
 	};
 	usize filePos = 0;
-	const char *src = file->src;
 
 	for (usize i = 0; i < file->lineCount; ++i)
 	{

@@ -195,7 +195,7 @@ TokenType getIdentifierType(const char *text)
 					break;
 					
 				case 'o':
-					if (text[2] == 'r'  *text[3] == '\0')
+					if (text[2] == 'r' && text[3] == '\0')
 						return TOKEN_KEYWORD_FOR;
 					break;
 
@@ -324,7 +324,6 @@ static Token getQuoteToken(const File *file, const usize startPos)
 	};
 
 	bool isEscaped = false;
-	usize pos = token.pos;
 
 	while (true)
 	{
@@ -777,7 +776,7 @@ usize tokenCopyText(char *out, const Token *token)
 	return token->length;
 }
 
-bool tokenIsSame(const Token *a, const Token *b)
+bool tokenEquals(const Token *a, const Token *b)
 {
 	if (a->file != b->file || a->length != b->length || a->type != b->type)
 		return false;

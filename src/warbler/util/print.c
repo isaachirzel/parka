@@ -128,7 +128,7 @@ void sbPushMargin(StringBuilder *builder, usize line)
 	tempBuffer[numberWidth + 2] = ' ';
 	tempBuffer[numberWidth + 3] = '\0';
 
-	sbPush(builder, tempBuffer);
+	sbPushString(builder, tempBuffer);
 }
 
 static usize getStartOfLine(const char *text, usize pos)
@@ -199,21 +199,6 @@ char *getTokenHighlight(const Token *token, const FilePosition *position, const 
 	sbPushChar(&highlight, '\n');
 
 	return highlight.data;
-}
-
-static const char *getPrompt(LogLevel level)
-{
-	switch (level)
-	{
-		case LOG_NOTE:
-			return "note";
-		case LOG_WARNING:
-			return "warning";
-		case LOG_ERROR:
-			return "error";
-		default:
-			exitWithErrorFmt("Invalid LogLevel: %d", level);
-	}
 }
 
 void _print(const char *file, u32 line, const char *msg)

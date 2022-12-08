@@ -2,7 +2,7 @@
 
 #include <warbler/util/memory.h>
 #include <warbler/util/print.h>
-#include <warbler/directory.h>
+#include <warbler/util/directory.h>
 #include <warbler/symbol_table.h>
 #include <string.h>
 #include <assert.h>
@@ -153,12 +153,15 @@ static bool parseIntegerLiteral(Expression *out, Token *token)
 	for (usize i = 0; i < token->length; ++i)
 		value = value * 10 + (tokenGetChar(token, i) - '0');
 
+	
+
 	out->type = EXPRESSION_LITERAL;
-	*makeNew(out->literal) = (Literal)
+	out->literal = new(Literal);
+	*out->literal = (Literal)
 	{
-		.token = *token,
-		.integer = value,
-		.type = LITERAL_INTEGER
+		*token,
+		{ value },
+		LITERAL_INTEGER
 	};
 
 	incrementToken(token);
@@ -974,8 +977,6 @@ bool parseConditionalExpression(Expression *out, Token *token)
 
 	incrementToken(token);
 
-	Expression falseCase;
-
 	if (!parseBooleanOrExpression(&node.rhs.falseCase, token))
 		goto error;
 
@@ -1377,8 +1378,49 @@ bool parseMember(Member *out, Token *token)
 	
 	incrementToken(token);
 
-	if (!parseType(&out->type, token))
+	if (!parseType(&out->annotation, token))
 		return false;
+
+	return true;
+}
+
+bool parseMemberList(MemberList *out, Token *token)
+{
+	if (token->type != TOKEN_LEFT_BRACE)
+	{
+		printParseError(token, "'{' before member list", NULL);
+		return false;
+	}
+
+	incrementToken(token);
+
+	if (token->type != TOKEN_RIGHT_BRACE)
+	{
+		while (true)
+		{
+			usize index = out->count;
+
+			resizeArray(out->data, ++out->count);
+
+			out->data[index] = (Member) { 0 };
+
+			if (!parseMember(&out->data[index], token))
+				return false;
+
+			if (token->type != TOKEN_COMMA)
+				break;
+
+			incrementToken(token);
+		}
+
+		if (token->type != TOKEN_RIGHT_BRACE)
+		{
+			printParseError(token, "'}' after struct body", NULL);
+			return false;
+		}
+	}
+
+	incrementToken(token);
 
 	return true;
 }
@@ -1403,39 +1445,8 @@ bool parseStruct(SymbolId *out, Token *token, const char *package)
 
 	incrementToken(token);
 
-	if (token->type != TOKEN_LEFT_BRACE)
-	{
-		printParseError(token, "'{' before struct body", NULL);
+	if (!parseMemberList(&node->members, token))
 		return false;
-	}
-
-	incrementToken(token);
-
-	if (token->type != TOKEN_RIGHT_BRACE)
-	{
-		while (true)
-		{
-			usize index = node->memberCount;
-
-			resizeArray(node->members, ++node->memberCount);
-
-			if (!parseMember(&node->members[index], token))
-				return false;
-
-			if (token->type != TOKEN_COMMA)
-				break;
-
-			incrementToken(token);
-		}
-
-		if (token->type != TOKEN_RIGHT_BRACE)
-		{
-			printParseError(token, "'}' after struct body", NULL);
-			return false;
-		}
-	}
-
-	incrementToken(token);
 
 	*out = id;
 	return true;
@@ -1523,11 +1534,11 @@ char *getPackageFromDirectory(const Directory *directory, usize pathOffset)
 	{
 		if (*iter == '/')
 		{
-			sbPush(&symbol, "::");
+			sbPushString(&symbol, "::");
 		}
 		else
 		{
-			sbPush(&symbol, *iter);
+			sbPushChar(&symbol, *iter);
 		}
 	}
 
@@ -1540,6 +1551,7 @@ static usize getModuleCount(const Directory *directory)
 
 	for (usize i = 0; i < directory->entryCount; ++i)
 	{
+		// TODO: Check if has correct extension
 		if (!directory->entries[i].isDirectory)
 			count += 1;
 	}
@@ -1547,13 +1559,17 @@ static usize getModuleCount(const Directory *directory)
 	return count;
 }
 
-bool parsePackage(const Directory *directory, usize pathOffset)
+bool parsePackage(const Directory *directory, Scope *package, const char *name)
 {
 	bool success = true;
+
 	SymbolId id = symbolTableAddPackage();
 	Package *node = symbolTableGetPackage(&id);
+	char *symbol = scopeCreateSymbol(package, name);
 
-	node->symbol = getPackageFromDirectory(directory, pathOffset),
+	scopePush(package, name);
+
+	node->symbol = symbol,
 	node->moduleCount = getModuleCount(directory);
 
 	makeArray(node->modules, node->moduleCount);
@@ -1566,7 +1582,7 @@ bool parsePackage(const Directory *directory, usize pathOffset)
 
 		if (entry->isDirectory)
 		{
-			if (!parsePackage(entry->directory, pathOffset))
+			if (!parsePackage(entry->directory, package, entry->directory->name))
 				success = false;
 
 			continue;
@@ -1578,12 +1594,19 @@ bool parsePackage(const Directory *directory, usize pathOffset)
 		++fileIndex;
 	}
 
+	scopePop(package);
+
 	return success;
 }
 
-bool parse(const Directory *srcDir)
+bool parse(const Project *project)
 {
-	usize offset = strlen(srcDir->path) + 1;
+	// TODO: Only allow qulified ids for symbols and unqualified ids for declarations
+	Scope package = { 0 };
 
-	return parsePackage(srcDir, offset);
+	bool success = parsePackage(&project->srcDir, &package, project->name);
+
+	scopeDestroy(&package);
+
+	return success;
 }

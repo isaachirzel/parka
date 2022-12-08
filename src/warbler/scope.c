@@ -8,7 +8,7 @@ bool scopeContains(const Scope *scope, const char *name)
 {
 	for (usize i = 0; i < scope->count; ++i)
 	{
-		if (!strcmp(scope->names[i], name))
+		if (!strcmp(scope->names[i].data, name))
 			return true;
 	}
 
@@ -17,11 +17,29 @@ bool scopeContains(const Scope *scope, const char *name)
 
 void scopePush(Scope *scope, const char *name)
 {
+	assert(scope);
+	assert(scope->capacity >= scope->count); // Count should never be higher than capacity
+
+	if (scope->count == scope->capacity)
+	{
+		usize newCapacity = scope->count + 8;
+		StringBuilder *names = reallocate(scope->names, newCapacity * sizeof(StringBuilder));
+
+		for (usize i = scope->count; i < newCapacity; ++i)
+			names[i] = (StringBuilder) { 0 };
+
+		scope->names = names;
+		scope->capacity = newCapacity;
+	}
+
 	usize index = scope->count;
 
-	incrementArray(scope->names, &scope->count, &scope->capacity);
+	StringBuilder *sb = &scope->names[index];
 
-	scope->names[index] = stringDuplicate(name);
+	sbClear(sb);
+	sbPushString(sb, name);
+
+	scope->count += 1;
 }
 
 void scopePop(Scope *scope)
@@ -29,37 +47,31 @@ void scopePop(Scope *scope)
 	assert(scope->count > 0);
 	
 	scope->count -= 1;
-
-	deallocate(scope->names + scope->count);
 }
 
 void scopeDestroy(Scope *scope)
 {
 	for (usize i = 0; i < scope->count; ++i)
-		deallocate(scope->names[i]);
+		sbDestroy(&scope->names[i]);
 
 	deallocate(scope->names);
 }
 
 void scopeClear(Scope *scope)
 {
-	for (usize i = 0; i < scope->count; ++i)
-		deallocate(scope->names[i]);
-
 	scope->count = 0;
 }
 
 char *scopeCreateSymbolN(const Scope *scope, const char *identifier, usize n)
 {
+	assert(n <= scope->count);
 	StringBuilder symbol = { 0 };
 
 	sbReserve(&symbol, 128);
 
 	for (usize i = 0; i < n; ++i)
 	{
-		const char *package = scope->names[i];
-
-		sbPushString(&symbol, package);
+		sbConcat(&symbol, &scope->names[i]);
 		sbPushString(&symbol, "::");
 	}
 

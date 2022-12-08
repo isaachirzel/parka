@@ -340,7 +340,7 @@ void freePrefixExpression(Prefix *node)
 
 void freeParameter(Parameter *node)
 {
-	freeType(&node->type);
+	freeTypeAnnotation(&node->type);
 	deallocate(node->symbol);
 }
 
@@ -350,7 +350,7 @@ void freeFunction(Function *node)
 	freeSymbolIdList(&node->parameterIds);
 
 	if (node->hasReturnType)
-		freeType(&node->returnType);
+		freeTypeAnnotation(&node->returnType);
 
 	deallocate(node->symbol);
 }
@@ -368,7 +368,7 @@ void freeDeclaration(Declaration *node)
 
 void freeVariable(Variable *node)
 {
-	freeType(&node->type);
+	freeTypeAnnotation(&node->type);
 	deallocate(node->symbol);
 }
 
@@ -378,22 +378,35 @@ void freeAssignment(Assignment *node)
 	freeExpression(&node->rhs);
 }
 
+void freeMemberList(MemberList *node)
+{
+	for (usize i = 0; i < node->count; ++i)
+		freeMember(&node->data[i]);
+
+	deallocate(node->data);
+}
+
 void freeStruct(Struct *node)
 {
-	for (usize i = 0; i < node->memberCount; ++i)
-		freeMember(&node->members[i]);
+	freeMemberList(&node->members);
 
 	deallocate(node->symbol);
 }
 
 void freeMember(Member *node)
 {
-	freeType(&node->type);
+	freeTypeAnnotation(&node->annotation);
 }
 
-void freeType(TypeAnnotation *node)
+void freeType(Type *type)
 {
-	// No-op
+	assert(type);
+	// TODO: pointers
+}
+
+void freeTypeAnnotation(TypeAnnotation *node)
+{
+	freeType(&node->type);
 }
 
 void freeModule(Module *node)

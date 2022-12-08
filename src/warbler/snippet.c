@@ -16,7 +16,7 @@ Snippet getSnippet(const File *file, const usize startPos, usize length)
 	usize currentLine = snippet.line;
 	usize pos = startPos;
 
-	for (pos; pos < end; ++pos)
+	for (; pos < end; ++pos)
 	{
 		char character = fileGetChar(file, pos);
 

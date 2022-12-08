@@ -1,5 +1,4 @@
 #include <warbler/ast.h>
-#include <warbler/conversion.h>
 #include <warbler/symbol_table.h>
 #include <warbler/util/array.h>
 #include <warbler/util/memory.h>
@@ -8,21 +7,12 @@
 #include <assert.h>
 #include <string.h>
 
-typedef struct SymbolData
-{
-	char *symbol;
-	SymbolId id;
-	bool isValid;
-	bool isDefined;
-	Token name;
-} SymbolData;
-
 typedef struct SymbolTable
 {
 	// Globals
 	SymbolData *globals;
 	usize globalCount;
-	usize globalCapacity;
+	usize globalCapacity; 
 
 	// Locals
 	SymbolData *locals;
@@ -83,7 +73,7 @@ const char *symbolTypeGetName(SymbolType type)
 	exitWithErrorFmt("Invalid SymbolType for type name: %d", type);
 }
 
-static SymbolData *findGlobalSymbolData(const char *symbol)
+static SymbolData *findGlobalSymbol(const char *symbol)
 {
 	for (usize i = 0; i < table.globalCount; ++i)
 	{
@@ -96,7 +86,7 @@ static SymbolData *findGlobalSymbolData(const char *symbol)
 	return NULL;
 }
 
-static SymbolData *findLocalSymbolData(usize blockIndex, const char *symbol)
+static SymbolData *findLocalSymbol(const char *identifier, usize blockIndex)
 {
 	if (table.localCount == 0)
 		return NULL;
@@ -107,7 +97,7 @@ static SymbolData *findLocalSymbolData(usize blockIndex, const char *symbol)
 	{
 		SymbolData *data = &table.locals[i];
 
-		if (!strcmp(symbol, data->symbol))
+		if (!strcmp(identifier, data->symbol))
 			return data;
 
 		if (i == blockIndex)
@@ -119,39 +109,30 @@ static SymbolData *findLocalSymbolData(usize blockIndex, const char *symbol)
 	return NULL;
 }
 
-static SymbolData *findBlockSymbolData(const char *symbol)
+static SymbolData *findBlockSymbol(const char *identifier)
 {
 	usize blockIndex = table.blockCount > 0
 		? table.blocks[table.blockCount - 1]
 		: 0;
-	SymbolData *data = findLocalSymbolData(blockIndex, symbol);
-	
-	return data;
+
+	return findLocalSymbol(identifier, blockIndex);
 }
 
-static char *getSymbolFromToken(const Token *token)
-{
-	// TODO: Optimize
-	char *name = tokenGetText(token);
-	char *symbol = symbolTableCreateSymbol(name);
-
-	deallocate(name);
-
-	return symbol;
-}
-
-static bool addGlobal(const SymbolId *id, const char *symbol, const Token *name)
+static bool declareGlobal(const SymbolId *id, const char *symbol, const Token *name)
 {
 	assert(name);
+	assert(id->type != SYMBOL_PACKAGE);
 
-	SymbolData *previous = findGlobalSymbolData(symbol);
+	SymbolData *previous = findGlobalSymbol(symbol);
 
 	if (previous)
 	{
-		printTokenError(name, "'%s' is already declared in this package.", symbol);
-		printTokenNote(&previous->name, "Previous declaration here.");
+		const Token *previousName = symbolTableGetToken(&previous->id);
 
-		previous->isValid = false;
+		printTokenError(name, "'%s' is already declared in this package.", symbol);
+		printTokenNote(previousName, "Previous declaration here.");
+
+		previous->status = VALIDATION_INVALID;
 		return false;
 	}
 
@@ -163,50 +144,35 @@ static bool addGlobal(const SymbolId *id, const char *symbol, const Token *name)
 	{
 		.symbol = stringDuplicate(symbol),
 		.id = *id,
-		.isValid = true,
-		.name = *name
+		.status = VALIDATION_PENDING
 	};
 
 	return true;
 }
 
-SymbolId *symbolTableFindGlobal(const char *symbol)
+const SymbolData *symbolTableFind(const char *symbol)
 {
-	SymbolData *data = findGlobalSymbolData(symbol);
-	SymbolId *id = data ? &data->id : NULL;
+	const SymbolData *local = findLocalSymbol(symbol, 0);
 
-	return id;
-}
+	if (local)
+		return local;
 
-SymbolId *symbolTableFindLocal(const char *symbol)
-{
-	SymbolData *data = findLocalSymbolData(0, symbol);
-	SymbolId *id = data ? &data->id : NULL;
+	const SymbolData *global = findGlobalSymbol(symbol);
 
-	return id;
-}
-
-SymbolId *symbolTableFind(const char *symbol)
-{
-	SymbolId *localId = symbolTableFindLocal(symbol);
-
-	if (localId)
-		return localId;
-
-	SymbolId *globalId = symbolTableFindGlobal(symbol);
-
-	return globalId;
+	return global;
 }
 
 static bool addLocal(const SymbolId *id, const char *symbol, const Token *name)
 {
-	SymbolData *previous = findBlockSymbolData(symbol);
+	SymbolData *previous = findBlockSymbol(symbol);
 
 	if (previous)
 	{
+		const Token *previousName = symbolTableGetToken(&previous->id);
+
 		printTokenError(name, "'%s' is already declared in this block.", symbol);
-		printTokenNote(&previous->name, "Previous declaration here.");
-		previous->isValid = false;
+		printTokenNote(previousName, "Previous declaration here.");
+		previous->status = VALIDATION_INVALID;
 		return false;
 	}
 
@@ -218,9 +184,7 @@ static bool addLocal(const SymbolId *id, const char *symbol, const Token *name)
 	{
 		.symbol = stringDuplicate(symbol),
 		.id = *id,
-		.name = *name,
-		.isDefined = true,
-		.isValid = true
+		.status = VALIDATION_INVALID
 	};
 
 	return true;
@@ -228,7 +192,7 @@ static bool addLocal(const SymbolId *id, const char *symbol, const Token *name)
 
 bool symbolTableDeclareGlobal(const SymbolId *id)
 {
-	printFmt("Declare global: %d, %zu", id->type, id->index);
+	printFmt("Declaring global: %d, %zu", id->type, id->index);
 	switch (id->type)
 	{
 		case SYMBOL_PACKAGE:
@@ -243,7 +207,7 @@ bool symbolTableDeclareGlobal(const SymbolId *id)
 			{
 				.symbol = stringDuplicate(package->symbol),
 				.id = *id,
-				.isValid = true
+				.status = VALIDATION_PENDING
 			};
 
 			return true;
@@ -253,14 +217,14 @@ bool symbolTableDeclareGlobal(const SymbolId *id)
 		{
 			Struct *node = symbolTableGetStruct(id);
 
-			return addGlobal(id, node->symbol, &node->name);
+			return declareGlobal(id, node->symbol, &node->name);
 		}
 
 		case SYMBOL_FUNCTION:
 		{
 			Function *node = symbolTableGetFunction(id);
 
-			return addGlobal(id, node->symbol, &node->name);
+			return declareGlobal(id, node->symbol, &node->name);
 		}
 
 		default:
@@ -270,7 +234,6 @@ bool symbolTableDeclareGlobal(const SymbolId *id)
 
 bool symbolTableDeclareLocal(const SymbolId *id)
 {
-	printFmt("Declare local: %d, %zu", id->type, id->index);
 	switch (id->type)
 	{
 		case SYMBOL_VARIABLE:
@@ -316,7 +279,7 @@ void symbolTableSetScope(const char *symbol)
 			continue;
 		}
 
-		sbPush(&tmp, *iter);
+		sbPushChar(&tmp, *iter);
 	}
 }
 
@@ -336,62 +299,85 @@ const char *symbolTableGetSymbol(const SymbolId *id)
 			return table.variables[id->index].symbol;
 		case SYMBOL_PARAMETER:
 			return table.parameters[id->index].symbol;
+		default:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to get symbol for invalid symbol type: %d", id->type);
+}
+
+const Token *symbolTableGetToken(const SymbolId *id)
+{
+	switch (id->type)
+	{
+		case SYMBOL_STRUCT:
+		{
+			Struct *node = symbolTableGetStruct(id);
+			return &node->name;
+		}
+		case SYMBOL_FUNCTION:
+		{
+			Function *node = symbolTableGetFunction(id);
+			return &node->name;
+		}
+		case SYMBOL_VARIABLE:
+		{
+			Variable *node = symbolTableGetVariable(id);
+			return &node->name;
+		}
+		case SYMBOL_PARAMETER:
+		{
+			Parameter *node = symbolTableGetParameter(id);
+			return &node->name;
+		}
+		default:
+			exitWithErrorFmt("Unable to get token for symbol type: %d", id->type);
 	}
 }
 
-SymbolId *symbolTableResolve(const Token *token)
+static SymbolData *symbolTableResolveIdentifier(const char *identifier)
 {
-	// TODO: Stack
-	char *identifier = tokenGetText(token);
-	SymbolId *localId = symbolTableFindLocal(identifier);
+	// TODO: Optimize symbol handling
+	SymbolData *local = findLocalSymbol(identifier, 0);
 
-	if (localId)
-		return localId;
+	if (local)
+		return local;
 
 	Scope *package = &table.package;
 
-	for (i32 i = (i32)package->count; i >= 0; --i)
+	for (usize i = package->count; i > 0; --i)
 	{
-		// TODO: Optimize with stack symbol
 		char *symbol = scopeCreateSymbolN(package, identifier, i);
-		SymbolId *globalId = symbolTableFindGlobal(symbol);
+		SymbolData *global = findGlobalSymbol(symbol);
 
 		deallocate(symbol);
 
-		if (globalId)
-			return globalId;
+		if (global)
+			return global;
 	}
 
-	printTokenError(token, "Unable to find '%s' in this scope.", identifier);
+	SymbolData *primitive = findGlobalSymbol(identifier);
 
-	return NULL;
+	return primitive;
 }
 
-static bool containsSemicolon(const char * const identifier)
+SymbolData *symbolTableResolve(const Token *token)
 {
-	for (const char * restrict pos = identifier; *pos; ++pos)
-	{
-		if (*pos == ':')
-			return true;
-	}
+	// TODO: Optimize symbol handling
+	char *identifier = tokenGetText(token);
+	SymbolData *data = symbolTableResolveIdentifier(identifier);
 
-	return false;
+	if (!data)
+		printTokenError(token, "Unable to find '%s' in this scope.", identifier);
+
+	deallocate(identifier);
+
+	return data;
 }
 
 char *symbolTableCreateSymbol(const char *identifier)
 {
-	StringBuilder symbol = { 0 };
-	Scope *scope = &table.package;
-
-	for (usize i = 0; i < scope->count; ++i)
-	{
-		sbPushString(&symbol, scope->names[i]);
-		sbPushString(&symbol, "::");
-	}
-
-	sbPushString(&symbol, identifier);
-
-	return symbol.data;
+	return scopeCreateSymbol(&table.package, identifier);
 }
 
 char *symbolTableCreateTokenSymbol(const Token *token)
@@ -435,7 +421,7 @@ void symbolDataDestroy(SymbolData *data)
 	deallocate(data->symbol);
 }
 
-void symbolTableInitialize()
+void symbolTableInitialize(const char *projectName)
 {
 	table = (SymbolTable)
 	{
@@ -451,11 +437,13 @@ void symbolTableInitialize()
 		{
 			.symbol = stringDuplicate(primitives[i].symbol),
 			.id = { SYMBOL_PRIMITIVE, i },
-			.isValid = true
+			.status = VALIDATION_VALID
 		};
 
 		table.globals[i] = data;
 	}
+
+	scopePush(&table.package, projectName);
 }
 
 void symbolTableDestroy()
@@ -628,6 +616,65 @@ SymbolId symbolTableAddParameter()
 	SymbolId id = { SYMBOL_PARAMETER, index };
 
 	return id;
+}
+
+static usize getEntityCount(SymbolType type)
+{
+	switch (type)
+	{
+		case SYMBOL_PACKAGE:
+			return table.packageCount;
+
+		case SYMBOL_STRUCT:
+			return table.structCount;
+
+		case SYMBOL_PRIMITIVE:
+			return primitiveCount;
+
+		case SYMBOL_FUNCTION:
+			return table.functionCount;
+
+		case SYMBOL_VARIABLE:
+			return table.variableCount;
+
+		case SYMBOL_PARAMETER:
+			return table.parameterCount;
+
+		default:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to get entity count for symbol type: %d", type);
+}
+
+bool symbolTableForEachEntity(SymbolType type, SymbolIdAction action)
+{
+	bool success = true;
+
+	usize count = getEntityCount(type);
+
+	for (usize i = 0; i < count; ++i)
+	{
+		SymbolId id = { type, i };
+
+		if (!action(&id))
+			success = false;
+	}
+
+	return success;
+}
+
+bool symbolTableForEachGlobal(SymbolDataAction action)
+{
+	bool success = true;
+
+	for (usize i = 0; i < table.globalCount; ++i)
+	{
+		if (!action(&table.globals[i]))
+			success = false;
+	}
+
+	return success;
 }
 
 usize symbolTablePackageCount()

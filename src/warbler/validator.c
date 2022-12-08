@@ -1,122 +1,132 @@
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
-#include <warbler/conversion.h>
 #include <warbler/scope.h>
 #include <string.h>
 
-bool validateType(TypeAnnotation *node)
+bool validateStruct(SymbolData *data);
+
+bool validateType(Type *node, const Token *token)
 {
-	// TODO: Optimize name
-	SymbolId *id = symbolTableResolve(&node->token);
+	SymbolData *data = symbolTableResolve(token);
 
-	if (!id)
+	if (!data)
 		return false;
+	
+	node->id = data->id;
 
-	node->type.id = *id;
-
-	switch (id->type)
+	switch (node->id.type)
 	{
-		case SYMBOL_PACKAGE:
+		case SYMBOL_STRUCT:
 		case SYMBOL_PRIMITIVE:
-			break;
+			return true;
 
 		default:
-		{
-			const char *typeName = symbolTypeGetName(id->type);
-			printTokenError(&node->token, "Expected type name, found %s.", typeName);
-			return false;
-		}
+			break;
 	}
 
-	return true;
-}
+	const char *typeName = symbolTypeGetName(node->id.type);
 
-bool validateStructMember(Member *node)
-{
-	return validateType(&node->type);
-}
-
-bool validateStructDeclaration(const SymbolId *id)
-{
-	return symbolTableDeclareGlobal(id);
-}
-
-static bool isRecursiveType(const char *symbol, const Struct *node)
-{
-	printFmt("TODO: Implement %s", __func__);
-	// exitNotImplemented();
-	// TODO: Implement this
-	// for (usize i = 0; i < node->memberCount; ++i)
-	// {
-	// 	const Member *member = &node->members[i];
-	// 	char *identifier = tokenGetText(&member->name);
-	// 	SymbolId *typeId = symbolTableResolve(identifier);
-
-	// 	deallocate(identifier);
-
-	// 	if (typeIf->type != SYMBOL_STRUCT)
-	// 		continue;
-
-	// 	const Str
-	// }
+	printTokenError(token, "Expected type name, found %s.", typeName);
 
 	return false;
 }
 
-bool validateStructDefinition(const SymbolId *id)
+bool validateTypeAnnotation(TypeAnnotation *node)
+{
+	return validateType(&node->type, &node->token);
+}
+
+// static bool isRecursiveMember(const Member *member, const SymbolId *parentId)
+// {
+// 	// TODO: Indirection check
+// 	const Token *typeName = &member->annotation.token;
+// 	const SymbolData *data = symbolTableResolve(typeName);
+
+// 	if (!data)
+// 		return false;
+
+// 	if (symbolIdEquals(parentId, &data->id))
+// 		return true;
+
+// 	const MemberList *members = getMembers(&data->id);
+	
+// 	if (members == NULL)
+// 		return false;
+
+// 	for (usize i = 0; i < members->count; ++i)
+// 	{
+// 		if (isRecursiveMember(&members->data[i], parentId))
+// 			return true;
+// 	}
+
+// 	return false;
+// }
+
+bool validateMemberList(MemberList *node)
 {
 	bool success = true;
 
-	// TODO: Validate recursive types
-
-	Struct *node = symbolTableGetStruct(id);
-
-	if (isRecursiveType(node->symbol, node))
-		success = false;
-
-	for (usize i = 0; i < node->memberCount; ++i)
+	for (usize i = 0; i < node->count; ++i)
 	{
-		const Member *member = &node->members[i];
+		Member *member = &node->data[i];
 
 		for (usize j = 0; j < i; ++j)
 		{
-			const Member *previous = &node->members[j];
+			const Member *previous = &node->data[j];
 
-			if (tokenIsSame(&member->name, &previous->name))
+			if (tokenEquals(&member->name, &previous->name))
 			{
 				success = false;
-				// TODO: Stack based string
-				char *name = tokenGetText(&member->name);
-
-				printTokenError(&member->name, "A member with name '%s' is already declared in struct '%s'.", name, node->symbol);
+				
+				printTokenError(&member->name, "A member with same name is already declared in this struct.");
 				printTokenNote(&previous->name, "Previous delcaration here.");
-				deallocate(name);
+
 				break;
 			}
 		}
 
-		if (!validateStructMember(&node->members[i]))
+		if (!validateTypeAnnotation(&member->annotation))
 			success = false;
+			// printTokenError(&member->name, "Declaration of member causes infinite recursion in struct '%s'.", node->symbol);
 	}
+
+	return success;
+}
+
+bool validateStruct(SymbolData *data)
+{
+	bool success = true;
+
+	Struct *node = symbolTableGetStruct(&data->id);
+
+	if (!validateMemberList(&node->members))
+		success = false;
+
+	data->status = success
+		? VALIDATION_VALID
+		: VALIDATION_INVALID;
 
 	return success;
 }
 
 bool validateLiteral(Literal *node)
 {
+	assert(node);
+
 	return true;
 }
 
 bool validateSymbol(Symbol *node)
 {
-	SymbolId *id = symbolTableResolve(&node->token);
+	assert(node);
+	const SymbolData *data = symbolTableResolve(&node->token);
 
-	if (!id)
+	if (!data)
 		return false;
 	
-	node->id = *id;
+	node->id = data->id;
 
-	return true;
+	return data->status == VALIDATION_VALID;
 }
 
 bool validateAssignment(Assignment *node)
@@ -144,16 +154,20 @@ bool validateBlock(Block *node)
 			success = false;
 	}
 
+	printFmt("Block success: %d", success);
+
 	return success;
 }
 
 bool validatePrefix(Prefix *node)
 {
+	assert(node);
 	exitNotImplemented();
 }
 
 bool validateArgumentList(ArgumentList *node)
 {
+	assert(node);
 	exitNotImplemented();
 }
 
@@ -283,8 +297,8 @@ bool validateVariable(const SymbolId *id)
 	Variable *node = symbolTableGetVariable(id);
 
 	if (node->isExplicitlyTyped)
-		return validateType(&node->type);
-
+		return validateTypeAnnotation(&node->type);
+	
 	return true;
 }
 
@@ -297,6 +311,8 @@ bool validateDeclaration(Declaration *node)
 
 	if (!validateExpression(&node->value))
 		success = false;
+
+	printFmt("Declaration success: %d", success);
 
 	if (!success)
 		return false;
@@ -312,24 +328,16 @@ bool validateDeclaration(Declaration *node)
 bool validateStatement(Statement *node)
 {
 	if (node->isDeclaration)
-	{		
-		if (!validateDeclaration(node->declaration))
-			return false;
-	}
-	else
-	{
-		if (!validateExpression(node->expression))
-			return false;
-	}
-
-	return true;
+		return validateDeclaration(node->declaration);
+	
+	return validateExpression(node->expression);
 }
 
-bool validateParameter(SymbolId *id)
+bool validateParameter(const SymbolId *id)
 {	
 	Parameter *node = symbolTableGetParameter(id);
 
-	if (!validateType(&node->type))
+	if (!validateTypeAnnotation(&node->type))
 		return false;
 
 	return true;
@@ -343,6 +351,9 @@ bool validateParameterList(SymbolIdList *ids)
 	{
 		SymbolId id = { ids->type, ids->indeces[i] };
 
+		if (!symbolTableDeclareLocal(&id))
+			success = false;
+
 		if (!validateParameter(&id))
 			success = false;
 	}
@@ -350,150 +361,154 @@ bool validateParameterList(SymbolIdList *ids)
 	return success;
 }
 
-bool validateFunctionDeclaration(SymbolId *id)
+bool validateFunction(SymbolData *data)
 {
 	bool success = true;
-	Function *node = symbolTableGetFunction(id);
+	printFmt("Validate function: %s", data->symbol);
+	Function *node = symbolTableGetFunction(&data->id);
 
-	if (!symbolTableDeclareGlobal(id))
-		success = false;
+	// TODO: Add function symbols
 
 	if (!validateParameterList(&node->parameterIds))
 		success = false;
 
-	if (node->hasReturnType)
-	{
-		if (!validateType(&node->returnType))
-			success = false;
-	}
+	if (node->hasReturnType && !validateTypeAnnotation(&node->returnType))
+		success = false;
+
+	if (!validateExpression(&node->body))
+		success = false;
+
+	printFmt("Function Success: %d", success);
+
+	data->status = success
+		? VALIDATION_VALID
+		: VALIDATION_INVALID;
 
 	return success;
 }
 
-bool validateFunctionDefinition(const SymbolId *id)
-{
-	Function *node = symbolTableGetFunction(id);
-
-	return validateExpression(&node->body);
-}
-
-static bool validateModuleDeclarations(Module *node)
-{
-	bool success = true;
-
-	for (usize i = 0; i < node->functionIds.count; ++i)
-	{
-		SymbolId id = { node->functionIds.type, node->functionIds.indeces[i] };
-
-		if (!validateFunctionDeclaration(&id))
-			success = false;
-	}
-
-	for (usize i = 0; i < node->structIds.count; ++i)
-	{
-		SymbolId id = { node->structIds.type, node->structIds.indeces[i] };
-
-		if (!validateStructDeclaration(&id))
-			success = false;
-	}
-
-	return success;
-}
-
-static bool validateModuleDefinitions(const Module *node)
+bool declareModule(const Module *module)
 {
 	bool success = true;
 
-	for (usize i = 0; i < node->functionIds.count; ++i)
+	if (!symbolIdListForEach(&module->structIds, symbolTableDeclareGlobal))
+		success = false;
+
+	if (!symbolIdListForEach(&module->functionIds, symbolTableDeclareGlobal))
+		success = false;
+
+	return success;
+}
+
+bool declarePackage(const SymbolId *id)
+{
+	bool success = symbolTableDeclareGlobal(id);
+
+	Package *package = symbolTableGetPackage(id);
+
+	for (usize i = 0; i < package->moduleCount; ++i)
 	{
-		SymbolId id = { node->functionIds.type, node->functionIds.indeces[i] };
-
-		if (!validateFunctionDefinition(&id))
-			success = false;
-	}
-
-	for (usize i = 0; i < node->structIds.count; ++i)
-	{
-		SymbolId id = { node->structIds.type, node->structIds.indeces[i] };
-
-		if (!validateStructDefinition(&id))
+		if (!declareModule(&package->modules[i]))
 			success = false;
 	}
 
 	return success;
 }
 
-static bool validatePackageDeclarations(const Package *node)
+bool validateGlobal(SymbolData *data)
 {
-	printFmt("packagedeclarations: %s", node->symbol);
-	bool success = true;
-
-	for (usize i = 0; i < node->moduleCount; ++i)
+	if (data->status != VALIDATION_PENDING)
+		return data->status == VALIDATION_VALID;
+		
+	switch (data->id.type)
 	{
-		if (!validateModuleDeclarations(&node->modules[i]))
-			success = false;
+		case SYMBOL_FUNCTION:
+			return validateFunction(data);
+
+		case SYMBOL_STRUCT:
+			return validateStruct(data);
+
+		default:
+			break;
 	}
 
-	return success;
+	return true;
 }
 
-static bool validatePackageDefinitions(const Package *node)
+static const MemberList *getGlobalMembers(const SymbolId *id)
 {
-	bool success = true;
-
-	for (usize i = 0; i < node->moduleCount; ++i)
+	switch (id->type)
 	{
-		if (!validateModuleDefinitions(&node->modules[i]))
-			success = false;
+		case SYMBOL_STRUCT:
+		{
+			const Struct *node = symbolTableGetStruct(id);
+
+			return &node->members;
+		}
+
+		default:
+			break;
 	}
 
-	return success;
+	return NULL;
+}
+
+static const Member *getRecursiveMember(const MemberList *members, const char *symbol)
+{
+	for (usize i = 0; i < members->count; ++i)
+	{
+		const Member *member = &members->data[i];
+		const Type *memberType = &member->annotation.type;
+		const SymbolId *memberTypeId = &memberType->id;
+		const char *memberTypeSymbol = symbolTableGetSymbol(memberTypeId);
+		// TODO: Indirection check
+
+		if (!strcmp(memberTypeSymbol, symbol))
+			return member;
+
+		const MemberList *memberTypeMembers = getGlobalMembers(memberTypeId);
+
+		if (!memberTypeMembers)
+			continue;
+
+		if (getRecursiveMember(memberTypeMembers, symbol))
+			return member;
+	}
+	
+	return NULL;
+}
+
+bool validateTypeRecursion(const SymbolId *id)
+{
+	const MemberList *members = getGlobalMembers(id);
+
+	if (!members)
+		return true;
+
+	const char *symbol = symbolTableGetSymbol(id);
+	const Member *recursiveMember = getRecursiveMember(members, symbol);
+
+	if (recursiveMember)
+	{
+		printTokenError(&recursiveMember->name, "Declaration of member creates recursive type");
+		return false;
+	}
+
+	return true;
 }
 
 bool validate()
 {
 	bool success = true;
 
-	usize packageCount = symbolTablePackageCount();
+	if (!symbolTableForEachEntity(SYMBOL_PACKAGE, declarePackage))
+		success = false;
 
-	for (usize i = 0; i < packageCount; ++i)
-	{
-		SymbolId packageId = { SYMBOL_PACKAGE, i };
-		Package *package = symbolTableGetPackage(&packageId);
+	if (!symbolTableForEachGlobal(validateGlobal))
+		success = false;
 
-		if (!validatePackageDeclarations(package))
-			success = false;
-	}
-
-	for (usize i = 0; i < packageCount; ++i)
-	{
-		SymbolId packageId = { SYMBOL_PACKAGE, i };
-		Package *package = symbolTableGetPackage(&packageId);
-
-		if (!validatePackageDefinitions(package))
-			success = false;
-	}
-
-	// TODO: Validate
-
-	// for (usize i = 0; i < count; ++i)
-	// {
-	// 	const Validation *validation = symbolTableValidationAt(i);
-
-	// 	switch (validation->id.type)
-	// 	{
-	// 		case SYMBOL_STRUCT:
-	// 			validateStructDefinition(&validation->id, validation->struct);
-	// 			break;
-
-	// 		case SYMBOL_FUNCTION:
-	// 			validateFunctionDefinition(&validation->id, validation->function);
-	// 			break;
-
-	// 		default:
-	// 			exitWithErrorFmt("Invalid validation symbol type: %d", validation->id.type);
-	// 	}
-	// }
+	if (!symbolTableForEachEntity(SYMBOL_STRUCT, validateTypeRecursion))
+		success = false;
 
 	if (!success)
 		symbolTableDestroy();

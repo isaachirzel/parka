@@ -1,4 +1,4 @@
-#include <warbler/file.h>
+#include <warbler/util/file.h>
 #include <warbler/parser.h>
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
@@ -8,18 +8,11 @@ int main(int argc, const char *argv[])
 	if (argc != 2)
 		exitWithError("Please supply only path to src folder");
 
-	Directory projectDir = directoryRead(argv[1]);
-	Directory *srcDir = directoryGetSrcDir(&projectDir);
+	Project project = projectLoad(argv[1]);
 
-	if (!srcDir)
-	{
-		printError("Unable to find 'src' directory.");
-		return 1;
-	}
+	symbolTableInitialize(project.name);
 
-	symbolTableInitialize();
-
-	if (!parse(srcDir))
+	if (!parse(&project))
 		return 1;
 
 	print("Successfully parsed.");

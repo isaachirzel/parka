@@ -2,9 +2,11 @@
 #define WARBLER_TOKEN_H
 
 // local includes
-#include <warbler/file.h>
+#include <warbler/util/file.h>
 #include <warbler/util/primitives.h>
 #include <warbler/util/string.h>
+
+#define MAX_TOKEN_LENGTH 1024
 
 typedef enum TokenType
 {
@@ -99,7 +101,7 @@ typedef struct Token
 	TokenType type;
 } Token;
 
-bool tokenIsSame(const Token *a, const Token *b);
+bool tokenEquals(const Token *a, const Token *b);
 Token getInitialToken(const File *file);
 void incrementToken(Token *token);
 const char *tokenCategory(const Token *token);

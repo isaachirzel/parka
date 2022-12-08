@@ -32,8 +32,6 @@ void sbPushCharN(StringBuilder *string, char c, usize n);
 char *stringDuplicate(const char *string);
 char *stringDuplicateN(const char *string, usize n);
 
-#define sbPush(stringBuilder, obj) ((_Generic((obj), const char *: sbPushString, char *: sbPushString, int: sbPushChar, char: sbPushChar ))(stringBuilder, obj))
-
 StringView stringViewFrom(const char *str, usize pos, usize length);
 
 #endif

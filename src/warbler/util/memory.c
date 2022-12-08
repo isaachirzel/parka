@@ -6,9 +6,13 @@
 
 static const char *allocationError = "The process ran out of memory";
 
+usize currentlyAllocatedBytes = 0;
+
 void *allocate(usize bytes)
 {
 	void *ptr = malloc(bytes);
+
+	currentlyAllocatedBytes += bytes;
 
 	if (!ptr)
 	{

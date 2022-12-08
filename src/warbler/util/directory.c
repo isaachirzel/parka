@@ -1,4 +1,4 @@
-#include <warbler/directory.h>
+#include <warbler/util/directory.h>
 #include <string.h>
 #include <warbler/util/print.h>
 #include <warbler/util/memory.h>
@@ -16,6 +16,7 @@ static Directory readSubdirectory(const char *base, const char *name)
 {
 	Directory directory =
 	{
+		.name = name ? stringDuplicate(name) : pathGetFilename(base),
 		.path = pathJoin(base, name)
 	};
 
@@ -104,23 +105,25 @@ void directoryList(const Directory *dir)
 	listSubdirectory(dir, 0);
 }
 
-Directory *directoryGetSrcDir(Directory *projectDirectory)
+void entryDestroy(Entry *entry)
 {
-	for (usize i = 0; i < projectDirectory->entryCount; ++i)
+	if (entry->isDirectory)
 	{
-		Entry *entry = &projectDirectory->entries[i];
-
-		if (!entry->isDirectory)
-			continue;
-
-		Directory *dir = entry->directory;
-		const char *dirname = pathGetFilenameComponent(dir->path);
-
-		if (!strcmp(dirname, "src"))
-			return dir;
+		directoryDestroy(entry->directory);
+		return;
 	}
+	
+	fileDestroy(&entry->file);
+}
 
-	return NULL;
+void directoryDestroy(Directory *dir)
+{
+	for (usize i = 0; i < dir->entryCount; ++i)
+		entryDestroy(&dir->entries[i]);
+
+	deallocate(dir->name);
+	deallocate(dir->path);
+	deallocate(dir->entries);
 }
 
 #endif

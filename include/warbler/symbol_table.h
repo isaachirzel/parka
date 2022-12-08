@@ -11,7 +11,23 @@
 #include <warbler/ast.h>
 #include <assert.h>
 
-void symbolTableInitialize();
+typedef enum ValidationStatus
+{
+	VALIDATION_PENDING,
+	VALIDATION_INVALID,
+	VALIDATION_VALID
+} ValidationStatus;
+
+typedef struct SymbolData
+{
+	char *symbol;
+	SymbolId id;
+	ValidationStatus status;
+} SymbolData;
+
+typedef bool (*SymbolDataAction)(SymbolData *data);
+
+void symbolTableInitialize(const char *projectName);
 void symbolTableDestroy();
 
 SymbolId symbolTableAddPackage();
@@ -23,10 +39,7 @@ SymbolId symbolTableAddParameter();
 bool symbolTableDeclareGlobal(const SymbolId *id);
 bool symbolTableDeclareLocal(const SymbolId *id);
 
-SymbolId *symbolTableResolve(const Token *token);
-SymbolId *symbolTableFind(const char *symbol);
-SymbolId *symbolTableFindGlobal(const char *symbol);
-SymbolId *symbolTableFindLocal(const char *symbol);
+SymbolData *symbolTableResolve(const Token *token);
 char *symbolTableCreateSymbol(const char *identifier);
 char *symbolTableCreateTokenSymbol(const Token *token);
 
@@ -35,10 +48,11 @@ void symbolTablePopBlock();
 
 void symbolTableSetScopeFromSymbol(const char *symbol);
 const char *symbolTypeGetName(SymbolType type);
-
 const char *symbolTableGetSymbol(const SymbolId *id);
+const Token *symbolTableGetToken(const SymbolId *id);
 
-usize symbolTablePackageCount();
+bool symbolTableForEachEntity(SymbolType type, SymbolIdAction action);
+bool symbolTableForEachGlobal(SymbolDataAction action);
 
 Package *symbolTableGetPackage(const SymbolId *id);
 Variable *symbolTableGetVariable(const SymbolId *id);

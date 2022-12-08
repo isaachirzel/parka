@@ -2,10 +2,11 @@
 #define WARBLER_SCOPE_H
 
 #include <warbler/util/primitives.h>
+#include <warbler/util/string.h>
 
 typedef struct Scope
 {
-    char **names;
+    StringBuilder *names;
     usize count;
     usize capacity;
 } Scope;

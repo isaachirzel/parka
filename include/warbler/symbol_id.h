@@ -17,7 +17,11 @@ typedef struct SymbolIdList
 	usize count;
 } SymbolIdList;
 
+typedef bool (*SymbolIdAction)(const SymbolId *id);
+
+bool symbolIdEquals(const SymbolId *a, const SymbolId *b);
 void symbolIdListPush(SymbolIdList *ids, const SymbolId *id);
 void symbolIdListFree(SymbolIdList *ids);
+bool symbolIdListForEach(const SymbolIdList *list, SymbolIdAction action);
 
 #endif

@@ -73,28 +73,30 @@ char *pathDuplicate(const char *path)
 	return buffer;
 }
 
-const char *pathGetFilenameComponent(const char *path)
+char *pathGetFilename(const char *path)
 {
 	const char *end = path;
 
 	while (*end)
 		++end;
 
-	usize len = end - path;
-
 	if (end - path == 0)
-		return path;
+		return NULL;
 
-	if (end[-1] == '/')
+	while (end[-1] == '/')
 		end -= 1;
 
-	while (end > path)
-	{
-		if (end[-1] == '/')
-			return end;
+	const char *begin = end;
 
-		--end;
+	while (begin > path)
+	{
+		if (begin[-1] == '/')
+			break;
+
+		--begin;
 	}
 
-	return path;
+	char *fileName = stringDuplicateN(begin, end - begin);
+
+	return fileName;
 }

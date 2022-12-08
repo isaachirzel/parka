@@ -22,7 +22,9 @@ typedef struct FilePosition
 	usize col;
 } FilePosition;
 
+bool fileHasExtension(const File *file, const char *extension);
 File fileReadRelative(const char *directory, const char *filename);
+void fileDestroy(File *file);
 File fileRead(const char *path);
 File fileFrom(const char *name, const char *text);
 usize fileGetLine(const File *file, usize pos);

@@ -246,16 +246,21 @@ typedef struct Member
 {
 	Token name;
 	char *symbol;
-	TypeAnnotation type;
+	TypeAnnotation annotation;
 	bool isPublic;
 } Member;
+
+typedef struct MemberList
+{
+	Member *data;
+	usize count;
+} MemberList;
 
 typedef struct Struct
 {
 	Token name;
 	char *symbol;
-	Member* members;
-	usize memberCount;
+	MemberList members;
 } Struct;
 
 typedef struct Variable
@@ -389,8 +394,9 @@ void freeBitwiseAndExpression(BitwiseAndExpression *node);
 void freeBitwiseXorExpression(BitwiseXorExpression *node);
 void freeBooleanOrExpression(BooleanOrExpression *node);
 void freeConditionalExpression(ConditionalExpression *node);
-void freeType(TypeAnnotation *node);
+void freeTypeAnnotation(TypeAnnotation *node);
 void freeMember(Member *node);
+void freeMemberList(MemberList *node);
 void freeStruct(Struct *node);
 void freeVariable(Variable *node);
 void freeStatement(Statement *node);
