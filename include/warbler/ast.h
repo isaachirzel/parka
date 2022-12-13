@@ -256,21 +256,21 @@ typedef struct MemberList
 	usize count;
 } MemberList;
 
+typedef struct Local
+{
+	Token name;
+	char *symbol;
+	TypeAnnotation type;
+	bool isMutable;
+	bool isExplicitlyTyped;
+} Local;
+
 typedef struct Struct
 {
 	Token name;
 	char *symbol;
 	MemberList members;
 } Struct;
-
-typedef struct Variable
-{
-	Token name;
-	char *symbol;
-	TypeAnnotation type;
-	bool isExplicitlyTyped;
-	bool isMutable;
-} Variable;
 
 typedef struct Statement
 {
@@ -317,14 +317,6 @@ typedef struct Assignment
 	Expression rhs;
 	AssignmentType type;
 } Assignment;
-
-typedef struct Parameter
-{
-	Token name;
-	char *symbol;
-	TypeAnnotation type;
-	bool isMutable;
-} Parameter;
 
 typedef struct Operator
 {
@@ -398,13 +390,13 @@ void freeTypeAnnotation(TypeAnnotation *node);
 void freeMember(Member *node);
 void freeMemberList(MemberList *node);
 void freeStruct(Struct *node);
-void freeVariable(Variable *node);
+void freeVariable(Local *node);
 void freeStatement(Statement *node);
 void freeBlock(Block *node);
 void freeIfStatement(IfStatement *node);
 void freeDeclaration(Declaration *node);
 void freeAssignment(Assignment *node);
-void freeParameter(Parameter *node);
+void freeParameter(Local *node);
 void freeFunction(Function *node);
 void freeModule(Module *node);
 void freePackage(Package *node);

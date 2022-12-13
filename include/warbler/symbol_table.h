@@ -55,8 +55,8 @@ bool symbolTableForEachEntity(SymbolType type, SymbolIdAction action);
 bool symbolTableForEachGlobal(SymbolDataAction action);
 
 Package *symbolTableGetPackage(const SymbolId *id);
-Variable *symbolTableGetVariable(const SymbolId *id);
-Parameter *symbolTableGetParameter(const SymbolId *id);
+Local *symbolTableGetVariable(const SymbolId *id);
+Local *symbolTableGetParameter(const SymbolId *id);
 Function *symbolTableGetFunction(const SymbolId *id);
 Struct *symbolTableGetStruct(const SymbolId *id);
 const Primitive *symbolTableGetPrimitive(const SymbolId *id);

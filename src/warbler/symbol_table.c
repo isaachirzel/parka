@@ -33,9 +33,9 @@ typedef struct SymbolTable
 	usize structCount;
 	Function* functions;
 	usize functionCount;
-	Parameter *parameters;
+	Local *parameters;
 	usize parameterCount;
-	Variable *variables;
+	Local *variables;
 	usize variableCount;
 	Literal *constants;
 	usize constantCount;
@@ -238,14 +238,14 @@ bool symbolTableDeclareLocal(const SymbolId *id)
 	{
 		case SYMBOL_VARIABLE:
 		{
-			Variable *node = symbolTableGetVariable(id);
+			Local *node = symbolTableGetVariable(id);
 
 			return addLocal(id, node->symbol, &node->name);
 		}
 
 		case SYMBOL_PARAMETER:
 		{
-			Parameter *node = symbolTableGetParameter(id);
+			Local *node = symbolTableGetParameter(id);
 
 			return addLocal(id, node->symbol, &node->name);
 		}
@@ -322,12 +322,12 @@ const Token *symbolTableGetToken(const SymbolId *id)
 		}
 		case SYMBOL_VARIABLE:
 		{
-			Variable *node = symbolTableGetVariable(id);
+			Local *node = symbolTableGetVariable(id);
 			return &node->name;
 		}
 		case SYMBOL_PARAMETER:
 		{
-			Parameter *node = symbolTableGetParameter(id);
+			Local *node = symbolTableGetParameter(id);
 			return &node->name;
 		}
 		default:
@@ -513,7 +513,7 @@ Package *symbolTableGetPackage(const SymbolId *id)
 	return &table.packages[id->index];
 }
 
-Variable *symbolTableGetVariable(const SymbolId *id)
+Local *symbolTableGetVariable(const SymbolId *id)
 {
 	assert(id->type == SYMBOL_VARIABLE);
 	assert(id->index < table.variableCount);
@@ -521,7 +521,7 @@ Variable *symbolTableGetVariable(const SymbolId *id)
 	return &table.variables[id->index];
 }
 
-Parameter *symbolTableGetParameter(const SymbolId *id)
+Local *symbolTableGetParameter(const SymbolId *id)
 {
 	assert(id->type == SYMBOL_PARAMETER);
 	assert(id->index < table.parameterCount);
@@ -598,7 +598,7 @@ SymbolId symbolTableAddVariable()
 
 	resizeArray(table.variables, ++table.variableCount);
 
-	table.variables[index] = (Variable) { 0 };
+	table.variables[index] = (Local) { 0 };
 
 	SymbolId id = { SYMBOL_VARIABLE, index };
 
@@ -611,7 +611,7 @@ SymbolId symbolTableAddParameter()
 
 	resizeArray(table.parameters, ++table.parameterCount);
 
-	table.parameters[index] = (Parameter) { 0 };
+	table.parameters[index] = (Local) { 0 };
 
 	SymbolId id = { SYMBOL_PARAMETER, index };
 

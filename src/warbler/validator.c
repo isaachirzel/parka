@@ -3,7 +3,54 @@
 #include <warbler/scope.h>
 #include <string.h>
 
+/*
+	
+*/
+
 bool validateStruct(SymbolData *data);
+
+Type getExpressionType(Expression *expression)
+{
+	switch (expression->type)
+	{
+		case EXPRESSION_BLOCK:
+			break;
+		case EXPRESSION_ASSIGNMENT:
+			break;
+		case EXPRESSION_CONDITIONAL:
+			break;
+		case EXPRESSION_BOOLEAN_OR:
+			break;
+		case EXPRESSION_BOOLEAN_AND:
+			break;
+		case EXPRESSION_BITWISE_OR:
+			break;
+		case EXPRESSION_BITWISE_XOR:
+			break;
+		case EXPRESSION_BITWISE_AND:
+			break;
+		case EXPRESSION_EQUALITY:
+			break;
+		case EXPRESSION_RELATIONAL:
+			break;
+		case EXPRESSION_SHIFT:
+			break;
+		case EXPRESSION_ADDITIVE:
+			break;
+		case EXPRESSION_MULTIPLICATIVE:
+			break;
+		case EXPRESSION_POSTFIX:
+			break;
+		case EXPRESSION_PREFIX:
+			break;
+		case EXPRESSION_LITERAL:
+			break;
+		case EXPRESSION_SYMBOL:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to get type for expression of type: %d", expression->type);
+}
 
 bool validateType(Type *node, const Token *token)
 {
@@ -35,32 +82,6 @@ bool validateTypeAnnotation(TypeAnnotation *node)
 {
 	return validateType(&node->type, &node->token);
 }
-
-// static bool isRecursiveMember(const Member *member, const SymbolId *parentId)
-// {
-// 	// TODO: Indirection check
-// 	const Token *typeName = &member->annotation.token;
-// 	const SymbolData *data = symbolTableResolve(typeName);
-
-// 	if (!data)
-// 		return false;
-
-// 	if (symbolIdEquals(parentId, &data->id))
-// 		return true;
-
-// 	const MemberList *members = getMembers(&data->id);
-	
-// 	if (members == NULL)
-// 		return false;
-
-// 	for (usize i = 0; i < members->count; ++i)
-// 	{
-// 		if (isRecursiveMember(&members->data[i], parentId))
-// 			return true;
-// 	}
-
-// 	return false;
-// }
 
 bool validateMemberList(MemberList *node)
 {
@@ -294,11 +315,11 @@ bool validateVariable(const SymbolId *id)
 	if (!symbolTableDeclareLocal(id))
 		return false;
 	
-	Variable *node = symbolTableGetVariable(id);
+	Local *node = symbolTableGetVariable(id);
 
 	if (node->isExplicitlyTyped)
 		return validateTypeAnnotation(&node->type);
-	
+
 	return true;
 }
 
@@ -311,14 +332,15 @@ bool validateDeclaration(Declaration *node)
 
 	if (!validateExpression(&node->value))
 		success = false;
-
-	printFmt("Declaration success: %d", success);
-
+	
 	if (!success)
 		return false;
 
+	Local *variable = symbolTableGetVariable(&node->variableId);
+	Type expressionType = getExpressionType(&node->value);
+
 	// TODO: Validate expression types
-	// Variable *variable = symbolTableGetVariable(&node->variableId);
+	// Local *variable = symbolTableGetVariable(&node->variableId);
 	// if (!variable->isExplicityTyped)
 	// 	variable->type = getExpressionType(&node->value);
 
@@ -335,7 +357,7 @@ bool validateStatement(Statement *node)
 
 bool validateParameter(const SymbolId *id)
 {	
-	Parameter *node = symbolTableGetParameter(id);
+	Local *node = symbolTableGetParameter(id);
 
 	if (!validateTypeAnnotation(&node->type))
 		return false;

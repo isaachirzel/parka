@@ -338,7 +338,7 @@ void freePrefixExpression(Prefix *node)
 	freeExpression(&node->expression);
 }
 
-void freeParameter(Parameter *node)
+void freeParameter(Local *node)
 {
 	freeTypeAnnotation(&node->type);
 	deallocate(node->symbol);
@@ -366,7 +366,7 @@ void freeDeclaration(Declaration *node)
 	freeExpression(&node->value);
 }
 
-void freeVariable(Variable *node)
+void freeVariable(Local *node)
 {
 	freeTypeAnnotation(&node->type);
 	deallocate(node->symbol);

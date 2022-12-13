@@ -1114,9 +1114,9 @@ bool parseExpression(Expression *out, Token *token)
 	return parseAssignment(out, token);
 }
 
-bool parseParameter(Parameter *out, Token *token)
+bool parseParameter(Local *out, Token *token)
 {
-	*out = (Parameter) { 0 };
+	*out = (Local) { 0 };
 
 	if (token->type == TOKEN_KEYWORD_MUT)
 	{
@@ -1164,7 +1164,7 @@ bool parseParameterList(SymbolIdList *out, Token *token)
 		while (true)
 		{
 			SymbolId id = symbolTableAddParameter();
-			Parameter *parameter = symbolTableGetParameter(&id);
+			Local *parameter = symbolTableGetParameter(&id);
 
 			if (!parseParameter(parameter, token))
 				return false;
@@ -1236,11 +1236,11 @@ bool parseFunction(SymbolId *out, Token *token, const char *package)
 	return true;
 }
 
-bool parseVariable(Variable *out, Token *token)
+bool parseVariable(Local *out, Token *token)
 {
 	assert(token->type == TOKEN_KEYWORD_VAR);
 
-	Variable node = { 0 };
+	Local node = { 0 };
 
 	incrementToken(token);
 
@@ -1280,7 +1280,7 @@ error:
 bool parseDeclaration(Declaration *node, Token *token)
 {
 	SymbolId id = symbolTableAddVariable();
-	Variable *variable = symbolTableGetVariable(&id);
+	Local *variable = symbolTableGetVariable(&id);
 
 	node->variableId = id;
 
