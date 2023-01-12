@@ -1,6 +1,6 @@
-#include "warbler/ast.h"
-#include "warbler/symbol_id.h"
-#include "warbler/type.h"
+#include <warbler/ast.h>
+#include <warbler/symbol_id.h>
+#include <warbler/type.h>
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
 #include <warbler/scope.h>
@@ -31,7 +31,7 @@ SymbolId getLiteralSymbolId(Literal *literal)
 			break;
 	}
 
-	printError("Unable to get SymbolId for Literal of type: %d", literal->type);
+	exitWithErrorFmt("Unable to get SymbolId for Literal of type: %d", literal->type);
 }
 
 Type getLiteralType(Literal *literal)
@@ -393,6 +393,7 @@ bool validateDeclaration(Declaration *node)
 			const char *toSymbol = symbolTableGetSymbol(&variableType->id);
 			const char *fromSymbol = symbolTableGetSymbol(&expressionType.id);
 
+			// TODO: Make error highlight entire statement
 			printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toSymbol, fromSymbol);
 
 			return false;

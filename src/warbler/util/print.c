@@ -1,4 +1,4 @@
-#include "warbler/util/path.h"
+#include <warbler/util/path.h>
 #include <warbler/util/print.h>
 
 // standard headers
@@ -259,6 +259,7 @@ static void printMessage(LogLevel level, const Token *token, const char *format,
 	if (token)
 	{
 		position = fileGetPosition(token->file, token->pos);
+
 		printf("%s:%zu:%zu: ", token->file->path, position.line, position.col);
 	}
 

@@ -5,12 +5,10 @@
 enum PrimitiveIndex
 {
 	INDEX_VOID,
-	INDEX_UINT,
 	INDEX_U8,
 	INDEX_16,
 	INDEX_U32,
 	INDEX_U64,
-	INDEX_INT,
 	INDEX_I8,
 	INDEX_I16,
 	INDEX_I32,
@@ -23,12 +21,10 @@ enum PrimitiveIndex
 };
 
 SymbolId voidSymbolId = { SYMBOL_PRIMITIVE, INDEX_VOID };
-SymbolId uintSymbolId = { SYMBOL_PRIMITIVE, INDEX_UINT };
 SymbolId u8SymbolId = { SYMBOL_PRIMITIVE, INDEX_U8 };
 SymbolId u16SymbolId = { SYMBOL_PRIMITIVE, INDEX_16 };
 SymbolId u32SymbolId = { SYMBOL_PRIMITIVE, INDEX_U32 };
 SymbolId u64SymbolId = { SYMBOL_PRIMITIVE, INDEX_U64 };
-SymbolId intSymbolId = { SYMBOL_PRIMITIVE, INDEX_INT };
 SymbolId i8SymbolId = { SYMBOL_PRIMITIVE, INDEX_I8 };
 SymbolId i16SymbolId = { SYMBOL_PRIMITIVE, INDEX_I16 };
 SymbolId i32SymbolId = { SYMBOL_PRIMITIVE, INDEX_I32 };
@@ -53,7 +49,8 @@ const Primitive primitives[] =
 	{ "f32", PRIMITIVE_FLOATING_POINT, 4 },
 	{ "f64", PRIMITIVE_FLOATING_POINT, 8 },
 	{ "bool", PRIMITIVE_BOOLEAN, 1 },
-	{ "char", PRIMITIVE_CHARACTER, 1 }
+	{ "char", PRIMITIVE_CHARACTER, 1 },
+	{ "string", PRIMITIVE_STRING, 0 }
 };
 
 const usize primitiveCount = sizeof(primitives) / sizeof(*primitives);
