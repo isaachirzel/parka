@@ -1,3 +1,4 @@
+#include "warbler/symbol_table.h"
 #include <warbler/ast.h>
 #include <warbler/symbol_id.h>
 #include <warbler/type.h>
@@ -8,24 +9,78 @@
 
 bool validateStruct(SymbolData *data);
 
-SymbolId getLiteralSymbolId(Literal *literal)
+typedef SymbolId *(*LiteralValidationFunction)(const Primitive *);
+
+SymbolId *getFloatLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_FLOATING_POINT)
+		return NULL;
+
+	return &f64SymbolId;
+}
+
+SymbolId *getIntegerLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive)
+	{
+		switch (primitive->type)
+		{
+			// TODO: Add boolean and char
+			case PRIMITIVE_UNSIGNED_INTEGER:
+			case PRIMITIVE_SIGNED_INTEGER:
+			case PRIMITIVE_FLOATING_POINT:
+				return NULL;
+
+			default:
+				break;
+		}
+	}
+
+	return &i32SymbolId;
+}
+
+SymbolId *getBooleanLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_BOOLEAN)
+		return NULL;
+
+	return &boolSymbolId;
+}
+
+SymbolId *getCharacterLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_CHARACTER)
+		return NULL;
+
+	return &charSymbolId;
+}
+
+SymbolId *getStringLiteralSymboId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_STRING)
+		return NULL;
+
+	return &stringSymbolId;
+}
+
+LiteralValidationFunction getLiteralValidationFunction(Literal *literal)
 {
 	switch (literal->type)
 	{
 		case LITERAL_CHARACTER:
-			return charSymbolId;
+			return getCharacterLiteralSymbolId;
 
 		case LITERAL_STRING:
-			return stringSymbolId;
+			return getStringLiteralSymboId;
 
 		case LITERAL_INTEGER:
-			return i32SymbolId;
+			return getIntegerLiteralSymbolId;
 
 		case LITERAL_FLOAT:
-			return f64SymbolId;
+			return getFloatLiteralSymbolId;
 
 		case LITERAL_BOOLEAN:
-			return boolSymbolId;
+			return getBooleanLiteralSymbolId;
 
 		default:
 			break;
@@ -34,17 +89,46 @@ SymbolId getLiteralSymbolId(Literal *literal)
 	exitWithErrorFmt("Unable to get SymbolId for Literal of type: %d", literal->type);
 }
 
-Type getLiteralType(Literal *literal)
+static const Primitive *getTypePrimitive(Type *type)
+{
+	if (!type)
+		return NULL;
+
+	const SymbolId *id = &type->id;
+
+	if (id->type != SYMBOL_PRIMITIVE)
+		return NULL;
+
+	const Primitive *primitive = symbolTableGetPrimitive(id);
+
+	return primitive;
+}
+
+SymbolId getLiteralSymbolId(Literal *literal, Type *expectedType)
+{
+	assert(literal != NULL);
+
+	LiteralValidationFunction check = getLiteralValidationFunction(literal);
+	const Primitive *primitive = getTypePrimitive(expectedType);
+	SymbolId *id = check(primitive);
+
+	if (!id)
+		id = &expectedType->id;
+
+	return *id;
+}
+
+Type getLiteralType(Literal *literal, Type *expectedType)
 {
 	Type type =
 	{
-		.id = getLiteralSymbolId(literal)
+		.id = getLiteralSymbolId(literal, expectedType)
 	};
 
 	return type;
 }
 
-Type getExpressionType(Expression *expression)
+Type getExpressionType(Expression *expression, Type *expectedType)
 {
 	switch (expression->type)
 	{
@@ -79,7 +163,7 @@ Type getExpressionType(Expression *expression)
 		case EXPRESSION_PREFIX:
 			break;
 		case EXPRESSION_LITERAL:
-			return getLiteralType(expression->literal);
+			return getLiteralType(expression->literal, expectedType);
 		case EXPRESSION_SYMBOL:
 			break;
 	}
@@ -382,7 +466,10 @@ bool validateDeclaration(Declaration *node)
 		return false;
 
 	Local *variable = symbolTableGetVariable(&node->variableId);
-	Type expressionType = getExpressionType(&node->value);
+	Type *variableType = variable->isExplicitlyTyped
+		? &variable->type.type
+		: NULL;
+	Type expressionType = getExpressionType(&node->value, variableType);
 
 	if (variable->isExplicitlyTyped)
 	{
