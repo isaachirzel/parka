@@ -6,6 +6,9 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <unistd.h>
 
 static usize pathCopy(char *buffer, const char *path)
 {
@@ -99,4 +102,25 @@ char *pathGetFilename(const char *path)
 	char *fileName = stringDuplicateN(begin, end - begin);
 
 	return fileName;
+}
+
+char *pathGetCurrentWorkingDirectory(char *buffer)
+{
+	// TODO: Make OS agnostic
+
+	getcwd(buffer, PATH_MAX);
+}
+
+void pathGetExecutableDirectory(char *buffer)
+{
+	// TODO: Make OS agnostic
+	
+	const char *procPath = "/proc/self/exe";
+	// FreeBSD: /proc/curproc/file
+	// Solaris: /proc/self/path/a.out
+	// Windows: GetModuleFileName(NULL, buffer, PATH_MAX)
+
+	usize length = readlink(procPath, buffer, PATH_MAX);
+
+	buffer[length] = '\0';
 }

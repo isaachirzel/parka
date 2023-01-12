@@ -2,6 +2,8 @@
 #include <warbler/util/memory.h>
 
 #include <string.h>
+#include <stdio.h>
+#include <assert.h>
 
 StringBuilder sbCreate(usize capacity)
 {
@@ -157,4 +159,24 @@ void sbPushStringInvisibleN(StringBuilder *sb, const char *text, usize n)
 
     sb->data[newLength] = '\0';
     sb->length = newLength;
+}
+
+usize stringFindOccurrence(const char *text, const char *token)
+{
+    assert(text != NULL);
+    assert(token != NULL);
+
+    char starter = token[0];
+    usize length = strlen(token);
+
+    for (const char *iter = text; *iter; ++iter)
+    {
+        if (*iter != starter)
+            continue;
+
+        if (!strncmp(iter, token, length))
+            return iter - text;
+    }
+
+    return SIZE_MAX;
 }

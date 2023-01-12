@@ -1,5 +1,6 @@
 # ide files
 .vscode/
+.cache/
 *.sublime-project
 *.sublime-workspace
 test/

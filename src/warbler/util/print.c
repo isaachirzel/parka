@@ -1,3 +1,4 @@
+#include "warbler/util/path.h"
 #include <warbler/util/print.h>
 
 // standard headers
@@ -6,9 +7,11 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <warbler/util/primitives.h>
 #include <warbler/util/string.h>
 #include <warbler/util/memory.h>
+
 
 #define COLOR_RED		"\033[91m"
 #define COLOR_YELLOW	"\033[93m"
@@ -201,9 +204,21 @@ char *getTokenHighlight(const Token *token, const FilePosition *position, const 
 	return highlight.data;
 }
 
+void printFileAndLine(const char *file, u32 line)
+{
+	// TODO: Make OS agnostic
+	usize index = stringFindOccurrence(file, "/src/");
+
+	if (index != PATH_MAX)
+		file += (index + 5);
+
+	printf("%s:%u: ", file, line);
+}
+
 void _print(const char *file, u32 line, const char *msg)
 {
-	printf("%s:%u: %s\n", file, line, msg);
+	printFileAndLine(file, line);
+	puts(msg);
 }
 
 void _printFmt(const char *file, u32 line, const char *fmt, ...)
@@ -211,7 +226,7 @@ void _printFmt(const char *file, u32 line, const char *fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 
-	printf("%s:%u: ", file, line);
+	printFileAndLine(file, line);
 	vprintf(fmt, args);
 	putchar('\n');
 
@@ -328,7 +343,8 @@ noreturn void _exitWithError(const char *file, usize line, const char *format, .
 
 	va_start(args, format);
 
-	printf("%s:%zu " COLOR_RED "fatal" COLOR_RESET ": ", file, line);
+	printFileAndLine(file, line);
+	printf(COLOR_RED "fatal" COLOR_RESET ": ");
 	vprintf(format, args);
 	putchar('\n');
 
@@ -339,6 +355,7 @@ noreturn void _exitWithError(const char *file, usize line, const char *format, .
 
 noreturn void _exitNotImplemented(const char *file, usize line, const char *func)
 {
-	printf("%s:%zu " COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", file, line, func);
+	printFileAndLine(file, line);
+	printf(COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", func);
 	exit(1);
 }

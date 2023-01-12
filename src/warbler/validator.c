@@ -1,13 +1,48 @@
+#include "warbler/ast.h"
+#include "warbler/symbol_id.h"
+#include "warbler/type.h"
 #include <warbler/validator.h>
 #include <warbler/util/print.h>
 #include <warbler/scope.h>
 #include <string.h>
 
-/*
-	
-*/
-
 bool validateStruct(SymbolData *data);
+
+SymbolId getLiteralSymbolId(Literal *literal)
+{
+	switch (literal->type)
+	{
+		case LITERAL_CHARACTER:
+			return charSymbolId;
+
+		case LITERAL_STRING:
+			return stringSymbolId;
+
+		case LITERAL_INTEGER:
+			return i32SymbolId;
+
+		case LITERAL_FLOAT:
+			return f64SymbolId;
+
+		case LITERAL_BOOLEAN:
+			return boolSymbolId;
+
+		default:
+			break;
+	}
+
+	printError("Unable to get SymbolId for Literal of type: %d", literal->type);
+}
+
+Type getLiteralType(Literal *literal)
+{
+	Type type =
+	{
+		.id = getLiteralSymbolId(literal)
+	};
+
+	return type;
+}
 
 Type getExpressionType(Expression *expression)
 {
@@ -44,7 +79,7 @@ Type getExpressionType(Expression *expression)
 		case EXPRESSION_PREFIX:
 			break;
 		case EXPRESSION_LITERAL:
-			break;
+			return getLiteralType(expression->literal);
 		case EXPRESSION_SYMBOL:
 			break;
 	}
@@ -76,6 +111,16 @@ bool validateType(Type *node, const Token *token)
 	printTokenError(token, "Expected type name, found %s.", typeName);
 
 	return false;
+}
+
+bool canConvertType(Type *to, Type *from)
+{
+	const SymbolId *toId = &to->id;
+	const SymbolId *fromId = &from->id;
+
+	bool success = symbolIdEquals(toId, fromId);
+
+	return success;
 }
 
 bool validateTypeAnnotation(TypeAnnotation *node)
@@ -339,10 +384,24 @@ bool validateDeclaration(Declaration *node)
 	Local *variable = symbolTableGetVariable(&node->variableId);
 	Type expressionType = getExpressionType(&node->value);
 
-	// TODO: Validate expression types
-	// Local *variable = symbolTableGetVariable(&node->variableId);
-	// if (!variable->isExplicityTyped)
-	// 	variable->type = getExpressionType(&node->value);
+	if (variable->isExplicitlyTyped)
+	{
+		Type *variableType = &variable->type.type;
+
+		if (!canConvertType(variableType, &expressionType))
+		{
+			const char *toSymbol = symbolTableGetSymbol(&variableType->id);
+			const char *fromSymbol = symbolTableGetSymbol(&expressionType.id);
+
+			printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toSymbol, fromSymbol);
+
+			return false;
+		}
+	}
+	else
+	{
+		variable->type.type = expressionType;
+	}
 
 	return true;
 }
