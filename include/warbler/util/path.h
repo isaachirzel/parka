@@ -14,7 +14,7 @@ char *pathGetFilename(const char *path);
 /**
 * @return Current working directory
 */
-char *pathGetCurrentWorkingDirectory(char *buffer);
+void pathGetCurrentWorkingDirectory(char *buffer);
 
 /**
 * @return Directory of application executable

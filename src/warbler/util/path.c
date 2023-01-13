@@ -104,7 +104,7 @@ char *pathGetFilename(const char *path)
 	return fileName;
 }
 
-char *pathGetCurrentWorkingDirectory(char *buffer)
+void pathGetCurrentWorkingDirectory(char *buffer)
 {
 	// TODO: Make OS agnostic
 

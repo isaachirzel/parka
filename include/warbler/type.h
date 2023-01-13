@@ -155,5 +155,6 @@ typedef enum SymbolType
 } SymbolType;
 
 const char *constantTypeName(LiteralType type);
+const char *symbolTypeName(SymbolType type);
 
 #endif

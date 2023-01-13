@@ -28,8 +28,12 @@ void printTokenError(const Token *token, const char *format, ...);
 void printNote(const char *format, ...);
 void printWarning(const char *format, ...);
 void printError(const char *format, ...);
+void printSuccess(const char *format, ...);
 
 void printParseError(const Token *token, const char *expected, const char *message);
 
+usize getNoteCount(void);
+usize getWarningCount(void);
+usize getErrorCount(void);
 
 #endif

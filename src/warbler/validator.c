@@ -304,8 +304,6 @@ bool validateBlock(Block *node)
 			success = false;
 	}
 
-	printFmt("Block success: %d", success);
-
 	return success;
 }
 
@@ -546,8 +544,6 @@ bool validateFunction(SymbolData *data)
 
 	if (!validateExpression(&node->body))
 		success = false;
-
-	printFmt("Function Success: %d", success);
 
 	data->status = success
 		? VALIDATION_VALID

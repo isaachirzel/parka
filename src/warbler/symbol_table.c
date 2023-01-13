@@ -192,7 +192,8 @@ static bool addLocal(const SymbolId *id, const char *symbol, const Token *name)
 
 bool symbolTableDeclareGlobal(const SymbolId *id)
 {
-	printFmt("Declaring global: %d, %zu", id->type, id->index);
+	printFmt("Declaring %s[%zu]: %s", symbolTypeName(id->type), id->index, symbolTableGetSymbol(id));
+	
 	switch (id->type)
 	{
 		case SYMBOL_PACKAGE:
@@ -234,6 +235,8 @@ bool symbolTableDeclareGlobal(const SymbolId *id)
 
 bool symbolTableDeclareLocal(const SymbolId *id)
 {
+	printFmt("Declaring %s[%zu]: %s", symbolTypeName(id->type), id->index, symbolTableGetSymbol(id));
+	
 	switch (id->type)
 	{
 		case SYMBOL_VARIABLE:

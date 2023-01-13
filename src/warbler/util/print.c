@@ -18,21 +18,27 @@
 #define COLOR_BLUE		"\033[94m"
 #define COLOR_PURPLE	"\033[95m"
 #define COLOR_CYAN		"\033[96m"
+#define COLOR_GREEN		"\033[32m"
 #define COLOR_RESET		"\033[0m"
 
 #define PROMPT_NOTE		"note"
 #define PROMPT_WARNING	"warning"
 #define PROMPT_ERROR	"error"
+#define PROMPT_SUCCESS	"success"
 
 #define outputStream stdout
 
 static bool isColorEnabled = true;
+static usize errorCount = 0;
+static usize warningCount = 0;
+static usize noteCount = 0;
 
 typedef enum LogLevel
 {
 	LOG_NOTE,
 	LOG_WARNING,
-	LOG_ERROR
+	LOG_ERROR,
+	LOG_SUCCESS
 } LogLevel;
 
 typedef struct Log
@@ -46,7 +52,9 @@ static Log createLog(LogLevel level)
 {
 	const char *prompt = "";
 	const char *color = "";
-	const char *reset = "";
+	const char *reset = isColorEnabled
+		? COLOR_RESET
+		: "";
 
 	switch (level)
 	{
@@ -54,34 +62,32 @@ static Log createLog(LogLevel level)
 			prompt = PROMPT_NOTE;
 			
 			if (isColorEnabled)
-			{
 				color = COLOR_CYAN;
-				reset = COLOR_RESET;
-			}
 			break;
 				
 		case LOG_WARNING:
 			prompt = PROMPT_WARNING;
 			
 			if (isColorEnabled)
-			{
 				color = COLOR_PURPLE;
-				reset = COLOR_RESET;
-			}
 			break;
 			
 		case LOG_ERROR:
 			prompt = PROMPT_ERROR;
 
 			if (isColorEnabled)
-			{
 				color = COLOR_RED;
-				reset = COLOR_RESET;
-			}
+			break;
+
+		case LOG_SUCCESS:
+			prompt = PROMPT_SUCCESS;
+
+			if (isColorEnabled)
+				color = COLOR_GREEN;
 			break;
 
 		default:
-			exitWithErrorFmt("Invalid LogLevel: %d", level);
+			exitWithErrorFmt("Unable to create Log with LogLevel: %d", level);
 	}
 
 	return (Log)
@@ -256,6 +262,24 @@ static void printMessage(LogLevel level, const Token *token, const char *format,
 {
 	FilePosition position;
 
+	switch (level)
+	{
+		case LOG_ERROR:
+			errorCount += 1;
+			break;
+
+		case LOG_WARNING:
+			warningCount += 1;
+			break;
+
+		case LOG_NOTE:
+			noteCount += 1;
+			break;
+
+		default:
+			break;
+	}
+
 	if (token)
 	{
 		position = fileGetPosition(token->file, token->pos);
@@ -338,6 +362,16 @@ void printError(const char *format, ...)
 	va_end(args);
 }
 
+void printSuccess(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	printMessage(LOG_SUCCESS, NULL, format, args);
+	
+	va_end(args);
+}
+
 noreturn void _exitWithError(const char *file, usize line, const char *format, ...)
 {
 	va_list args;
@@ -359,4 +393,19 @@ noreturn void _exitNotImplemented(const char *file, usize line, const char *func
 	printFileAndLine(file, line);
 	printf(COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", func);
 	exit(1);
+}
+
+usize getNoteCount(void)
+{
+	return noteCount;
+}
+
+usize getWarningCount(void)
+{
+	return warningCount;
+}
+
+usize getErrorCount(void)
+{
+	return errorCount;
 }
