@@ -2,6 +2,7 @@
 #define WARBLER_UTIL_STRING_H
 
 #include <warbler/util/primitives.h>
+#include <warbler/util/arena.h>
 
 typedef struct StringBuilder
 {
@@ -29,6 +30,7 @@ void sbPushStringInvisible(StringBuilder *sb, const char *text);
 void sbPushStringInvisibleN(StringBuilder *sb, const char *text, usize n);
 void sbPushChar(StringBuilder *sb, char c);
 void sbPushCharN(StringBuilder *sb, char c, usize n);
+
 char *stringDuplicate(const char *sb);
 char *stringDuplicateN(const char *sb, usize n);
 usize stringFindOccurrence(const char *text, const char *token);

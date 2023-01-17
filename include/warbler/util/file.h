@@ -1,7 +1,6 @@
 #ifndef WARBLER_FILE_H
 #define WARBLER_FILE_H
 
-
 #include <warbler/util/primitives.h>
 #include <warbler/util/string.h>
 
