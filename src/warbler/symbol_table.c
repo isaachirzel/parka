@@ -1,3 +1,5 @@
+#include <warbler/symbol_id.h>
+#include <warbler/type.h>
 #include <warbler/ast.h>
 #include <warbler/symbol_table.h>
 #include <warbler/util/array.h>
@@ -24,7 +26,10 @@ typedef struct SymbolTable
 	usize blockCount;
 	usize blockCapacity;
 
+	// State >:(
 	Scope package;
+	Function *currentFunction;
+	Block *currentBlock;
 
 	// Contexts
 	Package *packages;
@@ -449,7 +454,7 @@ void symbolTableInitialize(const char *projectName)
 	scopePush(&table.package, projectName);
 }
 
-void symbolTableDestroy()
+void symbolTableDestroy(void)
 {
 	for (usize i = 0; i < table.globalCount; ++i)
 		symbolDataDestroy(&table.globals[i]);
@@ -458,19 +463,19 @@ void symbolTableDestroy()
 		symbolDataDestroy(&table.locals[i]);
 
 	for (usize i = 0; i < table.packageCount; ++i)
-		freePackage(&table.packages[i]);
+		packageFree(&table.packages[i]);
 
 	for (usize i = 0; i < table.structCount; ++i)
-		freeStruct(&table.structs[i]);
+		structFree(&table.structs[i]);
 
 	for (usize i = 0; i < table.functionCount; ++i)
-		freeFunction(&table.functions[i]);
+		functionFree(&table.functions[i]);
 
 	for (usize i = 0; i < table.parameterCount; ++i)
-		freeParameter(&table.parameters[i]);
+		parameterFree(&table.parameters[i]);
 
 	for (usize i = 0; i < table.variableCount; ++i)
-		freeVariable(&table.variables[i]);
+		variableFree(&table.variables[i]);
 
 	scopeDestroy(&table.package);
 
@@ -486,7 +491,7 @@ void symbolTableDestroy()
 	table = (SymbolTable) { 0 };
 }
 
-void symbolTablePushBlock()
+void symbolTablePushBlock(void)
 {
 	usize index = table.blockCount;
 
@@ -495,7 +500,7 @@ void symbolTablePushBlock()
 	table.blocks[index] = table.localCount;
 }
 
-void symbolTablePopBlock()
+void symbolTablePopBlock(void)
 {
 	assert(table.blockCount > 0);
 	
@@ -556,7 +561,53 @@ const Primitive *symbolTableGetPrimitive(const SymbolId *id)
 	return &primitives[id->index];
 }
 
-SymbolId symbolTableAddPackage()
+Function *symbolTableSelectFunction(const SymbolId *id)
+{
+	assert(table.currentFunction == NULL);
+
+	Function *function = symbolTableGetFunction(id);
+
+	table.currentFunction = function;
+
+	return function;
+}
+
+Function *symbolTableGetSelectedFunction(void)
+{
+	assert(table.currentFunction != NULL);
+
+	return table.currentFunction;
+}
+
+void symbolTableDeselectFunction(void)
+{
+	assert(table.currentFunction != NULL);
+
+	table.currentFunction = NULL;
+}
+
+void symbolTableSelectBlock(Block *block)
+{
+	assert(table.currentBlock == NULL);
+
+	table.currentBlock = block;
+}
+
+Block *symbolTableGetSelectedBlock(void)
+{
+	assert(table.currentBlock != NULL);
+
+	return table.currentBlock;
+}
+
+void symbolTableDeselectBlock(void)
+{
+	assert(table.currentBlock != NULL);
+
+	table.currentBlock = NULL;
+}
+
+SymbolId symbolTableAddPackage(void)
 {
 	usize index = table.packageCount;
 
@@ -569,7 +620,7 @@ SymbolId symbolTableAddPackage()
 	return id;
 }
 
-SymbolId symbolTableAddStruct()
+SymbolId symbolTableAddStruct(void)
 {
 	usize index = table.structCount;
 
@@ -582,20 +633,24 @@ SymbolId symbolTableAddStruct()
 	return id;
 }
 
-SymbolId symbolTableAddFunction()
+SymbolId symbolTableAddFunction(void)
 {
 	usize index = table.functionCount;
 
 	resizeArray(table.functions, ++table.functionCount);
 
-	table.functions[index] = (Function) { 0 };
+	table.functions[index] = (Function) {
+		.parameterIds = {
+			.type = SYMBOL_PARAMETER
+		}
+	};
 
 	SymbolId id = { SYMBOL_FUNCTION, index };
 
 	return id;
 }
 
-SymbolId symbolTableAddVariable()
+SymbolId symbolTableAddVariable(void)
 {
 	usize index = table.variableCount;
 
@@ -608,7 +663,7 @@ SymbolId symbolTableAddVariable()
 	return id;
 }
 
-SymbolId symbolTableAddParameter()
+SymbolId symbolTableAddParameter(void)
 {
 	usize index = table.parameterCount;
 
@@ -680,7 +735,7 @@ bool symbolTableForEachGlobal(SymbolDataAction action)
 	return success;
 }
 
-usize symbolTablePackageCount()
+usize symbolTablePackageCount(void)
 {
 	return table.packageCount;
 }

@@ -1,3 +1,6 @@
+#include <warbler/ast.h>
+#include <warbler/token.h>
+#include <warbler/type.h>
 #include <warbler/parser.h>
 
 #include <warbler/util/memory.h>
@@ -246,7 +249,7 @@ bool parsePrimaryExpression(Expression *out, Token *token)
 
 error:
 
-	freeExpression(&node);
+	expressionFree(&node);
 	return false;
 }
 
@@ -293,7 +296,7 @@ parseArgument:
 	
 error:
 
-	freeArgumentList(&node);
+	argumentListFree(&node);
 	return false;
 }
 
@@ -384,7 +387,7 @@ finish:
 	
 error:
 
-	freePostfixExpression(&node);
+	postfixExpressionFree(&node);
 	return false;
 }
 
@@ -436,7 +439,7 @@ bool parsePrefix(Expression *out, Token *token)
 	
 error:
 
-	freePrefixExpression(&node);
+	prefixExpressionFree(&node);
 	return false;
 }
 
@@ -502,7 +505,7 @@ bool parseMultiplicativeExpression(Expression *out, Token *token)
 	
 error:
 
-	freeMultiplicativeExpression(&node);
+	multiplicativeExpressionFree(&node);
 	return false;
 }
 
@@ -560,7 +563,7 @@ bool parseAdditiveExpression(Expression *out, Token *token)
 
 error:
 
-	freeAdditiveExpression(&node);
+	additiveExpressionFree(&node);
 
 	return false;
 }
@@ -624,7 +627,7 @@ bool parseBitShiftExpression(Expression *out, Token *token)
 	
 error:
 
-	freeBitShiftExpression(&node);
+	bitShiftExpressionFree(&node);
 	return false;
 }
 
@@ -696,7 +699,7 @@ bool parseRelationalExpression(Expression *out, Token *token)
 	
 error:
 
-	freeRelationalExpression(&node);
+	relationalExpressionFree(&node);
 	return false;
 }
 
@@ -758,7 +761,7 @@ bool parseEqualityExpression(Expression *out, Token *token)
 	
 error:
 
-	freeEqualityExpression(&node);
+	equalityExpressionFree(&node);
 	return false;
 }
 
@@ -796,7 +799,7 @@ bool parseBitwiseAndExpression(Expression *out, Token *token)
 
 error:
 
-	freeBitwiseAndExpression(&node);
+	bitwiseAndExpressionFree(&node);
 	return false;
 }
 
@@ -833,7 +836,7 @@ bool parseBitwiseXorExpression(Expression *out, Token *token)
 	
 error:
 
-	freeBitwiseXorExpression(&node);
+	bitwiseXorExpressionFree(&node);
 	return false;
 }
 
@@ -870,7 +873,7 @@ bool parseBitwiseOrExpression(Expression *out, Token *token)
 	
 error:
 
-	freeBitwiseOrExpression(&node);
+	bitwiseOrExpressionFree(&node);
 	return false;
 }
 
@@ -908,7 +911,7 @@ bool parseBooleanAndExpression(Expression *out, Token *token)
 	
 error:
 
-	freeBooleanAndExpression(&node);
+	booleanAndExpressionFree(&node);
 	return false;
 }
 
@@ -945,7 +948,7 @@ bool parseBooleanOrExpression(Expression *out, Token *token)
 	
 error:
 
-	freeBooleanOrExpression(&node);
+	booleanOrExpressionFree(&node);
 	return false;
 }
 
@@ -987,7 +990,7 @@ bool parseConditionalExpression(Expression *out, Token *token)
 	
 error:
 
-	freeConditionalExpression(&node);
+	conditionalExpressionFree(&node);
 	return false;
 }
 
@@ -1061,7 +1064,7 @@ bool parseAssignment(Expression *out, Token *token)
 	
 error:
 
-	freeAssignment(&node);
+	assignmentFree(&node);
 	return false;
 }
 
@@ -1102,7 +1105,7 @@ bool parseBlock(Expression *out, Token *token)
 
 error:
 
-	freeBlock(&node);
+	blockFree(&node);
 	return false;
 }
 
@@ -1273,7 +1276,7 @@ bool parseVariable(Local *out, Token *token)
 
 error:
 
-	freeVariable(&node);
+	variableFree(&node);
 	return false;
 }
 
@@ -1311,19 +1314,104 @@ bool parseDeclaration(Declaration *node, Token *token)
 	return true;
 }
 
-bool parseStatement(Statement *out, Token *token)
+bool parseJumpStatement(JumpStatement *out, Token *token)
 {
-	if (token->type == TOKEN_KEYWORD_VAR)
+	switch (token->type)
 	{
-		Declaration declaration;
+		case TOKEN_KEYWORD_RETURN:
+			out->type = JUMP_RETURN;
+			break;
 
-		if (!parseDeclaration(&declaration, token))
+		case TOKEN_KEYWORD_BREAK:
+			out->type = JUMP_BREAK;
+			break;
+
+		case TOKEN_KEYWORD_CONTINUE:
+			out->type = JUMP_CONTINUE;
+			break;
+
+		case TOKEN_KEYWORD_YIELD:
+			out->type = JUMP_YIELD;
+			break;
+
+		default:
+			printParseError(token, "return, break, continue or yield", NULL);
+			return false;
+	}
+
+	incrementToken(token);
+
+	if (token->type == TOKEN_SEMICOLON)
+	{
+		incrementToken(token);
+		return true;
+	}
+
+	switch (out->type)
+	{
+		case JUMP_CONTINUE:
+			// TODO: Implement continuing on labels
+			printTokenError(token, "Continue statements cannot have a value.");
+			return false;
+		
+		case JUMP_BREAK:
+			printTokenError(token, "Break statements cannot have a value.");
 			return false;
 
-		*makeNew(out->declaration) = declaration;
-		out->isDeclaration = true;
+		default:
+			break;
+	}
 
-		return true;
+	out->hasValue = true;
+	
+	if (!parseExpression(&out->value, token))
+		return false;
+	
+	if (token->type != TOKEN_SEMICOLON)
+	{
+		printParseError(token, "';' after jump statement", NULL);
+		return false;
+	}
+
+	incrementToken(token);
+	return true;
+}
+
+bool parseStatement(Statement *out, Token *token)
+{
+	switch (token->type)
+	{
+		case TOKEN_KEYWORD_VAR:
+		{
+			Declaration declaration;
+
+			if (!parseDeclaration(&declaration, token))
+				return false;
+
+			*makeNew(out->declaration) = declaration;
+			out->type = STATEMENT_DECLARATION;
+
+			return true;
+		}
+
+		case TOKEN_KEYWORD_RETURN:
+		case TOKEN_KEYWORD_BREAK:
+		case TOKEN_KEYWORD_CONTINUE:
+		case TOKEN_KEYWORD_YIELD:
+		{
+			JumpStatement jump;
+
+			if (!parseJumpStatement(&jump, token))
+				return false;
+
+			*makeNew(out->jump) = jump;
+			out->type = STATEMENT_JUMP;
+
+			return true;
+		}
+
+		default:
+			break;
 	}
 
 	Expression expression;
@@ -1334,14 +1422,14 @@ bool parseStatement(Statement *out, Token *token)
 	if (token->type != TOKEN_SEMICOLON)
 	{
 		printParseError(token, "';' after expression statement", NULL);
-		freeExpression(&expression);
+		expressionFree(&expression);
 		return false;
 	}
 
 	incrementToken(token);
 
 	*makeNew(out->expression) = expression;
-	out->isDeclaration = false;
+	out->type = STATEMENT_EXPRESSION;
 
 	return true;
 }

@@ -1,56 +1,52 @@
 # Warbler Programming Language
-> NOTICE: This project is prealpha-level and under active development. It is not currently in a useable state.
+> NOTICE: This project is prealpha-level and under active development. It is not currently in a
+useable state.
+
 # Brief
 
-Warbler aims to an easy to use, fast, and safe language with native C inter-op. This is planned to
-be implemented by giving the option to compile to machine code through use of LLVM or interpreted by use
-of an inbuilt VM. This would allow warbler to be used to develop applications as well as be used as
-a scripting language.
+Warbler aims to an easy to use, fast, and safe language with native C inter-op. In the future,
+support for embedding in other applications, running as a script, compilation to C, and compilation
+to machine code is planned.
 
 # Purpose
 
 This project has primary been made as a learning tool for myself to better understand
-compiler design, standard language principles, and application development in C.
+compiler design, programming language principles, and software development in C.
 
 # Syntax
 
 The syntax is a mix between several langauges such as GO, Rust, and C with the intention of making
 the code easy to read for this familiar with C like languages, but allow for a more modern syntax.
 
-Below is the syntax of a hello world program.
-```
-import std::io
+The syntax of a hello world program is as follows:
 
-func main(args: String[])
+```
+import std::io as io;
+
+function main()
 {
-	var message = get_greeting()
-	std::io::print(message)
+	var message = get_greeting();
+
+	io::print(message);
 }
 
-func get_greeting() -> char[]
+function get_greeting(): char[]
 {
-	return "Hello, world!"
+	return "Hello, world!";
 }
 ```
-# Status
-
-* Lexer is functional although not all token types are implemented. An overhaul is planned for
-	greater efficiency
-* Parser is currently being implemented
 
 # To-Do
 
-* Finish parser
-* Update parser to not use hash table for operators
-* AST semantic verification
-
-# Dependencies
-
-* [c-utils](https://github.com/ikehirzel/c-utils)
+- Implement while-var and if-var expression parsing, validation
+- Implement hash table for performance increase
+- Finish parser
+- Finish validator
+- Implement C generator
 
 # License
 
-Copyright 2021 Ike Hirzel
+Copyright 2023 Isaac Hirzel
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -23,7 +23,7 @@ struct Symbol;
 struct Assignment;
 struct Block;
 struct Declaration;
-struct IfStatement;
+struct IfExpression;
 
 typedef struct Primitive
 {
@@ -278,32 +278,40 @@ typedef struct Statement
 	{
 		struct Expression *expression;
 		struct Declaration *declaration;
+		struct JumpStatement *jump;
 	};
 
-	bool isDeclaration;
+	StatementType type;
 } Statement;
 
 typedef struct Block
 {
 	Statement* statements;
 	usize count;
-	TypeAnnotation returnType;
+	Type returnType;
 	bool hasReturnType;
 } Block;
 
-typedef struct IfStatement
+typedef struct IfExpression
 {
 	Expression condition;
-	Block thenBody;
+	Statement thenCase;
 
 	union
 	{
-		Block elseBody;
-		struct IfStatement *elseIf;
+		Statement elseCase;
+		struct IfExpression *elseIf;
 	};
 
 	IfType type;
 } IfStatement;
+
+typedef struct JumpStatement
+{
+	JumpType type;
+	Expression value;
+	bool hasValue;
+} JumpStatement;
 
 typedef struct Declaration
 {
@@ -349,56 +357,65 @@ typedef struct Package
 	usize moduleCount;
 } Package;
 
-extern SymbolId voidSymbolId;
-extern SymbolId u8SymbolId;
-extern SymbolId u16SymbolId;
-extern SymbolId u32SymbolId;
-extern SymbolId u64SymbolId;
-extern SymbolId uFlexSymbolId;
-extern SymbolId i8SymbolId;
-extern SymbolId i16SymbolId;
-extern SymbolId i32SymbolId;
-extern SymbolId i64SymbolId;
-extern SymbolId iFlexSymbolId;
-extern SymbolId f32SymbolId;
-extern SymbolId f64SymbolId;
-extern SymbolId boolSymbolId;
-extern SymbolId charSymbolId;
-extern SymbolId stringSymbolId;
+extern const SymbolId voidSymbolId;
+extern const SymbolId u8SymbolId;
+extern const SymbolId u16SymbolId;
+extern const SymbolId u32SymbolId;
+extern const SymbolId u64SymbolId;
+extern const SymbolId i8SymbolId;
+extern const SymbolId i16SymbolId;
+extern const SymbolId i32SymbolId;
+extern const SymbolId i64SymbolId;
+extern const SymbolId f32SymbolId;
+extern const SymbolId f64SymbolId;
+extern const SymbolId boolSymbolId;
+extern const SymbolId charSymbolId;
+extern const SymbolId stringSymbolId;
+extern const Type voidType;
 extern const Primitive primitives[];
 extern const usize primitiveCount;
 
-// void freeSymbol(Symbol *node);
-void freeSymbolIdList(SymbolIdList *node);
-void freeBooleanAndExpression(BooleanAndExpression *node);
-void freeBitwiseOrExpression(BitwiseOrExpression *node);
-void freeExpression(Expression *node);
-void freeLiteral(Literal *node);
-void freeArgumentList(ArgumentList *node);
-void freePostfixExpression(Postfix *node);
-void freePrefixExpression(Prefix *node);
-void freeMultiplicativeExpression(MultiplicativeExpression *node);
-void freeAdditiveExpression(AdditiveExpression *node);
-void freeBitShiftExpression(BitShiftExpression *node);
-void freeRelationalExpression(RelationalExpression *node);
-void freeEqualityExpression(EqualityExpression *node);
-void freeBitwiseAndExpression(BitwiseAndExpression *node);
-void freeBitwiseXorExpression(BitwiseXorExpression *node);
-void freeBooleanOrExpression(BooleanOrExpression *node);
-void freeConditionalExpression(ConditionalExpression *node);
-void freeTypeAnnotation(TypeAnnotation *node);
-void freeMember(Member *node);
-void freeMemberList(MemberList *node);
-void freeStruct(Struct *node);
-void freeVariable(Local *node);
-void freeStatement(Statement *node);
-void freeBlock(Block *node);
-void freeIfStatement(IfStatement *node);
-void freeDeclaration(Declaration *node);
-void freeAssignment(Assignment *node);
-void freeParameter(Local *node);
-void freeFunction(Function *node);
-void freeModule(Module *node);
-void freePackage(Package *node);
+void booleanAndExpressionFree(BooleanAndExpression *node);
+void bitwiseOrExpressionFree(BitwiseOrExpression *node);
+void expressionFree(Expression *node);
+void literalFree(Literal *node);
+void argumentListFree(ArgumentList *node);
+void postfixExpressionFree(Postfix *node);
+void prefixExpressionFree(Prefix *node);
+void multiplicativeExpressionFree(MultiplicativeExpression *node);
+void additiveExpressionFree(AdditiveExpression *node);
+void bitShiftExpressionFree(BitShiftExpression *node);
+void relationalExpressionFree(RelationalExpression *node);
+void equalityExpressionFree(EqualityExpression *node);
+void bitwiseAndExpressionFree(BitwiseAndExpression *node);
+void bitwiseXorExpressionFree(BitwiseXorExpression *node);
+void booleanOrExpressionFree(BooleanOrExpression *node);
+void conditionalExpressionFree(ConditionalExpression *node);
+void typeAnnotationFree(TypeAnnotation *node);
+void memberFree(Member *node);
+void memberListFree(MemberList *node);
+void structFree(Struct *node);
+void variableFree(Local *node);
+void statementFree(Statement *node);
+void jumpStatementFree(JumpStatement *node);
+void blockFree(Block *node);
+void ifExpressionFree(IfStatement *node);
+void declarationFree(Declaration *node);
+void assignmentFree(Assignment *node);
+void parameterFree(Local *node);
+void functionFree(Function *node);
+void moduleFree(Module *node);
+void packageFree(Package *node);
+
+Token tokenFromExpression(Expression *expression);
+Type typeFromExpression(Expression *expression, const Type *expectedType);
+Type typeDuplicate(const Type *type);
+bool typeCanConvert(const Type *to, const Type *from);
+
+/**
+ * @return Malloc'd string representation of type
+ */
+char *typeGetName(const Type *type);
+const Type *functionGetReturnType(const Function *function);
 
 #endif

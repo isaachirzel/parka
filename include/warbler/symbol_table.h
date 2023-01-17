@@ -43,8 +43,8 @@ SymbolData *symbolTableResolve(const Token *token);
 char *symbolTableCreateSymbol(const char *identifier);
 char *symbolTableCreateTokenSymbol(const Token *token);
 
-void symbolTablePushBlock();
-void symbolTablePopBlock();
+void symbolTablePushBlock(void);
+void symbolTablePopBlock(void);
 
 void symbolTableSetScopeFromSymbol(const char *symbol);
 const char *symbolTypeGetName(SymbolType type);
@@ -60,5 +60,13 @@ Local *symbolTableGetParameter(const SymbolId *id);
 Function *symbolTableGetFunction(const SymbolId *id);
 Struct *symbolTableGetStruct(const SymbolId *id);
 const Primitive *symbolTableGetPrimitive(const SymbolId *id);
+
+Function *symbolTableSelectFunction(const SymbolId * id);
+Function *symbolTableGetSelectedFunction(void);
+void symbolTableDeselectFunction(void);
+
+void symbolTableSelectBlock(Block *block);
+Block *symbolTableGetSelectedBlock(void);
+void symbolTableDeselectBlock(void);
 
 #endif

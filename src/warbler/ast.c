@@ -1,4 +1,7 @@
+#include "warbler/util/string.h"
 #include <warbler/ast.h>
+#include <warbler/type.h>
+#include <warbler/symbol_table.h>
 #include <warbler/util/memory.h>
 #include <warbler/util/print.h>
 
@@ -20,20 +23,22 @@ enum PrimitiveIndex
 	INDEX_STRING,
 };
 
-SymbolId voidSymbolId = { SYMBOL_PRIMITIVE, INDEX_VOID };
-SymbolId u8SymbolId = { SYMBOL_PRIMITIVE, INDEX_U8 };
-SymbolId u16SymbolId = { SYMBOL_PRIMITIVE, INDEX_16 };
-SymbolId u32SymbolId = { SYMBOL_PRIMITIVE, INDEX_U32 };
-SymbolId u64SymbolId = { SYMBOL_PRIMITIVE, INDEX_U64 };
-SymbolId i8SymbolId = { SYMBOL_PRIMITIVE, INDEX_I8 };
-SymbolId i16SymbolId = { SYMBOL_PRIMITIVE, INDEX_I16 };
-SymbolId i32SymbolId = { SYMBOL_PRIMITIVE, INDEX_I32 };
-SymbolId i64SymbolId = { SYMBOL_PRIMITIVE, INDEX_I64 };
-SymbolId f32SymbolId = { SYMBOL_PRIMITIVE, INDEX_F32 };
-SymbolId f64SymbolId = { SYMBOL_PRIMITIVE, INDEX_F64 };
-SymbolId boolSymbolId = { SYMBOL_PRIMITIVE, INDEX_BOOL };
-SymbolId charSymbolId = { SYMBOL_PRIMITIVE, INDEX_CHAR };
-SymbolId stringSymbolId = { SYMBOL_PRIMITIVE, INDEX_STRING };
+const SymbolId voidSymbolId = { SYMBOL_PRIMITIVE, INDEX_VOID };
+const SymbolId u8SymbolId = { SYMBOL_PRIMITIVE, INDEX_U8 };
+const SymbolId u16SymbolId = { SYMBOL_PRIMITIVE, INDEX_16 };
+const SymbolId u32SymbolId = { SYMBOL_PRIMITIVE, INDEX_U32 };
+const SymbolId u64SymbolId = { SYMBOL_PRIMITIVE, INDEX_U64 };
+const SymbolId i8SymbolId = { SYMBOL_PRIMITIVE, INDEX_I8 };
+const SymbolId i16SymbolId = { SYMBOL_PRIMITIVE, INDEX_I16 };
+const SymbolId i32SymbolId = { SYMBOL_PRIMITIVE, INDEX_I32 };
+const SymbolId i64SymbolId = { SYMBOL_PRIMITIVE, INDEX_I64 };
+const SymbolId f32SymbolId = { SYMBOL_PRIMITIVE, INDEX_F32 };
+const SymbolId f64SymbolId = { SYMBOL_PRIMITIVE, INDEX_F64 };
+const SymbolId boolSymbolId = { SYMBOL_PRIMITIVE, INDEX_BOOL };
+const SymbolId charSymbolId = { SYMBOL_PRIMITIVE, INDEX_CHAR };
+const SymbolId stringSymbolId = { SYMBOL_PRIMITIVE, INDEX_STRING };
+
+const Type voidType = { .id = { SYMBOL_PRIMITIVE, INDEX_VOID } };
 
 const Primitive primitives[] =
 {
@@ -55,88 +60,83 @@ const Primitive primitives[] =
 
 const usize primitiveCount = sizeof(primitives) / sizeof(*primitives);
 
-void freeSymbolIdList(SymbolIdList *list)
-{
-	deallocate(list->indeces);
-}
-
-void freeStringLiteral(StringLiteral *node)
+void stringLiteralFree(StringLiteral *node)
 {
 	deallocate(node->text);
 }
 
-void freeLiteral(Literal *node)
+void literalFree(Literal *node)
 {
 	if (node->type == LITERAL_STRING)
-		freeStringLiteral(&node->string);
+		stringLiteralFree(&node->string);
 }
 
-void freeExpression(Expression *node)
+void expressionFree(Expression *node)
 {
 	switch (node->type)
 	{
 	case EXPRESSION_BLOCK:
-		freeBlock(node->block);
+		blockFree(node->block);
 		deallocate(node->block);
 		break;
 	case EXPRESSION_ASSIGNMENT:
-		freeAssignment(node->assignment);
+		assignmentFree(node->assignment);
 		deallocate(node->assignment);
 		break;
 	case EXPRESSION_CONDITIONAL:
-		freeConditionalExpression(node->conditional);
+		conditionalExpressionFree(node->conditional);
 		deallocate(node->conditional);
 		break;
 	case EXPRESSION_BOOLEAN_OR:
-		freeBooleanOrExpression(node->booleanOr);
+		booleanOrExpressionFree(node->booleanOr);
 		deallocate(node->booleanOr);
 		break;
 	case EXPRESSION_BOOLEAN_AND:
-		freeBooleanAndExpression(node->booleanAnd);
+		booleanAndExpressionFree(node->booleanAnd);
 		deallocate(node->booleanAnd);
 		break;
 	case EXPRESSION_BITWISE_OR:
-		freeBitwiseOrExpression(node->bitwiseOr);
+		bitwiseOrExpressionFree(node->bitwiseOr);
 		deallocate(node->bitwiseOr);
 		break;
 	case EXPRESSION_BITWISE_XOR:
-		freeBitwiseXorExpression(node->bitwiseXor);
+		bitwiseXorExpressionFree(node->bitwiseXor);
 		deallocate(node->bitwiseXor);
 		break;
 	case EXPRESSION_BITWISE_AND:
-		freeBitwiseAndExpression(node->bitwiseAnd);
+		bitwiseAndExpressionFree(node->bitwiseAnd);
 		deallocate(node->bitwiseAnd);
 		break;
 	case EXPRESSION_EQUALITY:
-		freeEqualityExpression(node->equality);
+		equalityExpressionFree(node->equality);
 		deallocate(node->equality);
 		break;
 	case EXPRESSION_RELATIONAL:
-		freeRelationalExpression(node->relational);
+		relationalExpressionFree(node->relational);
 		deallocate(node->relational);
 		break;
 	case EXPRESSION_SHIFT:
-		freeBitShiftExpression(node->shift);
+		bitShiftExpressionFree(node->shift);
 		deallocate(node->shift);
 		break;
 	case EXPRESSION_ADDITIVE:
-		freeAdditiveExpression(node->additive);
+		additiveExpressionFree(node->additive);
 		deallocate(node->additive);
 		break;
 	case EXPRESSION_MULTIPLICATIVE:
-		freeMultiplicativeExpression(node->multiplicative);
+		multiplicativeExpressionFree(node->multiplicative);
 		deallocate(node->multiplicative);
 		break;
 	case EXPRESSION_POSTFIX:
-		freePrefixExpression(node->prefix);
+		prefixExpressionFree(node->prefix);
 		deallocate(node->prefix);
 		break;
 	case EXPRESSION_PREFIX:
-		freePostfixExpression(node->postfix);
+		postfixExpressionFree(node->postfix);
 		deallocate(node->postfix);
 		break;
 	case EXPRESSION_LITERAL:
-		freeLiteral(node->literal);
+		literalFree(node->literal);
 		deallocate(node->literal);
 		break;
 	case EXPRESSION_SYMBOL:
@@ -147,28 +147,28 @@ void freeExpression(Expression *node)
 	}
 }
 
-void freeArgumentList(ArgumentList *node)
+void argumentListFree(ArgumentList *node)
 {
 	for (usize i = 0; i < node->count; ++i)
 	{
-		freeExpression(node->expressions + i);
+		expressionFree(node->expressions + i);
 	}
 
 	deallocate(node->expressions);
 }
 
-void freePostfixExpression(Postfix *node)
+void postfixExpressionFree(Postfix *node)
 {
-	freeExpression(&node->expression);
+	expressionFree(&node->expression);
 
 	switch (node->type)
 	{
 		case POSTFIX_INDEX:
-			freeExpression(&node->index);
+			expressionFree(&node->index);
 			break;
 
 		case POSTFIX_FUNCTION_CALL:
-			freeArgumentList(&node->arguments);
+			argumentListFree(&node->arguments);
 			break;
 
 		case POSTFIX_MEMBER:
@@ -179,220 +179,237 @@ void freePostfixExpression(Postfix *node)
 	}
 }
 
-void freeStatement(Statement *node)
+void jumpStatementFree(JumpStatement *node)
 {
-	if (node->isDeclaration)
+	if (node->hasValue)
+		expressionFree(&node->value);
+}
+
+void statementFree(Statement *node)
+{
+	switch (node->type)
 	{
-		freeDeclaration(node->declaration);
-		deallocate(node->declaration);
-	}
-	else
-	{
-		freeExpression(node->expression);
-		deallocate(node->expression);
+		case STATEMENT_EXPRESSION:
+			expressionFree(node->expression);
+			deallocate(node->expression);
+			break;
+
+		case STATEMENT_DECLARATION:
+			declarationFree(node->declaration);
+			deallocate(node->declaration);
+			break;
+
+		case STATEMENT_JUMP:
+			jumpStatementFree(node->jump);
+			deallocate(node->jump);
+			break;
+
+		default:
+			exitWithErrorFmt("Unable to free Statement with StatementType: %d", node->type);
 	}
 }
 
-void freeIfStatement(IfStatement *node)
+void ifExpressionFree(IfStatement *node)
 {
-	freeExpression(&node->condition);
+	expressionFree(&node->condition);
+	statementFree(&node->thenCase);
 
 	if (node->type == IF_THEN_ELSE)
 	{
-		freeBlock(&node->elseBody);
+		statementFree(&node->elseCase);
 	}
 	else if (node->type == IF_THEN_ELSE)
 	{
-		freeIfStatement(node->elseIf);
+		ifExpressionFree(node->elseIf);
 		deallocate(node->elseIf);
 	}
 }
 
-void freePackage(Package *node)
+void packageFree(Package *node)
 {
 	for (usize i = 0; i < node->moduleCount; ++i)
-		freeModule(&node->modules[i]);
+		moduleFree(&node->modules[i]);
 
 	deallocate(node->symbol);
 }
 
-void freeAdditiveExpression(AdditiveExpression *node)
+void additiveExpressionFree(AdditiveExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(&node->rhs[i].expr);
+		expressionFree(&node->rhs[i].expr);
 
 	deallocate(node->rhs);
 }
 
-void freeBitwiseAndExpression(BitwiseAndExpression *node)
+void bitwiseAndExpressionFree(BitwiseAndExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(node-> rhs + i);
+		expressionFree(node-> rhs + i);
 
 	deallocate(node->rhs);
 }
 
-void freeBitwiseOrExpression(BitwiseOrExpression *node)
+void bitwiseOrExpressionFree(BitwiseOrExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(node-> rhs + i);
+		expressionFree(node-> rhs + i);
 
 	deallocate(node->rhs);
 }
 
-void freeBitwiseXorExpression(BitwiseXorExpression *node)
+void bitwiseXorExpressionFree(BitwiseXorExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(node-> rhs + i);
+		expressionFree(node-> rhs + i);
 
 	deallocate(node->rhs);
 }
 
-void freeBooleanAndExpression(BooleanAndExpression *node)
+void booleanAndExpressionFree(BooleanAndExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(node-> rhs + i);
+		expressionFree(node-> rhs + i);
 
 	deallocate(node->rhs);
 }
 
-void freeBooleanOrExpression(BooleanOrExpression *node)
+void booleanOrExpressionFree(BooleanOrExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(node-> rhs + i);
+		expressionFree(node-> rhs + i);
 
 	deallocate(node->rhs);
 }
 
 void freeConditionalRhs(ConditionalRhs *node)
 {
-	freeExpression(&node->trueCase);
-	freeExpression(&node->falseCase);
+	expressionFree(&node->trueCase);
+	expressionFree(&node->falseCase);
 }
 
-void freeConditionalExpression(ConditionalExpression *node)
+void conditionalExpressionFree(ConditionalExpression *node)
 {
-	freeExpression(&node->expression);
+	expressionFree(&node->expression);
 
 	if (node->hasRhs)
 		freeConditionalRhs(&node->rhs);
 }
 
-void freeEqualityExpression(EqualityExpression *node)
+void equalityExpressionFree(EqualityExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(&node->rhs[i].expr);
+		expressionFree(&node->rhs[i].expr);
 
 	deallocate(node->rhs);
 }
 
-void freeMultiplicativeExpression(MultiplicativeExpression *node)
+void multiplicativeExpressionFree(MultiplicativeExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(&node->rhs[i].expr);
+		expressionFree(&node->rhs[i].expr);
 
 	deallocate(node->rhs);
 }
 
-void freeRelationalExpression(RelationalExpression *node)
+void relationalExpressionFree(RelationalExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(&node->rhs[i].expr);
+		expressionFree(&node->rhs[i].expr);
 
 	deallocate(node->rhs);
 }
 
-void freeBitShiftExpression(BitShiftExpression *node)
+void bitShiftExpressionFree(BitShiftExpression *node)
 {
-	freeExpression(&node->lhs);
+	expressionFree(&node->lhs);
 
 	for (usize i = 0; i < node->rhsCount; ++i)
-		freeExpression(&node->rhs[i].expr);
+		expressionFree(&node->rhs[i].expr);
 
 	deallocate(node->rhs);
 }
 
-void freePrefixExpression(Prefix *node)
+void prefixExpressionFree(Prefix *node)
 {
-	freeExpression(&node->expression);
+	expressionFree(&node->expression);
 }
 
-void freeParameter(Local *node)
+void parameterFree(Local *node)
 {
-	freeTypeAnnotation(&node->type);
+	typeAnnotationFree(&node->type);
 	deallocate(node->symbol);
 }
 
-void freeFunction(Function *node)
+void functionFree(Function *node)
 {
-	freeExpression(&node->body);
-	freeSymbolIdList(&node->parameterIds);
+	expressionFree(&node->body);
+	symbolIdListFree(&node->parameterIds);
 
 	if (node->hasReturnType)
-		freeTypeAnnotation(&node->returnType);
+		typeAnnotationFree(&node->returnType);
 
 	deallocate(node->symbol);
 }
 
-void freeBlock(Block *node)
+void blockFree(Block *node)
 {
 	for (usize i = 0; i< node->count; ++i)
-		freeStatement(&node->statements[i]);
+		statementFree(&node->statements[i]);
 }
 
-void freeDeclaration(Declaration *node)
+void declarationFree(Declaration *node)
 {
-	freeExpression(&node->value);
+	expressionFree(&node->value);
 }
 
-void freeVariable(Local *node)
+void variableFree(Local *node)
 {
-	freeTypeAnnotation(&node->type);
+	typeAnnotationFree(&node->type);
 	deallocate(node->symbol);
 }
 
-void freeAssignment(Assignment *node)
+void assignmentFree(Assignment *node)
 {
-	freeExpression(&node->lhs);
-	freeExpression(&node->rhs);
+	expressionFree(&node->lhs);
+	expressionFree(&node->rhs);
 }
 
-void freeMemberList(MemberList *node)
+void memberListFree(MemberList *node)
 {
 	for (usize i = 0; i < node->count; ++i)
-		freeMember(&node->data[i]);
+		memberFree(&node->data[i]);
 
 	deallocate(node->data);
 }
 
-void freeStruct(Struct *node)
+void structFree(Struct *node)
 {
-	freeMemberList(&node->members);
+	memberListFree(&node->members);
 
 	deallocate(node->symbol);
 }
 
-void freeMember(Member *node)
+void memberFree(Member *node)
 {
-	freeTypeAnnotation(&node->annotation);
+	typeAnnotationFree(&node->annotation);
 }
 
 void freeType(Type *type)
@@ -401,15 +418,269 @@ void freeType(Type *type)
 	// TODO: pointers
 }
 
-void freeTypeAnnotation(TypeAnnotation *node)
+void typeAnnotationFree(TypeAnnotation *node)
 {
 	freeType(&node->type);
 }
 
-void freeModule(Module *node)
+void moduleFree(Module *node)
 {
 	symbolIdListFree(&node->functionIds);
 	symbolIdListFree(&node->structIds);
 
 	deallocate(node->symbol);
+}
+
+typedef const SymbolId *(*LiteralValidationFunction)(const Primitive *);
+
+const SymbolId *getFloatLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_FLOATING_POINT)
+		return NULL;
+
+	return &f64SymbolId;
+}
+
+const SymbolId *getIntegerLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive)
+	{
+		switch (primitive->type)
+		{
+			// TODO: Add boolean and char
+			case PRIMITIVE_UNSIGNED_INTEGER:
+			case PRIMITIVE_SIGNED_INTEGER:
+			case PRIMITIVE_FLOATING_POINT:
+				return NULL;
+
+			default:
+				break;
+		}
+	}
+
+	return &i32SymbolId;
+}
+
+const SymbolId *getBooleanLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_BOOLEAN)
+		return NULL;
+
+	return &boolSymbolId;
+}
+
+const SymbolId *getCharacterLiteralSymbolId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_CHARACTER)
+		return NULL;
+
+	return &charSymbolId;
+}
+
+const SymbolId *getStringLiteralSymboId(const Primitive *primitive)
+{
+	if (primitive && primitive->type == PRIMITIVE_STRING)
+		return NULL;
+
+	return &stringSymbolId;
+}
+
+LiteralValidationFunction getLiteralValidationFunction(Literal *literal)
+{
+	switch (literal->type)
+	{
+		case LITERAL_CHARACTER:
+			return getCharacterLiteralSymbolId;
+
+		case LITERAL_STRING:
+			return getStringLiteralSymboId;
+
+		case LITERAL_INTEGER:
+			return getIntegerLiteralSymbolId;
+
+		case LITERAL_FLOAT:
+			return getFloatLiteralSymbolId;
+
+		case LITERAL_BOOLEAN:
+			return getBooleanLiteralSymbolId;
+
+		default:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to get SymbolId for Literal of type: %d", literal->type);
+}
+
+static const Primitive *getTypePrimitive(const Type *type)
+{
+	if (!type)
+		return NULL;
+
+	const SymbolId *id = &type->id;
+
+	if (id->type != SYMBOL_PRIMITIVE)
+		return NULL;
+
+	const Primitive *primitive = symbolTableGetPrimitive(id);
+
+	return primitive;
+}
+
+SymbolId getLiteralSymbolId(Literal *literal, const Type *expectedType)
+{
+	assert(literal != NULL);
+
+	LiteralValidationFunction check = getLiteralValidationFunction(literal);
+	const Primitive *primitive = getTypePrimitive(expectedType);
+	const SymbolId *id = check(primitive);
+
+	if (!id)
+		id = &expectedType->id;
+
+	return *id;
+}
+
+Type getLiteralType(Literal *literal, const Type *expectedType)
+{
+	Type type =
+	{
+		.id = getLiteralSymbolId(literal, expectedType)
+	};
+
+	return type;
+}
+
+Type typeFromExpression(Expression *expression, const Type *expectedType)
+{
+	switch (expression->type)
+	{
+		case EXPRESSION_BLOCK:
+			break;
+		case EXPRESSION_ASSIGNMENT:
+			break;
+		case EXPRESSION_CONDITIONAL:
+			break;
+		case EXPRESSION_BOOLEAN_OR:
+			break;
+		case EXPRESSION_BOOLEAN_AND:
+			break;
+		case EXPRESSION_BITWISE_OR:
+			break;
+		case EXPRESSION_BITWISE_XOR:
+			break;
+		case EXPRESSION_BITWISE_AND:
+			break;
+		case EXPRESSION_EQUALITY:
+			break;
+		case EXPRESSION_RELATIONAL:
+			break;
+		case EXPRESSION_SHIFT:
+			break;
+		case EXPRESSION_ADDITIVE:
+			break;
+		case EXPRESSION_MULTIPLICATIVE:
+			break;
+		case EXPRESSION_POSTFIX:
+			break;
+		case EXPRESSION_PREFIX:
+			break;
+		case EXPRESSION_LITERAL:
+			return getLiteralType(expression->literal, expectedType);
+		case EXPRESSION_SYMBOL:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to get type for expression of type: %d", expression->type);
+}
+
+Type typeDuplicate(const Type *type)
+{
+	return *type;
+}
+
+bool typeCanConvert(const Type *to, const Type *from)
+{
+	const SymbolId *toId = &to->id;
+	const SymbolId *fromId = &from->id;
+
+	bool success = symbolIdEquals(toId, fromId);
+
+	return success;
+}
+
+Token tokenFromExpression(Expression *expression)
+{
+	switch( expression->type)
+	{
+		case EXPRESSION_BLOCK:
+			break;
+
+		case EXPRESSION_ASSIGNMENT:
+			break;
+
+		case EXPRESSION_CONDITIONAL:
+			break;
+
+		case EXPRESSION_BOOLEAN_OR:
+			break;
+
+		case EXPRESSION_BOOLEAN_AND:
+			break;
+
+		case EXPRESSION_BITWISE_OR:
+			break;
+
+		case EXPRESSION_BITWISE_XOR:
+			break;
+
+		case EXPRESSION_BITWISE_AND:
+			break;
+
+		case EXPRESSION_EQUALITY:
+			break;
+
+		case EXPRESSION_RELATIONAL:
+			break;
+
+		case EXPRESSION_SHIFT:
+			break;
+
+		case EXPRESSION_ADDITIVE:
+			break;
+
+		case EXPRESSION_MULTIPLICATIVE:
+			break;
+
+		case EXPRESSION_POSTFIX:
+			break;
+
+		case EXPRESSION_PREFIX:
+			break;
+
+		case EXPRESSION_LITERAL:
+			return expression->literal->token;
+			
+		case EXPRESSION_SYMBOL:
+			return expression->symbol.token;
+	}
+
+	exitWithErrorFmt("Unable to get Token for Expression of type: %d", expression->type);
+}
+
+const Type *functionGetReturnType(const Function *function)
+{
+	const Type *returnType = function->hasReturnType
+		? &function->returnType.type
+		: &voidType;
+
+	return returnType;
+}
+
+char *typeGetName(const Type *type)
+{
+	const char *symbol = symbolTableGetSymbol(&type->id);
+	
+	char *name = stringDuplicate(symbol);
+
+	return name;
 }

@@ -1,4 +1,4 @@
-#include "warbler/symbol_table.h"
+#include <warbler/symbol_table.h>
 #include <warbler/ast.h>
 #include <warbler/symbol_id.h>
 #include <warbler/type.h>
@@ -8,168 +8,6 @@
 #include <string.h>
 
 bool validateStruct(SymbolData *data);
-
-typedef SymbolId *(*LiteralValidationFunction)(const Primitive *);
-
-SymbolId *getFloatLiteralSymbolId(const Primitive *primitive)
-{
-	if (primitive && primitive->type == PRIMITIVE_FLOATING_POINT)
-		return NULL;
-
-	return &f64SymbolId;
-}
-
-SymbolId *getIntegerLiteralSymbolId(const Primitive *primitive)
-{
-	if (primitive)
-	{
-		switch (primitive->type)
-		{
-			// TODO: Add boolean and char
-			case PRIMITIVE_UNSIGNED_INTEGER:
-			case PRIMITIVE_SIGNED_INTEGER:
-			case PRIMITIVE_FLOATING_POINT:
-				return NULL;
-
-			default:
-				break;
-		}
-	}
-
-	return &i32SymbolId;
-}
-
-SymbolId *getBooleanLiteralSymbolId(const Primitive *primitive)
-{
-	if (primitive && primitive->type == PRIMITIVE_BOOLEAN)
-		return NULL;
-
-	return &boolSymbolId;
-}
-
-SymbolId *getCharacterLiteralSymbolId(const Primitive *primitive)
-{
-	if (primitive && primitive->type == PRIMITIVE_CHARACTER)
-		return NULL;
-
-	return &charSymbolId;
-}
-
-SymbolId *getStringLiteralSymboId(const Primitive *primitive)
-{
-	if (primitive && primitive->type == PRIMITIVE_STRING)
-		return NULL;
-
-	return &stringSymbolId;
-}
-
-LiteralValidationFunction getLiteralValidationFunction(Literal *literal)
-{
-	switch (literal->type)
-	{
-		case LITERAL_CHARACTER:
-			return getCharacterLiteralSymbolId;
-
-		case LITERAL_STRING:
-			return getStringLiteralSymboId;
-
-		case LITERAL_INTEGER:
-			return getIntegerLiteralSymbolId;
-
-		case LITERAL_FLOAT:
-			return getFloatLiteralSymbolId;
-
-		case LITERAL_BOOLEAN:
-			return getBooleanLiteralSymbolId;
-
-		default:
-			break;
-	}
-
-	exitWithErrorFmt("Unable to get SymbolId for Literal of type: %d", literal->type);
-}
-
-static const Primitive *getTypePrimitive(Type *type)
-{
-	if (!type)
-		return NULL;
-
-	const SymbolId *id = &type->id;
-
-	if (id->type != SYMBOL_PRIMITIVE)
-		return NULL;
-
-	const Primitive *primitive = symbolTableGetPrimitive(id);
-
-	return primitive;
-}
-
-SymbolId getLiteralSymbolId(Literal *literal, Type *expectedType)
-{
-	assert(literal != NULL);
-
-	LiteralValidationFunction check = getLiteralValidationFunction(literal);
-	const Primitive *primitive = getTypePrimitive(expectedType);
-	SymbolId *id = check(primitive);
-
-	if (!id)
-		id = &expectedType->id;
-
-	return *id;
-}
-
-Type getLiteralType(Literal *literal, Type *expectedType)
-{
-	Type type =
-	{
-		.id = getLiteralSymbolId(literal, expectedType)
-	};
-
-	return type;
-}
-
-Type getExpressionType(Expression *expression, Type *expectedType)
-{
-	switch (expression->type)
-	{
-		case EXPRESSION_BLOCK:
-			break;
-		case EXPRESSION_ASSIGNMENT:
-			break;
-		case EXPRESSION_CONDITIONAL:
-			break;
-		case EXPRESSION_BOOLEAN_OR:
-			break;
-		case EXPRESSION_BOOLEAN_AND:
-			break;
-		case EXPRESSION_BITWISE_OR:
-			break;
-		case EXPRESSION_BITWISE_XOR:
-			break;
-		case EXPRESSION_BITWISE_AND:
-			break;
-		case EXPRESSION_EQUALITY:
-			break;
-		case EXPRESSION_RELATIONAL:
-			break;
-		case EXPRESSION_SHIFT:
-			break;
-		case EXPRESSION_ADDITIVE:
-			break;
-		case EXPRESSION_MULTIPLICATIVE:
-			break;
-		case EXPRESSION_POSTFIX:
-			break;
-		case EXPRESSION_PREFIX:
-			break;
-		case EXPRESSION_LITERAL:
-			return getLiteralType(expression->literal, expectedType);
-		case EXPRESSION_SYMBOL:
-			break;
-	}
-
-	exitWithErrorFmt("Unable to get type for expression of type: %d", expression->type);
-}
 
 bool validateType(Type *node, const Token *token)
 {
@@ -195,16 +33,6 @@ bool validateType(Type *node, const Token *token)
 	printTokenError(token, "Expected type name, found %s.", typeName);
 
 	return false;
-}
-
-bool canConvertType(Type *to, Type *from)
-{
-	const SymbolId *toId = &to->id;
-	const SymbolId *fromId = &from->id;
-
-	bool success = symbolIdEquals(toId, fromId);
-
-	return success;
 }
 
 bool validateTypeAnnotation(TypeAnnotation *node)
@@ -298,11 +126,15 @@ bool validateBlock(Block *node)
 {
 	bool success = true;
 
+	symbolTableSelectBlock(node);
+
 	for (usize i = 0; i < node->count; ++i)
 	{
 		if (!validateStatement(&node->statements[i]))
 			success = false;
 	}
+
+	symbolTableDeselectBlock();
 
 	return success;
 }
@@ -467,13 +299,13 @@ bool validateDeclaration(Declaration *node)
 	Type *variableType = variable->isExplicitlyTyped
 		? &variable->type.type
 		: NULL;
-	Type expressionType = getExpressionType(&node->value, variableType);
+	Type expressionType = typeFromExpression(&node->value, variableType);
 
 	if (variable->isExplicitlyTyped)
 	{
 		Type *variableType = &variable->type.type;
 
-		if (!canConvertType(variableType, &expressionType))
+		if (!typeCanConvert(variableType, &expressionType))
 		{
 			const char *toSymbol = symbolTableGetSymbol(&variableType->id);
 			const char *fromSymbol = symbolTableGetSymbol(&expressionType.id);
@@ -492,12 +324,99 @@ bool validateDeclaration(Declaration *node)
 	return true;
 }
 
+bool validateReturnStatement(JumpStatement *node)
+{
+	Function *function = symbolTableGetSelectedFunction();
+	const Type *returnType = functionGetReturnType(function);
+	Type valueType = node->hasValue
+		? typeFromExpression(&node->value, returnType)
+		: typeDuplicate(&voidType);
+	Expression *functionBody = &function->body;
+
+	if (functionBody->type == EXPRESSION_BLOCK)
+	{
+		Block *block = functionBody->block;
+
+		block->returnType = typeDuplicate(&valueType);
+		block->hasReturnType = true;
+	}
+
+	if (!typeCanConvert(returnType, &valueType))
+	{
+		const char *returnTypeSymbol = symbolTableGetSymbol(&returnType->id);
+
+		printError("Return value is not compatible with return type `%s`", returnTypeSymbol);
+
+		return false;
+	}
+
+	return true;
+}
+
+bool validateYieldStatement(JumpStatement *node)
+{
+	Block *currentBlock = symbolTableGetSelectedBlock();
+	const Type *blockReturnType = currentBlock->hasReturnType
+		? &currentBlock->returnType
+		: &voidType;
+	// TODO: Confirm copying type is OK
+	Type valueType = node->hasValue
+		? typeFromExpression(&node->value, blockReturnType)
+		: typeDuplicate(&voidType);
+
+	if (typeCanConvert(blockReturnType, &valueType))
+	{
+		const char *blockTypeSymbol = symbolTableGetSymbol(&blockReturnType->id);
+
+		printError("Yield value is not compatible with type of block expression `%s`", blockTypeSymbol);
+
+		return false;
+	}
+
+	return true;
+}
+
+bool validateJumpStatement(JumpStatement *node)
+{
+	switch (node->type)
+	{
+		case JUMP_RETURN:
+			return validateReturnStatement(node);
+
+		case JUMP_BREAK:
+			break;
+
+		case JUMP_CONTINUE:
+			break;
+
+		case JUMP_YIELD:
+			return validateYieldStatement(node);
+
+		default:
+			break;
+	}
+	
+	exitWithErrorFmt("Unable to validate JumpStatement with type: %d", node->type);
+}
+
 bool validateStatement(Statement *node)
 {
-	if (node->isDeclaration)
-		return validateDeclaration(node->declaration);
-	
-	return validateExpression(node->expression);
+	switch (node->type)
+	{
+		case STATEMENT_EXPRESSION:
+			return validateExpression(node->expression);
+
+		case STATEMENT_DECLARATION:
+			return validateDeclaration(node->declaration);
+
+		case STATEMENT_JUMP:
+			return validateJumpStatement(node->jump);
+
+		default:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to validate Statement with StatementType: %d", node->type);
 }
 
 bool validateParameter(const SymbolId *id)
@@ -530,9 +449,10 @@ bool validateParameterList(SymbolIdList *ids)
 
 bool validateFunction(SymbolData *data)
 {
-	bool success = true;
 	printFmt("Validate function: %s", data->symbol);
-	Function *node = symbolTableGetFunction(&data->id);
+
+	bool success = true;
+	Function *node = symbolTableSelectFunction(&data->id);
 
 	// TODO: Add function symbols
 
@@ -545,9 +465,27 @@ bool validateFunction(SymbolData *data)
 	if (!validateExpression(&node->body))
 		success = false;
 
+	if (success)
+	{
+		const Type *returnType = functionGetReturnType(node);
+		Type bodyType = typeFromExpression(&node->body, returnType);
+
+		if (!typeCanConvert(returnType, &bodyType))
+		{
+			const char *symbol = symbolTableGetSymbol(&returnType->id);
+			Token token = tokenFromExpression(&node->body);
+
+			printTokenError(&token, "Expected `%s`, got .", symbol);
+
+			success = false;
+		}
+	}
+
 	data->status = success
 		? VALIDATION_VALID
 		: VALIDATION_INVALID;
+
+	symbolTableDeselectFunction();
 
 	return success;
 }
@@ -662,7 +600,7 @@ bool validateTypeRecursion(const SymbolId *id)
 	return true;
 }
 
-bool validate()
+bool validate(void)
 {
 	bool success = true;
 

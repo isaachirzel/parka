@@ -49,7 +49,7 @@ typedef enum StatementType
 {
 	STATEMENT_EXPRESSION,
 	STATEMENT_DECLARATION,
-	STATEMENT_BLOCK
+	STATEMENT_JUMP
 } StatementType;
 
 typedef enum PrimitiveType

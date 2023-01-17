@@ -20,10 +20,12 @@ int main(int argc, const char *argv[])
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
 
-	ClockTimerId timerId = clockTimerStart();
+	ClockTimerId compileTimerId = clockTimerStart();
 	Project project = projectLoad(argv[1]);
 
 	symbolTableInitialize(project.name);
+
+	printNote("starting parsing");
 
 	if (!parse(&project))
 	{
@@ -31,17 +33,24 @@ int main(int argc, const char *argv[])
 		return 1;
 	}
 
+	printSuccess("parsing complete");
+	printNote("starting validating");
+
 	if (!validate())
 	{
 		printErrorCount(&project);
 		return 2;
 	}
 
+	printSuccess("validation complete");
+
+	printNote("generation not implemented yet");
+
 	symbolTableDestroy();
 
-	f64 elapsedSeconds = clockTimerStop(timerId);
+	f64 compilationDuration = clockTimerStop(compileTimerId);
 
-	printSuccess("compiled `%s` in %f seconds.", project.name, elapsedSeconds);
+	printSuccess("compiled `%s` in %f seconds.", project.name, compilationDuration);
 
 	return 0;
 }
