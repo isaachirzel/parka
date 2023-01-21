@@ -21,7 +21,7 @@ StringBuilder sbCreate(usize capacity)
     return builder;
 }
 
-StringBuilder stringFrom(const char *text)
+StringBuilder sbFrom(const char *text)
 {
     usize length = strlen(text);
     char *data = allocate(length + 1);

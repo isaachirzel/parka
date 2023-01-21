@@ -81,7 +81,7 @@ typedef enum ExpressionType
 	EXPRESSION_POSTFIX,
 	EXPRESSION_PREFIX,
 	EXPRESSION_LITERAL,
-	EXPRESSION_SYMBOL
+	EXPRESSION_IDENTIFIER
 } ExpressionType;
 
 typedef enum AdditiveType

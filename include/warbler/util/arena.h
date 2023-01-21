@@ -1,16 +1,17 @@
 #ifndef WARBLER_UTIL_ARENA_H
 #define WARBLER_UTIL_ARENA_H
 
-#include <warbler/util/primitives.h>
+#include "warbler/util/primitives.h"
 
 typedef struct Arena
 {
-	void *basePtr;
+	void *data;
 	usize pageCount;
-	usize length;
+	usize committedPages;
+	usize bytesUsed;
 } Arena;
 
-Arena arenaCreate(usize maxBytes);
+Arena arenaCreate(usize minBytes);
 void arenaDestroy(Arena *arena);
 void *arenaAllocate(Arena *arena, usize bytes);
 

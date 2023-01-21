@@ -1,3 +1,4 @@
+#include "warbler/util/table.h"
 #include <warbler/parser.h>
 #include <warbler/util/memory.h>
 #include <warbler/util/path.h>
@@ -43,7 +44,6 @@ int main(int argc, const char *argv[])
 	}
 
 	printSuccess("validation complete");
-
 	printNote("generation not implemented yet");
 
 	symbolTableDestroy();

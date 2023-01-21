@@ -2,9 +2,9 @@
 #define WARBLER_TOKEN_H
 
 // local includes
-#include <warbler/util/file.h>
-#include <warbler/util/primitives.h>
-#include <warbler/util/string.h>
+#include "warbler/util/file.h"
+#include "warbler/util/primitives.h"
+#include "warbler/util/string.h"
 
 #define MAX_TOKEN_LENGTH 1024
 

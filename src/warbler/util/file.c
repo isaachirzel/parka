@@ -132,7 +132,7 @@ File fileRead(const char *path)
 
 File fileFrom(const char *name, const char *text)
 {
-	StringBuilder str = stringFrom(text);
+	StringBuilder str = sbFrom(text);
 	File file =
 	{
 		.path = stringDuplicate(name),

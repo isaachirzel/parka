@@ -92,8 +92,6 @@ ClockTimerId clockTimerStart(void)
 	exitWithErrorFmt("Unable to create a clock timer as all %zu clock timers are currently running.", clockTimerCount);
 }
 
-
-
 f64 clockTimerStop(ClockTimerId id)
 {
 	struct timespec currentTime = getClockTime();

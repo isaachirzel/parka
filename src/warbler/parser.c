@@ -1,12 +1,12 @@
-#include <warbler/ast.h>
-#include <warbler/token.h>
-#include <warbler/type.h>
-#include <warbler/parser.h>
+#include "warbler/ast.h"
+#include "warbler/token.h"
+#include "warbler/type.h"
+#include "warbler/parser.h"
+#include "warbler/symbol_table.h"
+#include "warbler/util/memory.h"
+#include "warbler/util/print.h"
+#include "warbler/util/directory.h"
 
-#include <warbler/util/memory.h>
-#include <warbler/util/print.h>
-#include <warbler/util/directory.h>
-#include <warbler/symbol_table.h>
 #include <string.h>
 #include <assert.h>
 
@@ -49,7 +49,7 @@ bool parseSymbol(Expression *out, Token *token)
 		return false;
 	}
 
-	Symbol symbol =
+	Identifier identifier =
 	{
 		.token = *token
 	};
@@ -58,8 +58,8 @@ bool parseSymbol(Expression *out, Token *token)
 
 	*out = (Expression)
 	{
-		.type = EXPRESSION_SYMBOL,
-		.symbol = symbol
+		.type = EXPRESSION_IDENTIFIER,
+		.identifier = identifier
 	};
 
 	return true;
@@ -1152,7 +1152,7 @@ bool parseParameter(Local *out, Token *token)
 	return true;
 }
 
-bool parseParameterList(SymbolIdList *out, Token *token)
+bool parseParameterList(IdList *out, Token *token)
 {
 	if (token->type != TOKEN_LEFT_PARENTHESIS)
 	{
@@ -1166,13 +1166,13 @@ bool parseParameterList(SymbolIdList *out, Token *token)
 	{
 		while (true)
 		{
-			SymbolId id = symbolTableAddParameter();
-			Local *parameter = symbolTableGetParameter(&id);
+			usize index = symbolTableAddParameter();
+			Local *parameter = symbolTableGetParameter(index);
 
 			if (!parseParameter(parameter, token))
 				return false;
 
-			symbolIdListPush(out, &id);
+			symbolIdListPush(out, index);
 
 			if (token->type != TOKEN_COMMA)
 				break;
@@ -1192,12 +1192,12 @@ bool parseParameterList(SymbolIdList *out, Token *token)
 	return true;
 }
 
-bool parseFunction(SymbolId *out, Token *token, const char *package)
+bool parseFunction(usize *out, Token *token, const char *package)
 {
 	assert(token->type == TOKEN_KEYWORD_FUNCTION);
 
-	SymbolId id = symbolTableAddFunction();
-	Function *node = symbolTableGetFunction(&id);
+	usize index = symbolTableAddFunction();
+	Function *node = symbolTableGetFunction(index);
 
 	incrementToken(token);
 
@@ -1234,7 +1234,7 @@ bool parseFunction(SymbolId *out, Token *token, const char *package)
 	if (!parseBlock(&node->body, token))
 		return false;
 
-	*out = id;
+	*out = index;
 
 	return true;
 }
@@ -1282,10 +1282,10 @@ error:
 
 bool parseDeclaration(Declaration *node, Token *token)
 {
-	SymbolId id = symbolTableAddVariable();
-	Local *variable = symbolTableGetVariable(&id);
+	usize index = symbolTableAddVariable();
+	Local *variable = symbolTableGetVariable(index);
 
-	node->variableId = id;
+	node->variableId = index;
 
 	if (!parseVariable(variable, token))
 		return false;
@@ -1338,6 +1338,8 @@ bool parseJumpStatement(JumpStatement *out, Token *token)
 			printParseError(token, "return, break, continue or yield", NULL);
 			return false;
 	}
+
+	out->token = *token;
 
 	incrementToken(token);
 
@@ -1513,12 +1515,12 @@ bool parseMemberList(MemberList *out, Token *token)
 	return true;
 }
 
-bool parseStruct(SymbolId *out, Token *token, const char *package)
+bool parseStruct(usize *out, Token *token, const char *package)
 {
 	assert(token->type == TOKEN_KEYWORD_STRUCT);
 
-	SymbolId id = symbolTableAddStruct();
-	Struct *node = symbolTableGetStruct(&id);
+	usize index = symbolTableAddStruct();
+	Struct *node = symbolTableGetStruct(index);
 
 	incrementToken(token);
 
@@ -1536,7 +1538,7 @@ bool parseStruct(SymbolId *out, Token *token, const char *package)
 	if (!parseMemberList(&node->members, token))
 		return false;
 
-	*out = id;
+	*out = index;
 	return true;
 }
 
@@ -1546,40 +1548,31 @@ bool parseModule(Module *node, const File *file, const char *package)
 	bool success = true;
 	Token token = getInitialToken(file);
 
-	node->structIds.type = SYMBOL_STRUCT;
-	node->functionIds.type = SYMBOL_FUNCTION;
-
 parse:
 
 	switch (token.type)
 	{
-		case TOKEN_KEYWORD_FUNCTION:
-		{
-			SymbolId id;
+		usize index;
 
-			if (!parseFunction(&id, &token, package))
+		case TOKEN_KEYWORD_FUNCTION:
+			if (!parseFunction(&index, &token, package))
 			{
 				success = false;
 				break;
 			}
 
-			symbolIdListPush(&node->functionIds, &id);
+			symbolIdListPush(&node->functionIds, index);
 			goto parse;
-		}
 
 		case TOKEN_KEYWORD_STRUCT:
-		{
-			SymbolId id;
-
-			if (!parseStruct(&id, &token, package))
+			if (!parseStruct(&index, &token, package))
 			{
 				success = false;
 				break;
 			}
 
-			symbolIdListPush(&node->structIds, &id);
+			symbolIdListPush(&node->structIds, index);
 			goto parse;
-		}
 
 		case TOKEN_END_OF_FILE:
 			break;
@@ -1647,15 +1640,15 @@ static usize getModuleCount(const Directory *directory)
 	return count;
 }
 
-bool parsePackage(const Directory *directory, Scope *package, const char *name)
+bool parsePackage(const Directory *directory, Scope *scope, const char *name)
 {
 	bool success = true;
 
-	SymbolId id = symbolTableAddPackage();
-	Package *node = symbolTableGetPackage(&id);
-	char *symbol = scopeCreateSymbol(package, name);
+	usize index = symbolTableAddPackage();
+	Package *node = symbolTableGetPackage(index);
+	char *symbol = scopeCreateSymbol(scope, name);
 
-	scopePush(package, name);
+	scopePush(scope, name);
 
 	node->symbol = symbol,
 	node->moduleCount = getModuleCount(directory);
@@ -1666,11 +1659,11 @@ bool parsePackage(const Directory *directory, Scope *package, const char *name)
 
 	for (usize i = 0; i < directory->entryCount; ++i)
 	{
-		const Entry *entry = &directory->entries[i];
+		const DirectoryEntry *entry = &directory->entries[i];
 
 		if (entry->isDirectory)
 		{
-			if (!parsePackage(entry->directory, package, entry->directory->name))
+			if (!parsePackage(entry->directory, scope, entry->directory->name))
 				success = false;
 
 			continue;
@@ -1682,7 +1675,7 @@ bool parsePackage(const Directory *directory, Scope *package, const char *name)
 		++fileIndex;
 	}
 
-	scopePop(package);
+	scopePop(scope);
 
 	return success;
 }

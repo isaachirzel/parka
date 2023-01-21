@@ -1,14 +1,15 @@
 #ifndef WARBLER_SYMBOL_TABLE_H
 #define WARBLER_SYMBOL_TABLE_H
 
-#include <warbler/util/array.h>
-#include <warbler/util/string.h>
-#include <warbler/util/table.h>
-#include <warbler/util/primitives.h>
-#include <warbler/type.h>
-#include <warbler/util/memory.h>
-#include <warbler/scope.h>
-#include <warbler/ast.h>
+#include "warbler/util/array.h"
+#include "warbler/util/string.h"
+#include "warbler/util/table.h"
+#include "warbler/util/primitives.h"
+#include "warbler/type.h"
+#include "warbler/util/memory.h"
+#include "warbler/scope.h"
+#include "warbler/ast.h"
+
 #include <assert.h>
 
 typedef enum ValidationStatus
@@ -18,55 +19,72 @@ typedef enum ValidationStatus
 	VALIDATION_VALID
 } ValidationStatus;
 
-typedef struct SymbolData
+typedef struct Symbol
 {
-	char *symbol;
-	SymbolId id;
+	char *key;
+	usize index;
+	SymbolType type;
 	ValidationStatus status;
-} SymbolData;
+} Symbol;
 
-typedef bool (*SymbolDataAction)(SymbolData *data);
+typedef struct BlockInfo
+{
+	Block *node;
+	usize offset;
+} BlockInfo;
+
+typedef struct LocalSymbolTable
+{
+	Symbol *symbols;
+	usize symbolCount;
+	usize symbolCapacity;
+
+	BlockInfo *blocks;
+	usize blockCount;
+	usize blockCapacity;
+
+	Function *function;
+	const Scope *packageScope;
+} LocalSymbolTable;
+
+typedef bool (*SymbolAction)(Symbol *symbol);
 
 void symbolTableInitialize(const char *projectName);
-void symbolTableDestroy();
+void symbolTableDestroy(void);
 
-SymbolId symbolTableAddPackage();
-SymbolId symbolTableAddStruct();
-SymbolId symbolTableAddFunction();
-SymbolId symbolTableAddVariable();
-SymbolId symbolTableAddParameter();
+usize symbolTableAddPackage(void);
+usize symbolTableAddStruct(void);
+usize symbolTableAddFunction(void);
+usize symbolTableAddVariable(void);
+usize symbolTableAddParameter(void);
 
-bool symbolTableDeclareGlobal(const SymbolId *id);
-bool symbolTableDeclareLocal(const SymbolId *id);
+bool symbolTableDeclareGlobal(SymbolType type, usize index);
+bool symbolTableDeclareLocal(LocalSymbolTable *localTable, SymbolType type, usize index);
 
-SymbolData *symbolTableResolve(const Token *token);
-char *symbolTableCreateSymbol(const char *identifier);
-char *symbolTableCreateTokenSymbol(const Token *token);
+Symbol *symbolTableResolve(LocalSymbolTable *localTable, const Token *token);
+Symbol *symbolTableResolveGlobal(const Scope *scope, const Token *token);
 
-void symbolTablePushBlock(void);
-void symbolTablePopBlock(void);
 
 void symbolTableSetScopeFromSymbol(const char *symbol);
+Symbol *symbolTableGetSymbol(usize index);
 const char *symbolTypeGetName(SymbolType type);
-const char *symbolTableGetSymbol(const SymbolId *id);
-const Token *symbolTableGetToken(const SymbolId *id);
+const Token *symbolTableGetToken(usize symbolIndex);
+const char *symbolGetKey(SymbolType type, usize index);
 
-bool symbolTableForEachEntity(SymbolType type, SymbolIdAction action);
-bool symbolTableForEachGlobal(SymbolDataAction action);
+bool symbolTableForEachEntity(SymbolType type, IdAction action);
 
-Package *symbolTableGetPackage(const SymbolId *id);
-Local *symbolTableGetVariable(const SymbolId *id);
-Local *symbolTableGetParameter(const SymbolId *id);
-Function *symbolTableGetFunction(const SymbolId *id);
-Struct *symbolTableGetStruct(const SymbolId *id);
-const Primitive *symbolTableGetPrimitive(const SymbolId *id);
+Package *symbolTableGetPackage(usize index);
+Local *symbolTableGetVariable(usize index);
+Local *symbolTableGetParameter(usize index);
+Function *symbolTableGetFunction(usize index);
+Struct *symbolTableGetStruct(usize index);
+const Primitive *symbolTableGetPrimitive(usize index);
 
-Function *symbolTableSelectFunction(const SymbolId * id);
-Function *symbolTableGetSelectedFunction(void);
-void symbolTableDeselectFunction(void);
-
-void symbolTableSelectBlock(Block *block);
-Block *symbolTableGetSelectedBlock(void);
-void symbolTableDeselectBlock(void);
+LocalSymbolTable localSymbolTableCreate(const Scope *packageScope);
+void localSymbolTableDestroy(LocalSymbolTable *localTable);
+void localSymbolTableClear(LocalSymbolTable *localTable);
+void localSymbolTablePushBlock(LocalSymbolTable *localTable, Block *block);
+Block *localSymbolTableGetCurrentBlock(LocalSymbolTable *localTable);
+void localSymbolTablePopBlock(LocalSymbolTable *localTable);
 
 #endif

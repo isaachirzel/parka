@@ -1,8 +1,8 @@
 #ifndef WARBLER_SCOPE_H
 #define WARBLER_SCOPE_H
 
-#include <warbler/util/primitives.h>
-#include <warbler/util/string.h>
+#include "warbler/util/primitives.h"
+#include "warbler/util/string.h"
 
 typedef struct Scope
 {
@@ -11,6 +11,8 @@ typedef struct Scope
     usize capacity;
 } Scope;
 
+Scope scopeCreate(usize capacity);
+Scope scopeFromKey(const char *key);
 bool scopeContains(const Scope *scope, const char *name);
 void scopePush(Scope *scope, const char *name);
 void scopePop(Scope *scope);

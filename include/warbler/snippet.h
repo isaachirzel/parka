@@ -1,8 +1,8 @@
 #ifndef WARBLER_SNIPPET_H
 #define WARBLER_SNIPPET_H
 
-#include <warbler/util/file.h>
-#include <warbler/token.h>
+#include "warbler/util/file.h"
+#include "warbler/token.h"
 
 typedef struct Snippet
 {

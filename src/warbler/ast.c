@@ -1,9 +1,10 @@
+#include "warbler/util/primitives.h"
 #include "warbler/util/string.h"
-#include <warbler/ast.h>
-#include <warbler/type.h>
-#include <warbler/symbol_table.h>
-#include <warbler/util/memory.h>
-#include <warbler/util/print.h>
+#include "warbler/ast.h"
+#include "warbler/type.h"
+#include "warbler/symbol_table.h"
+#include "warbler/util/memory.h"
+#include "warbler/util/print.h"
 
 enum PrimitiveIndex
 {
@@ -23,22 +24,26 @@ enum PrimitiveIndex
 	INDEX_STRING,
 };
 
-const SymbolId voidSymbolId = { SYMBOL_PRIMITIVE, INDEX_VOID };
-const SymbolId u8SymbolId = { SYMBOL_PRIMITIVE, INDEX_U8 };
-const SymbolId u16SymbolId = { SYMBOL_PRIMITIVE, INDEX_16 };
-const SymbolId u32SymbolId = { SYMBOL_PRIMITIVE, INDEX_U32 };
-const SymbolId u64SymbolId = { SYMBOL_PRIMITIVE, INDEX_U64 };
-const SymbolId i8SymbolId = { SYMBOL_PRIMITIVE, INDEX_I8 };
-const SymbolId i16SymbolId = { SYMBOL_PRIMITIVE, INDEX_I16 };
-const SymbolId i32SymbolId = { SYMBOL_PRIMITIVE, INDEX_I32 };
-const SymbolId i64SymbolId = { SYMBOL_PRIMITIVE, INDEX_I64 };
-const SymbolId f32SymbolId = { SYMBOL_PRIMITIVE, INDEX_F32 };
-const SymbolId f64SymbolId = { SYMBOL_PRIMITIVE, INDEX_F64 };
-const SymbolId boolSymbolId = { SYMBOL_PRIMITIVE, INDEX_BOOL };
-const SymbolId charSymbolId = { SYMBOL_PRIMITIVE, INDEX_CHAR };
-const SymbolId stringSymbolId = { SYMBOL_PRIMITIVE, INDEX_STRING };
+const usize voidSymbolId = INDEX_VOID;
+const usize u8SymbolId = INDEX_U8;
+const usize u16SymbolId = INDEX_16;
+const usize u32SymbolId = INDEX_U32;
+const usize u64SymbolId = INDEX_U64;
+const usize i8SymbolId = INDEX_I8;
+const usize i16SymbolId = INDEX_I16;
+const usize i32SymbolId = INDEX_I32;
+const usize i64SymbolId = INDEX_I64;
+const usize f32SymbolId = INDEX_F32;
+const usize f64SymbolId = INDEX_F64;
+const usize boolSymbolId = INDEX_BOOL;
+const usize charSymbolId = INDEX_CHAR;
+const usize stringSymbolId = INDEX_STRING;
 
-const Type voidType = { .id = { SYMBOL_PRIMITIVE, INDEX_VOID } };
+const Type voidType =
+{
+	.index = INDEX_VOID,
+	.type = SYMBOL_PRIMITIVE
+};
 
 const Primitive primitives[] =
 {
@@ -139,7 +144,7 @@ void expressionFree(Expression *node)
 		literalFree(node->literal);
 		deallocate(node->literal);
 		break;
-	case EXPRESSION_SYMBOL:
+	case EXPRESSION_IDENTIFIER:
 		break;
 
 	default:
@@ -431,17 +436,17 @@ void moduleFree(Module *node)
 	deallocate(node->symbol);
 }
 
-typedef const SymbolId *(*LiteralValidationFunction)(const Primitive *);
+typedef usize (*LiteralValidationFunction)(const Primitive *);
 
-const SymbolId *getFloatLiteralSymbolId(const Primitive *primitive)
+usize getFloatLiteralSymbolId(const Primitive *primitive)
 {
 	if (primitive && primitive->type == PRIMITIVE_FLOATING_POINT)
-		return NULL;
+		return NOT_FOUND;
 
-	return &f64SymbolId;
+	return INDEX_F64;
 }
 
-const SymbolId *getIntegerLiteralSymbolId(const Primitive *primitive)
+usize getIntegerLiteralSymbolId(const Primitive *primitive)
 {
 	if (primitive)
 	{
@@ -451,38 +456,38 @@ const SymbolId *getIntegerLiteralSymbolId(const Primitive *primitive)
 			case PRIMITIVE_UNSIGNED_INTEGER:
 			case PRIMITIVE_SIGNED_INTEGER:
 			case PRIMITIVE_FLOATING_POINT:
-				return NULL;
+				return NOT_FOUND;
 
 			default:
 				break;
 		}
 	}
 
-	return &i32SymbolId;
+	return INDEX_I32;
 }
 
-const SymbolId *getBooleanLiteralSymbolId(const Primitive *primitive)
+usize getBooleanLiteralSymbolId(const Primitive *primitive)
 {
 	if (primitive && primitive->type == PRIMITIVE_BOOLEAN)
-		return NULL;
+		return NOT_FOUND;
 
-	return &boolSymbolId;
+	return INDEX_BOOL;
 }
 
-const SymbolId *getCharacterLiteralSymbolId(const Primitive *primitive)
+usize getCharacterLiteralSymbolId(const Primitive *primitive)
 {
 	if (primitive && primitive->type == PRIMITIVE_CHARACTER)
-		return NULL;
+		return NOT_FOUND;
 
-	return &charSymbolId;
+	return INDEX_CHAR;
 }
 
-const SymbolId *getStringLiteralSymboId(const Primitive *primitive)
+usize getStringLiteralSymboId(const Primitive *primitive)
 {
 	if (primitive && primitive->type == PRIMITIVE_STRING)
-		return NULL;
+		return NOT_FOUND;
 
-	return &stringSymbolId;
+	return INDEX_STRING;
 }
 
 LiteralValidationFunction getLiteralValidationFunction(Literal *literal)
@@ -513,39 +518,46 @@ LiteralValidationFunction getLiteralValidationFunction(Literal *literal)
 
 static const Primitive *getTypePrimitive(const Type *type)
 {
-	if (!type)
+	if (type == NULL || type->type != SYMBOL_PRIMITIVE)
 		return NULL;
 
-	const SymbolId *id = &type->id;
-
-	if (id->type != SYMBOL_PRIMITIVE)
-		return NULL;
-
-	const Primitive *primitive = symbolTableGetPrimitive(id);
+	const Primitive *primitive = symbolTableGetPrimitive(type->index);
 
 	return primitive;
 }
 
-SymbolId getLiteralSymbolId(Literal *literal, const Type *expectedType)
+usize getLiteralSymbolId(Literal *literal, const Type *expectedType)
 {
 	assert(literal != NULL);
 
 	LiteralValidationFunction check = getLiteralValidationFunction(literal);
 	const Primitive *primitive = getTypePrimitive(expectedType);
-	const SymbolId *id = check(primitive);
+	usize index = check(primitive);
 
-	if (!id)
-		id = &expectedType->id;
+	if (index == NOT_FOUND)
+		index = expectedType->index;
 
-	return *id;
+	return index;
 }
 
 Type getLiteralType(Literal *literal, const Type *expectedType)
 {
+	// TODO: Make this not always a primitive, because there are literal structs
+
 	Type type =
 	{
-		.id = getLiteralSymbolId(literal, expectedType)
+		.index = getLiteralSymbolId(literal, expectedType),
+		.type = SYMBOL_PRIMITIVE
 	};
+
+	return type;
+}
+
+Type typeFromBlock(Block *block)
+{
+	Type type = block->hasReturnType
+		? typeDuplicate(&block->returnType)
+		: typeDuplicate(&voidType);
 
 	return type;
 }
@@ -555,42 +567,61 @@ Type typeFromExpression(Expression *expression, const Type *expectedType)
 	switch (expression->type)
 	{
 		case EXPRESSION_BLOCK:
-			break;
+			return typeFromBlock(expression->block);
+
 		case EXPRESSION_ASSIGNMENT:
 			break;
+
 		case EXPRESSION_CONDITIONAL:
 			break;
+
 		case EXPRESSION_BOOLEAN_OR:
 			break;
+
 		case EXPRESSION_BOOLEAN_AND:
 			break;
+
 		case EXPRESSION_BITWISE_OR:
 			break;
+
 		case EXPRESSION_BITWISE_XOR:
 			break;
+
 		case EXPRESSION_BITWISE_AND:
 			break;
+
 		case EXPRESSION_EQUALITY:
 			break;
+
 		case EXPRESSION_RELATIONAL:
 			break;
+
 		case EXPRESSION_SHIFT:
 			break;
+
 		case EXPRESSION_ADDITIVE:
 			break;
+
 		case EXPRESSION_MULTIPLICATIVE:
 			break;
+
 		case EXPRESSION_POSTFIX:
 			break;
+			
 		case EXPRESSION_PREFIX:
 			break;
+
 		case EXPRESSION_LITERAL:
 			return getLiteralType(expression->literal, expectedType);
-		case EXPRESSION_SYMBOL:
+
+		case EXPRESSION_IDENTIFIER:
+			break;
+
+		default:
 			break;
 	}
 
-	exitWithErrorFmt("Unable to get type for expression of type: %d", expression->type);
+	exitWithErrorFmt("Unable to get Type for Expression of type: %d", expression->type);
 }
 
 Type typeDuplicate(const Type *type)
@@ -600,12 +631,10 @@ Type typeDuplicate(const Type *type)
 
 bool typeCanConvert(const Type *to, const Type *from)
 {
-	const SymbolId *toId = &to->id;
-	const SymbolId *fromId = &from->id;
+	bool canConvert = to->type == from->type
+		&& to->index == from->index;
 
-	bool success = symbolIdEquals(toId, fromId);
-
-	return success;
+	return canConvert;
 }
 
 Token tokenFromExpression(Expression *expression)
@@ -660,8 +689,8 @@ Token tokenFromExpression(Expression *expression)
 		case EXPRESSION_LITERAL:
 			return expression->literal->token;
 			
-		case EXPRESSION_SYMBOL:
-			return expression->symbol.token;
+		case EXPRESSION_IDENTIFIER:
+			return expression->identifier.token;
 	}
 
 	exitWithErrorFmt("Unable to get Token for Expression of type: %d", expression->type);
@@ -678,9 +707,8 @@ const Type *functionGetReturnType(const Function *function)
 
 char *typeGetName(const Type *type)
 {
-	const char *symbol = symbolTableGetSymbol(&type->id);
-	
-	char *name = stringDuplicate(symbol);
+	Symbol *symbol = symbolTableGetSymbol(type->index);
+	char *name = stringDuplicate(symbol->key);
 
 	return name;
 }

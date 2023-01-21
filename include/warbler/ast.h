@@ -1,9 +1,9 @@
 #ifndef WARBLER_AST_H
 #define WARBLER_AST_H
 
-#include <warbler/token.h>
-#include <warbler/type.h>
-#include <warbler/symbol_id.h>
+#include "warbler/token.h"
+#include "warbler/type.h"
+#include "warbler/symbol_id.h"
 
 struct ConditionalExpression;
 struct BooleanOrExpression;
@@ -19,7 +19,6 @@ struct MultiplicativeExpression;
 struct Prefix;
 struct Postfix;
 struct Literal;
-struct Symbol;
 struct Assignment;
 struct Block;
 struct Declaration;
@@ -32,11 +31,11 @@ typedef struct Primitive
 	u32 size;
 } Primitive;
 
-typedef struct Symbol
+typedef struct Identifier
 {
 	Token token;
-	SymbolId id;
-} Symbol;
+	usize id;
+} Identifier;
 
 typedef struct Expression
 {
@@ -58,7 +57,7 @@ typedef struct Expression
 		struct Prefix *prefix;
 		struct Postfix *postfix;
 		struct Literal *literal;
-		Symbol symbol;
+		Identifier identifier;
 	};
 
 	ExpressionType type;
@@ -232,8 +231,9 @@ typedef struct ConditionalExpression
 
 typedef struct Type
 {
-	SymbolId id;
-	// Ptrs
+	usize index;
+	SymbolType type;
+	// TODO: Add pointer info
 } Type;
 
 typedef struct TypeAnnotation
@@ -308,6 +308,7 @@ typedef struct IfExpression
 
 typedef struct JumpStatement
 {
+	Token token;
 	JumpType type;
 	Expression value;
 	bool hasValue;
@@ -315,7 +316,7 @@ typedef struct JumpStatement
 
 typedef struct Declaration
 {
-	SymbolId variableId;
+	usize variableId;
 	Expression value;
 } Declaration;
 
@@ -337,7 +338,7 @@ typedef struct Function
 {
 	Token name;
 	char *symbol;
-	SymbolIdList parameterIds;
+	IdList parameterIds;
 	TypeAnnotation returnType;
 	Expression body;
 	bool hasReturnType;
@@ -346,8 +347,8 @@ typedef struct Function
 typedef struct Module
 {
 	char *symbol;
-	SymbolIdList functionIds;
-	SymbolIdList structIds;
+	IdList functionIds;
+	IdList structIds;
 } Module;
 
 typedef struct Package
@@ -357,20 +358,20 @@ typedef struct Package
 	usize moduleCount;
 } Package;
 
-extern const SymbolId voidSymbolId;
-extern const SymbolId u8SymbolId;
-extern const SymbolId u16SymbolId;
-extern const SymbolId u32SymbolId;
-extern const SymbolId u64SymbolId;
-extern const SymbolId i8SymbolId;
-extern const SymbolId i16SymbolId;
-extern const SymbolId i32SymbolId;
-extern const SymbolId i64SymbolId;
-extern const SymbolId f32SymbolId;
-extern const SymbolId f64SymbolId;
-extern const SymbolId boolSymbolId;
-extern const SymbolId charSymbolId;
-extern const SymbolId stringSymbolId;
+extern const usize voidSymbolId;
+extern const usize u8SymbolId;
+extern const usize u16SymbolId;
+extern const usize u32SymbolId;
+extern const usize u64SymbolId;
+extern const usize i8SymbolId;
+extern const usize i16SymbolId;
+extern const usize i32SymbolId;
+extern const usize i64SymbolId;
+extern const usize f32SymbolId;
+extern const usize f64SymbolId;
+extern const usize boolSymbolId;
+extern const usize charSymbolId;
+extern const usize stringSymbolId;
 extern const Type voidType;
 extern const Primitive primitives[];
 extern const usize primitiveCount;

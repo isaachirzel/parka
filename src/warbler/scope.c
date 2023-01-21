@@ -4,6 +4,83 @@
 #include <string.h>
 #include <assert.h>
 
+Scope scopeCreate(usize capacity)
+{	
+	Scope scope =
+	{
+		.names = allocateArray(sizeof(StringBuilder), capacity),
+		.capacity = capacity
+	};
+
+	return scope;
+}
+
+usize getTokenCount(const char * restrict key)
+{
+	usize count = 0;
+	
+	while (true)
+	{
+		switch (*key)
+		{
+			case ':':
+				assert(key[1] == ':');
+				count += 1;
+				key += 2;
+				continue;
+
+			case '\0':
+				count += 1;
+				break;
+
+			default:
+				key += 1;
+				continue;
+		}
+
+		break;
+	}
+
+	return count;
+}
+
+Scope scopeFromKey(const char * restrict key)
+{
+	usize tokenCount = getTokenCount(key);
+	Scope scope = scopeCreate(tokenCount);
+
+	// TODO: Make this safe
+	char token[128];
+	usize tokenLength = 0;
+
+	while (true)
+	{
+		switch (*key)
+		{
+			case ':':
+				token[tokenLength] = '\0';
+				key += 2;
+				scopePush(&scope, token);
+				tokenLength = 0;
+				continue;
+
+			case '\0':
+				token[tokenLength] = '\0';
+				scopePush(&scope, token);
+				tokenLength = 0;
+				break;
+
+			default:
+				token[tokenLength++] = *key;
+				key += 1;
+				continue;
+		}
+		break;
+	}
+
+	return scope;
+}
+
 bool scopeContains(const Scope *scope, const char *name)
 {
 	for (usize i = 0; i < scope->count; ++i)

@@ -1,36 +1,34 @@
-#include <warbler/symbol_id.h>
-#include <warbler/util/memory.h>
+#include "warbler/symbol_id.h"
+#include "warbler/util/memory.h"
+
 #include <assert.h>
 
-bool symbolIdEquals(const SymbolId *a, const SymbolId *b)
+usize idListGet(const IdList *ids, usize index)
 {
-    assert(a);
-    assert(b);
-    return a->type == b->type && a->index == b->index;
+    assert(index < ids->count);
+
+    return ids->ids[index];
 }
 
-void symbolIdListPush(SymbolIdList *ids, const SymbolId *id)
+void symbolIdListPush(IdList *ids, usize index)
 {
-    assert(ids->type == id->type);
-    resizeArray(ids->indeces, ++ids->count);
+    resizeArray(ids->ids, ++ids->count);
 
-    ids->indeces[ids->count - 1] = id->index;
+    ids->ids[ids->count - 1] = index;
 }
 
-void symbolIdListFree(SymbolIdList *ids)
+void symbolIdListFree(IdList *ids)
 {
-    deallocate(ids->indeces);
+    deallocate(ids->ids);
 }
 
-bool symbolIdListForEach(const SymbolIdList *list, SymbolIdAction action)
+bool symbolIdListForEach(const IdList *list, IdAction action)
 {
     bool success = true;
 
     for (usize i = 0; i < list->count; ++i)
     {
-        SymbolId id = { list->type, i };
-
-        if (!action(&id))
+        if (!action(i))
             success = false;
     }
 

@@ -1,19 +1,18 @@
+#include "warbler/util/memory.h"
+#include "warbler/util/print.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <warbler/util/arena.h>
 
 #include <assert.h>
+
+// TODO: Make this OS agnostic
 #include <unistd.h>
 #include <sys/mman.h>
 
-// TODO: Make this memory agnostic
-
 static usize pageSize = 0;
 
-void areaInit(void)
-{
-	pageSize = getpagesize();
-}
-
-usize getPageAlignedBytes(usize bytes)
+usize getPageAlignedByteCount(usize bytes)
 {
 	usize difference = bytes % pageSize;
 
@@ -25,45 +24,70 @@ usize getPageAlignedBytes(usize bytes)
 
 Arena arenaCreate(usize minBytes)
 {
-	assert(pageSize != 0);
+	if (pageSize == 0)
+		pageSize = getpagesize();
 
-	usize bytes = getPageAlignedBytes(minBytes);
+	usize bytes = getPageAlignedByteCount(minBytes);
 	usize pageCount = bytes / pageSize;
+	void *data = mmap(NULL, bytes, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+	if (data == MAP_FAILED)
+		exitWithErrorFmt("Failed to allocate Arena with size of %zu bytes.", bytes);
+
 	Arena arena =
 	{
-		.basePtr = mmap(NULL, bytes, PROT_NONE, MAP_ANONYMOUS, -1, 0),
-		.pageCount = pageCount,
-		.length = 0
+		.data = data,
+		.pageCount = pageCount
 	};
 
+	printSuccess("Successfully mapped Arena with %zu bytes.", bytes);
 
 	return arena;
 }
 
 void arenaDestroy(Arena *arena)
 {
-	munmap(arena->basePtr, arena->pageCount * pageSize);
+	assert(arena != NULL);
+
+	usize mappingLength = arena->pageCount * pageSize;
+
+	munmap(arena->data, mappingLength);
 }
 
 void *arenaAllocate(Arena *arena, usize bytes)
 {
-	usize usedBytesInPage = arena->length % pageSize;
-	usize remainingBytesInPage = pageSize - usedBytesInPage;
+	assert(arena != NULL);
+	assert(arena->data != NULL);
+	assert(arena->pageCount > 0);
 
-	if (bytes > remainingBytesInPage)
+	usize committedBytes = arena->committedPages * pageSize;
+	usize requiredBytes = arena->bytesUsed + bytes;
+
+	if (requiredBytes > committedBytes)
 	{
-		usize bytesToAllocate = bytes - remainingBytesInPage;
-		usize pagesToAllocate = bytesToAllocate / pageSize;
+		usize minBytesToCommit = requiredBytes - committedBytes;
+		usize pagesToCommit = minBytesToCommit / pageSize;
 
-		if (bytesToAllocate % pageSize > 0)
-			pagesToAllocate += 1;
+		if (minBytesToCommit % pageSize > 0)
+			pagesToCommit += 1;
 
-		void *startOfNewAllocation = (char*)arena->basePtr + (arena->pageCount * pageSize);
+		void *startOfPagesToCommit = (char*)arena->data + (arena->committedPages * pageSize);
+		usize bytesToCommit = pagesToCommit * pageSize;
+		int code = mprotect(startOfPagesToCommit, bytesToCommit, PROT_READ | PROT_WRITE);
 
-		mprotect(startOfNewAllocation, pagesToAllocate, PROT_READ | PROT_WRITE);
+		if (code == -1)
+		{
+			perror("Failed to commit pages");
+			exitWithErrorFmt("Failed to commit %zu pages in Arena.", pagesToCommit);
+		}
+
+		printSuccess("Succesfully committed %zu pages in Arena.", pagesToCommit);
 	}
 
-	void *ptr = (char*)arena->basePtr + arena->length;
+	void *ptr = (char*)arena->data + arena->bytesUsed;
+
+	arena->bytesUsed += bytes;
+
 
 	return ptr;
 }

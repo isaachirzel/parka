@@ -43,7 +43,10 @@ static Directory readSubdirectory(const char *base, const char *name)
 
 			resizeArray(directory.entries, ++directory.entryCount);
 
-			directory.entries[index] = (Entry) { .file = file };
+			directory.entries[index] = (DirectoryEntry)
+			{
+				.file = file
+			};
 		}
 		else if (entry->d_type == DT_DIR)
 		{
@@ -51,9 +54,10 @@ static Directory readSubdirectory(const char *base, const char *name)
 
 			resizeArray(directory.entries, ++directory.entryCount);
 
-			Entry *dirEntry = &directory.entries[directory.entryCount - 1];
+			DirectoryEntry *dirEntry = &directory.entries[directory.entryCount - 1];
 
 			dirEntry->isDirectory = true;
+
 			*makeNew(dirEntry->directory) = subDirectory;
 		}
 	}
@@ -88,7 +92,7 @@ static void listSubdirectory(const Directory *dir, usize depth)
 
 	for (usize i = 0; i < dir->entryCount; ++i)
 	{
-		const Entry *entry = &dir->entries[i];
+		const DirectoryEntry *entry = &dir->entries[i];
 
 		if (entry->isDirectory)
 		{
@@ -105,7 +109,7 @@ void directoryList(const Directory *dir)
 	listSubdirectory(dir, 0);
 }
 
-void entryDestroy(Entry *entry)
+void directoryEntryDestroy(DirectoryEntry *entry)
 {
 	if (entry->isDirectory)
 	{
@@ -119,7 +123,7 @@ void entryDestroy(Entry *entry)
 void directoryDestroy(Directory *dir)
 {
 	for (usize i = 0; i < dir->entryCount; ++i)
-		entryDestroy(&dir->entries[i]);
+		directoryEntryDestroy(&dir->entries[i]);
 
 	deallocate(dir->name);
 	deallocate(dir->path);

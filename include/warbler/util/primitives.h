@@ -29,4 +29,6 @@ typedef double f64;
 #define thread_local _Thread_local
 #endif
 
+#define NOT_FOUND (SIZE_MAX)
+
 #endif

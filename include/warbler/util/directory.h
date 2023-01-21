@@ -1,11 +1,11 @@
-#ifndef WARBLER_FILE_TREE_H
-#define WARBLER_FILE_TREE_H
+#ifndef WARBLER_DIRECTORY_H
+#define WARBLER_DIRECTORY_H
 
-#include <warbler/util/file.h>
+#include "warbler/util/file.h"
 
 struct Directory;
 
-typedef struct Entry
+typedef struct DirectoryEntry
 {
     union
     {
@@ -13,20 +13,20 @@ typedef struct Entry
         struct Directory *directory;
     };
     bool isDirectory;
-} Entry;
+} DirectoryEntry;
 
 typedef struct Directory
 {
     char *name;
     char *path;
-    Entry *entries;
+    DirectoryEntry *entries;
     usize entryCount;
 } Directory;
 
 Directory directoryRead(const char *path);
 void directoryAddFile(Directory *dir, File *file);
 void directoryList(const Directory *dir);
-void entryDestroy(Entry *entry);
 void directoryDestroy(Directory *dir);
+void directoryEntryDestroy(DirectoryEntry *entry);
 
 #endif

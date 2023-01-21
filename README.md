@@ -38,6 +38,9 @@ function get_greeting(): char[]
 
 # To-Do
 
+- Separate SymbolTable structure into contexts
+- Make SymbolTable thread-safe
+- Implement thread pool for tasks
 - Implement while-var and if-var expression parsing, validation
 - Implement hash table for performance increase
 - Finish parser

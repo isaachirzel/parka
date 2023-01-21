@@ -1,47 +1,54 @@
-#include <warbler/symbol_table.h>
-#include <warbler/ast.h>
-#include <warbler/symbol_id.h>
-#include <warbler/type.h>
-#include <warbler/validator.h>
-#include <warbler/util/print.h>
-#include <warbler/scope.h>
+#include "warbler/ast.h"
+#include "warbler/context.h"
+#include "warbler/scope.h"
+#include "warbler/symbol_id.h"
+#include "warbler/symbol_table.h"
+#include "warbler/type.h"
+#include "warbler/util/memory.h"
+#include "warbler/util/print.h"
+#include "warbler/validator.h"
+
 #include <string.h>
 
-bool validateStruct(SymbolData *data);
-
-bool validateType(Type *node, const Token *token)
+bool validateTypeAnnotation(TypeAnnotation *node, const Scope *packageScope)
 {
-	SymbolData *data = symbolTableResolve(token);
+	assert(node != NULL);
+	assert(packageScope != NULL);
 
-	if (!data)
+	const Token *token = &node->token;
+	Symbol *symbol = symbolTableResolveGlobal(packageScope, token);
+
+	if (!symbol)
 		return false;
-	
-	node->id = data->id;
 
-	switch (node->id.type)
+	switch (symbol->type)
 	{
 		case SYMBOL_STRUCT:
 		case SYMBOL_PRIMITIVE:
+			node->type = (Type)
+			{
+				.type = symbol->type,
+				.index = symbol->index
+			};
+
 			return true;
 
 		default:
 			break;
 	}
 
-	const char *typeName = symbolTypeGetName(node->id.type);
+	const char *typeName = symbolTypeGetName(symbol->type);
 
 	printTokenError(token, "Expected type name, found %s.", typeName);
 
 	return false;
 }
 
-bool validateTypeAnnotation(TypeAnnotation *node)
+bool validateMemberList(MemberList *node, const Scope *packageScope)
 {
-	return validateType(&node->type, &node->token);
-}
+	assert(node != NULL);
+	assert(packageScope != NULL);
 
-bool validateMemberList(MemberList *node)
-{
 	bool success = true;
 
 	for (usize i = 0; i < node->count; ++i)
@@ -63,7 +70,7 @@ bool validateMemberList(MemberList *node)
 			}
 		}
 
-		if (!validateTypeAnnotation(&member->annotation))
+		if (!validateTypeAnnotation(&member->annotation, packageScope))
 			success = false;
 			// printTokenError(&member->name, "Declaration of member causes infinite recursion in struct '%s'.", node->symbol);
 	}
@@ -71,50 +78,49 @@ bool validateMemberList(MemberList *node)
 	return success;
 }
 
-bool validateStruct(SymbolData *data)
+bool validateStruct(Struct *node, const Scope *packageScope)
 {
 	bool success = true;
 
-	Struct *node = symbolTableGetStruct(&data->id);
-
-	if (!validateMemberList(&node->members))
+	if (!validateMemberList(&node->members, packageScope))
 		success = false;
-
-	data->status = success
-		? VALIDATION_VALID
-		: VALIDATION_INVALID;
 
 	return success;
 }
 
 bool validateLiteral(Literal *node)
 {
-	assert(node);
+	assert(node != NULL);
 
 	return true;
 }
 
-bool validateSymbol(Symbol *node)
+bool validateIdentifier(Identifier *node, LocalSymbolTable *localTable)
 {
-	assert(node);
-	const SymbolData *data = symbolTableResolve(&node->token);
+	assert(node != NULL);
+	assert(localTable != NULL);
 
-	if (!data)
+	const Symbol *symbol = symbolTableResolve(localTable, &node->token);
+
+	if (!symbol)
 		return false;
 	
-	node->id = data->id;
+	node->id = symbol->index;
 
-	return data->status == VALIDATION_VALID;
+	return symbol->status == VALIDATION_VALID;
 }
 
-bool validateAssignment(Assignment *node)
+bool validateAssignment(Assignment *node, LocalSymbolTable *localTable)
 {
+	assert(node != NULL);
+	assert(localTable != NULL);
+
 	bool success = true;
 
-	if (!validateExpression(&node->lhs))
+	if (!validateExpression(&node->lhs, localTable))
 		success = false;
 
-	if (!validateExpression(&node->rhs))
+	if (!validateExpression(&node->rhs, localTable))
 		success = false;
 
 	// TODO: validate type of assignment
@@ -122,24 +128,27 @@ bool validateAssignment(Assignment *node)
 	return success;
 }
 
-bool validateBlock(Block *node)
+bool validateBlock(Block *node, LocalSymbolTable *localTable)
 {
+	assert(node != NULL);
+	assert(localTable != NULL);
+
 	bool success = true;
 
-	symbolTableSelectBlock(node);
+	localSymbolTablePushBlock(localTable, node);
 
 	for (usize i = 0; i < node->count; ++i)
 	{
-		if (!validateStatement(&node->statements[i]))
+		if (!validateStatement(&node->statements[i], localTable))
 			success = false;
 	}
 
-	symbolTableDeselectBlock();
+	localSymbolTablePopBlock(localTable);
 
 	return success;
 }
 
-bool validatePrefix(Prefix *node)
+bool validatePrefix(Prefix *node, LocalSymbolTable *localTable)
 {
 	assert(node);
 	exitNotImplemented();
@@ -151,9 +160,9 @@ bool validateArgumentList(ArgumentList *node)
 	exitNotImplemented();
 }
 
-bool validatePostfix(Postfix *node)
+bool validatePostfix(Postfix *node, LocalSymbolTable *localTable)
 {
-	if (!validateExpression(&node->expression))
+	if (!validateExpression(&node->expression, localTable))
 		return false;
 	
 	switch (node->type)
@@ -174,47 +183,47 @@ bool validatePostfix(Postfix *node)
 	return true;
 }
 
-bool validateMultiplicativeExpression(MultiplicativeExpression *node)
+bool validateMultiplicativeExpression(MultiplicativeExpression *node, LocalSymbolTable *localTable)
 {
 	bool success = true;
 
-	if (!validateExpression(&node->lhs))
+	if (!validateExpression(&node->lhs, localTable))
 		success = false;
 
 	for (usize i = 0; i < node->rhsCount; ++i)
 	{
-		if (!validateExpression(&node->rhs[i].expr))
+		if (!validateExpression(&node->rhs[i].expr, localTable))
 			success = false;
 	}
 
 	return success;
 }
 
-bool validateAdditiveExpression(AdditiveExpression *node)
+bool validateAdditiveExpression(AdditiveExpression *node, LocalSymbolTable *localTable)
 {
 	bool success = true;
 
-	if (!validateExpression(&node->lhs))
+	if (!validateExpression(&node->lhs, localTable))
 		success = false;
 
 	for (usize i = 0; i < node->rhsCount; ++i)
 	{
-		if (!validateExpression(&node->rhs[i].expr))
+		if (!validateExpression(&node->rhs[i].expr, localTable))
 			success = false;
 	}
 
 	return success;
 }
 
-bool validateExpression(Expression *node)
+bool validateExpression(Expression *node, LocalSymbolTable *localTable)
 {
 	switch (node->type)
 	{
 		case EXPRESSION_BLOCK:
-			return validateBlock(node->block);
+			return validateBlock(node->block, localTable);
 
 		case EXPRESSION_ASSIGNMENT:
-			return validateAssignment(node->assignment);
+			return validateAssignment(node->assignment, localTable);
 
 		case EXPRESSION_CONDITIONAL:
 			// evaluate types of both branch, confirm are the same and return that
@@ -245,22 +254,22 @@ bool validateExpression(Expression *node)
 			break;
 
 		case EXPRESSION_ADDITIVE:
-			return validateAdditiveExpression(node->additive);
+			return validateAdditiveExpression(node->additive, localTable);
 
 		case EXPRESSION_MULTIPLICATIVE:
-			return validateMultiplicativeExpression(node->multiplicative);
+			return validateMultiplicativeExpression(node->multiplicative, localTable);
 
 		case EXPRESSION_POSTFIX:
-			return validatePostfix(node->postfix);
+			return validatePostfix(node->postfix, localTable);
 
 		case EXPRESSION_PREFIX:
-			return validatePrefix(node->prefix);
+			return validatePrefix(node->prefix, localTable);
 		
 		case EXPRESSION_LITERAL:
 			return validateLiteral(node->literal);
 
-		case EXPRESSION_SYMBOL:
-			return validateSymbol(&node->symbol);
+		case EXPRESSION_IDENTIFIER:
+			return validateIdentifier(&node->identifier, localTable);
 
 		default:
 			break;
@@ -269,33 +278,32 @@ bool validateExpression(Expression *node)
 	exitWithErrorFmt("Invalid expression type: %d.", node->type);
 }
 
-bool validateVariable(const SymbolId *id)
+bool validateVariable(Local *node, LocalSymbolTable *localTable)
 {
-	if (!symbolTableDeclareLocal(id))
-		return false;
-	
-	Local *node = symbolTableGetVariable(id);
-
 	if (node->isExplicitlyTyped)
-		return validateTypeAnnotation(&node->type);
+		return validateTypeAnnotation(&node->type, localTable->packageScope);
 
 	return true;
 }
 
-bool validateDeclaration(Declaration *node)
+bool validateDeclaration(Declaration *node, LocalSymbolTable *localTable)
 {
 	bool success = true;
 
-	if (!validateVariable(&node->variableId))
+	if (!symbolTableDeclareLocal(localTable, SYMBOL_VARIABLE, node->variableId))
 		success = false;
 
-	if (!validateExpression(&node->value))
+	Local *variable = symbolTableGetVariable(node->variableId);
+	
+	if (!validateVariable(variable, localTable))
+		success = false;
+
+	if (!validateExpression(&node->value, localTable))
 		success = false;
 	
 	if (!success)
 		return false;
 
-	Local *variable = symbolTableGetVariable(&node->variableId);
 	Type *variableType = variable->isExplicitlyTyped
 		? &variable->type.type
 		: NULL;
@@ -307,11 +315,13 @@ bool validateDeclaration(Declaration *node)
 
 		if (!typeCanConvert(variableType, &expressionType))
 		{
-			const char *toSymbol = symbolTableGetSymbol(&variableType->id);
-			const char *fromSymbol = symbolTableGetSymbol(&expressionType.id);
+			char *toTypeName = typeGetName(&expressionType);
+			char *fromTypeName = typeGetName(variableType);
 
 			// TODO: Make error highlight entire statement
-			printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toSymbol, fromSymbol);
+			printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toTypeName, fromTypeName);
+			deallocate(toTypeName);
+			deallocate(fromTypeName);
 
 			return false;
 		}
@@ -324,9 +334,9 @@ bool validateDeclaration(Declaration *node)
 	return true;
 }
 
-bool validateReturnStatement(JumpStatement *node)
+bool validateReturnStatement(JumpStatement *node, LocalSymbolTable *localTable)
 {
-	Function *function = symbolTableGetSelectedFunction();
+	Function *function = localTable->function;
 	const Type *returnType = functionGetReturnType(function);
 	Type valueType = node->hasValue
 		? typeFromExpression(&node->value, returnType)
@@ -343,9 +353,10 @@ bool validateReturnStatement(JumpStatement *node)
 
 	if (!typeCanConvert(returnType, &valueType))
 	{
-		const char *returnTypeSymbol = symbolTableGetSymbol(&returnType->id);
+		char *returnTypeName = typeGetName(returnType);
 
-		printError("Return value is not compatible with return type `%s`", returnTypeSymbol);
+		printError("Return value is not compatible with return type `%s`.", returnTypeName);
+		deallocate(returnTypeName);
 
 		return false;
 	}
@@ -353,9 +364,17 @@ bool validateReturnStatement(JumpStatement *node)
 	return true;
 }
 
-bool validateYieldStatement(JumpStatement *node)
+bool validateYieldStatement(JumpStatement *node, LocalSymbolTable *localTable)
 {
-	Block *currentBlock = symbolTableGetSelectedBlock();
+	Block *currentBlock = localSymbolTableGetCurrentBlock(localTable);
+
+	if (currentBlock == NULL)
+	{
+		printTokenError(&node->token, "Yield statement must be within a block.");
+
+		return false;
+	}
+
 	const Type *blockReturnType = currentBlock->hasReturnType
 		? &currentBlock->returnType
 		: &voidType;
@@ -366,9 +385,10 @@ bool validateYieldStatement(JumpStatement *node)
 
 	if (typeCanConvert(blockReturnType, &valueType))
 	{
-		const char *blockTypeSymbol = symbolTableGetSymbol(&blockReturnType->id);
+		const char *blockTypeName = typeGetName(blockReturnType);
+		// TODO: get type token
 
-		printError("Yield value is not compatible with type of block expression `%s`", blockTypeSymbol);
+		printError("Yield value is not compatible with type of block expression `%s`.", blockTypeName);
 
 		return false;
 	}
@@ -376,12 +396,12 @@ bool validateYieldStatement(JumpStatement *node)
 	return true;
 }
 
-bool validateJumpStatement(JumpStatement *node)
+bool validateJumpStatement(JumpStatement *node, LocalSymbolTable *localTable)
 {
 	switch (node->type)
 	{
 		case JUMP_RETURN:
-			return validateReturnStatement(node);
+			return validateReturnStatement(node, localTable);
 
 		case JUMP_BREAK:
 			break;
@@ -390,7 +410,7 @@ bool validateJumpStatement(JumpStatement *node)
 			break;
 
 		case JUMP_YIELD:
-			return validateYieldStatement(node);
+			return validateYieldStatement(node, localTable);
 
 		default:
 			break;
@@ -399,18 +419,18 @@ bool validateJumpStatement(JumpStatement *node)
 	exitWithErrorFmt("Unable to validate JumpStatement with type: %d", node->type);
 }
 
-bool validateStatement(Statement *node)
+bool validateStatement(Statement *node, LocalSymbolTable *localTable)
 {
 	switch (node->type)
 	{
 		case STATEMENT_EXPRESSION:
-			return validateExpression(node->expression);
+			return validateExpression(node->expression, localTable);
 
 		case STATEMENT_DECLARATION:
-			return validateDeclaration(node->declaration);
+			return validateDeclaration(node->declaration, localTable);
 
 		case STATEMENT_JUMP:
-			return validateJumpStatement(node->jump);
+			return validateJumpStatement(node->jump, localTable);
 
 		default:
 			break;
@@ -419,50 +439,46 @@ bool validateStatement(Statement *node)
 	exitWithErrorFmt("Unable to validate Statement with StatementType: %d", node->type);
 }
 
-bool validateParameter(const SymbolId *id)
+bool validateParameter(Local *node, LocalSymbolTable *localTable)
 {	
-	Local *node = symbolTableGetParameter(id);
-
-	if (!validateTypeAnnotation(&node->type))
+	if (!validateTypeAnnotation(&node->type, localTable->packageScope))
 		return false;
 
 	return true;
 }
 
-bool validateParameterList(SymbolIdList *ids)
+bool validateParameterList(const IdList *ids, LocalSymbolTable *localTable)
 {
 	bool success = true;
 
 	for (usize i = 0; i < ids->count; ++i)
 	{
-		SymbolId id = { ids->type, ids->indeces[i] };
+		usize index = idListGet(ids, i);
 
-		if (!symbolTableDeclareLocal(&id))
+		if (!symbolTableDeclareLocal(localTable, SYMBOL_PARAMETER, index))
 			success = false;
 
-		if (!validateParameter(&id))
+		Local *node = symbolTableGetParameter(index);
+
+		if (!validateParameter(node, localTable))
 			success = false;
 	}
 
 	return success;
 }
 
-bool validateFunction(SymbolData *data)
+bool validateFunction(Function *node, LocalSymbolTable *localTable)
 {
-	printFmt("Validate function: %s", data->symbol);
-
 	bool success = true;
-	Function *node = symbolTableSelectFunction(&data->id);
 
-	// TODO: Add function symbols
-
-	if (!validateParameterList(&node->parameterIds))
+	if (!validateParameterList(&node->parameterIds, localTable))
 		success = false;
 
-	if (node->hasReturnType && !validateTypeAnnotation(&node->returnType))
+	if (node->hasReturnType
+		&& !validateTypeAnnotation(&node->returnType, localTable->packageScope))
 		success = false;
 
-	if (!validateExpression(&node->body))
+	if (!validateExpression(&node->body, localTable))
 		success = false;
 
 	if (success)
@@ -472,20 +488,18 @@ bool validateFunction(SymbolData *data)
 
 		if (!typeCanConvert(returnType, &bodyType))
 		{
-			const char *symbol = symbolTableGetSymbol(&returnType->id);
-			Token token = tokenFromExpression(&node->body);
+			char *returnTypeName = typeGetName(returnType);
+			char *bodyTypeName = typeGetName(&bodyType);
+			// TODO: handle token like so: Token token = tokenFromExpression(&node->body);
 
-			printTokenError(&token, "Expected `%s`, got .", symbol);
+			printError("Expected `%s`, got `%s`.", returnTypeName, bodyTypeName);
+			printTokenNote(&node->returnType.token, "Function return type here.");
+			deallocate(returnTypeName);
+			deallocate(bodyTypeName);
 
 			success = false;
 		}
-	}
-
-	data->status = success
-		? VALIDATION_VALID
-		: VALIDATION_INVALID;
-
-	symbolTableDeselectFunction();
+	}	
 
 	return success;
 }
@@ -493,21 +507,32 @@ bool validateFunction(SymbolData *data)
 bool declareModule(const Module *module)
 {
 	bool success = true;
+	const IdList *structIds = &module->structIds;
+	const IdList *functionIds = &module->functionIds;
 
-	if (!symbolIdListForEach(&module->structIds, symbolTableDeclareGlobal))
-		success = false;
+	for (usize i = 0; i < structIds->count; ++i)
+	{
+		usize index = idListGet(structIds, i);
 
-	if (!symbolIdListForEach(&module->functionIds, symbolTableDeclareGlobal))
-		success = false;
+		if (!symbolTableDeclareGlobal(SYMBOL_STRUCT, index))
+			success = false;
+	}
+
+	for (usize i = 0; i < functionIds->count; ++i)
+	{
+		usize index = idListGet(functionIds, i);
+
+		if (!symbolTableDeclareGlobal(SYMBOL_FUNCTION, index))
+			success = false;
+	}
 
 	return success;
 }
 
-bool declarePackage(const SymbolId *id)
+bool declarePackage(usize index)
 {
-	bool success = symbolTableDeclareGlobal(id);
-
-	Package *package = symbolTableGetPackage(id);
+	bool success = symbolTableDeclareGlobal(SYMBOL_PACKAGE, index);
+	Package *package = symbolTableGetPackage(index);
 
 	for (usize i = 0; i < package->moduleCount; ++i)
 	{
@@ -518,33 +543,13 @@ bool declarePackage(const SymbolId *id)
 	return success;
 }
 
-bool validateGlobal(SymbolData *data)
+static const MemberList *getGlobalMembers(SymbolType type, usize index)
 {
-	if (data->status != VALIDATION_PENDING)
-		return data->status == VALIDATION_VALID;
-		
-	switch (data->id.type)
-	{
-		case SYMBOL_FUNCTION:
-			return validateFunction(data);
-
-		case SYMBOL_STRUCT:
-			return validateStruct(data);
-
-		default:
-			break;
-	}
-
-	return true;
-}
-
-static const MemberList *getGlobalMembers(const SymbolId *id)
-{
-	switch (id->type)
+	switch (type)
 	{
 		case SYMBOL_STRUCT:
 		{
-			const Struct *node = symbolTableGetStruct(id);
+			const Struct *node = symbolTableGetStruct(index);
 
 			return &node->members;
 		}
@@ -556,40 +561,39 @@ static const MemberList *getGlobalMembers(const SymbolId *id)
 	return NULL;
 }
 
-static const Member *getRecursiveMember(const MemberList *members, const char *symbol)
+static const Member *getRecursiveMember(const MemberList *members, const char *key)
 {
 	for (usize i = 0; i < members->count; ++i)
 	{
 		const Member *member = &members->data[i];
 		const Type *memberType = &member->annotation.type;
-		const SymbolId *memberTypeId = &memberType->id;
-		const char *memberTypeSymbol = symbolTableGetSymbol(memberTypeId);
+		const char *memberTypeKey = symbolGetKey(memberType->type, memberType->index);
 		// TODO: Indirection check
 
-		if (!strcmp(memberTypeSymbol, symbol))
+		if (!strcmp(memberTypeKey, key))
 			return member;
 
-		const MemberList *memberTypeMembers = getGlobalMembers(memberTypeId);
+		const MemberList *memberTypeMembers = getGlobalMembers(memberType->type, memberType->index);
 
 		if (!memberTypeMembers)
 			continue;
 
-		if (getRecursiveMember(memberTypeMembers, symbol))
+		if (getRecursiveMember(memberTypeMembers, key))
 			return member;
 	}
 	
 	return NULL;
 }
 
-bool validateTypeRecursion(const SymbolId *id)
+bool validateTypeRecursion(SymbolType type, usize index)
 {
-	const MemberList *members = getGlobalMembers(id);
+	const MemberList *members = getGlobalMembers(type, index);
 
 	if (!members)
 		return true;
 
-	const char *symbol = symbolTableGetSymbol(id);
-	const Member *recursiveMember = getRecursiveMember(members, symbol);
+	const char *key = symbolGetKey(type, index);
+	const Member *recursiveMember = getRecursiveMember(members, key);
 
 	if (recursiveMember)
 	{
@@ -600,6 +604,63 @@ bool validateTypeRecursion(const SymbolId *id)
 	return true;
 }
 
+bool validateStructRecursion(usize index)
+{
+	return validateTypeRecursion(SYMBOL_STRUCT, index);
+}
+
+bool validateModule(Module *module, const Scope *packageScope)
+{
+	assert(module != NULL);
+	assert(packageScope != NULL);
+
+	bool success = true;
+	IdList *functionIds = &module->functionIds;
+	IdList *structIds = &module->structIds;
+	LocalSymbolTable localTable = localSymbolTableCreate(packageScope);
+
+	for (usize i = 0; i < functionIds->count; ++i)
+	{
+		usize index = idListGet(functionIds, i);
+		Function *function = symbolTableGetFunction(index);
+
+		localTable.function = function;
+
+		if (!validateFunction(function, &localTable))
+			success = false;
+
+		localSymbolTableClear(&localTable);
+	}
+
+	for (usize i = 0; i < structIds->count; ++i)
+	{
+		usize index = idListGet(structIds, i);
+		Struct *node = symbolTableGetStruct(index);
+
+		if (!validateStruct(node, packageScope))
+			success = false;
+	}
+
+	return success;
+}
+
+bool validatePackage(usize index)
+{
+	bool success = true;
+	Package *package = symbolTableGetPackage(index);
+	Scope scope = scopeFromKey(package->symbol);
+
+	for (usize i = 0; i < package->moduleCount; ++i)
+	{
+		if (!validateModule(&package->modules[i], &scope))
+			success = false;
+	}
+
+	scopeDestroy(&scope);
+
+	return success;
+}
+
 bool validate(void)
 {
 	bool success = true;
@@ -607,14 +668,11 @@ bool validate(void)
 	if (!symbolTableForEachEntity(SYMBOL_PACKAGE, declarePackage))
 		success = false;
 
-	if (!symbolTableForEachGlobal(validateGlobal))
+	if (!symbolTableForEachEntity(SYMBOL_PACKAGE, validatePackage))
 		success = false;
 
-	if (!symbolTableForEachEntity(SYMBOL_STRUCT, validateTypeRecursion))
+	if (!symbolTableForEachEntity(SYMBOL_STRUCT, validateStructRecursion))
 		success = false;
-
-	if (!success)
-		symbolTableDestroy();
 
 	return success;
 }
