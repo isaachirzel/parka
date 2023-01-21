@@ -347,9 +347,6 @@ Symbol *symbolTableResolve(LocalSymbolTable *localTable, const Token *token)
 Symbol *symbolTableResolveGlobal(const Scope *scope, const Token *token)
 {
 	char *identifier = tokenGetText(token);
-
-	printFmt("Resolving global: %s", identifier);
-
 	Symbol *symbol = symbolTableResolveIdentifier(scope, identifier);
 
 	if (!symbol)

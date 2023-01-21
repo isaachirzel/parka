@@ -34,7 +34,8 @@ typedef struct Primitive
 typedef struct Identifier
 {
 	Token token;
-	usize id;
+	usize index;
+	SymbolType type;
 } Identifier;
 
 typedef struct Expression
@@ -260,7 +261,7 @@ typedef struct Local
 {
 	Token name;
 	char *symbol;
-	TypeAnnotation type;
+	TypeAnnotation annotation;
 	bool isMutable;
 	bool isExplicitlyTyped;
 } Local;

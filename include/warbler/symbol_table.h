@@ -64,7 +64,6 @@ bool symbolTableDeclareLocal(LocalSymbolTable *localTable, SymbolType type, usiz
 Symbol *symbolTableResolve(LocalSymbolTable *localTable, const Token *token);
 Symbol *symbolTableResolveGlobal(const Scope *scope, const Token *token);
 
-
 void symbolTableSetScopeFromSymbol(const char *symbol);
 Symbol *symbolTableGetSymbol(usize index);
 const char *symbolTypeGetName(SymbolType type);

@@ -1,7 +1,5 @@
 #include "warbler/util/memory.h"
 #include "warbler/util/print.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <warbler/util/arena.h>
 
 #include <assert.h>
@@ -40,8 +38,6 @@ Arena arenaCreate(usize minBytes)
 		.pageCount = pageCount
 	};
 
-	printSuccess("Successfully mapped Arena with %zu bytes.", bytes);
-
 	return arena;
 }
 
@@ -77,11 +73,8 @@ void *arenaAllocate(Arena *arena, usize bytes)
 
 		if (code == -1)
 		{
-			perror("Failed to commit pages");
 			exitWithErrorFmt("Failed to commit %zu pages in Arena.", pagesToCommit);
 		}
-
-		printSuccess("Succesfully committed %zu pages in Arena.", pagesToCommit);
 	}
 
 	void *ptr = (char*)arena->data + arena->bytesUsed;

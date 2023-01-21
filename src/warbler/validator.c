@@ -104,10 +104,28 @@ bool validateIdentifier(Identifier *node, LocalSymbolTable *localTable)
 
 	if (!symbol)
 		return false;
-	
-	node->id = symbol->index;
 
-	return symbol->status == VALIDATION_VALID;
+	switch (symbol->type)
+	{
+		case SYMBOL_PACKAGE:
+		case SYMBOL_STRUCT:
+			printTokenError
+			(
+				&node->token,
+				"Expected identifier, found %s `%s`.",
+				symbolTypeName(symbol->type),
+				symbol->key
+			);
+			return false;
+
+		default:
+			break;
+	}
+	
+	node->index = symbol->index;
+	node->type = symbol->type;
+
+	return true;
 }
 
 bool validateAssignment(Assignment *node, LocalSymbolTable *localTable)
@@ -281,7 +299,7 @@ bool validateExpression(Expression *node, LocalSymbolTable *localTable)
 bool validateVariable(Local *node, LocalSymbolTable *localTable)
 {
 	if (node->isExplicitlyTyped)
-		return validateTypeAnnotation(&node->type, localTable->packageScope);
+		return validateTypeAnnotation(&node->annotation, localTable->packageScope);
 
 	return true;
 }
@@ -305,13 +323,13 @@ bool validateDeclaration(Declaration *node, LocalSymbolTable *localTable)
 		return false;
 
 	Type *variableType = variable->isExplicitlyTyped
-		? &variable->type.type
+		? &variable->annotation.type
 		: NULL;
 	Type expressionType = typeFromExpression(&node->value, variableType);
 
 	if (variable->isExplicitlyTyped)
 	{
-		Type *variableType = &variable->type.type;
+		Type *variableType = &variable->annotation.type;
 
 		if (!typeCanConvert(variableType, &expressionType))
 		{
@@ -328,7 +346,7 @@ bool validateDeclaration(Declaration *node, LocalSymbolTable *localTable)
 	}
 	else
 	{
-		variable->type.type = expressionType;
+		variable->annotation.type = expressionType;
 	}
 
 	return true;
@@ -336,8 +354,12 @@ bool validateDeclaration(Declaration *node, LocalSymbolTable *localTable)
 
 bool validateReturnStatement(JumpStatement *node, LocalSymbolTable *localTable)
 {
+	if (node->hasValue && !validateExpression(&node->value, localTable))
+		return false;
+
 	Function *function = localTable->function;
 	const Type *returnType = functionGetReturnType(function);
+
 	Type valueType = node->hasValue
 		? typeFromExpression(&node->value, returnType)
 		: typeDuplicate(&voidType);
@@ -441,7 +463,7 @@ bool validateStatement(Statement *node, LocalSymbolTable *localTable)
 
 bool validateParameter(Local *node, LocalSymbolTable *localTable)
 {	
-	if (!validateTypeAnnotation(&node->type, localTable->packageScope))
+	if (!validateTypeAnnotation(&node->annotation, localTable->packageScope))
 		return false;
 
 	return true;

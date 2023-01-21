@@ -359,7 +359,7 @@ void prefixExpressionFree(Prefix *node)
 
 void parameterFree(Local *node)
 {
-	typeAnnotationFree(&node->type);
+	typeAnnotationFree(&node->annotation);
 	deallocate(node->symbol);
 }
 
@@ -387,7 +387,7 @@ void declarationFree(Declaration *node)
 
 void variableFree(Local *node)
 {
-	typeAnnotationFree(&node->type);
+	typeAnnotationFree(&node->annotation);
 	deallocate(node->symbol);
 }
 
@@ -562,6 +562,32 @@ Type typeFromBlock(Block *block)
 	return type;
 }
 
+Type typeFromIdentifier(Identifier *node)
+{
+	switch (node->type)
+	{
+		// case SYMBOL_FUNCTION: // TODO: Add function primitive
+		case SYMBOL_VARIABLE:
+		{
+			Local *local = symbolTableGetVariable(node->index);
+
+			return typeDuplicate(&local->annotation.type);
+		}
+		
+		case SYMBOL_PARAMETER:
+		{
+			Local *local = symbolTableGetParameter(node->index);
+
+			return typeDuplicate(&local->annotation.type);
+		}
+
+		default:
+			break;
+	}
+
+	exitWithErrorFmt("Unable to get Type for Identifier with SymbolType: %d.", node->type);
+}
+
 Type typeFromExpression(Expression *expression, const Type *expectedType)
 {
 	switch (expression->type)
@@ -615,7 +641,7 @@ Type typeFromExpression(Expression *expression, const Type *expectedType)
 			return getLiteralType(expression->literal, expectedType);
 
 		case EXPRESSION_IDENTIFIER:
-			break;
+			return typeFromIdentifier(&expression->identifier);
 
 		default:
 			break;

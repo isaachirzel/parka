@@ -1146,7 +1146,7 @@ bool parseParameter(Local *out, Token *token)
 
 	incrementToken(token);
 
-	if (!parseType(&out->type, token))
+	if (!parseType(&out->annotation, token))
 		return false;
 	
 	return true;
@@ -1268,7 +1268,7 @@ bool parseVariable(Local *out, Token *token)
 
 	node.isExplicitlyTyped = true;
 
-	if (!parseType(&node.type, token))
+	if (!parseType(&node.annotation, token))
 		goto error;
 
 	*out = node;
