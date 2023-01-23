@@ -1,11 +1,13 @@
 #ifndef WARBLER_SYMBOL_TABLE_H
 #define WARBLER_SYMBOL_TABLE_H
 
+#include "warbler/ast/function.h"
+#include "warbler/ast/primitive.h"
+#include "warbler/ast/statement.h"
 #include "warbler/util/array.h"
 #include "warbler/util/string.h"
 #include "warbler/util/table.h"
 #include "warbler/util/primitives.h"
-#include "warbler/type.h"
 #include "warbler/util/memory.h"
 #include "warbler/scope.h"
 #include "warbler/ast.h"
@@ -73,8 +75,8 @@ const char *symbolGetKey(SymbolType type, usize index);
 bool symbolTableForEachEntity(SymbolType type, IdAction action);
 
 Package *symbolTableGetPackage(usize index);
-Local *symbolTableGetVariable(usize index);
-Local *symbolTableGetParameter(usize index);
+Variable *symbolTableGetVariable(usize index);
+Parameter *symbolTableGetParameter(usize index);
 Function *symbolTableGetFunction(usize index);
 Struct *symbolTableGetStruct(usize index);
 const Primitive *symbolTableGetPrimitive(usize index);

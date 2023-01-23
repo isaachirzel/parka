@@ -1,9 +1,9 @@
 #include "warbler/ast.h"
-#include "warbler/context.h"
+#include "warbler/ast/function.h"
+#include "warbler/ast/statement.h"
 #include "warbler/symbol_id.h"
 #include "warbler/symbol_table.h"
 #include "warbler/token.h"
-#include "warbler/type.h"
 #include "warbler/util/arena.h"
 #include "warbler/util/array.h"
 #include "warbler/util/memory.h"
@@ -58,12 +58,12 @@ static inline Function *getFunctions()
 	return table.functionArena.data;
 }
 
-static inline Local *getVariables()
+static inline Variable *getVariables()
 {
 	return table.variableArena.data;
 }
 
-static inline Local *getParameters()
+static inline Parameter *getParameters()
 {
 	return table.parameterArena.data;
 }
@@ -141,14 +141,14 @@ const Token *symbolGetToken(SymbolType type, usize index)
 
 		case SYMBOL_VARIABLE:
 		{
-			Local *variables = getVariables();
+			Variable *variables = getVariables();
 
 			return &variables[index].name;
 		}
 
 		case SYMBOL_PARAMETER:
 		{
-			Local *parameters = getParameters();
+			Parameter *parameters = getParameters();
 
 			return &parameters[index].name;
 		}
@@ -395,8 +395,8 @@ void symbolTableDestroy(void)
 	Package *packages = getPackages();
 	Struct *structs = getStructs();
 	Function *functions = getFunctions();
-	Local *variables = getVariables();
-	Local *parameters = getParameters();
+	Variable *variables = getVariables();
+	Parameter *parameters = getParameters();
 
 	for (usize i = 0; i < table.symbolCount; ++i)
 		symbolDestroy(&symbols[i]);
@@ -443,20 +443,20 @@ Package *symbolTableGetPackage(usize index)
 	return &packages[index];
 }
 
-Local *symbolTableGetVariable(usize index)
+Variable *symbolTableGetVariable(usize index)
 {
 	assert(index < table.variableCount);
 
-	Local *variables = getVariables();
+	Variable *variables = getVariables();
 
 	return &variables[index];
 }
 
-Local *symbolTableGetParameter(usize index)
+Parameter *symbolTableGetParameter(usize index)
 {
 	assert(index < table.parameterCount);
 	
-	Local *parameters = getParameters();
+	Parameter *parameters = getParameters();
 
 	return &parameters[index];
 }
@@ -522,9 +522,9 @@ usize symbolTableAddFunction(void)
 usize symbolTableAddVariable(void)
 {
 	usize index = table.variableCount;
-	Local *node = arenaAllocate(&table.variableArena, sizeof(Local));
+	Variable *node = arenaAllocate(&table.variableArena, sizeof(Variable));
 
-	*node = (Local) { 0 };
+	*node = (Variable) { 0 };
 	++table.variableCount;
 
 	return index;
@@ -533,9 +533,9 @@ usize symbolTableAddVariable(void)
 usize symbolTableAddParameter(void)
 {
 	usize index = table.parameterCount;
-	Local *node = arenaAllocate(&table.parameterArena, sizeof(Local));
+	Parameter *node = arenaAllocate(&table.parameterArena, sizeof(Parameter));
 
-	*node = (Local) { 0 };
+	*node = (Parameter) { 0 };
 	++table.parameterCount;
 
 	return index;
@@ -638,14 +638,14 @@ const char *symbolGetKey(SymbolType type, usize index)
 
 		case SYMBOL_VARIABLE:
 		{
-			Local *node = symbolTableGetVariable(index);
+			Variable *node = symbolTableGetVariable(index);
 
 			return node->symbol;
 		}
 
 		case SYMBOL_PARAMETER:
 		{
-			Local *node = symbolTableGetParameter(index);
+			Parameter *node = symbolTableGetParameter(index);
 
 			return node->symbol;
 		}

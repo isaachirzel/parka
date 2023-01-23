@@ -1,9 +1,10 @@
 #include "warbler/ast.h"
-#include "warbler/context.h"
+#include "warbler/ast/function.h"
+#include "warbler/ast/literal.h"
+#include "warbler/ast/statement.h"
 #include "warbler/scope.h"
 #include "warbler/symbol_id.h"
 #include "warbler/symbol_table.h"
-#include "warbler/type.h"
 #include "warbler/util/memory.h"
 #include "warbler/util/print.h"
 #include "warbler/validator.h"
@@ -297,7 +298,7 @@ bool validateExpression(Expression *node, LocalSymbolTable *localTable)
 	exitWithErrorFmt("Unable to validate Expression with type: %d.", node->type);
 }
 
-bool validateVariable(Local *node, LocalSymbolTable *localTable)
+bool validateVariable(Variable *node, LocalSymbolTable *localTable)
 {
 	if (node->isExplicitlyTyped)
 		return validateTypeAnnotation(&node->annotation, localTable->packageScope);
@@ -312,7 +313,7 @@ bool validateDeclaration(Declaration *node, LocalSymbolTable *localTable)
 	if (!symbolTableDeclareLocal(localTable, SYMBOL_VARIABLE, node->variableId))
 		success = false;
 
-	Local *variable = symbolTableGetVariable(node->variableId);
+	Variable *variable = symbolTableGetVariable(node->variableId);
 	
 	if (!validateVariable(variable, localTable))
 		success = false;
@@ -462,7 +463,7 @@ bool validateStatement(Statement *node, LocalSymbolTable *localTable)
 	exitWithErrorFmt("Unable to validate Statement with StatementType: %d", node->type);
 }
 
-bool validateParameter(Local *node, LocalSymbolTable *localTable)
+bool validateParameter(Parameter *node, LocalSymbolTable *localTable)
 {	
 	if (!validateTypeAnnotation(&node->annotation, localTable->packageScope))
 		return false;
@@ -481,7 +482,7 @@ bool validateParameterList(const IdList *ids, LocalSymbolTable *localTable)
 		if (!symbolTableDeclareLocal(localTable, SYMBOL_PARAMETER, index))
 			success = false;
 
-		Local *node = symbolTableGetParameter(index);
+		Parameter *node = symbolTableGetParameter(index);
 
 		if (!validateParameter(node, localTable))
 			success = false;

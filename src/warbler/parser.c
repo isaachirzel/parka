@@ -1,6 +1,7 @@
 #include "warbler/ast.h"
+#include "warbler/ast/literal.h"
+#include "warbler/ast/statement.h"
 #include "warbler/token.h"
-#include "warbler/type.h"
 #include "warbler/parser.h"
 #include "warbler/symbol_table.h"
 #include "warbler/util/memory.h"
@@ -1117,9 +1118,9 @@ bool parseExpression(Expression *out, Token *token)
 	return parseAssignment(out, token);
 }
 
-bool parseParameter(Local *out, Token *token)
+bool parseParameter(Parameter *out, Token *token)
 {
-	*out = (Local) { 0 };
+	*out = (Parameter) { 0 };
 
 	if (token->type == TOKEN_KEYWORD_MUT)
 	{
@@ -1167,7 +1168,7 @@ bool parseParameterList(IdList *out, Token *token)
 		while (true)
 		{
 			usize index = symbolTableAddParameter();
-			Local *parameter = symbolTableGetParameter(index);
+			Parameter *parameter = symbolTableGetParameter(index);
 
 			if (!parseParameter(parameter, token))
 				return false;
@@ -1239,11 +1240,11 @@ bool parseFunction(usize *out, Token *token, const char *package)
 	return true;
 }
 
-bool parseVariable(Local *out, Token *token)
+bool parseVariable(Variable *out, Token *token)
 {
 	assert(token->type == TOKEN_KEYWORD_VAR);
 
-	Local node = { 0 };
+	Variable node = { 0 };
 
 	incrementToken(token);
 
@@ -1283,7 +1284,7 @@ error:
 bool parseDeclaration(Declaration *node, Token *token)
 {
 	usize index = symbolTableAddVariable();
-	Local *variable = symbolTableGetVariable(index);
+	Variable *variable = symbolTableGetVariable(index);
 
 	node->variableId = index;
 
