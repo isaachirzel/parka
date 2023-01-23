@@ -1,7 +1,6 @@
 #include "warbler/ast.h"
 #include "warbler/ast/function.h"
 #include "warbler/ast/statement.h"
-#include "warbler/symbol_id.h"
 #include "warbler/symbol_table.h"
 #include "warbler/token.h"
 #include "warbler/util/arena.h"
@@ -570,7 +569,7 @@ static usize getEntityCount(SymbolType type)
 	exitWithErrorFmt("Unable to get entity count for symbol type: %d", type);
 }
 
-bool symbolTableForEachEntity(SymbolType type, IdAction action)
+bool symbolTableForEachEntity(SymbolType type, EntityAction action)
 {
 	bool success = true;
 

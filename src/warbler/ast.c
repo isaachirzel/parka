@@ -1,49 +1,20 @@
 #include "warbler/ast.h"
-#include "warbler/ast/expression.h"
 #include "warbler/util/memory.h"
+#include <stdlib.h>
 
-void argumentListFree(ArgumentList *node)
+void moduleFree(Module *node)
 {
-	for (usize i = 0; i < node->count; ++i)
-	{
-		expressionFree(node->expressions + i);
-	}
+	arrayDestroy(&node->functionIds, NULL);
+	arrayDestroy(&node->structIds, NULL);
 
-	deallocate(node->expressions);
+	deallocate(node->symbol);
 }
 
 void packageFree(Package *node)
 {
-	for (usize i = 0; i < node->moduleCount; ++i)
-		moduleFree(&node->modules[i]);
+	for (usize i = 0; i < node->modules.length; ++i)
+		moduleFree(&node->modules.data[i]);
 
-	deallocate(node->symbol);
-}
-
-void memberListFree(MemberList *node)
-{
-	for (usize i = 0; i < node->count; ++i)
-		memberFree(&node->data[i]);
-
-	deallocate(node->data);
-}
-
-void structFree(Struct *node)
-{
-	memberListFree(&node->members);
-
-	deallocate(node->symbol);
-}
-
-void memberFree(Member *node)
-{
-	typeAnnotationFree(&node->annotation);
-}
-
-void moduleFree(Module *node)
-{
-	symbolIdListFree(&node->functionIds);
-	symbolIdListFree(&node->structIds);
-
+	arrayDestroy(&node->modules, (ElementDestructor)moduleFree);
 	deallocate(node->symbol);
 }

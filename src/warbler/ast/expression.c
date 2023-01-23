@@ -196,7 +196,7 @@ void postfixExpressionFree(Postfix *node)
 			break;
 
 		case POSTFIX_FUNCTION_CALL:
-			argumentListFree(&node->arguments);
+			callExpressionFree(&node->call);
 			break;
 
 		case POSTFIX_MEMBER:
@@ -248,4 +248,14 @@ void assignmentFree(Assignment *node)
 {
 	expressionFree(&node->lhs);
 	expressionFree(&node->rhs);
+}
+
+void callExpressionFree(CallExpression *node)
+{
+	for (usize i = 0; i < node->count; ++i)
+	{
+		expressionFree(node->expressions + i);
+	}
+
+	deallocate(node->expressions);
 }

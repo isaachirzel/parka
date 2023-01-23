@@ -7,8 +7,6 @@
 
 typedef Array(void) GenericArray;
 
-// #define pointerToMember(array, member) ((void*)((char*)array + offsetof(GenericArray, member)))
-
 // TODO: Make this bit agnostic
 #define ARRAY_SIGNATURE (0x4849525A454C4152)
 
@@ -35,12 +33,15 @@ void arrayDestroy(void *arrayPtr, ElementDestructor destructor)
 
 	assert(array->signature == ARRAY_SIGNATURE);
 
-	char *dataIter = array->data;
-
-	for (usize i = 0; i < array->length; ++i)
+	if (destructor != NULL)
 	{
-		destructor(dataIter);
-		dataIter += array->elementSize;
+		char *dataIter = array->data;
+
+		for (usize i = 0; i < array->length; ++i)
+		{
+			destructor(dataIter);
+			dataIter += array->elementSize;
+		}
 	}
 
 	deallocate(array->data);
@@ -86,4 +87,25 @@ void arrayReserve(void *arrayPtr, usize capacity)
 
 	array->data = reallocate(array->data, newBufferSize);
 	array->capacity = capacity;
+}
+
+bool arrayForEach(void *arrayPtr, ElementAction action)
+{
+	GenericArray *array = arrayPtr;
+
+	assert(array->signature == ARRAY_SIGNATURE);
+
+	bool success = true;
+
+	char *itemIter = array->data;
+
+	for (usize i = 0; i < array->length; ++i)
+	{
+		if (!action(itemIter))
+			success = false;
+
+		itemIter += array->elementSize;
+	}
+
+	return success;
 }

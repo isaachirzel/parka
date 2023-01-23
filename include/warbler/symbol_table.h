@@ -4,6 +4,7 @@
 #include "warbler/ast/function.h"
 #include "warbler/ast/primitive.h"
 #include "warbler/ast/statement.h"
+#include "warbler/ast/struct.h"
 #include "warbler/util/array.h"
 #include "warbler/util/string.h"
 #include "warbler/util/table.h"
@@ -49,6 +50,7 @@ typedef struct LocalSymbolTable
 	const Scope *packageScope;
 } LocalSymbolTable;
 
+typedef bool (*EntityAction)(usize);
 typedef bool (*SymbolAction)(Symbol *symbol);
 
 void symbolTableInitialize(const char *projectName);
@@ -72,7 +74,7 @@ const char *symbolTypeGetName(SymbolType type);
 const Token *symbolTableGetToken(usize symbolIndex);
 const char *symbolGetKey(SymbolType type, usize index);
 
-bool symbolTableForEachEntity(SymbolType type, IdAction action);
+bool symbolTableForEachEntity(SymbolType type, EntityAction action);
 
 Package *symbolTableGetPackage(usize index);
 Variable *symbolTableGetVariable(usize index);

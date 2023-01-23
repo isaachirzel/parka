@@ -1,5 +1,6 @@
 #include "warbler/ast/function.h"
 #include "warbler/ast.h"
+#include "warbler/util/array.h"
 #include "warbler/util/memory.h"
 
 void parameterFree(Parameter *node)
@@ -11,7 +12,7 @@ void parameterFree(Parameter *node)
 void functionFree(Function *node)
 {
 	expressionFree(&node->body);
-	symbolIdListFree(&node->parameterIds);
+	arrayDestroy(&node->parameterIds, NULL);
 
 	if (node->hasReturnType)
 		typeAnnotationFree(&node->returnType);

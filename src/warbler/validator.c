@@ -3,9 +3,10 @@
 #include "warbler/ast/literal.h"
 #include "warbler/ast/statement.h"
 #include "warbler/scope.h"
-#include "warbler/symbol_id.h"
 #include "warbler/symbol_table.h"
+#include "warbler/util/array.h"
 #include "warbler/util/memory.h"
+#include "warbler/util/primitives.h"
 #include "warbler/util/print.h"
 #include "warbler/validator.h"
 
@@ -173,7 +174,7 @@ bool validatePrefix(Prefix *node, LocalSymbolTable *localTable)
 	exitNotImplemented();
 }
 
-bool validateArgumentList(ArgumentList *node)
+bool validateArgumentList(CallExpression *node)
 {
 	assert(node);
 	exitNotImplemented();
@@ -471,13 +472,13 @@ bool validateParameter(Parameter *node, LocalSymbolTable *localTable)
 	return true;
 }
 
-bool validateParameterList(const IdList *ids, LocalSymbolTable *localTable)
+bool validateParameterList(const IndexList *ids, LocalSymbolTable *localTable)
 {
 	bool success = true;
 
-	for (usize i = 0; i < ids->count; ++i)
+	for (usize i = 0; i < ids->length; ++i)
 	{
-		usize index = idListGet(ids, i);
+		usize index = ids->data[i];
 
 		if (!symbolTableDeclareLocal(localTable, SYMBOL_PARAMETER, index))
 			success = false;
@@ -499,7 +500,7 @@ bool validateFunction(Function *node, LocalSymbolTable *localTable)
 		success = false;
 
 	if (node->hasReturnType
-		&& !validateTypeAnnotation(&node->returnType, localTable->packageScope))
+			&& !validateTypeAnnotation(&node->returnType, localTable->packageScope))
 		success = false;
 
 	if (!validateExpression(&node->body, localTable))
@@ -528,27 +529,25 @@ bool validateFunction(Function *node, LocalSymbolTable *localTable)
 	return success;
 }
 
-bool declareModule(const Module *module)
+bool declareStruct(usize *index)
+{
+	return symbolTableDeclareGlobal(SYMBOL_STRUCT, *index);
+}
+
+bool declareFunction(usize *index)
+{
+	return symbolTableDeclareGlobal(SYMBOL_FUNCTION, *index);
+}
+
+bool declareModule(Module *module)
 {
 	bool success = true;
-	const IdList *structIds = &module->structIds;
-	const IdList *functionIds = &module->functionIds;
 
-	for (usize i = 0; i < structIds->count; ++i)
-	{
-		usize index = idListGet(structIds, i);
+	if (!arrayForEach(&module->structIds, (ElementAction)declareStruct))
+		success = false;
 
-		if (!symbolTableDeclareGlobal(SYMBOL_STRUCT, index))
-			success = false;
-	}
-
-	for (usize i = 0; i < functionIds->count; ++i)
-	{
-		usize index = idListGet(functionIds, i);
-
-		if (!symbolTableDeclareGlobal(SYMBOL_FUNCTION, index))
-			success = false;
-	}
+	if (!arrayForEach(&module->functionIds, (ElementAction)declareFunction))
+		success = false;
 
 	return success;
 }
@@ -558,9 +557,9 @@ bool declarePackage(usize index)
 	bool success = symbolTableDeclareGlobal(SYMBOL_PACKAGE, index);
 	Package *package = symbolTableGetPackage(index);
 
-	for (usize i = 0; i < package->moduleCount; ++i)
+	for (usize i = 0; i < package->modules.length; ++i)
 	{
-		if (!declareModule(&package->modules[i]))
+		if (!declareModule(&package->modules.data[i]))
 			success = false;
 	}
 
@@ -639,14 +638,13 @@ bool validateModule(Module *module, const Scope *packageScope)
 	assert(packageScope != NULL);
 
 	bool success = true;
-	IdList *functionIds = &module->functionIds;
-	IdList *structIds = &module->structIds;
+	IndexList *functionIds = &module->functionIds;
+	IndexList *structIds = &module->structIds;
 	LocalSymbolTable localTable = localSymbolTableCreate(packageScope);
 
-	for (usize i = 0; i < functionIds->count; ++i)
+	for (usize i = 0; i < functionIds->length; ++i)
 	{
-		usize index = idListGet(functionIds, i);
-		Function *function = symbolTableGetFunction(index);
+		Function *function = symbolTableGetFunction(functionIds->data[i]);
 
 		localTable.function = function;
 
@@ -656,10 +654,9 @@ bool validateModule(Module *module, const Scope *packageScope)
 		localSymbolTableClear(&localTable);
 	}
 
-	for (usize i = 0; i < structIds->count; ++i)
+	for (usize i = 0; i < structIds->length; ++i)
 	{
-		usize index = idListGet(structIds, i);
-		Struct *node = symbolTableGetStruct(index);
+		Struct *node = symbolTableGetStruct(structIds->data[i]);
 
 		if (!validateStruct(node, packageScope))
 			success = false;
@@ -674,9 +671,9 @@ bool validatePackage(usize index)
 	Package *package = symbolTableGetPackage(index);
 	Scope scope = scopeFromKey(package->symbol);
 
-	for (usize i = 0; i < package->moduleCount; ++i)
+	for (usize i = 0; i < package->modules.length; ++i)
 	{
-		if (!validateModule(&package->modules[i], &scope))
+		if (!validateModule(&package->modules.data[i], &scope))
 			success = false;
 	}
 

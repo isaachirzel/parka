@@ -4,6 +4,7 @@
 #include "warbler/token.h"
 #include "warbler/parser.h"
 #include "warbler/symbol_table.h"
+#include "warbler/util/array.h"
 #include "warbler/util/memory.h"
 #include "warbler/util/print.h"
 #include "warbler/util/directory.h"
@@ -254,12 +255,12 @@ error:
 	return false;
 }
 
-bool parseArgumentList(ArgumentList* out, Token *token)
+bool parseArgumentList(CallExpression* out, Token *token)
 {
 	assert(token->type == TOKEN_LEFT_PARENTHESIS);
 	incrementToken(token);
 
-	ArgumentList node = { 0 };
+	CallExpression node = { 0 };
 
 parseArgument:
 
@@ -297,7 +298,7 @@ parseArgument:
 	
 error:
 
-	argumentListFree(&node);
+	callExpressionFree(&node);
 	return false;
 }
 
@@ -334,13 +335,13 @@ parsePostfix:
 
 		case TOKEN_LEFT_PARENTHESIS: // Function call
 		{
-			ArgumentList arguments;
+			CallExpression arguments;
 
 			if (!parseArgumentList(&arguments, token))
 				goto error;
 
 			node.type = POSTFIX_FUNCTION_CALL;
-			node.arguments = arguments;
+			node.call = arguments;
 			break;
 		}
 
@@ -1153,8 +1154,10 @@ bool parseParameter(Parameter *out, Token *token)
 	return true;
 }
 
-bool parseParameterList(IdList *out, Token *token)
+bool parseParameterList(IndexList *out, Token *token)
 {
+	arrayInit(out, 3);
+	
 	if (token->type != TOKEN_LEFT_PARENTHESIS)
 	{
 		printParseError(token, "'(' after function name", NULL);
@@ -1173,7 +1176,7 @@ bool parseParameterList(IdList *out, Token *token)
 			if (!parseParameter(parameter, token))
 				return false;
 
-			symbolIdListPush(out, index);
+			arrayPush(out, &index);
 
 			if (token->type != TOKEN_COMMA)
 				break;
@@ -1549,6 +1552,9 @@ bool parseModule(Module *node, const File *file, const char *package)
 	bool success = true;
 	Token token = getInitialToken(file);
 
+	arrayInit(&node->functionIds, 5);
+	arrayInit(&node->structIds, 2);
+
 parse:
 
 	switch (token.type)
@@ -1562,7 +1568,7 @@ parse:
 				break;
 			}
 
-			symbolIdListPush(&node->functionIds, index);
+			arrayPush(&node->functionIds, &index);
 			goto parse;
 
 		case TOKEN_KEYWORD_STRUCT:
@@ -1572,7 +1578,7 @@ parse:
 				break;
 			}
 
-			symbolIdListPush(&node->structIds, index);
+			arrayPush(&node->structIds, &index);
 			goto parse;
 
 		case TOKEN_END_OF_FILE:
@@ -1651,12 +1657,11 @@ bool parsePackage(const Directory *directory, Scope *scope, const char *name)
 
 	scopePush(scope, name);
 
-	node->symbol = symbol,
-	node->moduleCount = getModuleCount(directory);
+	node->symbol = symbol;
 
-	makeArray(node->modules, node->moduleCount);
+	usize moduleCount = getModuleCount(directory);
 
-	usize fileIndex = 0;
+	arrayInit(&node->modules, moduleCount);
 
 	for (usize i = 0; i < directory->entryCount; ++i)
 	{
@@ -1670,10 +1675,12 @@ bool parsePackage(const Directory *directory, Scope *scope, const char *name)
 			continue;
 		}
 
-		if (!parseModule(&node->modules[fileIndex], &entry->file, node->symbol))
+		Module module = { 0 };
+
+		if (!parseModule(&module, &entry->file, node->symbol))
 			success = false;
 
-		++fileIndex;
+		arrayPush(&node->modules, &module);
 	}
 
 	scopePop(scope);

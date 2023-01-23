@@ -311,11 +311,11 @@ typedef struct Prefix
 	PrefixType type;
 } Prefix;
 
-typedef struct ArgumentList
+typedef struct CallExpression
 {
 	Expression *expressions;
 	usize count;
-} ArgumentList;
+} CallExpression;
 
 typedef struct Postfix
 {
@@ -323,7 +323,7 @@ typedef struct Postfix
 	union
 	{
 		Expression index;
-		ArgumentList arguments;
+		CallExpression call;
 		Token member;
 	};
 	PostfixType type;
@@ -360,6 +360,7 @@ void booleanOrExpressionFree(BooleanOrExpression *node);
 void ifExpressionFree(IfStatement *node);
 void blockFree(Block *node);
 void assignmentFree(Assignment *node);
+void callExpressionFree(CallExpression *node);
 
 Token tokenFromExpression(Expression *expression);
 

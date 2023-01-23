@@ -2,13 +2,13 @@
 #define WARBLER_AST_FUNCTION_H
 
 #include "warbler/ast/expression.h"
-#include "warbler/symbol_id.h"
+#include "warbler/util/array.h"
 
 typedef struct Function
 {
 	Token name;
 	char *symbol;
-	IdList parameterIds;
+	IndexList parameterIds;
 	TypeAnnotation returnType;
 	Expression body;
 	bool hasReturnType;
