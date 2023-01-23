@@ -41,26 +41,6 @@ void deallocate(void *ptr)
 	free(ptr);
 }
 
-char *stringDuplicate(const char *string)
-{
-	assert(string);
-	usize n = strlen(string);
-
-	return stringDuplicateN(string, n);
-}
-
-char *stringDuplicateN(const char *string, usize n)
-{
-	assert(string);
-	char *data = allocate(n + 1);
-
-	memcpy(data, string, n);
-
-	data[n] = '\0';
-
-	return data;
-}
-
 void *_incrementArray(void *array, usize size, usize * restrict length, usize * restrict capacity)
 {
 	if (*length < *capacity)

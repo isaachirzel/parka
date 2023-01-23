@@ -248,6 +248,7 @@ bool validateExpression(Expression *node, LocalSymbolTable *localTable)
 			break;
 
 		case EXPRESSION_BOOLEAN_OR:
+			// confirm both types have bool operator
 			break;
 
 		case EXPRESSION_BOOLEAN_AND:
@@ -293,7 +294,7 @@ bool validateExpression(Expression *node, LocalSymbolTable *localTable)
 			break;
 	}
 
-	exitWithErrorFmt("Invalid expression type: %d.", node->type);
+	exitWithErrorFmt("Unable to validate Expression with type: %d.", node->type);
 }
 
 bool validateVariable(Local *node, LocalSymbolTable *localTable)

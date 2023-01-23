@@ -249,6 +249,8 @@ typedef struct Member
 	char *symbol;
 	TypeAnnotation annotation;
 	bool isPublic;
+	usize readCount;
+	usize writeCount;
 } Member;
 
 typedef struct MemberList
@@ -328,13 +330,6 @@ typedef struct Assignment
 	AssignmentType type;
 } Assignment;
 
-typedef struct Operator
-{
-	Type leftType;
-	Type rightType;
-	Type returnType;
-} Operator;
-
 typedef struct Function
 {
 	Token name;
@@ -344,6 +339,21 @@ typedef struct Function
 	Expression body;
 	bool hasReturnType;
 } Function;
+
+typedef struct Operator
+{
+	OperatorType type;
+	Type rightType;
+	Type returnType;
+	bool isSelfConst;
+	bool isBinary;
+} Operator;
+
+typedef struct Operators
+{
+	Operator *adds;
+	usize addCount;
+} Operators;
 
 typedef struct Module
 {
@@ -376,6 +386,8 @@ extern const usize stringSymbolId;
 extern const Type voidType;
 extern const Primitive primitives[];
 extern const usize primitiveCount;
+
+Operators createOperators(void);
 
 void booleanAndExpressionFree(BooleanAndExpression *node);
 void bitwiseOrExpressionFree(BitwiseOrExpression *node);

@@ -1,3 +1,4 @@
+#include "warbler/ast.h"
 #include "warbler/util/table.h"
 #include <warbler/parser.h>
 #include <warbler/util/memory.h>

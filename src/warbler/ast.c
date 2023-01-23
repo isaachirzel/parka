@@ -738,3 +738,8 @@ char *typeGetName(const Type *type)
 
 	return name;
 }
+
+Operators createOperators()
+{
+	exitNotImplemented();
+}

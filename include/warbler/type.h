@@ -1,13 +1,6 @@
 #ifndef WARBLER_TYPE_H
 #define WARBLER_TYPE_H
 
-
-
-typedef enum OperatorType
-{
-	OPERATOR_PLUS
-} OperatorType;
-
 typedef enum AssignmentType
 {
 	ASSIGNMENT_BECOME,
@@ -153,6 +146,11 @@ typedef enum SymbolType
 	SYMBOL_VARIABLE,
 	SYMBOL_PARAMETER
 } SymbolType;
+
+typedef enum OperatorType
+{
+	OPERATOR_PLUS
+} OperatorType;
 
 const char *constantTypeName(LiteralType type);
 const char *symbolTypeName(SymbolType type);

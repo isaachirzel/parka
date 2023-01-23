@@ -5,6 +5,46 @@
 #include <stdio.h>
 #include <assert.h>
 
+char *stringDuplicate(const char *string)
+{
+	assert(string);
+	usize n = strlen(string);
+
+	return stringDuplicateN(string, n);
+}
+
+char *stringDuplicateN(const char *string, usize n)
+{
+	assert(string);
+	char *data = allocate(n + 1);
+
+	memcpy(data, string, n);
+
+	data[n] = '\0';
+
+	return data;
+}
+
+usize stringFindOccurrence(const char *text, const char *token)
+{
+    assert(text != NULL);
+    assert(token != NULL);
+
+    char starter = token[0];
+    usize length = strlen(token);
+
+    for (const char *iter = text; *iter; ++iter)
+    {
+        if (*iter != starter)
+            continue;
+
+        if (!strncmp(iter, token, length))
+            return iter - text;
+    }
+
+    return SIZE_MAX;
+}
+
 StringBuilder sbCreate(usize capacity)
 {
     char *buffer = allocate(capacity + 1);
@@ -159,24 +199,4 @@ void sbPushStringInvisibleN(StringBuilder *sb, const char *text, usize n)
 
     sb->data[newLength] = '\0';
     sb->length = newLength;
-}
-
-usize stringFindOccurrence(const char *text, const char *token)
-{
-    assert(text != NULL);
-    assert(token != NULL);
-
-    char starter = token[0];
-    usize length = strlen(token);
-
-    for (const char *iter = text; *iter; ++iter)
-    {
-        if (*iter != starter)
-            continue;
-
-        if (!strncmp(iter, token, length))
-            return iter - text;
-    }
-
-    return SIZE_MAX;
 }

@@ -3,6 +3,14 @@
 
 #include "warbler/util/primitives.h"
 
-#define Array(type) struct { type *data; usize length; usize capacity; }
+#define Array(type) struct { usize signature; type *data; usize elementSize; usize length; usize capacity; }
+
+typedef void (*ElementDestructor)(void *);
+
+void arrayCreate(void *array, usize elementSize, usize capacity);
+void arrayDestroy(void *array, ElementDestructor destructor);
+void arrayPush(void *array, const void * restrict item);
+void arrayPop(void *array);
+void arrayReserve(void *array, usize capacity);
 
 #endif
