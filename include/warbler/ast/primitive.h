@@ -1,6 +1,7 @@
 #ifndef WARBLER_AST_PRIMITIVE_H
 #define WARBLER_AST_PRIMITIVE_H
 
+#include "warbler/ast/operator.h"
 #include "warbler/util/primitives.h"
 
 enum PrimitiveIndex
@@ -34,12 +35,15 @@ typedef enum PrimitiveType
 
 typedef struct Primitive
 {
-	const char *symbol;
-	PrimitiveType type;
-	u32 size;
+	const char * const symbol;
+	PrimitiveType const type;
+	u32 const size;
+	Operators operators;
 } Primitive;
 
-extern const Primitive primitives[];
+extern Primitive primitives[];
 extern const usize primitiveCount;
+
+void primitiveInitAll();
 
 #endif

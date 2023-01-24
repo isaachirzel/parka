@@ -31,7 +31,8 @@ void arrayDestroy(void *arrayPtr, ElementDestructor destructor)
 {
 	GenericArray *array = arrayPtr;
 
-	assert(array->signature == ARRAY_SIGNATURE);
+	if (array->signature != ARRAY_SIGNATURE)
+		return;
 
 	if (destructor != NULL)
 	{
@@ -80,7 +81,7 @@ void arrayReserve(void *arrayPtr, usize capacity)
 
 	assert(array->signature == ARRAY_SIGNATURE);
 
-	if (array->capacity <= capacity)
+	if (capacity <= array->capacity)
 		return;
 
 	usize newBufferSize = capacity * array->elementSize;

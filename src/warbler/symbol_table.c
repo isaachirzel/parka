@@ -1,6 +1,11 @@
-#include "warbler/ast.h"
+#include "warbler/ast/expression/block.h"
 #include "warbler/ast/function.h"
-#include "warbler/ast/statement.h"
+#include "warbler/ast/package.h"
+#include "warbler/ast/parameter.h"
+#include "warbler/ast/primitive.h"
+#include "warbler/ast/statement/statement.h"
+#include "warbler/ast/struct.h"
+#include "warbler/ast/variable.h"
 #include "warbler/symbol_table.h"
 #include "warbler/token.h"
 #include "warbler/util/arena.h"
@@ -370,10 +375,13 @@ void symbolTableInitialize(const char *projectName)
 		.parameterArena = arenaCreate(megabytes(128)),
 	};
 
+	primitiveInitAll();
+
 	Symbol *symbols = arenaAllocate(&table.symbolArena, sizeof(Symbol) * primitiveCount);
 
 	for (usize i = 0; i < primitiveCount; ++i)
 	{
+
 		symbols[i] = (Symbol)
 		{
 			.key = stringDuplicate(primitives[i].symbol),
@@ -382,9 +390,8 @@ void symbolTableInitialize(const char *projectName)
 			.status = VALIDATION_VALID
 		};
 
-		bool successfullyInsertedPrimitive = symbolTableDeclareGlobal(SYMBOL_PRIMITIVE, i);
-
-		assert(successfullyInsertedPrimitive);
+		if (!symbolTableDeclareGlobal(SYMBOL_PRIMITIVE, i))
+			exitWithErrorFmt("Failed to declare primitive: `%s`.", primitives[i].symbol);
 	}
 }
 

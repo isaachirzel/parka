@@ -10,6 +10,8 @@ typedef struct Struct
 	MemberList members;
 } Struct;
 
+bool parseStruct(usize *out, Token *token, const char *package);
+bool validateStruct(Struct *node, const Scope *packageScope);
 void structFree(Struct *node);
 
 #endif

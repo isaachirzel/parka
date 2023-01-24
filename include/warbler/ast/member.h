@@ -2,6 +2,7 @@
 #define WARBLER_AST_MEMBER_H
 
 #include "warbler/ast/type.h"
+#include "warbler/scope.h"
 #include "warbler/token.h"
 
 typedef struct Member
@@ -20,6 +21,9 @@ typedef struct MemberList
 	usize count;
 } MemberList;
 
+bool parseMember(Member *out, Token *token);
+bool parseMemberList(MemberList *out, Token *token);
+bool validateMemberList(MemberList *node, const Scope *packageScope);
 void memberFree(Member *node);
 void memberListFree(MemberList *node);
 

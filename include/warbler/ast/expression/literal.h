@@ -1,6 +1,7 @@
 #ifndef WARBLER_AST_LITERAL_H
 #define WARBLER_AST_LITERAL_H
 
+#include "warbler/ast/expression/expression.h"
 #include "warbler/ast/type.h"
 #include "warbler/token.h"
 #include "warbler/util/primitives.h"
@@ -43,8 +44,10 @@ typedef struct Literal
 	LiteralType type;
 } Literal;
 
+bool parseLiteral(Expression *out, Token *token);
+bool validateLiteral(Literal *node);
 void literalFree(Literal *node);
 const char *literalTypeName(LiteralType type);
-Type literalGetType(Literal *literal, const Type *expectedType);
+bool literalGetType(Type *out, Literal *literal, const Type *expected);
 
 #endif

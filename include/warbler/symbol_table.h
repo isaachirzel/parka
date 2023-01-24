@@ -1,19 +1,22 @@
 #ifndef WARBLER_SYMBOL_TABLE_H
 #define WARBLER_SYMBOL_TABLE_H
 
-#include "warbler/ast/function.h"
-#include "warbler/ast/primitive.h"
-#include "warbler/ast/statement.h"
-#include "warbler/ast/struct.h"
+#include "warbler/symbol.h"
 #include "warbler/util/array.h"
 #include "warbler/util/string.h"
 #include "warbler/util/table.h"
 #include "warbler/util/primitives.h"
 #include "warbler/util/memory.h"
 #include "warbler/scope.h"
-#include "warbler/ast.h"
 
 #include <assert.h>
+
+struct Function;
+struct Package;
+struct Parameter;
+struct Primitive;
+struct Variable;
+struct Struct;
 
 typedef enum ValidationStatus
 {
@@ -32,7 +35,7 @@ typedef struct Symbol
 
 typedef struct BlockInfo
 {
-	Block *node;
+	struct Block *node;
 	usize offset;
 } BlockInfo;
 
@@ -46,7 +49,7 @@ typedef struct LocalSymbolTable
 	usize blockCount;
 	usize blockCapacity;
 
-	Function *function;
+	struct Function *function;
 	const Scope *packageScope;
 } LocalSymbolTable;
 
@@ -76,18 +79,18 @@ const char *symbolGetKey(SymbolType type, usize index);
 
 bool symbolTableForEachEntity(SymbolType type, EntityAction action);
 
-Package *symbolTableGetPackage(usize index);
-Variable *symbolTableGetVariable(usize index);
-Parameter *symbolTableGetParameter(usize index);
-Function *symbolTableGetFunction(usize index);
-Struct *symbolTableGetStruct(usize index);
-const Primitive *symbolTableGetPrimitive(usize index);
+struct Package *symbolTableGetPackage(usize index);
+struct Variable *symbolTableGetVariable(usize index);
+struct Parameter *symbolTableGetParameter(usize index);
+struct Function *symbolTableGetFunction(usize index);
+struct Struct *symbolTableGetStruct(usize index);
+const struct Primitive *symbolTableGetPrimitive(usize index);
 
 LocalSymbolTable localSymbolTableCreate(const Scope *packageScope);
 void localSymbolTableDestroy(LocalSymbolTable *localTable);
 void localSymbolTableClear(LocalSymbolTable *localTable);
-void localSymbolTablePushBlock(LocalSymbolTable *localTable, Block *block);
-Block *localSymbolTableGetCurrentBlock(LocalSymbolTable *localTable);
+void localSymbolTablePushBlock(LocalSymbolTable *localTable, struct Block *block);
+struct Block *localSymbolTableGetCurrentBlock(LocalSymbolTable *localTable);
 void localSymbolTablePopBlock(LocalSymbolTable *localTable);
 
 #endif

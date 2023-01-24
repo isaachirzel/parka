@@ -14,13 +14,16 @@ typedef struct Operator
 	OperatorType type;
 	Type rightType;
 	Type returnType;
-	bool isSelfConst;
-	bool isBinary;
+	bool isConst;
+	// SelfType { Value, Ref, Const Ref }
+	bool isBinary; // Used to determin if rightType is used
 } Operator;
+
+typedef Array(Operator) OperatorList;
 
 typedef struct Operators
 {
-	Array(Operator) adds;
+	OperatorList adds;
 } Operators;
 
 Operators operatorsCreate(void);

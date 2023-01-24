@@ -1,6 +1,10 @@
 #include "warbler/ast/primitive.h"
+#include "warbler/ast/operator.h"
+#include "warbler/ast/type.h"
+#include "warbler/symbol.h"
+#include "warbler/util/array.h"
 
-const Primitive primitives[] =
+Primitive primitives[] =
 {
 	{ "void", PRIMITIVE_VOID, 0 },
 	{ "u8", PRIMITIVE_UNSIGNED_INTEGER, 1 },
@@ -19,3 +23,21 @@ const Primitive primitives[] =
 };
 
 const usize primitiveCount = sizeof(primitives) / sizeof(*primitives);
+
+void primitiveInitAll()
+{
+	Primitive *i32 = &primitives[INDEX_I32];
+
+	i32->operators = operatorsCreate();
+
+	Operator operator = 
+	{
+		.type = OPERATOR_PLUS,
+		.rightType = typeDuplicate(&i32Type),
+		.returnType = typeDuplicate(&i32Type),
+		.isBinary = true,
+		.isConst = true,
+	};
+
+	arrayPush(&i32->operators.adds, &operator);
+}
