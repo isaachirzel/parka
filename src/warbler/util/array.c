@@ -48,7 +48,7 @@ void arrayDestroy(void *arrayPtr, ElementDestructor destructor)
 	deallocate(array->data);
 }
 
-void arrayPush(void *arrayPtr, const void * restrict item)
+usize arrayPush(void *arrayPtr, const void * restrict item)
 {
 	GenericArray *array = arrayPtr;
 
@@ -58,11 +58,14 @@ void arrayPush(void *arrayPtr, const void * restrict item)
 	if (array->length >= array->capacity)
 		arrayReserve(array, array->capacity + 1);
 
-	char *newElementPtr = (char*)array->data + (array->length * array->elementSize);
+	usize index = array->length;
+	char *newElementPtr = (char*)array->data + (index * array->elementSize);
 
 	memcpy(newElementPtr, item, array->elementSize);
 
 	array->length += 1;
+
+	return index;
 }
 
 void arrayPop(void *arrayPtr)

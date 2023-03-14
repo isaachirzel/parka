@@ -1,6 +1,9 @@
 #include "warbler/ast/expression/additive.h"
 #include "warbler/ast/expression/multiplicative.h"
+#include "warbler/ast/primitive.h"
 #include "warbler/ast/type.h"
+#include "warbler/symbol.h"
+#include "warbler/symbol_table.h"
 #include "warbler/util/memory.h"
 #include "warbler/util/print.h"
 
@@ -89,10 +92,41 @@ void additiveExpressionFree(AdditiveExpression *node)
 	deallocate(node->rhs);
 }
 
+bool additiveExpressionGetSignedIntegerType(Type *out, const Primitive *left, const Primitive *right, const Type *expected)
+{
+	switch (right->type)
+	{
+		case PRIMITIVE_SIGNED_INTEGER:
+			// TODO: Actually check the bytes
+			*out = (Type) { .type = SYMBOL_PRIMITIVE, .index = INDEX_I32 }; 
+			return true;
+
+		default:
+			break;
+	}
+	
+	return false;
+}
+
+bool additiveExpressionPrimitiveType(Type *out, const Primitive *left, const Primitive *right, const Type *expected)
+{
+	switch (left->type)
+	{
+		case PRIMITIVE_SIGNED_INTEGER:
+			return additiveExpressionGetSignedIntegerType(out, left, right, expected);
+
+		default:
+			break;
+	}
+
+	return false;
+}
+
 bool additiveExpressionGetType(Type *out, AdditiveExpression *expression, const Type *expected)
 {
-	// TODO: Remove debug asserts
 	assert(expression->rhsCount == 1);
+
+	// Find defined operation
 
 	Type leftType;
 
@@ -104,5 +138,31 @@ bool additiveExpressionGetType(Type *out, AdditiveExpression *expression, const 
 	if (!expressionGetType(&rightType, &expression->rhs->expr, expected))
 		return false;
 
-	exitNotImplemented();
+
+	if (leftType.type == SYMBOL_PRIMITIVE)
+	{
+		const Primitive *leftPrimitive = symbolTableGetPrimitive(leftType.index);
+		
+		if (rightType.type == SYMBOL_PRIMITIVE)
+		{
+			const Primitive *rightPrimitive = symbolTableGetPrimitive(rightType.index);
+
+			if (additiveExpressionPrimitiveType(out, leftPrimitive, rightPrimitive, expected))
+				return true;
+		}
+		else
+		{
+			exitWithError("Primitive + Complex is not implemented yet.");
+		
+		}
+
+	}
+	else
+	{
+		exitWithError("Addition for complex types is not implemented yet.");
+	}
+	
+	printError("`%s` cannot be added to `%s`.", typeGetName(&rightType), typeGetName(&leftType));
+
+	return false;
 }

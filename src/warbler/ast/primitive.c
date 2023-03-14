@@ -28,16 +28,22 @@ void primitiveInitAll()
 {
 	Primitive *i32 = &primitives[INDEX_I32];
 
-	i32->operators = operatorsCreate();
+	// i32->operators = operatorsCreate();
 
-	Operator operator = 
-	{
-		.type = OPERATOR_PLUS,
-		.rightType = typeDuplicate(&i32Type),
-		.returnType = typeDuplicate(&i32Type),
-		.isBinary = true,
-		.isConst = true,
-	};
+	// operatorsAddBuiltIn(i32->operators, OPERATOR_ADD);
 
-	arrayPush(&i32->operators.adds, &operator);
+	// Operator operator = 
+	// {
+	// 	.type = OPERATOR_ADD,
+	// 	.rightType = typeDuplicate(&i32Type),
+	// 	.returnType = typeDuplicate(&i32Type),
+	// 	.isBinary = true,
+	// 	.isSelfConst = true,
+	// };
+
+	// arrayPush(&i32->operators.adds, &operator);
 }
+
+/*
+	Talk to
+*/

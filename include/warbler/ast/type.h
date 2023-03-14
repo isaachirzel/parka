@@ -14,6 +14,10 @@ typedef struct Type
 {
 	usize index;
 	SymbolType type;
+	
+	// Add Literal for better type inference?
+	// Literal literal;
+	// bool isLiteral;
 } Type;
 
 typedef struct TypeAnnotation
