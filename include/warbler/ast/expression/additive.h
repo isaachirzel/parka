@@ -9,17 +9,11 @@ typedef enum AdditiveType
 	ADDITIVE_SUBTRACT
 } AdditiveType;
 
-typedef struct AdditiveRhs
-{
-	Expression expr;
-	AdditiveType type;
-} AdditiveRhs;
-
 typedef struct AdditiveExpression
 {
 	Expression lhs;
-	AdditiveRhs *rhs;
-	usize rhsCount;
+	Expression rhs;
+	AdditiveType type;
 } AdditiveExpression;
 
 bool parseAdditiveExpression(Expression *out, Token *token);
