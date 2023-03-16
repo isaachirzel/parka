@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
-project("warbler")
+project("parka")
 
-set(MAIN_PROGRAM "warble")
+set(MAIN_PROGRAM "parka")
 set(INCLUDE_DIRS "include")
 
 message("Source dir: ${SRC}")
@@ -23,9 +23,9 @@ set(SRC ".")
 # 	add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 # endif()
 
-file(GLOB_RECURSE COMMON_SOURCES "src/warbler/*.c")
+file(GLOB_RECURSE COMMON_SOURCES "src/parka/*.c")
 add_library(common OBJECT ${COMMON_SOURCES})
-add_executable(warble "src/main.c" $<TARGET_OBJECTS:common>)
+add_executable(parka "src/main.c" $<TARGET_OBJECTS:common>)
 list(APPEND TARGETS ${MAIN_PROGRAM} common)
 
 # creating targets for all test sources

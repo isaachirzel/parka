@@ -1,10 +1,10 @@
-# Warbler Programming Language
+# Parka Programming Language
 > NOTICE: This project is prealpha-level and under active development. It is not currently in a
 useable state.
 
 # Brief
 
-Warbler aims to an easy to use, fast, and safe language with native C inter-op. In the future,
+Parka aims to an easy to use, fast, and safe language with native C inter-op. In the future,
 support for embedding in other applications, running as a script, compilation to C, and compilation
 to machine code is planned.
 
