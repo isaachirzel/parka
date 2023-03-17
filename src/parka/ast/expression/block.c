@@ -52,10 +52,13 @@ bool validateBlock(Block *node, LocalSymbolTable *localTable)
 
 	bool success = true;
 
+	print("Validating block");
+
 	localSymbolTablePushBlock(localTable, node);
 
 	for (usize i = 0; i < node->count; ++i)
 	{
+		printFmt("Validating statement: %zu", i);
 		if (!validateStatement(&node->statements[i], localTable))
 			success = false;
 	}

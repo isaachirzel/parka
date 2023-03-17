@@ -6,10 +6,8 @@
 
 bool parseDeclaration(Declaration *node, Token *token)
 {
-	usize index = symbolTableAddVariable();
-	Variable *variable = symbolTableGetVariable(index);
-
-	node->variableId = index;
+	node->variableId = symbolTableAddVariable();
+	Variable *variable = symbolTableGetVariable(node->variableId);
 
 	if (!parseVariable(variable, token))
 		return false;

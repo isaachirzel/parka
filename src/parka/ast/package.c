@@ -3,6 +3,7 @@
 #include "parka/scope.h"
 #include "parka/symbol_table.h"
 #include "parka/util/directory.h"
+#include "parka/util/file.h"
 
 static usize getModuleCount(const Directory *directory)
 {
@@ -46,12 +47,22 @@ bool parsePackage(const Directory *directory, Scope *scope, const char *name)
 			continue;
 		}
 
-		Module module = { 0 };
+		switch (entry->file.type)
+		{
+			case FILE_SOURCE:
+			{
+				Module module = { 0 };
 
-		if (!parseModule(&module, &entry->file, node->symbol))
-			success = false;
+				if (!parseModule(&module, &entry->file, node->symbol))
+					success = false;
 
-		arrayPush(&node->modules, &module);
+				arrayPush(&node->modules, &module);
+				break;
+			}
+
+			default:
+				break;
+		}
 	}
 
 	scopePop(scope);

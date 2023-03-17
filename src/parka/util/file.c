@@ -2,9 +2,11 @@
 #include "parka/util/memory.h"
 #include "parka/util/print.h"
 #include "parka/util/path.h"
+#include "parka/util/string.h"
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 static bool readStreamText(StringBuilder *out, FILE *file)
 {
@@ -98,6 +100,39 @@ static void getLineLengths(File *file)
 	addLine(file, length);
 }
 
+static FileType getFileType(const char *filepath)
+{
+	printFmt("Getting file type for: %s", filepath);
+	// TODO: Optimize and safety
+
+	assert(filepath != NULL && "NULL filepath");
+	assert(filepath[0] != '\0' && "Empty filepath");
+
+	const char *lastPoint = NULL;
+	const char *end = filepath;
+
+	while (*end)
+	{
+		if (*end == '.')
+			lastPoint = end;
+
+		end += 1;
+	}
+
+	if (lastPoint == NULL || end - lastPoint == 1)
+		return FILE_REGULAR;
+	
+	const char *extension = lastPoint + 1;
+
+	if (!strcmp(extension, "pk"))
+		return FILE_SOURCE;
+
+	if (!strcmp(extension, "json"))
+		return FILE_JSON;
+
+	return FILE_REGULAR;
+}
+
 File fileReadRelative(const char *directory, const char *filename)
 {
 	// TODO: Optimize
@@ -107,7 +142,8 @@ File fileReadRelative(const char *directory, const char *filename)
 	{
 		.path = path,
 		.src = text.data,
-		.length = text.length
+		.length = text.length,
+		.type = getFileType(path)
 	};
 
 	getLineLengths(&file);
@@ -122,7 +158,8 @@ File fileRead(const char *path)
 	{
 		.path = pathDuplicate(path),
 		.src = text.data,
-		.length = text.length
+		.length = text.length,
+		.type = getFileType(path)
 	};
 
 	getLineLengths(&file);
@@ -137,7 +174,8 @@ File fileFrom(const char *name, const char *text)
 	{
 		.path = stringDuplicate(name),
 		.src = str.data,
-		.length = str.length
+		.length = str.length,
+		.type = getFileType(name)
 	};
 
 	getLineLengths(&file);
@@ -187,7 +225,7 @@ usize fileGetCol(const File *file, usize startPos)
 
 char fileGetChar(const File *file, usize pos)
 {
-	assert(file);
+	assert(file != NULL);
 	assert(pos <= file->length);
 
 	return file->src[pos];

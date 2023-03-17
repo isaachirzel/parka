@@ -180,17 +180,18 @@ static Symbol *findLocalSymbol(LocalSymbolTable *localTable, const char *identif
 	if (localTable->symbolCount == 0)
 		return NULL;
 
-	usize i = localTable->symbolCount - 1;
+	usize i = localTable->symbolCount;
 
-	while (i >= blockOffset)
+	do
 	{
+		i -= 1;
+
 		Symbol *symbol = &localTable->symbols[i];
 
 		if (!strcmp(identifier, symbol->key))
 			return symbol;
-
-		i -= 1;
 	}
+	while (i > 0);
 
 	return NULL;
 }

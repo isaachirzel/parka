@@ -7,10 +7,9 @@
 #include <stdio.h>
 
 #if defined (_WIN32) || defined(_WIN64)
-
 #else
-
 #include <dirent.h>
+#endif
 
 static Directory readSubdirectory(const char *base, const char *name)
 {
@@ -19,6 +18,8 @@ static Directory readSubdirectory(const char *base, const char *name)
 		.name = name ? stringDuplicate(name) : pathGetFilename(base),
 		.path = pathJoin(base, name)
 	};
+	
+	printFmt("Reading subdirectory: %s : %s", directory.path, directory.name);
 
 	DIR *dir = opendir(directory.path);
 
@@ -38,6 +39,7 @@ static Directory readSubdirectory(const char *base, const char *name)
 
 		if (entry->d_type == DT_REG)
 		{
+			printFmt("Regular file: %s", entry->d_name);
 			File file = fileReadRelative(directory.path, entry->d_name);
 			usize index = directory.entryCount;
 
@@ -129,5 +131,3 @@ void directoryDestroy(Directory *dir)
 	deallocate(dir->path);
 	deallocate(dir->entries);
 }
-
-#endif

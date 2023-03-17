@@ -8,6 +8,7 @@
 
 bool parseModule(Module *node, const File *file, const char *package)
 {
+	printFmt("Parsing file: %s", file->path);
 	// TODO: parse error recovery
 	bool success = true;
 	Token token = getInitialToken(file);
@@ -78,6 +79,7 @@ bool declareModule(Module *module)
 
 bool validateModule(Module *module, const Scope *packageScope)
 {
+	print("Validating module");
 	assert(module != NULL);
 	assert(packageScope != NULL);
 

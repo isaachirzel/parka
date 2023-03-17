@@ -63,6 +63,8 @@ bool parseStatement(Statement *out, Token *token)
 
 bool validateStatement(Statement *node, LocalSymbolTable *localTable)
 {
+	printFmt("Statement type: %d", node->type);
+
 	switch (node->type)
 	{
 		case STATEMENT_EXPRESSION:

@@ -6,6 +6,13 @@
 
 #include <assert.h>
 
+typedef enum FileType
+{
+	FILE_REGULAR,
+	FILE_SOURCE,
+	FILE_JSON
+} FileType;
+
 typedef struct File
 {
 	char *path;
@@ -13,6 +20,7 @@ typedef struct File
 	usize length;
 	usize *lineLengths;
 	usize lineCount;
+	FileType type;
 } File;
 
 typedef struct FilePosition
