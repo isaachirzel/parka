@@ -1,65 +1,46 @@
 #include "parka/ast/expression/shift.hpp"
 #include "parka/ast/expression/additive.hpp"
+#include "parka/entity/node_bank.hpp"
 
-
-Optional<Box<Expression>> BitShiftExpression::parse(Token& token)
+Optional<BitShiftType> parseBitShiftType(Token& token)
 {
-	BitShiftExpression node = { 0 };
-
-	if (!parseAdditiveExpression(&node.lhs, token))
-		goto error;
-
-	while (true)
+	switch (token.type())
 	{
-		bool shouldBreak = false;
-		BitShiftType type;
+		case TokenType::LeftBitShift:
+			return BitShiftType::Left;
 
-		switch (token.type())
-		{
-			case TokenType::LeftBitShift:
-				type = BIT_SHIFT_LEFT;
-				break;
+		case TokenType::RightBitShift:
+			return BitShiftType::Right;
 
-			case TokenType::RightBitShift:
-				type = BIT_SHIFT_RIGHT;
-				break;
+		default:
+			return {};
+	}
+}
 
-			default:
-				shouldBreak = true;
-				break;
-		}
+Optional<ExpressionId> BitShiftExpression::parse(Token& token)
+{
+	auto lhs = AdditiveExpression::parse(token);
 
-		if (shouldBreak)
-			break;
-		
+	if (!lhs)
+		return {};
+
+	auto type = parseBitShiftType(token);
+
+	while (type)
+	{
 		token.increment();
 
-		Expression expression;
+		auto rhs = AdditiveExpression::parse(token);
 
-		if (!parseAdditiveExpression(&expression, token))
-			goto error;
+		if (!rhs)
+			return {};
 
-		resizeArray(node.rhs, ++node.rhsCount);
-		node.rhs[node.rhsCount - 1] = (BitShiftRhs)
-		{
-			.type = type,
-			.expr = expression
-		};
-	}
-	
-	if (!node.rhs)
-	{
-		*out = node.lhs;
-	}
-	else
-	{
-		out->type = EXPRESSION_SHIFT;
-		*makeNew(out->shift) = node;
+		auto expression = BitShiftExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
+		auto id = NodeBank::add(std::move(expression));
+
+		lhs = std::move(id);
+		type = parseBitShiftType(token);
 	}
 
-	return true;
-	
-error:
-
-	return false;
+	return lhs;
 }

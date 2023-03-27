@@ -1,18 +1,19 @@
 #include "parka/util/project.hpp"
 
+#include "parka/util/directory.hpp"
+#include "parka/util/optional.hpp"
 #include "parka/util/path.hpp"
 
-
-Project projectLoad(const char *path)
+Optional<Project> Project::read(const String& path)
 {
-    char *srcPath = pathJoin(path, "src");
+    auto srcPath = path::join(path, "src");
+    auto directory = Directory::read(srcPath);
 
-    Project project = {
-        .name = pathGetFilename(path),
-        .srcDir = directoryRead(srcPath)
-    };
+    if (!directory)
+        return {};
 
-    deallocate(srcPath);
+    auto name = path::getFilename(path);
+    auto project = Project(std::move(name), directory.unwrap());
 
     return project;
 }

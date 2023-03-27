@@ -2,7 +2,7 @@
 #define PARKA_AST_EXPRESSION_EQUALITY_HPP
 
 #include "parka/ast/expression/expression.hpp"
-#include "parka/symbol_table.hpp"
+
 
 enum EqualityType
 {
@@ -12,11 +12,11 @@ enum EqualityType
 
 class EqualityExpression : public Expression
 {
-	Box<Expression> _lhs;
-	Box<Expression> _rhs;
+	ExpressionId _lhs;
+	ExpressionId _rhs;
 	EqualityType _type;
 
-	EqualityExpression(Box<Expression>&& lhs, Box<Expression>&& rhs, EqualityType type) :
+	EqualityExpression(ExpressionId&& lhs, ExpressionId&& rhs, EqualityType type) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs)),
 	_type(type)
@@ -28,13 +28,13 @@ public:
 	EqualityExpression(const EqualityExpression&) = delete;
 	~EqualityExpression() = default;
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;;
+	bool validate(SymbolTable& symbols);
+	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
-	const auto& lhs() const { return *_lhs; }
-	const auto& rhs() const { return *_rhs; }
+	const auto& lhs() const { return _lhs; }
+	const auto& rhs() const { return _rhs; }
 	const auto& type() const { return _type; }
 };
 

@@ -1,83 +1,49 @@
 #include "parka/ast/statement/statement.hpp"
 #include "parka/ast/statement/declaration.hpp"
+#include "parka/ast/statement/expression.hpp"
 #include "parka/ast/statement/jump.hpp"
 
 #include "parka/util/print.hpp"
 
-Optional<Box<Statement>> Statement::parse(Token& token)
+Optional<StatementId> Statement::parse(Token& token)
 {
 	switch (token.type())
 	{
 		case TokenType::KeywordVar:
-		{
-			Declaration declaration;
-
-			if (!parseDeclaration(&declaration, token))
-				return false;
-
-			*makeNew(out->declaration) = declaration;
-			out->type = STATEMENT_DECLARATION;
-
-			return true;
-		}
+			return Declaration::parse(token);
 
 		case TokenType::KeywordReturn:
 		case TokenType::KeywordBreak:
 		case TokenType::KeywordContinue:
 		case TokenType::KeywordYield:
-		{
-			JumpStatement jump;
-
-			if (!parseJumpStatement(&jump, token))
-				return false;
-
-			*makeNew(out->jump) = jump;
-			out->type = STATEMENT_JUMP;
-
-			return true;
-		}
+			return JumpStatement::parse(token);
 
 		default:
 			break;
 	}
 
-	Expression expression;
-
-	if (!parseExpression(&expression, token))
-		return false;
-
-	if (token.type() != TokenType::Semicolon)
-	{
-		printParseError(token, "';' after expression statement", NULL);
-		return false;
-	}
-
-	token.increment();
-
-	*makeNew(out->expression) = expression;
-	out->type = STATEMENT_EXPRESSION;
-
-	return true;
+	return ExpressionStatement::parse(token);
 }
 
-bool validateStatement(Statement *node, SymbolTable& localTable)
+bool Statement::validate(SymbolTable& symbols)
 {
-	printFmt("Statement type: %d", node->type);
+	exitNotImplemented();
+	// printFmt("Statement type: %d", node->type);
 
-	switch (node->type)
-	{
-		case STATEMENT_EXPRESSION:
-			return validateExpression(node->expression, localTable);
+	// switch (node->type)
+	// {
+	// 	case STATEMENT_EXPRESSION:
+	// 		return validateExpression(node->expression, symbols);
 
-		case STATEMENT_DECLARATION:
-			return validateDeclaration(node->declaration, localTable);
+	// 	case STATEMENT_DECLARATION:
+	// 		return validateDeclaration(node->declaration, symbols);
 
-		case STATEMENT_JUMP:
-			return validateJumpStatement(node->jump, localTable);
+	// 	case STATEMENT_JUMP:
+	// 		return validateJumpStatement(node->jump, symbols);
 
-		default:
-			break;
-	}
+	// 	default:
+	// 		break;
+	// }
 
-	exitWithErrorFmt("Unable to validate Statement with StatementType: %d", node->type);
+	// exitWithErrorFmt("Unable to validate Statement with StatementType: %d", node->type);
 }

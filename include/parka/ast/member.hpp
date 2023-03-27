@@ -2,11 +2,12 @@
 #define PARKA_AST_MEMBER_HPP
 
 #include "parka/ast/type_annotation.hpp"
-#include "parka/scope.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
-typedef struct Member
+
+
+class Member
 {
 	Token _name;
 	String _symbol;
@@ -26,16 +27,16 @@ public:
 
 	Member(Member&&) = default;
 	Member(const Member&) = delete;
-	~Member() = delete;
+	~Member() = default;
 
 	static Optional<Member> parse(Token& token);
 
-	bool validate();
+	bool validate(SymbolTable& symbols);
 
 	const auto& name() const { return _name; }
 	const auto& symbol() const { return _symbol; }
 	const auto& annotation() const { return _annotation; }
 	const auto& isPublic() const { return _isPublic; }
-} Member;
+};
 
 #endif

@@ -1,74 +1,52 @@
 #include "parka/ast/expression/relational.hpp"
 #include "parka/ast/expression/shift.hpp"
+#include "parka/entity/node_bank.hpp"
 
-
-Optional<Box<Expression>> RelationalExpression::parse(Token& token)
+Optional<RelationalType> parseRelationalType(Token& token)
 {
-	RelationalExpression node = { 0 };
-
-	if (!parseBitShiftExpression(&node.lhs, token))
-		goto error;
-
-	while (true)
+	switch (token.type())
 	{
-		bool shouldBreak = false;
+		case TokenType::GreaterThan:
+			return RelationalType::GreaterThan;
 
-		RelationalType type;
-		switch (token.type())
-		{
-			case TokenType::GreaterThan:
-				type = RELATIONAL_GREATER_THAN;
-				break;
+		case TokenType::LessThan:
+			return RelationalType::LessThan;
 
-			case TokenType::LessThan:
-				type = RELATIONAL_LESS_THAN;
-				break;
+		case TokenType::GreaterThanOrEqualTo:
+			return RelationalType::GreaterThanOrEqualTo;
 
-			case TokenType::GreaterThanOrEqualTo:
-				type = RELATIONAL_GREATER_THAN_OR_EQUAL_TO;
-				break;
+		case TokenType::LessThanOrEqualTo:
+			return RelationalType::LessThanOrEqualTo;
 
-			case TokenType::LessThanOrEqualTo:
-				type = RELATIONAL_LESS_THAN_OR_EQUAL_TO;
-				break;
+		default:
+			return {};
+	}
+}
 
-			default:
-				shouldBreak = true;
-				break;
-		}
+Optional<ExpressionId> RelationalExpression::parse(Token& token)
+{
+	auto lhs = BitShiftExpression::parse(token);
 
-		if (shouldBreak)
-			break;
+	if (!lhs)
+		return {};
 
+	auto type = parseRelationalType(token);
+
+	while (type)
+	{
 		token.increment();
 
-		Expression expression;
+		auto rhs = BitShiftExpression::parse(token);
 
-		if (!parseBitShiftExpression(&expression, token))
-			goto error;
+		if (!rhs)
+			return {};
 
-		resizeArray(node.rhs, ++node.rhsCount);
-		node.rhs[node.rhsCount - 1] = (RelationalRhs)
-		{
-			.expr = expression,
-			.type = type
-		};
+		auto expression = RelationalExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
+		auto id = NodeBank::add(std::move(expression));
+
+		lhs = std::move(id);
+		type = parseRelationalType(token);
 	}
 
-	if (!node.rhs)
-	{
-		*out = node.lhs;
-	}
-	else
-	{
-		out->type = EXPRESSION_RELATIONAL;
-		out->relational = new(RelationalExpression);
-		*out->relational = node;
-	}
-
-	return true;
-	
-error:
-
-	return false;
+	return lhs;
 }

@@ -1,8 +1,9 @@
 #ifndef PARKA_TYPE_HPP
 #define PARKA_TYPE_HPP
 
-#include "parka/entity_context.hpp"
+#include "parka/entity/entity_id.hpp"
 #include "parka/util/primitives.hpp"
+#include "parka/util/string.hpp"
 
 class Type
 {

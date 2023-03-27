@@ -15,7 +15,11 @@ class FloatLiteral : public Literal
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	FloatLiteral(FloatLiteral&&) = default;
+	FloatLiteral(const FloatLiteral&) = delete;
+	~FloatLiteral() = default;
+
+	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;

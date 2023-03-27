@@ -2,6 +2,7 @@
 #define PARKA_AST_STRUCT_HPP
 
 #include "parka/ast/member.hpp"
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/util/array.hpp"
 
 class Struct
@@ -22,10 +23,9 @@ public:
 	Struct(const Struct&) = delete;
 	~Struct() = default;
 
-	static Optional<Struct> parse(Token& token);
+	static Optional<EntityId> parse(Token& token, const String& package);
 
-	bool validate(const Scope& packageScope);
-
+	bool validate(SymbolTable& symbols);
 
 	auto token() const { return _name; }
 	const auto& name() const { return _name; }

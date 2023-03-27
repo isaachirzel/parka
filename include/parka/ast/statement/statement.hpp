@@ -2,7 +2,8 @@
 #define PARKA_AST_STATEMENT_HPP
 
 #include "parka/ast/expression/expression.hpp"
-#include "parka/symbol_table.hpp"
+#include "parka/entity/statement_id.hpp"
+#include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
 struct JumpStatement;
@@ -10,10 +11,10 @@ struct Declaration;
 
 struct Statement
 {
-	static Optional<Box<Statement>> parse(Token& token);
+	static Optional<StatementId> parse(Token& token);
 
 	virtual ~Statement() {}
-	virtual bool validate(SymbolTable& localTable) = 0;
+	virtual bool validate(SymbolTable& symbols) = 0;
 };
 
 #endif

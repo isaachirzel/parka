@@ -1,6 +1,7 @@
 #ifndef PARKA_AST_TYPE_ANNOTATION_HPP
 #define PARKA_AST_TYPE_ANNOTATION_HPP
 
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/type.hpp"
 #include "parka/scope.hpp"
 #include "parka/token.hpp"
@@ -9,11 +10,11 @@
 class TypeAnnotation
 {
 	Token _token;
-	Type _type;
+	// TODO: Add type after validation
+	Optional<Type> _type; 
 
-	TypeAnnotation(const Token& token, Type&& type) :
-	_token(token),
-	_type(std::move(type))
+	TypeAnnotation(const Token& token) :
+	_token(token)
 	{}
 
 public:
@@ -24,10 +25,11 @@ public:
 
 	static Optional<TypeAnnotation> parse(Token& token);
 
-	bool validate(const Scope& packageScope);
+	bool validate(SymbolTable& symbols);
 
 	const auto& token() const { return _token; }
-	const auto& type() const { return _type; }
+	const auto& type() const { assert(_type.hasValue()); return _type.value(); }
+	// const auto& type() const { return _type; }
 };
 
 #endif

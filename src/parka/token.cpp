@@ -1,144 +1,71 @@
 #include "parka/token.hpp"
 
 #include "parka/util/print.hpp"
-#include <string.h>
 
-usize getEndOfLinePos(const char *src, usize pos)
+#include <cstring>
+
+usize getEndOfLinePos(const File& file, usize pos)
 {
-	while (true)
+	for (usize i = pos; i < file.length(); ++i)
 	{
-		char c = src[pos];
-
-		if (c == '\0')
-			break;
-
-		if (c == '\n')
-		{
-			pos += 1;
-			break;
-		}
-
-		pos += 1;
+		if (file[i] == '\n')
+			return i + 1;
 	}
 
-	return pos;
+	return file.length();
 }
 
-usize getEndOfBlockCommentPos(const char *src, usize pos)
+usize getEndOfBlockCommentPos(const File& file, usize pos)
 {
-	while (true)
+	for (usize i = pos; i < file.length(); ++i)
 	{
-		char c = src[pos];
-
-		if (c == '\0')
-			break;
-
-		if (c == '*' && src[pos + 1] == '/')
-		{
-			pos += 2;
-			break;
-		}
-
-		pos += 1;
+		if (file[i] == '*' && file[i + 1] == '/')
+			return i + 2;
 	}
 
-	return pos;
+	return file.length();
 }
 
-usize getNextPos(const char *src, usize pos)
+usize getNextPos(const File& file, usize pos)
 {
-	while (true)
+	for (usize i = pos; i < file.length(); ++i)
 	{
-		char c = src[pos];
+		auto c = file[i];
 
-		if (c == '\0')
-			break;
+		if (c <= ' ')
+			continue;
 
 		if (c == '/')
 		{
-			switch (src[pos + 1])
+			switch (file[i + 1])
 			{
 				case '/': // Line comment
-					pos = getEndOfLinePos(src, pos + 2);
+					i = getEndOfLinePos(file, i + 2);
 					continue;
 
 				case '*': // Block comment
-					pos = getEndOfBlockCommentPos(src, pos + 2);
+					i = getEndOfBlockCommentPos(file, i + 2);
 					continue;
 
 				default:
-					return pos;
+					break;
 			}
 		}
 
-		if (c > ' ')
-			break;
-
-		pos += 1;
+		return i;
 	}
 
-	return pos;
+	return file.length();
 }
 
 inline bool isIdentifierChar(char c)
 {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-	// switch (c)
-	// {
-	// 	case '_':
-	// 	case 'a': case 'A':
-	// 	case 'b': case 'B':
-	// 	case 'c': case 'C':
-	// 	case 'd': case 'D':
-	// 	case 'e': case 'E':
-	// 	case 'f': case 'F':
-	// 	case 'g': case 'G':
-	// 	case 'h': case 'H':
-	// 	case 'i': case 'I':
-	// 	case 'j': case 'J':
-	// 	case 'k': case 'K':
-	// 	case 'l': case 'L':
-	// 	case 'm': case 'M':
-	// 	case 'n': case 'N':
-	// 	case 'o': case 'O':
-	// 	case 'p': case 'P':
-	// 	case 'q': case 'Q':
-	// 	case 'r': case 'R':
-	// 	case 's': case 'S':
-	// 	case 't': case 'T':
-	// 	case 'u': case 'U':
-	// 	case 'v': case 'V':
-	// 	case 'w': case 'W':
-	// 	case 'x': case 'X':
-	// 	case 'y': case 'Y':
-	// 	case 'z': case 'Z':
-	// 		return true;
-
-	// 	default:
-	// 		return false;
-	// }
 }
 
 inline bool isDigitChar(char c)
 {
 	return (c >= '0' && c <= '9');
-	// switch (c)
-	// {
-	// 	case '0':
-	// 	case '1':
-	// 	case '2':
-	// 	case '3':
-	// 	case '4':
-	// 	case '5':
-	// 	case '6':
-	// 	case '7':
-	// 	case '8':
-	// 	case '9':
-	// 		return true;
-
-	// 	default:
-	// 		return false;
-	// }
 }
 
 TokenType getIdentifierType(const char *text)
@@ -308,37 +235,31 @@ TokenType getIdentifierType(const char *text)
 	return TokenType::Identifier;
 }
 
-Token getQuoteToken(const File *file, const usize startPos)
+Token getQuoteToken(const File& file, const usize startPos)
 {
-	char terminal = fileGetChar(file, startPos);
-	TokenType type = terminal == '\''
+	auto terminal = file[startPos];
+	auto type = terminal == '\''
 		? TokenType::CharacterLiteral
 		: TokenType::StringLiteral;
 
-	Token token =
+	usize length = 1;
+	auto isEscaped = false;
+
+	for (usize i = startPos + length; file[i] != terminal || isEscaped; ++i)
 	{
-		.file = file,
-		.pos = startPos,
-		.type = type,
-		.length = 1
-	};
+		char c = file[i];
 
-	bool isEscaped = false;
-
-	while (true)
-	{
-		char c = file->src[token.pos + token.length]; 
-
-		// TODO: This should be an error
 		if (!c)
 		{
+			// TODO: Rethink how this error should be handled
 			const char *typeName = terminal == '\''
 				? "Character"
 				: "String";
+			auto token = Token(file, startPos, length, TokenType::EndOfFile);
 
-			printTokenError(&token, "%s literal is unterminated.", typeName);
-			token.type = TokenType::EndOfFile;
-			break;
+			printTokenError(token, "%s literal is unterminated.", typeName);
+			
+			return token;
 		}
 
 		if (c == '\\')
@@ -347,12 +268,11 @@ Token getQuoteToken(const File *file, const usize startPos)
 			continue;
 		}
 		
-		token.length += 1;
-
-		if (c == terminal && !isEscaped)
-			break;
+		length += 1;
 	}
 	
+	auto token = Token(file, startPos, length, type);
+
 	return token;
 }
 
@@ -360,7 +280,7 @@ Token getIdentifierToken(const File& file, const usize startPos)
 {
 	usize pos = startPos + 1;
 
-	while (isIdentifierChar(file->src[pos]) || isDigitChar(file->src[pos]))
+	while (isIdentifierChar(file[pos]) || isDigitChar(file[pos]))
 		pos += 1;
 
 	usize length = pos - startPos;
@@ -368,7 +288,7 @@ Token getIdentifierToken(const File& file, const usize startPos)
 	// TODO: Make sure okay size
 	char tmpKey[512];
 
-	strncpy(tmpKey, file->src + startPos, length);
+	strncpy(tmpKey, &file[startPos], length);
 	tmpKey[length] = '\0';
 
 	TokenType type = getIdentifierType(tmpKey);
@@ -376,40 +296,38 @@ Token getIdentifierToken(const File& file, const usize startPos)
 	return Token(file, startPos, length, type);
 }
 
-Token getDigitToken(const File *file, const usize startPos)
+Token getDigitToken(const File& file, const usize startPos)
 {
-	usize pos = startPos;
-	bool isFloat = false;
+	auto isFloat = false;
+	usize length = 0;
 
-	while (true)
+	for (usize i = startPos; ; ++i)
 	{
-		char c = fileGetChar(file, pos);
+		char c = file[i];
 
-		if (!isDigitChar(c))
+		if (isDigitChar(c))
+			continue;
+
+		if (c != '.' || isFloat)
 		{
-			if (c != '.')
-			{
-				break;
-			}
-
-			isFloat = true;
+			length = i - startPos;
+			break;
 		}
-
-		pos += 1;
+			
+		isFloat = true;
 	}
 
-	usize length = pos - startPos;
-
-	TokenType type = isFloat
+	auto type = isFloat
 		? TokenType::FloatLiteral
 		: TokenType::IntegerLiteral;
+	auto token = Token(file, startPos, length, type);
 
-	return Token(file, startPos, length, type);
+	return token;
 }
 
-Token getNextToken(const File *file, usize startPos)
+Token getNextToken(const File& file, usize startPos)
 {
-	char c = fileGetChar(file, startPos);
+	char c = file[startPos];
 
 	switch (c)
 	{
@@ -483,13 +401,13 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::Semicolon };
 
 		case ':':
-			return fileGetChar(file, startPos + 1) == ':'
+			return file[startPos + 1] == ':'
 				? Token(file, startPos, 1, TokenType::Semicolon)
 				: Token { file, startPos, 1, TokenType::Colon };
 
 		case '.':
 		{
-			char c1 = fileGetChar(file, startPos + 1);
+			char c1 = file[startPos + 1];
 
 			if (isDigitChar(c1))
 			{
@@ -497,7 +415,7 @@ Token getNextToken(const File *file, usize startPos)
 			}
 			else if (c1 == '.')
 			{
-				return fileGetChar(file, startPos + 2) == '.'
+				return file[startPos + 2] == '.'
 					? (Token) { file, startPos, 3, TokenType::Elipsis }
 					: (Token) { file, startPos, 2, TokenType::Range };
 			}
@@ -507,13 +425,13 @@ Token getNextToken(const File *file, usize startPos)
 
 		// Operators
 		case '<':
-			if (fileGetChar(file, startPos + 1) == '<')
+			if (file[startPos + 1] == '<')
 			{
-				return fileGetChar(file, startPos + 2) == '='
+				return file[startPos + 2] == '='
 					? (Token) { file, startPos, 3, TokenType::LeftBitShiftAssign }
 					: (Token) { file, startPos, 2, TokenType::LeftBitShift };
 			}
-			else if (fileGetChar(file, startPos + 1) == '=')
+			else if (file[startPos + 1] == '=')
 			{
 				return (Token) { file, startPos, 2, TokenType::LessThanOrEqualTo };
 			}
@@ -521,13 +439,13 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::LessThan };
 
 		case '>':
-			if (fileGetChar(file, startPos + 1) == '>')
+			if (file[startPos + 1] == '>')
 			{
-				return fileGetChar(file, startPos + 2) == '='
+				return file[startPos + 2] == '='
 					? (Token) { file, startPos, 3, TokenType::RightBitShiftAssign }
 					: (Token) { file, startPos, 2, TokenType::RightBitShift };
 			}
-			else if (fileGetChar(file, startPos + 1) == '=')
+			else if (file[startPos + 1] == '=')
 			{
 				return (Token) { file, startPos, 2, TokenType::GreaterThanOrEqualTo };
 			}
@@ -535,23 +453,23 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::GreaterThan };
 
 		case '%':
-			return fileGetChar(file, startPos + 1) == '='
+			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::ModulusAssign }
 				: (Token) { file, startPos, 1, TokenType::Modulus };
 
 		case '^':
-			return fileGetChar(file, startPos + 1) == '='
+			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::BitwiseXorAssign }
 				: (Token) { file, startPos, 1, TokenType::BitwiseXor };
 			
 		case '&':
-			if (fileGetChar(file, startPos + 1) == '&')
+			if (file[startPos + 1] == '&')
 			{
-				return fileGetChar(file, startPos + 2) == '='
+				return file[startPos + 2] == '='
 					? (Token) { file, startPos, 3, TokenType::BooleanAndAssign }
 					: (Token) { file, startPos, 2, TokenType::BooleanAnd };
 			}
-			else if (fileGetChar(file, startPos + 1) == '=')
+			else if (file[startPos + 1] == '=')
 			{
 				return (Token) { file, startPos, 2, TokenType::BitwiseAndAssign };
 			}
@@ -559,16 +477,16 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::Ampersand };
 
 		case '*':
-			return fileGetChar(file, startPos + 1) == '='
+			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::MultiplyAssign }
 				: (Token) { file, startPos, 1, TokenType::Asterisk };
 
 		case '-':
-			if (fileGetChar(file, startPos + 1) == '=')
+			if (file[startPos + 1] == '=')
 			{
 				return (Token) { file, startPos, 2, TokenType::SubtractAssign };
 			}
-			else if (fileGetChar(file, startPos + 1) == '>')
+			else if (file[startPos + 1] == '>')
 			{
 				return (Token) { file, startPos, 2, TokenType::SingleArrow };
 			}
@@ -576,11 +494,11 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::Minus };
 
 		case '=':
-			if (fileGetChar(file, startPos + 1) == '=')
+			if (file[startPos + 1] == '=')
 			{
 				return (Token) { file, startPos, 2, TokenType::Equals };
 			}
-			else if (fileGetChar(file, startPos + 1) == '>')
+			else if (file[startPos + 1] == '>')
 			{
 				return (Token) { file, startPos, 2, TokenType::DoubleArrow };
 			}
@@ -588,13 +506,13 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::Assign };
 
 		case '|':
-			if (fileGetChar(file, startPos + 1) == '|')
+			if (file[startPos + 1] == '|')
 			{
-				return fileGetChar(file, startPos + 2) == '='
+				return file[startPos + 2] == '='
 					? (Token) { file, startPos, 3, TokenType::BooleanOrAssign }
 					: (Token) { file, startPos, 2, TokenType::BooleanOr };
 			}
-			else if (fileGetChar(file, startPos + 1) == '=')
+			else if (file[startPos + 1] == '=')
 			{
 				return (Token) { file, startPos, 2, TokenType::BitwiseOrAssign };
 			}
@@ -602,7 +520,7 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::Pipe };
 
 		case '+':
-			return fileGetChar(file, startPos + 1) == '='
+			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::AddAssign }
 				: (Token) { file, startPos, 1, TokenType::Plus };
 
@@ -610,12 +528,12 @@ Token getNextToken(const File *file, usize startPos)
 			return (Token) { file, startPos, 1, TokenType::Question };
 
 		case '!':
-			return fileGetChar(file, startPos + 1) == '='
+			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::NotEquals }
 				: (Token) { file, startPos, 1, TokenType::BooleanNot };
 
 		case '/':
-			return fileGetChar(file, startPos + 1) == '='
+			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::DivideAssign }
 				: (Token) { file, startPos, 1, TokenType::Slash };
 
@@ -627,36 +545,32 @@ Token getNextToken(const File *file, usize startPos)
 			break;
 	}
 
-	Token token =
-	{
-		.file = file,
-		.pos = startPos,
-		.length = 1,
-		.type = TokenType::EndOfFile
-	};
+	// TODO: Rethink handling of strange characters
+	auto token = Token(file, startPos, 1, TokenType::EndOfFile);
 
-	printTokenError(&token, "An invalid character was found in the source file");
+	printTokenError(token, "An invalid character was found in the source file.");
 
 	return token;
 }
 
 void Token::increment()
 {
-	usize nextTokenPos = getNextPos(token.file()->src, token.pos() + token.length());
+	usize nextTokenPos = getNextPos(_file, _pos + _length);
 
-	new (this) auto(getNextToken(token.file(), nextTokenPos));
+	new (this) auto(getNextToken(_file, nextTokenPos));
 }
 
-Token getInitialToken(const File *file)
+Token Token::initial(const File& file)
 {
-	usize pos = getNextPos(file->src, 0);
+	usize pos = getNextPos(file, 0);
+	auto token = getNextToken(file, pos);
 
-	return getNextToken(file, pos);
+	return token;
 }
 
 String Token::category() const
 {
-	switch (token.type())
+	switch (_type)
 	{
 		case TokenType::EndOfFile:
 			return "end-of-file";
@@ -755,18 +669,8 @@ String Token::category() const
 			return "keyword";
 
 		default:
-			exitWithErrorFmt("Invalid TokenType: %d", token.type());
+			exitWithErrorFmt("Invalid TokenType: %d", _type);
 	}
-}
-
-char operator[](usize index) const
-{
-	return fileGetChar(_file, index);
-}
-
-String Token::text() const
-{
-	return fileGetText(_file, _pos, _length);
 }
 
 bool Token::operator==(const Token& other) const
@@ -774,12 +678,12 @@ bool Token::operator==(const Token& other) const
 	if (&_file != &other.file() || _length != other.length() || _type != other.type())
 		return false;
 
-	if (_pos == b.pos())
+	if (_pos == other.pos())
 		return true;
 
-	for (usize i = 0; i < length; ++i)
+	for (usize i = 0; i < _length; ++i)
 	{
-		if (fileGetChar(file, _pos + i) != fileGetChar(file, b.pos() + i))
+		if (_file[i] != other[i])
 			return false;
 	}
 

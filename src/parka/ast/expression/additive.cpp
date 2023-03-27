@@ -1,6 +1,8 @@
 #include "parka/ast/expression/additive.hpp"
 #include "parka/ast/expression/multiplicative.hpp"
 #include "parka/ast/primitive.hpp"
+#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/util/print.hpp"
 #include "parka/util/optional.hpp"
 
@@ -23,7 +25,7 @@ Optional<AdditiveType> getAdditiveType(Token& token)
 	return {};
 }
 
-Optional<Box<Expression>> AdditiveExpression::parse(Token& token)
+Optional<ExpressionId> AdditiveExpression::parse(Token& token)
 {
 	auto lhs = MultiplicativeExpression::parse(token);
 
@@ -41,24 +43,24 @@ Optional<Box<Expression>> AdditiveExpression::parse(Token& token)
 		if (!rhs)
 			return {};
 
-		auto *expression = new AdditiveExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
-		auto box = Box<Expression>(expression);
+		auto expression = AdditiveExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
+		auto id = NodeBank::add(std::move(expression));
 
-		lhs = Optional(std::move(box));
+		lhs = std::move(id);
 		type = getAdditiveType(token);
 	}
 
 	return lhs;
 }
 
-bool AdditiveExpression::validate(SymbolTable& localTable)
+bool AdditiveExpression::validate(SymbolTable& symbols)
 {
-	bool success = true;
+	auto success = true;
 
-	if (!_lhs->validate(localTable))
+	if (!NodeBank::get(_lhs).validate(symbols))
 		success = false;
 
-	if (!_rhs->validate(localTable))
+	if (!NodeBank::get(_rhs).validate(symbols))
 		success = false;
 
 	return {};

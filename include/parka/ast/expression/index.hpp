@@ -7,22 +7,22 @@
 
 class IndexExpression : public Expression
 {
-	Box<Expression> _expression;
-	Box<Expression> _index;
+	ExpressionId _primary;
+	ExpressionId _index;
 
-	IndexExpression(Box<Expression>&& expression, Box<Expression>&& index) :
-	_expression(std::move(expression)),
-	_index(std::move(index))
+	IndexExpression(ExpressionId primary, ExpressionId index) :
+	_primary(primary),
+	_index(index)
 	{}
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token, ExpressionId primary);
 
-	bool validate(SymbolTable& localTable);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;;
+	bool validate(SymbolTable& symbols);
+	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
-	const auto& expression() const { return *_expression; }
+	const auto& expression() const { return _primary; }
 	const auto& index() const { return _index; }
 };
 

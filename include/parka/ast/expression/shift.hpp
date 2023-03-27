@@ -3,20 +3,22 @@
 
 #include "parka/ast/expression/expression.hpp"
 
-enum BitShiftType
+enum class BitShiftType
 {
-	BIT_SHIFT_LEFT,
-	BIT_SHIFT_RIGHT
+	Left,
+	Right
 };
 
 class BitShiftExpression : public Expression
 {
-	Box<Expression> _lhs;
-	Box<Expression> _rhs;
+	ExpressionId _lhs;
+	ExpressionId _rhs;
+	BitShiftType _type;
 
-	BitShiftExpression(Box<Expression>&& lhs, Box<Expression>&& rhs):
+	BitShiftExpression(ExpressionId&& lhs, ExpressionId&& rhs, BitShiftType type) :
 	_lhs(std::move(lhs)),
-	_rhs(std::move(rhs))
+	_rhs(std::move(rhs)),
+	_type(type)
 	{}
 
 public:
@@ -25,13 +27,13 @@ public:
 	BitShiftExpression(const BitShiftExpression&) = delete;
 	~BitShiftExpression() = default;
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;;
+	bool validate(SymbolTable& symbols);
+	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
-	const auto& lhs() const { return *_lhs; }
-	const auto& rhs() const { return *_rhs; }
+	const auto& lhs() const { return _lhs; }
+	const auto& rhs() const { return _rhs; }
 };
 
 #endif

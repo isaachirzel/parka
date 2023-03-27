@@ -1,10 +1,11 @@
 #include "parka/ast/expression/bitwise_and.hpp"
 #include "parka/ast/expression/equality.hpp"
 #include "parka/ast/expression/expression.hpp"
+#include "parka/entity/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
-Optional<Box<Expression>> BitwiseAndExpression::parse(Token& token)
+Optional<ExpressionId> BitwiseAndExpression::parse(Token& token)
 {
 	auto lhs = EqualityExpression::parse(token);
 
@@ -20,11 +21,10 @@ Optional<Box<Expression>> BitwiseAndExpression::parse(Token& token)
 		if (!rhs)
 			return {};
 
-		auto *expression = new BitwiseAndExpression(lhs.unwrap(), rhs.unwrap());
-		auto box = Box<Expression>(expression);
+		auto expression = BitwiseAndExpression(lhs.unwrap(), rhs.unwrap());
+		auto id = NodeBank::add(std::move(expression));
 
-		lhs = Optional(std::move(box));
-		
+		lhs = std::move(id);
 	}
 
 	return lhs;

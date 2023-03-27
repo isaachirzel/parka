@@ -1,6 +1,6 @@
 #include "parka/ast/expression/equality.hpp"
 #include "parka/ast/expression/relational.hpp"
-
+#include "parka/entity/node_bank.hpp"
 
 Optional<EqualityType> getEqualityType(Token& token)
 {
@@ -17,7 +17,7 @@ Optional<EqualityType> getEqualityType(Token& token)
 	}
 }
 
-Optional<Box<Expression>> EqualityExpression::parse(Token& token)
+Optional<ExpressionId> EqualityExpression::parse(Token& token)
 {
 	auto lhs = RelationalExpression::parse(token);
 
@@ -35,10 +35,10 @@ Optional<Box<Expression>> EqualityExpression::parse(Token& token)
 		if (!rhs)
 			return {};
 
-		auto *expression = new EqualityExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
-		auto box = Box<Expression>(expression);
+		auto expression = EqualityExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
+		auto id = NodeBank::add(std::move(expression));
 
-		lhs = Optional(std::move(box));
+		lhs = std::move(id);
 		type = getEqualityType(token);
 	}
 

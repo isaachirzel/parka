@@ -2,94 +2,40 @@
 #include "parka/ast/expression/call.hpp"
 
 #include "parka/ast/expression/expression.hpp"
+#include "parka/ast/expression/index.hpp"
+#include "parka/ast/expression/member_access.hpp"
+#include "parka/ast/expression/primary.hpp"
 #include "parka/util/print.hpp"
 
-Optional<Box<Expression>> PostfixExpression::parse(Token& token)
+Optional<ExpressionId> PostfixExpression::parse(Token& token)
 {
-	PostfixExpression node = { 0 };
+	auto postfix = PrimaryExpression::parse(token);
 
-	if (!parsePrimaryExpression(&node.expression, token))
-		goto error;
+	if (!postfix)
+		return {};
 
-parsePostfix:
-
-	switch (token.type())
+	while (true)
 	{
-		case TokenType::LeftBracket: // Index
-			token.increment();
-
-			Expression index;
-
-			if (!parseExpression(&index, token))
-				goto error;
-
-			node.type = POSTFIX_INDEX;
-			node.index = index;
-
-			if (token.type() != TokenType::RightBracket)
-			{
-				printParseError(token, "']' after index operation", NULL);
-				goto error;
-			}
-
-			token.increment();
-			break;
-
-		case TokenType::LeftParenthesis: // Function call
+		switch (token.type())
 		{
-			CallExpression arguments;
+			case TokenType::LeftBracket: // Index
+				postfix = IndexExpression::parse(token, postfix.unwrap());
+				continue;
 
-			if (!parseCallExpression(&arguments, token))
-				goto error;
+			case TokenType::LeftParenthesis: // Function call
+				postfix = CallExpression::parse(token, postfix.unwrap());
+				continue;
 
-			node.type = POSTFIX_FUNCTION_CALL;
-			node.call = arguments;
-			break;
+			case TokenType::Dot: // Member
+				postfix = MemberAccess::parse(token, postfix.unwrap());
+				continue;
+			
+			default:
+				break;
 		}
 
-		case TokenType::Dot: // Member
-			token.increment();
-		
-			if (token.type() != TokenType::Identifier)
-			{
-				printParseError(token, "member, method, or property name", NULL);
-				goto error;
-			}
-
-			Token name = *token;
-
-			token.increment();
-			
-			node.type = POSTFIX_MEMBER;
-			node.member = name;
-			break;
-		
-		default:
-			goto finish;
+		break;
 	}
 
-	Expression inner =
-	{
-		.type = EXPRESSION_POSTFIX,
-		.postfix = new(Postfix)
-	};
-
-	*inner.postfix = node;
-
-	node = (Postfix)
-	{
-		.expression = inner
-	};
-
-	goto parsePostfix;
-
-finish:
-
-	*out = node.expression;
-
-	return true;
-	
-error:
-
-	return false;
+	return postfix;
 }

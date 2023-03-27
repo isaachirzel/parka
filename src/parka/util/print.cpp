@@ -1,17 +1,10 @@
 #include "parka/util/path.hpp"
 #include "parka/util/print.hpp"
-
-// standard headers
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <limits.h>
 #include "parka/util/primitives.hpp"
 #include "parka/util/string.hpp"
 
-
+#include <iostream> 
+#include <cstdarg>
 
 #define COLOR_RED		"\033[91m"
 #define COLOR_YELLOW	"\033[93m"
@@ -33,20 +26,20 @@ usize errorCount = 0;
 usize warningCount = 0;
 usize noteCount = 0;
 
-typedef enum LogLevel
+enum LogLevel
 {
-	LOG_NOTE,
-	LOG_WARNING,
-	LOG_ERROR,
-	LOG_SUCCESS
-} LogLevel;
+	Note,
+	Warning,
+	Error,
+	Success
+};
 
-typedef struct Log
+struct Log
 {
 	const char* prompt;
 	const char* color;
 	const char* reset;
-} Log;
+};
 
 Log createLog(LogLevel level)
 {
@@ -58,28 +51,28 @@ Log createLog(LogLevel level)
 
 	switch (level)
 	{
-		case LOG_NOTE:
+		case LogLevel::Note:
 			prompt = PROMPT_NOTE;
 			
 			if (isColorEnabled)
 				color = COLOR_CYAN;
 			break;
 				
-		case LOG_WARNING:
+		case LogLevel::Warning:
 			prompt = PROMPT_WARNING;
 			
 			if (isColorEnabled)
 				color = COLOR_PURPLE;
 			break;
 			
-		case LOG_ERROR:
+		case LogLevel::Error:
 			prompt = PROMPT_ERROR;
 
 			if (isColorEnabled)
 				color = COLOR_RED;
 			break;
 
-		case LOG_SUCCESS:
+		case LogLevel::Success:
 			prompt = PROMPT_SUCCESS;
 
 			if (isColorEnabled)
@@ -116,15 +109,15 @@ usize getNumberWidth(usize number)
 	return out;
 }
 
-void sbPushMargin(StringBuilder *builder, usize line)
+String toMargin(usize lineNumber)
 {
 	const usize numberWidth = 5;
 
 	char tempBuffer[numberWidth + 4];
 
-	if (line > 0)
+	if (lineNumber > 0)
 	{
-		sprintf(tempBuffer, "%5zu", line);
+		sprintf(tempBuffer, "%5zu", lineNumber);
 	}
 	else
 	{
@@ -137,7 +130,20 @@ void sbPushMargin(StringBuilder *builder, usize line)
 	tempBuffer[numberWidth + 2] = ' ';
 	tempBuffer[numberWidth + 3] = '\0';
 
-	sbPushString(builder, tempBuffer);
+	return tempBuffer;
+}
+
+String toInvisible(const char *start, usize n)
+{
+	auto text = String(n, ' ');
+
+    for (usize i = 0; i < n; ++i)
+    {
+		if (start[i] == '\t')
+			text[i] = '\t';
+    }
+
+	return text;
 }
 
 usize getStartOfLine(const char *text, usize pos)
@@ -153,69 +159,91 @@ usize getStartOfLine(const char *text, usize pos)
 	return 0;
 }
 
-char *getTokenHighlight(const Token& token, const FilePosition *position, const Log *context)
+String getLine(const char *str)
+{
+	const char *end;
+
+	for (end = str; *end && *end != '\n'; ++end);	
+
+	auto text = String(str, end - str);
+	
+	return text;
+}
+
+usize findOccurrence(const char *text, const char *token)
+{
+    assert(text != NULL);
+    assert(token != NULL);
+
+    char starter = token[0];
+    usize length = strlen(token);
+
+    for (const char *iter = text; *iter; ++iter)
+    {
+        if (*iter != starter)
+            continue;
+
+        if (!strncmp(iter, token, length))
+            return iter - text;
+    }
+
+    return SIZE_MAX;
+}
+
+String getTokenHighlight(const Token& token, const FilePosition& position, const Log& context)
 {
 	// TODO: Handle multiline tokens
-	// TODO: Handle tabs
-	const File *file = token.file();
+	const File& file = token.file();
 
-	StringBuilder highlight = sbCreate(256);
-	StringBuilder line = sbCreate(128);
-	StringBuilder underline = sbCreate(128);
+	auto highlight = String();
+	auto line = String();
+	auto underline = String();
+	auto pos = getStartOfLine(file.text().c_str(), token.pos());
 
-	usize pos = getStartOfLine(file->src, token.pos());
+	line += toMargin(position.line());
+	underline += toMargin(0);
 
-	sbPushMargin(&line, position->line);
-	sbPushMargin(&underline, 0);
-
-	const char *start = file->src + pos;
+	const char *start = file.text().c_str() + pos;
 	usize startLength = token.pos() - pos;
 
 	// Start of Line
-	sbPushStringN(&line, start, startLength);
-	sbPushStringInvisibleN(&underline, start, startLength);
+	line += String(start, startLength);
+	underline += toInvisible(start, startLength);
 
 	// Color
-	if (*context->color)
+	if (context.color)
 	{
-		sbPushString(&line, context->color);
-		sbPushString(&underline, context->color);
+		line += context.color;
+		underline += context.color;
 	}
 
-	// Token
-	const char *text  = file->src + token.pos();
-
-	sbPushStringN(&line, text, token.length());
-	sbPushCharN(&underline, '~', token.length());
+	line += token.text();
+	underline += String(token.length(), '~');
 
 	// Reset
-	if (*context->color)
+	if (*context.color)
 	{
-		sbPushString(&line, context->reset);
-		sbPushString(&underline, context->reset);
+		line += context.reset;
+		underline += context.reset;
 	}
 
-	const char *end = text + token.length();
-	const char *endPos = sbPushLine(&line, end);
+	const char *end = &file[token.pos() + token.length()];
+	line += getLine(end);
+	line += '\n';
+	underline += '\n';
+	highlight += line;
+	highlight += underline;
+	highlight += '\n';
 
-	sbPushStringInvisibleN(&underline, end, endPos - end);
-
-	sbPushChar(&line, '\n');
-	sbPushChar(&underline, '\n');
-
-	sbPushString(&highlight, line.data);
-	sbPushString(&highlight, underline.data);
-	sbPushChar(&highlight, '\n');
-
-	return highlight.data;
+	return highlight;
 }
 
 void printFileAndLine(const char *file, u32 line)
 {
 	// TODO: Make OS agnostic
-	usize index = stringFindOccurrence(file, "/src/");
+	usize index = findOccurrence(file, "/src/");
 
-	if (index != PATH_MAX)
+	if (index != SIZE_MAX)
 		file += (index + 5);
 
 	printf("%s:%u: ", file, line);
@@ -252,27 +280,25 @@ void printParseError(const Token& token, const char *expected, const char *messa
 	}
 	else
 	{
-		const char *category = tokenCategory(token);
+		auto category = token.category();
 
-		printTokenError(token, "Expected %s, found %s. %s", expected, category, message);
+		printTokenError(token, "Expected %s, found %s. %s", expected, category.c_str(), message);
 	}
 }
 
-void printMessage(LogLevel level, const Token& token, const char *format, va_list args)
+void printMessage(LogLevel level, const Token *token, const char *format, va_list args)
 {
-	FilePosition position;
-
 	switch (level)
 	{
-		case LOG_ERROR:
+		case LogLevel::Error:
 			errorCount += 1;
 			break;
 
-		case LOG_WARNING:
+		case LogLevel::Warning:
 			warningCount += 1;
 			break;
 
-		case LOG_NOTE:
+		case LogLevel::Note:
 			noteCount += 1;
 			break;
 
@@ -282,24 +308,27 @@ void printMessage(LogLevel level, const Token& token, const char *format, va_lis
 
 	if (token)
 	{
-		position = fileGetPosition(token.file(), token.pos());
+		auto position = token->file().getPosition(token->pos());
 
-		printf("%s:%zu:%zu: ", token.file()->path, position.line, position.col);
+		std::cout << token->file().path() << ':' << position.line() << ':' << position.col() << ": ";
 	}
 
-	Log log = createLog(level);
+	auto log = createLog(level);
 	
-	printf("%s%s%s: ", log.color, log.prompt, log.reset);
+	std::cout << log.color << log.prompt << log.reset;
 	vprintf(format, args);
 	putchar('\n');
 
 	if (token)
 	{
-		char* highlight = getTokenHighlight(token, &position, &log);
+		// FIXME: Fix this function to not need position twice
+		auto position = token->file().getPosition(token->pos());
+		auto highlight = getTokenHighlight(*token, position, log);
 
-		puts(highlight);
-		deallocate(highlight);
+		std::cout << highlight;
 	}
+
+	std::cout << std::endl;
 }
 
 void printTokenNote(const Token& token, const char *format, ...)
@@ -307,7 +336,7 @@ void printTokenNote(const Token& token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_NOTE, token, format, args);
+	printMessage(LogLevel::Note, &token, format, args);
 
 	va_end(args);
 }
@@ -317,7 +346,7 @@ void printTokenWarning(const Token& token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_WARNING, token, format, args);
+	printMessage(LogLevel::Warning, &token, format, args);
 
 	va_end(args);
 }
@@ -327,7 +356,7 @@ void printTokenError(const Token& token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_ERROR, token, format, args);
+	printMessage(LogLevel::Error, &token, format, args);
 
 	va_end(args);
 }
@@ -337,7 +366,7 @@ void printNote(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_NOTE, NULL, format, args);
+	printMessage(LogLevel::Note, NULL, format, args);
 
 	va_end(args);
 }
@@ -347,7 +376,7 @@ void printWarning(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_WARNING, NULL, format, args);
+	printMessage(LogLevel::Warning, NULL, format, args);
 
 	va_end(args);
 }
@@ -357,7 +386,7 @@ void printError(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_ERROR, NULL, format, args);
+	printMessage(LogLevel::Error, NULL, format, args);
 	
 	va_end(args);
 }
@@ -367,7 +396,7 @@ void printSuccess(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LOG_SUCCESS, NULL, format, args);
+	printMessage(LogLevel::Success, NULL, format, args);
 	
 	va_end(args);
 }

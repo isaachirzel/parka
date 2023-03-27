@@ -39,7 +39,7 @@ String readFileText(const String& filepath)
 	return text;
 }
 
-bool writeFileText(const char *filepath, const StringBuilder *content)
+bool writeFileText(const char *filepath, const String& content)
 {
 	FILE *file = fopen(filepath, "w");
 
@@ -49,11 +49,11 @@ bool writeFileText(const char *filepath, const StringBuilder *content)
 		return false;
 	}
 
-	usize bytesWritten = fwrite(content->data, sizeof(char), content->length, file);
+	usize bytesWritten = fwrite(content.c_str(), sizeof(char), content.length(), file);
 
 	fclose(file);
 
-	if (bytesWritten != content->length)
+	if (bytesWritten != content.length())
 	{
 		printError("Failed to write content to file '%s'.", filepath);
 		return false;
@@ -64,10 +64,7 @@ bool writeFileText(const char *filepath, const StringBuilder *content)
 
 Array<usize> File::getLineLengths(const String& text)
 {
-	auto lengths = Array<usize>();
-	
-	lengths.reserve(text.size() / 80);
-
+	auto lengths = Array<usize>(text.length() / 80);
 	usize lastStartOfLine = 0;
 	usize length = 0;
 
@@ -75,7 +72,7 @@ Array<usize> File::getLineLengths(const String& text)
 	{
 		if (c == '\n')
 		{
-			lengths.push_back(length);
+			lengths.push(length);
 			length = 0;
 			continue;
 		}
@@ -83,7 +80,7 @@ Array<usize> File::getLineLengths(const String& text)
 		length += 1;
 	}
 
-	lengths.push_back(length);
+	lengths.push(length);
 
 	return lengths;
 }
@@ -149,7 +146,7 @@ File File::from(const String& name, const String& text)
 
 usize File::getLine(usize pos) const
 {
-	assert(pos < _text.size());
+	assert(pos < _text.length());
 
 	usize line = 0;
 
@@ -167,7 +164,7 @@ usize File::getLine(usize pos) const
 
 usize File::getCol(usize startPos) const
 {
-	assert(startPos < _text.size());
+	assert(startPos < _text.length());
 
 	usize pos = startPos;
 
@@ -182,22 +179,19 @@ usize File::getCol(usize startPos) const
 	return startPos - pos;
 }
 
-char File::operator[](usize index) const
+const char& File::operator[](usize index) const
 {
-	assert(index <= _text.size()); // Allow retrieving null end
+	assert(index <= _text.length()); // Allow retrieving null end
 
 	return _text[index];
 }
 
 FilePosition File::getPosition(usize pos) const
 {
-	assert(pos < _text.size());
-
-	FilePosition position =
-	{
-		.line = 1,
-		.col = 1
-	};
+	assert(pos < _text.length());
+	
+	usize line = 1;
+	usize col = 1;
 
 	usize filePos = 0;
 
@@ -207,10 +201,10 @@ FilePosition File::getPosition(usize pos) const
 			break;
 
 		filePos += length + 1;
-		position.line += 1;
+		line += 1;
 	}
 
-	position.col = pos - filePos + 1;
+	col = pos - filePos + 1;
 
-	return position;
+	return { line, col };
 }

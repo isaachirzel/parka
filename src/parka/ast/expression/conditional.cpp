@@ -1,11 +1,11 @@
 #include "parka/ast/expression/conditional.hpp"
 #include "parka/ast/expression/boolean_or.hpp"
-
 #include "parka/ast/expression/expression.hpp"
+#include "parka/entity/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
 
-Optional<Box<Expression>> ConditionalExpression::parse(Token& token)
+Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 {
 	auto condition = BooleanOrExpression::parse(token);
 
@@ -32,8 +32,8 @@ Optional<Box<Expression>> ConditionalExpression::parse(Token& token)
 	if (!falseCase)
 		return {};
 
-	auto expression = new ConditionalExpression(condition.unwrap(), trueCase.unwrap(), falseCase.unwrap());
-	auto box = Box<Expression>(expression);
+	auto expression = ConditionalExpression(condition.unwrap(), trueCase.unwrap(), falseCase.unwrap());
+	auto id = NodeBank::add(std::move(expression));
 
-	return box;
+	return id;
 }

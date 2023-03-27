@@ -4,11 +4,11 @@
 
 #include "parka/util/print.hpp"
 
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <unistd.h>
+#include <cassert>
+#include <cstring>
+#include <cstdlib>
+#include <climits>
+// #include <unistd>
 
 namespace path
 {
@@ -25,85 +25,82 @@ namespace path
 
 		return a + '/' + b;
 	};
-}
 
-usize pathCopy(char *buffer, const char *path)
-{
-	usize len = 0;
-
-	for (const char *iter = path; *iter; ++iter)
+	usize pathCopy(char *buffer, const char *path)
 	{
-		if (*iter == '\\' || *iter == '/')
-		{
-			buffer[len++] = '/';
+		usize len = 0;
 
-			while (iter[1] == '\\' || iter[1] == '/')
-				++iter;
-			
-			continue;
+		for (const char *iter = path; *iter; ++iter)
+		{
+			if (*iter == '\\' || *iter == '/')
+			{
+				buffer[len++] = '/';
+
+				while (iter[1] == '\\' || iter[1] == '/')
+					++iter;
+				
+				continue;
+			}
+
+			buffer[len++] = *iter;
 		}
 
-		buffer[len++] = *iter;
+		return len;
 	}
 
-	return len;
-}
-
-char *pathGetRelative(const char *base, const char *path)
-{
-	usize offset = strlen(base);
-
-	if (path[offset] == '/')
-		offset += 1;
-
-	return stringDuplicate(path + offset);
-}
-
-char *pathGetFilename(const char *path)
-{
-	const char *end = path;
-
-	while (*end)
-		++end;
-
-	if (end - path == 0)
-		return NULL;
-
-	while (end[-1] == '/')
-		end -= 1;
-
-	const char *begin = end;
-
-	while (begin > path)
+	String getRelativePath(const String& base, const String& path)
 	{
-		if (begin[-1] == '/')
-			break;
+		usize offset = base.length();
 
-		--begin;
+		if (path[offset] == '/')
+			offset += 1;
+
+		auto str = String(path.c_str() + offset);
+
+		return str;
 	}
 
-	char *fileName = stringDuplicateN(begin, end - begin);
+	String getFilename(const String& path)
+	{
+		const char *end = path.c_str();
 
-	return fileName;
+		while (*end)
+			++end;
+
+		if (end - path.c_str() == 0)
+			return "";
+
+		while (end[-1] == '/')
+			end -= 1;
+
+		const char *begin = end;
+
+		while (begin > path)
+		{
+			if (begin[-1] == '/')
+				break;
+
+			--begin;
+		}
+
+		auto filename = String(begin, end - begin);
+
+		return filename;
+	}
+
+	// void pathGetExecutableDirectory(char *buffer)
+	// {
+	// 	// TODO: Make OS agnostic
+		
+	// 	const char *procPath = "/proc/self/exe";
+	// 	// FreeBSD: /proc/curproc/file
+	// 	// Solaris: /proc/self/path/a.out
+	// 	// Windows: GetModuleFileName(NULL, buffer, PATH_MAX)
+
+	// 	usize length = readlink(procPath, buffer, PATH_MAX);
+
+	// 	buffer[length] = '\0';
+	// }
 }
 
-void pathGetCurrentWorkingDirectory(char *buffer)
-{
-	// TODO: Make OS agnostic
 
-	getcwd(buffer, PATH_MAX);
-}
-
-void pathGetExecutableDirectory(char *buffer)
-{
-	// TODO: Make OS agnostic
-	
-	const char *procPath = "/proc/self/exe";
-	// FreeBSD: /proc/curproc/file
-	// Solaris: /proc/self/path/a.out
-	// Windows: GetModuleFileName(NULL, buffer, PATH_MAX)
-
-	usize length = readlink(procPath, buffer, PATH_MAX);
-
-	buffer[length] = '\0';
-}

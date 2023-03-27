@@ -26,8 +26,8 @@ public:
 	const T& value() const { assert(_ptr); return _ptr; }
 	T *operator ->() { assert(_ptr); return _ptr; }
 	const T *operator ->() const { assert(_ptr); return _ptr; }
-	T& operator *() { assert(_ptr); return *_ptr; }
-	const T& operator *() const { assert(_ptr); return *_ptr; }
+	T& operator *() { assert(_ptr); return _ptr; }
+	const T& operator *() const { assert(_ptr); return _ptr; }
 };
 
 #endif

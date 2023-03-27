@@ -3,7 +3,7 @@
 #include "parka/ast/expression/assignment.hpp"
 #include "parka/ast/expression/block.hpp"
 
-Optional<Box<Expression>> Expression::parse(Token& token)
+Optional<ExpressionId> Expression::parse(Token& token)
 {
 	if (token.type() == TokenType::LeftBrace)
 		return Block::parse(token);

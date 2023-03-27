@@ -1,163 +1,117 @@
 #include "parka/scope.hpp"
 #include "parka/util/string.hpp"
 
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
-Scope scopeCreate(usize capacity)
-{	
-	Scope scope =
-	{
-		.names = allocateArray(sizeof(StringBuilder), capacity),
-		.capacity = capacity
-	};
 
-	return scope;
-}
 
-usize getTokenCount(const char * restrict key)
+usize getTokenCount(const char *key)
 {
 	usize count = 0;
 	
-	while (true)
+	do
 	{
 		switch (*key)
 		{
+			case '\0':
+				count += 1;
+				break;
+
 			case ':':
 				assert(key[1] == ':');
 				count += 1;
 				key += 2;
 				continue;
 
-			case '\0':
-				count += 1;
-				break;
-
 			default:
 				key += 1;
 				continue;
 		}
-
-		break;
-	}
+	} while (false);
 
 	return count;
 }
 
-Scope scopeFromKey(const char * restrict key)
+Scope Scope::from(const String& symbol)
 {
-	usize tokenCount = getTokenCount(key);
-	Scope scope = scopeCreate(tokenCount);
-
+	auto scope = Scope(getTokenCount(symbol.c_str()));
 	// TODO: Make this safe
 	char token[128];
 	usize tokenLength = 0;
 
-	while (true)
+	for (usize i = 0; i < symbol.size() + 1; ++i)
 	{
-		switch (*key)
+		switch (symbol[i])
 		{
 			case ':':
 				token[tokenLength] = '\0';
-				key += 2;
-				scopePush(&scope, token);
+				i += 1;
+				scope.push(token);
 				tokenLength = 0;
 				continue;
 
 			case '\0':
 				token[tokenLength] = '\0';
-				scopePush(&scope, token);
+				scope.push(token);
 				tokenLength = 0;
 				break;
 
 			default:
-				token[tokenLength++] = *key;
-				key += 1;
+				token[tokenLength] = symbol[i];
+				tokenLength += 1;
 				continue;
 		}
-		break;
 	}
 
 	return scope;
 }
 
-bool scopeContains(const Scope *scope, const char *name)
+bool Scope::contains(const String& name)
 {
-	for (usize i = 0; i < scope->count; ++i)
+	for (const auto& value : _names)
 	{
-		if (!strcmp(scope->names[i].data, name))
+		if (value == name)
 			return true;
 	}
 
 	return false;
 }
 
-void scopePush(Scope *scope, const char *name)
+void Scope::push(String&& name)
 {
-	assert(scope);
-	assert(scope->capacity >= scope->count); // Count should never be higher than capacity
-
-	if (scope->count == scope->capacity)
-	{
-		usize newCapacity = scope->count + 8;
-		StringBuilder *names = reallocate(scope->names, newCapacity * sizeof(StringBuilder));
-
-		for (usize i = scope->count; i < newCapacity; ++i)
-			names[i] = (StringBuilder) { 0 };
-
-		scope->names = names;
-		scope->capacity = newCapacity;
-	}
-
-	usize index = scope->count;
-
-	StringBuilder *sb = &scope->names[index];
-
-	sbClear(sb);
-	sbPushString(sb, name);
-
-	scope->count += 1;
+	_names.push(name);
 }
 
-void scopePop(Scope *scope)
+void Scope::pop()
 {
-	assert(scope->count > 0);
-	
-	scope->count -= 1;
+	_names.pop();
 }
 
-void scopeDestroy(Scope *scope)
+void Scope::clear()
 {
-	for (usize i = 0; i < scope->count; ++i)
-		sbDestroy(&scope->names[i]);
-
-	deallocate(scope->names);
+	_names.clear();
 }
 
-void scopeClear(Scope *scope)
+String Scope::createSymbolN(const String& identifier, usize n) const
 {
-	scope->count = 0;
-}
+	assert(n <= _names.length());
+	auto symbol = String();
 
-char *scopeCreateSymbolN(const Scope *scope, const char *identifier, usize n)
-{
-	assert(n <= scope->count);
-	StringBuilder symbol = { 0 };
-
-	sbReserve(&symbol, 128);
+	symbol.reserve(255);
 
 	for (usize i = 0; i < n; ++i)
 	{
-		sbConcat(&symbol, &scope->names[i]);
-		sbPushString(&symbol, "::");
+		symbol += _names[i];
+		symbol += "::";
 	}
 
-	sbPushString(&symbol, identifier);
+	symbol += identifier;
 
-	return symbol.data;
+	return symbol;
 }
 
-char *scopeCreateSymbol(const Scope *scope, const char *identifier)
+String Scope::createSymbol(const String& identifier) const
 {
-	return scopeCreateSymbolN(scope, identifier, scope->count);
+	return createSymbolN(identifier, _names.length());
 }

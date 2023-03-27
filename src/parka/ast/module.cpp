@@ -1,110 +1,97 @@
 #include "parka/ast/module.hpp"
-#include "parka/ast/function.hpp"
+#include "parka/ast/function/function.hpp"
 #include "parka/ast/struct.hpp"
+#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/array.hpp"
-
+#include "parka/util/path.hpp"
 #include "parka/util/print.hpp"
 
-bool parseModule(Module *node, const File *file, const String& package)
+Optional<Module> Module::parse(const File& file, const String& package)
 {
-	printFmt("Parsing file: %s", file->path);
-	// TODO: parse error recovery
-	bool success = true;
-	Token token = getInitialToken(file);
+	printFmt("Parsing file: %s", file.path().c_str());
+	// TODO: Fast forwarding after encountering parse error to not stop after first failure
+	auto success = true;
+	auto token = Token::initial(file);
+	auto functionIds = Array<EntityId>();
+	auto structIds = Array<EntityId>();
 
-	arrayInit(&node->functionIds, 5);
-	arrayInit(&node->structIds, 2);
-
-parse:
-
-	switch (token.type)
+	do
 	{
-		usize index;
-
-		case TokenType::KeywordFunction:
-			if (!parseFunction(&index, &token, package))
+		switch (token.type())
+		{
+			case TokenType::KeywordFunction:
 			{
-				success = false;
-				break;
+				auto functionId = Function::parse(token, package);
+
+				if (!functionId)
+				{
+					success = false;
+					break;
+				}
+
+				functionIds.push(functionId.unwrap());
+
+				continue;
 			}
 
-			arrayPush(&node->functionIds, &index);
-			goto parse;
-
-		case TokenType::KeywordStruct:
-			if (!parseStruct(&index, &token, package))
+			case TokenType::KeywordStruct:
 			{
-				success = false;
-				break;
+				auto structId = Struct::parse(token, package);
+
+				if (!structId)
+				{
+					success = false;
+					break;
+				}
+
+				structIds.push(structId.unwrap());
+
+				continue;
 			}
 
-			arrayPush(&node->structIds, &index);
-			goto parse;
+			case TokenType::EndOfFile:
+				break;
 
-		case TokenType::EndOfFile:
-			break;
+			default:
+				printParseError(token, "type or function definition");
+				success = false;
+				break;
+		}
+	
+	} while (false);
 
-		default:
-			printParseError(&token, "type or function definition", NULL);
-			success = false;
-			break;
-	}
+	if (!success)
+		return {};
 
-	return success;
+	auto filename = path::getFilename(file.path());
+	auto mod = Module(std::move(filename), std::move(functionIds), std::move(structIds));
+
+	return mod;
 }
 
-bool declareStruct(usize *index)
-{
-	return symbolTableDeclareGlobal(EntityType::Struct, *index);
-}
-
-bool declareFunction(usize *index)
-{
-	return symbolTableDeclareGlobal(EntityType::Function, *index);
-}
-
-bool declareModule(Module *module)
-{
-	bool success = true;
-
-	if (!arrayForEach(&module->structIds, (ElementAction)declareStruct))
-		success = false;
-
-	if (!arrayForEach(&module->functionIds, (ElementAction)declareFunction))
-		success = false;
-
-	return success;
-}
-
-bool validateModule(Module *module, const Scope *packageScope)
+bool Module::validate(Table<EntityId>& globalSymbols, const String& packageSymbol)
 {
 	print("Validating module");
-	assert(module != NULL);
-	assert(packageScope != NULL);
 
-	bool success = true;
-	IndexList *functionIds = &module->functionIds;
-	IndexList *structIds = &module->structIds;
-	SymbolTable localTable = localSymbolTableCreate(packageScope);
+	auto success = true;
+	auto symbols = SymbolTable(globalSymbols, packageSymbol);
 
-	for (usize i = 0; i < functionIds->length; ++i)
+	for (auto id : _functionIds)
 	{
-		Function *function = symbolTableGetFunction(functionIds->data[i]);
+		auto& function = NodeBank::getFunction(id);
 
-		localTable.function = function;
-
-		if (!validateFunction(function, &localTable))
+		if (!function.validate(symbols))
 			success = false;
-
-		localSymbolTableClear(&localTable);
 	}
 
-	for (usize i = 0; i < structIds->length; ++i)
+	for (auto id : _structIds)
 	{
-		Struct *node = symbolTableGetStruct(structIds->data[i]);
+		auto& strct = NodeBank::getStruct(id);
 
-		if (!validateStruct(node, packageScope))
+		if (!strct.validate(symbols))
 			success = false;
 	}
 

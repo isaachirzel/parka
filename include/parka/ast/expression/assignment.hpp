@@ -20,11 +20,11 @@ enum AssignmentType
 
 class Assignment : public Expression
 {
-	Box<Expression> _lhs;
-	Box<Expression> _rhs;
+	ExpressionId _lhs;
+	ExpressionId _rhs;
 	AssignmentType _type;
 
-	Assignment(Box<Expression>&& lhs, Box<Expression>&& rhs, AssignmentType type) :
+	Assignment(ExpressionId&& lhs, ExpressionId&& rhs, AssignmentType type) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs)),
 	_type(type)
@@ -36,13 +36,13 @@ public:
 	Assignment(const Assignment&) = delete;
 	~Assignment() = default;
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
+	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 	
-	const auto& lhs() const { return *_lhs; }
-	const auto& rhs() const { return *_rhs; }
+	const auto& lhs() const { return _lhs; }
+	const auto& rhs() const { return _rhs; }
 	const auto& type() const { return _type; }
 };
 

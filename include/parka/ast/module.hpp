@@ -1,18 +1,19 @@
 #ifndef PARKA_AST_MODULE_HPP
 #define PARKA_AST_MODULE_HPP
 
-#include "parka/scope.hpp"
+#include "parka/entity/entity_id.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/file.hpp"
 #include "parka/util/optional.hpp"
+#include "parka/util/table.hpp"
 
 class Module
 {
-	String _symbol;
-	Array<usize> _functionIds;
-	Array<usize> _structIds;
+	String _symbol; // TODO: Change to filename?
+	Array<EntityId> _structIds;
+	Array<EntityId> _functionIds;
 
-	Module(String&& symbol, Array<usize>&& functionIds, Array<usize>&& structIds) :
+	Module(String&& symbol, Array<EntityId>&& functionIds, Array<EntityId>&& structIds) :
 	_symbol(std::move(symbol)),
 	_functionIds(std::move(functionIds)),
 	_structIds(std::move(structIds))
@@ -24,10 +25,9 @@ public:
 	Module(const Module&) = delete;
 	~Module() = default;
 
-	static Optional<Module> parse(const File& file, const String& package);
+	static Optional<Module> parse(const File& file, const String& packageSymbol);
 
-	bool declare();
-	bool validate(const Scope& packageScope);
+	bool validate(Table<EntityId>& globalSymbols, const String& packageSymbol);
 
 	const auto& symbol() const { return _symbol; }
 	const auto& functionIds() const { return _functionIds; }

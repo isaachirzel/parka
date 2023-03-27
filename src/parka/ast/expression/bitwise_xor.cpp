@@ -1,8 +1,8 @@
 #include "parka/ast/expression/bitwise_xor.hpp"
 #include "parka/ast/expression/bitwise_and.hpp"
+#include "parka/entity/node_bank.hpp"
 
-
-Optional<Box<Expression>> BitwiseXorExpression::parse(Token& token)
+Optional<ExpressionId> BitwiseXorExpression::parse(Token& token)
 {
 	auto lhs = BitwiseAndExpression::parse(token);
 
@@ -18,11 +18,10 @@ Optional<Box<Expression>> BitwiseXorExpression::parse(Token& token)
 		if (!rhs)
 			return {};
 
-		auto *expression = new BitwiseXorExpression(lhs.unwrap(), rhs.unwrap());
-		auto box = Box<Expression>(expression);
+		auto expression = BitwiseXorExpression(lhs.unwrap(), rhs.unwrap());
+		auto id = NodeBank::add(std::move(expression));
 
-		lhs = Optional(std::move(box));
-		
+		lhs = std::move(id);
 	}
 
 	return lhs;

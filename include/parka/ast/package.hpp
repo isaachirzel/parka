@@ -2,7 +2,9 @@
 #define PARKA_AST_PACKAGE_HPP
 
 #include "parka/ast/module.hpp"
+#include "parka/entity/entity.hpp"
 #include "parka/scope.hpp"
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/optional.hpp"
@@ -23,15 +25,14 @@ public:
 	Package(const Package&) = delete;
 	~Package() = default;
 
-	static Optional<Package> parse(const Directory& directory, Scope& scope, const String& name);
-	static bool declare(usize index);
-	static bool validate(usize index);
+	static Optional<Package> parse(const Array<File>& files, String&& symbol);
 
-	Token token() const { return Token(); }
+	bool declare(Table<EntityId>& globalSymbols);
+	bool validate(Table<EntityId>& globalSymbols);
+
 	const String& symbol() const { return _symbol; }
 	EntityType type() const { return EntityType::Package; }
 
-	const auto& symbol() const { return _symbol; }
 	const auto& modules() const { return _modules; }
 };
 

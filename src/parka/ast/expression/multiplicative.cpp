@@ -1,5 +1,6 @@
 #include "parka/ast/expression/multiplicative.hpp"
 #include "parka/ast/expression/prefix.hpp"
+#include "parka/entity/node_bank.hpp"
 
 Optional<MultiplicativeType> getMultiplicativeType(Token& token)
 {
@@ -19,7 +20,7 @@ Optional<MultiplicativeType> getMultiplicativeType(Token& token)
 	}
 }
 
-Optional<Box<Expression>> MultiplicativeExpression::parse(Token& token)
+Optional<ExpressionId> MultiplicativeExpression::parse(Token& token)
 {
 	auto lhs = Prefix::parse(token);
 
@@ -37,10 +38,10 @@ Optional<Box<Expression>> MultiplicativeExpression::parse(Token& token)
 		if (!rhs)
 			return {};
 
-		auto *expression = new MultiplicativeExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
-		auto box = Box<Expression>(expression);
+		auto expression = MultiplicativeExpression(lhs.unwrap(), rhs.unwrap(), type.unwrap());
+		auto id = NodeBank::add(std::move(expression));
 
-		lhs = Optional(std::move(box));
+		lhs = std::move(id);
 		type = getMultiplicativeType(token);
 	}
 
@@ -49,12 +50,12 @@ Optional<Box<Expression>> MultiplicativeExpression::parse(Token& token)
 
 bool MultiplicativeExpression::validate(SymbolTable& symbols)
 {
-	bool success = true;
+	auto success = true;
 
-	if (!_lhs->validate(symbols))
+	if (!NodeBank::get(_lhs).validate(symbols))
 		success = false;
 
-	if (!_rhs->validate(symbols))
+	if (!NodeBank::get(_rhs).validate(symbols))
 		success = false;
 
 	return success;

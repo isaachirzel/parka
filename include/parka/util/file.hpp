@@ -5,7 +5,7 @@
 #include "parka/util/primitives.hpp"
 #include "parka/util/string.hpp"
 
-#include <assert.h>
+#include <cassert>
 
 enum FileType
 {
@@ -14,10 +14,20 @@ enum FileType
 	FILE_JSON
 };
 
-struct FilePosition
+class FilePosition
 {
-	usize line;
-	usize col;
+	usize _line;
+	usize _col;
+
+public:
+
+	FilePosition(usize line, usize col) :
+	_line(line),
+	_col(col)
+	{}
+
+	const auto& line() const { return _line; }
+	const auto& col() const { return _col; }
 };
 
 class File
@@ -50,13 +60,14 @@ public:
 	usize getLine(usize pos) const;
 	usize getCol(usize pos) const;
 	bool hasExtension(const char *extension) const;
-	char operator[](usize index) const;
+	const char& operator[](usize index) const;
 	FilePosition getPosition(usize pos) const;
 
 	const auto& path() const { return _path; }
 	const auto& text() const { return _text; }
 	const auto& lineLengths() const { return _lineLengths; }
 	const auto& type() const { return _type; }
+	auto length() const { return _text.size(); }
 };
 
 #endif

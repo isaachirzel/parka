@@ -5,7 +5,7 @@
 
 struct PrimaryExpression
 {
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token);
 };
 
 #endif

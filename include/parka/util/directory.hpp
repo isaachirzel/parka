@@ -1,36 +1,39 @@
 #ifndef PARKA_DIRECTORY_HPP
 #define PARKA_DIRECTORY_HPP
 
+#include "parka/util/array.hpp"
 #include "parka/util/file.hpp"
-
-struct Directory;
-
-struct DirectoryEntry
-{
-    union
-    {
-        File file;
-        struct Directory *directory;
-    };
-    bool isDirectory;
-};
+#include "parka/util/optional.hpp"
+#include "parka/util/path.hpp"
 
 class Directory
 {
-    char *name;
-    char *path;
-    DirectoryEntry *entries;
-    usize entryCount;
+    String _name;
+    String _path;
+    Array<File> _files;
+    Array<Directory> _subdirectories;
+
+    Directory(String &&path, Array<File>&& files, Array<Directory>&& subdirectories) :
+    _name(path::getFilename(path)),
+    _path(std::move(path)),
+    _files(std::move(files)),
+    _subdirectories(std::move(subdirectories))
+    {}
+
+    static Directory readSubdirectory(const String& path);
 
 public:
 
-    
-};
+    Directory(Directory&&) = default;
+    Directory(const Directory&) = delete;
+    ~Directory() = default;
 
-Directory directoryRead(const char *path);
-void directoryAddFile(Directory *dir, File *file);
-void directoryList(const Directory *dir);
-void directoryDestroy(Directory *dir);
-void directoryEntryDestroy(DirectoryEntry *entry);
+    static Optional<Directory> read(const String& path);
+
+    const auto& name() const { return _name; }
+    const auto& path() const { return _path; }
+    const auto& files() const { return _files; }
+    const auto& subdirectories() const { return _subdirectories; }
+};
 
 #endif

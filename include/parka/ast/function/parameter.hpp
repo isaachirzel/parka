@@ -2,9 +2,11 @@
 #define PARKA_AST_PARAMETER_HPP
 
 #include "parka/ast/type_annotation.hpp"
-#include "parka/symbol_table.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/optional.hpp"
+#include "parka/entity/entity.hpp"
+
+
 
 class Parameter : public Entity
 {
@@ -26,9 +28,9 @@ public:
 	Parameter(const Parameter&) = delete;
 	~Parameter() = default;
 
-	static Optional<Parameter> parse(Token& token);
+	static Optional<EntityId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
+	bool validate(SymbolTable& symbols);
 
 	Token token() const { return _name; }
 	const String& symbol() const { return _symbol; }

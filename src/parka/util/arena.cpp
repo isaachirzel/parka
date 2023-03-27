@@ -2,7 +2,7 @@
 #include "parka/util/print.hpp"
 #include "parka/util/arena.hpp"
 
-#include <assert.h>
+#include <cassert>
 
 // TODO: Make this OS agnostic
 #include <exception>

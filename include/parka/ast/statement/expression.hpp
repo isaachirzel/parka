@@ -3,29 +3,30 @@
 
 #include "parka/ast/expression/expression.hpp"
 #include "parka/ast/statement/statement.hpp"
+#include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
 #include <utility>
 
-class ExpressionStatment : public Statement
+class ExpressionStatement : public Statement
 {
-	Box<Expression> _expression;
+	ExpressionId _expression;
 
-	ExpressionStatment(Box<Expression>&& expression) :
+	ExpressionStatement(ExpressionId&& expression) :
 	_expression(std::move(expression))
 	{}
 
 public:
 
-	ExpressionStatment(ExpressionStatment&&) = default;
-	ExpressionStatment(const ExpressionStatment&) = delete;
-	~ExpressionStatment() = default;
+	ExpressionStatement(ExpressionStatement&&) = default;
+	ExpressionStatement(const ExpressionStatement&) = delete;
+	~ExpressionStatement() = default;
 
-	static Optional<Box<Statement>> parse(Token& token);
+	static Optional<StatementId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
+	bool validate(SymbolTable& symbols);
 
-	const auto& expression() const { return *_expression; }
-}
+	const auto& expression() const { return _expression; }
+};
 
 #endif

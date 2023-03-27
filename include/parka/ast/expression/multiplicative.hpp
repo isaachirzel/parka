@@ -2,25 +2,24 @@
 #define PARKA_AST_EXPRESSION_MULTIPLICATIVE_HPP
 
 #include "parka/ast/expression/expression.hpp"
-#include "parka/symbol_table.hpp"
 #include "parka/util/optional.hpp"
 
 #include <utility>
 
-typedef enum MultiplicativeType
+enum MultiplicativeType
 {
 	MULTIPLICATIVE_MULTIPLY,
 	MULTIPLICATIVE_DIVIDE,
 	MULTIPLICATIVE_MODULUS
-} MultiplicativeType;
+};
 
 class MultiplicativeExpression : public Expression
 {
-	Box<Expression> _lhs;
-	Box<Expression> _rhs;
+	ExpressionId _lhs;
+	ExpressionId _rhs;
 	MultiplicativeType _type;
 
-	MultiplicativeExpression(Box<Expression>&& lhs, Box<Expression>&& rhs, MultiplicativeType type):
+	MultiplicativeExpression(ExpressionId&& lhs, ExpressionId&& rhs, MultiplicativeType type):
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs)),
 	_type(type)
@@ -32,13 +31,13 @@ public:
 	MultiplicativeExpression(const MultiplicativeExpression&) = delete;
 	~MultiplicativeExpression() = default;
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
+	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
-	const auto& lhs() const { return *_lhs; }
-	const auto& rhs() const { return *_rhs; }
+	const auto& lhs() const { return _lhs; }
+	const auto& rhs() const { return _rhs; }
 	const auto& type() const { return _type; }
 };
 

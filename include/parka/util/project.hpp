@@ -2,13 +2,24 @@
 #define PARKA_UTIL_PROJECT_HPP
 
 #include "parka/util/directory.hpp"
+#include "parka/util/optional.hpp"
 
-typedef struct Project
+class Project
 {
-    char *name;
-    Directory srcDir;
-} Project;
+    String _name;
+    Directory _srcDirectory;
 
-Project projectLoad(const char *path);
+    Project(String&& name, Directory&& srcDirectory) :
+    _name(std::move(name)),
+    _srcDirectory(std::move(srcDirectory))
+    {}
+
+public:
+
+    static Optional<Project> read(const String& path);
+
+    const auto& name() const { return _name; }
+    const auto& srcDirectory() const { return _srcDirectory; }
+};
 
 #endif

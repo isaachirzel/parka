@@ -19,7 +19,11 @@ class IntegerLiteral : public Literal
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	IntegerLiteral(IntegerLiteral&&) = default;
+	IntegerLiteral(const IntegerLiteral&) = delete;
+	~IntegerLiteral() = default;
+
+	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;

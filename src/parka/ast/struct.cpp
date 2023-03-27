@@ -1,41 +1,102 @@
 #include "parka/ast/struct.hpp"
-#include "parka/symbol_table.hpp"
-
+#include "parka/ast/member.hpp"
+#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/util/print.hpp"
 
-bool parseStruct(usize *out, Token& token, const char *package)
+Optional<EntityId> Struct::parse(Token& token, const String& package)
 {
-	assert(token.type() == TokenType::KeywordStruct);
-
-	usize index = symbolTableAddStruct();
-	Struct *node = symbolTableGetStruct(index);
+	if (token.type() != TokenType::KeywordStruct)
+	{
+		printParseError(token, "`struct` keyword");
+		return {};
+	}
 
 	token.increment();
 
 	if (token.type() != TokenType::Identifier)
 	{
-		printParseError(token, "struct name", NULL);
-		return false;
+		printParseError(token, "struct name", "Anonymous structs are not allowed.");
+		return {};
 	}
 
-	node->name = *token;
-	node->symbol = createSymbolKey(package, token);
+	auto name = token;
+	auto symbol = package + "::" + name.text();
 
 	token.increment();
 
-	if (!parseMemberList(&node->members, token))
-		return false;
+	if (token.type() != TokenType::LeftBrace)
+	{
+		// TODO: 
+		printParseError(token, "'{' before member list", "Bodyless structs are not allowed.");
+		return {};
+	}
 
-	*out = index;
-	return true;
+	auto members = Array<Member>();
+
+	token.increment();
+
+	if (token.type() != TokenType::RightBrace)
+	{
+		do
+		{
+			auto member = Member::parse(token);
+
+			if (!member)
+				return {};
+
+			members.push(member.unwrap());
+
+			if (token.type() == TokenType::Comma)
+			{
+				token.increment();
+				continue;
+			}
+		} while (false);
+
+		if (token.type() != TokenType::RightBrace)
+		{
+			printParseError(token, "'}' after struct body");
+			return {};
+		}
+	}
+
+	token.increment();
+
+	auto strct = Struct(name, std::move(symbol), std::move(members));
+	auto id = NodeBank::add(std::move(strct));
+
+	return id;
 }
 
-bool validateStruct(Struct *node, const Scope *packageScope)
+bool Struct::validate(SymbolTable& symbols)
 {
 	bool success = true;
 
-	if (!validateMemberList(&node->members, packageScope))
-		success = false;
+	usize index = 0;
+
+	for (auto& member : _members)
+	{
+		for (usize j = 0; j < index; ++j)
+		{
+			const auto& previous = _members[j];
+
+			if (member.name() == previous.name())
+			{
+				success = false;
+				
+				printTokenError(member.name(), "A member with same name is already declared in this struct.");
+				printTokenNote(previous.name(), "Previous delcaration here.");
+
+				break;
+			}
+		}
+
+		if (member.validate(symbols))
+			success = false;
+
+		index += 1;
+	}
 
 	return success;
 }

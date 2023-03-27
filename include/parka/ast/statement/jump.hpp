@@ -3,25 +3,25 @@
 
 #include "parka/ast/expression/expression.hpp"
 #include "parka/ast/statement/statement.hpp"
-#include "parka/symbol_table.hpp"
+
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
-typedef enum JumpType
+enum JumpType
 {
 	JUMP_CONTINUE,
 	JUMP_BREAK,
 	JUMP_RETURN,
 	JUMP_YIELD
-} JumpType;
+};
 
 class JumpStatement : public Statement
 {
 	Token _token;
-	Optional<Box<Expression>> _value;
+	Optional<ExpressionId> _value;
 	JumpType _type;
 
-	JumpStatement(const Token& token, JumpType type, Optional<Box<Expression>>&& value = {}) :
+	JumpStatement(const Token& token, JumpType type, Optional<ExpressionId>&& value) :
 	_token(token),
 	_value(std::move(value)),
 	_type(type)
@@ -33,9 +33,9 @@ public:
 	JumpStatement(const JumpStatement&) = delete;
 	~JumpStatement() = default;
 
-	static Optional<Box<Statement>> parse(Token& token);
+	static Optional<StatementId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
+	bool validate(SymbolTable& symbols);
 
 	const auto& token() const { return _token; }
 	bool hasValue() const { return _value; }

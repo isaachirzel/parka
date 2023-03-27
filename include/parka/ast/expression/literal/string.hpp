@@ -8,14 +8,18 @@ class StringLiteral : public Literal
 	Token _token;
 	String _value;
 
-	StringLiteral(const Token& token, String&& value) :
+	StringLiteral(Token token, String&& value) :
 	_token(token),
 	_value(std::move(value))
 	{}
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	StringLiteral(StringLiteral&&) = default;
+	StringLiteral(const StringLiteral&) = delete;
+	~StringLiteral() = default;
+
+	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;

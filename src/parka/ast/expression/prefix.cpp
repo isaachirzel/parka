@@ -1,62 +1,58 @@
 
 #include "parka/ast/expression/prefix.hpp"
+#include "parka/ast/expression/expression.hpp"
 #include "parka/ast/expression/postfix.hpp"
 
+#include "parka/ast/expression/primary.hpp"
+#include "parka/entity/node_bank.hpp"
 #include "parka/util/print.hpp"
 
-Optional<Box<Expression>> Prefix::parse(Token& token)
+Optional<PrefixType> parsePrefixType(Token& token)
 {
-	Prefix node = { 0 };
-
 	switch (token.type())
 	{
 		case TokenType::Ampersand:
-			node.type = PREFIX_REFERENCE;
-			break;
+			return PrefixType::Reference;
 
 		case TokenType::Asterisk:
-			node.type = PREFIX_DEREFERENCE;
-			break;
+			return PrefixType::Dereference;
 
 		case TokenType::Plus:
-			node.type = PREFIX_POSITIVE;
-			break;
+			return PrefixType::Positive;
 
 		case TokenType::Minus:
-			node.type = PREFIX_NEGATIVE;
-			break;
+			return PrefixType::Negative;
 
 		case TokenType::BitwiseNot:
-			node.type = PREFIX_BITWISE_NOT;
-			break;
+			return PrefixType::BitwiseNot;
 
 		case TokenType::BooleanNot:
-			node.type = PREFIX_BOOLEAN_NOT;
-			break;
+			return PrefixType::BooleanNot;
 
 		default:
-			return parsePostfix(out, token);
+			return {};
 	}
+}
 
-	node.token = *token;
+Optional<ExpressionId> Prefix::parse(Token& token)
+{
+	auto type = parsePrefixType(token);
+
+	if (!type)
+		return PrimaryExpression::parse(token);
+
+	auto prefixToken = token;
 
 	token.increment();
 
-	if (!parsePrefix(&node.expression, token))
-		goto error;
+	auto inner = Prefix::parse(token);
+	auto expression = Prefix(type.value(), inner.unwrap(), prefixToken);
+	auto id = NodeBank::add(std::move(expression));
 
-	*makeNew(out->prefix) = node;
-	out->type = EXPRESSION_PREFIX;
-
-	return true;
-	
-error:
-
-	return false;
+	return id;
 }
 
 bool Prefix::validate(SymbolTable& symbols)
 {
-	assert(node);
 	exitNotImplemented();
 }

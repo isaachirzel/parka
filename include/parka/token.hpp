@@ -104,7 +104,6 @@ class Token
 
 public:
 
-	Token(const File& file);
 	Token(const File& file, usize pos, usize length, TokenType type) :
 	_file(file),
 	_pos(pos),
@@ -115,13 +114,18 @@ public:
 	Token(const Token&) = default;
 	~Token() = default;
 
+	static Token initial(const File& file);
+
 	void increment();
 
 	bool operator ==(const Token& other) const;
-	char operator[](usize index) const;
-	String text() const;
-	String category() const;
+	bool operator ==(const String& other) const;
+	const auto& operator[](usize index) const { return _file[index]; }
 
+	auto text() const { return _file.text().substr(_pos, _length); }
+	String category() const;
+	const auto *begin() const { return &_file[_pos]; }
+	const auto *end() const { return &_file[_pos + _length]; }
 	const auto& file() const { return _file; }
 	const auto& pos() const { return _pos; }
 	const auto& length() const { return _length; }

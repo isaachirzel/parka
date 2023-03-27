@@ -7,23 +7,12 @@
 namespace path
 {
 	String join(const String& a, const String& b);
+	String getFilename(const String& path);
+	bool hasExtension(const char *path, const char *extension);
+	String getRelativePath(const String& base, const String& path);
+	void santizePath(String& path);
+	String pathDuplicate(const String& path);
+	String getFilename(const String& path);
 }
-
-void printInit(void);
-bool pathHasExtension(const char *path, const char *extension);
-char *pathGetRelative(const char *base, const char *path);
-void santizePath(char *path);
-char *pathDuplicate(const char *path);
-char *pathGetFilename(const char *path);
-
-/**
-* @return Current working directory
-*/
-void pathGetCurrentWorkingDirectory(char *buffer);
-
-/**
-* @return Directory of application executable
-*/
-void pathGetExecutableDirectory(char *buffer);
 
 #endif

@@ -3,7 +3,7 @@
 #include "parka/util/timer.hpp"
 
 #include "parka/util/print.hpp"
-#include <time.h>
+#include <ctime>
 
 // TODO: Make OS agnostic
 

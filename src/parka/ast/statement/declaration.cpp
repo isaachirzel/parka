@@ -1,88 +1,92 @@
 #include "parka/ast/expression/expression.hpp"
+#include "parka/ast/module.hpp"
 #include "parka/ast/statement/declaration.hpp"
-#include "parka/ast/variable.hpp"
-#include "parka/symbol_table.hpp"
+#include "parka/ast/function/variable.hpp"
+#include "parka/entity/node_bank.hpp"
 #include "parka/util/print.hpp"
 
-bool parseDeclaration(Declaration *node, Token& token)
+Optional<StatementId> Declaration::parse(Token& token)
 {
-	node->variableId = symbolTableAddVariable();
-	Variable *variable = symbolTableGetVariable(node->variableId);
+	auto variableId = Variable::parse(token);
 
-	if (!parseVariable(variable, token))
-		return false;
+	if (!variableId)
+		return {};
 
 	if (token.type() != TokenType::Assign)
 	{
 		printParseError(token, "expected '=' after declaration", NULL);
-		return false;
+		return {};
 	}
 
 	token.increment();
 
-	if (!parseExpression(&node->value, token))
-		return false;
+	auto value = Expression::parse(token);
+
+	if (!value)
+		return {};
 
 	if (token.type() != TokenType::Semicolon)
 	{
-		printFmt("TOKEN: %zu, %s", token.length(), tokenGetText(token));
-
-		printParseError(token, "';' after declaration", NULL);
-		return false;
+		printParseError(token, "';'", "Declaration statements need to be ended with a ';'.");
+		return {};
 	}
 
 	token.increment();
 
-	return true;
+	auto declaration = Declaration(variableId.unwrap(), value.unwrap());
+	auto id = NodeBank::add(std::move(declaration));
+
+	return id;
 }
 
-bool validateDeclaration(Declaration *node, SymbolTable& localTable)
+bool Declaration::validate(SymbolTable& symbols)
 {
-	bool success = true;
+	exitNotImplemented();
+	// bool success = true;
 
-	if (!symbolTableDeclareLocal(localTable, EntityType::Variable, node->variableId))
-		success = false;
+	// if (!symbolTableDeclareLocal(symbols, EntityType::Variable, node->variableId))
+	// 	success = false;
 
-	Variable *variable = symbolTableGetVariable(node->variableId);
+	// Variable *variable = symbolTableGetVariable(node->variableId);
 	
-	if (!validateVariable(variable, localTable))
-		success = false;
+	// if (!validateVariable(variable, symbols))
+	// 	success = false;
 
-	if (!validateExpression(&node->value, localTable))
-		success = false;
+	// if (!validateExpression(&node->value, symbols))
+	// 	success = false;
 	
-	if (!success)
-		return false;
+	// if (!success)
+	// 	return false;
 
-	Type *variableType = variable->isExplicitlyTyped
-		? &variable->annotation.type
-		: NULL;
+	// Type *variableType = variable->isExplicitlyTyped
+	// 	? &variable->annotation.type
+	// 	: NULL;
 
-	Type expressionType;
-	if (!expressionGetType(&expressionType, &node->value, variableType))
-		return false;
+	// Type expressionType;
+	// if (!expressionGetType(&expressionType, &node->value, variableType))
+	// 	return false;
 
-	if (variable->isExplicitlyTyped)
-	{
-		Type& variableType = &variable->annotation.type;
+	// if (variable->isExplicitlyTyped)
+	// {
+	// 	Type& variableType = &variable->annotation.type;
 
-		if (!typeCanConvert(variableType, &expressionType))
-		{
-			auto toTypeName = expressionType.getName();
-			auto fromTypeName = variableTypegetName();
+	// 	if (!typeCanConvert(variableType, &expressionType))
+	// 	{
+	// 		auto toTypeName = expressionType.getName();
+	// 		auto fromTypeName = variableTypegetName();
 
-			// TODO: Make error highlight entire statement
-			printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toTypeName, fromTypeName);
-			deallocate(toTypeName);
-			deallocate(fromTypeName);
+	// 		// TODO: Make error highlight entire statement
+	// 		printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toTypeName, fromTypeName);
+	// 		deallocate(toTypeName);
+	// 		deallocate(fromTypeName);
 
-			return false;
-		}
-	}
-	else
-	{
-		variable->annotation.type = expressionType;
-	}
+	// 		return false;
+	// 	}
+	// }
+	// else
+	// {
+	// 	variable->annotation.type = expressionType;
+	// }
 
-	return true;
+	// return true;
 }

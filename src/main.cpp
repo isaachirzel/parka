@@ -1,19 +1,20 @@
 #include "parka/util/table.hpp"
-#include "parka/parser.hpp"
+#include "parka/ast/ast.hpp"
 
 #include "parka/util/path.hpp"
 #include "parka/util/file.hpp"
 #include "parka/util/print.hpp"
 #include "parka/util/timer.hpp"
-#include "parka/validator.hpp"
 
-void printErrorCount(Project *project)
+#include <iostream>
+
+void printErrorCount(Project& project)
 {
 	usize errorCount = getErrorCount();
 
 	assert(errorCount > 0);
 
-	printError("Failed to compile `%s`: encountered %zu error(s).", project->name, errorCount);
+	std::cout << "Failed to compile `" << project.name() << "`: encountered " << errorCount << " error(s)." << std::endl;
 }
 
 int main(int argc, const char *argv[])
@@ -21,36 +22,40 @@ int main(int argc, const char *argv[])
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
 
-	ClockTimerId compileTimerId = clockTimerStart();
-	Project project = projectLoad(argv[1]);
+	auto compileTimerId = clockTimerStart();
+	auto projectResult = Project::read(argv[1]);
 
-	symbolTableInitialize(project.name);
+	if (!projectResult)
+		return 1;
+
+	auto& project = projectResult.value();
+	auto astResult = Ast::parse(project);
 
 	printNote("starting parsing");
 
-	if (!parse(&project))
+	if (!astResult)
 	{
-		printErrorCount(&project);
+		printErrorCount(project);
 		return 1;
 	}
+
+	auto& ast = astResult.value();
 
 	printSuccess("parsing complete");
 	printNote("starting validating");
 
-	if (!validate())
+	if (!ast.validate())
 	{
-		printErrorCount(&project);
-		return 2;
+		printErrorCount(project);
+		return 1;
 	}
 
 	printSuccess("validation complete");
 	printNote("generation not implemented yet");
 
-	symbolTableDestroy();
+	auto compilationDuration = clockTimerStop(compileTimerId);
 
-	f64 compilationDuration = clockTimerStop(compileTimerId);
-
-	printSuccess("compiled `%s` in %f seconds.", project.name, compilationDuration);
+	printSuccess("compiled `%s` in %f seconds.", project.name().c_str(), compilationDuration);
 
 	return 0;
 }

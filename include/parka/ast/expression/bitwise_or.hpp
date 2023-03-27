@@ -5,10 +5,10 @@
 
 class BitwiseOrExpression : public Expression
 {
-	Box<Expression> _lhs;
-	Box<Expression> _rhs;
+	ExpressionId _lhs;
+	ExpressionId _rhs;
 
-	BitwiseOrExpression(Box<Expression>&& lhs, Box<Expression>&&rhs) :
+	BitwiseOrExpression(ExpressionId&& lhs, ExpressionId&&rhs) :
 	_lhs(std::move(lhs)),
 	_rhs(std::move(rhs))
 	{}
@@ -19,13 +19,13 @@ public:
 	BitwiseOrExpression(const BitwiseOrExpression&) = delete;
 	~BitwiseOrExpression() = default;
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(SymbolTable& table);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;;
+	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
-	const auto& lhs() const { return *_lhs; }
-	const auto& rhs() const { return *_rhs; }
+	const auto& lhs() const { return _lhs; }
+	const auto& rhs() const { return _rhs; }
 };
 
 #endif

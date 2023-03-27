@@ -2,7 +2,10 @@
 #define PARKA_AST_VARIABLE_HPP
 
 #include "parka/ast/type_annotation.hpp"
-#include "parka/symbol_table.hpp"
+#include "parka/entity/entity.hpp"
+#include "parka/entity/entity_id.hpp"
+
+
 
 class Variable : public Entity
 {
@@ -11,11 +14,18 @@ class Variable : public Entity
 	Optional<TypeAnnotation> _annotation;
 	bool _isMutable;
 
+	Variable(const Token& name, bool isMutable, Optional<TypeAnnotation>&& annotation = {}) :
+	_name(name),
+	_symbol(name.text()),
+	_isMutable(isMutable),
+	_annotation(std::move(annotation))
+	{}
+
 public:
 
-	static Variable parse(Token& token);
+	static Optional<EntityId> parse(Token& token);
 
-	bool validate(SymbolTable& localTable);
+	bool validate(SymbolTable& symbols);
 
 	Token token() const { return _name; }
 	const String& symbol() const { return _symbol; }

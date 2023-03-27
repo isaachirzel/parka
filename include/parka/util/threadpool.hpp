@@ -3,6 +3,9 @@
 
 #include "parka/util/primitives.hpp"
 
-usize getProcessorCount(void);
+class Threadpool
+{
+	static usize getThreadCount(void);
+};
 
 #endif

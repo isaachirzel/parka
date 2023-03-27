@@ -5,9 +5,9 @@
 #include "parka/type.hpp"
 #include "parka/util/array.hpp"
 
-enum OperatorType
+enum class OperatorType
 {
-	OPERATOR_ADD
+	Add
 };
 
 class Operator
@@ -16,7 +16,9 @@ class Operator
 	Type rightType;
 	Type returnType;
 	bool isBuiltIn;
-	Box<Expression> body;
+	ExpressionId body;
+
+public:
 };
 
 class Operators

@@ -16,10 +16,14 @@ class CharLiteral : public Literal
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	CharLiteral(CharLiteral&&) = default;
+	CharLiteral(const CharLiteral&) = delete;
+	~CharLiteral() = default;
+
+	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
-}
+};
 
 #endif

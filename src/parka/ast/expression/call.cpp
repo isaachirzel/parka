@@ -1,21 +1,19 @@
 #include "parka/ast/expression/call.hpp"
-#include "parka/symbol_table.hpp"
-
+#include "parka/entity/node_bank.hpp"
 #include "parka/util/print.hpp"
 
-Optional<Box<Expression>> CallExpression::parse(Token& token)
+Optional<ExpressionId> CallExpression::parse(Token& token, ExpressionId primary)
 {
 	if (token.type() == TokenType::LeftParenthesis)
 	{
 		printParseError(token, "'(' before argument list");
-		
 		return {};
 	}
 
 	token.increment();
 
 	// TODO: Add initial capacity
-	auto arguments = Array<Box<Expression>>();
+	auto arguments = Array<ExpressionId>();
 
 	if (token.type() == TokenType::RightParenthesis)
 	{
@@ -28,7 +26,7 @@ Optional<Box<Expression>> CallExpression::parse(Token& token)
 			if (!argument)
 				return {}; // TODO: Continue to next argument
 
-			arguments.emplace_back(argument.unwrap());
+			arguments.push(argument.unwrap());
 		}
 		while (token.type() == TokenType::Comma);
 
@@ -42,10 +40,10 @@ Optional<Box<Expression>> CallExpression::parse(Token& token)
 
 	token.increment();
 
-	auto *call = new CallExpression(std::move(arguments));
-	auto box = Box<Expression>(call);
+	auto expression = CallExpression(std::move(primary), std::move(arguments));
+	auto id = NodeBank::add(std::move(expression));
 
-	return box;
+	return id;
 }
 
 bool CallExpression::validate(SymbolTable& symbols)

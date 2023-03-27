@@ -6,6 +6,8 @@
 struct Literal : public Expression
 {
 	virtual ~Literal() {}
+
+	static Optional<ExpressionId> parse(Token& token);
 };
 
 #endif

@@ -1,40 +1,39 @@
 #include "parka/ast/expression/primary.hpp"
+#include "parka/ast/expression/expression.hpp"
+#include "parka/ast/expression/identifier.hpp"
+#include "parka/ast/expression/literal/literal.hpp"
+#include "parka/entity/node_bank.hpp"
+#include "parka/util/print.hpp"
 
-Optional<Box<Expression>> PrimaryExpression::parse(Token& token)
+Optional<ExpressionId> parseEnclosedExpression(Token& token)
 {
-	Expression node = { 0 };
+	token.increment();
 
-	if (token.type() == TokenType::Identifier)
-	{		
-		if (!parseIdentifier(&node, token))
-			goto error;
-	}
-	else if (token.type() == TokenType::LeftParenthesis)
+	auto expression = Expression::parse(token);
+
+	if (!expression)
+		return {};
+
+	if (token.type() != TokenType::RightParenthesis)
 	{
-		token.increment();
-
-		if (!parseExpression(&node, token))
-			goto error;
-
-		if (token.type() != TokenType::RightParenthesis)
-		{
-			printParseError(token, "expected ')' after primary sub-expression", NULL);
-			goto error;
-		}
-
-		token.increment();
+		printParseError(token, "expected ')' after primary sub-expression");
+		return {};
 	}
-	else
+
+	return expression;
+}
+
+Optional<ExpressionId> PrimaryExpression::parse(Token& token)
+{
+	switch (token.type())
 	{
-		if (!parseLiteral(&node, token))
-			goto error;
+		case TokenType::Identifier:
+			return Identifier::parse(token);
+
+		case TokenType::LeftParenthesis:
+			return parseEnclosedExpression(token);
+
+		default:
+			return Literal::parse(token);
 	}
-
-	*out = node;
-
-	return true;
-
-error:
-
-	return false;
 }

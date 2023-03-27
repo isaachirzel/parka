@@ -2,31 +2,30 @@
 #define PARKA_AST_EXPRESSION_IF_HPP
 
 #include "parka/ast/expression/expression.hpp"
+#include "parka/entity/statement_id.hpp"
 #include "parka/util/box.hpp"
-
-class Statement;
 
 // TODO: Consider merging this with conditional expression
 
-enum IfType
+enum class IfType
 {
-	IF_THEN,
-	IF_THEN_ELSE,
-	IF_THEN_ELSE_IF
+	Then,
+	ThenElse,
+	ThenElseIf
 };
 
-typedef struct IfExpression : public Expression
+class IfExpression : public Expression
 {
-	Box<Expression> condition;
-	Box<Statement> thenCase;
+	ExpressionId _condition;
+	StatementId _thenCase;
 
 	union
 	{
-		struct Statement *elseCase;
-		struct IfExpression *elseIf;
+		StatementId _elseCase;
+		ExpressionId _elseIf;
 	};
 
-	IfType type;
-} IfExpression;
+	IfType _type;
+};
 
 #endif

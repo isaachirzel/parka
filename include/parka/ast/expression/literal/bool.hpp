@@ -15,7 +15,11 @@ class BoolLiteral : public Literal
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	BoolLiteral(BoolLiteral&&) = default;
+	BoolLiteral(const BoolLiteral&) = delete;
+	~BoolLiteral() = default;
+
+	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(SymbolTable& symbols);
 	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;

@@ -1,11 +1,11 @@
 #include "parka/ast/expression/block.hpp"
 #include "parka/ast/statement/statement.hpp"
-#include "parka/parser.hpp"
-
+#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
 
-Optional<Box<Expression>> Block::parse(Token& token)
+Optional<ExpressionId> Block::parse(Token& token)
 {
 	if (token.type() != TokenType::LeftBrace)
 	{
@@ -17,7 +17,7 @@ Optional<Box<Expression>> Block::parse(Token& token)
 	token.increment();
 
 	// TODO: Add initial capacity
-	auto statements = Array<Box<Statement>>();
+	auto statements = Array<StatementId>();
 
 	while (token.type() != TokenType::RightBrace)
 	{
@@ -32,26 +32,26 @@ Optional<Box<Expression>> Block::parse(Token& token)
 		if (!statement)
 			return {};
 
-		statements.emplace_back(statement.unwrap());
+		statements.push(statement.unwrap());
 	}
 
 	token.increment();
 
-	auto block = new Block(std::move(statements));
-	auto result = Box<Expression>(block);
+	auto block = Block(std::move(statements));
+	auto id = NodeBank::add(std::move(block));
 
-	return result;
+	return id;
 }
 
 bool Block::validate(SymbolTable& symbols)
 {
-	symbols.pushBlock(*this);
+	symbols.pushBlock();
 
-	bool success = true;
+	auto success = true;
 
-	for (auto& statement : _statements)
+	for (auto statement : _statements)
 	{
-		if (!statement->validate(symbols))
+		if (!NodeBank::get(statement).validate(symbols))
 			success = false;
 	}
 

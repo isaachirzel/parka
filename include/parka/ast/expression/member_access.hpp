@@ -7,22 +7,22 @@
 
 class MemberAccess : public Expression
 {
-	Box<Expression> _expression;
+	ExpressionId _expression;
 	Token _member;
 
-	MemberAccess(Box<Expression>&& expression, const Token& member) :
+	MemberAccess(ExpressionId&& expression, const Token& member) :
 	_expression(std::move(expression)),
 	_member(member)
 	{}
 
 public:
 
-	static Optional<Box<Expression>> parse(Token& token);
+	static Optional<ExpressionId> parse(Token& token, ExpressionId primary);
 
-	bool validate(SymbolTable& localTable);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;;
+	bool validate(SymbolTable& symbols);
+	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
-	const auto& expression() const { return *_expression; }
+	const auto& expression() const { return _expression; }
 	const auto& member() const { return _member; }
 };
 

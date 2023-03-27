@@ -1,8 +1,9 @@
 #include "parka/ast/expression/boolean_or.hpp"
 #include "parka/ast/expression/boolean_and.hpp"
+#include "parka/entity/node_bank.hpp"
 
 
-Optional<Box<Expression>> BooleanOrExpression::parse(Token& token)
+Optional<ExpressionId> BooleanOrExpression::parse(Token& token)
 {
 	auto lhs = BooleanAndExpression::parse(token);
 
@@ -18,10 +19,10 @@ Optional<Box<Expression>> BooleanOrExpression::parse(Token& token)
 		if (!rhs)
 			return {};
 
-		auto *expression = new BooleanOrExpression(lhs.unwrap(), rhs.unwrap());
-		auto box = Box<Expression>(expression);
+		auto expression = BooleanOrExpression(lhs.unwrap(), rhs.unwrap());
+		auto id = NodeBank::add(std::move(expression));
 
-		lhs = Optional(std::move(box));
+		lhs = std::move(id);
 	}
 
 	return lhs;
