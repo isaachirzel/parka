@@ -23,7 +23,12 @@ enum class ExpressionType
 	Multiplicative,
 	Prefix,
 	Relational,
-	Shift
+	Shift,
+	BoolLiteral,
+	CharLiteral,
+	FloatLiteral,
+	IntegerLiteral,
+	StringLiteral
 };
 
 class ExpressionId

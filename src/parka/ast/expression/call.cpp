@@ -50,3 +50,8 @@ bool CallExpression::validate(SymbolTable& symbols)
 {
 	exitNotImplemented();
 }
+
+Optional<Type> CallExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}

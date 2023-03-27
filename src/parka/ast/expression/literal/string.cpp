@@ -17,3 +17,14 @@ Optional<ExpressionId> StringLiteral::parse(Token& token)
 
 	return id;
 }
+
+bool StringLiteral::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> StringLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}
+

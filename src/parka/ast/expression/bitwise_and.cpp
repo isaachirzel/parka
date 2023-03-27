@@ -4,6 +4,7 @@
 #include "parka/entity/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
+#include "parka/util/print.hpp"
 
 Optional<ExpressionId> BitwiseAndExpression::parse(Token& token)
 {
@@ -28,4 +29,14 @@ Optional<ExpressionId> BitwiseAndExpression::parse(Token& token)
 	}
 
 	return lhs;
+}
+
+bool BitwiseAndExpression::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> BitwiseAndExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
 }

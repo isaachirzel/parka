@@ -3,6 +3,7 @@
 #include "parka/ast/expression/conditional.hpp"
 #include "parka/ast/module.hpp"
 #include "parka/entity/node_bank.hpp"
+#include "parka/util/print.hpp"
 
 Optional<AssignmentType> getAssignmentType(Token& token)
 {
@@ -84,4 +85,9 @@ bool Assignment::validate(SymbolTable& symbols)
 	// TODO: validate type of assignment
 
 	return success;
+}
+
+Optional<Type> Assignment::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
 }

@@ -1,6 +1,7 @@
 #include "parka/ast/expression/shift.hpp"
 #include "parka/ast/expression/additive.hpp"
 #include "parka/entity/node_bank.hpp"
+#include "parka/util/print.hpp"
 
 Optional<BitShiftType> parseBitShiftType(Token& token)
 {
@@ -43,4 +44,14 @@ Optional<ExpressionId> BitShiftExpression::parse(Token& token)
 	}
 
 	return lhs;
+}
+
+bool BitShiftExpression::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> BitShiftExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
 }

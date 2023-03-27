@@ -1,6 +1,8 @@
 #ifndef PARKA_ENTITY_STATEMENT_ID_HPP
 #define PARKA_ENTITY_STATEMENT_ID_HPP
 
+#include "parka/util/primitives.hpp"
+
 enum class StatementType
 {
 	Declaration,

@@ -2,10 +2,12 @@
 #define PARKA_AST_STRUCT_HPP
 
 #include "parka/ast/member.hpp"
+#include "parka/entity/entity.hpp"
 #include "parka/symbol/symbol_table.hpp"
+#include "parka/type.hpp"
 #include "parka/util/array.hpp"
 
-class Struct
+class Struct : public Entity
 {
 	Token _name;
 	String _symbol;
@@ -27,11 +29,11 @@ public:
 
 	bool validate(SymbolTable& symbols);
 
-	auto token() const { return _name; }
+	Token token() const { return _name; }
 	const auto& name() const { return _name; }
-	const auto& symbol() const { return _symbol; }
+	const String& symbol() const { return _symbol; }
 	const auto& members() const { return _members; }
-	auto type() const { return EntityType::Struct; }
+	EntityType type() const { return EntityType::Struct; }
 };
 
 #endif

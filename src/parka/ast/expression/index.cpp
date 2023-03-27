@@ -31,3 +31,13 @@ Optional<ExpressionId> IndexExpression::parse(Token& token, ExpressionId primary
 
 	return id;
 }
+
+bool IndexExpression::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> IndexExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}

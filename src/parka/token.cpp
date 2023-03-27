@@ -689,3 +689,11 @@ bool Token::operator==(const Token& other) const
 
 	return true;
 }
+
+bool Token::operator ==(const String& text) const
+{
+	if (_length != text.length())
+		return false;
+
+	return !strcmp(&_file[_pos], text.c_str());
+}

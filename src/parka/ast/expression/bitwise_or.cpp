@@ -1,6 +1,7 @@
 #include "parka/ast/expression/bitwise_or.hpp"
 #include "parka/ast/expression/bitwise_xor.hpp"
 #include "parka/entity/node_bank.hpp"
+#include "parka/util/print.hpp"
 
 
 Optional<ExpressionId> BitwiseOrExpression::parse(Token& token)
@@ -26,4 +27,14 @@ Optional<ExpressionId> BitwiseOrExpression::parse(Token& token)
 	}
 
 	return lhs;
+}
+
+bool BitwiseOrExpression::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> BitwiseOrExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
 }

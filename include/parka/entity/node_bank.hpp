@@ -78,7 +78,7 @@ struct NodeBank
 	static StatementId add(ExpressionStatement&& value);
 	static StatementId add(JumpStatement&& value);
 
-	static Entity& get(EntityId);
+	static Entity& get(EntityId id);
 	static Expression& get(ExpressionId id);
 	static Statement& get(StatementId id);
 

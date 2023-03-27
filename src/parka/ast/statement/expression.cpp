@@ -23,3 +23,8 @@ Optional<StatementId> ExpressionStatement::parse(Token& token)
 
 	return id;
 }
+
+bool ExpressionStatement::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}

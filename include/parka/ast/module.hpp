@@ -27,6 +27,7 @@ public:
 
 	static Optional<Module> parse(const File& file, const String& packageSymbol);
 
+	bool declare(Table<EntityId>& globalSymbols);
 	bool validate(Table<EntityId>& globalSymbols, const String& packageSymbol);
 
 	const auto& symbol() const { return _symbol; }

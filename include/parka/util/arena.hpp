@@ -12,7 +12,7 @@ class Arena
 
 public:
 
-	Arena(usize minBytes);
+	Arena(usize minByteCount);
 	Arena(Arena&&) = default;
 	Arena(const Arena&) = delete;
 	~Arena();

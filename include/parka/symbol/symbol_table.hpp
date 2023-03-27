@@ -25,8 +25,7 @@ public:
 	SymbolTable(const SymbolTable&) = delete;
 	~SymbolTable() = default;
 
-	bool declare(EntityId id);
-	bool declareGlobal(EntityId id);
+	static bool declareGlobal(Table<EntityId>& globalSymbols, EntityId id);
 	bool declareLocal(EntityId id);
 	Optional<EntityId> resolve(const Token& token);
 	Optional<EntityId> resolve(const String& identifier);

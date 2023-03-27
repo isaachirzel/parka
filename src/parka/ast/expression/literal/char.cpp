@@ -35,3 +35,15 @@ Optional<ExpressionId> CharLiteral::parse(Token& token)
 
 	return id;
 }
+
+
+bool CharLiteral::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> CharLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}
+

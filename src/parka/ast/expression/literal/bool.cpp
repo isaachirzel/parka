@@ -32,3 +32,15 @@ Optional<ExpressionId> BoolLiteral::parse(Token& token)
 
 	return id;
 }
+
+
+bool BoolLiteral::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> BoolLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}
+

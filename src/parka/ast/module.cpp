@@ -72,6 +72,25 @@ Optional<Module> Module::parse(const File& file, const String& package)
 	return mod;
 }
 
+bool Module::declare(Table<EntityId>& globalSymbols)
+{
+	auto success = true;
+
+	for (auto structId : _structIds)
+	{
+		if (!SymbolTable::declareGlobal(globalSymbols, structId))
+			success = false;
+	}
+
+	for (auto functionId : _functionIds)
+	{
+		if (!SymbolTable::declareGlobal(globalSymbols, functionId))
+			success = false;
+	}
+
+	return success;
+}
+
 bool Module::validate(Table<EntityId>& globalSymbols, const String& packageSymbol)
 {
 	print("Validating module");

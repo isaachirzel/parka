@@ -9,12 +9,12 @@
 #include <cstring>
 
 
-bool SymbolTable::declareGlobal(EntityId id)
+bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 {
 	// TODO: Add tokens for highlighting
 	auto& entity = NodeBank::get(id);
 	const auto& symbol = entity.symbol();
-	auto result = _globalSymbols.insert({ symbol,  id });
+	auto result = globalSymbols.insert({ symbol,  id });
 
 	if (!result.second)
 	{
@@ -24,7 +24,7 @@ bool SymbolTable::declareGlobal(EntityId id)
 
 		//TODO: invalidate entity previous.invalidate();
 
-		printError( "'%s' is already declared in this package.", symbol.c_str());
+		printError( "`%s` is already declared in this package.", symbol.c_str());
 	}
 
 	return result.second;

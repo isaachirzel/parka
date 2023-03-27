@@ -8,7 +8,7 @@ struct Entity
 {
 	virtual ~Entity() {}
 
-	virtual Token token() const;
+	virtual Token token() const = 0;
 	virtual const String& symbol() const = 0;
 	virtual EntityType type() const = 0;
 };

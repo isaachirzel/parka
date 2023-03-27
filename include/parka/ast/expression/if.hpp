@@ -14,7 +14,7 @@ enum class IfType
 	ThenElseIf
 };
 
-class IfExpression : public Expression
+class IfExpression //: public Expression
 {
 	ExpressionId _condition;
 	StatementId _thenCase;

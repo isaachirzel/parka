@@ -55,3 +55,15 @@ Optional<ExpressionId> FloatLiteral::parse(Token& token)
 
 	return id;
 }
+
+
+bool FloatLiteral::validate(SymbolTable& symbols)
+{
+	exitNotImplemented();
+}
+
+Optional<Type> FloatLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}
+

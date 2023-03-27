@@ -56,3 +56,8 @@ bool Prefix::validate(SymbolTable& symbols)
 {
 	exitNotImplemented();
 }
+
+Optional<Type> Prefix::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+{
+	exitNotImplemented();
+}

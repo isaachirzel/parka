@@ -108,10 +108,14 @@ bool Ast::validate()
 	for (auto packageId : _packageIds)
 	{
 		auto& package = NodeBank::getPackage(packageId);
+		
+		globalSymbols.insert({ package.symbol(), packageId });
 
 		if (!package.declare(globalSymbols))
 			success = false;
 	}
+
+	// TODO: Validate struct recursion
 
 	return success;
 }

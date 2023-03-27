@@ -8,6 +8,7 @@
 #include "parka/token.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/optional.hpp"
+#include <stdexcept>
 
 class Package : public Entity
 {
@@ -30,6 +31,7 @@ public:
 	bool declare(Table<EntityId>& globalSymbols);
 	bool validate(Table<EntityId>& globalSymbols);
 
+	Token token() const { throw std::invalid_argument("Packages do not have tokens."); }
 	const String& symbol() const { return _symbol; }
 	EntityType type() const { return EntityType::Package; }
 

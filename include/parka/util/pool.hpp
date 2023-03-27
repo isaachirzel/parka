@@ -5,6 +5,7 @@
 #include "parka/util/view.hpp"
 
 #include <cassert>
+#include <utility>
 
 template <typename T>
 class Pool
@@ -22,8 +23,17 @@ public:
 	Pool(const Pool&) = delete;
 	~Pool() = default;
 
-	T* add(usize count);
-	T& add();
+	usize add(T&& value)
+	{
+		auto index = _itemCount;
+		auto *item = _arena.allocate(sizeof(T));
+
+		new (item) auto(std::move(value));
+
+		_itemCount += 1;
+
+		return index;
+	}
 
 	T& operator[](usize index) { assert(index < _itemCount); return ((T*)_arena.data())[index]; }
 	const T& operator[](usize index) const { assert(index < _itemCount); return ((T*)_arena.data())[index]; }
