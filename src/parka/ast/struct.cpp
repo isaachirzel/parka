@@ -6,6 +6,8 @@
 
 Optional<EntityId> Struct::parse(Token& token, const String& package)
 {
+	print("Parse struct");
+	
 	if (token.type() != TokenType::KeywordStruct)
 	{
 		printParseError(token, "`struct` keyword");

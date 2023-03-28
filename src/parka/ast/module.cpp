@@ -18,6 +18,8 @@ Optional<Module> Module::parse(const File& file, const String& package)
 	auto functionIds = Array<EntityId>();
 	auto structIds = Array<EntityId>();
 
+	printFmt("Token.type: %d", token.type());
+
 	do
 	{
 		switch (token.type())

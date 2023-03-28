@@ -28,7 +28,7 @@ String readFileText(const String& filepath)
 
 	auto text = String();
 
-	text.reserve(size);
+	text.resize(size);
 
 	usize bytesRead = fread(&text[0], sizeof(char), size, file);
 
@@ -179,16 +179,9 @@ usize File::getCol(usize startPos) const
 	return startPos - pos;
 }
 
-const char& File::operator[](usize index) const
-{
-	assert(index <= _text.length()); // Allow retrieving null end
-
-	return _text[index];
-}
-
 FilePosition File::getPosition(usize pos) const
 {
-	assert(pos < _text.length());
+	assert(pos <= _text.length());
 	
 	usize line = 1;
 	usize col = 1;

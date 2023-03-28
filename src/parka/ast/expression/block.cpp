@@ -21,12 +21,7 @@ Optional<ExpressionId> Block::parse(Token& token)
 
 	while (token.type() != TokenType::RightBrace)
 	{
-		if (token.type() == TokenType::EndOfFile)
-		{
-			printParseError(token, "'}' after block");
-			return {};
-		}
-
+		printFmt("Token: %d", token.type());
 		auto statement = Statement::parse(token);
 
 		if (!statement)

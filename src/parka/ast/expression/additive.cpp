@@ -11,11 +11,9 @@ Optional<AdditiveType> getAdditiveType(Token& token)
 	switch (token.type())
 	{
 		case TokenType::Plus:
-			token.increment();
 			return ADDITIVE_ADD;
 
 		case TokenType::Minus:
-			token.increment();
 			return ADDITIVE_SUBTRACT;
 
 		default:
@@ -27,6 +25,7 @@ Optional<AdditiveType> getAdditiveType(Token& token)
 
 Optional<ExpressionId> AdditiveExpression::parse(Token& token)
 {
+	print("parse additive!");
 	auto lhs = MultiplicativeExpression::parse(token);
 
 	if (!lhs)
@@ -37,7 +36,7 @@ Optional<ExpressionId> AdditiveExpression::parse(Token& token)
 	while (type)
 	{
 		token.increment();
-		
+
 		auto rhs = MultiplicativeExpression::parse(token);
 
 		if (!rhs)

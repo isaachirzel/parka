@@ -41,16 +41,11 @@ Optional<ExpressionId> parseBody(Token& token)
 
 Optional<EntityId> Function::parse(Token& token, const String& package)
 {
+	print("Parse function");
 	auto prototype = Prototype::parse(token);
 
 	if (!prototype)
 		return {};
-
-	if (token.type() != TokenType::KeywordFunction)
-	{
-		printParseError(token, "`function` keyword");
-		return {};
-	}
 
 	auto body = parseBody(token);
 

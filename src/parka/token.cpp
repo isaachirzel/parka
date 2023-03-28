@@ -40,11 +40,11 @@ usize getNextPos(const File& file, usize pos)
 			switch (file[i + 1])
 			{
 				case '/': // Line comment
-					i = getEndOfLinePos(file, i + 2);
+					i = getEndOfLinePos(file, i + 2) - 1;
 					continue;
 
 				case '*': // Block comment
-					i = getEndOfBlockCommentPos(file, i + 2);
+					i = getEndOfBlockCommentPos(file, i + 2) - 1;
 					continue;
 
 				default:
@@ -563,6 +563,9 @@ void Token::increment()
 Token Token::initial(const File& file)
 {
 	usize pos = getNextPos(file, 0);
+
+	printFmt("pos: %zu", pos);
+
 	auto token = getNextToken(file, pos);
 
 	return token;

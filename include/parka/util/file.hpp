@@ -60,7 +60,7 @@ public:
 	usize getLine(usize pos) const;
 	usize getCol(usize pos) const;
 	bool hasExtension(const char *extension) const;
-	const char& operator[](usize index) const;
+	const char& operator[](usize index) const { assert(index <= _text.length()); return _text[index]; }
 	FilePosition getPosition(usize pos) const;
 
 	const auto& path() const { return _path; }

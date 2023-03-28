@@ -36,9 +36,11 @@ int main(int argc, const char *argv[])
 		return 1;
 
 	auto& project = projectResult.value();
+	
+	printNote("starting parsing");
+
 	auto astResult = Ast::parse(project);
 
-	printNote("starting parsing");
 
 	if (!astResult)
 	{
