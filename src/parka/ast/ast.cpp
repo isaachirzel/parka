@@ -6,10 +6,12 @@
 #include "parka/entity/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
+#include "parka/util/path.hpp"
 #include "parka/util/print.hpp"
 
-String getSymbolFromPath(const String& path)
+String getSymbolFromPath(const String& pathText)
 {
+	auto path = path::toAbsolute(pathText);
 	printFmt("Path: %s", path.c_str());
 	exitNotImplemented();
 }
@@ -54,14 +56,15 @@ bool validateStructRecursion(EntityId structId)
 	return true;
 }
 
-Optional<Array<EntityId>> parseDirectory(const Directory& directory, const String& name)
+Optional<Array<EntityId>> parseDirectory(const Directory& directory, String&& symbol)
 {
 	auto success = true;
 	auto packageIds = Array<EntityId>();
 
 	for (const auto& subdirectory : directory.subdirectories())
 	{
-		auto subPackageIds = parseDirectory(subdirectory, subdirectory.name());
+		auto subdirectorySymbol = symbol + "::" + subdirectory.name();
+		auto subPackageIds = parseDirectory(subdirectory, std::move(subdirectorySymbol));
 
 		if (!subPackageIds)
 		{
@@ -72,8 +75,7 @@ Optional<Array<EntityId>> parseDirectory(const Directory& directory, const Strin
 		packageIds.concat(subPackageIds.value());
 	}
 
-	auto path = getSymbolFromPath(directory.path());
-	auto package = Package::parse(directory.files(), std::move(path));
+	auto package = Package::parse(directory.files(), std::move(symbol));
 
 	if (!package)
 		return {};
@@ -87,7 +89,7 @@ Optional<Array<EntityId>> parseDirectory(const Directory& directory, const Strin
 
 Optional<Ast> Ast::parse(const Project& project)
 {
-	auto packageIds = parseDirectory(project.srcDirectory(), project.name());
+	auto packageIds = parseDirectory(project.srcDirectory(), String(project.name()));
 	
 	if (!packageIds)
 		return {};

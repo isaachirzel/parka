@@ -88,6 +88,7 @@ struct NodeBank
 	static Variable& getVariable(EntityId id);
 	static Parameter& getParameter(EntityId id);
 
+	static void initialize();
 	static void declarePrimitives(Table<EntityId>& globalSymbols);
 	static usize getGlobalCount();
 };

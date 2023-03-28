@@ -51,7 +51,6 @@ public:
 	{}
 	Primitive(Primitive&&) = default;
 	Primitive(const Primitive&) = delete;
-	~Primitive() = default;
 
 	Token token() const;
 	const String& symbol() const { return _symbol; }

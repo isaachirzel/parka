@@ -8,6 +8,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <climits>
+#include <filesystem>
 // #include <unistd>
 
 namespace path
@@ -101,6 +102,13 @@ namespace path
 
 	// 	buffer[length] = '\0';
 	// }
+
+	String toAbsolute(const String &path)
+	{
+		auto absolute = std::filesystem::absolute(path);
+
+		return absolute.string();
+	}
 }
 
 

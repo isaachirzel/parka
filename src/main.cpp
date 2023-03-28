@@ -1,3 +1,5 @@
+#include "parka/entity/node_bank.hpp"
+#include "parka/util/string.hpp"
 #include "parka/util/table.hpp"
 #include "parka/ast/ast.hpp"
 
@@ -19,6 +21,8 @@ void printErrorCount(Project& project)
 
 int main(int argc, const char *argv[])
 {
+	NodeBank::initialize();
+
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
 

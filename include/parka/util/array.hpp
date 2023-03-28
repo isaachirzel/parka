@@ -4,12 +4,13 @@
 #include "parka/util/primitives.hpp"
 
 #include <cassert>
-#include <cstring>
 #include <initializer_list>
+#include <iostream>
 #include <new>
 #include <stdexcept>
 
 #include <cstdlib>
+#include <type_traits>
 
 template <typename T>
 class Array
@@ -33,13 +34,6 @@ public:
 		if (!_data)
 			throw std::bad_alloc();
 	}
-	Array(std::initializer_list<T> elements) :
-	_length(elements.size()),
-	_capacity(_length),
-	_data((T*)malloc(sizeof(T) * _capacity))
-	{
-		memcpy(_data, elements.begin(), sizeof(T) * _length);
-	}
 	Array(Array&& other) :
 	_length(other._length),
 	_capacity(other._capacity),
@@ -58,18 +52,18 @@ public:
 		free(_data);
 	}
 
-	void reserve(usize capacity)
+	void reserve(usize minimum)
 	{
-		if (capacity >= _capacity)
+		if (_capacity >= minimum)
 			return;
 
-		auto *newData = (T*)realloc(_data, sizeof(T) * (_capacity));
+		auto *newData = (T*)realloc(_data, sizeof(T) * minimum);
 
 		if (!newData)
 			throw std::bad_alloc();
 
 		_data = newData;
-		_capacity = capacity;
+		_capacity = minimum;
 	}
 
 	T& push(T&& value)
@@ -77,18 +71,24 @@ public:
 		reserve(_length + 1);
 		
 		T& ref = _data[_length];
+
 		new (&ref) auto(std::move(value));
 
 		_length += 1;
 
-		return _data[_length];
+		return ref;
 	}
 
 	Array& concat(Array& other)
 	{
 		reserve(_length + other._length);
-		memcpy(&_data[_length], other._data, other._length * sizeof(T));
+
+		for (usize i = 0; i < other.length(); ++i)
+		{
+			new (&_data[_length + i]) auto (std::move(other[i]));
+		}
 		
+		_length += other._length;
 		other._length = 0;
 
 		return *this;

@@ -5,6 +5,7 @@
 
 #include <iostream> 
 #include <cstdarg>
+#include <cstring>
 
 #define COLOR_RED		"\033[91m"
 #define COLOR_YELLOW	"\033[93m"
@@ -315,9 +316,8 @@ void printMessage(LogLevel level, const Token *token, const char *format, va_lis
 
 	auto log = createLog(level);
 	
-	std::cout << log.color << log.prompt << log.reset;
+	std::cout << log.color << log.prompt << log.reset << ": ";
 	vprintf(format, args);
-	putchar('\n');
 
 	if (token)
 	{
@@ -325,7 +325,7 @@ void printMessage(LogLevel level, const Token *token, const char *format, va_lis
 		auto position = token->file().getPosition(token->pos());
 		auto highlight = getTokenHighlight(*token, position, log);
 
-		std::cout << highlight;
+		std::cout << '\n' << highlight;
 	}
 
 	std::cout << std::endl;

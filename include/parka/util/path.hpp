@@ -10,6 +10,7 @@ namespace path
 	String getFilename(const String& path);
 	bool hasExtension(const char *path, const char *extension);
 	String getRelativePath(const String& base, const String& path);
+	String toAbsolute(const String& path);
 	void santizePath(String& path);
 	String pathDuplicate(const String& path);
 	String getFilename(const String& path);

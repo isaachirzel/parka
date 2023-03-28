@@ -40,23 +40,7 @@
 #include "parka/util/pool.hpp"
 #include "parka/util/print.hpp"
 
-Array<Primitive> _primitives =
-{
-	{ "void", PRIMITIVE_VOID, 0 },
-	{ "u8", PRIMITIVE_UNSIGNED_INTEGER, 1 },
-	{ "u16", PRIMITIVE_UNSIGNED_INTEGER, 2 },
-	{ "u32", PRIMITIVE_UNSIGNED_INTEGER, 4 },
-	{ "u64", PRIMITIVE_UNSIGNED_INTEGER, 8 },
-	{ "i8", PRIMITIVE_SIGNED_INTEGER, 1 },
-	{ "i16", PRIMITIVE_SIGNED_INTEGER, 2 },
-	{ "i32", PRIMITIVE_SIGNED_INTEGER, 4 },
-	{ "i64", PRIMITIVE_SIGNED_INTEGER, 8 },
-	{ "f32", PRIMITIVE_FLOATING_POINT, 4 },
-	{ "f64", PRIMITIVE_FLOATING_POINT, 8 },
-	{ "bool", PRIMITIVE_BOOLEAN, 1 },
-	{ "char", PRIMITIVE_CHARACTER, 1 },
-	{ "string", PRIMITIVE_STRING, 0 }
-};
+Array<Primitive> _primitives(14);
 Pool<Package> _packages(10'000);
 Pool<Struct> _structs(100'000);
 Pool<Function> _functions(1'000'000);
@@ -481,6 +465,24 @@ Parameter& NodeBank::getParameter(EntityId id)
 	assert(id.type() == EntityType::Parameter);
 
 	return _parameters[id.index()];
+}
+
+void NodeBank::initialize()
+{
+	_primitives.push({ "void", PRIMITIVE_VOID, 0 });
+	_primitives.push({ "u8", PRIMITIVE_UNSIGNED_INTEGER, 1 });
+	_primitives.push({ "u16", PRIMITIVE_UNSIGNED_INTEGER, 2 });
+	_primitives.push({ "u32", PRIMITIVE_UNSIGNED_INTEGER, 4 });
+	_primitives.push({ "u64", PRIMITIVE_UNSIGNED_INTEGER, 8 });
+	_primitives.push({ "i8", PRIMITIVE_SIGNED_INTEGER, 1 });
+	_primitives.push({ "i16", PRIMITIVE_SIGNED_INTEGER, 2 });
+	_primitives.push({ "i32", PRIMITIVE_SIGNED_INTEGER, 4 });
+	_primitives.push({ "i64", PRIMITIVE_SIGNED_INTEGER, 8 });
+	_primitives.push({ "f32", PRIMITIVE_FLOATING_POINT, 4 });
+	_primitives.push({ "f64", PRIMITIVE_FLOATING_POINT, 8 });
+	_primitives.push({ "bool", PRIMITIVE_BOOLEAN, 1 });
+	_primitives.push({ "char", PRIMITIVE_CHARACTER, 1 });
+	_primitives.push({ "string", PRIMITIVE_STRING, 0 });
 }
 
 void NodeBank::declarePrimitives(Table<EntityId>& globalSymbols)
