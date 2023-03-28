@@ -2,7 +2,7 @@
 #define PARKA_ENTITY_HPP
 
 #include "parka/token.hpp"
-#include "parka/entity/entity_id.hpp"
+#include "parka/symbol/entity_id.hpp"
 
 struct Entity
 {

@@ -63,7 +63,7 @@ void *Arena::allocate(usize bytes)
 
 		if (code == -1)
 		{
-			exitWithErrorFmt("Failed to commit %zu pages in Arena.", pagesToCommit);
+			exitWithError("Failed to commit %zu pages in Arena.", pagesToCommit);
 		}
 	}
 

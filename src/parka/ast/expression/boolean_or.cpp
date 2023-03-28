@@ -1,6 +1,6 @@
 #include "parka/ast/expression/boolean_or.hpp"
 #include "parka/ast/expression/boolean_and.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 
@@ -31,10 +31,10 @@ Optional<ExpressionId> BooleanOrExpression::parse(Token& token)
 
 bool BooleanOrExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> BooleanOrExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

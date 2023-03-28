@@ -1,6 +1,6 @@
 #include "parka/ast/statement/expression.hpp"
-#include "parka/entity/expression_id.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/expression_id.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<StatementId> ExpressionStatement::parse(Token& token)
@@ -26,5 +26,5 @@ Optional<StatementId> ExpressionStatement::parse(Token& token)
 
 bool ExpressionStatement::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

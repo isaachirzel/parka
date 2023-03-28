@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <climits>
 #include <filesystem>
-// #include <unistd>
 
 namespace path
 {
@@ -63,45 +62,23 @@ namespace path
 
 	String getFilename(const String& path)
 	{
-		const char *end = path.c_str();
+		auto i = path.size();
 
-		while (*end)
-			++end;
-
-		if (end - path.c_str() == 0)
-			return "";
-
-		while (end[-1] == '/')
-			end -= 1;
-
-		const char *begin = end;
-
-		while (begin > path)
+		while (i > 0)
 		{
-			if (begin[-1] == '/')
-				break;
+			i -= 1;
 
-			--begin;
+			if (path[i] == '/')
+			{
+				i += 1;
+				break;
+			}
 		}
 
-		auto filename = String(begin, end - begin);
+		auto filename = path.substr(i);
 
 		return filename;
 	}
-
-	// void pathGetExecutableDirectory(char *buffer)
-	// {
-	// 	// TODO: Make OS agnostic
-		
-	// 	const char *procPath = "/proc/self/exe";
-	// 	// FreeBSD: /proc/curproc/file
-	// 	// Solaris: /proc/self/path/a.out
-	// 	// Windows: GetModuleFileName(NULL, buffer, PATH_MAX)
-
-	// 	usize length = readlink(procPath, buffer, PATH_MAX);
-
-	// 	buffer[length] = '\0';
-	// }
 
 	String toAbsolute(const String &path)
 	{

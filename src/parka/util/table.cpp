@@ -83,7 +83,7 @@
 
 // 	usize maxCapacity = primeNumbers[primeNumberCount - 1];
 
-// 	exitWithErrorFmt("Unable to get Table size, requested capacity (%zu) is over maximum (%zu).", minCapacity, maxCapacity);
+// 	exitWithError("Unable to get Table size, requested capacity (%zu) is over maximum (%zu).", minCapacity, maxCapacity);
 // }
 
 // Table tableCreate(usize minCapacity)

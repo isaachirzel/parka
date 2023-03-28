@@ -1,6 +1,6 @@
 #include "parka/ast/expression/block.hpp"
 #include "parka/ast/statement/statement.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
@@ -21,7 +21,6 @@ Optional<ExpressionId> Block::parse(Token& token)
 
 	while (token.type() != TokenType::RightBrace)
 	{
-		printFmt("Token: %d", token.type());
 		auto statement = Statement::parse(token);
 
 		if (!statement)

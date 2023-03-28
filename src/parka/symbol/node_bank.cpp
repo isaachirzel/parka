@@ -1,4 +1,4 @@
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 
 #include "parka/ast/expression/additive.hpp"
 #include "parka/ast/expression/assignment.hpp"
@@ -32,8 +32,8 @@
 #include "parka/ast/statement/expression.hpp"
 #include "parka/ast/statement/jump.hpp"
 #include "parka/ast/struct.hpp"
-#include "parka/entity/entity_id.hpp"
-#include "parka/entity/expression_id.hpp"
+#include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/expression_id.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/array.hpp"
 #include "parka/ast/primitive.hpp"
@@ -324,7 +324,7 @@ Entity& NodeBank::get(EntityId id)
 			break;
 	}
 	
-	exitWithErrorFmt("Unable to get entity of type: %d", id.type());
+	exitWithError("Unable to get entity of type: %", (int)id.type());
 }
 
 Expression& NodeBank::get(ExpressionId id)
@@ -409,7 +409,7 @@ Expression& NodeBank::get(ExpressionId id)
 			break;
 	}
 
-	exitWithErrorFmt("Unable to get Expression of type: %d", id.type());
+	exitWithError("Unable to get Expression of type: %", (int)id.type());
 }
 
 Statement& NodeBank::get(StatementId id)
@@ -429,7 +429,7 @@ Statement& NodeBank::get(StatementId id)
 			break;
 	}
 
-	exitWithErrorFmt("Unable to get Statement of type: %d", id.type());
+	exitWithError("Unable to get Statement of type: %", (int)id.type());
 }
 
 Package& NodeBank::getPackage(EntityId id)

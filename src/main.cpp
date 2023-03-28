@@ -1,4 +1,6 @@
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/node_bank.hpp"
+#include "parka/token.hpp"
 #include "parka/util/string.hpp"
 #include "parka/util/table.hpp"
 #include "parka/ast/ast.hpp"
@@ -9,12 +11,13 @@
 #include "parka/util/timer.hpp"
 
 #include <iostream>
+#include <functional>
+#include <sstream>
+#include <stdexcept>
 
 void printErrorCount(Project& project)
 {
 	usize errorCount = getErrorCount();
-
-	assert(errorCount > 0);
 
 	std::cout << "Failed to compile `" << project.name() << "`: encountered " << errorCount << " error(s)." << std::endl;
 }
@@ -36,11 +39,10 @@ int main(int argc, const char *argv[])
 		return 1;
 
 	auto& project = projectResult.value();
-	
-	printNote("starting parsing");
+
+	printNote("Parsing begin.");
 
 	auto astResult = Ast::parse(project);
-
 
 	if (!astResult)
 	{
@@ -50,8 +52,8 @@ int main(int argc, const char *argv[])
 
 	auto& ast = astResult.value();
 
-	printSuccess("parsing complete");
-	printNote("starting validating");
+	printSuccess("Parsing complete.");
+	printNote("Validation begin.");
 
 	if (!ast.validate())
 	{
@@ -59,8 +61,8 @@ int main(int argc, const char *argv[])
 		return 1;
 	}
 
-	printSuccess("validation complete");
-	printNote("generation not implemented yet");
+	printSuccess("Validation complete.");
+	printNote("Generation not implemented yet.");
 
 	compileTimer.stop();
 

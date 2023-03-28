@@ -1,5 +1,5 @@
 #include "parka/ast/expression/call.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<ExpressionId> CallExpression::parse(Token& token, ExpressionId primary)
@@ -48,10 +48,10 @@ Optional<ExpressionId> CallExpression::parse(Token& token, ExpressionId primary)
 
 bool CallExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> CallExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

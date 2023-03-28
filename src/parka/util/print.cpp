@@ -20,76 +20,65 @@
 #define PROMPT_ERROR	"error"
 #define PROMPT_SUCCESS	"success"
 
-#define outputStream stdout
-
 bool isColorEnabled = true;
 usize errorCount = 0;
 usize warningCount = 0;
 usize noteCount = 0;
 
-enum LogLevel
+Prompt::Prompt(PromptType type)
 {
-	Note,
-	Warning,
-	Error,
-	Success
-};
-
-struct Log
-{
-	const char* prompt;
-	const char* color;
-	const char* reset;
-};
-
-Log createLog(LogLevel level)
-{
-	const char *prompt = "";
-	const char *color = "";
-	const char *reset = isColorEnabled
-		? COLOR_RESET
-		: "";
-
-	switch (level)
+	switch (type)
 	{
-		case LogLevel::Note:
-			prompt = PROMPT_NOTE;
+		case PromptType::Note:
+			_text = PROMPT_NOTE;
 			
 			if (isColorEnabled)
-				color = COLOR_CYAN;
+			{
+				_color = COLOR_CYAN;
+				_reset = COLOR_RESET;
+			}
 			break;
 				
-		case LogLevel::Warning:
-			prompt = PROMPT_WARNING;
+		case PromptType::Warning:
+			_text = PROMPT_WARNING;
 			
 			if (isColorEnabled)
-				color = COLOR_PURPLE;
+			{
+				_color = COLOR_PURPLE;
+				_reset = COLOR_RESET;
+			}
 			break;
 			
-		case LogLevel::Error:
-			prompt = PROMPT_ERROR;
+		case PromptType::Error:
+			_text = PROMPT_ERROR;
 
 			if (isColorEnabled)
-				color = COLOR_RED;
+			{
+				_color = COLOR_RED;
+				_reset = COLOR_RESET;
+			}
 			break;
 
-		case LogLevel::Success:
-			prompt = PROMPT_SUCCESS;
+		case PromptType::Success:
+			_text = PROMPT_SUCCESS;
 
 			if (isColorEnabled)
-				color = COLOR_GREEN;
+			{
+				_color = COLOR_GREEN;
+				_reset = COLOR_RESET;
+			}
 			break;
 
 		default:
-			exitWithErrorFmt("Unable to create Log with LogLevel: %d", level);
+			exitWithError("Unable to create Log with PromptType: %d", type);
 	}
+}
 
-	return (Log)
-	{
-		.prompt = prompt,
-		.color = color,
-		.reset = reset
-	};
+std::ostream& operator<<(std::ostream& out, const Prompt& prompt)
+{
+	out << prompt._color << prompt._text << prompt._reset << ": ";
+
+	return out;
 }
 
 void enableColorPrinting(bool enabled)
@@ -191,7 +180,7 @@ usize findOccurrence(const char *text, const char *token)
     return SIZE_MAX;
 }
 
-String getTokenHighlight(const Token& token, const FilePosition& position, const Log& context)
+String getTokenHighlight(const Token& token, const FilePosition& position, const Prompt& context)
 {
 	// TODO: Handle multiline tokens
 	const File& file = token.file();
@@ -212,20 +201,20 @@ String getTokenHighlight(const Token& token, const FilePosition& position, const
 	underline += toInvisible(start, startLength);
 
 	// Color
-	if (context.color)
+	if (context.color())
 	{
-		line += context.color;
-		underline += context.color;
+		line += context.color();
+		underline += context.color();
 	}
 
 	line += token.text();
 	underline += String(token.length(), '~');
 
 	// Reset
-	if (*context.color)
+	if (*context.color())
 	{
-		line += context.reset;
-		underline += context.reset;
+		line += context.reset();
+		underline += context.reset();
 	}
 
 	const char *end = &file[token.pos() + token.length()];
@@ -250,22 +239,19 @@ void printFileAndLine(const char *file, u32 line)
 	printf("%s:%u: ", file, line);
 }
 
-void _print(const char *file, u32 line, const char *msg)
+void _print(const char * const fmt)
 {
-	printFileAndLine(file, line);
-	puts(msg);
-}
+	// TODO: Escape % symbol
+	for (const char * iter = fmt; *iter; ++iter)
+	{
+		if (*iter == '%')
+		{
+			std::cout << "Not enough arguments to print." << std::endl;
+			exit(1);
+		}
+	}
 
-void _printFmt(const char *file, u32 line, const char *fmt, ...)
-{
-	va_list args;
-	va_start(args, fmt);
-
-	printFileAndLine(file, line);
-	vprintf(fmt, args);
-	putchar('\n');
-
-	va_end(args);
+	std::cout << fmt << std::endl;
 }
 
 void printParseError(const Token& token, const char *expected, const char *message)
@@ -287,19 +273,19 @@ void printParseError(const Token& token, const char *expected, const char *messa
 	}
 }
 
-void printMessage(LogLevel level, const Token *token, const char *format, va_list args)
+void printMessage(PromptType type, const Token *token, const char *format, va_list args)
 {
-	switch (level)
+	switch (type)
 	{
-		case LogLevel::Error:
+		case PromptType::Error:
 			errorCount += 1;
 			break;
 
-		case LogLevel::Warning:
+		case PromptType::Warning:
 			warningCount += 1;
 			break;
 
-		case LogLevel::Note:
+		case PromptType::Note:
 			noteCount += 1;
 			break;
 
@@ -314,16 +300,17 @@ void printMessage(LogLevel level, const Token *token, const char *format, va_lis
 		std::cout << token->file().path() << ':' << position.line() << ':' << position.col() << ": ";
 	}
 
-	auto log = createLog(level);
+	auto prompt = Prompt(type);
 	
-	std::cout << log.color << log.prompt << log.reset << ": ";
+	std::cout << prompt;
+
 	vprintf(format, args);
 
 	if (token)
 	{
 		// FIXME: Fix this function to not need position twice
 		auto position = token->file().getPosition(token->pos());
-		auto highlight = getTokenHighlight(*token, position, log);
+		auto highlight = getTokenHighlight(*token, position, prompt);
 
 		std::cout << '\n' << highlight;
 	}
@@ -336,7 +323,7 @@ void printTokenNote(const Token& token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Note, &token, format, args);
+	printMessage(PromptType::Note, &token, format, args);
 
 	va_end(args);
 }
@@ -346,7 +333,7 @@ void printTokenWarning(const Token& token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Warning, &token, format, args);
+	printMessage(PromptType::Warning, &token, format, args);
 
 	va_end(args);
 }
@@ -356,7 +343,7 @@ void printTokenError(const Token& token, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Error, &token, format, args);
+	printMessage(PromptType::Error, &token, format, args);
 
 	va_end(args);
 }
@@ -366,7 +353,7 @@ void printNote(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Note, NULL, format, args);
+	printMessage(PromptType::Note, NULL, format, args);
 
 	va_end(args);
 }
@@ -376,7 +363,7 @@ void printWarning(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Warning, NULL, format, args);
+	printMessage(PromptType::Warning, NULL, format, args);
 
 	va_end(args);
 }
@@ -386,7 +373,7 @@ void printError(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Error, NULL, format, args);
+	printMessage(PromptType::Error, NULL, format, args);
 	
 	va_end(args);
 }
@@ -396,33 +383,16 @@ void printSuccess(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printMessage(LogLevel::Success, NULL, format, args);
+	printMessage(PromptType::Success, NULL, format, args);
 	
 	va_end(args);
 }
 
 [[ noreturn ]]
-void _exitWithError(const char *file, usize line, const char *format, ...)
+void exitNotImplemented(SourceLocation&& location)
 {
-	va_list args;
-
-	va_start(args, format);
-
-	printFileAndLine(file, line);
-	printf(COLOR_RED "fatal" COLOR_RESET ": ");
-	vprintf(format, args);
-	putchar('\n');
-
-	va_end(args);
-
-	exit(1);
-}
-
-[[ noreturn ]]
-void _exitNotImplemented(const char *file, usize line, const char *func)
-{
-	printFileAndLine(file, line);
-	printf(COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", func);
+	printFileAndLine(location.file(), location.line());
+	printf(COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", location.function());
 	exit(1);
 }
 

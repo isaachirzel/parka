@@ -2,7 +2,7 @@
 #define PARKA_AST_EXPRESSION_HPP
 
 #include "parka/ast/module.hpp"
-#include "parka/entity/expression_id.hpp"
+#include "parka/symbol/expression_id.hpp"
 #include "parka/token.hpp"
 #include "parka/type.hpp"
 #include "parka/util/box.hpp"

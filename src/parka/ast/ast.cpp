@@ -2,8 +2,8 @@
 #include "parka/ast/member.hpp"
 #include "parka/ast/package.hpp"
 #include "parka/ast/struct.hpp"
-#include "parka/entity/entity_id.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/path.hpp"
@@ -12,8 +12,8 @@
 String getSymbolFromPath(const String& pathText)
 {
 	auto path = path::toAbsolute(pathText);
-	printFmt("Path: %s", path.c_str());
-	exitNotImplemented();
+	print("Path: %", path);
+	exitNotImplemented(here());
 }
 
 const Member *getRecursiveMember(const Array<Member>& members, const String& parentSymbol)

@@ -1,8 +1,8 @@
 #ifndef PARKA_AST_AST_HPP
 #define PARKA_AST_AST_HPP
 
-#include "parka/entity/entity_id.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/project.hpp"
 #include "parka/util/optional.hpp"
 

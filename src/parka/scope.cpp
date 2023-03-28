@@ -10,7 +10,7 @@ usize getTokenCount(const char *key)
 {
 	usize count = 0;
 	
-	do
+	while (true)
 	{
 		switch (*key)
 		{
@@ -28,7 +28,8 @@ usize getTokenCount(const char *key)
 				key += 1;
 				continue;
 		}
-	} while (false);
+		break;
+	}
 
 	return count;
 }

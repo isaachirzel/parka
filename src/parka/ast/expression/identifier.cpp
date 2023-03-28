@@ -1,5 +1,5 @@
 #include "parka/ast/expression/identifier.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 #include "parka/util/optional.hpp"
 
@@ -21,7 +21,7 @@ Optional<ExpressionId> Identifier::parse(Token& token)
 
 bool Identifier::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 	// auto context = symbols.resolve(_token);
 
 	// if (!context)

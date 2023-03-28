@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_MODULE_HPP
 #define PARKA_AST_MODULE_HPP
 
-#include "parka/entity/entity_id.hpp"
+#include "parka/symbol/entity_id.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/file.hpp"
 #include "parka/util/optional.hpp"

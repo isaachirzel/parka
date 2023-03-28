@@ -27,8 +27,7 @@ Optional<StatementId> Statement::parse(Token& token)
 
 bool Statement::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
-	// printFmt("Statement type: %d", node->type);
+	exitNotImplemented(here());
 
 	// switch (node->type)
 	// {
@@ -45,5 +44,5 @@ bool Statement::validate(SymbolTable& symbols)
 	// 		break;
 	// }
 
-	// exitWithErrorFmt("Unable to validate Statement with StatementType: %d", node->type);
+	// exitWithError("Unable to validate Statement with StatementType: %d", node->type);
 }

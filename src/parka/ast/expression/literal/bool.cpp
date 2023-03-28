@@ -1,5 +1,5 @@
 #include "parka/ast/expression/literal/bool.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<bool> parseBool(Token& token)
@@ -36,11 +36,11 @@ Optional<ExpressionId> BoolLiteral::parse(Token& token)
 
 bool BoolLiteral::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> BoolLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 

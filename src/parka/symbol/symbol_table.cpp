@@ -1,25 +1,30 @@
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/ast/primitive.hpp"
-#include "parka/entity/entity.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/entity.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
 
-
 bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 {
 	// TODO: Add tokens for highlighting
 	auto& entity = NodeBank::get(id);
 	const auto& symbol = entity.symbol();
+
+	print("Declaring symbol: %: `%`", id, symbol);
+
 	auto result = globalSymbols.insert({ symbol,  id });
 
 	if (!result.second)
 	{
 		// TODO: get previous entity
 		auto previousId = result.first->second;
+
+		print("Previous id: % %", (int)id.type(), id.index());
+
 		auto& previous = NodeBank::get(previousId);
 
 		//TODO: invalidate entity previous.invalidate();

@@ -1,8 +1,8 @@
 #include "parka/ast/statement/jump.hpp"
 #include "parka/ast/expression/block.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/entity/node_bank.hpp"
-#include "parka/entity/statement_id.hpp"
+#include "parka/symbol/node_bank.hpp"
+#include "parka/symbol/statement_id.hpp"
 #include "parka/util/optional.hpp"
 #include "parka/util/print.hpp"
 
@@ -163,7 +163,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 
 bool JumpStatement::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 	// switch (node->type)
 	// {
 	// 	case JUMP_RETURN:
@@ -182,5 +182,5 @@ bool JumpStatement::validate(SymbolTable& symbols)
 	// 		break;
 	// }
 	
-	// exitWithErrorFmt("Unable to validate JumpStatement with type: %d", node->type);
+	// exitWithError("Unable to validate JumpStatement with type: %d", node->type);
 }

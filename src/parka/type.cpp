@@ -4,7 +4,7 @@
 #include "parka/ast/function/function.hpp"
 #include "parka/ast/primitive.hpp"
 #include "parka/ast/type_annotation.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/print.hpp"
 

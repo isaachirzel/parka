@@ -1,5 +1,5 @@
 #include "parka/ast/expression/literal/float.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<f64> parseFloat(Token& token)
@@ -59,11 +59,11 @@ Optional<ExpressionId> FloatLiteral::parse(Token& token)
 
 bool FloatLiteral::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> FloatLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 

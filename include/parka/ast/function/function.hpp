@@ -2,7 +2,7 @@
 #define PARKA_AST_FUNCTION_HPP
 
 #include "parka/ast/function/prototype.hpp"
-#include "parka/entity/entity.hpp"
+#include "parka/symbol/entity.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/type.hpp"
@@ -15,12 +15,12 @@
 
 class Function : public Entity
 {
-
 	String _symbol;
 	Prototype _prototype;
 	ExpressionId _body;
 
-	Function(Prototype&& prototype, ExpressionId&& body) :
+	Function(String&& symbol, Prototype&& prototype, ExpressionId&& body) :
+	_symbol(std::move(symbol)),
 	_prototype(std::move(prototype)),
 	_body(std::move(body))
 	{}
@@ -34,7 +34,6 @@ public:
 	static Optional<EntityId> parse(Token& token, const String& package);
 
 	bool validate(SymbolTable& symbols);
-	
 	
 	Token token() const { return _prototype.name(); }
 	const String& symbol() const { return _symbol; }

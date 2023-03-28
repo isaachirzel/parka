@@ -18,5 +18,5 @@ Optional<TypeAnnotation> TypeAnnotation::parse(Token& token)
 
 bool TypeAnnotation::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

@@ -1,7 +1,7 @@
 #include "parka/ast/function/prototype.hpp"
 #include "parka/ast/function/parameter.hpp"
 #include "parka/ast/type_annotation.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/print.hpp"
 
@@ -24,7 +24,7 @@ Optional<Array<EntityId>> parseParameterList(Token& token)
 		return parameters;
 	}
 	
-	do
+	while (true)
 	{
 		auto parameterId = Parameter::parse(token);
 
@@ -38,7 +38,9 @@ Optional<Array<EntityId>> parseParameterList(Token& token)
 			token.increment();
 			continue;
 		}
-	} while (false);
+
+		break;
+	}
 
 	if (token.type() != TokenType::RightParenthesis)
 	{
@@ -97,7 +99,7 @@ Optional<Prototype> Prototype::parse(Token& token)
 
 bool Prototype::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 	// bool success = true;
 
 	// for (usize i = 0; i < ids->length; ++i)

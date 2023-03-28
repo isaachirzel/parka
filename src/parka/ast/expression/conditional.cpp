@@ -1,7 +1,7 @@
 #include "parka/ast/expression/conditional.hpp"
 #include "parka/ast/expression/boolean_or.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
 
@@ -40,10 +40,10 @@ Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 
 bool ConditionalExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> ConditionalExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

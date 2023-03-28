@@ -1,7 +1,7 @@
 #include "parka/ast/expression/additive.hpp"
 #include "parka/ast/expression/multiplicative.hpp"
 #include "parka/ast/primitive.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/print.hpp"
 #include "parka/util/optional.hpp"
@@ -25,7 +25,6 @@ Optional<AdditiveType> getAdditiveType(Token& token)
 
 Optional<ExpressionId> AdditiveExpression::parse(Token& token)
 {
-	print("parse additive!");
 	auto lhs = MultiplicativeExpression::parse(token);
 
 	if (!lhs)
@@ -82,7 +81,7 @@ Optional<Type> getSignedIntegerType(const Primitive& left, const Primitive& righ
 
 Optional<Type> getPrimitiveType(const Primitive& left, const Primitive& right, const Type& expected)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 	// switch (left.type())
 	// {
 	// 	case PRIMITIVE_SIGNED_INTEGER:
@@ -97,7 +96,7 @@ Optional<Type> getPrimitiveType(const Primitive& left, const Primitive& right, c
 
 Optional<Type> AdditiveExpression::getType(const SymbolTable& symbols, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 
 	// auto leftType = _lhs->getType(symbols, expected);
 

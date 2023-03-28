@@ -1,5 +1,5 @@
 #include "parka/ast/expression/literal/char.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<char> parseChar(Token& token)
@@ -39,11 +39,11 @@ Optional<ExpressionId> CharLiteral::parse(Token& token)
 
 bool CharLiteral::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> CharLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 

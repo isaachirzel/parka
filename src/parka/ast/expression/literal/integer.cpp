@@ -1,5 +1,5 @@
 #include "parka/ast/expression/literal/integer.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<u64> parseInteger(Token& token)
@@ -54,10 +54,10 @@ Optional<ExpressionId> IntegerLiteral::parse(Token& token)
 
 bool IntegerLiteral::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> IntegerLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

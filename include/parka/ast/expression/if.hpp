@@ -2,7 +2,7 @@
 #define PARKA_AST_EXPRESSION_IF_HPP
 
 #include "parka/ast/expression/expression.hpp"
-#include "parka/entity/statement_id.hpp"
+#include "parka/symbol/statement_id.hpp"
 #include "parka/util/box.hpp"
 
 // TODO: Consider merging this with conditional expression

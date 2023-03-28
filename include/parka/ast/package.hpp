@@ -2,7 +2,7 @@
 #define PARKA_AST_PACKAGE_HPP
 
 #include "parka/ast/module.hpp"
-#include "parka/entity/entity.hpp"
+#include "parka/symbol/entity.hpp"
 #include "parka/scope.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/token.hpp"

@@ -4,7 +4,7 @@
 #include "parka/ast/type_annotation.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/optional.hpp"
-#include "parka/entity/entity.hpp"
+#include "parka/symbol/entity.hpp"
 
 
 

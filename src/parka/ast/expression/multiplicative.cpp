@@ -1,6 +1,6 @@
 #include "parka/ast/expression/multiplicative.hpp"
 #include "parka/ast/expression/prefix.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<MultiplicativeType> getMultiplicativeType(Token& token)
@@ -64,5 +64,5 @@ bool MultiplicativeExpression::validate(SymbolTable& symbols)
 
 Optional<Type> MultiplicativeExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

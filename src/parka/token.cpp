@@ -563,9 +563,6 @@ void Token::increment()
 Token Token::initial(const File& file)
 {
 	usize pos = getNextPos(file, 0);
-
-	printFmt("pos: %zu", pos);
-
 	auto token = getNextToken(file, pos);
 
 	return token;
@@ -672,7 +669,7 @@ String Token::category() const
 			return "keyword";
 
 		default:
-			exitWithErrorFmt("Invalid TokenType: %d", _type);
+			exitWithError("Invalid TokenType: %", _type);
 	}
 }
 
@@ -699,4 +696,103 @@ bool Token::operator ==(const String& text) const
 		return false;
 
 	return !strcmp(&_file[_pos], text.c_str());
+}
+
+const char *getTokenTypeText(TokenType type)
+{
+	switch (type)
+	{
+		case TokenType::EndOfFile: return "EOF";
+		case TokenType::Compound: return "Compound Token";
+		case TokenType::Identifier: return "Identifier";
+		case TokenType::LeftParenthesis: return "(";
+		case TokenType::RightParenthesis: return ")";
+		case TokenType::LeftBracket: return "[";
+		case TokenType::RightBracket: return "]";
+		case TokenType::LeftBrace: return "{";
+		case TokenType::RightBrace: return "}";
+		case TokenType::Semicolon: return ";";
+		case TokenType::Colon: return ":";
+		case TokenType::Comma: return ",";
+		case TokenType::Dot: return ".";
+		case TokenType::Range: return "";
+		case TokenType::Elipsis: return ".";
+		case TokenType::Ampersand: return "&";
+		case TokenType::Pipe: return "|";
+		case TokenType::Carrot: return "^";
+		case TokenType::LeftBitShift: return "<<";
+		case TokenType::RightBitShift: return ">>";
+		case TokenType::BooleanNot: return "not";
+		case TokenType::BooleanAnd: return "and";
+		case TokenType::BooleanOr: return "or";
+		case TokenType::BitwiseNot: return "~";
+		case TokenType::BitwiseXor: return "^";
+		case TokenType::Equals: return "==";
+		case TokenType::NotEquals: return "!=";
+		case TokenType::LessThanOrEqualTo: return "<=";
+		case TokenType::GreaterThanOrEqualTo: return ">=";
+		case TokenType::LessThan: return "<";
+		case TokenType::GreaterThan: return ">";
+		case TokenType::SingleArrow: return "->";
+		case TokenType::DoubleArrow: return "=>";
+		case TokenType::Option: return "??";
+		case TokenType::Question: return "?";
+		case TokenType::Assign: return "=";
+		case TokenType::AddAssign: return "+=";
+		case TokenType::SubtractAssign: return "-=";
+		case TokenType::MultiplyAssign: return "*=";
+		case TokenType::DivideAssign: return "/=";
+		case TokenType::ModulusAssign: return "%=";
+		case TokenType::LeftBitShiftAssign: return "<<=";
+		case TokenType::RightBitShiftAssign: return ">>=";
+		case TokenType::BitwiseAndAssign: return "&=";
+		case TokenType::BitwiseOrAssign: return "|=";
+		case TokenType::BitwiseXorAssign: return "^=";
+		case TokenType::BooleanOrAssign: return "||=";
+		case TokenType::BooleanAndAssign: return "&&=";
+		case TokenType::Modulus: return "%";
+		case TokenType::Slash: return "/";
+		case TokenType::Asterisk: return "*";
+		case TokenType::Plus: return "+";
+		case TokenType::Minus: return "-";
+		case TokenType::Scope: return "::";
+		case TokenType::IntegerLiteral: return "{integer}";
+		case TokenType::FloatLiteral: return "{float}";
+		case TokenType::CharacterLiteral: return "{char}";
+		case TokenType::StringLiteral: return "{string}";
+		case TokenType::KeywordBreak: return "`break`";
+		case TokenType::KeywordCase: return "`case`";
+		case TokenType::KeywordContinue: return "`continue`";
+		case TokenType::KeywordYield: return "`yield`";
+		case TokenType::KeywordElse: return "`else`";
+		case TokenType::KeywordEnum: return "`enum`";
+		case TokenType::KeywordExport: return "`export`";
+		case TokenType::KeywordFalse: return "`false`";
+		case TokenType::KeywordFor: return "`for`";
+		case TokenType::KeywordFunction: return "`function`";
+		case TokenType::KeywordIf: return "`if`";
+		case TokenType::KeywordImport: return "`import`";
+		case TokenType::KeywordLoop: return "`loop`";
+		case TokenType::KeywordMatch: return "`match`";
+		case TokenType::KeywordMut: return "`mut`";
+		case TokenType::KeywordPrivate: return "`private`";
+		case TokenType::KeywordPublic: return "`public`";
+		case TokenType::KeywordReturn: return "`return`";
+		case TokenType::KeywordStruct: return "`struct`";
+		case TokenType::KeywordThen: return "`then`";
+		case TokenType::KeywordTrue: return "`true`";
+		case TokenType::KeywordType: return "`type`";
+		case TokenType::KeywordUnion: return "`union`";
+		case TokenType::KeywordVar: return "`var`";
+		case TokenType::KeywordWhile: return "`while`";
+	}
+
+	exitWithError("Unable to get text for TokenType: %d", (int)type);
+}
+
+std::ostream& operator<<(std::ostream& out, TokenType type)
+{
+	out << getTokenTypeText(type);
+
+	return out;
 }

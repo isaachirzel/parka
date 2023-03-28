@@ -2,6 +2,7 @@
 #define PARKA_ENTITY_ENTITY_ID_HPP
 
 #include "parka/util/primitives.hpp"
+#include <ostream>
 
 enum class EntityType
 {
@@ -36,10 +37,8 @@ public:
 	const auto& index() const { return _index; }
 	const auto& type() const { return _type; }
 
-	bool operator==(const EntityId& other) const
-	{
-		return _type == other.type() && _index == other.index();
-	}
+	friend std::ostream& operator<<(std::ostream& out, const EntityId& id);
+	bool operator==(const EntityId& other) const;
 };
 
 #endif

@@ -41,7 +41,7 @@ class File
 	_path(std::move(path)),
 	_text(std::move(text)),
 	_lineLengths(getLineLengths(_text)),
-	_type(getType(_text))
+	_type(getType(_path))
 	{}
 
 	static FileType getType(const String& filepath);

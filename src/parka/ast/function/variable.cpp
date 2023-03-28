@@ -1,6 +1,6 @@
 #include "parka/ast/function/variable.hpp"
 #include "parka/ast/type_annotation.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<EntityId> Variable::parse(Token& token)
@@ -44,7 +44,7 @@ Optional<EntityId> Variable::parse(Token& token)
 
 bool Variable::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 	// if (node->isExplicitlyTyped)
 	// 	return validateTypeAnnotation(&node->annotation, symbols->packageScope);
 

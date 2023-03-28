@@ -1,6 +1,6 @@
 #include "parka/ast/expression/member_access.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<ExpressionId> MemberAccess::parse(Token& token, ExpressionId primary)
@@ -29,10 +29,10 @@ Optional<ExpressionId> MemberAccess::parse(Token& token, ExpressionId primary)
 
 bool MemberAccess::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> MemberAccess::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

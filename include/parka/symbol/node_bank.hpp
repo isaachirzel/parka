@@ -2,8 +2,8 @@
 #define PARKA_UTIL_ENTITY_ENTITY_BANK_HPP
 
 #include "parka/ast/statement/statement.hpp"
-#include "parka/entity/entity.hpp"
-#include "parka/entity/entity_id.hpp"
+#include "parka/symbol/entity.hpp"
+#include "parka/symbol/entity_id.hpp"
 
 class Package;
 class Struct;

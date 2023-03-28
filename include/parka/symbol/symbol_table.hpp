@@ -1,7 +1,7 @@
 #ifndef PARKA_SYMBOL_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOL_SYMBOL_TABLE_HPP
 
-#include "parka/entity/entity_id.hpp"
+#include "parka/symbol/entity_id.hpp"
 #include "parka/scope.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"

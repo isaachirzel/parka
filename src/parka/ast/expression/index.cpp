@@ -1,5 +1,5 @@
 #include "parka/ast/expression/index.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
 
@@ -34,10 +34,10 @@ Optional<ExpressionId> IndexExpression::parse(Token& token, ExpressionId primary
 
 bool IndexExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> IndexExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

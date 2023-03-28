@@ -2,7 +2,7 @@
 #include "parka/ast/module.hpp"
 #include "parka/ast/statement/declaration.hpp"
 #include "parka/ast/function/variable.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<StatementId> Declaration::parse(Token& token)
@@ -41,7 +41,7 @@ Optional<StatementId> Declaration::parse(Token& token)
 
 bool Declaration::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 	// bool success = true;
 
 	// if (!symbolTableDeclareLocal(symbols, EntityType::Variable, node->variableId))

@@ -2,7 +2,7 @@
 #define PARKA_AST_STRUCT_HPP
 
 #include "parka/ast/member.hpp"
-#include "parka/entity/entity.hpp"
+#include "parka/symbol/entity.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/type.hpp"
 #include "parka/util/array.hpp"

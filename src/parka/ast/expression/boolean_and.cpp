@@ -1,7 +1,7 @@
 #include "parka/ast/expression/boolean_and.hpp"
 #include "parka/ast/expression/bitwise_or.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 
@@ -32,10 +32,10 @@ Optional<ExpressionId> BooleanAndExpression::parse(Token& token)
 
 bool BooleanAndExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> BooleanAndExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

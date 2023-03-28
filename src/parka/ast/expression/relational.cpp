@@ -1,6 +1,6 @@
 #include "parka/ast/expression/relational.hpp"
 #include "parka/ast/expression/shift.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<RelationalType> parseRelationalType(Token& token)
@@ -54,10 +54,10 @@ Optional<ExpressionId> RelationalExpression::parse(Token& token)
 
 bool RelationalExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> RelationalExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

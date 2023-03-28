@@ -4,7 +4,7 @@
 #include "parka/ast/expression/postfix.hpp"
 
 #include "parka/ast/expression/primary.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<PrefixType> parsePrefixType(Token& token)
@@ -54,10 +54,10 @@ Optional<ExpressionId> Prefix::parse(Token& token)
 
 bool Prefix::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> Prefix::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

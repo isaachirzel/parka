@@ -50,7 +50,7 @@
 // 		return id;
 // 	}
 
-// 	exitWithErrorFmt("Unable to create a CPU timer as all %zu CPU timers are currently running.", cpuTimerCount);
+// 	exitWithError("Unable to create a CPU timer as all %zu CPU timers are currently running.", cpuTimerCount);
 // }
 
 // f64 cpuTimerStop(CpuTimerId id)
@@ -80,7 +80,7 @@
 // 		return id;
 // 	}
 
-// 	exitWithErrorFmt("Unable to create a clock timer as all %zu clock timers are currently running.", clockTimerCount);
+// 	exitWithError("Unable to create a clock timer as all %zu clock timers are currently running.", clockTimerCount);
 // }
 
 // f64 clockTimerStop(ClockTimerId id)

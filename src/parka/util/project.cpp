@@ -3,6 +3,7 @@
 #include "parka/util/directory.hpp"
 #include "parka/util/optional.hpp"
 #include "parka/util/path.hpp"
+#include "parka/util/print.hpp"
 
 Optional<Project> Project::read(const String& path)
 {
@@ -11,6 +12,8 @@ Optional<Project> Project::read(const String& path)
 
     if (!directory)
         return {};
+
+    print("Reading path: %", path);
 
     auto name = path::getFilename(path);
     auto project = Project(std::move(name), directory.unwrap());

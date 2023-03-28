@@ -1,6 +1,6 @@
 #include "parka/ast/struct.hpp"
 #include "parka/ast/member.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/print.hpp"
 
@@ -40,7 +40,7 @@ Optional<EntityId> Struct::parse(Token& token, const String& package)
 
 	if (token.type() != TokenType::RightBrace)
 	{
-		do
+		while (true)
 		{
 			auto member = Member::parse(token);
 
@@ -54,7 +54,9 @@ Optional<EntityId> Struct::parse(Token& token, const String& package)
 				token.increment();
 				continue;
 			}
-		} while (false);
+
+			break;
+		}
 
 		if (token.type() != TokenType::RightBrace)
 		{

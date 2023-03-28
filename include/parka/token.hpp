@@ -132,4 +132,7 @@ public:
 	const auto& type() const { return _type; }
 };
 
+const char *getTokenTypeText(TokenType type);
+std::ostream& operator<<(std::ostream& out, TokenType type);
+
 #endif

@@ -1,7 +1,7 @@
 #include "parka/ast/expression/bitwise_and.hpp"
 #include "parka/ast/expression/equality.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 #include "parka/util/print.hpp"
@@ -33,10 +33,10 @@ Optional<ExpressionId> BitwiseAndExpression::parse(Token& token)
 
 bool BitwiseAndExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> BitwiseAndExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }

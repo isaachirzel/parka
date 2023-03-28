@@ -2,8 +2,8 @@
 #define PARKA_AST_VARIABLE_HPP
 
 #include "parka/ast/type_annotation.hpp"
-#include "parka/entity/entity.hpp"
-#include "parka/entity/entity_id.hpp"
+#include "parka/symbol/entity.hpp"
+#include "parka/symbol/entity_id.hpp"
 
 
 

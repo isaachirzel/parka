@@ -1,10 +1,11 @@
 #include "parka/ast/package.hpp"
 #include "parka/ast/module.hpp"
-#include "parka/entity/entity_id.hpp"
+#include "parka/symbol/entity_id.hpp"
 #include "parka/scope.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/file.hpp"
+#include "parka/util/print.hpp"
 
 Optional<Package> Package::parse(const Array<File>& files, String&& symbol)
 {

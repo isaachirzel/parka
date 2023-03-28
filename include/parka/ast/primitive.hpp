@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_PRIMITIVE_HPP
 #define PARKA_AST_PRIMITIVE_HPP
 
-#include "parka/entity/entity.hpp"
+#include "parka/symbol/entity.hpp"
 #include "parka/token.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/primitives.hpp"

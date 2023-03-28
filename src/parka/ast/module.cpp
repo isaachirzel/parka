@@ -1,7 +1,7 @@
 #include "parka/ast/module.hpp"
 #include "parka/ast/function/function.hpp"
 #include "parka/ast/struct.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/token.hpp"
@@ -11,16 +11,13 @@
 
 Optional<Module> Module::parse(const File& file, const String& package)
 {
-	printFmt("Parsing file: %s", file.path().c_str());
 	// TODO: Fast forwarding after encountering parse error to not stop after first failure
 	auto success = true;
 	auto token = Token::initial(file);
 	auto functionIds = Array<EntityId>();
 	auto structIds = Array<EntityId>();
 
-	printFmt("Token.type: %d", token.type());
-
-	do
+	while (true)
 	{
 		switch (token.type())
 		{
@@ -62,8 +59,9 @@ Optional<Module> Module::parse(const File& file, const String& package)
 				success = false;
 				break;
 		}
-	
-	} while (false);
+
+		break;
+	}
 
 	if (!success)
 		return {};

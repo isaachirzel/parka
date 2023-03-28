@@ -13,18 +13,18 @@ String readFileText(const String& filepath)
 	FILE *file = fopen(filepath.c_str(), "r");
 	
 	if (!file)
-		exitWithErrorFmt("Failed to open file '%s'.", filepath.c_str());
+		exitWithError("Failed to open file '%s'.", filepath.c_str());
 
 	if (fseek(file, 0, SEEK_END))
-		exitWithErrorFmt("Failed to seek end of file '%s'.", filepath.c_str());
+		exitWithError("Failed to seek end of file '%s'.", filepath.c_str());
 
 	long size = ftell(file);
 
 	if (size == -1)
-		exitWithErrorFmt("File '%s' is invalid size.", filepath.c_str());
+		exitWithError("File '%s' is invalid size.", filepath.c_str());
 
 	if (fseek(file, 0, SEEK_SET))
-		exitWithErrorFmt("Failed to seek beginning of file '%s'.", filepath.c_str());
+		exitWithError("Failed to seek beginning of file '%s'.", filepath.c_str());
 
 	auto text = String();
 
@@ -87,9 +87,7 @@ Array<usize> File::getLineLengths(const String& text)
 
 FileType File::getType(const String& filepath)
 {
-	printFmt("Getting file type for: %s", filepath.c_str());
 	// TODO: Optimize and safety
-
 	assert(!filepath.empty() && "Empty filepath");
 
 	const char *lastPoint = NULL;
@@ -131,7 +129,6 @@ File File::read(const String& path)
 {
 	auto text = readFileText(path);
 	auto lineLengths = getLineLengths(text);
-	auto type = getType(path);
 	auto file = File(String(path), std::move(text));
 
 	return file;

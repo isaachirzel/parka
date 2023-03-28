@@ -1,6 +1,6 @@
 #include "parka/ast/expression/equality.hpp"
 #include "parka/ast/expression/relational.hpp"
-#include "parka/entity/node_bank.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<EqualityType> getEqualityType(Token& token)
@@ -48,10 +48,10 @@ Optional<ExpressionId> EqualityExpression::parse(Token& token)
 
 bool EqualityExpression::validate(SymbolTable& symbols)
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
 
 Optional<Type> EqualityExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
 {
-	exitNotImplemented();
+	exitNotImplemented(here());
 }
