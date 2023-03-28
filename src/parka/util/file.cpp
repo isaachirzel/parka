@@ -13,18 +13,18 @@ String readFileText(const String& filepath)
 	FILE *file = fopen(filepath.c_str(), "r");
 	
 	if (!file)
-		exitWithError("Failed to open file '%s'.", filepath.c_str());
+		exitWithError("Failed to open file '$'.", filepath.c_str());
 
 	if (fseek(file, 0, SEEK_END))
-		exitWithError("Failed to seek end of file '%s'.", filepath.c_str());
+		exitWithError("Failed to seek end of file '$'.", filepath.c_str());
 
 	long size = ftell(file);
 
 	if (size == -1)
-		exitWithError("File '%s' is invalid size.", filepath.c_str());
+		exitWithError("File '$' is invalid size.", filepath.c_str());
 
 	if (fseek(file, 0, SEEK_SET))
-		exitWithError("Failed to seek beginning of file '%s'.", filepath.c_str());
+		exitWithError("Failed to seek beginning of file '$'.", filepath.c_str());
 
 	auto text = String();
 
@@ -45,7 +45,7 @@ bool writeFileText(const char *filepath, const String& content)
 
 	if (!file)
 	{
-		printError("Failed to open file '%s' for writing.", filepath);
+		printError("Failed to open file '$' for writing.", filepath);
 		return false;
 	}
 
@@ -55,7 +55,7 @@ bool writeFileText(const char *filepath, const String& content)
 
 	if (bytesWritten != content.length())
 	{
-		printError("Failed to write content to file '%s'.", filepath);
+		printError("Failed to write content to file '$'.", filepath);
 		return false;
 	}
 

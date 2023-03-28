@@ -136,7 +136,7 @@ Optional<Type> AdditiveExpression::getType(const SymbolTable& symbols, Ref<Type>
 	// 	exitWithError("Addition for complex types is not implemented yet.");
 	// }
 	
-	// printError("`%s` cannot be added to `%s`.", rightType.name() typeGetName(&rightType), typeGetName(&leftType));
+	// printError("`$` cannot be added to `$`.", rightType.name() typeGetName(&rightType), typeGetName(&leftType));
 
 	return {};
 }

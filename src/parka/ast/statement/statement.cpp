@@ -44,5 +44,5 @@ bool Statement::validate(SymbolTable& symbols)
 	// 		break;
 	// }
 
-	// exitWithError("Unable to validate Statement with StatementType: %d", node->type);
+	// exitWithError("Unable to validate Statement with StatementType: $", node->type);
 }

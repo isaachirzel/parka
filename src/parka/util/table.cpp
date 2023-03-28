@@ -83,7 +83,7 @@
 
 // 	usize maxCapacity = primeNumbers[primeNumberCount - 1];
 
-// 	exitWithError("Unable to get Table size, requested capacity (%zu) is over maximum (%zu).", minCapacity, maxCapacity);
+// 	exitWithError("Unable to get Table size, requested capacity ($) is over maximum ($).", minCapacity, maxCapacity);
 // }
 
 // Table tableCreate(usize minCapacity)
@@ -123,8 +123,8 @@
 
 // 	while (*key)
 // 	{
-// 		hash = (hash + (*key - 'a' + 1) * pop) % m;
-// 		pop = (pop * p) % m;
+// 		hash = (hash + (*key - 'a' + 1) * pop) $ m;
+// 		pop = (pop * p) $ m;
 // 		key += 1;
 // 	}
 
@@ -139,7 +139,7 @@
 // 	TableEntry *entries = table->entries;
 // 	usize length = primeNumbers[table->primeNumberIndex];
 // 	usize hash = hashKey(key);
-// 	usize index = hash % length;
+// 	usize index = hash $ length;
 // 	usize step = 0;
 
 // 	while (true)
@@ -155,7 +155,7 @@
 // 		step += 1;
 
 // 		// TODO: Double check that this is correct
-// 		index = (hash + step * step) % length;
+// 		index = (hash + step * step) $ length;
 // 	}
 
 // 	return &entries[index];

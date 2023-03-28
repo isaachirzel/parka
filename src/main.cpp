@@ -66,7 +66,7 @@ int main(int argc, const char *argv[])
 
 	compileTimer.stop();
 
-	printSuccess("compiled `%s` in %f seconds.", project.name().c_str(), compileTimer.elapsedSeconds());
+	printSuccess("compiled `$` in $ seconds.", project.name().c_str(), compileTimer.elapsedSeconds());
 
 	return 0;
 }

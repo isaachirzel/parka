@@ -76,7 +76,7 @@ bool Declaration::validate(SymbolTable& symbols)
 	// 		auto fromTypeName = variableTypegetName();
 
 	// 		// TODO: Make error highlight entire statement
-	// 		printTokenError(&variable->name, "Variable of type `%s` cannot be initialized with value of type `%s`.", toTypeName, fromTypeName);
+	// 		printTokenError(&variable->name, "Variable of type `$` cannot be initialized with value of type `$`.", toTypeName, fromTypeName);
 	// 		deallocate(toTypeName);
 	// 		deallocate(fromTypeName);
 

@@ -257,7 +257,7 @@ Token getQuoteToken(const File& file, const usize startPos)
 				: "String";
 			auto token = Token(file, startPos, length, TokenType::EndOfFile);
 
-			printTokenError(token, "%s literal is unterminated.", typeName);
+			printTokenError(token, "$ literal is unterminated.", typeName);
 			
 			return token;
 		}
@@ -452,7 +452,7 @@ Token getNextToken(const File& file, usize startPos)
 
 			return (Token) { file, startPos, 1, TokenType::GreaterThan };
 
-		case '%':
+		case '$':
 			return file[startPos + 1] == '='
 				? (Token) { file, startPos, 2, TokenType::ModulusAssign }
 				: (Token) { file, startPos, 1, TokenType::Modulus };
@@ -669,7 +669,7 @@ String Token::category() const
 			return "keyword";
 
 		default:
-			exitWithError("Invalid TokenType: %", _type);
+			exitWithError("Invalid TokenType: $", _type);
 	}
 }
 
@@ -742,7 +742,7 @@ const char *getTokenTypeText(TokenType type)
 		case TokenType::SubtractAssign: return "-=";
 		case TokenType::MultiplyAssign: return "*=";
 		case TokenType::DivideAssign: return "/=";
-		case TokenType::ModulusAssign: return "%=";
+		case TokenType::ModulusAssign: return "$=";
 		case TokenType::LeftBitShiftAssign: return "<<=";
 		case TokenType::RightBitShiftAssign: return ">>=";
 		case TokenType::BitwiseAndAssign: return "&=";
@@ -750,7 +750,7 @@ const char *getTokenTypeText(TokenType type)
 		case TokenType::BitwiseXorAssign: return "^=";
 		case TokenType::BooleanOrAssign: return "||=";
 		case TokenType::BooleanAndAssign: return "&&=";
-		case TokenType::Modulus: return "%";
+		case TokenType::Modulus: return "$";
 		case TokenType::Slash: return "/";
 		case TokenType::Asterisk: return "*";
 		case TokenType::Plus: return "+";
@@ -787,7 +787,7 @@ const char *getTokenTypeText(TokenType type)
 		case TokenType::KeywordWhile: return "`while`";
 	}
 
-	exitWithError("Unable to get text for TokenType: %d", (int)type);
+	exitWithError("Unable to get text for TokenType: $", (int)type);
 }
 
 std::ostream& operator<<(std::ostream& out, TokenType type)

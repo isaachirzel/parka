@@ -324,7 +324,7 @@ Entity& NodeBank::get(EntityId id)
 			break;
 	}
 	
-	exitWithError("Unable to get entity of type: %", (int)id.type());
+	exitWithError("Unable to get entity of type: $", (int)id.type());
 }
 
 Expression& NodeBank::get(ExpressionId id)
@@ -409,7 +409,7 @@ Expression& NodeBank::get(ExpressionId id)
 			break;
 	}
 
-	exitWithError("Unable to get Expression of type: %", (int)id.type());
+	exitWithError("Unable to get Expression of type: $", (int)id.type());
 }
 
 Statement& NodeBank::get(StatementId id)
@@ -429,7 +429,7 @@ Statement& NodeBank::get(StatementId id)
 			break;
 	}
 
-	exitWithError("Unable to get Statement of type: %", (int)id.type());
+	exitWithError("Unable to get Statement of type: $", (int)id.type());
 }
 
 Package& NodeBank::getPackage(EntityId id)

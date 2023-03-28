@@ -14,7 +14,7 @@ bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 	auto& entity = NodeBank::get(id);
 	const auto& symbol = entity.symbol();
 
-	print("Declaring symbol: %: `%`", id, symbol);
+	print("Declaring symbol: $: `$`", id, symbol);
 
 	auto result = globalSymbols.insert({ symbol,  id });
 
@@ -23,13 +23,13 @@ bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 		// TODO: get previous entity
 		auto previousId = result.first->second;
 
-		print("Previous id: % %", (int)id.type(), id.index());
+		print("Previous id: $ $", (int)id.type(), id.index());
 
 		auto& previous = NodeBank::get(previousId);
 
 		//TODO: invalidate entity previous.invalidate();
 
-		printError( "`%s` is already declared in this package.", symbol.c_str());
+		printError( "`$` is already declared in this package.", symbol.c_str());
 	}
 
 	return result.second;
@@ -90,7 +90,7 @@ Optional<EntityId> SymbolTable::resolve(const Token& token)
 			return EntityId(iter->second);
 	}
 
-	printTokenError(token, "Unable to find '%s' in this scope.", identifier.c_str());
+	printTokenError(token, "Unable to find '$' in this scope.", identifier.c_str());
 
 	return {};
 }

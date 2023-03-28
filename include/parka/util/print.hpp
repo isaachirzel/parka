@@ -13,14 +13,14 @@ void _print(const char * const fmt);
 template <typename First, typename... Arg>
 void _print(const char * const fmt, const First& first, Arg const&... args)
 {
-	// TODO: Escape % symbol
+	// TODO: Escape $ symbol
 	const char *iter = fmt;
 
 	while (true)
 	{
 		switch (*iter)
 		{
-			case '%':
+			case '$':
 				break;
 
 			case '\0':

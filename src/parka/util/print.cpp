@@ -70,7 +70,7 @@ Prompt::Prompt(PromptType type)
 			break;
 
 		default:
-			exitWithError("Unable to create Log with PromptType: %d", type);
+			exitWithError("Unable to create Log with PromptType: $", type);
 	}
 }
 
@@ -107,7 +107,7 @@ String toMargin(usize lineNumber)
 
 	if (lineNumber > 0)
 	{
-		sprintf(tempBuffer, "%5zu", lineNumber);
+		sprintf(tempBuffer, "$5zu", lineNumber);
 	}
 	else
 	{
@@ -236,15 +236,15 @@ void printFileAndLine(const char *file, u32 line)
 	if (index != SIZE_MAX)
 		file += (index + 5);
 
-	printf("%s:%u: ", file, line);
+	printf("$:$u: ", file, line);
 }
 
 void _print(const char * const fmt)
 {
-	// TODO: Escape % symbol
+	// TODO: Escape $ symbol
 	for (const char * iter = fmt; *iter; ++iter)
 	{
-		if (*iter == '%')
+		if (*iter == '$')
 		{
 			std::cout << "Not enough arguments to print." << std::endl;
 			exit(1);
@@ -259,17 +259,17 @@ void printParseError(const Token& token, const char *expected, const char *messa
 	if (!message)
 		message = "";
 
-	printf("Length: %zu\n", token.length());
+	printf("Length: $\n", token.length());
 
 	if (token.type() == TokenType::EndOfFile)
 	{
-		printTokenError(token, "Expected %s, found end of file. %s", expected, message);
+		printTokenError(token, "Expected $, found end of file. $", expected, message);
 	}
 	else
 	{
 		auto category = token.category();
 
-		printTokenError(token, "Expected %s, found %s. %s", expected, category.c_str(), message);
+		printTokenError(token, "Expected $, found $. $", expected, category.c_str(), message);
 	}
 }
 
@@ -392,7 +392,7 @@ void printSuccess(const char *format, ...)
 void exitNotImplemented(SourceLocation&& location)
 {
 	printFileAndLine(location.file(), location.line());
-	printf(COLOR_RED "fatal" COLOR_RESET ": %s is not implemented.\n", location.function());
+	printf(COLOR_RED "fatal" COLOR_RESET ": $ is not implemented.\n", location.function());
 	exit(1);
 }
 

@@ -112,7 +112,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 // 	{
 // 		char *returnTypeName = typeGetName(returnType);
 
-// 		printError("Return value is not compatible with return type `%s`.", returnTypeName);
+// 		printError("Return value is not compatible with return type `$`.", returnTypeName);
 // 		deallocate(returnTypeName);
 
 // 		return false;
@@ -153,7 +153,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 // 		auto blockTypeName = blockReturnType.getName();
 // 		// TODO: get type token
 
-// 		printError("Yield value is not compatible with type of block expression `%s`.", blockTypeName);
+// 		printError("Yield value is not compatible with type of block expression `$`.", blockTypeName);
 
 // 		return false;
 // 	}
@@ -182,5 +182,5 @@ bool JumpStatement::validate(SymbolTable& symbols)
 	// 		break;
 	// }
 	
-	// exitWithError("Unable to validate JumpStatement with type: %d", node->type);
+	// exitWithError("Unable to validate JumpStatement with type: $", node->type);
 }

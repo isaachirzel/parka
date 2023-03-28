@@ -12,7 +12,7 @@
 String getSymbolFromPath(const String& pathText)
 {
 	auto path = path::toAbsolute(pathText);
-	print("Path: %", path);
+	print("Path: $", path);
 	exitNotImplemented(here());
 }
 
