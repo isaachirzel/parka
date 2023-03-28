@@ -3,13 +3,30 @@
 
 #include "parka/util/primitives.hpp"
 
-typedef struct CpuTimer *CpuTimerId;
-typedef struct ClockTimer *ClockTimerId;
+#include <chrono>
 
-CpuTimerId cpuTtimerStart(void);
-f64 cpuTimerStop(CpuTimerId id);
+class Timer
+{
+	using Clock = std::chrono::high_resolution_clock;
+	
+	std::chrono::time_point<Clock> _startTime;
+	std::chrono::time_point<Clock> _stopTime;
 
-ClockTimerId clockTimerStart(void);
-f64 clockTimerStop(ClockTimerId id);
+public:
+
+	void start() { _startTime = Clock::now(); }
+	void stop() { _stopTime = Clock::now(); }
+
+	const auto& startTime() const { return _startTime; }
+	const auto& stopTime() const { return _stopTime; }
+
+	f64 elapsedSeconds() const
+	{
+		auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(_stopTime - _startTime).count();
+		auto elapsedSeconds = (f64)nanoseconds / 1'000'000'000.0;
+
+		return elapsedSeconds;
+	}
+};
 
 #endif

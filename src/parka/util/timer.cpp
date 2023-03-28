@@ -1,106 +1,97 @@
-#include <bits/time.h>
-#include "parka/util/print.hpp"
-#include "parka/util/timer.hpp"
+// #include <bits/time.h>
+// #include "parka/util/print.hpp"
+// #include "parka/util/timer.hpp"
 
-#include "parka/util/print.hpp"
-#include <ctime>
+// #include "parka/util/print.hpp"
+// #include <chrono>
 
-// TODO: Make OS agnostic
+// void Timer::start()
+// {
+// 	auto d = std::chrono::high_resolution_clock::now().time_since_epoch();
+// }
 
-typedef struct CpuTimer
-{
-	bool isRunning;
-	struct timespec startTime;
-} CpuTimer;
+// void Timer::stop()
+// {
+// }
 
-typedef struct ClockTimer
-{
-	bool isRunning;
-	struct timespec startTime;
-} ClockTimer;
 
-CpuTimer cpuTimers[16];
-ClockTimer clockTimers[16];
-usize cpuTimerCount = sizeof(cpuTimers) / sizeof(*cpuTimers);
-usize clockTimerCount = sizeof(clockTimers) / sizeof(*clockTimers);
+// struct timespec getClockTime()
+// {
+// 	struct timespec time;
 
-struct timespec getClockTime()
-{
-	struct timespec time;
-
-	if (clock_gettime(CLOCK_MONOTONIC, &time))
-			exitWithError("The system does not support a clock timer.");
+// 	if (clock_gettime(CLOCK_MONOTONIC, &time))
+// 			exitWithError("The system does not support a clock timer.");
 			
-	return time;
-}
+// 	return time;
+// }
 
-struct timespec getCpuTime()
-{
-	struct timespec time;
+// struct timespec getCpuTime()
+// {
+// 	struct timespec time;
 
-	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time))
-			exitWithError("The system does not support a CPU timer.");
+// 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time))
+// 			exitWithError("The system does not support a CPU timer.");
 			
-	return time;
-}
+// 	return time;
+// }
 
-CpuTimerId cpuTimerStart(void)
-{
-	for (usize i = 0; i < cpuTimerCount; ++i)
-	{
-		CpuTimerId id = &cpuTimers[i];
+// CpuTimerId cpuTimerStart(void)
+// {
+// 	for (usize i = 0; i < cpuTimerCount; ++i)
+// 	{
+// 		CpuTimerId id = &cpuTimers[i];
 
-		if (id->isRunning)
-			continue;
+// 		if (id->isRunning)
+// 			continue;
 
-		id->isRunning = true;
-		id->startTime = getCpuTime();
+// 		id->isRunning = true;
+// 		id->startTime = getCpuTime();
 
-		return id;
-	}
+// 		return id;
+// 	}
 
-	exitWithErrorFmt("Unable to create a CPU timer as all %zu CPU timers are currently running.", cpuTimerCount);
-}
+// 	exitWithErrorFmt("Unable to create a CPU timer as all %zu CPU timers are currently running.", cpuTimerCount);
+// }
 
-f64 cpuTimerStop(CpuTimerId id)
-{
-	struct timespec currentTime = getCpuTime();
+// f64 cpuTimerStop(CpuTimerId id)
+// {
+// 	struct timespec currentTime = getCpuTime();
 
-	f64 elapsedSeconds = (f64) (currentTime.tv_sec - id->startTime.tv_sec)
-		+ (f64) (currentTime.tv_nsec - id->startTime.tv_nsec) / 1.0e+9;
+// 	f64 elapsedSeconds = (f64) (currentTime.tv_sec - id->startTime.tv_sec)
+// 		+ (f64) (currentTime.tv_nsec - id->startTime.tv_nsec) / 1.0e+9;
 
-	id->isRunning = false;
+// 	id->isRunning = false;
 
-	return elapsedSeconds;
-}
+// 	return elapsedSeconds;
+// }
 
-ClockTimerId clockTimerStart(void)
-{
-	for (usize i = 0; i < clockTimerCount; ++i)
-	{
-		ClockTimerId id = &clockTimers[i];
+// ClockTimerId clockTimerStart(void)
+// {
+// 	for (usize i = 0; i < clockTimerCount; ++i)
+// 	{
+// 		ClockTimerId id = &clockTimers[i];
 
-		if (id->isRunning)
-			continue;
+// 		if (id->isRunning)
+// 			continue;
 
-		id->isRunning = true;
-		id->startTime = getClockTime();
+// 		id->isRunning = true;
+// 		id->startTime = getClockTime();
 
-		return id;
-	}
+// 		return id;
+// 	}
 
-	exitWithErrorFmt("Unable to create a clock timer as all %zu clock timers are currently running.", clockTimerCount);
-}
+// 	exitWithErrorFmt("Unable to create a clock timer as all %zu clock timers are currently running.", clockTimerCount);
+// }
 
-f64 clockTimerStop(ClockTimerId id)
-{
-	struct timespec currentTime = getClockTime();
+// f64 clockTimerStop(ClockTimerId id)
+// {
+// 	struct timespec currentTime = getClockTime();
 
-	f64 elapsedSeconds = (f64) (currentTime.tv_sec - id->startTime.tv_sec)
-		+ (f64) (currentTime.tv_nsec - id->startTime.tv_nsec) / 1.0e+9;
+// 	f64 elapsedSeconds = (f64) (currentTime.tv_sec - id->startTime.tv_sec)
+// 		+ (f64) (currentTime.tv_nsec - id->startTime.tv_nsec) / 1.0e+9;
 
-	id->isRunning = false;
+// 	id->isRunning = false;
 
-	return elapsedSeconds;
-}
+// 	return elapsedSeconds;
+// }
 

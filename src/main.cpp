@@ -26,7 +26,10 @@ int main(int argc, const char *argv[])
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
 
-	auto compileTimerId = clockTimerStart();
+	auto compileTimer = Timer();
+
+	compileTimer.start();
+
 	auto projectResult = Project::read(argv[1]);
 
 	if (!projectResult)
@@ -57,9 +60,9 @@ int main(int argc, const char *argv[])
 	printSuccess("validation complete");
 	printNote("generation not implemented yet");
 
-	auto compilationDuration = clockTimerStop(compileTimerId);
+	compileTimer.stop();
 
-	printSuccess("compiled `%s` in %f seconds.", project.name().c_str(), compilationDuration);
+	printSuccess("compiled `%s` in %f seconds.", project.name().c_str(), compileTimer.elapsedSeconds());
 
 	return 0;
 }
