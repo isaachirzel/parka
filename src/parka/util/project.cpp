@@ -7,7 +7,7 @@
 Optional<Project> Project::read(const String& path)
 {
     auto srcPath = path::join(path, "src");
-    auto directory = Directory::read(srcPath);
+    auto directory = Directory::read(srcPath, path.length() + 1);
 
     if (!directory)
         return {};

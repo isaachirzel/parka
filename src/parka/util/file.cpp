@@ -124,11 +124,11 @@ File File::read(const String& directoryPath, const String& filename)
 	return file;
 }
 
-File File::read(const String& path)
+File File::read(const String& path, usize pathOffset)
 {
 	auto text = readFileText(path);
 	auto lineLengths = getLineLengths(text);
-	auto file = File(String(path), std::move(text));
+	auto file = File(path.substr(pathOffset), std::move(text));
 
 	return file;
 }

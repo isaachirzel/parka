@@ -20,7 +20,7 @@ class Directory
     _subdirectories(std::move(subdirectories))
     {}
 
-    static Directory readSubdirectory(const String& path);
+    static Directory readSubdirectory(const String& path, usize offset);
 
 public:
 
@@ -28,7 +28,7 @@ public:
     Directory(const Directory&) = delete;
     ~Directory() = default;
 
-    static Optional<Directory> read(const String& path);
+    static Optional<Directory> read(const String& path, usize pathOffset = 0);
 
     const auto& name() const { return _name; }
     const auto& path() const { return _path; }

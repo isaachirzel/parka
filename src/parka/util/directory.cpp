@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-Directory Directory::readSubdirectory(const String& path)
+Directory Directory::readSubdirectory(const String& path, usize pathOffset)
 {
 	auto iterator = std::filesystem::directory_iterator(path);
 	auto files = Array<File>();
@@ -19,29 +19,29 @@ Directory Directory::readSubdirectory(const String& path)
 
 		if (entry.is_directory())
 		{
-			auto subdirectory = readSubdirectory(std::move(path));
+			auto subdirectory = readSubdirectory(std::move(path), pathOffset);
 			
 			subdirectories.push(std::move(subdirectory));
 
 			continue;
 		}
 
-		auto file = File::read(path);
+		auto file = File::read(path, pathOffset);
 
 		files.push(std::move(file));
 	}
 
-	auto directory = Directory(String(path), std::move(files), std::move(subdirectories));
+	auto directory = Directory(path.substr(pathOffset), std::move(files), std::move(subdirectories));
 
 	return directory;
 }
 
-Optional<Directory> Directory::read(const String& path)
+Optional<Directory> Directory::read(const String& path, usize pathOffset)
 {
 	if (!std::filesystem::exists(path))
 		return {};
 
-	auto directory = readSubdirectory(path);
+	auto directory = readSubdirectory(path, pathOffset);
 
 	return directory;
 }

@@ -38,7 +38,7 @@ public:
 	File(const File&) = delete;
 	~File() = default;
 
-	static File read(const String& filepath);
+	static File read(const String& filepath, usize pathOffset = 0);
 	static File read(const String& directoryPath, const String& filename);
 	static File from(const String& name, const String& text);
 

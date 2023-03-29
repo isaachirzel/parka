@@ -86,6 +86,21 @@ namespace path
 
 		return absolute.string();
 	}
+
+	usize getParentFolderPathOffset(const String& path)
+	{
+		auto i = path.size();
+
+		while (i > 0)
+		{
+			i -= 1;
+
+			if (path[i] == '/')
+			{
+				break;
+			}
+		}
+
+		return i;
+	}
 }
-
-
