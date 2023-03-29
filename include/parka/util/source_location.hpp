@@ -3,6 +3,8 @@
 
 #include "parka/util/primitives.hpp"
 
+#include <ostream>
+
 class SourceLocation
 {
 	const char *_file;
@@ -20,6 +22,8 @@ public:
 	const auto* file() const { return _file; }
 	const auto& line() const { return _line; }
 	const auto* function() const { return _function; }
+
+	friend std::ostream& operator<<(std::ostream& out, const SourceLocation& location);
 };
 
 #define here() (SourceLocation(__FILE__, __LINE__, __func__))

@@ -257,7 +257,7 @@ Token getQuoteToken(const File& file, const usize startPos)
 				: "String";
 			auto token = Token(file, startPos, length, TokenType::EndOfFile);
 
-			printTokenError(token, "$ literal is unterminated.", typeName);
+			printError(token, "$ literal is unterminated.", typeName);
 			
 			return token;
 		}
@@ -548,7 +548,7 @@ Token getNextToken(const File& file, usize startPos)
 	// TODO: Rethink handling of strange characters
 	auto token = Token(file, startPos, 1, TokenType::EndOfFile);
 
-	printTokenError(token, "An invalid character was found in the source file.");
+	printError(token, "An invalid character was found in the source file.");
 
 	return token;
 }
@@ -793,6 +793,13 @@ const char *getTokenTypeText(TokenType type)
 std::ostream& operator<<(std::ostream& out, TokenType type)
 {
 	out << getTokenTypeText(type);
+
+	return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Token& token)
+{
+	out.write(token.begin(), token.length());
 
 	return out;
 }

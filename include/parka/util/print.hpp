@@ -51,20 +51,17 @@ void print(const char * const fmt, Arg const&... args)
 	return _print(fmt, args...);
 }
 
-[[ noreturn ]]
-void exitNotImplemented(SourceLocation&& location);
-void enableColorPrinting(bool enabled);
-void printPrompt(PromptType type);
-
-void printTokenNote(const Token& token, const char *format, ...);
-void printTokenWarning(const Token& token, const char *format, ...);
-void printTokenError(const Token& token, const char *format, ...);
+String toHighlight(const Token& token, const FilePosition& position, const Prompt& prompt);
+void printPrompt(const Prompt& prompt, const FilePosition& position);
 
 template <PromptType type, typename... Arg>
 void printMessage(const char *format, Arg const&... args)
 {
-	std::cout << Prompt(type);
-	print(format, args...);
+	auto prompt = Prompt(type);
+
+	std::cout << prompt << ' ';
+
+	_print(format, args...);
 }
 template <typename... Arg>
 void printNote(const char* format, Arg const&... args) { printMessage<PromptType::Note>(format, args...); }
@@ -75,8 +72,29 @@ void printError(const char *format, Arg const&... args) { printMessage<PromptTyp
 template <typename... Arg>
 void printSuccess(const char *format, Arg const&... args) { printMessage<PromptType::Success>(format, args...); }
 
-void printParseError(const Token& token, const char *expected, const char *message = NULL);
+template <PromptType type, typename... Arg>
+void printTokenMessage(const Token& token, const char *format, Arg const&... args)
+{
+	auto prompt = Prompt(type);
+	auto position = token.getFilePosition();
 
+	std::cout << prompt << position << ' ';
+
+	_print(format, args...);
+
+	std::cout << toHighlight(token, position, prompt);
+}
+template <typename... Arg>
+void printNote(const Token& token, const char *format, Arg const&... args) { printTokenMessage<PromptType::Note>(token, format, args...); }
+template <typename... Arg>
+void printWarning(const Token& token, const char *format, Arg const&... args) { printTokenMessage<PromptType::Warning>(token, format, args...); }
+template <typename... Arg>
+void printError(const Token& token, const char *format, Arg const&... args) { printTokenMessage<PromptType::Error>(token, format, args...); }
+
+void printParseError(const Token& token, const char *expected, const char *message = "");
+
+void enableColorPrinting(bool enabled);
+bool isColorPrintingEnabled();
 usize getNoteCount();
 usize getWarningCount();
 usize getErrorCount();
@@ -89,5 +107,7 @@ void exitWithError(const char *fmt, Arg... args)
 	exit(1);
 }
 
+[[ noreturn ]]
+void exitNotImplemented(SourceLocation&& location);
 
 #endif

@@ -49,7 +49,7 @@ bool validateStructRecursion(EntityId structId)
 
 	if (recursiveMember)
 	{
-		printTokenError(recursiveMember->name(), "Declaration of member creates recursive type.");
+		printError(recursiveMember->name(), "Declaration of member creates recursive type.");
 		return false;
 	}
 

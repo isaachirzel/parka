@@ -47,11 +47,11 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 		{
 			case JUMP_CONTINUE:
 				// TODO: Implement continuing on labels
-				printTokenError(token, "Continue statements cannot have a value.");
+				printError(token, "Continue statements cannot have a value.");
 				return {};
 			
 			case JUMP_BREAK:
-				printTokenError(token, "Break statements cannot have a value.");
+				printError(token, "Break statements cannot have a value.");
 				return {};
 
 			default:
@@ -127,7 +127,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 
 // 	if (currentBlock == NULL)
 // 	{
-// 		printTokenError(&node->token, "Yield statement must be within a block.");
+// 		printError(&node->token, "Yield statement must be within a block.");
 
 // 		return false;
 // 	}

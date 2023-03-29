@@ -130,6 +130,9 @@ public:
 	const auto& pos() const { return _pos; }
 	const auto& length() const { return _length; }
 	const auto& type() const { return _type; }
+	FilePosition getFilePosition() const { return _file.getPosition(_pos); }
+
+	friend std::ostream& operator<<(std::ostream& out, const Token& token);
 };
 
 const char *getTokenTypeText(TokenType type);

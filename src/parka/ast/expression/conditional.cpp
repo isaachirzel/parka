@@ -21,7 +21,7 @@ Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 
 	if (token.type() != TokenType::KeywordElse)
 	{
-		printTokenError(token, "else case for conditional expression");
+		printError(token, "else case for conditional expression");
 		return {};
 	}
 

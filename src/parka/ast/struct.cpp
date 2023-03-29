@@ -89,8 +89,8 @@ bool Struct::validate(SymbolTable& symbols)
 			{
 				success = false;
 				
-				printTokenError(member.name(), "A member with same name is already declared in this struct.");
-				printTokenNote(previous.name(), "Previous delcaration here.");
+				printError(member.name(), "A member with same name is already declared in this struct.");
+				printNote(previous.name(), "Previous delcaration here.");
 
 				break;
 			}

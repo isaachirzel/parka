@@ -8,6 +8,7 @@ enum class PromptType
 	Note,
 	Warning,
 	Error,
+	Fatal,
 	Success
 };
 

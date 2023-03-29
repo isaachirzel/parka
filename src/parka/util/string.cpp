@@ -2,7 +2,6 @@
 
 
 // #include <cstring>
-// #include <cstdio>
 // #include <cassert>
 
 // char *stringDuplicate(const char *string)

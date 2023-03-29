@@ -4,7 +4,6 @@
 #include "parka/util/path.hpp"
 #include "parka/util/string.hpp"
 
-#include <cstdio>
 #include <cassert>
 #include <cstring>
 
@@ -102,17 +101,17 @@ FileType File::getType(const String& filepath)
 	}
 
 	if (lastPoint == NULL || end - lastPoint == 1)
-		return FILE_REGULAR;
+		return FileType::Regular;
 	
 	const char *extension = lastPoint + 1;
 
 	if (!strcmp(extension, "pk"))
-		return FILE_SOURCE;
+		return FileType::Source;
 
 	if (!strcmp(extension, "json"))
-		return FILE_JSON;
+		return FileType::Json;
 
-	return FILE_REGULAR;
+	return FileType::Regular;
 }
 
 File File::read(const String& directoryPath, const String& filename)

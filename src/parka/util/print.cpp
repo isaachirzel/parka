@@ -7,78 +7,14 @@
 #include <cstdarg>
 #include <cstring>
 
-#define COLOR_RED		"\033[91m"
-#define COLOR_YELLOW	"\033[93m"
-#define COLOR_BLUE		"\033[94m"
-#define COLOR_PURPLE	"\033[95m"
-#define COLOR_CYAN		"\033[96m"
-#define COLOR_GREEN		"\033[32m"
-#define COLOR_RESET		"\033[0m"
-
-#define PROMPT_NOTE		"note"
-#define PROMPT_WARNING	"warning"
-#define PROMPT_ERROR	"error"
-#define PROMPT_SUCCESS	"success"
-
 bool isColorEnabled = true;
 usize errorCount = 0;
 usize warningCount = 0;
 usize noteCount = 0;
 
-Prompt::Prompt(PromptType type)
+bool isColorPrintingEnabled()
 {
-	switch (type)
-	{
-		case PromptType::Note:
-			_text = PROMPT_NOTE;
-			
-			if (isColorEnabled)
-			{
-				_color = COLOR_CYAN;
-				_reset = COLOR_RESET;
-			}
-			break;
-				
-		case PromptType::Warning:
-			_text = PROMPT_WARNING;
-			
-			if (isColorEnabled)
-			{
-				_color = COLOR_PURPLE;
-				_reset = COLOR_RESET;
-			}
-			break;
-			
-		case PromptType::Error:
-			_text = PROMPT_ERROR;
-
-			if (isColorEnabled)
-			{
-				_color = COLOR_RED;
-				_reset = COLOR_RESET;
-			}
-			break;
-
-		case PromptType::Success:
-			_text = PROMPT_SUCCESS;
-
-			if (isColorEnabled)
-			{
-				_color = COLOR_GREEN;
-				_reset = COLOR_RESET;
-			}
-			break;
-
-		default:
-			exitWithError("Unable to create Log with PromptType: $", type);
-	}
-}
-
-std::ostream& operator<<(std::ostream& out, const Prompt& prompt)
-{
-	out << prompt._color << prompt._text << prompt._reset << ": ";
-
-	return out;
+	return isColorEnabled;
 }
 
 void enableColorPrinting(bool enabled)
@@ -107,7 +43,7 @@ String toMargin(usize lineNumber)
 
 	if (lineNumber > 0)
 	{
-		sprintf(tempBuffer, "$5zu", lineNumber);
+		sprintf(tempBuffer, "%5zu", lineNumber);
 	}
 	else
 	{
@@ -180,7 +116,7 @@ usize findOccurrence(const char *text, const char *token)
     return SIZE_MAX;
 }
 
-String getTokenHighlight(const Token& token, const FilePosition& position, const Prompt& context)
+String toHighlight(const Token& token, const FilePosition& position, const Prompt& prompt)
 {
 	// TODO: Handle multiline tokens
 	const File& file = token.file();
@@ -201,20 +137,20 @@ String getTokenHighlight(const Token& token, const FilePosition& position, const
 	underline += toInvisible(start, startLength);
 
 	// Color
-	if (context.color())
+	if (prompt.color())
 	{
-		line += context.color();
-		underline += context.color();
+		line += prompt.color();
+		underline += prompt.color();
 	}
 
 	line += token.text();
 	underline += String(token.length(), '~');
 
 	// Reset
-	if (*context.color())
+	if (*prompt.color())
 	{
-		line += context.reset();
-		underline += context.reset();
+		line += prompt.reset();
+		underline += prompt.reset();
 	}
 
 	const char *end = &file[token.pos() + token.length()];
@@ -226,17 +162,6 @@ String getTokenHighlight(const Token& token, const FilePosition& position, const
 	highlight += '\n';
 
 	return highlight;
-}
-
-void printFileAndLine(const char *file, u32 line)
-{
-	// TODO: Make OS agnostic
-	usize index = findOccurrence(file, "/src/");
-
-	if (index != SIZE_MAX)
-		file += (index + 5);
-
-	printf("$:$u: ", file, line);
 }
 
 void _print(const char * const fmt)
@@ -259,154 +184,30 @@ void printParseError(const Token& token, const char *expected, const char *messa
 	if (!message)
 		message = "";
 
-	printf("Length: $\n", token.length());
-
-	if (token.type() == TokenType::EndOfFile)
-	{
-		printTokenError(token, "Expected $, found end of file. $", expected, message);
-	}
-	else
-	{
-		auto category = token.category();
-
-		printTokenError(token, "Expected $, found $. $", expected, category.c_str(), message);
-	}
-}
-
-void printMessage(PromptType type, const Token *token, const char *format, va_list args)
-{
-	switch (type)
-	{
-		case PromptType::Error:
-			errorCount += 1;
-			break;
-
-		case PromptType::Warning:
-			warningCount += 1;
-			break;
-
-		case PromptType::Note:
-			noteCount += 1;
-			break;
-
-		default:
-			break;
-	}
-
-	if (token)
-	{
-		auto position = token->file().getPosition(token->pos());
-
-		std::cout << token->file().path() << ':' << position.line() << ':' << position.col() << ": ";
-	}
-
-	auto prompt = Prompt(type);
-	
-	std::cout << prompt;
-
-	vprintf(format, args);
-
-	if (token)
-	{
-		// FIXME: Fix this function to not need position twice
-		auto position = token->file().getPosition(token->pos());
-		auto highlight = getTokenHighlight(*token, position, prompt);
-
-		std::cout << '\n' << highlight;
-	}
-
-	std::cout << std::endl;
-}
-
-void printTokenNote(const Token& token, const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Note, &token, format, args);
-
-	va_end(args);
-}
-
-void printTokenWarning(const Token& token, const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Warning, &token, format, args);
-
-	va_end(args);
-}
-
-void printTokenError(const Token& token, const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Error, &token, format, args);
-
-	va_end(args);
-}
-
-void printNote(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Note, NULL, format, args);
-
-	va_end(args);
-}
-
-void printWarning(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Warning, NULL, format, args);
-
-	va_end(args);
-}
-
-void printError(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Error, NULL, format, args);
-	
-	va_end(args);
-}
-
-void printSuccess(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	printMessage(PromptType::Success, NULL, format, args);
-	
-	va_end(args);
+	printError(token, "Expected $, found $. $", expected, token.type(), message);
 }
 
 [[ noreturn ]]
 void exitNotImplemented(SourceLocation&& location)
 {
-	printFileAndLine(location.file(), location.line());
-	printf(COLOR_RED "fatal" COLOR_RESET ": $ is not implemented.\n", location.function());
+	std::cout << location;
+	std::cout << Prompt(PromptType::Fatal);
+
+	print("$ is not implemented.", location.function());
 	exit(1);
 }
 
-usize getNoteCount(void)
+usize getNoteCount()
 {
 	return noteCount;
 }
 
-usize getWarningCount(void)
+usize getWarningCount()
 {
 	return warningCount;
 }
 
-usize getErrorCount(void)
+usize getErrorCount()
 {
 	return errorCount;
 }

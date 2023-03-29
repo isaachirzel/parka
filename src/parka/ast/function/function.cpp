@@ -96,7 +96,7 @@ bool Function::validate(SymbolTable& symbols)
 	// 		// TODO: handle token like so: Token token = tokenFromExpression(&node->body);
 
 	// 		printError("Expected `$`, got `$`.", returnTypeName, bodyTypeName);
-	// 		printTokenNote(&node->returnType.token, "Function return type here.");
+	// 		printNote(&node->returnType.token, "Function return type here.");
 
 	// 		success = false;
 	// 	}

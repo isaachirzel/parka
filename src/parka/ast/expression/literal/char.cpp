@@ -12,7 +12,7 @@ Optional<char> parseChar(Token& token)
 
 	if (token.length() != 3)
 	{
-		printTokenError(token, "character literals may only contain 1 character", NULL);
+		printError(token, "character literals may only contain 1 character", NULL);
 		return {};
 	}
 

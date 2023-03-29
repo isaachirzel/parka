@@ -1,33 +1,18 @@
-#ifndef PARKA_FILE_HPP
-#define PARKA_FILE_HPP
+#ifndef PARKA_UTIL_FILE_HPP
+#define PARKA_UTIL_FILE_HPP
 
 #include "parka/util/array.hpp"
 #include "parka/util/primitives.hpp"
 #include "parka/util/string.hpp"
+#include "parka/util/file_position.hpp"
 
 #include <cassert>
 
-enum FileType
+enum class FileType
 {
-	FILE_REGULAR,
-	FILE_SOURCE,
-	FILE_JSON
-};
-
-class FilePosition
-{
-	usize _line;
-	usize _col;
-
-public:
-
-	FilePosition(usize line, usize col) :
-	_line(line),
-	_col(col)
-	{}
-
-	const auto& line() const { return _line; }
-	const auto& col() const { return _col; }
+	Regular,
+	Source,
+	Json
 };
 
 class File

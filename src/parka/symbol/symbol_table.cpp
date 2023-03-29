@@ -90,7 +90,7 @@ Optional<EntityId> SymbolTable::resolve(const Token& token)
 			return EntityId(iter->second);
 	}
 
-	printTokenError(token, "Unable to find '$' in this scope.", identifier.c_str());
+	printError(token, "Unable to find '$' in this scope.", identifier.c_str());
 
 	return {};
 }

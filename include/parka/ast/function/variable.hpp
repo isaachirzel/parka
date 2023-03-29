@@ -5,8 +5,6 @@
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/entity_id.hpp"
 
-
-
 class Variable : public Entity
 {
 	Token _name;
