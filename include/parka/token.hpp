@@ -78,6 +78,7 @@ enum class TokenType
 	KeywordFalse,
 	KeywordFor,
 	KeywordFunction,
+	KeywordOperator,
 	KeywordIf,
 	KeywordImport,
 	KeywordLoop,

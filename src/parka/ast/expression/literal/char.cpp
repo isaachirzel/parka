@@ -28,7 +28,7 @@ Optional<ExpressionId> CharLiteral::parse(Token& token)
 	if (!value)
 		return {};
 
-	auto expression = CharLiteral(token, value.value());
+	auto expression = CharLiteral(token, *value);
 	auto id = NodeBank::add(std::move(expression));
 
 	token.increment();

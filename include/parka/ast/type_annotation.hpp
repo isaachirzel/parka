@@ -28,7 +28,7 @@ public:
 	bool validate(SymbolTable& symbols);
 
 	const auto& token() const { return _token; }
-	const auto& type() const { assert(_type.hasValue()); return _type.value(); }
+	const auto& type() const { return *_type; }
 	// const auto& type() const { return _type; }
 };
 

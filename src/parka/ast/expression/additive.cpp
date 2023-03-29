@@ -11,10 +11,10 @@ Optional<AdditiveType> getAdditiveType(Token& token)
 	switch (token.type())
 	{
 		case TokenType::Plus:
-			return ADDITIVE_ADD;
+			return AdditiveType::Add;
 
 		case TokenType::Minus:
-			return ADDITIVE_SUBTRACT;
+			return AdditiveType::Subtract;
 
 		default:
 			break;
@@ -61,6 +61,8 @@ bool AdditiveExpression::validate(SymbolTable& symbols)
 	if (!NodeBank::get(_rhs).validate(symbols))
 		success = false;
 
+	// TODO: Test type compatibility
+
 	return success;
 }
 
@@ -96,6 +98,7 @@ Optional<Type> getPrimitiveType(const Primitive& left, const Primitive& right, c
 
 Optional<Type> AdditiveExpression::getType(const SymbolTable& symbols, Ref<Type> expected) const
 {
+
 	exitNotImplemented(here());
 
 	// auto leftType = _lhs->getType(symbols, expected);
@@ -108,18 +111,18 @@ Optional<Type> AdditiveExpression::getType(const SymbolTable& symbols, Ref<Type>
 	// if (!rightType)
 	// 	return {};
 
-	// auto leftId = leftType.value().entityId();
+	// auto leftId = leftType->entityId();
 
 	// if (leftId.type() == EntityType::Primitive)
 	// {
 	// 	const auto& leftPrimitive = symbols.getEntity(leftId);
-	// 	// const Primitive *leftPrimitive = symbolTableGetPrimitive(leftType.value().index());
+	// 	// const Primitive *leftPrimitive = symbolTableGetPrimitive(leftType->index());
 		
-	// 	auto rightId = rightType.value().entityId();
+	// 	auto rightId = rightType->entityId();
 
 	// 	if (rightId.type() == EntityType::Primitive)
 	// 	{
-	// 		const Primitive *rightPrimitive = symbolTableGetPrimitive(rightType.value().index());
+	// 		const Primitive *rightPrimitive = symbolTableGetPrimitive(rightType->index());
 
 	// 		auto primitiveType = getPrimitiveType(leftPrimitive, rightPrimitive, expected);
 

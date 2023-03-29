@@ -44,7 +44,7 @@ Optional<ExpressionId> IntegerLiteral::parse(Token& token)
 		return {};
 
 	auto bits = getMinimumIntegerBits(value);
-	auto literal = IntegerLiteral(token, value.value(), bits);
+	auto literal = IntegerLiteral(token, *value, bits);
 	auto id = NodeBank::add(std::move(literal));
 
 	token.increment();

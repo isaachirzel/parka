@@ -46,7 +46,7 @@ Optional<ExpressionId> Prefix::parse(Token& token)
 	token.increment();
 
 	auto inner = Prefix::parse(token);
-	auto expression = Prefix(type.value(), inner.unwrap(), prefixToken);
+	auto expression = Prefix(*type, inner.unwrap(), prefixToken);
 	auto id = NodeBank::add(std::move(expression));
 
 	return id;

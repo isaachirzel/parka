@@ -31,7 +31,7 @@ public:
 
 	const auto& name() const { return _name; }
 	bool isExplicitlyTyped() const { return _annotation.hasValue(); }
-	const auto& annotation() const { return _annotation.value(); }
+	const auto& annotation() const { return *_annotation; }
 	const auto& isMutable() const { return _isMutable; }
 };
 

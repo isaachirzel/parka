@@ -43,7 +43,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 
 	if (token.type() != TokenType::Semicolon)
 	{
-		switch (type.value())
+		switch (*type)
 		{
 			case JUMP_CONTINUE:
 				// TODO: Implement continuing on labels

@@ -34,7 +34,7 @@ int main(int argc, const char *argv[])
 	if (!projectResult)
 		return 1;
 
-	auto& project = projectResult.value();
+	auto& project = *projectResult;
 
 	printNote("Parsing begin.");
 
@@ -46,7 +46,7 @@ int main(int argc, const char *argv[])
 		return 1;
 	}
 
-	auto& ast = astResult.value();
+	auto& ast = *astResult;
 
 	printSuccess("Parsing complete.");
 	printNote("Validation begin.");

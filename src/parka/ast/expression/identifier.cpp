@@ -35,7 +35,7 @@ bool Identifier::validate(SymbolTable& symbols)
 Optional<Type> Identifier::getType(const SymbolTable& symbols, Ref<Type> expected) const
 {
 	if (_entityId)
-		return Type(_entityId.value());
+		return Type(*_entityId);
 
 	return {};
 }

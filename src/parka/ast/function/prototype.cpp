@@ -112,7 +112,7 @@ bool Prototype::validate(SymbolTable& symbols)
 			success = false;
 	}
 
-	if (_returnType && !_returnType.value().validate(symbols))
+	if (_returnType && !_returnType->validate(symbols))
 		success = false;
 
 	return success;

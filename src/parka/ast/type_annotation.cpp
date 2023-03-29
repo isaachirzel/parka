@@ -24,7 +24,7 @@ bool TypeAnnotation::validate(SymbolTable& symbols)
 	if (!entityId)
 		return false;
 
-	_type = Type(entityId.value());
+	_type = Type(*entityId);
 
 	return true;
 }

@@ -30,7 +30,10 @@ public:
 	_hasValue(other._hasValue)
 	{
 		if (other._hasValue)
-			new (&_value) auto (std::move(other._value));
+		{
+			auto *t = new (&_value) auto (std::move(other._value))
+			;
+		}
 	}
 
 	Optional(const Optional&) = delete;
@@ -52,8 +55,10 @@ public:
 
 	operator bool() const { return _hasValue; }
 	bool hasValue() const { return _hasValue; }
-	auto& value() { assert(_hasValue); return _value; }
-	const auto& value() const { assert(_hasValue); return _value; }
+	auto *operator->() { assert(_hasValue); return &_value; }
+	const auto *operator->() const { assert(_hasValue); return &_value; }
+	auto& operator*() { assert(_hasValue); return _value; }
+	const auto& operator*() const { assert(_hasValue); return _value; }
 	auto&& unwrap() { return std::move(_value); }
 };
 

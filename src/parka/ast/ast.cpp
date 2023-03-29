@@ -72,7 +72,9 @@ Optional<Array<EntityId>> parseDirectory(const Directory& directory, String&& sy
 			continue;
 		}
 
-		packageIds.concat(subPackageIds.value());
+		auto value = subPackageIds.unwrap();
+
+		packageIds.concat(value);
 	}
 
 	auto package = Package::parse(directory.files(), std::move(symbol));

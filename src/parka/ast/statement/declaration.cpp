@@ -52,7 +52,7 @@ bool Declaration::validate(SymbolTable& symbols)
 
 	auto& value = NodeBank::get(_value);
 
-	if (value.validate(symbols))
+	if (!value.validate(symbols))
 		success = false;
 
 	// TODO: Validate type conversion

@@ -4,14 +4,12 @@
 #include "parka/ast/expression/expression.hpp"
 #include "parka/util/box.hpp"
 
-
-
 #include <utility>
 
-enum AdditiveType
+enum class AdditiveType
 {
-	ADDITIVE_ADD,
-	ADDITIVE_SUBTRACT
+	Add,
+	Subtract
 };
 
 class AdditiveExpression : public Expression

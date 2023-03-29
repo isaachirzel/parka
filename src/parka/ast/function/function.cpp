@@ -44,7 +44,7 @@ Optional<EntityId> Function::parse(Token& token, const String& package)
 	if (!prototype)
 		return {};
 
-	auto symbol = package + "::" + prototype.value().name().text();
+	auto symbol = package + "::" + prototype->name().text();
 	auto body = parseBody(token);
 
 	if (!body)
@@ -77,7 +77,7 @@ Type Function::getReturnType() const
 {
 	exitNotImplemented(here());
 	// auto returnType = _returnType
-	// 	? _returnType.value().type()
+	// 	? _returnType->type()
 	// 	: voidType;
 
 	// return returnType;

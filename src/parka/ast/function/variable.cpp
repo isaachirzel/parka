@@ -45,8 +45,7 @@ Optional<EntityId> Variable::parse(Token& token)
 bool Variable::validate(SymbolTable& symbols)
 {
 	auto success = true;
-
-	if (_annotation && !_annotation.value().validate(symbols))
+	if (_annotation && !_annotation->validate(symbols))
 		success = false;
 
 	return success;

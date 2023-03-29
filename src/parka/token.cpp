@@ -661,6 +661,7 @@ String Token::category() const
 		case TokenType::KeywordFalse:
 		case TokenType::KeywordFor:
 		case TokenType::KeywordFunction:
+		case TokenType::KeywordOperator:
 		case TokenType::KeywordIf:
 		case TokenType::KeywordImport:
 		case TokenType::KeywordLoop:
@@ -780,6 +781,7 @@ const char *getTokenTypeText(TokenType type)
 		case TokenType::KeywordFalse: return "`false`";
 		case TokenType::KeywordFor: return "`for`";
 		case TokenType::KeywordFunction: return "`function`";
+		case TokenType::KeywordOperator: return "`operator`";
 		case TokenType::KeywordIf: return "`if`";
 		case TokenType::KeywordImport: return "`import`";
 		case TokenType::KeywordLoop: return "`loop`";

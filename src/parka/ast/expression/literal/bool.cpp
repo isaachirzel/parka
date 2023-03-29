@@ -25,7 +25,7 @@ Optional<ExpressionId> BoolLiteral::parse(Token& token)
 	if (!value)
 		return {};
 
-	auto literal = BoolLiteral(token, value.value());
+	auto literal = BoolLiteral(token, *value);
 	auto id = NodeBank::add(std::move(literal));
 
 	token.increment();

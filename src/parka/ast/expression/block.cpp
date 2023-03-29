@@ -57,7 +57,7 @@ bool Block::validate(SymbolTable& symbols)
 Optional<Type> Block::getType(const SymbolTable& symbols, Ref<Type> expected) const
 {
 	if (_returnType)
-		return Type(_returnType.value());
+		return Type(*_returnType);
 
 	return Type(voidType);
 }
