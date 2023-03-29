@@ -21,15 +21,11 @@ bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 	if (!result.second)
 	{
 		// TODO: get previous entity
-		auto previousId = result.first->second;
-
-		print("Previous id: $ $", (int)id.type(), id.index());
-
-		auto& previous = NodeBank::get(previousId);
-
+		// auto previousId = result.first->second;
+		// auto& previous = NodeBank::get(previousId);
 		//TODO: invalidate entity previous.invalidate();
 
-		printError( "`$` is already declared in this package.", symbol.c_str());
+		printError("`$` is already declared in this package.", symbol);
 	}
 
 	return result.second;

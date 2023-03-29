@@ -77,7 +77,7 @@ Optional<Array<EntityId>> parseDirectory(const Directory& directory, String&& sy
 
 	auto package = Package::parse(directory.files(), std::move(symbol));
 
-	if (!package)
+	if (!package || !success)
 		return {};
 
 	auto id = NodeBank::add(package.unwrap());

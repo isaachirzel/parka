@@ -10,8 +10,8 @@
 class Module
 {
 	String _symbol; // TODO: Change to filename?
-	Array<EntityId> _structIds;
 	Array<EntityId> _functionIds;
+	Array<EntityId> _structIds;
 
 	Module(String&& symbol, Array<EntityId>&& functionIds, Array<EntityId>&& structIds) :
 	_symbol(std::move(symbol)),

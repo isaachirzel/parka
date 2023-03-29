@@ -61,7 +61,7 @@ bool AdditiveExpression::validate(SymbolTable& symbols)
 	if (!NodeBank::get(_rhs).validate(symbols))
 		success = false;
 
-	return {};
+	return success;
 }
 
 Optional<Type> getSignedIntegerType(const Primitive& left, const Primitive& right, const Type& expected)

@@ -64,7 +64,6 @@ bool writeFileText(const char *filepath, const String& content)
 Array<usize> File::getLineLengths(const String& text)
 {
 	auto lengths = Array<usize>(text.length() / 80);
-	usize lastStartOfLine = 0;
 	usize length = 0;
 
 	for (auto c : text)

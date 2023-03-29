@@ -8,11 +8,12 @@ template <typename T>
 class Optional
 {
 private:
-	bool _hasValue;
+
 	union
 	{
 		T _value;
 	};
+	bool _hasValue;
 
 public:
 

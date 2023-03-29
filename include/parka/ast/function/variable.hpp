@@ -15,8 +15,8 @@ class Variable : public Entity
 	Variable(const Token& name, bool isMutable, Optional<TypeAnnotation>&& annotation = {}) :
 	_name(name),
 	_symbol(name.text()),
-	_isMutable(isMutable),
-	_annotation(std::move(annotation))
+	_annotation(std::move(annotation)),
+	_isMutable(isMutable)
 	{}
 
 public:

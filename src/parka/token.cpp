@@ -263,10 +263,6 @@ Token getQuoteToken(const File& file, const usize startPos)
 
 		if (!c)
 		{
-			// TODO: Rethink how this error should be handled
-			const char *typeName = terminal == '\''
-				? "Character"
-				: "String";
 			auto token = Token(file, startPos, length, TokenType::EndOfFile);
 
 			printError(token, "$ is unterminated.", type);
@@ -346,7 +342,7 @@ Token getNextToken(const File& file, usize startPos)
 	switch (c)
 	{
 		case '\0':
-			return (Token) { file, startPos, 0, TokenType::EndOfFile };
+			return Token(file, startPos, 0, TokenType::EndOfFile);
 
 		case '_':
 		case 'a': case 'A':
@@ -391,28 +387,28 @@ Token getNextToken(const File& file, usize startPos)
 		
 		// Separators
 		case '(':
-			return (Token) { file, startPos, 1, TokenType::LeftParenthesis };
+			return Token(file, startPos, 1, TokenType::LeftParenthesis);
 
 		case ')':
-			return (Token) { file, startPos, 1, TokenType::RightParenthesis };
+			return Token(file, startPos, 1, TokenType::RightParenthesis);
 
 		case '[':
-			return (Token) { file, startPos, 1, TokenType::LeftBracket };
+			return Token(file, startPos, 1, TokenType::LeftBracket);
 
 		case ']':
-			return (Token) { file, startPos, 1, TokenType::RightBracket };
+			return Token(file, startPos, 1, TokenType::RightBracket);
 
 		case '{':
-			return (Token) { file, startPos, 1, TokenType::LeftBrace };
+			return Token(file, startPos, 1, TokenType::LeftBrace);
 
 		case '}':
-			return (Token) { file, startPos, 1, TokenType::RightBrace };
+			return Token(file, startPos, 1, TokenType::RightBrace);
 
 		case ',':
-			return (Token) { file, startPos, 1, TokenType::Comma };
+			return Token(file, startPos, 1, TokenType::Comma);
 
 		case ';':
-			return (Token) { file, startPos, 1, TokenType::Semicolon };
+			return Token(file, startPos, 1, TokenType::Semicolon);
 
 		case ':':
 			return file[startPos + 1] == ':'
@@ -430,11 +426,11 @@ Token getNextToken(const File& file, usize startPos)
 			else if (c1 == '.')
 			{
 				return file[startPos + 2] == '.'
-					? (Token) { file, startPos, 3, TokenType::Elipsis }
-					: (Token) { file, startPos, 2, TokenType::Range };
+					? Token(file, startPos, 3, TokenType::Elipsis)
+					: Token(file, startPos, 2, TokenType::Range);
 			}
 			
-			return (Token) { file, startPos, 1, TokenType::Dot };
+			return Token(file, startPos, 1, TokenType::Dot);
 		}
 
 		// Operators
@@ -442,114 +438,114 @@ Token getNextToken(const File& file, usize startPos)
 			if (file[startPos + 1] == '<')
 			{
 				return file[startPos + 2] == '='
-					? (Token) { file, startPos, 3, TokenType::LeftBitShiftAssign }
-					: (Token) { file, startPos, 2, TokenType::LeftBitShift };
+					? Token(file, startPos, 3, TokenType::LeftBitShiftAssign)
+					: Token(file, startPos, 2, TokenType::LeftBitShift);
 			}
 			else if (file[startPos + 1] == '=')
 			{
-				return (Token) { file, startPos, 2, TokenType::LessThanOrEqualTo };
+				return Token(file, startPos, 2, TokenType::LessThanOrEqualTo);
 			}
 
-			return (Token) { file, startPos, 1, TokenType::LessThan };
+			return Token(file, startPos, 1, TokenType::LessThan);
 
 		case '>':
 			if (file[startPos + 1] == '>')
 			{
 				return file[startPos + 2] == '='
-					? (Token) { file, startPos, 3, TokenType::RightBitShiftAssign }
-					: (Token) { file, startPos, 2, TokenType::RightBitShift };
+					? Token(file, startPos, 3, TokenType::RightBitShiftAssign)
+					: Token(file, startPos, 2, TokenType::RightBitShift);
 			}
 			else if (file[startPos + 1] == '=')
 			{
-				return (Token) { file, startPos, 2, TokenType::GreaterThanOrEqualTo };
+				return Token(file, startPos, 2, TokenType::GreaterThanOrEqualTo);
 			}
 
-			return (Token) { file, startPos, 1, TokenType::GreaterThan };
+			return Token(file, startPos, 1, TokenType::GreaterThan);
 
 		case '$':
 			return file[startPos + 1] == '='
-				? (Token) { file, startPos, 2, TokenType::ModulusAssign }
-				: (Token) { file, startPos, 1, TokenType::Modulus };
+				? Token(file, startPos, 2, TokenType::ModulusAssign)
+				: Token(file, startPos, 1, TokenType::Modulus);
 
 		case '^':
 			return file[startPos + 1] == '='
-				? (Token) { file, startPos, 2, TokenType::BitwiseXorAssign }
-				: (Token) { file, startPos, 1, TokenType::BitwiseXor };
+				? Token(file, startPos, 2, TokenType::BitwiseXorAssign)
+				: Token(file, startPos, 1, TokenType::BitwiseXor);
 			
 		case '&':
 			if (file[startPos + 1] == '&')
 			{
 				return file[startPos + 2] == '='
-					? (Token) { file, startPos, 3, TokenType::BooleanAndAssign }
-					: (Token) { file, startPos, 2, TokenType::BooleanAnd };
+					? Token(file, startPos, 3, TokenType::BooleanAndAssign)
+					: Token(file, startPos, 2, TokenType::BooleanAnd);
 			}
 			else if (file[startPos + 1] == '=')
 			{
-				return (Token) { file, startPos, 2, TokenType::BitwiseAndAssign };
+				return Token(file, startPos, 2, TokenType::BitwiseAndAssign);
 			}
 
-			return (Token) { file, startPos, 1, TokenType::Ampersand };
+			return Token(file, startPos, 1, TokenType::Ampersand);
 
 		case '*':
 			return file[startPos + 1] == '='
-				? (Token) { file, startPos, 2, TokenType::MultiplyAssign }
-				: (Token) { file, startPos, 1, TokenType::Asterisk };
+				? Token(file, startPos, 2, TokenType::MultiplyAssign)
+				: Token(file, startPos, 1, TokenType::Asterisk);
 
 		case '-':
 			if (file[startPos + 1] == '=')
 			{
-				return (Token) { file, startPos, 2, TokenType::SubtractAssign };
+				return Token(file, startPos, 2, TokenType::SubtractAssign);
 			}
 			else if (file[startPos + 1] == '>')
 			{
-				return (Token) { file, startPos, 2, TokenType::SingleArrow };
+				return Token(file, startPos, 2, TokenType::SingleArrow);
 			}
 
-			return (Token) { file, startPos, 1, TokenType::Minus };
+			return Token(file, startPos, 1, TokenType::Minus);
 
 		case '=':
 			if (file[startPos + 1] == '=')
 			{
-				return (Token) { file, startPos, 2, TokenType::Equals };
+				return Token(file, startPos, 2, TokenType::Equals);
 			}
 			else if (file[startPos + 1] == '>')
 			{
-				return (Token) { file, startPos, 2, TokenType::DoubleArrow };
+				return Token(file, startPos, 2, TokenType::DoubleArrow);
 			}
 
-			return (Token) { file, startPos, 1, TokenType::Assign };
+			return Token(file, startPos, 1, TokenType::Assign);
 
 		case '|':
 			if (file[startPos + 1] == '|')
 			{
 				return file[startPos + 2] == '='
-					? (Token) { file, startPos, 3, TokenType::BooleanOrAssign }
-					: (Token) { file, startPos, 2, TokenType::BooleanOr };
+					? Token(file, startPos, 3, TokenType::BooleanOrAssign)
+					: Token(file, startPos, 2, TokenType::BooleanOr);
 			}
 			else if (file[startPos + 1] == '=')
 			{
-				return (Token) { file, startPos, 2, TokenType::BitwiseOrAssign };
+				return Token(file, startPos, 2, TokenType::BitwiseOrAssign);
 			}
 			
-			return (Token) { file, startPos, 1, TokenType::Pipe };
+			return Token(file, startPos, 1, TokenType::Pipe);
 
 		case '+':
 			return file[startPos + 1] == '='
-				? (Token) { file, startPos, 2, TokenType::AddAssign }
-				: (Token) { file, startPos, 1, TokenType::Plus };
+				? Token(file, startPos, 2, TokenType::AddAssign)
+				: Token(file, startPos, 1, TokenType::Plus);
 
 		case '?':
-			return (Token) { file, startPos, 1, TokenType::Question };
+			return Token(file, startPos, 1, TokenType::Question);
 
 		case '!':
 			return file[startPos + 1] == '='
-				? (Token) { file, startPos, 2, TokenType::NotEquals }
-				: (Token) { file, startPos, 1, TokenType::BooleanNot };
+				? Token(file, startPos, 2, TokenType::NotEquals)
+				: Token(file, startPos, 1, TokenType::BooleanNot);
 
 		case '/':
 			return file[startPos + 1] == '='
-				? (Token) { file, startPos, 2, TokenType::DivideAssign }
-				: (Token) { file, startPos, 1, TokenType::Slash };
+				? Token(file, startPos, 2, TokenType::DivideAssign)
+				: Token(file, startPos, 1, TokenType::Slash);
 
 		case '\'':
 		case '\"':
