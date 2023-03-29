@@ -4,7 +4,7 @@
 
 Optional<ExpressionId> StringLiteral::parse(Token& token)
 {
-	if (token.type() == TokenType::StringLiteral)
+	if (token.type() != TokenType::StringLiteral)
 	{
 		printParseError(token, "string");
 		return {};
@@ -20,7 +20,7 @@ Optional<ExpressionId> StringLiteral::parse(Token& token)
 
 bool StringLiteral::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
+	return true;
 }
 
 Optional<Type> StringLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const

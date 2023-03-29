@@ -41,12 +41,9 @@ bool SymbolTable::declareLocal(EntityId id)
 	auto blockIndex = _blocks.length() > 0
 		? _blocks.back()
 		: 0;
-	auto i = _localSymbols.length();
 
-	while (i > blockIndex)
+	for (auto i = blockIndex; i < _localSymbols.length(); ++i)
 	{
-		i -= 1;
-
 		auto previousId = _localSymbols[i];
 		auto& previous = NodeBank::get(previousId);
 

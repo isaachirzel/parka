@@ -90,7 +90,7 @@ void printTokenMessage(const Token& token, const char *format, Arg const&... arg
 		addError();
 	}
 
-	std::cout << prompt << position << ' ';
+	std::cout << position << ' ' << prompt << ' ';
 
 	_print(format, args...);
 

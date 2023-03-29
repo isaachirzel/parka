@@ -47,7 +47,6 @@ bool Declaration::validate(SymbolTable& symbols)
 	if (!variable.validate(symbols))
 		success = false;
 
-	print("Validate declaration: $", variable.symbol());
 	if (!symbols.declareLocal(_variableId))
 		success = false;
 

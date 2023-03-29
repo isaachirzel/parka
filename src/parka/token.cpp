@@ -235,13 +235,25 @@ TokenType getIdentifierType(const char *text)
 	return TokenType::Identifier;
 }
 
+TokenType getQuoteType(char terminal)
+{
+	switch (terminal)
+	{
+		case '\'':
+			return TokenType::CharacterLiteral;
+
+		case '\"':
+			return TokenType::StringLiteral;
+
+		default:
+			exitWithError("Invalid quote type: $", terminal);
+	}
+}
+
 Token getQuoteToken(const File& file, const usize startPos)
 {
 	auto terminal = file[startPos];
-	auto type = terminal == '\''
-		? TokenType::CharacterLiteral
-		: TokenType::StringLiteral;
-
+	auto type = getQuoteType(terminal);
 	usize length = 1;
 	auto isEscaped = false;
 
@@ -257,7 +269,7 @@ Token getQuoteToken(const File& file, const usize startPos)
 				: "String";
 			auto token = Token(file, startPos, length, TokenType::EndOfFile);
 
-			printError(token, "$ literal is unterminated.", typeName);
+			printError(token, "$ is unterminated.", type);
 			
 			return token;
 		}
@@ -271,6 +283,8 @@ Token getQuoteToken(const File& file, const usize startPos)
 		length += 1;
 	}
 	
+	length += 1;
+
 	auto token = Token(file, startPos, length, type);
 
 	return token;
@@ -562,7 +576,7 @@ void Token::increment()
 
 Token Token::initial(const File& file)
 {
-	usize pos = getNextPos(file, 0);
+	auto pos = getNextPos(file, 0);
 	auto token = getNextToken(file, pos);
 
 	return token;
