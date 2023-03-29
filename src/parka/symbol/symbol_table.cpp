@@ -38,11 +38,10 @@ bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 bool SymbolTable::declareLocal(EntityId id)
 {
 	auto& entity = NodeBank::get(id);
-	usize blockIndex = _blocks.length() > 0
+	auto blockIndex = _blocks.length() > 0
 		? _blocks.back()
 		: 0;
-	
-	usize i = _localSymbols.length();
+	auto i = _localSymbols.length();
 
 	while (i > blockIndex)
 	{
@@ -52,9 +51,15 @@ bool SymbolTable::declareLocal(EntityId id)
 		auto& previous = NodeBank::get(previousId);
 
 		if (entity.symbol() == previous.symbol())
+		{
+			printError(entity.token(), "`$` is already declared in this block.", previous.symbol());
+			printNote(previous.token(), "Previous declaration here.");
+
 			return false;
-		// TODO: Invalidate entity
+		}
 	}
+
+	_localSymbols.push(id);
 
 	return true;
 }
@@ -90,7 +95,9 @@ Optional<EntityId> SymbolTable::resolve(const Token& token)
 			return EntityId(iter->second);
 	}
 
-	printError(token, "Unable to find '$' in this scope.", identifier.c_str());
+	printError(token, "Unable to find `$`.", identifier.c_str());
+
+	// TODO: Find missing imports, fuzzy match from symbols
 
 	return {};
 }

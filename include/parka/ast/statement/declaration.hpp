@@ -7,8 +7,6 @@
 #include "parka/util/primitives.hpp"
 #include "parka/util/optional.hpp"
 
-
-
 class Declaration : public Statement
 {
 	EntityId _variableId;

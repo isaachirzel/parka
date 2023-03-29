@@ -93,8 +93,6 @@ bool Module::declare(Table<EntityId>& globalSymbols)
 
 bool Module::validate(Table<EntityId>& globalSymbols, const String& packageSymbol)
 {
-	print("Validating module");
-
 	auto success = true;
 	auto symbols = SymbolTable(globalSymbols, packageSymbol);
 

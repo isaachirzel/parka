@@ -58,51 +58,19 @@ Optional<EntityId> Function::parse(Token& token, const String& package)
 
 bool Function::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
-	// bool success = true;
+	auto success = true;
 
-	// for (auto parameterId : _parameterIds)
-	// {
-	// 	auto& parameter = (Parameter&)symbols.getEntity({ EntityType::Parameter, parameterId });
+	if (!_prototype.validate(symbols))
+		success = false;
 
-	// 	if (!parameter.validate(symbols))
-	// 		success = false;
-	// }
+	auto& expression = NodeBank::get(_body);
 
-	// if (_returnType)
-	// {
-	// 	_returnType.value().validate(const Scope &packageScope)
-	// }
+	if (!expression.validate(symbols))
+		success = false;
 
-	// if (node->hasReturnType
-	// 		&& !validateTypeAnnotation(&node->returnType, symbols->packageScope))
-	// 	success = false;
+	// TODO: Validate return type
 
-	// if (!validateExpression(&node->body, symbols))
-	// 	success = false;
-
-	// if (success)
-	// {
-	// 	const Type *returnType = functionGetReturnType(node);
-	// 	Type bodyType;
-		
-	// 	if (!expressionGetType(&bodyType, &node->body, returnType))
-	// 		return false;
-
-	// 	if (!typeCanConvert(returnType, &bodyType))
-	// 	{
-	// 		auto returnTypeName = typeGetName(returnType);
-	// 		auto bodyTypeName = typeGetName(&bodyType);
-	// 		// TODO: handle token like so: Token token = tokenFromExpression(&node->body);
-
-	// 		printError("Expected `$`, got `$`.", returnTypeName, bodyTypeName);
-	// 		printNote(&node->returnType.token, "Function return type here.");
-
-	// 		success = false;
-	// 	}
-	// }	
-
-	// return success;
+	return success;
 }
 
 Type Function::getReturnType() const

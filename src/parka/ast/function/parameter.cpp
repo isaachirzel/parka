@@ -44,5 +44,10 @@ Optional<EntityId> Parameter::parse(Token& token)
 
 bool Parameter::validate(SymbolTable& symbols)
 {
-	return _annotation.validate(symbols);
+	auto success = true;
+
+	if (!_annotation.validate(symbols))
+		success = false;
+
+	return success;
 }

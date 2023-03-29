@@ -41,52 +41,22 @@ Optional<StatementId> Declaration::parse(Token& token)
 
 bool Declaration::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
-	// bool success = true;
+	auto success = true;
+	auto& variable = NodeBank::getVariable(_variableId);
 
-	// if (!symbolTableDeclareLocal(symbols, EntityType::Variable, node->variableId))
-	// 	success = false;
+	if (!variable.validate(symbols))
+		success = false;
 
-	// Variable *variable = symbolTableGetVariable(node->variableId);
-	
-	// if (!validateVariable(variable, symbols))
-	// 	success = false;
+	print("Validate declaration: $", variable.symbol());
+	if (!symbols.declareLocal(_variableId))
+		success = false;
 
-	// if (!validateExpression(&node->value, symbols))
-	// 	success = false;
-	
-	// if (!success)
-	// 	return false;
+	auto& value = NodeBank::get(_value);
 
-	// Type *variableType = variable->isExplicitlyTyped
-	// 	? &variable->annotation.type
-	// 	: NULL;
+	if (value.validate(symbols))
+		success = false;
 
-	// Type expressionType;
-	// if (!expressionGetType(&expressionType, &node->value, variableType))
-	// 	return false;
+	// TODO: Validate type conversion
 
-	// if (variable->isExplicitlyTyped)
-	// {
-	// 	Type& variableType = &variable->annotation.type;
-
-	// 	if (!typeCanConvert(variableType, &expressionType))
-	// 	{
-	// 		auto toTypeName = expressionType.getName();
-	// 		auto fromTypeName = variableTypegetName();
-
-	// 		// TODO: Make error highlight entire statement
-	// 		printError(&variable->name, "Variable of type `$` cannot be initialized with value of type `$`.", toTypeName, fromTypeName);
-	// 		deallocate(toTypeName);
-	// 		deallocate(fromTypeName);
-
-	// 		return false;
-	// 	}
-	// }
-	// else
-	// {
-	// 	variable->annotation.type = expressionType;
-	// }
-
-	// return true;
+	return success;
 }

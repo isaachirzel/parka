@@ -107,6 +107,9 @@ bool Ast::validate()
 
 	globalSymbols.reserve(globalCount);
 
+	NodeBank::declarePrimitives(globalSymbols);
+
+	// Declare packages
 	for (auto packageId : _packageIds)
 	{
 		auto& package = NodeBank::getPackage(packageId);
@@ -114,6 +117,15 @@ bool Ast::validate()
 		globalSymbols.insert({ package.symbol(), packageId });
 
 		if (!package.declare(globalSymbols))
+			success = false;
+	}
+
+	// Validate packages
+	for (const auto& packageId : _packageIds)
+	{
+		auto& package = NodeBank::getPackage(packageId);
+
+		if (!package.validate(globalSymbols))
 			success = false;
 	}
 

@@ -54,7 +54,7 @@ Optional<ExpressionId> IntegerLiteral::parse(Token& token)
 
 bool IntegerLiteral::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
+	return true;
 }
 
 Optional<Type> IntegerLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const

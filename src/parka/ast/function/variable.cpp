@@ -44,9 +44,10 @@ Optional<EntityId> Variable::parse(Token& token)
 
 bool Variable::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
-	// if (node->isExplicitlyTyped)
-	// 	return validateTypeAnnotation(&node->annotation, symbols->packageScope);
+	auto success = true;
 
-	// return true;
+	if (_annotation && !_annotation.value().validate(symbols))
+		success = false;
+
+	return success;
 }

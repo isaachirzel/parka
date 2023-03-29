@@ -1,4 +1,5 @@
 #include "parka/ast/type_annotation.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<TypeAnnotation> TypeAnnotation::parse(Token& token)
@@ -18,5 +19,12 @@ Optional<TypeAnnotation> TypeAnnotation::parse(Token& token)
 
 bool TypeAnnotation::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
+	auto entityId = symbols.resolve(_token);
+
+	if (!entityId)
+		return false;
+
+	_type = Type(entityId.value());
+
+	return true;
 }

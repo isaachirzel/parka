@@ -8,6 +8,8 @@
 #include <iostream>
 #include <cstdlib>
 
+void addError();
+
 void _print(const char * const fmt);
 
 template <typename First, typename... Arg>
@@ -59,6 +61,11 @@ void printMessage(const char *format, Arg const&... args)
 {
 	auto prompt = Prompt(type);
 
+	if constexpr (type == PromptType::Error)
+	{
+		addError();
+	}
+
 	std::cout << prompt << ' ';
 
 	_print(format, args...);
@@ -77,6 +84,11 @@ void printTokenMessage(const Token& token, const char *format, Arg const&... arg
 {
 	auto prompt = Prompt(type);
 	auto position = token.getFilePosition();
+
+	if constexpr (type == PromptType::Error)
+	{
+		addError();
+	}
 
 	std::cout << prompt << position << ' ';
 

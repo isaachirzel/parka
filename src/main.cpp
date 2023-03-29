@@ -11,15 +11,11 @@
 #include "parka/util/timer.hpp"
 
 #include <iostream>
-#include <functional>
-#include <sstream>
 #include <stdexcept>
 
 void printErrorCount(Project& project)
 {
-	usize errorCount = getErrorCount();
-
-	std::cout << "Failed to compile `" << project.name() << "`: encountered " << errorCount << " error(s)." << std::endl;
+	printError("Failed to compile `$`: encountered $ error(s).", project.name(), getErrorCount());
 }
 
 int main(int argc, const char *argv[])

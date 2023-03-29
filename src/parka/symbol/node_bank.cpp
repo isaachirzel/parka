@@ -492,6 +492,7 @@ void NodeBank::declarePrimitives(Table<EntityId>& globalSymbols)
 	for (const auto& primitive: _primitives)
 	{
 		globalSymbols.emplace(primitive.symbol(), EntityId { EntityType::Primitive, index });
+		
 		index += 1;
 	}
 }

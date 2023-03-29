@@ -99,21 +99,21 @@ Optional<Prototype> Prototype::parse(Token& token)
 
 bool Prototype::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
-	// bool success = true;
+	auto success = true;
 
-	// for (usize i = 0; i < ids->length; ++i)
-	// {
-	// 	usize index = ids->data[i];
+	for (auto parameterId : _parameterIds)
+	{
+		auto& parameter = NodeBank::getParameter(parameterId);
 
-	// 	if (!symbolTableDeclareLocal(symbols, EntityType::Parameter, index))
-	// 		success = false;
+		if (!parameter.validate(symbols))
+			success = false;
 
-	// 	Parameter *node = symbolTableGetParameter(index);
+		if (!symbols.declareLocal(parameterId))
+			success = false;
+	}
 
-	// 	if (!validateParameter(node, symbols))
-	// 		success = false;
-	// }
+	if (_returnType && !_returnType.value().validate(symbols))
+		success = false;
 
-	// return success;
+	return success;
 }

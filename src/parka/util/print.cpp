@@ -12,6 +12,11 @@ usize errorCount = 0;
 usize warningCount = 0;
 usize noteCount = 0;
 
+void addError()
+{
+	errorCount += 1;
+}
+
 bool isColorPrintingEnabled()
 {
 	return isColorEnabled;
@@ -154,6 +159,7 @@ String toHighlight(const Token& token, const FilePosition& position, const Promp
 	}
 
 	const char *end = &file[token.pos() + token.length()];
+
 	line += getLine(end);
 	line += '\n';
 	underline += '\n';
@@ -166,10 +172,9 @@ String toHighlight(const Token& token, const FilePosition& position, const Promp
 
 void _print(const char * const fmt)
 {
-	// TODO: Escape $ symbol
 	for (const char * iter = fmt; *iter; ++iter)
 	{
-		if (*iter == '$')
+		if (*iter == '$' && iter > fmt && iter[-1] != '\\')
 		{
 			std::cout << "Not enough arguments to print." << std::endl;
 			exit(1);
@@ -191,7 +196,7 @@ void printParseError(const Token& token, const char *expected, const char *messa
 void exitNotImplemented(SourceLocation&& location)
 {
 	std::cout << location;
-	std::cout << Prompt(PromptType::Fatal);
+	std::cout << Prompt(PromptType::Fatal) << ' ';
 
 	print("$ is not implemented.", location.function());
 	exit(1);

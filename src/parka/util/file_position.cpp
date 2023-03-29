@@ -2,5 +2,5 @@
 
 std::ostream& operator<<(std::ostream& out, const FilePosition& position)
 {
-	out << position._line << position._col << ':';
+	out << position._line << ':' << position._col << ':';
 }
