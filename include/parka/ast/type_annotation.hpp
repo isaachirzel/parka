@@ -10,11 +10,12 @@
 class TypeAnnotation
 {
 	Token _token;
-	// TODO: Add type after validation
-	Optional<Type> _type; 
+	// // TODO: Add type after validation
+	Optional<Type> _type; // Having an optional type is causing this a free warning to come up
 
 	TypeAnnotation(const Token& token) :
-	_token(token)
+	_token(token),
+	_type()
 	{}
 
 public:
@@ -27,8 +28,8 @@ public:
 
 	bool validate(SymbolTable& symbols);
 
-	const auto& token() const { return _token; }
-	const auto& type() const { return *_type; }
+	const Token& token() const { return _token; }
+	const Type& type() const { throw std::exception(); }//return *_type; }
 	// const auto& type() const { return _type; }
 };
 

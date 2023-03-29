@@ -29,7 +29,7 @@ public:
 	Array(usize capacity) :
 	_length(0),
 	_capacity(capacity),
-	_data((T*)malloc(sizeof(T) * capacity))
+	_data((T*)::operator new (sizeof(T) * capacity))
 	{
 		if (!_data)
 			throw std::bad_alloc();
@@ -46,10 +46,13 @@ public:
 	Array(const Array&) = delete;
 	~Array()
 	{
-		for (usize i = 0; i < _length; ++i)
-			_data[i].~T();
+		if constexpr (!std::is_fundamental_v<T>)
+		{
+			for (usize i = 0; i < _length; ++i)
+				_data[i].~T();
+		}
 		
-		free(_data);
+		delete _data;
 	}
 
 	void reserve(usize minimum)
@@ -57,10 +60,15 @@ public:
 		if (_capacity >= minimum)
 			return;
 
-		auto *newData = (T*)realloc(_data, sizeof(T) * minimum);
+		auto *newData = (T*)::operator new(sizeof(T) * minimum);
 
 		if (!newData)
 			throw std::bad_alloc();
+
+		for (usize i = 0; i < _length; ++i)
+			new (&newData[i]) auto (std::move(_data[i]));
+
+		delete _data;
 
 		_data = newData;
 		_capacity = minimum;

@@ -43,8 +43,8 @@ Optional<EntityId> Function::parse(Token& token, const String& package)
 
 	if (!prototype)
 		return {};
-
-	auto symbol = package + "::" + prototype->name().text();
+	auto name = prototype->name().text();
+	auto symbol = package + "::" + name;
 	auto body = parseBody(token);
 
 	if (!body)

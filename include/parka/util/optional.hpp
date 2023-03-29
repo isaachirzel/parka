@@ -2,6 +2,7 @@
 #define PARKA_UTIL_RESULT_HPP
 
 #include <cassert>
+#include <type_traits>
 #include <utility>
 
 template <typename T>
@@ -22,26 +23,32 @@ public:
 	_hasValue(true)
 	{}
 
+	template <typename U = T, typename = std::enable_if<std::is_fundamental_v<U>, U>>
+	Optional(const T& value) :
+	_value(value),
+	_hasValue(true)
+	{}
+
 	Optional() :
 	_hasValue(false)
 	{}
 
 	Optional(Optional&& other) :
+	_value(std::move(other._value)),
 	_hasValue(other._hasValue)
 	{
-		if (other._hasValue)
-		{
-			auto *t = new (&_value) auto (std::move(other._value))
-			;
-		}
+		other._hasValue = false;
 	}
 
 	Optional(const Optional&) = delete;
 
 	~Optional()
 	{
-		if (_hasValue)
-			_value.~T();
+		if constexpr (!std::is_fundamental_v<T>)
+		{
+			if (_hasValue)
+				_value.~T();
+		}
 	}
 
 	Optional& operator =(Optional&& other)
