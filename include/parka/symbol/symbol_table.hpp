@@ -2,7 +2,7 @@
 #define PARKA_SYMBOL_SYMBOL_TABLE_HPP
 
 #include "parka/symbol/entity_id.hpp"
-#include "parka/util/scope.hpp"
+#include "parka/symbol/scope.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 #include "parka/util/table.hpp"

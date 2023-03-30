@@ -1,7 +1,7 @@
 #include "parka/ast/package.hpp"
 #include "parka/ast/module.hpp"
 #include "parka/symbol/entity_id.hpp"
-#include "parka/util/scope.hpp"
+#include "parka/symbol/scope.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/file.hpp"

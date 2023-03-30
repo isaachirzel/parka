@@ -1,4 +1,4 @@
-#include "parka/util/scope.hpp"
+#include "parka/symbol/scope.hpp"
 #include "parka/util/string.hpp"
 
 #include <cstring>

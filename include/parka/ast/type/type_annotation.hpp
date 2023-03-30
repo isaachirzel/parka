@@ -3,7 +3,7 @@
 
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/ast/type/type.hpp"
-#include "parka/util/scope.hpp"
+#include "parka/symbol/scope.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
