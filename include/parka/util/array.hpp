@@ -39,9 +39,9 @@ public:
 	_capacity(other._capacity),
 	_data(other._data)
 	{
-		other._data = nullptr;
-		other._capacity = 0;
 		other._length = 0;
+		other._capacity = 0;
+		other._data = nullptr;
 	}
 	Array(const Array&) = delete;
 	~Array()
@@ -52,7 +52,7 @@ public:
 				_data[i].~T();
 		}
 		
-		delete _data;
+		::operator delete(_data, _length);
 	}
 
 	void reserve(usize minimum)
@@ -68,15 +68,30 @@ public:
 		for (usize i = 0; i < _length; ++i)
 			new (&newData[i]) auto (std::move(_data[i]));
 
-		delete _data;
+		::operator delete(_data);
 
 		_data = newData;
 		_capacity = minimum;
 	}
 
+	template <typename U = T, typename = std::enable_if_t<std::is_fundamental_v<U>>>
+	T& push(const T& value)
+	{
+		if (_length >= _capacity)
+			reserve(_length + 4);
+		
+		T& ref = _data[_length];
+
+		ref = value;
+		_length += 1;
+
+		return ref;
+	}
+
 	T& push(T&& value)
 	{
-		reserve(_length + 1);
+		if (_length >= _capacity)
+			reserve(_length + 4);
 		
 		T& ref = _data[_length];
 
