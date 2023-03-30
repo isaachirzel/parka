@@ -3,7 +3,7 @@
 
 #include "parka/symbol/expression_id.hpp"
 #include "parka/symbol/symbol_table.hpp"
-#include "parka/type.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/util/optional.hpp"
 
 enum class OperatorType

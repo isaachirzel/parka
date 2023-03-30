@@ -1,5 +1,5 @@
-#include "parka/ast/struct.hpp"
-#include "parka/ast/member.hpp"
+#include "parka/ast/struct/struct.hpp"
+#include "parka/ast/struct/member.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/util/print.hpp"

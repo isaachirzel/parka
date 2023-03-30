@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_MEMBER_HPP
 #define PARKA_AST_MEMBER_HPP
 
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 

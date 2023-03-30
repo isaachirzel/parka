@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_FUNCTION_PROTOTYPE_HPP
 #define PARKA_AST_FUNCTION_PROTOTYPE_HPP
 
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/symbol_table.hpp"
 
 class Prototype

@@ -1,7 +1,7 @@
 #include "parka/ast/function/function.hpp"
 #include "parka/ast/expression/block.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/optional.hpp"

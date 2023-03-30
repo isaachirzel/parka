@@ -31,7 +31,7 @@
 #include "parka/ast/statement/declaration.hpp"
 #include "parka/ast/statement/expression.hpp"
 #include "parka/ast/statement/jump.hpp"
-#include "parka/ast/struct.hpp"
+#include "parka/ast/struct/struct.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/symbol/expression_id.hpp"
 #include "parka/symbol/symbol_table.hpp"

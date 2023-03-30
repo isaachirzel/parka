@@ -1,6 +1,6 @@
 #include "parka/ast/module.hpp"
 #include "parka/ast/function/function.hpp"
-#include "parka/ast/struct.hpp"
+#include "parka/ast/struct/struct.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/symbol/symbol_table.hpp"

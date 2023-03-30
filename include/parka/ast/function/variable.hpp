@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_VARIABLE_HPP
 #define PARKA_AST_VARIABLE_HPP
 
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/entity_id.hpp"
 

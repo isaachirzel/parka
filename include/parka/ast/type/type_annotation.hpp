@@ -2,8 +2,8 @@
 #define PARKA_AST_TYPE_ANNOTATION_HPP
 
 #include "parka/symbol/symbol_table.hpp"
-#include "parka/type.hpp"
-#include "parka/scope.hpp"
+#include "parka/ast/type/type.hpp"
+#include "parka/util/scope.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 

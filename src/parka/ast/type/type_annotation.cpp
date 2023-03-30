@@ -1,4 +1,4 @@
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 

@@ -3,7 +3,7 @@
 
 #include "parka/ast/expression/expression.hpp"
 #include "parka/token.hpp"
-#include "parka/type.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/util/optional.hpp"
 
 class Identifier : public Expression

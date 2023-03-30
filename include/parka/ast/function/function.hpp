@@ -5,9 +5,9 @@
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/symbol_table.hpp"
 #include "parka/symbol/symbol_table.hpp"
-#include "parka/type.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/ast/expression/expression.hpp"
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 
 #include "parka/util/array.hpp"
 #include "parka/util/optional.hpp"

@@ -4,7 +4,7 @@
 #include "parka/ast/module.hpp"
 #include "parka/symbol/expression_id.hpp"
 #include "parka/token.hpp"
-#include "parka/type.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/util/box.hpp"
 #include "parka/util/optional.hpp"
 #include "parka/util/ref.hpp"

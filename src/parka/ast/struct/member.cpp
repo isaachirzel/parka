@@ -1,6 +1,6 @@
-#include "parka/ast/member.hpp"
+#include "parka/ast/struct/member.hpp"
 
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 
 #include "parka/util/print.hpp"
 

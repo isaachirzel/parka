@@ -1,6 +1,6 @@
 #include "parka/ast/function/prototype.hpp"
 #include "parka/ast/function/parameter.hpp"
-#include "parka/ast/type_annotation.hpp"
+#include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/print.hpp"

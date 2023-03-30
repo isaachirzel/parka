@@ -3,7 +3,7 @@
 
 #include "parka/ast/expression/expression.hpp"
 #include "parka/ast/statement/statement.hpp"
-#include "parka/type.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/util/primitives.hpp"
 
 struct Block : public Expression

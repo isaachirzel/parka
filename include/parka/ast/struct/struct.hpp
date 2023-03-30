@@ -1,10 +1,10 @@
 #ifndef PARKA_AST_STRUCT_HPP
 #define PARKA_AST_STRUCT_HPP
 
-#include "parka/ast/member.hpp"
+#include "parka/ast/struct/member.hpp"
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/symbol_table.hpp"
-#include "parka/type.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/util/array.hpp"
 
 class Struct : public Entity
