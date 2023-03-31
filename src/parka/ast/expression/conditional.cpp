@@ -38,12 +38,12 @@ Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 	return id;
 }
 
-bool ConditionalExpression::validate(SymbolTable& symbols)
+bool ConditionalExpression::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> ConditionalExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> ConditionalExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

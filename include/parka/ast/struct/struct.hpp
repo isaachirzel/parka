@@ -3,7 +3,7 @@
 
 #include "parka/ast/struct/member.hpp"
 #include "parka/symbol/entity.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/ast/type/type.hpp"
 #include "parka/util/array.hpp"
 
@@ -27,7 +27,7 @@ public:
 
 	static Optional<EntityId> parse(Token& token, const String& package);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	Token token() const { return _name; }
 	const auto& name() const { return _name; }

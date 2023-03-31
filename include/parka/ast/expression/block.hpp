@@ -24,8 +24,8 @@ public:
 
 	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
+	bool validate(LocalSymbolTable& symbols);
+	Optional<Type> getType(const LocalSymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
 	const auto& statements() const { return _statements; }
 };

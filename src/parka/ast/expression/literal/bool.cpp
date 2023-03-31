@@ -34,12 +34,12 @@ Optional<ExpressionId> BoolLiteral::parse(Token& token)
 }
 
 
-bool BoolLiteral::validate(SymbolTable& symbols)
+bool BoolLiteral::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> BoolLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> BoolLiteral::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

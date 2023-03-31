@@ -78,7 +78,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 	return id;
 }
 
-// bool validateReturnStatement(SymbolTable& symbols)
+// bool validateReturnStatement(LocalSymbolTable& symbols)
 // {
 // 	if (node->hasValue && !validateExpression(&node->value, symbols))
 // 		return false;
@@ -121,7 +121,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 // 	return true;
 // }
 
-// bool validateYieldStatement(JumpStatement *node, SymbolTable& symbols)
+// bool validateYieldStatement(JumpStatement *node, LocalSymbolTable& symbols)
 // {
 // 	Block *currentBlock = SymbolTableGetCurrentBlock(symbols);
 
@@ -161,7 +161,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 // 	return true;
 // }
 
-bool JumpStatement::validate(SymbolTable& symbols)
+bool JumpStatement::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 	// switch (node->type)

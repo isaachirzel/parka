@@ -97,7 +97,7 @@ Optional<Prototype> Prototype::parse(Token& token)
 	return prototype;
 }
 
-bool Prototype::validate(SymbolTable& symbols)
+bool Prototype::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 
@@ -108,7 +108,7 @@ bool Prototype::validate(SymbolTable& symbols)
 		if (!parameter.validate(symbols))
 			success = false;
 
-		if (!symbols.declareLocal(parameterId))
+		if (!symbols.declare(parameterId))
 			success = false;
 	}
 

@@ -2,7 +2,7 @@
 #include "parka/ast/module.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/symbol/scope.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/file.hpp"
 #include "parka/util/print.hpp"
@@ -34,7 +34,7 @@ Optional<Package> Package::parse(const Array<File>& files, String&& symbol)
 	return package;
 }
 
-bool Package::declare(Table<String, EntityId>& globalSymbols)
+bool Package::declare(GlobalSymbolTable& globalSymbols)
 {
 	auto success = true;
 
@@ -47,7 +47,7 @@ bool Package::declare(Table<String, EntityId>& globalSymbols)
 	return success;
 }
 
-bool Package::validate(Table<String, EntityId>& globalSymbols)
+bool Package::validate(GlobalSymbolTable& globalSymbols)
 {
 	auto success = true;
 

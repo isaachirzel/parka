@@ -23,7 +23,7 @@ public:
 
 	static Optional<EntityId> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	Token token() const { return _name; }
 	const String& symbol() const { return _symbol; }

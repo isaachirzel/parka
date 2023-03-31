@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_TYPE_ANNOTATION_HPP
 #define PARKA_AST_TYPE_ANNOTATION_HPP
 
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/ast/type/type.hpp"
 #include "parka/symbol/scope.hpp"
 #include "parka/token.hpp"
@@ -26,7 +26,7 @@ public:
 
 	static Optional<TypeAnnotation> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	const Token& token() const { return _token; }
 	const Type& type() const { throw std::exception(); }//return *_type; }

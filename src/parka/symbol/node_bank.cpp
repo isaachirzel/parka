@@ -34,7 +34,7 @@
 #include "parka/ast/struct/struct.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/symbol/expression_id.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/array.hpp"
 #include "parka/ast/primitive.hpp"
 #include "parka/util/pool.hpp"

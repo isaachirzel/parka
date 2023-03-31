@@ -56,7 +56,7 @@ Optional<EntityId> Function::parse(Token& token, const String& package)
 	return id;
 }
 
-bool Function::validate(SymbolTable& symbols)
+bool Function::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 

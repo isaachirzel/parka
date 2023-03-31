@@ -3,6 +3,7 @@
 #include "parka/ast/package.hpp"
 #include "parka/ast/struct/struct.hpp"
 #include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/global_symbol_table.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
@@ -104,19 +105,14 @@ Optional<Ast> Ast::parse(const Project& project)
 bool Ast::validate()
 {
 	auto success = true;
-	auto globalCount = NodeBank::getGlobalCount();
-	auto globalSymbols = Table<String, EntityId>(globalCount);
-
-	globalSymbols.reserve(globalCount);
-
-	NodeBank::declarePrimitives(globalSymbols);
+	auto globalSymbols = GlobalSymbolTable();
 
 	// Declare packages
 	for (auto packageId : _packageIds)
 	{
+		globalSymbols.declare(packageId);
+
 		auto& package = NodeBank::getPackage(packageId);
-		
-		globalSymbols.insert({ package.symbol(), packageId });
 
 		if (!package.declare(globalSymbols))
 			success = false;

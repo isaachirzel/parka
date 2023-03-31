@@ -49,7 +49,7 @@ Optional<ExpressionId> MultiplicativeExpression::parse(Token& token)
 	return lhs;
 }
 
-bool MultiplicativeExpression::validate(SymbolTable& symbols)
+bool MultiplicativeExpression::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 
@@ -62,7 +62,7 @@ bool MultiplicativeExpression::validate(SymbolTable& symbols)
 	return success;
 }
 
-Optional<Type> MultiplicativeExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> MultiplicativeExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

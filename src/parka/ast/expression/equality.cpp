@@ -46,12 +46,12 @@ Optional<ExpressionId> EqualityExpression::parse(Token& token)
 	return lhs;
 }
 
-bool EqualityExpression::validate(SymbolTable& symbols)
+bool EqualityExpression::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> EqualityExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> EqualityExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

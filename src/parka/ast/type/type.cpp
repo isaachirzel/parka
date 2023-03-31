@@ -5,7 +5,7 @@
 #include "parka/ast/primitive.hpp"
 #include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/print.hpp"
 
 const Type voidType = Type({ EntityType::Primitive, INDEX_VOID });

@@ -19,7 +19,7 @@ Optional<ExpressionId> Identifier::parse(Token& token)
 	return id;
 }
 
-bool Identifier::validate(SymbolTable& symbols)
+bool Identifier::validate(LocalSymbolTable& symbols)
 {
 	auto entity = symbols.resolve(_token);
 
@@ -31,7 +31,7 @@ bool Identifier::validate(SymbolTable& symbols)
 	return true;
 }
 
-Optional<Type> Identifier::getType(const SymbolTable&, Ref<Type>) const
+Optional<Type> Identifier::getType(const LocalSymbolTable&, Ref<Type>) const
 {
 	if (_entityId)
 		return Type(*_entityId);

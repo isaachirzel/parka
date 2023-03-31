@@ -35,7 +35,7 @@ public:
 
 	static Optional<StatementId> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	const auto& token() const { return _token; }
 	bool hasValue() const { return _value; }

@@ -42,7 +42,7 @@ Optional<EntityId> Parameter::parse(Token& token)
 	return id;
 }
 
-bool Parameter::validate(SymbolTable& symbols)
+bool Parameter::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 

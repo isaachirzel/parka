@@ -39,7 +39,7 @@ Optional<StatementId> Declaration::parse(Token& token)
 	return id;
 }
 
-bool Declaration::validate(SymbolTable& symbols)
+bool Declaration::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 	auto& variable = NodeBank::getVariable(_variableId);
@@ -47,7 +47,7 @@ bool Declaration::validate(SymbolTable& symbols)
 	if (!variable.validate(symbols))
 		success = false;
 
-	if (!symbols.declareLocal(_variableId))
+	if (!symbols.declare(_variableId))
 		success = false;
 
 	auto& value = NodeBank::get(_value);

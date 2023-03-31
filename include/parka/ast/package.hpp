@@ -3,8 +3,9 @@
 
 #include "parka/ast/module.hpp"
 #include "parka/symbol/entity.hpp"
+#include "parka/symbol/global_symbol_table.hpp"
 #include "parka/symbol/scope.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/optional.hpp"
@@ -28,8 +29,8 @@ public:
 
 	static Optional<Package> parse(const Array<File>& files, String&& symbol);
 
-	bool declare(Table<String, EntityId>& globalSymbols);
-	bool validate(Table<String, EntityId>& globalSymbols);
+	bool declare(GlobalSymbolTable& globalSymbols);
+	bool validate(GlobalSymbolTable& globalSymbols);
 
 	Token token() const { throw std::invalid_argument("Packages do not have tokens."); }
 	const String& symbol() const { return _symbol; }

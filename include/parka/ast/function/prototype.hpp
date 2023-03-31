@@ -2,7 +2,7 @@
 #define PARKA_AST_FUNCTION_PROTOTYPE_HPP
 
 #include "parka/ast/type/type_annotation.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 
 class Prototype
 {
@@ -24,7 +24,7 @@ public:
 
 	static Optional<Prototype> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	const auto& name() const { return _name; }
 	const auto& parameters() const { return _parameterIds; }

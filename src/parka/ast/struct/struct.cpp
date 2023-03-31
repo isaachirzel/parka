@@ -1,7 +1,7 @@
 #include "parka/ast/struct/struct.hpp"
 #include "parka/ast/struct/member.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/print.hpp"
 
 Optional<EntityId> Struct::parse(Token& token, const String& package)
@@ -73,7 +73,7 @@ Optional<EntityId> Struct::parse(Token& token, const String& package)
 	return id;
 }
 
-bool Struct::validate(SymbolTable& symbols)
+bool Struct::validate(LocalSymbolTable& symbols)
 {
 	bool success = true;
 

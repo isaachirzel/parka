@@ -11,7 +11,7 @@ Optional<Operator> parse(Token& token)
 	exitNotImplemented(here());
 }
 
-bool validate(SymbolTable& symbols)
+bool validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }

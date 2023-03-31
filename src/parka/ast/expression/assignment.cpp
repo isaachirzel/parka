@@ -72,7 +72,7 @@ Optional<ExpressionId> Assignment::parse(Token& token)
 	return id;
 }
 
-bool Assignment::validate(SymbolTable& symbols)
+bool Assignment::validate(LocalSymbolTable& symbols)
 {
 	bool success = true;
 
@@ -87,7 +87,7 @@ bool Assignment::validate(SymbolTable& symbols)
 	return success;
 }
 
-Optional<Type> Assignment::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> Assignment::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

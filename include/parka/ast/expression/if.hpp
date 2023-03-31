@@ -3,7 +3,6 @@
 
 #include "parka/ast/expression/expression.hpp"
 #include "parka/symbol/statement_id.hpp"
-#include "parka/util/box.hpp"
 
 // TODO: Consider merging this with conditional expression
 

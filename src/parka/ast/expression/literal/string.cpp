@@ -18,12 +18,12 @@ Optional<ExpressionId> StringLiteral::parse(Token& token)
 	return id;
 }
 
-bool StringLiteral::validate(SymbolTable& symbols)
+bool StringLiteral::validate(LocalSymbolTable& symbols)
 {
 	return true;
 }
 
-Optional<Type> StringLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> StringLiteral::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

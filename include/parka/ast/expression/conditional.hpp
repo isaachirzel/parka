@@ -3,8 +3,8 @@
 #define PARKA_AST_EXPRESSION_CONDITIONAL_HPP
 
 #include "parka/ast/expression/expression.hpp"
-#include "parka/symbol/symbol_table.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 
 class ConditionalExpression : public Expression
 {
@@ -26,8 +26,8 @@ public:
 
 	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
+	bool validate(LocalSymbolTable& symbols);
+	Optional<Type> getType(const LocalSymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
 	const auto& condition() const { return _condition; }
 	const auto& trueCase() const { return _trueCase; }

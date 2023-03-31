@@ -2,7 +2,6 @@
 #define PARKA_AST_EXPRESSION_ADDITIVE_HPP
 
 #include "parka/ast/expression/expression.hpp"
-#include "parka/util/box.hpp"
 
 #include <utility>
 
@@ -32,8 +31,8 @@ public:
 
 	static Optional<ExpressionId> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
-	Optional<Type> getType(const SymbolTable& symbolTable, Ref<Type> expected = {}) const;
+	bool validate(LocalSymbolTable& symbols);
+	Optional<Type> getType(const LocalSymbolTable& symbolTable, Ref<Type> expected = {}) const;
 
 	const auto& lhs() const { return _lhs; }
 	const auto& rhs() const { return _rhs; }

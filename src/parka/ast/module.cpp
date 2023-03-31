@@ -1,9 +1,10 @@
 #include "parka/ast/module.hpp"
 #include "parka/ast/function/function.hpp"
 #include "parka/ast/struct/struct.hpp"
+#include "parka/symbol/global_symbol_table.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/symbol_table.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/path.hpp"
@@ -72,45 +73,45 @@ Optional<Module> Module::parse(const File& file, const String& package)
 	return mod;
 }
 
-bool Module::declare(Table<String, EntityId>& globalSymbols)
+bool Module::declare(GlobalSymbolTable& globalSymbols)
 {
 	auto success = true;
 
 	for (auto structId : _structIds)
 	{
-		if (!SymbolTable::declareGlobal(globalSymbols, structId))
+		if (!globalSymbols.declare(structId))
 			success = false;
 	}
 
 	for (auto functionId : _functionIds)
 	{
-		if (!SymbolTable::declareGlobal(globalSymbols, functionId))
+		if (!globalSymbols.declare(functionId))
 			success = false;
 	}
 
 	return success;
 }
 
-bool Module::validate(Table<String, EntityId>& globalSymbols, const String& packageSymbol)
+bool Module::validate(GlobalSymbolTable& globalSymbols, const String& packageSymbol)
 {
 	auto success = true;
-	auto symbols = SymbolTable(globalSymbols, packageSymbol);
+	auto localSymbols = LocalSymbolTable(globalSymbols, packageSymbol);
 
 	for (auto id : _functionIds)
 	{
 		auto& function = NodeBank::getFunction(id);
 
-		if (!function.validate(symbols))
+		if (!function.validate(localSymbols))
 			success = false;
 
-		symbols.clearLocalSymbols();
+		localSymbols.clear();
 	}
 
 	for (auto id : _structIds)
 	{
 		auto& strct = NodeBank::getStruct(id);
 
-		if (!strct.validate(symbols))
+		if (!strct.validate(localSymbols))
 			success = false;
 	}
 

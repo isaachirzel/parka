@@ -42,7 +42,7 @@ Optional<EntityId> Variable::parse(Token& token)
 	return id;
 }
 
-bool Variable::validate(SymbolTable& symbols)
+bool Variable::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 	if (_annotation && !_annotation->validate(symbols))

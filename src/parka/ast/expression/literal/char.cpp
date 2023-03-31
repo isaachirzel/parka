@@ -37,12 +37,12 @@ Optional<ExpressionId> CharLiteral::parse(Token& token)
 }
 
 
-bool CharLiteral::validate(SymbolTable& symbols)
+bool CharLiteral::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> CharLiteral::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> CharLiteral::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

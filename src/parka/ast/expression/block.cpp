@@ -1,7 +1,7 @@
 #include "parka/ast/expression/block.hpp"
 #include "parka/ast/statement/statement.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
 
@@ -37,7 +37,7 @@ Optional<ExpressionId> Block::parse(Token& token)
 	return id;
 }
 
-bool Block::validate(SymbolTable& symbols)
+bool Block::validate(LocalSymbolTable& symbols)
 {
 	symbols.pushBlock();
 
@@ -54,7 +54,7 @@ bool Block::validate(SymbolTable& symbols)
 	return success;
 }
 
-Optional<Type> Block::getType(const SymbolTable& symbols, Ref<Type> expected) const
+Optional<Type> Block::getType(const LocalSymbolTable& symbols, Ref<Type> expected) const
 {
 	if (_returnType)
 		return Type(*_returnType);

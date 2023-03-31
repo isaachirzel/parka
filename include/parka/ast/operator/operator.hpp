@@ -2,7 +2,7 @@
 #define PARKA_AST_FUNCTION_OPERATOR_HPP
 
 #include "parka/symbol/expression_id.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/ast/type/type.hpp"
 #include "parka/util/optional.hpp"
 
@@ -29,7 +29,7 @@ public:
 
 	static Optional<Operator> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	const auto& leftType() const { return _leftType; }
 	const auto& rightType() const { return _rightType; }

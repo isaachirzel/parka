@@ -17,7 +17,7 @@ Optional<TypeAnnotation> TypeAnnotation::parse(Token& token)
 	return annotation;
 }
 
-bool TypeAnnotation::validate(SymbolTable& symbols)
+bool TypeAnnotation::validate(LocalSymbolTable& symbols)
 {
 	auto entityId = symbols.resolve(_token);
 

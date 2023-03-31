@@ -25,7 +25,7 @@ Optional<StatementId> Statement::parse(Token& token)
 	return ExpressionStatement::parse(token);
 }
 
-bool Statement::validate(SymbolTable& symbols)
+bool Statement::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 

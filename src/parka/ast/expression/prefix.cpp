@@ -52,12 +52,12 @@ Optional<ExpressionId> Prefix::parse(Token& token)
 	return id;
 }
 
-bool Prefix::validate(SymbolTable& symbols)
+bool Prefix::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> Prefix::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> Prefix::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

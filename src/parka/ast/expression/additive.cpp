@@ -2,7 +2,7 @@
 #include "parka/ast/expression/multiplicative.hpp"
 #include "parka/ast/primitive.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/symbol_table.hpp"
+#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/print.hpp"
 #include "parka/util/optional.hpp"
 
@@ -51,7 +51,7 @@ Optional<ExpressionId> AdditiveExpression::parse(Token& token)
 	return lhs;
 }
 
-bool AdditiveExpression::validate(SymbolTable& symbols)
+bool AdditiveExpression::validate(LocalSymbolTable& symbols)
 {
 	auto success = true;
 
@@ -96,7 +96,7 @@ Optional<Type> getPrimitiveType(const Primitive& left, const Primitive& right, c
 	return {};
 }
 
-Optional<Type> AdditiveExpression::getType(const SymbolTable& symbols, Ref<Type> expected) const
+Optional<Type> AdditiveExpression::getType(const LocalSymbolTable& symbols, Ref<Type> expected) const
 {
 
 	exitNotImplemented(here());

@@ -50,7 +50,7 @@ Optional<Member> Member::parse(Token& token)
 	return member;
 }
 
-bool Member::validate(SymbolTable& symbols)
+bool Member::validate(LocalSymbolTable& symbols)
 {
 	return _annotation.validate(symbols);
 }

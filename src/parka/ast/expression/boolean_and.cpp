@@ -30,12 +30,12 @@ Optional<ExpressionId> BooleanAndExpression::parse(Token& token)
 	return lhs;
 }
 
-bool BooleanAndExpression::validate(SymbolTable& symbols)
+bool BooleanAndExpression::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> BooleanAndExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> BooleanAndExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

@@ -46,12 +46,12 @@ Optional<ExpressionId> CallExpression::parse(Token& token, ExpressionId primary)
 	return id;
 }
 
-bool CallExpression::validate(SymbolTable& symbols)
+bool CallExpression::validate(LocalSymbolTable& symbols)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> CallExpression::getType(const SymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> CallExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
 {
 	exitNotImplemented(here());
 }

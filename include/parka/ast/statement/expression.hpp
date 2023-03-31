@@ -24,7 +24,7 @@ public:
 
 	static Optional<StatementId> parse(Token& token);
 
-	bool validate(SymbolTable& symbols);
+	bool validate(LocalSymbolTable& symbols);
 
 	const auto& expression() const { return _expression; }
 };
