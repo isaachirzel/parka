@@ -41,4 +41,6 @@ public:
 	bool operator==(const EntityId& other) const;
 };
 
+std::ostream& operator<<(std::ostream& out, const EntityType& type);
+
 #endif

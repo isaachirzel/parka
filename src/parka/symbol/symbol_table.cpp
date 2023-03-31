@@ -34,6 +34,7 @@ bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
 bool SymbolTable::declareLocal(EntityId id)
 {
 	auto& entity = NodeBank::get(id);
+	print("Declaring $ $", id.type(), entity.symbol());
 	auto blockIndex = _blocks.length() > 0
 		? _blocks.back()
 		: 0;
@@ -59,10 +60,10 @@ bool SymbolTable::declareLocal(EntityId id)
 
 Optional<EntityId> SymbolTable::resolve(const Token& token)
 {
+	print("Resolving local: $", token);
 	// TODO: Optimize
 	auto identifier = token.text();
-
-	usize i = _localSymbols.length();
+	auto i = _localSymbols.length();
 
 	while (i > 0)
 	{

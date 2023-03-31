@@ -11,6 +11,7 @@
 #include "parka/util/timer.hpp"
 
 #include <iostream>
+#include <locale>
 #include <stdexcept>
 
 void printErrorCount(Project& project)
@@ -25,18 +26,16 @@ int main(int argc, const char *argv[])
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
 
-	auto compileTimer = Timer();
-
-	compileTimer.start();
-
+	auto timer = Timer();
 	auto projectResult = Project::read(argv[1]);
 
 	if (!projectResult)
 		return 1;
 
 	auto& project = *projectResult;
+	auto readTime = timer.split();
 
-	printNote("Parsing begin.");
+	printSuccess("Project loaded in $ seconds.", readTime);
 
 	auto astResult = Ast::parse(project);
 
@@ -47,9 +46,9 @@ int main(int argc, const char *argv[])
 	}
 
 	auto& ast = *astResult;
+	auto parseTime = timer.split();
 
-	printSuccess("Parsing complete.");
-	printNote("Validation begin.");
+	printSuccess("Parsing completed in $ seconds.", parseTime);
 
 	if (!ast.validate())
 	{
@@ -57,12 +56,15 @@ int main(int argc, const char *argv[])
 		return 1;
 	}
 
-	printSuccess("Validation complete.");
-	printNote("Generation not implemented yet.");
+	auto validatetime = timer.split();
 
-	compileTimer.stop();
+	printSuccess("Validation completed in $ seconds.", validatetime);
 
-	printSuccess("Compiled `$` in $ seconds.", project.name(), compileTimer.elapsedSeconds());
+	auto compileTime = timer.stop();
+	auto linesOfCodeCount = project.getLinesOfCodeCount();
+	auto compileSpeed = (usize)(linesOfCodeCount / compileTime / 1000.0);
+
+	printSuccess("Compiled `$` in $ seconds at $k lines/sec.", project.name(), compileTime, compileSpeed);
 
 	return 0;
 }

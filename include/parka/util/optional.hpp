@@ -34,10 +34,18 @@ public:
 	{}
 
 	Optional(Optional&& other) :
-	_value(std::move(other._value)),
+	// _value(std::move(other._value)),
 	_hasValue(other._hasValue)
 	{
-		other._hasValue = false;
+		if (other._hasValue)
+		{
+			T& newItem = _value;
+			T& oldItem = other._value;
+
+			new (&newItem) auto (std::move(oldItem));
+
+			other._hasValue = false;
+		}
 	}
 
 	Optional(const Optional&) = delete;

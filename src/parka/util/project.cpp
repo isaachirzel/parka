@@ -17,3 +17,24 @@ Optional<Project> Project::read(const String& path)
 
     return project;
 }
+
+usize getDirectoryLinesOfCodeCount(const Directory& directory)
+{
+    usize count = 0;
+
+    for (const auto& file : directory.files())
+    {
+        if (file.type() == FileType::Source)
+            count += file.lineCount();
+    }
+
+    for (const auto& subdirectory :directory.subdirectories())
+        count += getDirectoryLinesOfCodeCount(subdirectory);
+
+    return count;
+}
+
+usize Project::getLinesOfCodeCount()
+{
+    return getDirectoryLinesOfCodeCount(_srcDirectory);
+}

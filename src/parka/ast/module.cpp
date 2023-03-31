@@ -102,6 +102,8 @@ bool Module::validate(Table<EntityId>& globalSymbols, const String& packageSymbo
 
 		if (!function.validate(symbols))
 			success = false;
+
+		symbols.clearLocalSymbols();
 	}
 
 	for (auto id : _structIds)

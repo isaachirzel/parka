@@ -52,7 +52,8 @@ public:
 	const auto& text() const { return _text; }
 	const auto& lineLengths() const { return _lineLengths; }
 	const auto& type() const { return _type; }
-	auto length() const { return _text.size(); }
+	auto lineCount() const { return _lineLengths.length(); }
+	auto length() const { return _text.length(); }
 };
 
 #endif

@@ -29,7 +29,7 @@ public:
 	Array(usize capacity) :
 	_length(0),
 	_capacity(capacity),
-	_data((T*)::operator new (sizeof(T) * capacity))
+	_data((T*)::operator new(sizeof(T) * capacity))
 	{
 		if (!_data)
 			throw std::bad_alloc();
@@ -52,7 +52,7 @@ public:
 				_data[i].~T();
 		}
 		
-		::operator delete(_data, _length);
+		::operator delete (_data);
 	}
 
 	void reserve(usize minimum)
@@ -60,16 +60,22 @@ public:
 		if (_capacity >= minimum)
 			return;
 
-		auto *newData = (T*)::operator new(sizeof(T) * minimum);
+		auto *oldData = _data;
+		auto *newData = (T*)::operator new (sizeof(T) * minimum);
 
-		if (!newData)
+		if (newData == nullptr)
 			throw std::bad_alloc();
 
 		for (usize i = 0; i < _length; ++i)
-			new (&newData[i]) auto (std::move(_data[i]));
+		{
+			T& oldItem = oldData[i];
+			T& newItem = newData[i];
 
-		::operator delete(_data);
+			new (&newItem) auto (std::move(oldItem));
+		}
 
+		::operator delete(oldData);
+		
 		_data = newData;
 		_capacity = minimum;
 	}

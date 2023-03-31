@@ -20,6 +20,7 @@ public:
 
     const auto& name() const { return _name; }
     const auto& srcDirectory() const { return _srcDirectory; }
+    usize getLinesOfCodeCount();
 };
 
 #endif

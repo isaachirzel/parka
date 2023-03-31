@@ -29,6 +29,7 @@ void enableColorPrinting(bool enabled)
 
 usize getNumberWidth(usize number)
 {
+	// TODO: get line count to make sure it doesn't overflow
 	usize out = 1;
 	
 	while (number > 9)
@@ -40,28 +41,19 @@ usize getNumberWidth(usize number)
 	return out;
 }
 
-String toMargin(usize lineNumber)
+String toMargin(usize lineNumber, usize numberWidth)
 {
-	const usize numberWidth = 5;
+	const char *divider = " | ";
 
-	char tempBuffer[numberWidth + 4];
+	if (lineNumber == 0)
+		return String(numberWidth, ' ') + divider;
 
-	if (lineNumber > 0)
-	{
-		sprintf(tempBuffer, "%5zu", lineNumber);
-	}
-	else
-	{
-		for (usize i = 0; i < numberWidth; ++i)
-			tempBuffer[i] = ' ';
-	}
+	auto text = std::to_string(lineNumber);
 
-	tempBuffer[numberWidth] = ' ';
-	tempBuffer[numberWidth + 1] = '|';
-	tempBuffer[numberWidth + 2] = ' ';
-	tempBuffer[numberWidth + 3] = '\0';
+	if (text.length() < numberWidth)
+		text.insert(0, String(numberWidth - text.length(), ' '));
 
-	return tempBuffer;
+	return text + " | ";
 }
 
 String toInvisible(const char *start, usize n)
@@ -124,15 +116,16 @@ usize findOccurrence(const char *text, const char *token)
 String toHighlight(const Token& token, const FilePosition& position, const Prompt& prompt)
 {
 	// TODO: Handle multiline tokens
-	const File& file = token.file();
-
+	const auto& file = token.file();
+	auto lineCount = token.file().lineCount();
+	auto numberWidth = getNumberWidth(lineCount);
 	auto highlight = String();
 	auto line = String();
 	auto underline = String();
 	auto pos = getStartOfLine(file.text().c_str(), token.pos());
 
-	line += toMargin(position.line());
-	underline += toMargin(0);
+	line += toMargin(position.line(), numberWidth);
+	underline += toMargin(0, numberWidth);
 
 	const char *start = file.text().c_str() + pos;
 	usize startLength = token.pos() - pos;

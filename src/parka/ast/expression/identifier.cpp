@@ -21,18 +21,17 @@ Optional<ExpressionId> Identifier::parse(Token& token)
 
 bool Identifier::validate(SymbolTable& symbols)
 {
-	exitNotImplemented(here());
-	// auto context = symbols.resolve(_token);
+	auto entity = symbols.resolve(_token);
 
-	// if (!context)
-	// 	return false;
+	if (!entity)
+		return false;
 
-	// _entityId = EntityId(context->id());
+	_entityId = entity.unwrap();
 
-	// return true;
+	return true;
 }
 
-Optional<Type> Identifier::getType(const SymbolTable& symbols, Ref<Type> expected) const
+Optional<Type> Identifier::getType(const SymbolTable&, Ref<Type>) const
 {
 	if (_entityId)
 		return Type(*_entityId);

@@ -27,11 +27,19 @@ const char *getEntityTypeText(EntityType type)
 	}
 }
 
+std::ostream& operator<<(std::ostream& out, const EntityType& type)
+{
+	const auto *text = getEntityTypeText(type);
+
+	out << text;
+
+	return out;
+}
+
 std::ostream& operator<<(std::ostream& out, const EntityId& id)
 {
-	const auto *text = getEntityTypeText(id._type);
 
-	out << text << "s[" << id._index << ']';
+	out << id._type << "s[" << id._index << ']';
 
 	return out;
 }

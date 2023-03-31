@@ -684,31 +684,6 @@ String Token::category() const
 	}
 }
 
-bool Token::operator==(const Token& other) const
-{
-	if (&_file != &other.file() || _length != other.length() || _type != other.type())
-		return false;
-
-	if (_pos == other.pos())
-		return true;
-
-	for (usize i = 0; i < _length; ++i)
-	{
-		if (_file[i] != other[i])
-			return false;
-	}
-
-	return true;
-}
-
-bool Token::operator ==(const String& text) const
-{
-	if (_length != text.length())
-		return false;
-
-	return !strcmp(&_file[_pos], text.c_str());
-}
-
 const char *getTokenTypeText(TokenType type)
 {
 	switch (type)
@@ -800,6 +775,31 @@ const char *getTokenTypeText(TokenType type)
 	}
 
 	exitWithError("Unable to get text for TokenType: $", (int)type);
+}
+
+bool Token::operator==(const Token& other) const
+{
+	if (&_file != &other.file() || _length != other.length() || _type != other.type())
+		return false;
+
+	if (_pos == other.pos())
+		return true;
+
+	for (usize i = 0; i < _length; ++i)
+	{
+		if (_file[i] != other[i])
+			return false;
+	}
+
+	return true;
+}
+
+bool Token::operator ==(const String& text) const
+{
+	if (_length != text.length())
+		return false;
+
+	return !strncmp(&_file[_pos], text.c_str(), _length);
 }
 
 std::ostream& operator<<(std::ostream& out, TokenType type)
