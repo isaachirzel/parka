@@ -105,7 +105,7 @@ bool Ast::validate()
 {
 	auto success = true;
 	auto globalCount = NodeBank::getGlobalCount();
-	auto globalSymbols = Table<EntityId>(globalCount);
+	auto globalSymbols = Table<String, EntityId>(globalCount);
 
 	globalSymbols.reserve(globalCount);
 

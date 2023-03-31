@@ -1,9 +1,12 @@
 #ifndef PARKA_UTIL_ENTITY_ENTITY_BANK_HPP
 #define PARKA_UTIL_ENTITY_ENTITY_BANK_HPP
 
+#include "parka/ast/expression/expression.hpp"
 #include "parka/ast/statement/statement.hpp"
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/expression_id.hpp"
+#include "parka/symbol/statement_id.hpp"
 
 class Package;
 class Struct;
@@ -89,7 +92,7 @@ struct NodeBank
 	static Parameter& getParameter(EntityId id);
 
 	static void initialize();
-	static void declarePrimitives(Table<EntityId>& globalSymbols);
+	static void declarePrimitives(Table<String, EntityId>& globalSymbols);
 	static usize getGlobalCount();
 };
 

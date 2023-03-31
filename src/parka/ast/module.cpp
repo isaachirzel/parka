@@ -72,7 +72,7 @@ Optional<Module> Module::parse(const File& file, const String& package)
 	return mod;
 }
 
-bool Module::declare(Table<EntityId>& globalSymbols)
+bool Module::declare(Table<String, EntityId>& globalSymbols)
 {
 	auto success = true;
 
@@ -91,7 +91,7 @@ bool Module::declare(Table<EntityId>& globalSymbols)
 	return success;
 }
 
-bool Module::validate(Table<EntityId>& globalSymbols, const String& packageSymbol)
+bool Module::validate(Table<String, EntityId>& globalSymbols, const String& packageSymbol)
 {
 	auto success = true;
 	auto symbols = SymbolTable(globalSymbols, packageSymbol);

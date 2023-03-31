@@ -28,8 +28,8 @@ public:
 
 	static Optional<Package> parse(const Array<File>& files, String&& symbol);
 
-	bool declare(Table<EntityId>& globalSymbols);
-	bool validate(Table<EntityId>& globalSymbols);
+	bool declare(Table<String, EntityId>& globalSymbols);
+	bool validate(Table<String, EntityId>& globalSymbols);
 
 	Token token() const { throw std::invalid_argument("Packages do not have tokens."); }
 	const String& symbol() const { return _symbol; }

@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstring>
 
-bool SymbolTable::declareGlobal(Table<EntityId>& globalSymbols, EntityId id)
+bool SymbolTable::declareGlobal(Table<String, EntityId>& globalSymbols, EntityId id)
 {
 	// TODO: Add tokens for highlighting
 	auto& entity = NodeBank::get(id);

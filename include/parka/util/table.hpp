@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-template <typename T>
-using Table = std::unordered_map<String, T>;
+template <typename Key, typename Value>
+using Table = std::unordered_map<Key, Value>;
 
 #endif

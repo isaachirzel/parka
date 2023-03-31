@@ -9,14 +9,14 @@
 
 class SymbolTable
 {
-	Table<EntityId>& _globalSymbols;
+	Table<String, EntityId>& _globalSymbols;
 	Array<EntityId> _localSymbols;
 	Array<usize> _blocks;
 	Scope _scope;
 
 public:
 
-	SymbolTable(Table<EntityId>& globalSymbols, const String& packageSymbol) :
+	SymbolTable(Table<String, EntityId>& globalSymbols, const String& packageSymbol) :
 	_globalSymbols(globalSymbols),
 	_scope(Scope::from(packageSymbol))
 	{}
@@ -25,7 +25,7 @@ public:
 	SymbolTable(const SymbolTable&) = delete;
 	~SymbolTable() = default;
 
-	static bool declareGlobal(Table<EntityId>& globalSymbols, EntityId id);
+	static bool declareGlobal(Table<String, EntityId>& globalSymbols, EntityId id);
 	bool declareLocal(EntityId id);
 	Optional<EntityId> resolve(const Token& token);
 	Optional<EntityId> resolve(const String& identifier);

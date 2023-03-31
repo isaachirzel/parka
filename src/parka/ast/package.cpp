@@ -34,7 +34,7 @@ Optional<Package> Package::parse(const Array<File>& files, String&& symbol)
 	return package;
 }
 
-bool Package::declare(Table<EntityId>& globalSymbols)
+bool Package::declare(Table<String, EntityId>& globalSymbols)
 {
 	auto success = true;
 
@@ -47,7 +47,7 @@ bool Package::declare(Table<EntityId>& globalSymbols)
 	return success;
 }
 
-bool Package::validate(Table<EntityId>& globalSymbols)
+bool Package::validate(Table<String, EntityId>& globalSymbols)
 {
 	auto success = true;
 

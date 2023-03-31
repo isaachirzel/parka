@@ -6,7 +6,7 @@
 #include "parka/ast/type/type.hpp"
 #include "parka/util/primitives.hpp"
 
-struct Block : public Expression
+class Block : public Expression
 {
 	Array<StatementId> _statements;
 	Optional<Type> _returnType;

@@ -485,7 +485,7 @@ void NodeBank::initialize()
 	_primitives.push({ "string", PRIMITIVE_STRING, 0 });
 }
 
-void NodeBank::declarePrimitives(Table<EntityId>& globalSymbols)
+void NodeBank::declarePrimitives(Table<String, EntityId>& globalSymbols)
 {
 	usize index = 0;
 
