@@ -18,8 +18,8 @@ public:
 
 	LocalSymbolTable(GlobalSymbolTable& globalSymbols, const String& packageSymbol) :
 	_globalSymbols(globalSymbols),
-	_localSymbols(32),
-	_blocks(4),
+	_localSymbols(64),
+	_blocks(8),
 	_scope(Scope::from(packageSymbol))
 	{}
 

@@ -1,6 +1,7 @@
 #ifndef PARKA_SYMBOL_GLOBAL_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOL_GLOBAL_SYMBOL_TABLE_HPP
 
+#include "parka/ast/operator/operator_key.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
@@ -10,6 +11,7 @@
 class GlobalSymbolTable
 {
 	Table<String, EntityId> _globalSymbols;
+	Table<OperatorKey, OperatorId> _operatorSymbols;
 
 public:
 

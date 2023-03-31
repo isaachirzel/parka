@@ -3,13 +3,9 @@
 
 #include "parka/symbol/expression_id.hpp"
 #include "parka/symbol/local_symbol_table.hpp"
+#include "parka/ast/operator/operator_id.hpp"
 #include "parka/ast/type/type.hpp"
 #include "parka/util/optional.hpp"
-
-enum class OperatorType
-{
-	Add
-};
 
 class Operator
 {

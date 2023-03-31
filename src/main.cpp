@@ -11,6 +11,7 @@
 #include "parka/util/timer.hpp"
 
 #include <iostream>
+#include <limits>
 #include <locale>
 #include <stdexcept>
 
