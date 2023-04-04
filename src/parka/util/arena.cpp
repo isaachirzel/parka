@@ -73,3 +73,13 @@ void *Arena::allocate(usize bytes)
 
 	return ptr;
 }
+
+usize Arena::getOffset(void *ptr) const
+{
+	assert(ptr >= _data);
+	assert(ptr < (char*)_data + _bytesUsed);
+
+	auto offset = (char*)ptr - (char*)_data;
+
+	return offset;
+}

@@ -52,12 +52,12 @@ Optional<ExpressionId> RelationalExpression::parse(Token& token)
 	return lhs;
 }
 
-bool RelationalExpression::validate(LocalSymbolTable& symbols)
+bool RelationalExpression::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> RelationalExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> RelationalExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

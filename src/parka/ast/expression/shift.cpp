@@ -46,12 +46,12 @@ Optional<ExpressionId> BitShiftExpression::parse(Token& token)
 	return lhs;
 }
 
-bool BitShiftExpression::validate(LocalSymbolTable& symbols)
+bool BitShiftExpression::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> BitShiftExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> BitShiftExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

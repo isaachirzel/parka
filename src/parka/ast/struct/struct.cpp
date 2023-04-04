@@ -1,31 +1,23 @@
 #include "parka/ast/struct/struct.hpp"
+#include "parka/ast/identifier.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/ast/struct/member.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/print.hpp"
 
-Optional<EntityId> Struct::parse(Token& token, const String& package)
+Optional<EntityId> Struct::parse(Token& token)
 {
 	print("Parse struct");
 	
-	if (token.type() != TokenType::KeywordStruct)
-	{
-		printParseError(token, "`struct` keyword");
+	auto keyword = Keyword::parseStruct(token);
+
+	if (!keyword)
 		return {};
-	}
 
-	token.increment();
+	auto identifier = Identifier::parse(token);
 
-	if (token.type() != TokenType::Identifier)
-	{
-		printParseError(token, "struct name", "Anonymous structs are not allowed.");
+	if (!identifier)
 		return {};
-	}
-
-	auto name = token;
-	auto symbol = package + "::" + name.text();
-
-	token.increment();
 
 	if (token.type() != TokenType::LeftBrace)
 	{
@@ -67,13 +59,13 @@ Optional<EntityId> Struct::parse(Token& token, const String& package)
 
 	token.increment();
 
-	auto strct = Struct(name, std::move(symbol), std::move(members));
+	auto strct = Struct(identifier.unwrap(), std::move(members));
 	auto id = NodeBank::add(std::move(strct));
 
 	return id;
 }
 
-bool Struct::validate(LocalSymbolTable& symbols)
+bool Struct::validate(const EntityId& functionId)
 {
 	bool success = true;
 
@@ -96,7 +88,7 @@ bool Struct::validate(LocalSymbolTable& symbols)
 			}
 		}
 
-		if (member.validate(symbols))
+		if (member.validate(functionId))
 			success = false;
 
 		index += 1;

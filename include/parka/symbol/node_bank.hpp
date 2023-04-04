@@ -7,6 +7,7 @@
 #include "parka/symbol/entity_id.hpp"
 #include "parka/symbol/expression_id.hpp"
 #include "parka/symbol/statement_id.hpp"
+#include "parka/util/table.hpp"
 
 class Package;
 class Struct;
@@ -24,7 +25,7 @@ class BooleanOrExpression;
 class CallExpression;
 class ConditionalExpression;
 class EqualityExpression;
-class Identifier;
+class IdentifierExpression;
 class IfExpression;
 class IndexExpression;
 class MemberAccess;
@@ -43,6 +44,11 @@ class JumpStatement;
 
 struct NodeBank
 {
+	static const EntityId i32Id;
+	static const EntityId voidId;
+
+	static void initialize();
+
 	static EntityId add(Package&& value);
 	static EntityId add(Struct&& value);
 	static EntityId add(Function&& value);
@@ -60,7 +66,7 @@ struct NodeBank
 	static ExpressionId add(CallExpression&& value);
 	static ExpressionId add(ConditionalExpression&& value);
 	static ExpressionId add(EqualityExpression&& value);
-	static ExpressionId add(Identifier&& value);
+	static ExpressionId add(IdentifierExpression&& value);
 	static ExpressionId add(IfExpression&& value);
 	static ExpressionId add(IndexExpression&& value);
 	static ExpressionId add(MemberAccess&& value);
@@ -91,9 +97,12 @@ struct NodeBank
 	static Variable& getVariable(EntityId id);
 	static Parameter& getParameter(EntityId id);
 
-	static void initialize();
+	static EntityId getId(Function& value);
+	static EntityId getId(Package& value);
+	
 	static void declarePrimitives(Table<String, EntityId>& globalSymbols);
 	static usize getGlobalCount();
+	static usize getPackageCount();
 };
 
 #endif

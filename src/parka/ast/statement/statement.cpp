@@ -1,4 +1,5 @@
 #include "parka/ast/statement/statement.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/ast/statement/declaration.hpp"
 #include "parka/ast/statement/expression.hpp"
 #include "parka/ast/statement/jump.hpp"
@@ -7,15 +8,17 @@
 
 Optional<StatementId> Statement::parse(Token& token)
 {
-	switch (token.type())
+	auto keywordType = Keyword::getKeywordType(token);
+
+	switch (keywordType)
 	{
-		case TokenType::KeywordVar:
+		case KeywordType::Var:
 			return Declaration::parse(token);
 
-		case TokenType::KeywordReturn:
-		case TokenType::KeywordBreak:
-		case TokenType::KeywordContinue:
-		case TokenType::KeywordYield:
+		case KeywordType::Return:
+		case KeywordType::Break:
+		case KeywordType::Continue:
+		case KeywordType::Yield:
 			return JumpStatement::parse(token);
 
 		default:
@@ -25,7 +28,7 @@ Optional<StatementId> Statement::parse(Token& token)
 	return ExpressionStatement::parse(token);
 }
 
-bool Statement::validate(LocalSymbolTable& symbols)
+bool Statement::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 

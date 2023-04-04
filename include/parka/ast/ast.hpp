@@ -8,10 +8,10 @@
 
 class Ast
 {
-	Array<EntityId> _packageIds;
+	EntityId _globalPackageId;
 
-	Ast(Array<EntityId>&& packageIds) :
-	_packageIds(std::move(packageIds))
+	Ast(const EntityId& globalPackageId) :
+	_globalPackageId(globalPackageId)
 	{}
 
 public:

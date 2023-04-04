@@ -1,19 +1,13 @@
+#include "parka/ast/ast.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/token.hpp"
+#include "parka/util/file.hpp"
+#include "parka/util/path.hpp"
+#include "parka/util/print.hpp"
 #include "parka/util/string.hpp"
 #include "parka/util/table.hpp"
-#include "parka/ast/ast.hpp"
-
-#include "parka/util/path.hpp"
-#include "parka/util/file.hpp"
-#include "parka/util/print.hpp"
 #include "parka/util/timer.hpp"
-
-#include <iostream>
-#include <limits>
-#include <locale>
-#include <stdexcept>
 
 void printErrorCount(Project& project)
 {

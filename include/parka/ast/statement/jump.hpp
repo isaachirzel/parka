@@ -7,12 +7,12 @@
 #include "parka/token.hpp"
 #include "parka/util/optional.hpp"
 
-enum JumpType
+enum class JumpType
 {
-	JUMP_CONTINUE,
-	JUMP_BREAK,
-	JUMP_RETURN,
-	JUMP_YIELD
+	Continue,
+	Break,
+	Return,
+	Yield
 };
 
 class JumpStatement : public Statement
@@ -35,7 +35,7 @@ public:
 
 	static Optional<StatementId> parse(Token& token);
 
-	bool validate(LocalSymbolTable& symbols);
+	bool validate(const EntityId& functionId);
 
 	const auto& token() const { return _token; }
 	bool hasValue() const { return _value; }

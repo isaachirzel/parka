@@ -36,7 +36,7 @@ namespace std
 	template <>
 	struct hash<OperatorKey>
 	{
-		usize operator()(const OperatorKey& key) const;
+		usize operator()(const OperatorKey& key) const { return hash64(key); }
 	};
 }
 

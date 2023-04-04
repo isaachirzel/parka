@@ -52,12 +52,12 @@ Optional<ExpressionId> IntegerLiteral::parse(Token& token)
 	return id;
 }
 
-bool IntegerLiteral::validate(LocalSymbolTable& symbols)
+bool IntegerLiteral::validate(const EntityId&)
 {
 	return true;
 }
 
-Optional<Type> IntegerLiteral::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> IntegerLiteral::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

@@ -2,51 +2,45 @@
 #include "parka/ast/struct/member.hpp"
 #include "parka/ast/package.hpp"
 #include "parka/ast/struct/struct.hpp"
+#include "parka/symbol/entity.hpp"
 #include "parka/symbol/entity_id.hpp"
-#include "parka/symbol/global_symbol_table.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/path.hpp"
 #include "parka/util/print.hpp"
 
-String getSymbolFromPath(const String& pathText)
+const Member *getRecursiveMember(const Array<Member>&, EntityId /*parentId*/)
 {
-	auto path = path::toAbsolute(pathText);
-	print("Path: $", path);
 	exitNotImplemented(here());
-}
+	// for (const auto& member : members)
+	// {
+	// 	// TODO: Check if types are referencing the base type or an indirection to it
+	// 	const auto& type = member.annotation().type();
+	// 	auto& entity = NodeBank::get(type.entityId());
 
-const Member *getRecursiveMember(const Array<Member>& members, const String& parentSymbol)
-{
-	for (const auto& member : members)
-	{
-		// TODO: Check if types are referencing the base type or an indirection to it
-		const auto& type = member.annotation().type();
-		auto& entity = NodeBank::get(type.entityId());
+	// 	if (entity.type() != EntityType::Struct)
+	// 		continue;
 
-		if (entity.type() != EntityType::Struct)
-			continue;
+	// 	auto& strct = (Struct&)entity;
 
-		auto& strct = (Struct&)entity;
+	// 	if (parentSymbol == strct.identifier())
+	// 		return &member;
 
-		if (parentSymbol == strct.symbol())
-			return &member;
+	// 	auto recursiveMember = getRecursiveMember(strct.members(), parentSymbol);
 
-		auto recursiveMember = getRecursiveMember(strct.members(), parentSymbol);
-
-		if (recursiveMember)
-			return recursiveMember;
-	}
+	// 	if (recursiveMember)
+	// 		return recursiveMember;
+	// }
 	
-	return nullptr;
+	// return nullptr;
 }
 
 bool validateStructRecursion(EntityId structId)
 {
 	auto& strct = NodeBank::getStruct(structId);
 
-	const Member *recursiveMember = getRecursiveMember(strct.members(), strct.symbol());
+	const Member *recursiveMember = getRecursiveMember(strct.members(), structId);
 
 	if (recursiveMember)
 	{
@@ -57,47 +51,14 @@ bool validateStructRecursion(EntityId structId)
 	return true;
 }
 
-Optional<Array<EntityId>> parseDirectory(const Directory& directory, String&& symbol)
-{
-	auto success = true;
-	auto packageIds = Array<EntityId>();
-
-	for (const auto& subdirectory : directory.subdirectories())
-	{
-		auto subdirectorySymbol = symbol + "::" + subdirectory.name();
-		auto subPackageIds = parseDirectory(subdirectory, std::move(subdirectorySymbol));
-
-		if (!subPackageIds)
-		{
-			success = false;
-			continue;
-		}
-
-		auto value = subPackageIds.unwrap();
-
-		packageIds.concat(value);
-	}
-
-	auto package = Package::parse(directory.files(), std::move(symbol));
-
-	if (!package || !success)
-		return {};
-
-	auto id = NodeBank::add(package.unwrap());
-
-	packageIds.push(std::move(id));
-
-	return packageIds;
-}
-
 Optional<Ast> Ast::parse(const Project& project)
 {
-	auto packageIds = parseDirectory(project.srcDirectory(), String(project.name()));
+	auto globalPackageId = Package::parse(project);
 	
-	if (!packageIds)
+	if (!globalPackageId)
 		return {};
 
-	auto ast = Ast(packageIds.unwrap());
+	auto ast = Ast(globalPackageId.unwrap());
 
 	return ast;
 }
@@ -105,27 +66,13 @@ Optional<Ast> Ast::parse(const Project& project)
 bool Ast::validate()
 {
 	auto success = true;
-	auto globalSymbols = GlobalSymbolTable();
+	auto& globalPackage = NodeBank::getPackage(_globalPackageId);
 
-	// Declare packages
-	for (auto packageId : _packageIds)
-	{
-		globalSymbols.declare(packageId);
-
-		auto& package = NodeBank::getPackage(packageId);
-
-		if (!package.declare(globalSymbols))
-			success = false;
-	}
-
-	// Validate packages
-	for (const auto& packageId : _packageIds)
-	{
-		auto& package = NodeBank::getPackage(packageId);
-
-		if (!package.validate(globalSymbols))
-			success = false;
-	}
+	if (!globalPackage.declare())
+		success = false;
+	
+	if (!globalPackage.validate())
+		success = false;
 
 	// TODO: Validate struct recursion
 

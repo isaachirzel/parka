@@ -12,11 +12,6 @@ u64 hash64(const OperatorKey& key)
 	return hash;
 }
 
-usize std::hash<OperatorKey>::operator()(const OperatorKey& key) const
-{
-	return hash64(key);
-}
-
 bool operator==(const OperatorKey& left, const OperatorKey& right)
 {
 	return left._operatorType == right._operatorType

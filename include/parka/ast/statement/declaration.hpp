@@ -25,7 +25,7 @@ public:
 
 	static Optional<StatementId> parse(Token& token);
 
-	bool validate(LocalSymbolTable& symbols);
+	bool validate(const EntityId& functionId);
 
 	const auto& variableId() const { return _variableId; }
 	const auto& value() const { return _value; }

@@ -35,6 +35,8 @@ public:
 		return index;
 	}
 
+	usize getIndex(T *ptr) const { return _arena.getOffset(ptr) / sizeof(T); }
+
 	T& operator[](usize index) { assert(index < _itemCount); return ((T*)_arena.data())[index]; }
 	const T& operator[](usize index) const { assert(index < _itemCount); return ((T*)_arena.data())[index]; }
 

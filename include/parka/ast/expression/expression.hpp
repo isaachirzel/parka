@@ -6,7 +6,6 @@
 #include "parka/ast/type/type.hpp"
 #include "parka/util/optional.hpp"
 #include "parka/util/ref.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
 
 struct Expression
 {
@@ -14,8 +13,8 @@ struct Expression
 
 	virtual ~Expression() {}
 
-	virtual bool validate(LocalSymbolTable& symbols) = 0;
-	virtual Optional<Type> getType(const LocalSymbolTable& symbolTable, Ref<Type> expected = {}) const = 0;
+	virtual bool validate(const EntityId& functionId) = 0;
+	virtual Optional<Type> getType(Ref<Type> expected = {}) const = 0;
 };
 
 #endif

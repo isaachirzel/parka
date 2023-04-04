@@ -1,6 +1,7 @@
 #include "parka/ast/expression/conditional.hpp"
 #include "parka/ast/expression/boolean_or.hpp"
 #include "parka/ast/expression/expression.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/print.hpp"
@@ -8,8 +9,9 @@
 Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 {
 	auto condition = BooleanOrExpression::parse(token);
+	auto keyword = Keyword::getKeywordType(token);
 
-	if (token.type() != TokenType::KeywordThen)
+	if (keyword != KeywordType::Then)
 		return condition;
 
 	token.increment();
@@ -19,7 +21,9 @@ Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 	if (!trueCase)
 		return {};
 
-	if (token.type() != TokenType::KeywordElse)
+	keyword = Keyword::getKeywordType(token);
+
+	if (keyword != KeywordType::Else)
 	{
 		printError(token, "else case for conditional expression");
 		return {};
@@ -38,12 +42,12 @@ Optional<ExpressionId> ConditionalExpression::parse(Token& token)
 	return id;
 }
 
-bool ConditionalExpression::validate(LocalSymbolTable& symbols)
+bool ConditionalExpression::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> ConditionalExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> ConditionalExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

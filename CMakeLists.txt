@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.16)
 project("parka")
 
 set(MAIN_PROGRAM "parka")
@@ -41,4 +41,19 @@ foreach(TARGET ${TARGETS})
 	target_compile_features(${TARGET} PRIVATE cxx_std_17)
 	set_target_properties(${TARGET} PROPERTIES CXX_STANDARD 17)
 	target_include_directories(${TARGET} PRIVATE ${INCLUDE_DIRS})
+	target_precompile_headers(${TARGET} PRIVATE
+		"<iostream>"
+		"<stdexcept>"
+		"<utility>"
+		"<ostream>"
+		"<cassert>"
+		"<type_traits>"
+		"<cstdlib>"
+		"<cstddef>"
+		"<chrono>"
+		"<filesystem>"
+		"<exception>"
+		"<new>"
+		"<filesystem>"
+	)
 endforeach()

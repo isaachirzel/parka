@@ -28,12 +28,12 @@ Optional<ExpressionId> BitwiseXorExpression::parse(Token& token)
 	return lhs;
 }
 
-bool BitwiseXorExpression::validate(LocalSymbolTable& symbols)
+bool BitwiseXorExpression::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> BitwiseXorExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> BitwiseXorExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

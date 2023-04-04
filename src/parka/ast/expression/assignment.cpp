@@ -72,14 +72,14 @@ Optional<ExpressionId> Assignment::parse(Token& token)
 	return id;
 }
 
-bool Assignment::validate(LocalSymbolTable& symbols)
+bool Assignment::validate(const EntityId& functionId)
 {
 	bool success = true;
 
-	if (!NodeBank::get(_lhs).validate(symbols))
+	if (!NodeBank::get(_lhs).validate(functionId))
 		success = false;
 
-	if (!NodeBank::get(_rhs).validate(symbols))
+	if (!NodeBank::get(_rhs).validate(functionId))
 		success = false;
 
 	// TODO: validate type of assignment
@@ -87,7 +87,7 @@ bool Assignment::validate(LocalSymbolTable& symbols)
 	return success;
 }
 
-Optional<Type> Assignment::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> Assignment::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

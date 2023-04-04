@@ -1,18 +1,21 @@
 #include "parka/ast/struct/member.hpp"
 
+#include "parka/ast/keyword.hpp"
 #include "parka/ast/type/type_annotation.hpp"
 
 #include "parka/util/print.hpp"
 
 bool parsePublicity(Token& token)
 {
-	if (token.type() == TokenType::KeywordPublic)
+	auto keywordType = Keyword::getKeywordType(token);
+
+	if (keywordType == KeywordType::Public)
 	{
 		token.increment();
 		return true;
 	}
 
-	if (token.type() == TokenType::KeywordPrivate)
+	if (keywordType == KeywordType::Private)
 		token.increment();
 	
 	return false;
@@ -50,7 +53,7 @@ Optional<Member> Member::parse(Token& token)
 	return member;
 }
 
-bool Member::validate(LocalSymbolTable& symbols)
+bool Member::validate(const EntityId& functionId)
 {
-	return _annotation.validate(symbols);
+	return _annotation.validate(functionId);
 }

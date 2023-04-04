@@ -1,6 +1,6 @@
 #include "parka/token.hpp"
-
 #include "parka/util/print.hpp"
+#include "parka/util/table.hpp"
 
 #include <cstring>
 
@@ -58,7 +58,7 @@ usize getNextPos(const File& file, usize pos)
 	return file.length();
 }
 
-inline bool isIdentifierChar(char c)
+inline bool isIdentifierExpressionChar(char c)
 {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
@@ -66,173 +66,6 @@ inline bool isIdentifierChar(char c)
 inline bool isDigitChar(char c)
 {
 	return (c >= '0' && c <= '9');
-}
-
-TokenType getIdentifierType(const char *text)
-{
-	switch (text[0])
-	{
-		case 'b':
-			if (!strcmp(text + 1, "reak"))
-				return TokenType::KeywordBreak;
-			break;
-
-		case 'c':
-			if (text[1] == 'a')
-			{
-				if (!strcmp(text + 2, "se"))
-					return TokenType::KeywordCase;
-			}
-			else if (text[1] == 'o')
-			{
-				if (!strcmp(text + 2, "ntinue"))
-					return TokenType::KeywordContinue;
-			}
-			break;
-
-		case 'e':
-			switch (text[1])
-			{
-				case 'l':
-					if (!strcmp(text + 2, "se"))
-						return TokenType::KeywordElse;
-					break;
-
-				case 'n':
-					if (!strcmp(text + 2, "um"))
-						return TokenType::KeywordEnum;
-					break;
-
-				case 'x':
-					if (!strcmp(text + 2, "port"))
-						return TokenType::KeywordExport;
-					break;
-
-				default:
-					return TokenType::Identifier;
-			}
-			break;
-
-		case 'f':
-			switch (text[1])
-			{
-				case 'a':
-					if (!strcmp(text + 2, "lse"))
-						return TokenType::KeywordFalse;
-					break;
-					
-				case 'o':
-					if (text[2] == 'r' && text[3] == '\0')
-						return TokenType::KeywordFor;
-					break;
-
-				case 'u':
-					if (!strcmp(text + 2, "nction"))
-						return TokenType::KeywordFunction;
-					break;
-
-				default:
-					return TokenType::Identifier;
-			}
-			break;
-
-		case 'i':
-			if (text[1] == 'f')
-			{
-				if (text[2] == '\0')
-					return TokenType::KeywordIf;
-			}
-			else if (text[1] == 'm')
-			{
-				if (!strcmp(text + 2, "port"))
-					return TokenType::KeywordImport;
-			}
-			break;
-
-		case 'l':
-			if (!strcmp(text + 1, "oop"))
-				return TokenType::KeywordLoop;
-			break;
-
-		case 'm':
-			if (text[1] == 'a')
-			{
-				if (!strcmp(text + 2, "tch"))
-					return TokenType::KeywordMatch;
-			}
-			else if (text[1] == 'u')
-			{
-				if (!strcmp(text + 2, "t"))
-					return TokenType::KeywordMut;
-			}
-			break;
-
-		case 'p':
-			if (text[1] == 'r')
-			{
-				if (!strcmp(text + 2, "ivate"))
-					return TokenType::KeywordPrivate;
-			}
-			else if (text[1] == 'u')
-			{
-				if (!strcmp(text + 2, "blic"))
-					return TokenType::KeywordPublic;
-			}
-			break;
-
-		case 'r':
-			if (!strcmp(text + 1, "eturn"))
-				return TokenType::KeywordReturn;
-			break;
-
-		case 's':
-			if (!strcmp(text + 1, "truct"))
-				return TokenType::KeywordStruct;
-			break;
-
-		case 't':
-			switch (text[1])
-			{
-				case 'h':
-					if (!strcmp(text + 2, "en"))
-						return TokenType::KeywordThen;
-					break;
-
-				case 'r':
-					if (!strcmp(text + 2, "ue"))
-						return TokenType::KeywordTrue;
-					break;
-
-				case 'y':
-					if (!strcmp(text + 2, "pe"))
-						return TokenType::KeywordType;
-					break;
-
-				default:
-					break;
-			}
-			break;
-
-		case 'u':
-			if (!strcmp(text + 1, "nion"))
-				return TokenType::KeywordUnion;
-			break;
-
-		case 'v':
-			if (!strcmp(text + 1, "ar"))
-				return TokenType::KeywordVar;
-			break;
-
-		case 'w':
-			if (!strcmp(text + 1, "hile"))
-				return TokenType::KeywordWhile;
-			break;
-			
-		default:
-			break;
-	}
-
-	return TokenType::Identifier;
 }
 
 TokenType getQuoteType(char terminal)
@@ -286,24 +119,23 @@ Token getQuoteToken(const File& file, const usize startPos)
 	return token;
 }
 
-Token getIdentifierToken(const File& file, const usize startPos)
+Token getIdentifierExpressionToken(const File& file, const usize startPos)
 {
-	usize pos = startPos + 1;
+	usize i = startPos + 1;
 
-	while (isIdentifierChar(file[pos]) || isDigitChar(file[pos]))
-		pos += 1;
+	while (true)
+	{
+		char c = file[i];
 
-	usize length = pos - startPos;
-	
-	// TODO: Make sure okay size
-	char tmpKey[512];
+		if (!isIdentifierExpressionChar(c) && isDigitChar(c))
+			break;
 
-	strncpy(tmpKey, &file[startPos], length);
-	tmpKey[length] = '\0';
+		i += 1;
+	}
 
-	TokenType type = getIdentifierType(tmpKey);
+	auto length = i - startPos;
 
-	return Token(file, startPos, length, type);
+	return Token(file, startPos, length, TokenType::Identifier);
 }
 
 Token getDigitToken(const File& file, const usize startPos)
@@ -371,7 +203,7 @@ Token getNextToken(const File& file, usize startPos)
 		case 'x': case 'X':
 		case 'y': case 'Y':
 		case 'z': case 'Z':
-			return getIdentifierToken(file, startPos);
+			return getIdentifierExpressionToken(file, startPos);
 
 		case '0':
 		case '1':
@@ -652,33 +484,6 @@ String Token::category() const
 		case TokenType::StringLiteral:
 			return "string literal";
 
-		case TokenType::KeywordBreak:
-		case TokenType::KeywordCase:
-		case TokenType::KeywordContinue:
-		case TokenType::KeywordElse:
-		case TokenType::KeywordEnum:
-		case TokenType::KeywordExport:
-		case TokenType::KeywordFalse:
-		case TokenType::KeywordFor:
-		case TokenType::KeywordFunction:
-		case TokenType::KeywordOperator:
-		case TokenType::KeywordIf:
-		case TokenType::KeywordImport:
-		case TokenType::KeywordLoop:
-		case TokenType::KeywordMatch:
-		case TokenType::KeywordMut:
-		case TokenType::KeywordPrivate:
-		case TokenType::KeywordPublic:
-		case TokenType::KeywordReturn:
-		case TokenType::KeywordStruct:
-		case TokenType::KeywordThen:
-		case TokenType::KeywordTrue:
-		case TokenType::KeywordType:
-		case TokenType::KeywordUnion:
-		case TokenType::KeywordVar:
-		case TokenType::KeywordWhile:
-			return "keyword";
-
 		default:
 			exitWithError("Invalid TokenType: $", _type);
 	}
@@ -690,7 +495,7 @@ const char *getTokenTypeText(TokenType type)
 	{
 		case TokenType::EndOfFile: return "EOF";
 		case TokenType::Compound: return "Compound Token";
-		case TokenType::Identifier: return "Identifier";
+		case TokenType::Identifier: return "IdentifierExpression";
 		case TokenType::LeftParenthesis: return "(";
 		case TokenType::RightParenthesis: return ")";
 		case TokenType::LeftBracket: return "[";
@@ -746,32 +551,6 @@ const char *getTokenTypeText(TokenType type)
 		case TokenType::FloatLiteral: return "{float}";
 		case TokenType::CharacterLiteral: return "{char}";
 		case TokenType::StringLiteral: return "{string}";
-		case TokenType::KeywordBreak: return "`break`";
-		case TokenType::KeywordCase: return "`case`";
-		case TokenType::KeywordContinue: return "`continue`";
-		case TokenType::KeywordYield: return "`yield`";
-		case TokenType::KeywordElse: return "`else`";
-		case TokenType::KeywordEnum: return "`enum`";
-		case TokenType::KeywordExport: return "`export`";
-		case TokenType::KeywordFalse: return "`false`";
-		case TokenType::KeywordFor: return "`for`";
-		case TokenType::KeywordFunction: return "`function`";
-		case TokenType::KeywordOperator: return "`operator`";
-		case TokenType::KeywordIf: return "`if`";
-		case TokenType::KeywordImport: return "`import`";
-		case TokenType::KeywordLoop: return "`loop`";
-		case TokenType::KeywordMatch: return "`match`";
-		case TokenType::KeywordMut: return "`mut`";
-		case TokenType::KeywordPrivate: return "`private`";
-		case TokenType::KeywordPublic: return "`public`";
-		case TokenType::KeywordReturn: return "`return`";
-		case TokenType::KeywordStruct: return "`struct`";
-		case TokenType::KeywordThen: return "`then`";
-		case TokenType::KeywordTrue: return "`true`";
-		case TokenType::KeywordType: return "`type`";
-		case TokenType::KeywordUnion: return "`union`";
-		case TokenType::KeywordVar: return "`var`";
-		case TokenType::KeywordWhile: return "`while`";
 	}
 
 	exitWithError("Unable to get text for TokenType: $", (int)type);

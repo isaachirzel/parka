@@ -7,7 +7,6 @@
 #include <cassert>
 #include <cstring>
 #include <cstdlib>
-#include <climits>
 #include <filesystem>
 
 namespace path

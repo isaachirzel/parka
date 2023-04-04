@@ -2,7 +2,6 @@
 #define PARKA_AST_MODULE_HPP
 
 #include "parka/symbol/entity_id.hpp"
-#include "parka/symbol/global_symbol_table.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/file.hpp"
 #include "parka/util/optional.hpp"
@@ -26,10 +25,9 @@ public:
 	Module(const Module&) = delete;
 	~Module() = default;
 
-	static Optional<Module> parse(const File& file, const String& packageSymbol);
+	static Optional<Module> parse(const File& file);
 
-	bool declare(GlobalSymbolTable& globalSymbols);
-	bool validate(GlobalSymbolTable& globalSymbols, const String& packageSymbol);
+	bool validate(const EntityId& packageId);
 
 	const auto& symbol() const { return _symbol; }
 	const auto& functionIds() const { return _functionIds; }

@@ -1,5 +1,9 @@
 #include "parka/ast/function/prototype.hpp"
+#include "parka/ast/function/function.hpp"
 #include "parka/ast/function/parameter.hpp"
+#include "parka/ast/identifier.hpp"
+#include "parka/ast/keyword.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/array.hpp"
@@ -55,64 +59,55 @@ Optional<Array<EntityId>> parseParameterList(Token& token)
 
 Optional<Prototype> Prototype::parse(Token& token)
 {
-	if (token.type() != TokenType::KeywordFunction)
-	{
-		printParseError(token, "`function` keyword");
+	auto keyword = Keyword::parseFunction(token);
+
+	if (!keyword)
 		return {};
-	}
 
-	token.increment();
+	auto identifier = Identifier::parse(token);
 
-	if (token.type() != TokenType::Identifier)
-	{
-		printParseError(token, "function name");
+	if (!identifier)
 		return {};
-	}
-
-	auto name = token;
-
-	token.increment();
 
 	auto parameters = parseParameterList(token);
 	
 	if (!parameters)
 		return {};
 
-	if (token.type() != TokenType::SingleArrow)
+	auto returnType = Optional<TypeAnnotation>();
+
+	if (token.type() == TokenType::SingleArrow)
 	{
-		auto prototype = Prototype(name, parameters.unwrap());
+		token.increment();
+		
+		returnType = TypeAnnotation::parse(token);
 
-		return prototype;
+		if (!returnType)
+			return {};
 	}
-	
-	token.increment();
 
-	auto returnType = TypeAnnotation::parse(token);
-
-	if (!returnType)
-		return {};
-
-	auto prototype = Prototype(name, parameters.unwrap(), std::move(returnType));
+	auto prototype = Prototype(keyword.unwrap(), identifier.unwrap(), parameters.unwrap(), std::move(returnType));
 
 	return prototype;
 }
 
-bool Prototype::validate(LocalSymbolTable& symbols)
+bool Prototype::validate(const EntityId& functionId)
 {
 	auto success = true;
+	auto& function = NodeBank::getFunction(functionId);
 
 	for (auto parameterId : _parameterIds)
 	{
 		auto& parameter = NodeBank::getParameter(parameterId);
 
-		if (!parameter.validate(symbols))
+		if (!parameter.validate(functionId))
 			success = false;
 
-		if (!symbols.declare(parameterId))
+		if (!function.declare(parameterId))
 			success = false;
 	}
 
-	if (_returnType && !_returnType->validate(symbols))
+	if (_returnType && !_returnType->validate(functionId))
 		success = false;
 
 	return success;

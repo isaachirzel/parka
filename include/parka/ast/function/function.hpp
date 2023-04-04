@@ -2,9 +2,10 @@
 #define PARKA_AST_FUNCTION_HPP
 
 #include "parka/ast/function/prototype.hpp"
+#include "parka/ast/identifier.hpp"
+#include "parka/ast/qualified_identifier.hpp"
 #include "parka/symbol/entity.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
+#include "parka/symbol/entity_id.hpp"
 #include "parka/ast/type/type.hpp"
 #include "parka/ast/expression/expression.hpp"
 #include "parka/ast/type/type_annotation.hpp"
@@ -15,12 +16,14 @@
 
 class Function : public Entity
 {
-	String _symbol;
 	Prototype _prototype;
 	ExpressionId _body;
+	// Validation
+	Optional<EntityId> _packageId;
+	Array<EntityId> _localSymbols;
+	Array<usize> _blocks;
 
-	Function(String&& symbol, Prototype&& prototype, ExpressionId&& body) :
-	_symbol(std::move(symbol)),
+	Function(Prototype&& prototype, ExpressionId&& body) :
 	_prototype(std::move(prototype)),
 	_body(std::move(body))
 	{}
@@ -31,12 +34,18 @@ public:
 	Function(const Function&) = delete;
 	~Function() = default;
 
-	static Optional<EntityId> parse(Token& token, const String& package);
+	static Optional<EntityId> parse(Token& token);
 
-	bool validate(LocalSymbolTable& symbols);
+	bool declare(const EntityId& entityId);
+	bool validate(const EntityId& packageId);
+
+	void pushBlock();
+	void popBlock();
+
+	Optional<EntityId> resolve(const Identifier& identifier);
+	Optional<EntityId> resolve(const QualifiedIdentifier& identifier);
 	
-	Token token() const { return _prototype.name(); }
-	const String& symbol() const { return _symbol; }
+	const String& identifier() const { return _prototype.identifier().text(); }
 	EntityType type() const { return EntityType::Function; }
 	const auto& body() const { return _body; }
 	Type getReturnType() const;

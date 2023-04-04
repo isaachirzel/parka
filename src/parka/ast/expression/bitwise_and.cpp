@@ -31,12 +31,12 @@ Optional<ExpressionId> BitwiseAndExpression::parse(Token& token)
 	return lhs;
 }
 
-bool BitwiseAndExpression::validate(LocalSymbolTable& symbols)
+bool BitwiseAndExpression::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> BitwiseAndExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> BitwiseAndExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

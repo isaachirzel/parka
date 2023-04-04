@@ -24,7 +24,7 @@ Optional<StatementId> ExpressionStatement::parse(Token& token)
 	return id;
 }
 
-bool ExpressionStatement::validate(LocalSymbolTable& symbols)
+bool ExpressionStatement::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }

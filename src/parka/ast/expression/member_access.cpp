@@ -27,12 +27,12 @@ Optional<ExpressionId> MemberAccess::parse(Token& token, ExpressionId primary)
 	return id;
 }
 
-bool MemberAccess::validate(LocalSymbolTable& symbols)
+bool MemberAccess::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> MemberAccess::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> MemberAccess::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

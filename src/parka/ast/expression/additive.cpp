@@ -2,7 +2,6 @@
 #include "parka/ast/expression/multiplicative.hpp"
 #include "parka/ast/primitive.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/print.hpp"
 #include "parka/util/optional.hpp"
 
@@ -51,14 +50,14 @@ Optional<ExpressionId> AdditiveExpression::parse(Token& token)
 	return lhs;
 }
 
-bool AdditiveExpression::validate(LocalSymbolTable& symbols)
+bool AdditiveExpression::validate(const EntityId& functionId)
 {
 	auto success = true;
 
-	if (!NodeBank::get(_lhs).validate(symbols))
+	if (!NodeBank::get(_lhs).validate(functionId))
 		success = false;
 
-	if (!NodeBank::get(_rhs).validate(symbols))
+	if (!NodeBank::get(_rhs).validate(functionId))
 		success = false;
 
 	// TODO: Test type compatibility
@@ -66,13 +65,13 @@ bool AdditiveExpression::validate(LocalSymbolTable& symbols)
 	return success;
 }
 
-Optional<Type> getSignedIntegerType(const Primitive& left, const Primitive& right, const Type& expected)
+Optional<Type> getSignedIntegerType(const Primitive&, const Primitive& right, Ref<Type>)
 {
 	switch (right.primitiveType())
 	{
 		case PRIMITIVE_SIGNED_INTEGER:
 			// TODO: Actually check the bytes
-			return Type({ EntityType::Primitive, INDEX_I32 });
+			return Type(NodeBank::i32Id);
 
 		default:
 			break;
@@ -81,7 +80,7 @@ Optional<Type> getSignedIntegerType(const Primitive& left, const Primitive& righ
 	return {};
 }
 
-Optional<Type> getPrimitiveType(const Primitive& left, const Primitive& right, const Type& expected)
+Optional<Type> getPrimitiveType(const Primitive&, const Primitive&, Ref<Type>)
 {
 	exitNotImplemented(here());
 	// switch (left.type())
@@ -96,7 +95,7 @@ Optional<Type> getPrimitiveType(const Primitive& left, const Primitive& right, c
 	return {};
 }
 
-Optional<Type> AdditiveExpression::getType(const LocalSymbolTable& symbols, Ref<Type> expected) const
+Optional<Type> AdditiveExpression::getType(Ref<Type>) const
 {
 
 	exitNotImplemented(here());

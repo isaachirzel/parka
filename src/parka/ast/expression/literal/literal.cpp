@@ -22,8 +22,7 @@ Optional<ExpressionId> Literal::parse(Token& token)
 		case TokenType::FloatLiteral:
 			return FloatLiteral::parse(token);
 
-		case TokenType::KeywordTrue:
-		case TokenType::KeywordFalse:
+		case TokenType::Identifier:
 			return BoolLiteral::parse(token);
 
 		default:

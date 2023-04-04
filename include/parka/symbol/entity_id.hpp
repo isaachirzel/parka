@@ -19,15 +19,13 @@ class EntityId
 	usize _index;
 	EntityType _type;
 
-public:
-
-	EntityId() :
-	EntityId(EntityType::Package, SIZE_MAX)
-	{}
 	EntityId(EntityType type, usize index) :
 	_index(index),
 	_type(type)
 	{}
+
+public:
+
 	EntityId(EntityId&&) = default;
 	EntityId(const EntityId&) = default;
 	~EntityId() = default;
@@ -39,6 +37,8 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& out, const EntityId& id);
 	bool operator==(const EntityId& other) const;
+
+	friend struct NodeBank;
 };
 
 std::ostream& operator<<(std::ostream& out, const EntityType& type);

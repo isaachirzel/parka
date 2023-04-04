@@ -1,4 +1,5 @@
 #include "parka/ast/expression/expression.hpp"
+#include "parka/ast/function/function.hpp"
 #include "parka/ast/module.hpp"
 #include "parka/ast/statement/declaration.hpp"
 #include "parka/ast/function/variable.hpp"
@@ -39,20 +40,21 @@ Optional<StatementId> Declaration::parse(Token& token)
 	return id;
 }
 
-bool Declaration::validate(LocalSymbolTable& symbols)
+bool Declaration::validate(const EntityId& functionId)
 {
 	auto success = true;
+	auto& function = NodeBank::getFunction(functionId);
 	auto& variable = NodeBank::getVariable(_variableId);
-
-	if (!variable.validate(symbols))
+	
+	if (!variable.validate(functionId))
 		success = false;
 
-	if (!symbols.declare(_variableId))
+	if (!function.declare(_variableId))
 		success = false;
 
 	auto& value = NodeBank::get(_value);
 
-	if (!value.validate(symbols))
+	if (!value.validate(functionId))
 		success = false;
 
 	// TODO: Validate type conversion

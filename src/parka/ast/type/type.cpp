@@ -5,17 +5,16 @@
 #include "parka/ast/primitive.hpp"
 #include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/print.hpp"
 
-const Type voidType = Type({ EntityType::Primitive, INDEX_VOID });
-const Type i32Type = Type({ EntityType::Primitive, INDEX_I32 });
+const Type Type::voidType = Type(NodeBank::voidId);
+const Type Type::i32Type = Type(NodeBank::i32Id);
 
 String Type::getName() const
 {
 	auto& entity = NodeBank::get(_entityId);
 
-	return entity.symbol();
+	return entity.identifier();
 }
 
 bool Type::canConvertTo(const Type& to)

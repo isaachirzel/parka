@@ -1,6 +1,7 @@
 #include "parka/ast/statement/jump.hpp"
 #include "parka/ast/expression/block.hpp"
 #include "parka/ast/expression/expression.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/statement_id.hpp"
 #include "parka/util/optional.hpp"
@@ -8,22 +9,24 @@
 
 Optional<JumpType> getJumpType(Token& token)
 {
-	switch (token.type())
+	auto keywordType = Keyword::getKeywordType(token);
+
+	switch (keywordType)
 	{
-		case TokenType::KeywordReturn:
-			return JUMP_RETURN;
+		case KeywordType::Return:
+			return JumpType::Return;
 
-		case TokenType::KeywordBreak:
-			return JUMP_BREAK;
+		case KeywordType::Break:
+			return JumpType::Break;
 
-		case TokenType::KeywordContinue:
-			return JUMP_CONTINUE;
+		case KeywordType::Continue:
+			return JumpType::Continue;
 
-		case TokenType::KeywordYield:
-			return JUMP_YIELD;
+		case KeywordType::Yield:
+			return JumpType::Yield;
 
 		default:
-			printParseError(token, "return, break, continue or yield");
+			printParseError(token, "`return`, `break`, `continue` or `yield`");
 			return {};
 	}
 }
@@ -45,12 +48,12 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 	{
 		switch (*type)
 		{
-			case JUMP_CONTINUE:
+			case JumpType::Continue:
 				// TODO: Implement continuing on labels
 				printError(token, "Continue statements cannot have a value.");
 				return {};
 			
-			case JUMP_BREAK:
+			case JumpType::Break:
 				printError(token, "Break statements cannot have a value.");
 				return {};
 
@@ -161,7 +164,7 @@ Optional<StatementId> JumpStatement::parse(Token& token)
 // 	return true;
 // }
 
-bool JumpStatement::validate(LocalSymbolTable& symbols)
+bool JumpStatement::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 	// switch (node->type)

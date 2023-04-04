@@ -11,7 +11,7 @@
 #include "parka/ast/expression/call.hpp"
 #include "parka/ast/expression/conditional.hpp"
 #include "parka/ast/expression/equality.hpp"
-#include "parka/ast/expression/identifier.hpp"
+#include "parka/ast/expression/identifier_expression.hpp"
 #include "parka/ast/expression/if.hpp"
 #include "parka/ast/expression/index.hpp"
 #include "parka/ast/expression/literal/bool.hpp"
@@ -34,7 +34,6 @@
 #include "parka/ast/struct/struct.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/symbol/expression_id.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
 #include "parka/util/array.hpp"
 #include "parka/ast/primitive.hpp"
 #include "parka/util/pool.hpp"
@@ -57,7 +56,7 @@ Pool<BooleanOrExpression> _booleanOrExpressions(100'000'000);
 Pool<CallExpression> _callExpressions(100'000'000);
 Pool<ConditionalExpression> _conditionalExpressions(100'000'000);
 Pool<EqualityExpression> _equalityExpressions(100'000'000);
-Pool<Identifier> _identifierExpressions(100'000'000);
+Pool<IdentifierExpression> _identifierExpressions(100'000'000);
 Pool<IfExpression> _ifExpressions(100'000'000);
 Pool<IndexExpression> _subscriptExpressions(100'000'000);
 Pool<MemberAccess> _memberAccessExpressions(100'000'000);
@@ -73,6 +72,27 @@ Pool<CharLiteral> _charLiterals(1'000'000);
 Pool<FloatLiteral> _floatLiterals(1'000'000);
 Pool<IntegerLiteral> _integerLiterals(1'000'000);
 Pool<StringLiteral> _stringLiterals(1'000'000);
+
+const EntityId NodeBank::voidId(EntityType::Primitive, 0);
+const EntityId NodeBank::i32Id(EntityType::Primitive, 7);
+
+void NodeBank::initialize()
+{
+	_primitives.push({ "void", PRIMITIVE_VOID, 0 });
+	_primitives.push({ "u8", PRIMITIVE_UNSIGNED_INTEGER, 1 });
+	_primitives.push({ "u16", PRIMITIVE_UNSIGNED_INTEGER, 2 });
+	_primitives.push({ "u32", PRIMITIVE_UNSIGNED_INTEGER, 4 });
+	_primitives.push({ "u64", PRIMITIVE_UNSIGNED_INTEGER, 8 });
+	_primitives.push({ "i8", PRIMITIVE_SIGNED_INTEGER, 1 });
+	_primitives.push({ "i16", PRIMITIVE_SIGNED_INTEGER, 2 });
+	_primitives.push({ "i32", PRIMITIVE_SIGNED_INTEGER, 4 });
+	_primitives.push({ "i64", PRIMITIVE_SIGNED_INTEGER, 8 });
+	_primitives.push({ "f32", PRIMITIVE_FLOATING_POINT, 4 });
+	_primitives.push({ "f64", PRIMITIVE_FLOATING_POINT, 8 });
+	_primitives.push({ "bool", PRIMITIVE_BOOLEAN, 1 });
+	_primitives.push({ "char", PRIMITIVE_CHARACTER, 1 });
+	_primitives.push({ "string", PRIMITIVE_STRING, 0 });
+}
 
 EntityId NodeBank::add(Package&& value)
 {
@@ -186,11 +206,11 @@ ExpressionId NodeBank::add(EqualityExpression&& value)
 	return ExpressionId(ExpressionType::Equality, index);
 }
 
-ExpressionId NodeBank::add(Identifier&& value)
+ExpressionId NodeBank::add(IdentifierExpression&& value)
 {
 	auto index = _identifierExpressions.add(std::move(value));
 
-	return ExpressionId(ExpressionType::Identifier, index);
+	return ExpressionId(ExpressionType::IdentifierExpression, index);
 }
 
 ExpressionId NodeBank::add(IfExpression&& value)
@@ -364,7 +384,7 @@ Expression& NodeBank::get(ExpressionId id)
 		case ExpressionType::Equality:
 			return _equalityExpressions[id.index()];
 
-		case ExpressionType::Identifier:
+		case ExpressionType::IdentifierExpression:
 			return _identifierExpressions[id.index()];
 
 		case ExpressionType::If:
@@ -467,22 +487,20 @@ Parameter& NodeBank::getParameter(EntityId id)
 	return _parameters[id.index()];
 }
 
-void NodeBank::initialize()
+EntityId NodeBank::getId(Function& value)
 {
-	_primitives.push({ "void", PRIMITIVE_VOID, 0 });
-	_primitives.push({ "u8", PRIMITIVE_UNSIGNED_INTEGER, 1 });
-	_primitives.push({ "u16", PRIMITIVE_UNSIGNED_INTEGER, 2 });
-	_primitives.push({ "u32", PRIMITIVE_UNSIGNED_INTEGER, 4 });
-	_primitives.push({ "u64", PRIMITIVE_UNSIGNED_INTEGER, 8 });
-	_primitives.push({ "i8", PRIMITIVE_SIGNED_INTEGER, 1 });
-	_primitives.push({ "i16", PRIMITIVE_SIGNED_INTEGER, 2 });
-	_primitives.push({ "i32", PRIMITIVE_SIGNED_INTEGER, 4 });
-	_primitives.push({ "i64", PRIMITIVE_SIGNED_INTEGER, 8 });
-	_primitives.push({ "f32", PRIMITIVE_FLOATING_POINT, 4 });
-	_primitives.push({ "f64", PRIMITIVE_FLOATING_POINT, 8 });
-	_primitives.push({ "bool", PRIMITIVE_BOOLEAN, 1 });
-	_primitives.push({ "char", PRIMITIVE_CHARACTER, 1 });
-	_primitives.push({ "string", PRIMITIVE_STRING, 0 });
+	auto index = _functions.getIndex(&value);
+	auto id = EntityId(EntityType::Function, index);
+
+	return id;
+}
+
+EntityId NodeBank::getId(Package& value)
+{
+	auto index = _packages.getIndex(&value);
+	auto id = EntityId(EntityType::Package, index);
+
+	return id;
 }
 
 void NodeBank::declarePrimitives(Table<String, EntityId>& globalSymbols)
@@ -491,7 +509,7 @@ void NodeBank::declarePrimitives(Table<String, EntityId>& globalSymbols)
 
 	for (const auto& primitive: _primitives)
 	{
-		globalSymbols.emplace(primitive.symbol(), EntityId { EntityType::Primitive, index });
+		globalSymbols.emplace(primitive.identifier(), EntityId { EntityType::Primitive, index });
 		
 		index += 1;
 	}

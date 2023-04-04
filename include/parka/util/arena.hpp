@@ -18,6 +18,7 @@ public:
 	~Arena();
 
 	void *allocate(usize bytes);
+	usize getOffset(void *ptr) const;
 
 	auto *data() { return _data; }
 	const auto *data() const { return _data; }

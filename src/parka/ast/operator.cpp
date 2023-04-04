@@ -1,17 +1,18 @@
 #include "parka/ast/operator/operator.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/util/print.hpp"
 
 Optional<Operator> parse(Token& token)
 {
-	if (token.type() != TokenType::KeywordOperator)
-	{
-		printParseError(token, "`operator`");
-	}
+	auto keyword = Keyword::parseOperator(token);
+
+	if (!keyword)
+		return {};
 
 	exitNotImplemented(here());
 }
 
-bool validate(LocalSymbolTable& symbols)
+bool validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }

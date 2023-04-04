@@ -1,4 +1,6 @@
 #include "parka/ast/function/variable.hpp"
+#include "parka/ast/identifier.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
@@ -6,23 +8,15 @@
 Optional<EntityId> Variable::parse(Token& token)
 {
 	// TODO: Variable mutability
-	if (token.type() != TokenType::KeywordVar)
-	{
-		printParseError(token, "`var` keyword");
+	auto keyword = Keyword::parseVar(token);
+
+	if (!keyword)
+		return {};	
+	
+	auto identifier = Identifier::parse(token);
+
+	if (!identifier)
 		return {};
-	}
-
-	token.increment();
-
-	if (token.type() != TokenType::Identifier)
-	{
-		printParseError(token, "variable name");
-		return {};
-	}
-
-	auto name = token;
-
-	token.increment();
 
 	Optional<TypeAnnotation> annotation;
 
@@ -36,16 +30,16 @@ Optional<EntityId> Variable::parse(Token& token)
 			return {};
 	}
 
-	auto variable = Variable(name, false, std::move(annotation));
+	auto variable = Variable(identifier.unwrap(), false, std::move(annotation));
 	auto id = NodeBank::add(std::move(variable));
 
 	return id;
 }
 
-bool Variable::validate(LocalSymbolTable& symbols)
+bool Variable::validate(const EntityId& functionId)
 {
 	auto success = true;
-	if (_annotation && !_annotation->validate(symbols))
+	if (_annotation && !_annotation->validate(functionId))
 		success = false;
 
 	return success;

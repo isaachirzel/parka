@@ -1,21 +1,28 @@
 #include "parka/ast/expression/literal/bool.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/symbol/node_bank.hpp"
+#include "parka/util/optional.hpp"
 #include "parka/util/print.hpp"
 
 Optional<bool> parseBool(Token& token)
 {
-	switch (token.type())
+	auto type = Keyword::getKeywordType(token);
+
+	switch (type)
 	{
-		case TokenType::KeywordTrue:
+		case KeywordType::True:
 			return true;
 
-		case TokenType::KeywordFalse:
+		case KeywordType::False:
 			return false;
 
 		default:
-			printParseError(token, "`true` or `false`");
-			return {};
+			break;
 	}
+
+	printParseError(token, "`true` or `false`");
+	
+	return {};
 }
 
 Optional<ExpressionId> BoolLiteral::parse(Token& token)
@@ -34,12 +41,12 @@ Optional<ExpressionId> BoolLiteral::parse(Token& token)
 }
 
 
-bool BoolLiteral::validate(LocalSymbolTable& symbols)
+bool BoolLiteral::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> BoolLiteral::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> BoolLiteral::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

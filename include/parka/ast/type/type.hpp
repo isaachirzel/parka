@@ -25,9 +25,9 @@ public:
 	bool canConvertTo(const Type& other);
 
 	const auto& entityId() const { return _entityId; }
-};
 
-extern const Type voidType;
-extern const Type i32Type;
+	static const Type voidType;
+	static const Type i32Type;
+};
 
 #endif

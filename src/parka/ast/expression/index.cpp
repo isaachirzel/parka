@@ -32,12 +32,12 @@ Optional<ExpressionId> IndexExpression::parse(Token& token, ExpressionId primary
 	return id;
 }
 
-bool IndexExpression::validate(LocalSymbolTable& symbols)
+bool IndexExpression::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> IndexExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> IndexExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

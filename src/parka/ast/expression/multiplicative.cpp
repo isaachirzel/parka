@@ -49,20 +49,20 @@ Optional<ExpressionId> MultiplicativeExpression::parse(Token& token)
 	return lhs;
 }
 
-bool MultiplicativeExpression::validate(LocalSymbolTable& symbols)
+bool MultiplicativeExpression::validate(const EntityId& functionId)
 {
 	auto success = true;
 
-	if (!NodeBank::get(_lhs).validate(symbols))
+	if (!NodeBank::get(_lhs).validate(functionId))
 		success = false;
 
-	if (!NodeBank::get(_rhs).validate(symbols))
+	if (!NodeBank::get(_rhs).validate(functionId))
 		success = false;
 
 	return success;
 }
 
-Optional<Type> MultiplicativeExpression::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> MultiplicativeExpression::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

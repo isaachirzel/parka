@@ -19,8 +19,8 @@ public:
 
 	static Optional<ExpressionId> parse(Token& token, ExpressionId primary);
 
-	bool validate(LocalSymbolTable& symbols);
-	Optional<Type> getType(const LocalSymbolTable& symbolTable, Ref<Type> expected = {}) const;
+	bool validate(const EntityId& functionId);
+	Optional<Type> getType(Ref<Type> expected = {}) const;
 
 	const auto& expression() const { return _expression; }
 	const auto& member() const { return _member; }

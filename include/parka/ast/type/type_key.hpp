@@ -32,7 +32,7 @@ namespace std
 	template <>
 	struct hash<TypeKey>
 	{
-		usize operator()(const TypeKey& key) const;
+		usize operator()(const TypeKey& key) const { return hash64(key); }
 	};
 }
 

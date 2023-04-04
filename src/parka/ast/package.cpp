@@ -1,21 +1,25 @@
 #include "parka/ast/package.hpp"
+#include "parka/ast/function/function.hpp"
 #include "parka/ast/module.hpp"
+#include "parka/ast/struct/struct.hpp"
 #include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/node_bank.hpp"
 #include "parka/symbol/scope.hpp"
-#include "parka/symbol/local_symbol_table.hpp"
+#include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/file.hpp"
+#include "parka/util/optional.hpp"
 #include "parka/util/print.hpp"
 
-Optional<Package> Package::parse(const Array<File>& files, String&& symbol)
+Optional<EntityId> Package::parse(const Directory& directory)
 {
 	// TODO: Add multithreading
 	auto success = true;
 	auto modules = Array<Module>();
 
-	for (const auto& file : files)
+	for (const auto& file : directory.files())
 	{
-		auto mod = Module::parse(file, symbol);
+		auto mod = Module::parse(file);
 
 		if (!mod)
 		{
@@ -26,36 +30,258 @@ Optional<Package> Package::parse(const Array<File>& files, String&& symbol)
 		modules.push(mod.unwrap());
 	}
 
+	auto packageIds = Array<EntityId>(directory.subdirectories().length());
+
+	for (const auto& subdirectory : directory.subdirectories())
+	{
+		auto packageId = Package::parse(subdirectory);
+
+		if (!packageId)
+		{
+			success = false;
+			continue;
+		}
+
+		packageIds.push(packageId.unwrap());
+	}
+
 	if (!success)
 		return {};
 
-	auto package = Package(std::move(symbol), std::move(modules));
+	auto package = Package(String(directory.name()), std::move(modules), std::move(packageIds));
+	auto id = NodeBank::add(std::move(package));
 
-	return package;
+	return id;
 }
 
-bool Package::declare(GlobalSymbolTable& globalSymbols)
+Optional<EntityId> Package::parse(const Project& project)
+{
+	// auto package = Package();
+	auto success = true;
+	auto packageIds = Array<EntityId>(project.srcDirectory().subdirectories().length());
+
+	for (const auto& directory : project.srcDirectory().subdirectories())
+	{
+		auto packageId = Package::parse(directory);
+
+		if (!packageId)
+		{
+			success = false;
+			continue;
+		}
+
+		packageIds.push(packageId.unwrap());
+	}
+
+	if (!success)
+		return {};
+
+	auto package = Package(std::move(packageIds));
+	auto id = NodeBank::add(std::move(package));
+
+	return id;
+}
+
+void Package::declarePackage(const EntityId& packageId)
+{
+	auto& package = NodeBank::getPackage(packageId);
+
+	_symbols.insert({ package.identifier(), packageId });
+
+	package._parentPackageId = packageId;
+}
+
+bool Package::declareEntity(const EntityId& entityId)
+{
+	auto& entity = NodeBank::get(entityId);
+	const auto& identifier = entity.identifier();
+	auto result = _symbols.insert({ identifier, entityId });
+
+	if (!result.second)
+	{
+		// TODO: get previous entity
+		// auto previousId = result.first->second;
+		// auto& previous = NodeBank::get(previousId);
+		//TODO: invalidate entity previous.invalidate();
+
+		printError("`$` is already declared in this package.", identifier);
+	}
+
+	return result.second;
+}
+
+bool Package::declareEntities(const Array<EntityId>& entityIds)
 {
 	auto success = true;
 
-	for (auto& mod : _modules)
+	for (const auto& entityId : entityIds)
 	{
-		if (!mod.declare(globalSymbols))
+		if (!declareEntity(entityId))
 			success = false;
 	}
 
 	return success;
 }
 
-bool Package::validate(GlobalSymbolTable& globalSymbols)
+bool Package::declareModule(const Module& mod)
 {
 	auto success = true;
 
-	for (auto& mod : _modules)
+	if (!declareEntities(mod.structIds()))
+		success = false;
+
+	if (!declareEntities(mod.functionIds()))
+		success = false;
+
+	return success;
+}
+
+bool Package::declare()
+{
+	auto success = true;
+
+	for (const auto& mod : _modules)
 	{
-		if (!mod.validate(globalSymbols, _symbol))
+		if (!declareModule(mod))
+			success = false;
+	}
+
+	for (const auto& packageId : _packageIds)
+	{
+		auto& package = NodeBank::getPackage(packageId);
+
+		_symbols.insert({ package.identifier(), packageId });
+
+		if (!package.declare())
 			success = false;
 	}
 
 	return success;
+}
+
+bool Package::validate()
+{
+	auto success = true;
+	auto id = NodeBank::getId(*this);
+
+	for (const auto& packageId : _packageIds)
+	{
+		auto& package = NodeBank::getPackage(packageId);
+
+		if (!package.validate(id))
+			success = false;
+	}
+
+	return success;
+}
+
+bool Package::validate(const EntityId& parentPackageId)
+{
+	// TODO: Multithreading
+	auto success = true;
+	auto id = NodeBank::getId(*this);
+
+	_parentPackageId = parentPackageId;
+
+	for (auto& mod : _modules)
+	{
+		if (!mod.validate(id))
+			success = false;
+	}
+
+	for (const auto& packageId : _packageIds)
+	{
+		auto& package = NodeBank::getPackage(packageId);
+
+		if (!package.validate(id))
+			success = false;
+	}
+
+	return success;
+}
+
+Optional<EntityId> Package::find(const Identifier& identifier)
+{
+	auto iter = _symbols.find(identifier.text());
+
+	if (iter == _symbols.end())
+		return {};
+
+	return iter->second;
+}
+
+Package& Package::getGlobalPackage()
+{
+	auto *table = this;
+
+	while (table->_parentPackageId)
+	{
+		auto& package = NodeBank::getPackage(*table->_parentPackageId);
+
+		table = &package;
+	}
+
+	return *table;
+}
+
+Optional<EntityId> Package::findGlobal(const Identifier& identifier)
+{
+	auto& globalSymbols = getGlobalPackage(); 
+	auto global = globalSymbols.find(identifier);
+
+	return global;
+}
+
+Optional<EntityId> Package::resolve(const QualifiedIdentifier& identifier, usize index)
+{
+	auto& part = identifier[index];
+	auto result = find(part);
+
+	if (!result)
+	{
+		if (_parentPackageId)
+		{
+			auto& parentPackage = NodeBank::getPackage(*_parentPackageId);
+
+			result = parentPackage.find(part);
+		}
+
+		if (!result)
+		{
+			// TODO: Output package symbol, entity type and reference highlight
+			printError("Unable to find `$` in package `$`.", part.text(), _identifier);
+			return {};
+		}
+	}
+
+	auto isLast = index == identifier.length() - 1;
+
+	if (isLast)
+		return result;
+
+	auto& entity = NodeBank::get(*result);
+
+	// TODO: Update for static features of other entities
+	switch (entity.type())
+	{
+		case EntityType::Package:
+		{
+			auto& package = (Package&)entity;
+
+			return package.resolve(identifier, index);
+		}
+
+		default:
+			break;
+	}
+	
+	printError("Unable able to get static member `$` of `$`.", entity.identifier());
+
+	return {};
+}
+
+Optional<EntityId> Package::resolve(const QualifiedIdentifier& identifier)
+{
+	return resolve(identifier, 0);
+	
 }

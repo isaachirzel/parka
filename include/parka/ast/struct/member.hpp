@@ -31,7 +31,7 @@ public:
 
 	static Optional<Member> parse(Token& token);
 
-	bool validate(LocalSymbolTable& symbols);
+	bool validate(const EntityId& functionId);
 
 	const auto& name() const { return _name; }
 	const auto& symbol() const { return _symbol; }

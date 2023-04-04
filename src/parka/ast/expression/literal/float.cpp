@@ -57,12 +57,12 @@ Optional<ExpressionId> FloatLiteral::parse(Token& token)
 }
 
 
-bool FloatLiteral::validate(LocalSymbolTable& symbols)
+bool FloatLiteral::validate(const EntityId&)
 {
 	exitNotImplemented(here());
 }
 
-Optional<Type> FloatLiteral::getType(const LocalSymbolTable& symbolTable, Ref<Type> expected) const
+Optional<Type> FloatLiteral::getType(Ref<Type>) const
 {
 	exitNotImplemented(here());
 }

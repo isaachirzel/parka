@@ -16,7 +16,7 @@ enum class ExpressionType
 	Call,
 	Conditional,
 	Equality,
-	Identifier,
+	IdentifierExpression,
 	If,
 	Subscript,
 	MemberAccess,

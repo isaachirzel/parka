@@ -1,27 +1,19 @@
 #include "parka/ast/function/parameter.hpp"
+#include "parka/ast/identifier.hpp"
+#include "parka/ast/keyword.hpp"
 #include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
 Optional<EntityId> Parameter::parse(Token& token)
 {
-	auto isMutable = false;
+	auto mutKeyword = Keyword::parseMut(token);
+	auto isMutable = !!mutKeyword;
 
-	if (token.type() == TokenType::KeywordMut)
-	{
-		isMutable = true;
-		token.increment();
-	}
+	auto identifier = Identifier::parse(token);
 
-	if (token.type() != TokenType::Identifier)
-	{
-		printParseError(token, "parameter name");
+	if (!identifier)
 		return {};
-	}
-
-	auto name = token;
-
-	token.increment();
 
 	if (token.type() != TokenType::Colon)
 	{
@@ -36,17 +28,17 @@ Optional<EntityId> Parameter::parse(Token& token)
 	if (!annotation)
 		return {};
 	
-	auto parameter = Parameter(name, name.text(), annotation.unwrap(), isMutable);
+	auto parameter = Parameter(identifier.unwrap(), annotation.unwrap(), isMutable);
 	auto id = NodeBank::add(std::move(parameter));
 	
 	return id;
 }
 
-bool Parameter::validate(LocalSymbolTable& symbols)
+bool Parameter::validate(const EntityId& functionId)
 {
 	auto success = true;
 
-	if (!_annotation.validate(symbols))
+	if (!_annotation.validate(functionId))
 		success = false;
 
 	return success;
