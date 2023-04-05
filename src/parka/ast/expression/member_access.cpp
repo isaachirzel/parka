@@ -32,7 +32,7 @@ bool MemberAccess::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> MemberAccess::getType(Ref<Type>) const
+Optional<Type> MemberAccess::getType() const
 {
 	exitNotImplemented(here());
 }

@@ -9,12 +9,12 @@
 
 class Module
 {
-	String _symbol; // TODO: Change to filename?
+	String _filepath;
 	Array<EntityId> _functionIds;
 	Array<EntityId> _structIds;
 
-	Module(String&& symbol, Array<EntityId>&& functionIds, Array<EntityId>&& structIds) :
-	_symbol(std::move(symbol)),
+	Module(String&& filepath, Array<EntityId>&& functionIds, Array<EntityId>&& structIds) :
+	_filepath(std::move(filepath)),
 	_functionIds(std::move(functionIds)),
 	_structIds(std::move(structIds))
 	{}
@@ -29,7 +29,7 @@ public:
 
 	bool validate(const EntityId& packageId);
 
-	const auto& symbol() const { return _symbol; }
+	const auto& filename() const { return _filepath; }
 	const auto& functionIds() const { return _functionIds; }
 	const auto& structIds() const { return _structIds; }
 };

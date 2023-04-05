@@ -45,19 +45,40 @@ bool Declaration::validate(const EntityId& functionId)
 	auto success = true;
 	auto& function = NodeBank::getFunction(functionId);
 	auto& variable = NodeBank::getVariable(_variableId);
-	
-	if (!variable.validate(functionId))
-		success = false;
-
-	if (!function.declare(_variableId))
-		success = false;
-
 	auto& value = NodeBank::get(_value);
-
+	
 	if (!value.validate(functionId))
 		success = false;
 
-	// TODO: Validate type conversion
+	if (!variable.validate(functionId))
+		success = false;
 
-	return success;
+	// The declaration comes after expression validation so it can't access the declaration
+	if (!function.declare(_variableId))
+		success = false;
+
+	if (!success)
+		return false;
+
+	auto valueType = value.getType();
+
+	if (!valueType)
+		return false;
+
+	auto variableType = variable.getType();
+
+	if (variableType)
+	{
+		if (!valueType->canConvertTo(*variableType))
+		{
+			printError("Unable to initialize $ with $", *variableType, *valueType);
+			return false;
+		}
+	}
+	else
+	{
+		variable.setType(*valueType);
+	}
+
+	return true;
 }

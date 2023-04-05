@@ -5,12 +5,18 @@
 #include "parka/ast/type/type_annotation.hpp"
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/entity_id.hpp"
+#include "parka/symbol/expression_id.hpp"
+#include "parka/symbol/typed_entity.hpp"
+#include "parka/util/ref.hpp"
 
-class Variable : public Entity
+class Variable : public TypedEntity
 {
 	Identifier _identifier;
 	Optional<TypeAnnotation> _annotation;
 	bool _isMutable;
+	// Validation
+	Optional<Type> _type;
+	bool _isValidated;
 
 	Variable(Identifier&& identifier, bool isMutable, Optional<TypeAnnotation> annotation) :
 	_identifier(std::move(identifier)),
@@ -23,10 +29,12 @@ public:
 	static Optional<EntityId> parse(Token& token);
 
 	bool validate(const EntityId& functionId);
+	void setType(const Type& type) { _type = type; }
+	Optional<Type> getType() const;
 
 	const String& identifier() const { return _identifier.text(); }
 	EntityType type() const { return EntityType::Variable; }
-	bool isExplicitlyTyped() const { return _annotation.hasValue(); }
+	const auto& isExplicitlyTyped() const { return _annotation.hasValue(); }
 	const auto& annotation() const { return *_annotation; }
 	const auto& isMutable() const { return _isMutable; }
 };

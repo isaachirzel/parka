@@ -46,7 +46,7 @@ bool BoolLiteral::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> BoolLiteral::getType(Ref<Type>) const
+Optional<Type> BoolLiteral::getType() const
 {
 	exitNotImplemented(here());
 }

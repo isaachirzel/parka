@@ -5,8 +5,10 @@
 #include "parka/util/prompt.hpp"
 #include "parka/util/source_location.hpp"
 
+#include <iomanip>
 #include <iostream>
 #include <cstdlib>
+#include <type_traits>
 
 void addError();
 
@@ -40,6 +42,12 @@ void _print(const char * const fmt, const First& first, Arg const&... args)
 	}
 
 	std::cout.write(fmt, iter - fmt);
+
+	if constexpr (std::is_floating_point_v<First>)
+	{
+		std::cout << std::fixed;
+	}
+	
 	std::cout << first;
 
 	iter += 1;

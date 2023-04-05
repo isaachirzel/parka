@@ -36,7 +36,7 @@ bool BitwiseAndExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> BitwiseAndExpression::getType(Ref<Type>) const
+Optional<Type> BitwiseAndExpression::getType() const
 {
 	exitNotImplemented(here());
 }

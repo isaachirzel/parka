@@ -57,7 +57,7 @@ bool Prefix::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> Prefix::getType(Ref<Type>) const
+Optional<Type> Prefix::getType() const
 {
 	exitNotImplemented(here());
 }

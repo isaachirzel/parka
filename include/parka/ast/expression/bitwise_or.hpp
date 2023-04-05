@@ -22,7 +22,7 @@ public:
 	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(const EntityId& functionId);
-	Optional<Type> getType(Ref<Type> expected = {}) const;
+	Optional<Type> getType() const;
 
 	const auto& lhs() const { return _lhs; }
 	const auto& rhs() const { return _rhs; }

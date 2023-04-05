@@ -57,7 +57,7 @@ bool RelationalExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> RelationalExpression::getType(Ref<Type>) const
+Optional<Type> RelationalExpression::getType() const
 {
 	exitNotImplemented(here());
 }

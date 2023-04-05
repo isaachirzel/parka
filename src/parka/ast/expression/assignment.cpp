@@ -87,7 +87,7 @@ bool Assignment::validate(const EntityId& functionId)
 	return success;
 }
 
-Optional<Type> Assignment::getType(Ref<Type>) const
+Optional<Type> Assignment::getType() const
 {
 	exitNotImplemented(here());
 }

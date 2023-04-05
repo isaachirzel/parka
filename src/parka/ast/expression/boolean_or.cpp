@@ -34,7 +34,7 @@ bool BooleanOrExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> BooleanOrExpression::getType(Ref<Type>) const
+Optional<Type> BooleanOrExpression::getType() const
 {
 	exitNotImplemented(here());
 }

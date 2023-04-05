@@ -42,7 +42,7 @@ bool CharLiteral::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> CharLiteral::getType(Ref<Type>) const
+Optional<Type> CharLiteral::getType() const
 {
 	exitNotImplemented(here());
 }

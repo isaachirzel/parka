@@ -4,7 +4,7 @@
 #include "parka/util/primitives.hpp"
 #include <ostream>
 
-enum class EntityType
+enum class EntityType: u8
 {
 	Package,
 	Struct,
@@ -16,7 +16,7 @@ enum class EntityType
 
 class EntityId
 {
-	usize _index;
+	u32 _index;
 	EntityType _type;
 
 	EntityId(EntityType type, usize index) :

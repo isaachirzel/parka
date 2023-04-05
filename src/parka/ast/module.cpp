@@ -12,6 +12,7 @@
 Optional<Module> Module::parse(const File& file)
 {
 	// TODO: Fast forwarding after encountering parse error to not stop after first failure
+	print("Parsing module `$`", file.path());
 	auto success = true;
 	auto token = Token::initial(file);
 	auto functionIds = Array<EntityId>();
@@ -54,13 +55,14 @@ Optional<Module> Module::parse(const File& file)
 			}
 
 			default:
+				print("Not a keyword: $", token);
 				break;
 		}
 
 		if (token.type() != TokenType::EndOfFile)
 		{
 			printParseError(token, "type or function definition");
-			success = false;
+			// success = false;
 		}
 
 		break;
@@ -69,8 +71,7 @@ Optional<Module> Module::parse(const File& file)
 	if (!success)
 		return {};
 
-	auto filename = path::getFilename(file.path());
-	auto mod = Module(std::move(filename), std::move(functionIds), std::move(structIds));
+	auto mod = Module(String(file.path()), std::move(functionIds), std::move(structIds));
 
 	return mod;
 }

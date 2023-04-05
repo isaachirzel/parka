@@ -23,8 +23,8 @@ bool StringLiteral::validate(const EntityId&)
 	return true;
 }
 
-Optional<Type> StringLiteral::getType(Ref<Type>) const
+Optional<Type> StringLiteral::getType() const
 {
-	exitNotImplemented(here());
+	return Type::stringType;
 }
 

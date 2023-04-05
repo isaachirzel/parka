@@ -30,7 +30,7 @@ public:
 	bool validate(const EntityId& functionId);
 
 	const auto& identifier() const { return _identifier; }
-	const Type& type() const { throw std::exception(); }
+	const Type& getType() const { return *_type; }
 };
 
 #endif

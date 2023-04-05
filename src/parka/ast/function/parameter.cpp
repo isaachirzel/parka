@@ -43,3 +43,11 @@ bool Parameter::validate(const EntityId& functionId)
 
 	return success;
 }
+
+Optional<Type> Parameter::getType() const
+{
+	if (!_type)
+		return {};
+
+	return *_type;
+}

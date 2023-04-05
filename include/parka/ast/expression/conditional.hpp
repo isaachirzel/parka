@@ -25,7 +25,7 @@ public:
 	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(const EntityId& functionId);
-	Optional<Type> getType(Ref<Type> expected = {}) const;
+	Optional<Type> getType() const;
 
 	const auto& condition() const { return _condition; }
 	const auto& trueCase() const { return _trueCase; }

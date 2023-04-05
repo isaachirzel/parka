@@ -58,7 +58,7 @@ usize getNextPos(const File& file, usize pos)
 	return file.length();
 }
 
-inline bool isIdentifierExpressionChar(char c)
+inline bool isIdentifierChar(char c)
 {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
@@ -119,7 +119,7 @@ Token getQuoteToken(const File& file, const usize startPos)
 	return token;
 }
 
-Token getIdentifierExpressionToken(const File& file, const usize startPos)
+Token getIdentifierToken(const File& file, const usize startPos)
 {
 	usize i = startPos + 1;
 
@@ -127,7 +127,7 @@ Token getIdentifierExpressionToken(const File& file, const usize startPos)
 	{
 		char c = file[i];
 
-		if (!isIdentifierExpressionChar(c) && isDigitChar(c))
+		if (!isIdentifierChar(c) && !isDigitChar(c))
 			break;
 
 		i += 1;
@@ -203,7 +203,7 @@ Token getNextToken(const File& file, usize startPos)
 		case 'x': case 'X':
 		case 'y': case 'Y':
 		case 'z': case 'Z':
-			return getIdentifierExpressionToken(file, startPos);
+			return getIdentifierToken(file, startPos);
 
 		case '0':
 		case '1':
@@ -493,9 +493,9 @@ const char *getTokenTypeText(TokenType type)
 {
 	switch (type)
 	{
-		case TokenType::EndOfFile: return "EOF";
-		case TokenType::Compound: return "Compound Token";
-		case TokenType::Identifier: return "IdentifierExpression";
+		case TokenType::EndOfFile: return "end of file";
+		case TokenType::Invalid: return "invalid token";
+		case TokenType::Identifier: return "identifier";
 		case TokenType::LeftParenthesis: return "(";
 		case TokenType::RightParenthesis: return ")";
 		case TokenType::LeftBracket: return "[";

@@ -11,11 +11,13 @@
 #include "parka/util/optional.hpp"
 #include "parka/util/print.hpp"
 
-Optional<EntityId> Package::parse(const Directory& directory)
+Optional<EntityId> Package::parse(const Directory& directory, const String& name)
 {
 	// TODO: Add multithreading
+	print("Package `$` has $ subpackages and $ modules", name, directory.subdirectories().length(), directory.files().length());
 	auto success = true;
 	auto modules = Array<Module>();
+	auto packageIds = Array<EntityId>(directory.subdirectories().length());
 
 	for (const auto& file : directory.files())
 	{
@@ -30,11 +32,9 @@ Optional<EntityId> Package::parse(const Directory& directory)
 		modules.push(mod.unwrap());
 	}
 
-	auto packageIds = Array<EntityId>(directory.subdirectories().length());
-
 	for (const auto& subdirectory : directory.subdirectories())
 	{
-		auto packageId = Package::parse(subdirectory);
+		auto packageId = Package::parse(subdirectory, subdirectory.name());
 
 		if (!packageId)
 		{
@@ -48,7 +48,7 @@ Optional<EntityId> Package::parse(const Directory& directory)
 	if (!success)
 		return {};
 
-	auto package = Package(String(directory.name()), std::move(modules), std::move(packageIds));
+	auto package = Package(String(name), std::move(modules), std::move(packageIds));
 	auto id = NodeBank::add(std::move(package));
 
 	return id;
@@ -56,30 +56,7 @@ Optional<EntityId> Package::parse(const Directory& directory)
 
 Optional<EntityId> Package::parse(const Project& project)
 {
-	// auto package = Package();
-	auto success = true;
-	auto packageIds = Array<EntityId>(project.srcDirectory().subdirectories().length());
-
-	for (const auto& directory : project.srcDirectory().subdirectories())
-	{
-		auto packageId = Package::parse(directory);
-
-		if (!packageId)
-		{
-			success = false;
-			continue;
-		}
-
-		packageIds.push(packageId.unwrap());
-	}
-
-	if (!success)
-		return {};
-
-	auto package = Package(std::move(packageIds));
-	auto id = NodeBank::add(std::move(package));
-
-	return id;
+	return Package::parse(project.srcDirectory(), "");
 }
 
 void Package::declarePackage(const EntityId& packageId)
@@ -95,6 +72,9 @@ bool Package::declareEntity(const EntityId& entityId)
 {
 	auto& entity = NodeBank::get(entityId);
 	const auto& identifier = entity.identifier();
+
+	print("Declaring $ `$`", entityId.type(), identifier);
+
 	auto result = _symbols.insert({ identifier, entityId });
 
 	if (!result.second)
@@ -125,6 +105,7 @@ bool Package::declareEntities(const Array<EntityId>& entityIds)
 
 bool Package::declareModule(const Module& mod)
 {
+	print("Declaring module `$` with $ struct and $ functions", mod.filename(), mod.structIds().length(), mod.functionIds().length());
 	auto success = true;
 
 	if (!declareEntities(mod.structIds()))
@@ -138,7 +119,13 @@ bool Package::declareModule(const Module& mod)
 
 bool Package::declare()
 {
+	print("Declaring Package: `$`", _identifier);
+
 	auto success = true;
+	auto isGlobalPackage = _identifier.length() == 0;
+
+	if (isGlobalPackage) 
+		NodeBank::declarePrimitives(_symbols);
 
 	for (const auto& mod : _modules)
 	{
@@ -163,6 +150,12 @@ bool Package::validate()
 {
 	auto success = true;
 	auto id = NodeBank::getId(*this);
+
+	for (auto& mod : _modules)
+	{
+		if (!mod.validate(id))
+			success = false;
+	}
 
 	for (const auto& packageId : _packageIds)
 	{

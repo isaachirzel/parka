@@ -38,9 +38,25 @@ Optional<EntityId> Variable::parse(Token& token)
 
 bool Variable::validate(const EntityId& functionId)
 {
-	auto success = true;
-	if (_annotation && !_annotation->validate(functionId))
-		success = false;
+	_isValidated = true;
 
-	return success;
+	if (_annotation)
+ 	{
+		if (!_annotation->validate(functionId))
+			return false;
+
+		auto type = _annotation->getType();
+
+		_type = type;
+	}
+
+	return true;
+}
+
+Optional<Type> Variable::getType() const
+{
+	if (!_type)
+		return {};
+
+	return *_type;
 }

@@ -47,7 +47,7 @@ bool ConditionalExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> ConditionalExpression::getType(Ref<Type>) const
+Optional<Type> ConditionalExpression::getType() const
 {
 	exitNotImplemented(here());
 }

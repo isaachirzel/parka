@@ -65,80 +65,26 @@ bool AdditiveExpression::validate(const EntityId& functionId)
 	return success;
 }
 
-Optional<Type> getSignedIntegerType(const Primitive&, const Primitive& right, Ref<Type>)
+Optional<Type> AdditiveExpression::getType() const
 {
-	switch (right.primitiveType())
-	{
-		case PRIMITIVE_SIGNED_INTEGER:
-			// TODO: Actually check the bytes
-			return Type(NodeBank::i32Id);
+	auto& lhs = NodeBank::get(_lhs);
+	auto& rhs = NodeBank::get(_rhs);
+	auto leftType = lhs.getType();
+	auto rightType = rhs.getType();
 
-		default:
-			break;
+	if (!leftType || !rightType)
+		return {};
+
+	print("Left type: `$`", *leftType);
+	print("Right type: `$`", *rightType);
+
+	// TODO: Operators
+
+	if (!rightType->canConvertTo(*leftType))
+	{
+		printError("A value of type $ cannot be added to $", *rightType, *leftType);
+		return {};
 	}
 	
-	return {};
-}
-
-Optional<Type> getPrimitiveType(const Primitive&, const Primitive&, Ref<Type>)
-{
-	exitNotImplemented(here());
-	// switch (left.type())
-	// {
-	// 	case PRIMITIVE_SIGNED_INTEGER:
-	// 		return getSignedIntegerType(left, right, expected);
-
-	// 	default:
-	// 		break;
-	// }
-
-	return {};
-}
-
-Optional<Type> AdditiveExpression::getType(Ref<Type>) const
-{
-
-	exitNotImplemented(here());
-
-	// auto leftType = _lhs->getType(symbols, expected);
-
-	// if (!leftType)
-	// 	return {};
-
-	// auto rightType = _rhs->getType(symbols, expected);
-
-	// if (!rightType)
-	// 	return {};
-
-	// auto leftId = leftType->entityId();
-
-	// if (leftId.type() == EntityType::Primitive)
-	// {
-	// 	const auto& leftPrimitive = symbols.getEntity(leftId);
-	// 	// const Primitive *leftPrimitive = symbolTableGetPrimitive(leftType->index());
-		
-	// 	auto rightId = rightType->entityId();
-
-	// 	if (rightId.type() == EntityType::Primitive)
-	// 	{
-	// 		const Primitive *rightPrimitive = symbolTableGetPrimitive(rightType->index());
-
-	// 		auto primitiveType = getPrimitiveType(leftPrimitive, rightPrimitive, expected);
-
-	// 		if (primitiveType)
-	// 			return primitiveType;
-	// 	}
-	// 	else
-	// 	{
-	// 		exitWithError("Primitive + Complex is not implemented yet.");
-	// 	}
-	// }
-	// else
-	// {
-	// 	exitWithError("Addition for complex types is not implemented yet.");
-	// }
-	
-	// printError("`$` cannot be added to `$`.", rightType.name() typeGetName(&rightType), typeGetName(&leftType));
-
-	return {};
+	return *leftType;
 }

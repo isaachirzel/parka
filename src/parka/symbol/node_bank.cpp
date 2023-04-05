@@ -74,24 +74,36 @@ Pool<IntegerLiteral> _integerLiterals(1'000'000);
 Pool<StringLiteral> _stringLiterals(1'000'000);
 
 const EntityId NodeBank::voidId(EntityType::Primitive, 0);
+const EntityId NodeBank::u8Id(EntityType::Primitive, 1);
+const EntityId NodeBank::u16Id(EntityType::Primitive, 2);
+const EntityId NodeBank::u32Id(EntityType::Primitive, 3);
+const EntityId NodeBank::u64Id(EntityType::Primitive, 4);
+const EntityId NodeBank::i8Id(EntityType::Primitive, 5);
+const EntityId NodeBank::i16Id(EntityType::Primitive, 6);
 const EntityId NodeBank::i32Id(EntityType::Primitive, 7);
+const EntityId NodeBank::i64Id(EntityType::Primitive, 8);
+const EntityId NodeBank::f32Id(EntityType::Primitive, 9);
+const EntityId NodeBank::f64Id(EntityType::Primitive, 10);
+const EntityId NodeBank::boolId(EntityType::Primitive, 11);
+const EntityId NodeBank::charId(EntityType::Primitive, 12);
+const EntityId NodeBank::stringId(EntityType::Primitive, 13);
 
 void NodeBank::initialize()
 {
-	_primitives.push({ "void", PRIMITIVE_VOID, 0 });
-	_primitives.push({ "u8", PRIMITIVE_UNSIGNED_INTEGER, 1 });
-	_primitives.push({ "u16", PRIMITIVE_UNSIGNED_INTEGER, 2 });
-	_primitives.push({ "u32", PRIMITIVE_UNSIGNED_INTEGER, 4 });
-	_primitives.push({ "u64", PRIMITIVE_UNSIGNED_INTEGER, 8 });
-	_primitives.push({ "i8", PRIMITIVE_SIGNED_INTEGER, 1 });
-	_primitives.push({ "i16", PRIMITIVE_SIGNED_INTEGER, 2 });
-	_primitives.push({ "i32", PRIMITIVE_SIGNED_INTEGER, 4 });
-	_primitives.push({ "i64", PRIMITIVE_SIGNED_INTEGER, 8 });
-	_primitives.push({ "f32", PRIMITIVE_FLOATING_POINT, 4 });
-	_primitives.push({ "f64", PRIMITIVE_FLOATING_POINT, 8 });
-	_primitives.push({ "bool", PRIMITIVE_BOOLEAN, 1 });
-	_primitives.push({ "char", PRIMITIVE_CHARACTER, 1 });
-	_primitives.push({ "string", PRIMITIVE_STRING, 0 });
+	_primitives.push({ "void", PrimitiveType::Void, 0 });
+	_primitives.push({ "u8", PrimitiveType::UnsignedInteger, 1 });
+	_primitives.push({ "u16", PrimitiveType::UnsignedInteger, 2 });
+	_primitives.push({ "u32", PrimitiveType::UnsignedInteger, 4 });
+	_primitives.push({ "u64", PrimitiveType::UnsignedInteger, 8 });
+	_primitives.push({ "i8", PrimitiveType::SignedInteger, 1 });
+	_primitives.push({ "i16", PrimitiveType::SignedInteger, 2 });
+	_primitives.push({ "i32", PrimitiveType::SignedInteger, 4 });
+	_primitives.push({ "i64", PrimitiveType::SignedInteger, 8 });
+	_primitives.push({ "f32", PrimitiveType::FloatingPoint, 4 });
+	_primitives.push({ "f64", PrimitiveType::FloatingPoint, 8 });
+	_primitives.push({ "bool", PrimitiveType::Boolean, 1 });
+	_primitives.push({ "char", PrimitiveType::Character, 1 });
+	_primitives.push({ "string", PrimitiveType::String, 0 });
 }
 
 EntityId NodeBank::add(Package&& value)

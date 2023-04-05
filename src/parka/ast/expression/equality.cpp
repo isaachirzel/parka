@@ -51,7 +51,7 @@ bool EqualityExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> EqualityExpression::getType(Ref<Type>) const
+Optional<Type> EqualityExpression::getType() const
 {
 	exitNotImplemented(here());
 }

@@ -37,7 +37,7 @@ bool IndexExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> IndexExpression::getType(Ref<Type>) const
+Optional<Type> IndexExpression::getType() const
 {
 	exitNotImplemented(here());
 }

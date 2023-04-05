@@ -62,7 +62,7 @@ bool MultiplicativeExpression::validate(const EntityId& functionId)
 	return success;
 }
 
-Optional<Type> MultiplicativeExpression::getType(Ref<Type>) const
+Optional<Type> MultiplicativeExpression::getType() const
 {
 	exitNotImplemented(here());
 }

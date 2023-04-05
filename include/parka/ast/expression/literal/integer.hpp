@@ -9,12 +9,12 @@ class IntegerLiteral : public Literal
 {
 	Token _token;
 	u64 _value;
-	u32 _bits;
+	u32 _bytes;
 
-	IntegerLiteral(const Token& token, u64 value, u32 bits) :
+	IntegerLiteral(const Token& token, u64 value, u32 bytes) :
 	_token(token),
 	_value(value),
-	_bits(bits)
+	_bytes(bytes)
 	{}
 
 public:
@@ -26,7 +26,7 @@ public:
 	static Optional<ExpressionId> parse(Token& token);
 
 	bool validate(const EntityId& functionId);
-	Optional<Type> getType(Ref<Type> expected = {}) const;
+	Optional<Type> getType() const;
 };
 
 #endif

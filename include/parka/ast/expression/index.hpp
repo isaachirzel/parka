@@ -20,7 +20,7 @@ public:
 	static Optional<ExpressionId> parse(Token& token, ExpressionId primary);
 
 	bool validate(const EntityId& functionId);
-	Optional<Type> getType(Ref<Type> expected = {}) const;
+	Optional<Type> getType() const;
 
 	const auto& expression() const { return _primary; }
 	const auto& index() const { return _index; }

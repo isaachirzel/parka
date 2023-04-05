@@ -33,7 +33,7 @@ bool BitwiseXorExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> BitwiseXorExpression::getType(Ref<Type>) const
+Optional<Type> BitwiseXorExpression::getType() const
 {
 	exitNotImplemented(here());
 }

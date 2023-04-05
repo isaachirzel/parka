@@ -14,7 +14,7 @@ struct Expression
 	virtual ~Expression() {}
 
 	virtual bool validate(const EntityId& functionId) = 0;
-	virtual Optional<Type> getType(Ref<Type> expected = {}) const = 0;
+	virtual Optional<Type> getType() const = 0;
 };
 
 #endif

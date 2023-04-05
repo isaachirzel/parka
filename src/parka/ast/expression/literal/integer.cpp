@@ -1,4 +1,5 @@
 #include "parka/ast/expression/literal/integer.hpp"
+#include "parka/ast/type/type.hpp"
 #include "parka/symbol/node_bank.hpp"
 #include "parka/util/print.hpp"
 
@@ -23,7 +24,7 @@ Optional<u64> parseInteger(Token& token)
 	return value;
 }
 
-usize getMinimumIntegerBits(u64 value)
+usize getMinimumIntegerBytes(u64 value)
 {
 	usize bits = 0;
 
@@ -43,7 +44,7 @@ Optional<ExpressionId> IntegerLiteral::parse(Token& token)
 	if (!value)
 		return {};
 
-	auto bits = getMinimumIntegerBits(value);
+	auto bits = getMinimumIntegerBytes(value);
 	auto literal = IntegerLiteral(token, *value, bits);
 	auto id = NodeBank::add(std::move(literal));
 
@@ -57,7 +58,25 @@ bool IntegerLiteral::validate(const EntityId&)
 	return true;
 }
 
-Optional<Type> IntegerLiteral::getType(Ref<Type>) const
+Optional<Type> IntegerLiteral::getType() const
 {
-	exitNotImplemented(here());
+	switch (_bytes)
+	{
+		case 0:
+		case 1:
+			return Type::i8Type;
+		case 2:
+			return Type::i16Type;
+		case 3:
+		case 4:
+			return Type::i32Type;
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+			return Type::i64Type;
+
+		default:
+			exitWithError("Unable to get Type of IntegerLiteral with size: $", _bytes);
+	}
 }

@@ -6,6 +6,7 @@
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/entity_id.hpp"
 #include "parka/ast/type/type.hpp"
+#include "parka/symbol/typed_entity.hpp"
 #include "parka/util/array.hpp"
 
 class Struct : public Entity
@@ -28,6 +29,7 @@ public:
 
 	bool validate(const EntityId& packageId);
 
+	Optional<Type> getType() const;
 	const String& identifier() const { return _identifier.text(); }
 	const auto& members() const { return _members; }
 	EntityType type() const { return EntityType::Struct; }

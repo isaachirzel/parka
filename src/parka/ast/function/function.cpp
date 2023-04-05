@@ -59,7 +59,8 @@ Optional<EntityId> Function::parse(Token& token)
 
 bool Function::declare(const EntityId& entityId)
 {
-	// TODO: Token highlights
+	// TODO: Implement LocalEntity to get common functionality
+	
 	auto& entity = NodeBank::get(entityId);
 	const auto& identifier = entity.identifier();
 
@@ -76,8 +77,9 @@ bool Function::declare(const EntityId& entityId)
 
 		if (entity.identifier() == previous.identifier())
 		{
+			// TODO: Show previous declaration
+			// TODO: Token highlights
 			printError("`$` is already declared in this block.", identifier);
-			// printNote(previous.token(), "Previous declaration here.");
 
 			return false;
 		}
@@ -135,13 +137,21 @@ Optional<EntityId> Function::resolve(const Identifier& identifier)
 	auto& package = NodeBank::getPackage(*_packageId);
 	auto result = package.findGlobal(identifier);
 
+	if (!result)
+		printError(identifier.token(), "Unable to find $ in this scope.", identifier);
+
 	return result;
 }
 
 Optional<EntityId> Function::resolve(const QualifiedIdentifier& identifier)
 {
-	auto& package = NodeBank::getPackage(*_packageId);
-	auto result = package.resolve(identifier);
+	if (identifier.isAbsolute() || identifier.length() > 1)
+	{
+		auto& package = NodeBank::getPackage(*_packageId);
+		auto result = package.resolve(identifier);
+	}
+
+	auto result = resolve(identifier[0]);
 
 	return result;
 }
@@ -155,5 +165,6 @@ void Function::pushBlock()
 
 void Function::popBlock()
 {
+	_localSymbols.reserve(_blocks.back());
 	_blocks.pop();
 }

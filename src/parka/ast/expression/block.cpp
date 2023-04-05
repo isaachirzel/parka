@@ -56,7 +56,7 @@ bool Block::validate(const EntityId& functionId)
 	return success;
 }
 
-Optional<Type> Block::getType(Ref<Type>) const
+Optional<Type> Block::getType() const
 {
 	if (_returnType)
 		return Type(*_returnType);

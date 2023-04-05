@@ -69,7 +69,7 @@ public:
 	Optional& operator =(const Optional& other) = delete;
 
 	operator bool() const { return _hasValue; }
-	bool hasValue() const { return _hasValue; }
+	const auto& hasValue() const { return _hasValue; }
 	auto *operator->() { assert(_hasValue); return &_value; }
 	const auto *operator->() const { assert(_hasValue); return &_value; }
 	auto& operator*() { assert(_hasValue); return _value; }

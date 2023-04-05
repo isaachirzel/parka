@@ -51,7 +51,7 @@ bool BitShiftExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> BitShiftExpression::getType(Ref<Type>) const
+Optional<Type> BitShiftExpression::getType() const
 {
 	exitNotImplemented(here());
 }

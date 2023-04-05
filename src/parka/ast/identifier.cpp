@@ -16,3 +16,10 @@ Optional<Identifier> Identifier::parse(Token& token)
 
 	return identifier;
 }
+
+std::ostream& operator<<(std::ostream& out, const Identifier& identifier)
+{
+	out << '`' << identifier.text() << '`';
+
+	return out;
+}

@@ -62,7 +62,7 @@ bool FloatLiteral::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> FloatLiteral::getType(Ref<Type>) const
+Optional<Type> FloatLiteral::getType() const
 {
 	exitNotImplemented(here());
 }

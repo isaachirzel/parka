@@ -11,7 +11,7 @@
 enum class TokenType
 {
 	EndOfFile,
-	Compound,
+	Invalid,
 	Identifier,
 	LeftParenthesis,
 	RightParenthesis,

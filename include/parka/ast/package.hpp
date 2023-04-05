@@ -44,13 +44,14 @@ class Package : public Entity
 	bool declareModule(const Module& mod);
 	Optional<EntityId> resolve(const QualifiedIdentifier& identifier, usize index);
 
+	static Optional<EntityId> parse(const Directory& directory, const String& name);
+	
 public:
 
 	Package(Package&&) = default;
 	Package(const Package&) = delete;
 	~Package() = default;
 
-	static Optional<EntityId> parse(const Directory& directory);
 	static Optional<EntityId> parse(const Project& project);
 
 	bool declare();

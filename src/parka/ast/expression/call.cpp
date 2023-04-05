@@ -51,7 +51,7 @@ bool CallExpression::validate(const EntityId&)
 	exitNotImplemented(here());
 }
 
-Optional<Type> CallExpression::getType(Ref<Type>) const
+Optional<Type> CallExpression::getType() const
 {
 	exitNotImplemented(here());
 }

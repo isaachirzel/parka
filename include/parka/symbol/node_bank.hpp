@@ -44,8 +44,20 @@ class JumpStatement;
 
 struct NodeBank
 {
-	static const EntityId i32Id;
 	static const EntityId voidId;
+	static const EntityId u8Id;
+	static const EntityId u16Id;
+	static const EntityId u32Id;
+	static const EntityId u64Id;
+	static const EntityId i8Id;
+	static const EntityId i16Id;
+	static const EntityId i32Id;
+	static const EntityId i64Id;
+	static const EntityId f32Id;
+	static const EntityId f64Id;
+	static const EntityId boolId;
+	static const EntityId charId;
+	static const EntityId stringId;
 
 	static void initialize();
 

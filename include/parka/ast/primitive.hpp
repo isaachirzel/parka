@@ -3,20 +3,21 @@
 
 #include "parka/symbol/entity.hpp"
 #include "parka/symbol/node_bank.hpp"
+#include "parka/symbol/typed_entity.hpp"
 #include "parka/token.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/primitives.hpp"
 #include "parka/util/string.hpp"
 
-enum PrimitiveType
+enum class PrimitiveType
 {
-	PRIMITIVE_VOID,
-	PRIMITIVE_UNSIGNED_INTEGER,
-	PRIMITIVE_SIGNED_INTEGER,
-	PRIMITIVE_FLOATING_POINT,
-	PRIMITIVE_BOOLEAN,
-	PRIMITIVE_CHARACTER,
-	PRIMITIVE_STRING
+	Void,
+	UnsignedInteger,
+	SignedInteger,
+	FloatingPoint,
+	Boolean,
+	Character,
+	String
 };
 
 class Primitive : public Entity
