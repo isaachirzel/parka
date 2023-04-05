@@ -1,0 +1,93 @@
+#include "parka/ast/assignment_expression.hpp"
+#include "parka/ast/additive_expression.hpp"
+#include "parka/ast/conditional_expression.hpp"
+#include "parka/ast/module.hpp"
+#include "parka/node/node_bank.hpp"
+#include "parka/util/print.hpp"
+
+Optional<AssignmentType> getAssignmentType(Token& token)
+{
+	switch (token.type())
+	{
+		case TokenType::Assign:
+			return ASSIGNMENT_BECOME;
+
+		case TokenType::MultiplyAssign:
+			return ASSIGNMENT_MULTIPLY;
+
+		case TokenType::DivideAssign:
+			return ASSIGNMENT_DIVIDE;
+
+		case TokenType::ModulusAssign:
+			return ASSIGNMENT_MODULUS;
+
+		case TokenType::AddAssign:
+			return ASSIGNMENT_ADD;
+
+		case TokenType::SubtractAssign:
+			return ASSIGNMENT_SUBTRACT;
+
+		case TokenType::LeftBitShiftAssign:
+			return ASSIGNMENT_LEFT_BIT_SHIFT;
+
+		case TokenType::RightBitShiftAssign:
+			return ASSIGNMENT_RIGHT_BIT_SHIFT;
+
+		case TokenType::BitwiseAndAssign:
+			return ASSIGNMENT_BITWISE_AND;
+
+		case TokenType::BitwiseOrAssign:
+			return ASSIGNMENT_BITWISE_OR;
+
+		case TokenType::BitwiseXorAssign:
+			return ASSIGNMENT_BITWISE_XOR;
+		
+		default:
+			return {};
+	}
+}
+
+Optional<ExpressionId> Assignment::parse(Token& token)
+{
+	auto lhs = ConditionalExpression::parse(token);
+
+	if (!lhs)
+		return {};
+
+	auto type = getAssignmentType(token);
+
+	if (!type)
+		return lhs;
+
+	token.increment();
+
+	auto rhs = ConditionalExpression::parse(token);
+
+	if (!rhs)
+		return {};
+
+	auto expression = Assignment(*lhs, *rhs, *type);
+	auto id = NodeBank::add(std::move(expression));
+
+	return id;
+}
+
+bool Assignment::validate(const EntityId& functionId)
+{
+	bool success = true;
+
+	if (!NodeBank::get(_lhs).validate(functionId))
+		success = false;
+
+	if (!NodeBank::get(_rhs).validate(functionId))
+		success = false;
+
+	// TODO: validate type of assignment
+
+	return success;
+}
+
+Optional<Type> Assignment::getType() const
+{
+	exitNotImplemented(here());
+}

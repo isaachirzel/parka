@@ -1,0 +1,532 @@
+#include "parka/node/node_bank.hpp"
+#include "parka/ast/additive_expression.hpp"
+#include "parka/ast/assignment_expression.hpp"
+#include "parka/ast/bitwise_and_expression.hpp"
+#include "parka/ast/bitwise_or_expression.hpp"
+#include "parka/ast/bitwise_xor_expression.hpp"
+#include "parka/ast/block.hpp"
+#include "parka/ast/boolean_and_expression.hpp"
+#include "parka/ast/boolean_or_expression.hpp"
+#include "parka/ast/call_expression.hpp"
+#include "parka/ast/conditional_expression.hpp"
+#include "parka/ast/equality_expression.hpp"
+#include "parka/ast/identifier_expression.hpp"
+#include "parka/ast/if_expression.hpp"
+#include "parka/ast/subscript_expression.hpp"
+#include "parka/ast/bool_literal.hpp"
+#include "parka/ast/char_literal.hpp"
+#include "parka/ast/float_literal.hpp"
+#include "parka/ast/integer_literal.hpp"
+#include "parka/ast/string_literal.hpp"
+#include "parka/ast/member_access_expression.hpp"
+#include "parka/ast/multiplicative_expression.hpp"
+#include "parka/ast/prefix_expression.hpp"
+#include "parka/ast/relational_expression.hpp"
+#include "parka/ast/shift_expression.hpp"
+#include "parka/ast/function.hpp"
+#include "parka/ast/parameter.hpp"
+#include "parka/ast/variable.hpp"
+#include "parka/ast/package.hpp"
+#include "parka/ast/declaration_statement.hpp"
+#include "parka/ast/expression_statement.hpp"
+#include "parka/ast/jump_statement.hpp"
+#include "parka/ast/struct.hpp"
+#include "parka/node/entity_id.hpp"
+#include "parka/node/expression_id.hpp"
+#include "parka/util/array.hpp"
+#include "parka/ast/primitive.hpp"
+#include "parka/util/pool.hpp"
+#include "parka/util/print.hpp"
+
+Array<Primitive> _primitives(14);
+Pool<Package> _packages(10'000);
+Pool<Struct> _structs(100'000);
+Pool<Function> _functions(1'000'000);
+Pool<Variable> _variables(10'000'000);
+Pool<Parameter> _parameters(10'000'000);
+Pool<AdditiveExpression> _additiveExpressions(100'000'000);
+Pool<Assignment> _assignmentExpressions(100'000'000);
+Pool<BitwiseAndExpression> _bitwiseAndExpressions(100'000'000);
+Pool<BitwiseOrExpression> _bitwiseOrExpressions(100'000'000);
+Pool<BitwiseXorExpression> _bitwiseXorExpressions(100'000'000);
+Pool<Block> _blockExpressions(100'000'000);
+Pool<BooleanAndExpression> _booleanAndExpressions(100'000'000);
+Pool<BooleanOrExpression> _booleanOrExpressions(100'000'000);
+Pool<CallExpression> _callExpressions(100'000'000);
+Pool<ConditionalExpression> _conditionalExpressions(100'000'000);
+Pool<EqualityExpression> _equalityExpressions(100'000'000);
+Pool<IdentifierExpression> _identifierExpressions(100'000'000);
+Pool<IfExpression> _ifExpressions(100'000'000);
+Pool<IndexExpression> _subscriptExpressions(100'000'000);
+Pool<MemberAccess> _memberAccessExpressions(100'000'000);
+Pool<MultiplicativeExpression> _multiplicativeExpressions(100'000'000);
+Pool<Prefix> _prefixExpressions(100'000'000);
+Pool<RelationalExpression> _relationalExpressions(100'000'000);
+Pool<BitShiftExpression> _shiftExpressions(100'000'000);
+Pool<Declaration> _declarationStatements(10'000'000);
+Pool<ExpressionStatement> _expressionStatements(10'000'000);
+Pool<JumpStatement> _jumpStatements(1'000'000);
+Pool<BoolLiteral> _boolLiterals(1'000'000);
+Pool<CharLiteral> _charLiterals(1'000'000);
+Pool<FloatLiteral> _floatLiterals(1'000'000);
+Pool<IntegerLiteral> _integerLiterals(1'000'000);
+Pool<StringLiteral> _stringLiterals(1'000'000);
+
+const EntityId NodeBank::voidId(EntityType::Primitive, 0);
+const EntityId NodeBank::u8Id(EntityType::Primitive, 1);
+const EntityId NodeBank::u16Id(EntityType::Primitive, 2);
+const EntityId NodeBank::u32Id(EntityType::Primitive, 3);
+const EntityId NodeBank::u64Id(EntityType::Primitive, 4);
+const EntityId NodeBank::i8Id(EntityType::Primitive, 5);
+const EntityId NodeBank::i16Id(EntityType::Primitive, 6);
+const EntityId NodeBank::i32Id(EntityType::Primitive, 7);
+const EntityId NodeBank::i64Id(EntityType::Primitive, 8);
+const EntityId NodeBank::f32Id(EntityType::Primitive, 9);
+const EntityId NodeBank::f64Id(EntityType::Primitive, 10);
+const EntityId NodeBank::boolId(EntityType::Primitive, 11);
+const EntityId NodeBank::charId(EntityType::Primitive, 12);
+const EntityId NodeBank::stringId(EntityType::Primitive, 13);
+
+void NodeBank::initialize()
+{
+	_primitives.push({ "void", PrimitiveType::Void, 0 });
+	_primitives.push({ "u8", PrimitiveType::UnsignedInteger, 1 });
+	_primitives.push({ "u16", PrimitiveType::UnsignedInteger, 2 });
+	_primitives.push({ "u32", PrimitiveType::UnsignedInteger, 4 });
+	_primitives.push({ "u64", PrimitiveType::UnsignedInteger, 8 });
+	_primitives.push({ "i8", PrimitiveType::SignedInteger, 1 });
+	_primitives.push({ "i16", PrimitiveType::SignedInteger, 2 });
+	_primitives.push({ "i32", PrimitiveType::SignedInteger, 4 });
+	_primitives.push({ "i64", PrimitiveType::SignedInteger, 8 });
+	_primitives.push({ "f32", PrimitiveType::FloatingPoint, 4 });
+	_primitives.push({ "f64", PrimitiveType::FloatingPoint, 8 });
+	_primitives.push({ "bool", PrimitiveType::Boolean, 1 });
+	_primitives.push({ "char", PrimitiveType::Character, 1 });
+	_primitives.push({ "string", PrimitiveType::String, 0 });
+}
+
+EntityId NodeBank::add(Package&& value)
+{
+	usize index = _packages.add(std::move(value));
+
+	return EntityId(EntityType::Package, index);
+}
+
+EntityId NodeBank::add(Struct&& value)
+{
+	usize index = _structs.add(std::move(value));
+	
+	return EntityId(EntityType::Struct, index);
+}
+
+EntityId NodeBank::add(Function&& value)
+{
+	usize index = _functions.add(std::move(value));
+	
+	return EntityId(EntityType::Function, index);
+}
+
+EntityId NodeBank::add(Variable&& value)
+{
+	usize index = _variables.add(std::move(value));
+	
+	return EntityId(EntityType::Variable, index);
+}
+
+EntityId NodeBank::add(Parameter&& value)
+{
+	usize index = _parameters.add(std::move(value));
+
+	return EntityId(EntityType::Parameter, index);
+}
+
+ExpressionId NodeBank::add(AdditiveExpression&& value)
+{
+	auto index = _additiveExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Additive, index);
+}
+
+ExpressionId NodeBank::add(Assignment&& value)
+{
+	auto index = _assignmentExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Assignment, index);
+}
+
+ExpressionId NodeBank::add(BitwiseAndExpression&& value)
+{
+	auto index = _bitwiseAndExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::BitwiseAnd, index);
+}
+
+ExpressionId NodeBank::add(BitwiseOrExpression&& value)
+{
+	auto index = _bitwiseOrExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::BitwiseOr, index);
+}
+
+ExpressionId NodeBank::add(BitwiseXorExpression&& value)
+{
+	auto index = _bitwiseXorExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::BitwiseXor, index);
+}
+
+ExpressionId NodeBank::add(Block&& value)
+{
+	auto index = _blockExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Block, index);
+}
+
+ExpressionId NodeBank::add(BooleanAndExpression&& value)
+{
+	auto index = _booleanAndExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::BooleanAnd, index);
+}
+
+ExpressionId NodeBank::add(BooleanOrExpression&& value)
+{
+	auto index = _booleanOrExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::BooleanOr, index);
+}
+
+ExpressionId NodeBank::add(CallExpression&& value)
+{
+	auto index = _callExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Call, index);
+}
+
+ExpressionId NodeBank::add(ConditionalExpression&& value)
+{
+	auto index = _conditionalExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Conditional, index);
+}
+
+ExpressionId NodeBank::add(EqualityExpression&& value)
+{
+	auto index = _equalityExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Equality, index);
+}
+
+ExpressionId NodeBank::add(IdentifierExpression&& value)
+{
+	auto index = _identifierExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::IdentifierExpression, index);
+}
+
+ExpressionId NodeBank::add(IfExpression&& value)
+{
+	auto index = _ifExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::If, index);
+}
+
+ExpressionId NodeBank::add(IndexExpression&& value)
+{
+	auto index = _subscriptExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Subscript, index);
+}
+
+ExpressionId NodeBank::add(MemberAccess&& value)
+{
+	auto index = _memberAccessExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::MemberAccess, index);
+}
+
+ExpressionId NodeBank::add(MultiplicativeExpression&& value)
+{
+	auto index = _multiplicativeExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Multiplicative, index);
+}
+
+ExpressionId NodeBank::add(Prefix&& value)
+{
+	auto index = _prefixExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Prefix, index);
+}
+
+ExpressionId NodeBank::add(RelationalExpression&& value)
+{
+	auto index = _relationalExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Relational, index);
+}
+
+ExpressionId NodeBank::add(BitShiftExpression&& value)
+{
+	auto index = _shiftExpressions.add(std::move(value));
+
+	return ExpressionId(ExpressionType::Shift, index);
+}
+
+ExpressionId NodeBank::add(BoolLiteral&& value)
+{
+	auto index = _boolLiterals.add(std::move(value));
+
+	return ExpressionId(ExpressionType::BoolLiteral, index);
+}
+
+ExpressionId NodeBank::add(CharLiteral&& value)
+{
+	auto index = _charLiterals.add(std::move(value));
+
+	return ExpressionId(ExpressionType::CharLiteral, index);
+}
+
+ExpressionId NodeBank::add(FloatLiteral&& value)
+{
+	auto index = _floatLiterals.add(std::move(value));
+
+	return ExpressionId(ExpressionType::FloatLiteral, index);
+}
+
+ExpressionId NodeBank::add(IntegerLiteral&& value)
+{
+	auto index = _integerLiterals.add(std::move(value));
+
+	return ExpressionId(ExpressionType::IntegerLiteral, index);
+}
+
+ExpressionId NodeBank::add(StringLiteral&& value)
+{
+	auto index = _stringLiterals.add(std::move(value));
+
+	return ExpressionId(ExpressionType::StringLiteral, index);
+}
+
+StatementId NodeBank::add(Declaration&& value)
+{
+	auto index = _declarationStatements.add(std::move(value));
+
+	return StatementId(StatementType::Declaration, index);
+}
+
+StatementId NodeBank::add(ExpressionStatement&& value)
+{
+	auto index = _expressionStatements.add(std::move(value));
+
+	return StatementId(StatementType::Expression, index);
+}
+
+StatementId NodeBank::add(JumpStatement&& value)
+{
+	auto index = _jumpStatements.add(std::move(value));
+
+	return StatementId(StatementType::Jump, index);
+}
+
+Entity& NodeBank::get(const EntityId& id)
+{
+	switch (id.type())
+	{
+		case EntityType::Package:
+			return _packages[id.index()];
+
+		case EntityType::Struct:
+			return _structs[id.index()];
+
+		case EntityType::Primitive:
+			return _primitives[id.index()];
+
+		case EntityType::Function:
+			return _functions[id.index()];
+			
+		case EntityType::Variable:
+			return _variables[id.index()];
+
+		case EntityType::Parameter:
+			return _parameters[id.index()];
+
+		default:
+			break;
+	}
+	
+	exitWithError("Unable to get entity of type: $", (int)id.type());
+}
+
+Expression& NodeBank::get(const ExpressionId& id)
+{
+	switch (id.type())
+	{
+		case ExpressionType::Additive:
+			return _additiveExpressions[id.index()];
+
+		case ExpressionType::Assignment:
+			return _assignmentExpressions[id.index()];
+
+		case ExpressionType::BitwiseAnd:
+			return _bitwiseAndExpressions[id.index()];
+
+		case ExpressionType::BitwiseOr:
+			return _bitwiseOrExpressions[id.index()];
+
+		case ExpressionType::BitwiseXor:
+			return _bitwiseXorExpressions[id.index()];
+
+		case ExpressionType::Block:
+			return _blockExpressions[id.index()];
+
+		case ExpressionType::BooleanAnd:
+			return _booleanAndExpressions[id.index()];
+
+		case ExpressionType::BooleanOr:
+			return _booleanOrExpressions[id.index()];
+
+		case ExpressionType::Call:
+			return _callExpressions[id.index()];
+
+		case ExpressionType::Conditional:
+			return _conditionalExpressions[id.index()];
+
+		case ExpressionType::Equality:
+			return _equalityExpressions[id.index()];
+
+		case ExpressionType::IdentifierExpression:
+			return _identifierExpressions[id.index()];
+
+		case ExpressionType::If:
+			// TODO: Implemente get for If
+			break;
+			// return _ifExpressions[id.index()];
+
+		case ExpressionType::Subscript:
+			return _subscriptExpressions[id.index()];
+
+		case ExpressionType::MemberAccess:
+			return _memberAccessExpressions[id.index()];
+
+		case ExpressionType::Multiplicative:
+			return _multiplicativeExpressions[id.index()];
+
+		case ExpressionType::Prefix:
+			return _prefixExpressions[id.index()];
+
+		case ExpressionType::Relational:
+			return _relationalExpressions[id.index()];
+
+		case ExpressionType::Shift:
+			return _shiftExpressions[id.index()];
+
+		case ExpressionType::BoolLiteral:
+			return _boolLiterals[id.index()];
+			
+		case ExpressionType::CharLiteral:
+			return _charLiterals[id.index()];
+			
+		case ExpressionType::FloatLiteral:
+			return _floatLiterals[id.index()];
+			
+		case ExpressionType::IntegerLiteral:
+			return _integerLiterals[id.index()];
+			
+		case ExpressionType::StringLiteral:
+			return _stringLiterals[id.index()];
+			
+		default:
+			break;
+	}
+
+	exitWithError("Unable to get Expression of type: $", (int)id.type());
+}
+
+Statement& NodeBank::get(const StatementId& id)
+{
+	switch (id.type())
+	{
+		case StatementType::Declaration:
+			return _declarationStatements[id.index()];
+
+		case StatementType::Expression:
+			return _expressionStatements[id.index()];
+
+		case StatementType::Jump:
+			return _jumpStatements[id.index()];
+
+		default:
+			break;
+	}
+
+	exitWithError("Unable to get Statement of type: $", (int)id.type());
+}
+
+Package& NodeBank::getPackage(const EntityId& id)
+{
+	assert(id.type() == EntityType::Package);
+
+	return _packages[id.index()];
+}
+
+Struct& NodeBank::getStruct(const EntityId& id)
+{
+	assert(id.type() == EntityType::Struct);
+
+	return _structs[id.index()];
+}
+
+Function& NodeBank::getFunction(const EntityId& id)
+{
+	assert(id.type() == EntityType::Function);
+
+	return _functions[id.index()];
+}
+
+Variable& NodeBank::getVariable(const EntityId& id)
+{
+	assert(id.type() == EntityType::Variable);
+
+	return _variables[id.index()];
+}
+
+Parameter& NodeBank::getParameter(const EntityId& id)
+{
+	assert(id.type() == EntityType::Parameter);
+
+	return _parameters[id.index()];
+}
+
+EntityId NodeBank::getId(Function& value)
+{
+	auto index = _functions.getIndex(&value);
+	auto id = EntityId(EntityType::Function, index);
+
+	return id;
+}
+
+EntityId NodeBank::getId(Package& value)
+{
+	auto index = _packages.getIndex(&value);
+	auto id = EntityId(EntityType::Package, index);
+
+	return id;
+}
+
+void NodeBank::declarePrimitives(Table<String, EntityId>& globalSymbols)
+{
+	usize index = 0;
+
+	for (const auto& primitive: _primitives)
+	{
+		globalSymbols.emplace(primitive.identifier(), EntityId { EntityType::Primitive, index });
+		
+		index += 1;
+	}
+}
+
+usize NodeBank::getGlobalCount()
+{
+	return _packages.count() + _structs.count() + _functions.count();
+}

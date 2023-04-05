@@ -1,6 +1,6 @@
 #include "parka/ast/ast.hpp"
-#include "parka/symbol/entity_id.hpp"
-#include "parka/symbol/node_bank.hpp"
+#include "parka/node/entity_id.hpp"
+#include "parka/node/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/file.hpp"
 #include "parka/util/path.hpp"
@@ -9,7 +9,7 @@
 #include "parka/util/table.hpp"
 #include "parka/util/timer.hpp"
 
-void printErrorCount(Project& project)
+void printErrorCount(const Project& project)
 {
 	printError("Failed to compile `$`: encountered $ error(s).", project.name(), getErrorCount());
 }
@@ -22,32 +22,30 @@ int main(int argc, const char *argv[])
 		exitWithError("Please supply only a path to the project root directory.");
 
 	auto timer = Timer();
-	auto projectResult = Project::read(argv[1]);
+	auto project = Project::read(argv[1]);
 
-	if (!projectResult)
+	if (!project)
 		return 1;
 
-	auto& project = *projectResult;
 	auto readTime = timer.split();
 
 	printSuccess("Project loaded in $ seconds.", readTime);
 
-	auto astResult = Ast::parse(project);
+	auto ast = Ast::parse(*project);
 
-	if (!astResult)
+	if (!ast)
 	{
-		printErrorCount(project);
+		printErrorCount(*project);
 		return 1;
 	}
 
-	auto& ast = *astResult;
 	auto parseTime = timer.split();
 
 	printSuccess("Parsing completed in $ seconds.", parseTime);
 
-	if (!ast.validate())
+	if (!ast->validate())
 	{
-		printErrorCount(project);
+		printErrorCount(*project);
 		return 1;
 	}
 
@@ -56,10 +54,10 @@ int main(int argc, const char *argv[])
 	printSuccess("Validation completed in $ seconds.", validatetime);
 
 	auto compileTime = timer.stop();
-	auto linesOfCodeCount = project.getLinesOfCodeCount();
+	auto linesOfCodeCount = project->getLinesOfCodeCount();
 	auto compileSpeed = (usize)(linesOfCodeCount / compileTime / 1000.0);
 
-	printSuccess("Compiled `$` in $ seconds at $k lines/sec.", project.name(), compileTime, compileSpeed);
+	printSuccess("Compiled `$` in $ seconds at $k lines/sec.", project->name(), compileTime, compileSpeed);
 
 	return 0;
 }

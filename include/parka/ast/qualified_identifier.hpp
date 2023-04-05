@@ -17,6 +17,10 @@ class QualifiedIdentifier
 
 public:
 
+	QualifiedIdentifier(QualifiedIdentifier&&) = default;
+	QualifiedIdentifier(const QualifiedIdentifier&) = delete;
+	~QualifiedIdentifier() = default;
+
 	static Optional<QualifiedIdentifier> parse(Token& token);
 
 	const auto& operator[](usize index) const { return _parts[index]; }

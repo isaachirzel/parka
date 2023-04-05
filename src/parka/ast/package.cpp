@@ -1,10 +1,9 @@
 #include "parka/ast/package.hpp"
-#include "parka/ast/function/function.hpp"
+#include "parka/ast/function.hpp"
 #include "parka/ast/module.hpp"
-#include "parka/ast/struct/struct.hpp"
-#include "parka/symbol/entity_id.hpp"
-#include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/scope.hpp"
+#include "parka/ast/struct.hpp"
+#include "parka/node/entity_id.hpp"
+#include "parka/node/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/file.hpp"
@@ -29,7 +28,7 @@ Optional<EntityId> Package::parse(const Directory& directory, const String& name
 			continue;
 		}
 
-		modules.push(mod.unwrap());
+		modules.push(*mod);
 	}
 
 	for (const auto& subdirectory : directory.subdirectories())
@@ -42,7 +41,7 @@ Optional<EntityId> Package::parse(const Directory& directory, const String& name
 			continue;
 		}
 
-		packageIds.push(packageId.unwrap());
+		packageIds.push(*packageId);
 	}
 
 	if (!success)

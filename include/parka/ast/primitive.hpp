@@ -1,9 +1,9 @@
 #ifndef PARKA_AST_PRIMITIVE_HPP
 #define PARKA_AST_PRIMITIVE_HPP
 
-#include "parka/symbol/entity.hpp"
-#include "parka/symbol/node_bank.hpp"
-#include "parka/symbol/typed_entity.hpp"
+#include "parka/node/entity.hpp"
+#include "parka/node/node_bank.hpp"
+#include "parka/node/typed_entity.hpp"
 #include "parka/token.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/primitives.hpp"

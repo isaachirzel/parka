@@ -13,7 +13,7 @@ Optional<Project> Project::read(const String& path)
         return {};
 
     auto name = path::getFilename(path);
-    auto project = Project(std::move(name), directory.unwrap());
+    auto project = Project(std::move(name), *directory);
 
     return project;
 }

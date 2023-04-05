@@ -3,59 +3,60 @@
 
 #include <cassert>
 #include <type_traits>
-#include <utility>
 
 template <typename T>
 class Optional
 {
-private:
-
-	union
-	{
-		T _value;
-	};
+	alignas(T) char _value[sizeof(T)];
 	bool _hasValue;
 
 public:
-
-	Optional(T&& value) :
-	_value(std::move(value)),
-	_hasValue(true)
-	{}
-
-	template <typename U = T, typename = std::enable_if<std::is_fundamental_v<U>, U>>
-	Optional(const T& value) :
-	_value(value),
-	_hasValue(true)
-	{}
 
 	Optional() :
 	_hasValue(false)
 	{}
 
+	Optional(T&& value) :
+	_hasValue(true)
+	{
+		new ((T*)_value) auto (std::move(value));
+	}
+
+	template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
+	Optional(const T& value) :
+	_hasValue(true)
+	{
+		new ((T*)_value) auto (value);
+	}
+
 	Optional(Optional&& other) :
-	// _value(std::move(other._value)),
 	_hasValue(other._hasValue)
 	{
 		if (other._hasValue)
 		{
-			T& newItem = _value;
-			T& oldItem = other._value;
+			auto *newItem = (T*)_value;
+			auto *oldItem = (T*)other._value;
 
-			new (&newItem) auto (std::move(oldItem));
+			new (newItem) auto (std::move(*oldItem));
 
 			other._hasValue = false;
 		}
 	}
 
-	Optional(const Optional&) = delete;
+	template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
+	Optional(const Optional& other)
+	{
+		new (this) auto(other);
+	}
 
 	~Optional()
 	{
 		if constexpr (!std::is_fundamental_v<T>)
 		{
 			if (_hasValue)
-				_value.~T();
+				((T&)_value).~T();
+
+			_hasValue = false;
 		}
 	}
 
@@ -66,15 +67,19 @@ public:
 		return *this;
 	}
 
-	Optional& operator =(const Optional& other) = delete;
+	template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
+	Optional& operator =(const Optional& other)
+	{
+		new (this) auto (other);
+		return *this;
+	}
 
 	operator bool() const { return _hasValue; }
-	const auto& hasValue() const { return _hasValue; }
-	auto *operator->() { assert(_hasValue); return &_value; }
-	const auto *operator->() const { assert(_hasValue); return &_value; }
-	auto& operator*() { assert(_hasValue); return _value; }
-	const auto& operator*() const { assert(_hasValue); return _value; }
-	auto&& unwrap() { return std::move(_value); }
+	const bool& hasValue() const { return _hasValue; }
+	T *operator->() { assert(_hasValue); return (T*)_value; }
+	const T *operator->() const { assert(_hasValue); return (T*)_value; }
+	T&& operator*() { assert(_hasValue); return std::move((T&)_value); }
+	const T& operator*() const { assert(_hasValue); return (T&)_value; }
 };
 
 #endif

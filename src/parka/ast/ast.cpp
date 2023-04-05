@@ -1,10 +1,10 @@
 #include "parka/ast/ast.hpp"
-#include "parka/ast/struct/member.hpp"
+#include "parka/ast/member.hpp"
 #include "parka/ast/package.hpp"
-#include "parka/ast/struct/struct.hpp"
-#include "parka/symbol/entity.hpp"
-#include "parka/symbol/entity_id.hpp"
-#include "parka/symbol/node_bank.hpp"
+#include "parka/ast/struct.hpp"
+#include "parka/node/entity.hpp"
+#include "parka/node/entity_id.hpp"
+#include "parka/node/node_bank.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/directory.hpp"
 #include "parka/util/path.hpp"
@@ -58,7 +58,7 @@ Optional<Ast> Ast::parse(const Project& project)
 	if (!globalPackageId)
 		return {};
 
-	auto ast = Ast(globalPackageId.unwrap());
+	auto ast = Ast(*globalPackageId);
 
 	return ast;
 }

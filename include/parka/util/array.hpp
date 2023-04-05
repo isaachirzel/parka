@@ -145,13 +145,13 @@ public:
 		_length = 0;
 	}
 
-	T& operator[](usize index)
+	constexpr T& operator[](usize index)
 	{
 		assert(index < _length);
 		return _data[index];
 	}
 
-	const T& operator[](usize index) const
+	constexpr const T& operator[](usize index) const
 	{
 		assert(index < _length);
 		return _data[index];

@@ -24,7 +24,7 @@ Optional<QualifiedIdentifier> QualifiedIdentifier::parse(Token& token)
 		if (!identifier)
 			return {};
 
-		parts.push(identifier.unwrap());
+		parts.push(*identifier);
 
 		if (token.type() == TokenType::Scope)
 		{

@@ -1,9 +1,9 @@
 #include "parka/ast/module.hpp"
-#include "parka/ast/function/function.hpp"
+#include "parka/ast/function.hpp"
 #include "parka/ast/keyword.hpp"
 #include "parka/ast/package.hpp"
-#include "parka/ast/struct/struct.hpp"
-#include "parka/symbol/node_bank.hpp"
+#include "parka/ast/struct.hpp"
+#include "parka/node/node_bank.hpp"
 #include "parka/token.hpp"
 #include "parka/util/array.hpp"
 #include "parka/util/path.hpp"
@@ -34,7 +34,7 @@ Optional<Module> Module::parse(const File& file)
 					break;
 				}
 
-				functionIds.push(functionId.unwrap());
+				functionIds.push(*functionId);
 
 				continue;
 			}
@@ -49,7 +49,7 @@ Optional<Module> Module::parse(const File& file)
 					break;
 				}
 
-				structIds.push(structId.unwrap());
+				structIds.push(*structId);
 
 				continue;
 			}
