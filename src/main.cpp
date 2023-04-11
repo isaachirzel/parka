@@ -1,6 +1,6 @@
 #include "parka/syntax/SyntaxTree.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/file/File.hpp"
 #include "parka/util/Path.hpp"

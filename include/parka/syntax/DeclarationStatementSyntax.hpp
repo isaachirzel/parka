@@ -11,10 +11,10 @@ namespace parka
 {
 	class DeclarationStatementSyntax : public StatementSyntax
 	{
-		EntityId _variableId;
-		ExpressionId _value;
+		EntitySyntaxId _variableId;
+		ExpressionSyntaxId _value;
 
-		DeclarationStatementSyntax(EntityId variableId, ExpressionId value) :
+		DeclarationStatementSyntax(EntitySyntaxId variableId, ExpressionSyntaxId value) :
 		_variableId(variableId),
 		_value(value)
 		{}
@@ -25,7 +25,7 @@ namespace parka
 		DeclarationStatementSyntax(const DeclarationStatementSyntax&) = delete;
 		~DeclarationStatementSyntax() = default;
 
-		static Optional<StatementId> parse(Token& token);
+		static Optional<StatementSyntaxId> parse(Token& token);
 
 		const auto& variableId() const { return _variableId; }
 		const auto& value() const { return _value; }

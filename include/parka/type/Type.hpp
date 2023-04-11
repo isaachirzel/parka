@@ -1,7 +1,7 @@
 #ifndef PARKA_TYPE_HPP
 #define PARKA_TYPE_HPP
 
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/util/Primitives.hpp"
 #include "parka/util/String.hpp"
 
@@ -28,13 +28,13 @@ namespace parka
 
 	private:
 
-		EntityId _entityId;
+		EntitySyntaxId _entityId;
 
 		// TODO: Add pointer info
 		// TODO: Add LiteralSyntax for better type inference?
 	public:
 
-		Type(EntityId entityId) :
+		Type(EntitySyntaxId entityId) :
 		_entityId(entityId)
 		{}
 		Type(Type&&) = default;

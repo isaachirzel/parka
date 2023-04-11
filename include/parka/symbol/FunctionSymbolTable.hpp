@@ -3,7 +3,7 @@
 
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
@@ -15,22 +15,22 @@ namespace parka
 
 	class FunctionSymbolTable
 	{
-		EntityId _functionId;
+		EntitySyntaxId _functionId;
 		const PackageSymbolTable& _parentPackage;
-		Table<String, EntityId> _symbols;
+		Table<String, EntitySyntaxId> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
 	public:
 
-		FunctionSymbolTable(const EntityId& functionId, const PackageSymbolTable& parentPackage) :
+		FunctionSymbolTable(const EntitySyntaxId& functionId, const PackageSymbolTable& parentPackage) :
 		_functionId(functionId),
 		_parentPackage(parentPackage)
 		{}
 
-		Optional<EntityId> resolve(const Identifier& identifier) const;
-		Optional<EntityId> resolve(const QualifiedIdentifier& identifier) const;
+		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
+		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		
-		void addBlock(const ExpressionId& blockId);
+		void addBlock(const ExpressionSyntaxId& blockId);
 	};
 }
 

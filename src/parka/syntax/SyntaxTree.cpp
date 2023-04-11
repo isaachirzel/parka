@@ -3,9 +3,9 @@
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
-#include "parka/data/EntitySyntax.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/Storage.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/util/Path.hpp"
@@ -13,7 +13,7 @@
 
 namespace parka
 {
-	const MemberSyntax *getRecursiveMember(const Array<MemberSyntax>&, EntityId /*parentId*/)
+	const MemberSyntax *getRecursiveMember(const Array<MemberSyntax>&, EntitySyntaxId /*parentId*/)
 	{
 		exitNotImplemented(here());
 		// for (const auto& member : members)
@@ -39,7 +39,7 @@ namespace parka
 		// return nullptr;
 	}
 
-	bool validateStructRecursion(EntityId structId)
+	bool validateStructRecursion(EntitySyntaxId structId)
 	{
 		auto& strct = Storage::getStruct(structId);
 

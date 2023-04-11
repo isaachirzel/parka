@@ -1,15 +1,11 @@
 #ifndef PARKA_SYNTAX_OPERATOR_OPERATOR_SYNTAX_HPP
 #define PARKA_SYNTAX_OPERATOR_OPERATOR_SYNTAX_HPP
 
+#include "parka/enum/OperatorType.hpp"
 #include "parka/util/Primitives.hpp"
 
 namespace parka
 {
-	enum class OperatorType
-	{
-		Add
-	};
-
 	class OperatorId
 	{
 		OperatorType _type;

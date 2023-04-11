@@ -7,10 +7,10 @@ namespace parka
 {
 	class BooleanOrExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionId _lhs;
-		ExpressionId _rhs;
+		ExpressionSyntaxId _lhs;
+		ExpressionSyntaxId _rhs;
 
-		BooleanOrExpressionSyntax(ExpressionId&& lhs, ExpressionId&&rhs) :
+		BooleanOrExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&&rhs) :
 		_lhs(std::move(lhs)),
 		_rhs(std::move(rhs))
 		{}
@@ -21,7 +21,7 @@ namespace parka
 		BooleanOrExpressionSyntax(const BooleanOrExpressionSyntax&) = delete;
 		~BooleanOrExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

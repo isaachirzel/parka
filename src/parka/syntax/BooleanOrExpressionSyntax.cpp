@@ -1,11 +1,11 @@
 #include "parka/syntax/BooleanOrExpressionSyntax.hpp"
 #include "parka/syntax/BooleanAndExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> BooleanOrExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> BooleanOrExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = BooleanAndExpressionSyntax::parse(token);
 

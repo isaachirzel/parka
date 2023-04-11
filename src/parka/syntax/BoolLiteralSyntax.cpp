@@ -1,6 +1,6 @@
 #include "parka/syntax/BoolLiteralSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
@@ -27,7 +27,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<ExpressionId> BoolLiteralSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> BoolLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseBool(token);
 

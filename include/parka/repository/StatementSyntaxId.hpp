@@ -12,22 +12,22 @@ namespace parka
 		Jump
 	};
 
-	class StatementId
+	class StatementSyntaxId
 	{
 		usize _index;
 		StatementType _type;
 
 	public:
 		
-		StatementId(StatementType type, usize index) :
+		StatementSyntaxId(StatementType type, usize index) :
 		_index(index),
 		_type(type)
 		{}
-		StatementId(StatementId&&) = default;
-		StatementId(const StatementId&) = default;
-		~StatementId() = default;
-		StatementId& operator=(StatementId&&) = default;
-		StatementId& operator=(const StatementId&) = default;
+		StatementSyntaxId(StatementSyntaxId&&) = default;
+		StatementSyntaxId(const StatementSyntaxId&) = default;
+		~StatementSyntaxId() = default;
+		StatementSyntaxId& operator=(StatementSyntaxId&&) = default;
+		StatementSyntaxId& operator=(const StatementSyntaxId&) = default;
 
 		const auto& index() const { return _index; }
 		const auto& type() const { return _type; }

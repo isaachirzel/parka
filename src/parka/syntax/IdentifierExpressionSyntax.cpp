@@ -1,6 +1,6 @@
 #include "parka/syntax/IdentifierExpressionSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	Optional<ExpressionId> IdentifierExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> IdentifierExpressionSyntax::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
 		auto expression = IdentifierExpressionSyntax(*identifier);
@@ -17,7 +17,7 @@ namespace parka
 		return id;
 	}
 
-	// bool IdentifierExpressionSyntax::validate(const EntityId& functionId)
+	// bool IdentifierExpressionSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	print("Validate identifier");
 	// 	auto& function = Storage::getFunction(functionId);

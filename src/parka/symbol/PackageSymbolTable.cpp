@@ -1,13 +1,13 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	// void PackageSymbolTable::declarePackage(const EntityId& packageId)
+	// void PackageSymbolTable::declarePackage(const EntitySyntaxId& packageId)
 	// {
 	// 	auto& package = Storage::getPackage(packageId);
 
@@ -16,7 +16,7 @@ namespace parka
 	// 	package._parentPackageId = packageId;
 	// }
 
-	// bool PackageSymbolTable::declareEntity(const EntityId& entityId)
+	// bool PackageSymbolTable::declareEntity(const EntitySyntaxId& entityId)
 	// {
 	// 	auto& entity = Storage::get(entityId);
 	// 	const auto& identifier = entity.identifier();
@@ -38,7 +38,7 @@ namespace parka
 	// 	return result.second;
 	// }
 
-	bool declareEntities(Table<String, EntityId>& symbols, const Array<EntityId>& entityIds)
+	bool declareEntities(Table<String, EntitySyntaxId>& symbols, const Array<EntitySyntaxId>& entityIds)
 	{
 		// TODO: Invalidate symbol on failure, better error
 		auto success = true;
@@ -59,12 +59,12 @@ namespace parka
 		return success;
 	}
 
-	Optional<PackageSymbolTable> PackageSymbolTable::declare(const EntityId& packageId, PackageSymbolTable *parent)
+	Optional<PackageSymbolTable> PackageSymbolTable::declare(const EntitySyntaxId& packageId, PackageSymbolTable *parent)
 	{
 		// TODO: pre-reserve symbol count
 		auto success = true;
 		auto& package = Storage::getPackage(packageId);
-		auto symbols = Table<String, EntityId>();
+		auto symbols = Table<String, EntitySyntaxId>();
 
 		if (parent == nullptr)
 			Storage::declarePrimitives(symbols);
@@ -94,12 +94,12 @@ namespace parka
 		return PackageSymbolTable(packageId, std::move(symbols));
 	}
 
-	Optional<PackageSymbolTable> PackageSymbolTable::declare(const EntityId& packageId)
+	Optional<PackageSymbolTable> PackageSymbolTable::declare(const EntitySyntaxId& packageId)
 	{
 		return declare(packageId, nullptr);
 	}
 
-	Optional<EntityId> PackageSymbolTable::find(const Identifier& identifier) const
+	Optional<EntitySyntaxId> PackageSymbolTable::find(const Identifier& identifier) const
 	{
 		auto iter = _symbols.find(identifier.text());
 
@@ -119,7 +119,7 @@ namespace parka
 		return *table;
 	}
 
-	Optional<EntityId> PackageSymbolTable::findGlobal(const Identifier& identifier) const
+	Optional<EntitySyntaxId> PackageSymbolTable::findGlobal(const Identifier& identifier) const
 	{
 		auto& globalSymbols = getGlobalPackageSymbolTable(); 
 		auto global = globalSymbols.find(identifier);
@@ -127,7 +127,7 @@ namespace parka
 		return global;
 	}
 
-	Optional<EntityId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier, usize index) const
+	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier, usize index) const
 	{
 		auto& part = identifier[index];
 		auto result = find(part);
@@ -174,7 +174,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<EntityId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
+	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
 	{
 		return resolve(identifier, 0);
 	}

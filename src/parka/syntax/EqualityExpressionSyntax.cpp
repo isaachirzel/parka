@@ -1,6 +1,6 @@
 #include "parka/syntax/EqualityExpressionSyntax.hpp"
 #include "parka/syntax/RelationalExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -20,7 +20,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionId> EqualityExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> EqualityExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = RelationalExpressionSyntax::parse(token);
 

@@ -1,6 +1,6 @@
 #include "parka/syntax/RelationalExpressionSyntax.hpp"
 #include "parka/syntax/ShiftExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -26,7 +26,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionId> RelationalExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> RelationalExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = ShiftExpressionSyntax::parse(token);
 

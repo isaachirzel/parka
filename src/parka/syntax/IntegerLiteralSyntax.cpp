@@ -1,6 +1,6 @@
 #include "parka/syntax/IntegerLiteralSyntax.hpp"
 #include "parka/type/Type.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -39,7 +39,7 @@ namespace parka
 		return bits;
 	}
 
-	Optional<ExpressionId> IntegerLiteralSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> IntegerLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseInteger(token);
 
@@ -55,7 +55,7 @@ namespace parka
 		return id;
 	}
 
-	// bool IntegerLiteralSyntax::validate(const EntityId&)
+	// bool IntegerLiteralSyntax::validate(const EntitySyntaxId&)
 	// {
 	// 	return true;
 	// }

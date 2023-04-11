@@ -11,10 +11,10 @@ namespace parka
 	{
 		KeywordSyntax _keyword;
 		Identifier _identifier;
-		Array<EntityId> _parameterIds;
+		Array<EntitySyntaxId> _parameterIds;
 		Optional<TypeAnnotationSyntax> _returnType;
 
-		PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<EntityId>&& parameterIds, Optional<TypeAnnotationSyntax>&& returnType) :
+		PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<EntitySyntaxId>&& parameterIds, Optional<TypeAnnotationSyntax>&& returnType) :
 		_keyword(std::move(keyword)),
 		_identifier(std::move(identifier)),
 		_parameterIds(std::move(parameterIds)),
@@ -29,7 +29,7 @@ namespace parka
 
 		static Optional<PrototypeSyntax> parse(Token& token);
 
-		bool validate(const EntityId& functionId);
+		bool validate(const EntitySyntaxId& functionId);
 
 		const auto& identifier() const { return _identifier; }
 		const auto& parameters() const { return _parameterIds; }

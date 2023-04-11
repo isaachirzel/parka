@@ -2,8 +2,8 @@
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-#include "parka/Storage.hpp"
-#include "parka/data/StatementId.hpp"
+#include "parka/repository/Storage.hpp"
+#include "parka/repository/StatementSyntaxId.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
@@ -33,7 +33,7 @@ namespace parka
 		}
 	}
 
-	Optional<StatementId> JumpStatementSyntax::parse(Token& token)
+	Optional<StatementSyntaxId> JumpStatementSyntax::parse(Token& token)
 	{
 		auto type = getJumpType(token);
 
@@ -44,7 +44,7 @@ namespace parka
 
 		token.increment();
 
-		Optional<ExpressionId> value;
+		Optional<ExpressionSyntaxId> value;
 
 		if (token.type() != TokenType::Semicolon)
 		{

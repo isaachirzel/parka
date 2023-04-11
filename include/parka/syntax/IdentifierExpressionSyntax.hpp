@@ -3,8 +3,8 @@
 
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/data/EntitySyntax.hpp"
-#include "parka/data/EntityId.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/Token.hpp"
 #include "parka/type/Type.hpp"
 #include "parka/util/Optional.hpp"
@@ -14,7 +14,7 @@ namespace parka
 	class IdentifierExpressionSyntax : public ExpressionSyntax
 	{
 		QualifiedIdentifier _identifier;
-		Optional<EntityId> _entityId;
+		Optional<EntitySyntaxId> _entityId;
 
 		IdentifierExpressionSyntax(QualifiedIdentifier&& identifier) :
 		_identifier(std::move(identifier)),
@@ -27,7 +27,7 @@ namespace parka
 		IdentifierExpressionSyntax(const IdentifierExpressionSyntax&) = delete;
 		~IdentifierExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& identifier() const { return _identifier; }
 	};

@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	Optional<ExpressionId> ExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> ExpressionSyntax::parse(Token& token)
 	{
 		if (token.type() == TokenType::LeftBrace)
 			return BlockSyntax::parse(token);

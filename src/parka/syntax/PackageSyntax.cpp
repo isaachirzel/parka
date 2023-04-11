@@ -2,8 +2,8 @@
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/file/File.hpp"
@@ -12,13 +12,13 @@
 
 namespace parka
 {
-	Optional<EntityId> PackageSyntax::parse(const Directory& directory, const String& name)
+	Optional<EntitySyntaxId> PackageSyntax::parse(const Directory& directory, const String& name)
 	{
 		// TODO: Add multithreading
 		print("PackageSyntax `$` has $ subpackages and $ modules", name, directory.subdirectories().length(), directory.files().length());
 		auto success = true;
 		auto modules = Array<ModuleSyntax>();
-		auto packageIds = Array<EntityId>(directory.subdirectories().length());
+		auto packageIds = Array<EntitySyntaxId>(directory.subdirectories().length());
 
 		for (const auto& file : directory.files())
 		{
@@ -55,7 +55,7 @@ namespace parka
 		return id;
 	}
 
-	Optional<EntityId> PackageSyntax::parse(const Project& project)
+	Optional<EntitySyntaxId> PackageSyntax::parse(const Project& project)
 	{
 		return PackageSyntax::parse(project.srcDirectory(), "");
 	}
@@ -82,7 +82,7 @@ namespace parka
 	// 	return success;
 	// }
 
-	// bool PackageSyntax::validate(const EntityId& parentPackageId)
+	// bool PackageSyntax::validate(const EntitySyntaxId& parentPackageId)
 	// {
 	// 	// TODO: Multithreading
 	// 	auto success = true;

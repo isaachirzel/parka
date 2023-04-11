@@ -22,7 +22,7 @@ namespace parka
 		CharLiteralSyntax(const CharLiteralSyntax&) = delete;
 		~CharLiteralSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};
 }
 

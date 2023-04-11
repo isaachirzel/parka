@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	Optional<ExpressionId> LiteralSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> LiteralSyntax::parse(Token& token)
 	{
 		switch (token.type())
 		{

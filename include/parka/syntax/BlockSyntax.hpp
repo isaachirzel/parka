@@ -11,9 +11,9 @@ namespace parka
 {
 	class BlockSyntax : public ExpressionSyntax
 	{
-		Array<StatementId> _statements;
+		Array<StatementSyntaxId> _statements;
 
-		BlockSyntax(Array<StatementId>&& statements) :
+		BlockSyntax(Array<StatementSyntaxId>&& statements) :
 		_statements(std::move(statements))
 		{}
 
@@ -23,7 +23,7 @@ namespace parka
 		BlockSyntax(const BlockSyntax&) = delete;
 		~BlockSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& statements() const { return _statements; }
 	};

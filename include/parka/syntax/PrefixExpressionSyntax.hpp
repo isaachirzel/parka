@@ -1,29 +1,20 @@
 #ifndef PARKA_SYNTAX_EXPRESSION_PREFIX_SYNTAX_HPP
 #define PARKA_SYNTAX_EXPRESSION_PREFIX_SYNTAX_HPP
 
+#include "parka/enum/PrefixType.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 
 #include "parka/Token.hpp"
 
 namespace parka
 {
-	enum class PrefixExpressionSyntaxType
-	{
-		Reference,
-		Dereference,
-		Positive,
-		Negative,
-		BitwiseNot,
-		BooleanNot
-	};
-
 	class PrefixExpressionSyntax : public ExpressionSyntax
 	{
 		Token _token;
-		ExpressionId _expression;
-		PrefixExpressionSyntaxType _type;
+		ExpressionSyntaxId _expression;
+		PrefixType _type;
 
-		PrefixExpressionSyntax(PrefixExpressionSyntaxType type, ExpressionId&& expression, const Token& token) :
+		PrefixExpressionSyntax(PrefixType type, ExpressionSyntaxId&& expression, const Token& token) :
 		_token(token),
 		_expression(std::move(expression)),
 		_type(type)
@@ -35,9 +26,9 @@ namespace parka
 		PrefixExpressionSyntax(const PrefixExpressionSyntax&) = delete;
 		~PrefixExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 		
-		bool validate(const EntityId& functionId);
+		bool validate(const EntitySyntaxId& functionId);
 		Optional<Type> getType() const;
 
 		const auto& token() const { return _token; }

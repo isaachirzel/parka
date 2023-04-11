@@ -12,9 +12,9 @@ namespace parka
 {
 	class ExpressionStatementSyntax : public StatementSyntax
 	{
-		ExpressionId _expression;
+		ExpressionSyntaxId _expression;
 
-		ExpressionStatementSyntax(ExpressionId&& expression) :
+		ExpressionStatementSyntax(ExpressionSyntaxId&& expression) :
 		_expression(std::move(expression))
 		{}
 
@@ -24,7 +24,7 @@ namespace parka
 		ExpressionStatementSyntax(const ExpressionStatementSyntax&) = delete;
 		~ExpressionStatementSyntax() = default;
 
-		static Optional<StatementId> parse(Token& token);
+		static Optional<StatementSyntaxId> parse(Token& token);
 
 		const auto& expression() const { return _expression; }
 	};

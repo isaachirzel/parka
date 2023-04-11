@@ -2,28 +2,21 @@
 #define PARKA_SYNTAX_IF_EXPRESSION_SYNTAX_HPP
 
 #include "parka/syntax/ExpressionSyntax.hpp"
-#include "parka/data/StatementId.hpp"
+#include "parka/repository/StatementSyntaxId.hpp"
 
 // TODO: Consider merging this with conditional expression
 
 namespace parka
 {
-	enum class IfType
-	{
-		Then,
-		ThenElse,
-		ThenElseIf
-	};
-
 	class IfExpressionSyntax : public ExpressionSyntax
 	{
-		// ExpressionId _condition;
-		// StatementId _thenCase;
+		// ExpressionSyntaxId _condition;
+		// StatementSyntaxId _thenCase;
 
 		// union
 		// {
-		// 	StatementId _elseCase;
-		// 	ExpressionId _elseIf;
+		// 	StatementSyntaxId _elseCase;
+		// 	ExpressionSyntaxId _elseIf;
 		// };
 
 		// IfType _type;

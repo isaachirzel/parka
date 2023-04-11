@@ -2,74 +2,13 @@
 #define PARKA_TOKEN_HPP
 
 // local includes
+#include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
 #include "parka/util/Primitives.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	enum class TokenType
-	{
-		EndOfFile,
-		Invalid,
-		Identifier,
-		LeftParenthesis,
-		RightParenthesis,
-		LeftBracket,
-		RightBracket,
-		LeftBrace,
-		RightBrace,
-		Semicolon,
-		Colon,
-		Comma,
-		Dot,
-		Range,
-		Elipsis,
-		Ampersand,
-		Pipe,
-		Carrot,
-		LeftBitShift,
-		RightBitShift,
-		BooleanNot,
-		BooleanAnd,
-		BooleanOr,
-		BitwiseNot,
-		BitwiseXor,
-		Equals,
-		NotEquals,
-		LessThanOrEqualTo,
-		GreaterThanOrEqualTo,
-		LessThan,
-		GreaterThan,
-		SingleArrow,
-		DoubleArrow,
-		Option,
-		Question,
-		Assign,
-		AddAssign,
-		SubtractAssign,
-		MultiplyAssign,
-		DivideAssign,
-		ModulusAssign,
-		LeftBitShiftAssign,
-		RightBitShiftAssign,
-		BitwiseAndAssign,
-		BitwiseOrAssign,
-		BitwiseXorAssign,
-		BooleanOrAssign,
-		BooleanAndAssign,
-		Modulus,
-		Slash,
-		Asterisk,
-		Plus,
-		Minus,
-		Scope,
-		IntegerLiteralSyntax,
-		FloatLiteralSyntax,
-		CharacterLiteral,
-		StringLiteralSyntax
-	};
-
 	class Token
 	{
 		const File& _file;

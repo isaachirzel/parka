@@ -53,7 +53,7 @@ namespace parka
 		return member;
 	}
 
-	// bool MemberSyntax::validate(const EntityId& functionId)
+	// bool MemberSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	return _annotation.validate(functionId);
 	// }

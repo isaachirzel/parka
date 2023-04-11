@@ -2,12 +2,12 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<EntityId> ParameterSyntax::parse(Token& token)
+	Optional<EntitySyntaxId> ParameterSyntax::parse(Token& token)
 	{
 		auto mutKeyword = KeywordSyntax::parseMut(token);
 		auto isMutable = !!mutKeyword;
@@ -36,7 +36,7 @@ namespace parka
 		return id;
 	}
 
-	// bool ParameterSyntax::validate(const EntityId& functionId)
+	// bool ParameterSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
 

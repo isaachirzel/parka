@@ -1,10 +1,10 @@
 #include "parka/syntax/CallExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> CallExpressionSyntax::parse(Token& token, ExpressionId primary)
+	Optional<ExpressionSyntaxId> CallExpressionSyntax::parse(Token& token, ExpressionSyntaxId primary)
 	{
 		if (token.type() == TokenType::LeftParenthesis)
 		{
@@ -15,7 +15,7 @@ namespace parka
 		token.increment();
 
 		// TODO: Add initial capacity
-		auto arguments = Array<ExpressionId>();
+		auto arguments = Array<ExpressionSyntaxId>();
 
 		if (token.type() == TokenType::RightParenthesis)
 		{

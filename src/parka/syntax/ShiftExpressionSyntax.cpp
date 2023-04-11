@@ -1,6 +1,6 @@
 #include "parka/syntax/ShiftExpressionSyntax.hpp"
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -20,7 +20,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionId> ShiftExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> ShiftExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = AdditiveExpressionSyntax::parse(token);
 

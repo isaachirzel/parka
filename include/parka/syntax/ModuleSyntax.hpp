@@ -1,7 +1,7 @@
 #ifndef PARKA_SYNTAX_MODULE_SYNTAX_HPP
 #define PARKA_SYNTAX_MODULE_SYNTAX_HPP
 
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/File.hpp"
 #include "parka/util/Optional.hpp"
@@ -12,10 +12,10 @@ namespace parka
 	class ModuleSyntax
 	{
 		String _filepath;
-		Array<EntityId> _functionIds;
-		Array<EntityId> _structIds;
+		Array<EntitySyntaxId> _functionIds;
+		Array<EntitySyntaxId> _structIds;
 
-		ModuleSyntax(String&& filepath, Array<EntityId>&& functionIds, Array<EntityId>&& structIds) :
+		ModuleSyntax(String&& filepath, Array<EntitySyntaxId>&& functionIds, Array<EntitySyntaxId>&& structIds) :
 		_filepath(std::move(filepath)),
 		_functionIds(std::move(functionIds)),
 		_structIds(std::move(structIds))

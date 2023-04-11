@@ -1,41 +1,12 @@
 #ifndef PARKA_SYNTAX_KEYWORD_SYNTAX_HPP
 #define PARKA_SYNTAX_KEYWORD_SYNTAX_HPP
 
-#include "parka/Token.hpp"
+#include "parka/enum/KeywordType.hpp"
 #include "parka/util/Optional.hpp"
+#include "parka/Token.hpp"
 
 namespace parka
 {
-	enum class KeywordType
-	{
-		None,
-		Break,
-		Case,
-		Continue,
-		Yield,
-		Else,
-		Enum,
-		Export,
-		False,
-		For,
-		Function,
-		Operator,
-		If,
-		Import,
-		Loop,
-		Match,
-		Mut,
-		Private,
-		Public,
-		Return,
-		StructSyntax,
-		Then,
-		True,
-		Type,
-		Var,
-		While
-	};
-
 	class KeywordSyntax
 	{
 		Token _token;

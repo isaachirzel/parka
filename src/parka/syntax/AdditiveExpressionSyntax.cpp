@@ -1,7 +1,7 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/MultiplicativeExpressionSyntax.hpp"
 #include "parka/syntax/PrimitiveSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -24,7 +24,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<ExpressionId> AdditiveExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> AdditiveExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = MultiplicativeExpressionSyntax::parse(token);
 
@@ -52,7 +52,7 @@ namespace parka
 		return lhs;
 	}
 
-	// bool AdditiveExpressionSyntax::validate(const EntityId& functionId)
+	// bool AdditiveExpressionSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
 

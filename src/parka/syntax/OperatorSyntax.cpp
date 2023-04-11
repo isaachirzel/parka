@@ -14,7 +14,7 @@ namespace parka
 		exitNotImplemented(here());
 	}
 
-	bool validate(const EntityId&)
+	bool validate(const EntitySyntaxId&)
 	{
 		exitNotImplemented(here());
 	}

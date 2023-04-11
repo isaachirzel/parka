@@ -1,7 +1,7 @@
 #ifndef PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
 #define PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
 
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/util/Hash.hpp"
 #include "parka/util/Primitives.hpp"
 

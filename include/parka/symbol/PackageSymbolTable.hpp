@@ -3,7 +3,7 @@
 
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Table.hpp"
@@ -12,28 +12,28 @@ namespace parka
 {
 	class PackageSymbolTable
 	{
-		EntityId _packageId;
-		Table<String, EntityId> _symbols;
+		EntitySyntaxId _packageId;
+		Table<String, EntitySyntaxId> _symbols;
 		Array<PackageSymbolTable> _packages;
 		const PackageSymbolTable *_parent;
 
-		PackageSymbolTable(const EntityId& entityId, Table<String, EntityId>&& symbols) :
+		PackageSymbolTable(const EntitySyntaxId& entityId, Table<String, EntitySyntaxId>&& symbols) :
 		_packageId(entityId),
 		_symbols(std::move(symbols)),
 		_parent(nullptr)
 		{}
 
-		PackageSymbolTable(const EntityId& entityId, Table<String, EntityId>&& symbols, const PackageSymbolTable& parent) :
+		PackageSymbolTable(const EntitySyntaxId& entityId, Table<String, EntitySyntaxId>&& symbols, const PackageSymbolTable& parent) :
 		_packageId(entityId),
 		_symbols(std::move(symbols)),
 		_parent(&parent)
 		{}
 
-		void declarePackage(const EntityId& packageId);
-		static Optional<PackageSymbolTable> declare(const EntityId& packageId, PackageSymbolTable *parent);
+		void declarePackage(const EntitySyntaxId& packageId);
+		static Optional<PackageSymbolTable> declare(const EntitySyntaxId& packageId, PackageSymbolTable *parent);
 
 		const PackageSymbolTable& getGlobalPackageSymbolTable() const;
-		Optional<EntityId> resolve(const QualifiedIdentifier& identifier, usize index) const;
+		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier, usize index) const;
 
 	public:
 
@@ -41,11 +41,11 @@ namespace parka
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
 		~PackageSymbolTable() = default;
 
-		static Optional<PackageSymbolTable> declare(const EntityId& packageId);
+		static Optional<PackageSymbolTable> declare(const EntitySyntaxId& packageId);
 
-		Optional<EntityId> find(const Identifier& identifier) const;
-		Optional<EntityId> findGlobal(const Identifier& identifier) const;
-		Optional<EntityId> resolve(const QualifiedIdentifier& identifier) const;
+		Optional<EntitySyntaxId> find(const Identifier& identifier) const;
+		Optional<EntitySyntaxId> findGlobal(const Identifier& identifier) const;
+		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 	};
 }
 

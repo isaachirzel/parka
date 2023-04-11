@@ -1,11 +1,11 @@
 #include "parka/syntax/ExpressionStatementSyntax.hpp"
-#include "parka/data/ExpressionId.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/ExpressionSyntaxId.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<StatementId> ExpressionStatementSyntax::parse(Token& token)
+	Optional<StatementSyntaxId> ExpressionStatementSyntax::parse(Token& token)
 	{
 		auto expression = ExpressionSyntax::parse(token);
 

@@ -3,7 +3,7 @@
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Path.hpp"
@@ -17,8 +17,8 @@ namespace parka
 		print("Parsing module `$`", file.path());
 		auto success = true;
 		auto token = Token::initial(file);
-		auto functionIds = Array<EntityId>();
-		auto structIds = Array<EntityId>();
+		auto functionIds = Array<EntitySyntaxId>();
+		auto structIds = Array<EntitySyntaxId>();
 
 		while (true)
 		{
@@ -78,7 +78,7 @@ namespace parka
 		return mod;
 	}
 
-	// bool ModuleSyntax::validate(const EntityId& packageId)
+	// bool ModuleSyntax::validate(const EntitySyntaxId& packageId)
 	// {
 	// 	auto success = true;
 	// 	// auto& package = Storage::getPackage(packageId);

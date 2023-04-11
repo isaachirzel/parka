@@ -21,9 +21,9 @@ namespace parka
 		StringLiteralSyntax(const StringLiteralSyntax&) = delete;
 		~StringLiteralSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
-		bool validate(const EntityId& functionId);
+		bool validate(const EntitySyntaxId& functionId);
 		Optional<Type> getType() const;
 	};
 }

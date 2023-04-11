@@ -1,11 +1,11 @@
 #include "parka/syntax/SubscriptExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> SubscriptExpressionSyntax::parse(Token& token, ExpressionId primary)
+	Optional<ExpressionSyntaxId> SubscriptExpressionSyntax::parse(Token& token, ExpressionSyntaxId primary)
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{

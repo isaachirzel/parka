@@ -1,5 +1,5 @@
 #include "parka/syntax/FloatLiteralSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -43,7 +43,7 @@ namespace parka
 		
 	}
 
-	Optional<ExpressionId> FloatLiteralSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> FloatLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseFloat(token);
 

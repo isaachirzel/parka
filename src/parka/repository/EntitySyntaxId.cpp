@@ -1,4 +1,4 @@
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 
 namespace parka
 {
@@ -7,22 +7,22 @@ namespace parka
 		switch (type)
 		{
 			case EntityType::PackageSyntax:
-				return "PackageSyntax";
+				return "package";
 
 			case EntityType::StructSyntax:
-				return "StructSyntax";
+				return "struct";
 
 			case EntityType::Primitive:
-				return "Primitive";
+				return "primitive";
 
 			case EntityType::Function:
-				return "FunctionSyntax";
+				return "function";
 
 			case EntityType::Variable:
-				return "VariableSyntax";
+				return "variable";
 
 			case EntityType::ParameterSyntax:
-				return "ParameterSyntax";
+				return "parameter";
 			
 			default:
 				return "";
@@ -38,7 +38,7 @@ namespace parka
 		return out;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const EntityId& id)
+	std::ostream& operator<<(std::ostream& out, const EntitySyntaxId& id)
 	{
 
 		out << id._type << "s[" << id._index << ']';
@@ -46,7 +46,7 @@ namespace parka
 		return out;
 	}
 
-	bool EntityId::operator==(const EntityId& other) const
+	bool EntitySyntaxId::operator==(const EntitySyntaxId& other) const
 	{
 		return _type == other.type() && _index == other.index();
 	}

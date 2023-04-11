@@ -4,7 +4,7 @@
 #include "parka/syntax/PrimitiveSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/type/Type.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka

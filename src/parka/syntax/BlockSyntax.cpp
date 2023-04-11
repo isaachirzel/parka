@@ -1,13 +1,13 @@
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> BlockSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> BlockSyntax::parse(Token& token)
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
@@ -19,7 +19,7 @@ namespace parka
 		token.increment();
 
 		// TODO: Add initial capacity
-		auto statements = Array<StatementId>();
+		auto statements = Array<StatementSyntaxId>();
 
 		while (token.type() != TokenType::RightBrace)
 		{
@@ -39,7 +39,7 @@ namespace parka
 		return id;
 	}
 
-	// bool Block::validate(const EntityId& functionId)
+	// bool Block::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto& function = Storage::getFunction(functionId);
 		

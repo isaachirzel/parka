@@ -1,4 +1,4 @@
-#include "parka/type/TypeId.hpp"
+#include "parka/repository/TypeId.hpp"
 #include "parka/util/Hash.hpp"
 
 namespace parka

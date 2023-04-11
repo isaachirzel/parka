@@ -7,7 +7,7 @@
 
 namespace parka
 {
-	Optional<StatementId> StatementSyntax::parse(Token& token)
+	Optional<StatementSyntaxId> StatementSyntax::parse(Token& token)
 	{
 		auto keywordType = KeywordSyntax::getKeywordType(token);
 

@@ -1,11 +1,11 @@
 #include "parka/syntax/BitwiseXorExpressionSyntax.hpp"
 #include "parka/syntax/BitwiseAndExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> BitwiseXorExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> BitwiseXorExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = BitwiseAndExpressionSyntax::parse(token);
 

@@ -9,7 +9,7 @@ namespace parka
 	{
 		virtual ~LiteralSyntax() {}
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};
 }
 

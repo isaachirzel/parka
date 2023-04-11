@@ -2,12 +2,12 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/IdentifierExpressionSyntax.hpp"
 #include "parka/syntax/LiteralSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> parseEnclosedExpressionSyntax(Token& token)
+	Optional<ExpressionSyntaxId> parseEnclosedExpressionSyntax(Token& token)
 	{
 		token.increment();
 
@@ -25,7 +25,7 @@ namespace parka
 		return expression;
 	}
 
-	Optional<ExpressionId> PrimaryExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> PrimaryExpressionSyntax::parse(Token& token)
 	{
 		switch (token.type())
 		{

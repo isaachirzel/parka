@@ -1,6 +1,6 @@
 #include "parka/syntax/MultiplicativeExpressionSyntax.hpp"
 #include "parka/syntax/PrefixExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -23,7 +23,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionId> MultiplicativeExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> MultiplicativeExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = PrefixExpressionSyntax::parse(token);
 
@@ -51,7 +51,7 @@ namespace parka
 		return lhs;
 	}
 
-	// bool MultiplicativeExpressionSyntax::validate(const EntityId& functionId)
+	// bool MultiplicativeExpressionSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
 

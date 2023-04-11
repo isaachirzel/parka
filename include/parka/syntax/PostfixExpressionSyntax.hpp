@@ -7,7 +7,7 @@ namespace parka
 {
 	struct PostfixExpressionSyntax
 	{
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};
 }
 

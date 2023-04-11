@@ -3,12 +3,12 @@
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/DeclarationStatementSyntax.hpp"
 #include "parka/syntax/VariableSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<StatementId> DeclarationStatementSyntax::parse(Token& token)
+	Optional<StatementSyntaxId> DeclarationStatementSyntax::parse(Token& token)
 	{
 		auto variableId = VariableSyntax::parse(token);
 
@@ -42,7 +42,7 @@ namespace parka
 		return id;
 	}
 
-	// bool DeclarationStatementSyntax::validate(const EntityId& functionId)
+	// bool DeclarationStatementSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
 	// 	auto& function = Storage::getFunction(functionId);

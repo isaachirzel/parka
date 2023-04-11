@@ -1,8 +1,8 @@
 #ifndef PARKA_OPERATOR_OPERATOR_KEY_HPP
 #define PARKA_OPERATOR_OPERATOR_KEY_HPP
 
-#include "parka/syntax/OperatorId.hpp"
-#include "parka/type/TypeKey.hpp"
+#include "parka/repository/OperatorId.hpp"
+#include "parka/symbol/TypeKey.hpp"
 
 namespace parka
 {

@@ -1,10 +1,10 @@
 #include "parka/syntax/StringLiteralSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> StringLiteralSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> StringLiteralSyntax::parse(Token& token)
 	{
 		if (token.type() != TokenType::StringLiteralSyntax)
 		{
@@ -20,7 +20,7 @@ namespace parka
 		return id;
 	}
 
-	// bool StringLiteralSyntax::validate(const EntityId&)
+	// bool StringLiteralSyntax::validate(const EntitySyntaxId&)
 	// {
 	// 	return true;
 	// }

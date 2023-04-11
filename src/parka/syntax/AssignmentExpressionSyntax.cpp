@@ -2,7 +2,7 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/ConditionalExpressionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -49,7 +49,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionId> AssignmentExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> AssignmentExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = ConditionalExpressionSyntax::parse(token);
 
@@ -74,7 +74,7 @@ namespace parka
 		return id;
 	}
 
-	// bool Assignment::validate(const EntityId& functionId)
+	// bool Assignment::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	bool success = true;
 

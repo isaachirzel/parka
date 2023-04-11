@@ -2,7 +2,7 @@
 #define PARKA_ENTITY_HPP
 
 #include "parka/Token.hpp"
-#include "parka/data/EntityId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 
 namespace parka
 {

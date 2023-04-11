@@ -1,8 +1,9 @@
 #ifndef PARKA_SYNTAX_TYPE_TYPE_KEY_SYNTAX_HPP
 #define PARKA_SYNTAX_TYPE_TYPE_KEY_SYNTAX_HPP
 
-#include "parka/type/TypeId.hpp"
+#include "parka/repository/TypeId.hpp"
 #include "parka/util/Primitives.hpp"
+
 #include <functional>
 
 namespace parka

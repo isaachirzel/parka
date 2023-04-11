@@ -3,8 +3,8 @@
 
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
-#include "parka/data/EntitySyntax.hpp"
-#include "parka/data/EntityId.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/type/Type.hpp"
 #include "parka/util/Array.hpp"
 
@@ -26,9 +26,9 @@ namespace parka
 		StructSyntax(const StructSyntax&) = delete;
 		~StructSyntax() = default;
 
-		static Optional<EntityId> parse(Token& token);
+		static Optional<EntitySyntaxId> parse(Token& token);
 
-		bool validate(const EntityId& packageId);
+		bool validate(const EntitySyntaxId& packageId);
 
 		Optional<Type> getType() const;
 		const String& identifier() const { return _identifier.text(); }

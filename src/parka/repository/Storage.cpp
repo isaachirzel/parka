@@ -1,4 +1,4 @@
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/AssignmentExpressionSyntax.hpp"
 #include "parka/syntax/BitwiseAndExpressionSyntax.hpp"
@@ -31,8 +31,8 @@
 #include "parka/syntax/ExpressionStatementSyntax.hpp"
 #include "parka/syntax/JumpStatementSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/data/ExpressionId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/ExpressionSyntaxId.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/syntax/PrimitiveSyntax.hpp"
 #include "parka/util/Pool.hpp"
@@ -40,20 +40,20 @@
 
 namespace parka
 {
-	const EntityId Storage::voidId(EntityType::Primitive, 0);
-	const EntityId Storage::u8Id(EntityType::Primitive, 1);
-	const EntityId Storage::u16Id(EntityType::Primitive, 2);
-	const EntityId Storage::u32Id(EntityType::Primitive, 3);
-	const EntityId Storage::u64Id(EntityType::Primitive, 4);
-	const EntityId Storage::i8Id(EntityType::Primitive, 5);
-	const EntityId Storage::i16Id(EntityType::Primitive, 6);
-	const EntityId Storage::i32Id(EntityType::Primitive, 7);
-	const EntityId Storage::i64Id(EntityType::Primitive, 8);
-	const EntityId Storage::f32Id(EntityType::Primitive, 9);
-	const EntityId Storage::f64Id(EntityType::Primitive, 10);
-	const EntityId Storage::boolId(EntityType::Primitive, 11);
-	const EntityId Storage::charId(EntityType::Primitive, 12);
-	const EntityId Storage::stringId(EntityType::Primitive, 13);
+	const EntitySyntaxId Storage::voidId(EntityType::Primitive, 0);
+	const EntitySyntaxId Storage::u8Id(EntityType::Primitive, 1);
+	const EntitySyntaxId Storage::u16Id(EntityType::Primitive, 2);
+	const EntitySyntaxId Storage::u32Id(EntityType::Primitive, 3);
+	const EntitySyntaxId Storage::u64Id(EntityType::Primitive, 4);
+	const EntitySyntaxId Storage::i8Id(EntityType::Primitive, 5);
+	const EntitySyntaxId Storage::i16Id(EntityType::Primitive, 6);
+	const EntitySyntaxId Storage::i32Id(EntityType::Primitive, 7);
+	const EntitySyntaxId Storage::i64Id(EntityType::Primitive, 8);
+	const EntitySyntaxId Storage::f32Id(EntityType::Primitive, 9);
+	const EntitySyntaxId Storage::f64Id(EntityType::Primitive, 10);
+	const EntitySyntaxId Storage::boolId(EntityType::Primitive, 11);
+	const EntitySyntaxId Storage::charId(EntityType::Primitive, 12);
+	const EntitySyntaxId Storage::stringId(EntityType::Primitive, 13);
 
 	Array<Primitive> primitives(14);
 	Pool<PackageSyntax> packages(10'000);
@@ -107,231 +107,231 @@ namespace parka
 		primitives.push({ "string", PrimitiveType::String, 0 });
 	}
 
-	EntityId Storage::add(PackageSyntax&& value)
+	EntitySyntaxId Storage::add(PackageSyntax&& value)
 	{
 		usize index = packages.add(std::move(value));
 
-		return EntityId(EntityType::PackageSyntax, index);
+		return EntitySyntaxId(EntityType::PackageSyntax, index);
 	}
 
-	EntityId Storage::add(StructSyntax&& value)
+	EntitySyntaxId Storage::add(StructSyntax&& value)
 	{
 		usize index = structs.add(std::move(value));
 		
-		return EntityId(EntityType::StructSyntax, index);
+		return EntitySyntaxId(EntityType::StructSyntax, index);
 	}
 
-	EntityId Storage::add(FunctionSyntax&& value)
+	EntitySyntaxId Storage::add(FunctionSyntax&& value)
 	{
 		usize index = functions.add(std::move(value));
 		
-		return EntityId(EntityType::Function, index);
+		return EntitySyntaxId(EntityType::Function, index);
 	}
 
-	EntityId Storage::add(VariableSyntax&& value)
+	EntitySyntaxId Storage::add(VariableSyntax&& value)
 	{
 		usize index = variables.add(std::move(value));
 		
-		return EntityId(EntityType::Variable, index);
+		return EntitySyntaxId(EntityType::Variable, index);
 	}
 
-	EntityId Storage::add(ParameterSyntax&& value)
+	EntitySyntaxId Storage::add(ParameterSyntax&& value)
 	{
 		usize index = parameters.add(std::move(value));
 
-		return EntityId(EntityType::ParameterSyntax, index);
+		return EntitySyntaxId(EntityType::ParameterSyntax, index);
 	}
 
-	ExpressionId Storage::add(AdditiveExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(AdditiveExpressionSyntax&& value)
 	{
 		auto index = additiveExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Additive, index);
+		return ExpressionSyntaxId(ExpressionType::Additive, index);
 	}
 
-	ExpressionId Storage::add(AssignmentExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(AssignmentExpressionSyntax&& value)
 	{
 		auto index = assignmentExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Assignment, index);
+		return ExpressionSyntaxId(ExpressionType::Assignment, index);
 	}
 
-	ExpressionId Storage::add(BitwiseAndExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(BitwiseAndExpressionSyntax&& value)
 	{
 		auto index = bitwiseAndExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::BitwiseAnd, index);
+		return ExpressionSyntaxId(ExpressionType::BitwiseAnd, index);
 	}
 
-	ExpressionId Storage::add(BitwiseOrExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(BitwiseOrExpressionSyntax&& value)
 	{
 		auto index = bitwiseOrExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::BitwiseOr, index);
+		return ExpressionSyntaxId(ExpressionType::BitwiseOr, index);
 	}
 
-	ExpressionId Storage::add(BitwiseXorExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(BitwiseXorExpressionSyntax&& value)
 	{
 		auto index = bitwiseXorExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::BitwiseXor, index);
+		return ExpressionSyntaxId(ExpressionType::BitwiseXor, index);
 	}
 
-	ExpressionId Storage::add(BlockSyntax&& value)
+	ExpressionSyntaxId Storage::add(BlockSyntax&& value)
 	{
 		auto index = blockExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Block, index);
+		return ExpressionSyntaxId(ExpressionType::Block, index);
 	}
 
-	ExpressionId Storage::add(BooleanAndExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(BooleanAndExpressionSyntax&& value)
 	{
 		auto index = booleanAndExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::BooleanAnd, index);
+		return ExpressionSyntaxId(ExpressionType::BooleanAnd, index);
 	}
 
-	ExpressionId Storage::add(BooleanOrExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(BooleanOrExpressionSyntax&& value)
 	{
 		auto index = booleanOrExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::BooleanOr, index);
+		return ExpressionSyntaxId(ExpressionType::BooleanOr, index);
 	}
 
-	ExpressionId Storage::add(CallExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(CallExpressionSyntax&& value)
 	{
 		auto index = callExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Call, index);
+		return ExpressionSyntaxId(ExpressionType::Call, index);
 	}
 
-	ExpressionId Storage::add(ConditionalExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(ConditionalExpressionSyntax&& value)
 	{
 		auto index = conditionalExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Conditional, index);
+		return ExpressionSyntaxId(ExpressionType::Conditional, index);
 	}
 
-	ExpressionId Storage::add(EqualityExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(EqualityExpressionSyntax&& value)
 	{
 		auto index = equalityExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Equality, index);
+		return ExpressionSyntaxId(ExpressionType::Equality, index);
 	}
 
-	ExpressionId Storage::add(IdentifierExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(IdentifierExpressionSyntax&& value)
 	{
 		auto index = identifierExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::IdentifierExpressionSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::IdentifierExpressionSyntax, index);
 	}
 
-	// ExpressionId Storage::add(IfExpressionSyntax&& value)
+	// ExpressionSyntaxId Storage::add(IfExpressionSyntax&& value)
 	// {
 	// 	auto index = ifExpressions.add(std::move(value));
 
-	// 	return ExpressionId(ExpressionType::If, index);
+	// 	return ExpressionSyntaxId(ExpressionType::If, index);
 	// }
 
-	ExpressionId Storage::add(SubscriptExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(SubscriptExpressionSyntax&& value)
 	{
 		auto index = subscriptExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Subscript, index);
+		return ExpressionSyntaxId(ExpressionType::Subscript, index);
 	}
 
-	ExpressionId Storage::add(MemberAccessExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(MemberAccessExpressionSyntax&& value)
 	{
 		auto index = memberAccessExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::MemberAccessExpressionSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::MemberAccessExpressionSyntax, index);
 	}
 
-	ExpressionId Storage::add(MultiplicativeExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(MultiplicativeExpressionSyntax&& value)
 	{
 		auto index = multiplicativeExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Multiplicative, index);
+		return ExpressionSyntaxId(ExpressionType::Multiplicative, index);
 	}
 
-	ExpressionId Storage::add(PrefixExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(PrefixExpressionSyntax&& value)
 	{
 		auto index = prefixExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::PrefixExpressionSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::PrefixExpressionSyntax, index);
 	}
 
-	ExpressionId Storage::add(RelationalExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(RelationalExpressionSyntax&& value)
 	{
 		auto index = relationalExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Relational, index);
+		return ExpressionSyntaxId(ExpressionType::Relational, index);
 	}
 
-	ExpressionId Storage::add(ShiftExpressionSyntax&& value)
+	ExpressionSyntaxId Storage::add(ShiftExpressionSyntax&& value)
 	{
 		auto index = shiftExpressions.add(std::move(value));
 
-		return ExpressionId(ExpressionType::Shift, index);
+		return ExpressionSyntaxId(ExpressionType::Shift, index);
 	}
 
-	ExpressionId Storage::add(BoolLiteralSyntax&& value)
+	ExpressionSyntaxId Storage::add(BoolLiteralSyntax&& value)
 	{
 		auto index = boolLiterals.add(std::move(value));
 
-		return ExpressionId(ExpressionType::BoolLiteralSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::BoolLiteralSyntax, index);
 	}
 
-	ExpressionId Storage::add(CharLiteralSyntax&& value)
+	ExpressionSyntaxId Storage::add(CharLiteralSyntax&& value)
 	{
 		auto index = charLiterals.add(std::move(value));
 
-		return ExpressionId(ExpressionType::CharLiteralSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::CharLiteralSyntax, index);
 	}
 
-	ExpressionId Storage::add(FloatLiteralSyntax&& value)
+	ExpressionSyntaxId Storage::add(FloatLiteralSyntax&& value)
 	{
 		auto index = floatLiterals.add(std::move(value));
 
-		return ExpressionId(ExpressionType::FloatLiteralSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::FloatLiteralSyntax, index);
 	}
 
-	ExpressionId Storage::add(IntegerLiteralSyntax&& value)
+	ExpressionSyntaxId Storage::add(IntegerLiteralSyntax&& value)
 	{
 		auto index = integerLiterals.add(std::move(value));
 
-		return ExpressionId(ExpressionType::IntegerLiteralSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::IntegerLiteralSyntax, index);
 	}
 
-	ExpressionId Storage::add(StringLiteralSyntax&& value)
+	ExpressionSyntaxId Storage::add(StringLiteralSyntax&& value)
 	{
 		auto index = stringLiterals.add(std::move(value));
 
-		return ExpressionId(ExpressionType::StringLiteralSyntax, index);
+		return ExpressionSyntaxId(ExpressionType::StringLiteralSyntax, index);
 	}
 
-	StatementId Storage::add(DeclarationStatementSyntax&& value)
+	StatementSyntaxId Storage::add(DeclarationStatementSyntax&& value)
 	{
 		auto index = declarationStatements.add(std::move(value));
 
-		return StatementId(StatementType::DeclarationStatementSyntax, index);
+		return StatementSyntaxId(StatementType::DeclarationStatementSyntax, index);
 	}
 
-	StatementId Storage::add(ExpressionStatementSyntax&& value)
+	StatementSyntaxId Storage::add(ExpressionStatementSyntax&& value)
 	{
 		auto index = expressionStatements.add(std::move(value));
 
-		return StatementId(StatementType::ExpressionSyntax, index);
+		return StatementSyntaxId(StatementType::ExpressionSyntax, index);
 	}
 
-	StatementId Storage::add(JumpStatementSyntax&& value)
+	StatementSyntaxId Storage::add(JumpStatementSyntax&& value)
 	{
 		auto index = jumpStatements.add(std::move(value));
 
-		return StatementId(StatementType::Jump, index);
+		return StatementSyntaxId(StatementType::Jump, index);
 	}
 
-	EntitySyntax& Storage::get(const EntityId& id)
+	EntitySyntax& Storage::get(const EntitySyntaxId& id)
 	{
 		switch (id.type())
 		{
@@ -360,7 +360,7 @@ namespace parka
 		exitWithError("Unable to get entity of type: $", (int)id.type());
 	}
 
-	ExpressionSyntax& Storage::get(const ExpressionId& id)
+	ExpressionSyntax& Storage::get(const ExpressionSyntaxId& id)
 	{
 		switch (id.type())
 		{
@@ -445,7 +445,7 @@ namespace parka
 		exitWithError("Unable to get ExpressionSyntax of type: $", (int)id.type());
 	}
 
-	StatementSyntax& Storage::get(const StatementId& id)
+	StatementSyntax& Storage::get(const StatementSyntaxId& id)
 	{
 		switch (id.type())
 		{
@@ -465,64 +465,64 @@ namespace parka
 		exitWithError("Unable to get Statement of type: $", (int)id.type());
 	}
 
-	PackageSyntax& Storage::getPackage(const EntityId& id)
+	PackageSyntax& Storage::getPackage(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::PackageSyntax);
 
 		return packages[id.index()];
 	}
 
-	StructSyntax& Storage::getStruct(const EntityId& id)
+	StructSyntax& Storage::getStruct(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::StructSyntax);
 
 		return structs[id.index()];
 	}
 
-	FunctionSyntax& Storage::getFunction(const EntityId& id)
+	FunctionSyntax& Storage::getFunction(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::Function);
 
 		return functions[id.index()];
 	}
 
-	VariableSyntax& Storage::getVariable(const EntityId& id)
+	VariableSyntax& Storage::getVariable(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::Variable);
 
 		return variables[id.index()];
 	}
 
-	ParameterSyntax& Storage::getParameter(const EntityId& id)
+	ParameterSyntax& Storage::getParameter(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::ParameterSyntax);
 
 		return parameters[id.index()];
 	}
 
-	EntityId Storage::getId(FunctionSyntax& value)
+	EntitySyntaxId Storage::getId(FunctionSyntax& value)
 	{
 		auto index = functions.getIndex(&value);
-		auto id = EntityId(EntityType::Function, index);
+		auto id = EntitySyntaxId(EntityType::Function, index);
 
 		return id;
 	}
 
-	EntityId Storage::getId(PackageSyntax& value)
+	EntitySyntaxId Storage::getId(PackageSyntax& value)
 	{
 		auto index = packages.getIndex(&value);
-		auto id = EntityId(EntityType::PackageSyntax, index);
+		auto id = EntitySyntaxId(EntityType::PackageSyntax, index);
 
 		return id;
 	}
 
-	void Storage::declarePrimitives(Table<String, EntityId>& globalSymbols)
+	void Storage::declarePrimitives(Table<String, EntitySyntaxId>& globalSymbols)
 	{
 		usize index = 0;
 
 		for (const auto& primitive: primitives)
 		{
-			globalSymbols.emplace(primitive.identifier(), EntityId { EntityType::Primitive, index });
+			globalSymbols.emplace(primitive.identifier(), EntitySyntaxId { EntityType::Primitive, index });
 			
 			index += 1;
 		}

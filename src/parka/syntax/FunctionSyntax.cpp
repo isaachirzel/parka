@@ -3,15 +3,15 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> parseBody(Token& token)
+	Optional<ExpressionSyntaxId> parseBody(Token& token)
 	{
 		if (token.type() == TokenType::DoubleArrow)
 		{
@@ -41,7 +41,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<EntityId> FunctionSyntax::parse(Token& token)
+	Optional<EntitySyntaxId> FunctionSyntax::parse(Token& token)
 	{
 		auto prototype = PrototypeSyntax::parse(token);
 
@@ -59,7 +59,7 @@ namespace parka
 		return id;
 	}
 
-	// bool FunctionSyntax::declare(const EntityId& entityId)
+	// bool FunctionSyntax::declare(const EntitySyntaxId& entityId)
 	// {
 	// 	// TODO: Implement LocalEntity to get common functionality
 		
@@ -87,12 +87,12 @@ namespace parka
 	// 		}
 	// 	}
 
-	// 	_localSymbols.push(EntityId(entityId));
+	// 	_localSymbols.push(EntitySyntaxId(entityId));
 
 	// 	return true;
 	// }
 
-	// bool FunctionSyntax::validate(const EntityId& packageId)
+	// bool FunctionSyntax::validate(const EntitySyntaxId& packageId)
 	// {
 	// 	auto success = true;
 	// 	auto functionId = Storage::getId(*this);
@@ -121,7 +121,7 @@ namespace parka
 
 	// 	// return returnType;
 	// }
-	// Optional<EntityId> FunctionSyntax::resolve(const Identifier& identifier)
+	// Optional<EntitySyntaxId> FunctionSyntax::resolve(const Identifier& identifier)
 	// {
 	// 	auto i = _localSymbols.length();
 
@@ -145,7 +145,7 @@ namespace parka
 	// 	return result;
 	// }
 
-	// Optional<EntityId> FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	// Optional<EntitySyntaxId> FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
 	// {
 	// 	if (identifier.isAbsolute() || identifier.length() > 1)
 	// 	{

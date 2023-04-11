@@ -1,5 +1,5 @@
 #include "parka/syntax/CharLiteralSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -23,7 +23,7 @@ namespace parka
 		return character;
 	}
 
-	Optional<ExpressionId> CharLiteralSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> CharLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseChar(token);
 

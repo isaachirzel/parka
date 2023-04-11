@@ -4,14 +4,14 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/type/Type.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<Array<EntityId>> parseParameterList(Token& token)
+	Optional<Array<EntitySyntaxId>> parseParameterList(Token& token)
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
@@ -21,7 +21,7 @@ namespace parka
 
 		token.increment();
 
-		auto parameters = Array<EntityId>();
+		auto parameters = Array<EntitySyntaxId>();
 
 		if (token.type() == TokenType::RightParenthesis)
 		{
@@ -94,7 +94,7 @@ namespace parka
 		return prototype;
 	}
 
-	// bool PrototypeSyntax::validate(const EntityId& functionId)
+	// bool PrototypeSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
 	// 	auto& function = Storage::getFunction(functionId);

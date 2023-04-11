@@ -4,8 +4,8 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/data/EntitySyntax.hpp"
-#include "parka/data/EntityId.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
@@ -20,22 +20,22 @@ namespace parka
 	{
 		String _identifier;
 		Array<ModuleSyntax> _modules;
-		Array<EntityId> _packageIds;
+		Array<EntitySyntaxId> _packageIds;
 		// Validation
 
-		PackageSyntax(Array<EntityId>&& packageIds) :
+		PackageSyntax(Array<EntitySyntaxId>&& packageIds) :
 		_identifier(),
 		_modules(),
 		_packageIds(std::move(packageIds))
 		{}
 
-		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<EntityId>&& packageIds) :
+		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<EntitySyntaxId>&& packageIds) :
 		_identifier(std::move(identifier)),
 		_modules(std::move(modules)),
 		_packageIds(std::move(packageIds))
 		{}
 
-		static Optional<EntityId> parse(const Directory& directory, const String& name);
+		static Optional<EntitySyntaxId> parse(const Directory& directory, const String& name);
 		
 	public:
 
@@ -43,7 +43,7 @@ namespace parka
 		PackageSyntax(const PackageSyntax&) = delete;
 		~PackageSyntax() = default;
 
-		static Optional<EntityId> parse(const Project& project);
+		static Optional<EntitySyntaxId> parse(const Project& project);
 
 		const String& identifier() const { return _identifier; }
 		EntityType type() const { return EntityType::PackageSyntax; }

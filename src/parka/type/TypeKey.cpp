@@ -1,4 +1,4 @@
-#include "parka/type/TypeKey.hpp"
+#include "parka/symbol/TypeKey.hpp"
 #include "parka/util/Hash.hpp"
 #include "parka/util/Print.hpp"
 

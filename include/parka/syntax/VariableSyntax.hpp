@@ -3,9 +3,9 @@
 
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/data/EntitySyntax.hpp"
-#include "parka/data/EntityId.hpp"
-#include "parka/data/ExpressionId.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/ExpressionSyntaxId.hpp"
 
 namespace parka
 {
@@ -27,7 +27,7 @@ namespace parka
 		VariableSyntax(const VariableSyntax&) = delete;
 		~VariableSyntax() = default;
 
-		static Optional<EntityId> parse(Token& token);
+		static Optional<EntitySyntaxId> parse(Token& token);
 
 		const String& identifier() const { return _identifier.text(); }
 		EntityType type() const { return EntityType::Variable; }

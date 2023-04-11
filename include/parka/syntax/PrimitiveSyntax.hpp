@@ -1,8 +1,9 @@
 #ifndef PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
 #define PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
 
-#include "parka/data/EntitySyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/enum/PrimitiveType.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Primitives.hpp"
@@ -10,17 +11,6 @@
 
 namespace parka
 {
-	enum class PrimitiveType
-	{
-		Void,
-		UnsignedInteger,
-		SignedInteger,
-		FloatingPoint,
-		Boolean,
-		Character,
-		String
-	};
-
 	class Primitive : public EntitySyntax
 	{
 		String _identifier;

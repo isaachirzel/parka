@@ -5,7 +5,7 @@
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
-#include "parka/data/EntitySyntax.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
 
 namespace parka
 {
@@ -27,9 +27,9 @@ namespace parka
 		ParameterSyntax(const ParameterSyntax&) = delete;
 		~ParameterSyntax() = default;
 
-		static Optional<EntityId> parse(Token& token);
+		static Optional<EntitySyntaxId> parse(Token& token);
 
-		bool validate(const EntityId& functionId);
+		bool validate(const EntitySyntaxId& functionId);
 
 		Optional<Type> getType() const;
 		const String& identifier() const { return _identifier.text(); }

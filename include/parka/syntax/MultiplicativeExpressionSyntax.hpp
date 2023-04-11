@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_EXPRESSION_MULTIPLICATIVE_SYNTAX_HPP
 #define PARKA_SYNTAX_EXPRESSION_MULTIPLICATIVE_SYNTAX_HPP
 
+#include "parka/enum/MultiplicativeType.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -8,20 +9,13 @@
 
 namespace parka
 {
-	enum class MultiplicativeType
-	{
-		Multiply,
-		Divide,
-		Modulus
-	};
-
 	class MultiplicativeExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionId _lhs;
-		ExpressionId _rhs;
+		ExpressionSyntaxId _lhs;
+		ExpressionSyntaxId _rhs;
 		MultiplicativeType _type;
 
-		MultiplicativeExpressionSyntax(ExpressionId&& lhs, ExpressionId&& rhs, MultiplicativeType type):
+		MultiplicativeExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, MultiplicativeType type):
 		_lhs(std::move(lhs)),
 		_rhs(std::move(rhs)),
 		_type(type)
@@ -33,7 +27,7 @@ namespace parka
 		MultiplicativeExpressionSyntax(const MultiplicativeExpressionSyntax&) = delete;
 		~MultiplicativeExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

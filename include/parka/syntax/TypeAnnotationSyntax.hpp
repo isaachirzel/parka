@@ -11,7 +11,7 @@ namespace parka
 	class TypeAnnotationSyntax
 	{
 		QualifiedIdentifier _identifier;
-		// // TODO: Add type after validation
+		// TODO: Add type after validation
 		Optional<Type> _type; // Having an optional type is causing this a free warning to come up
 
 		TypeAnnotationSyntax(QualifiedIdentifier&& identifier) :
@@ -27,7 +27,7 @@ namespace parka
 
 		static Optional<TypeAnnotationSyntax> parse(Token& token);
 
-		bool validate(const EntityId& functionId);
+		bool validate(const EntitySyntaxId& functionId);
 
 		const auto& identifier() const { return _identifier; }
 		const Type& getType() const { return *_type; }

@@ -2,12 +2,12 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<EntityId> StructSyntax::parse(Token& token)
+	Optional<EntitySyntaxId> StructSyntax::parse(Token& token)
 	{
 		print("Parse struct");
 		
@@ -67,7 +67,7 @@ namespace parka
 		return id;
 	}
 
-	// bool StructSyntax::validate(const EntityId& functionId)
+	// bool StructSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	bool success = true;
 

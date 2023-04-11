@@ -1,8 +1,8 @@
 #ifndef PARKA_SYNTAX_STATEMENT_SYNTAX_HPP
 #define PARKA_SYNTAX_STATEMENT_SYNTAX_HPP
 
-#include "parka/data/EntityId.hpp"
-#include "parka/data/StatementId.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/StatementSyntaxId.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -10,7 +10,7 @@ namespace parka
 {
 	struct StatementSyntax
 	{
-		static Optional<StatementId> parse(Token& token);
+		static Optional<StatementSyntaxId> parse(Token& token);
 
 		virtual ~StatementSyntax() {}
 	};

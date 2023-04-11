@@ -1,25 +1,18 @@
 #ifndef PARKA_SYNTAX_EXPRESSION_RELATIONAL_SYNTAX_HPP
 #define PARKA_SYNTAX_EXPRESSION_RELATIONAL_SYNTAX_HPP
 
+#include "parka/enum/RelationalType.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 
 namespace parka
 {
-	enum class RelationalType
-	{
-		GreaterThan,
-		LessThan,
-		GreaterThanOrEqualTo,
-		LessThanOrEqualTo
-	};
-
 	class RelationalExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionId _lhs;
-		ExpressionId _rhs;
+		ExpressionSyntaxId _lhs;
+		ExpressionSyntaxId _rhs;
 		RelationalType _type;
 
-		RelationalExpressionSyntax(ExpressionId&& lhs, ExpressionId&& rhs, RelationalType type) :
+		RelationalExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, RelationalType type) :
 		_lhs(std::move(lhs)),
 		_rhs(std::move(rhs)),
 		_type(type)
@@ -31,9 +24,9 @@ namespace parka
 		RelationalExpressionSyntax(const RelationalExpressionSyntax&) = delete;
 		~RelationalExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
-		bool validate(const EntityId& functionId);
+		bool validate(const EntitySyntaxId& functionId);
 		Optional<Type> getType() const;
 
 		const auto& lhs() const { return _lhs; }

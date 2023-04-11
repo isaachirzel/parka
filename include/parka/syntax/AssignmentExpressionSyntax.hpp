@@ -1,32 +1,18 @@
 #ifndef PARKA_SYNTAX_EXPRESSION_ASSIGNMENT_SYNTAX_HPP
 #define PARKA_SYNTAX_EXPRESSION_ASSIGNMENT_SYNTAX_HPP
 
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 
 namespace parka
 {
-	enum class AssignmentType
-	{
-		Become,
-		Multiply,
-		Divide,
-		Modulus,
-		Add,
-		Subtract,
-		LeftShift,
-		RightShift,
-		BitwiseAnd,
-		BitwiseOr,
-		BitwiseXor
-	};
-
 	class AssignmentExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionId _lhs;
-		ExpressionId _rhs;
+		ExpressionSyntaxId _lhs;
+		ExpressionSyntaxId _rhs;
 		AssignmentType _type;
 
-		AssignmentExpressionSyntax(ExpressionId&& lhs, ExpressionId&& rhs, AssignmentType type) :
+		AssignmentExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, AssignmentType type) :
 		_lhs(std::move(lhs)),
 		_rhs(std::move(rhs)),
 		_type(type)
@@ -38,7 +24,7 @@ namespace parka
 		AssignmentExpressionSyntax(const AssignmentExpressionSyntax&) = delete;
 		~AssignmentExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

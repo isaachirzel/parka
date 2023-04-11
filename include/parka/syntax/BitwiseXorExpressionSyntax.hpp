@@ -7,10 +7,10 @@ namespace parka
 {
 	class BitwiseXorExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionId _lhs;
-		ExpressionId _rhs;
+		ExpressionSyntaxId _lhs;
+		ExpressionSyntaxId _rhs;
 
-		BitwiseXorExpressionSyntax(ExpressionId&& lhs, ExpressionId&&rhs) :
+		BitwiseXorExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&&rhs) :
 		_lhs(std::move(lhs)),
 		_rhs(std::move(rhs))
 		{}
@@ -21,7 +21,7 @@ namespace parka
 		BitwiseXorExpressionSyntax(const BitwiseXorExpressionSyntax&) = delete;
 		~BitwiseXorExpressionSyntax() = default;
 
-		static Optional<ExpressionId> parse(Token& token);
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

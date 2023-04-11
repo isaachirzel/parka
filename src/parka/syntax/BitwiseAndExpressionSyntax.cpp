@@ -1,14 +1,14 @@
 #include "parka/syntax/BitwiseAndExpressionSyntax.hpp"
 #include "parka/syntax/EqualityExpressionSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
-#include "parka/Storage.hpp"
+#include "parka/repository/Storage.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionId> BitwiseAndExpressionSyntax::parse(Token& token)
+	Optional<ExpressionSyntaxId> BitwiseAndExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = EqualityExpressionSyntax::parse(token);
 
