@@ -1,0 +1,50 @@
+#include "parka/syntax/CallExpressionSyntax.hpp"
+#include "parka/Storage.hpp"
+#include "parka/util/Print.hpp"
+
+namespace parka
+{
+	Optional<ExpressionId> CallExpressionSyntax::parse(Token& token, ExpressionId primary)
+	{
+		if (token.type() == TokenType::LeftParenthesis)
+		{
+			printParseError(token, "'(' before argument list");
+			return {};
+		}
+
+		token.increment();
+
+		// TODO: Add initial capacity
+		auto arguments = Array<ExpressionId>();
+
+		if (token.type() == TokenType::RightParenthesis)
+		{
+			do
+			{
+				token.increment();
+
+				auto argument = ExpressionSyntax::parse(token);
+
+				if (!argument)
+					return {}; // TODO: Continue to next argument
+
+				arguments.push(*argument);
+			}
+			while (token.type() == TokenType::Comma);
+
+			if (token.type() != TokenType::RightParenthesis)
+			{
+				printParseError(token, "')' after argument list");
+
+				return {};
+			}
+		}
+
+		token.increment();
+
+		auto expression = CallExpressionSyntax(std::move(primary), std::move(arguments));
+		auto id = Storage::add(std::move(expression));
+
+		return id;
+	}
+}

@@ -1,13 +1,15 @@
-#include "parka/ast/ast.hpp"
-#include "parka/node/entity_id.hpp"
-#include "parka/node/node_bank.hpp"
-#include "parka/token.hpp"
-#include "parka/util/file.hpp"
-#include "parka/util/path.hpp"
-#include "parka/util/print.hpp"
-#include "parka/util/string.hpp"
-#include "parka/util/table.hpp"
-#include "parka/util/timer.hpp"
+#include "parka/syntax/SyntaxTree.hpp"
+#include "parka/data/EntityId.hpp"
+#include "parka/Storage.hpp"
+#include "parka/Token.hpp"
+#include "parka/file/File.hpp"
+#include "parka/util/Path.hpp"
+#include "parka/util/Print.hpp"
+#include "parka/util/String.hpp"
+#include "parka/util/Table.hpp"
+#include "parka/util/Timer.hpp"
+
+using namespace parka;
 
 void printErrorCount(const Project& project)
 {
@@ -16,7 +18,7 @@ void printErrorCount(const Project& project)
 
 int main(int argc, const char *argv[])
 {
-	NodeBank::initialize();
+	Storage::initialize();
 
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
@@ -31,7 +33,7 @@ int main(int argc, const char *argv[])
 
 	printSuccess("Project loaded in $ seconds.", readTime);
 
-	auto ast = Ast::parse(*project);
+	auto ast = SyntaxTree::parse(*project);
 
 	if (!ast)
 	{
@@ -43,15 +45,15 @@ int main(int argc, const char *argv[])
 
 	printSuccess("Parsing completed in $ seconds.", parseTime);
 
-	if (!ast->validate())
-	{
-		printErrorCount(*project);
-		return 1;
-	}
+	// if (!ast->validate())
+	// {
+	// 	printErrorCount(*project);
+	// 	return 1;
+	// }
 
-	auto validatetime = timer.split();
+	// auto validatetime = timer.split();
 
-	printSuccess("Validation completed in $ seconds.", validatetime);
+	// printSuccess("Validation completed in $ seconds.", validatetime);
 
 	auto compileTime = timer.stop();
 	auto linesOfCodeCount = project->getLinesOfCodeCount();

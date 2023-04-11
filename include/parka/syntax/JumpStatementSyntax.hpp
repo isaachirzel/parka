@@ -1,0 +1,46 @@
+#ifndef PARKA_SYNTAX_STATEMENT_JUMP_SYNTAX_HPP
+#define PARKA_SYNTAX_STATEMENT_JUMP_SYNTAX_HPP
+
+#include "parka/syntax/ExpressionSyntax.hpp"
+#include "parka/syntax/StatementSyntax.hpp"
+#include "parka/Token.hpp"
+#include "parka/util/Optional.hpp"
+
+namespace parka
+{
+	enum class JumpType
+	{
+		Continue,
+		Break,
+		Return,
+		Yield
+	};
+
+	class JumpStatementSyntax : public StatementSyntax
+	{
+		Token _token;
+		Optional<ExpressionId> _value;
+		JumpType _type;
+
+		JumpStatementSyntax(const Token& token, JumpType type, Optional<ExpressionId>&& value) :
+		_token(token),
+		_value(std::move(value)),
+		_type(type)
+		{}
+
+	public:
+
+		JumpStatementSyntax(JumpStatementSyntax&&) = default;
+		JumpStatementSyntax(const JumpStatementSyntax&) = delete;
+		~JumpStatementSyntax() = default;
+
+		static Optional<StatementId> parse(Token& token);
+
+		const auto& token() const { return _token; }
+		bool hasValue() const { return _value; }
+		const auto& value() const { return _value; }
+		const auto& type() const { return _type; }
+	};
+}
+
+#endif
