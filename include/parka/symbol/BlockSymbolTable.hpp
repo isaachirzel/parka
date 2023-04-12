@@ -1,39 +1,34 @@
 #ifndef PARKA_SYMBOLS_BLOCK_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOLS_BLOCK_SYMBOL_TABLE_HPP
 
-#include "parka/symbol/Identifier.hpp"
-#include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/repository/ExpressionSyntaxId.hpp"
+#include "parka/symbol/SymbolTable.hpp"
+#include "parka/syntax/BlockSyntax.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
 
 namespace parka
 {
-	class FunctionSymbolTable;
-
-	class BlockSymbolTable
+	class BlockSymbolTable : public SymbolTable
 	{
 		ExpressionSyntaxId _blockId;
-		const BlockSymbolTable *_parentBlock;
-		const FunctionSymbolTable& _parentFunction;
+		const SymbolTable& _parent;
 		Table<String, EntitySyntaxId> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
+		BlockSymbolTable(const ExpressionSyntaxId& blockId, const SymbolTable& parent) :
+		_blockId(blockId),
+		_parent(parent)
+		{}
+
 	public:
 
-		BlockSymbolTable(const ExpressionSyntaxId& blockId, const FunctionSymbolTable& parentFunction) :
-		_blockId(blockId),
-		_parentBlock(nullptr),
-		_parentFunction(parentFunction)
-		{}
-		BlockSymbolTable(const ExpressionSyntaxId& blockId, const BlockSymbolTable& parentBlock) :
-		_blockId(blockId),
-		_parentBlock(&parentBlock),
-		_parentFunction(parentBlock._parentFunction)
-		{}
+		BlockSymbolTable(BlockSymbolTable&&) = default;
+		BlockSymbolTable(const BlockSymbolTable&) = delete;
+		~BlockSymbolTable() = default;
 
+		static Optional<BlockSymbolTable> from(const BlockSyntax& block);
 
 		bool declare(const Identifier& identifier);
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;

@@ -1,7 +1,6 @@
 #ifndef PARKA_SYNTAX_BLOCK_SYNTAX_HPP
 #define PARKA_SYNTAX_BLOCK_SYNTAX_HPP
 
-#include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
 #include "parka/type/Type.hpp"

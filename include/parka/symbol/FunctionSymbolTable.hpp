@@ -1,32 +1,36 @@
 #ifndef PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 
-#include "parka/symbol/Identifier.hpp"
-#include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/BlockSymbolTable.hpp"
+#include "parka/symbol/Identifier.hpp"
+#include "parka/symbol/SymbolTable.hpp"
+#include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/util/Array.hpp"
-#include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	class PackageSymbolTable;
-
-	class FunctionSymbolTable
+	class FunctionSymbolTable : public SymbolTable
 	{
 		EntitySyntaxId _functionId;
-		const PackageSymbolTable& _parentPackage;
+		const SymbolTable& _parent;
 		Table<String, EntitySyntaxId> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
-	public:
-
-		FunctionSymbolTable(const EntitySyntaxId& functionId, const PackageSymbolTable& parentPackage) :
+		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
 		_functionId(functionId),
-		_parentPackage(parentPackage)
+		_parent(parent)
 		{}
 
+	public:
+
+		FunctionSymbolTable(FunctionSymbolTable&&) = default;
+		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
+		~FunctionSymbolTable() = default;
+
+		static Optional<FunctionSymbolTable> from(const FunctionSyntax& function);
+
+		bool declare(const Identifier& identifier);
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		
