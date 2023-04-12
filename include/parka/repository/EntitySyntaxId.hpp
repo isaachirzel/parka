@@ -2,7 +2,7 @@
 #define PARKA_ENTITY_ENTITY_ID_HPP
 
 #include "parka/enum/EntityType.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 #include <ostream>
 
@@ -32,7 +32,8 @@ namespace parka
 		friend std::ostream& operator<<(std::ostream& out, const EntitySyntaxId& id);
 		bool operator==(const EntitySyntaxId& other) const;
 
-		friend struct Storage;
+		friend struct SyntaxRepository;
+		friend class Primitive;
 	};
 
 	std::ostream& operator<<(std::ostream& out, const EntityType& type);

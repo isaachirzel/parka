@@ -1,7 +1,7 @@
 #ifndef PARKA_UTIL_SOURCE_LOCATION_HPP
 #define PARKA_UTIL_SOURCE_LOCATION_HPP
 
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 #include <ostream>
 

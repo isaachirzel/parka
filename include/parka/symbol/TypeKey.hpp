@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_TYPE_TYPE_KEY_SYNTAX_HPP
 
 #include "parka/repository/TypeId.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 #include <functional>
 

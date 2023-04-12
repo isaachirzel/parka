@@ -3,7 +3,7 @@
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/file/File.hpp"
@@ -50,7 +50,7 @@ namespace parka
 			return {};
 
 		auto package = PackageSyntax(String(name), std::move(modules), std::move(packageIds));
-		auto id = Storage::add(std::move(package));
+		auto id = SyntaxRepository::add(std::move(package));
 
 		return id;
 	}
@@ -63,7 +63,7 @@ namespace parka
 	// bool PackageSyntax::validate()
 	// {
 	// 	auto success = true;
-	// 	auto id = Storage::getId(*this);
+	// 	auto id = Primitive::getId(*this);
 
 	// 	for (auto& mod : _modules)
 	// 	{
@@ -73,7 +73,7 @@ namespace parka
 
 	// 	for (const auto& packageId : _packageIds)
 	// 	{
-	// 		auto& package = Storage::getPackage(packageId);
+	// 		auto& package = SyntaxRepository::getPackage(packageId);
 
 	// 		if (!package.validate(id))
 	// 			success = false;
@@ -86,7 +86,7 @@ namespace parka
 	// {
 	// 	// TODO: Multithreading
 	// 	auto success = true;
-	// 	auto id = Storage::getId(*this);
+	// 	auto id = Primitive::getId(*this);
 
 	// 	for (auto& mod : _modules)
 	// 	{
@@ -96,7 +96,7 @@ namespace parka
 
 	// 	for (const auto& packageId : _packageIds)
 	// 	{
-	// 		auto& package = Storage::getPackage(packageId);
+	// 		auto& package = SyntaxRepository::getPackage(packageId);
 
 	// 		if (!package.validate(id))
 	// 			success = false;

@@ -3,7 +3,7 @@
 
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/util/Hash.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 #include <cassert>
 

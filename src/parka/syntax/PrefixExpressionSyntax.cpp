@@ -3,7 +3,7 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/PostfixExpressionSyntax.hpp"
 #include "parka/syntax/PrimaryExpressionSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -48,7 +48,7 @@ namespace parka
 
 		auto inner = PrefixExpressionSyntax::parse(token);
 		auto expression = PrefixExpressionSyntax(*type, *inner, prefixToken);
-		auto id = Storage::add(std::move(expression));
+		auto id = SyntaxRepository::add(std::move(expression));
 
 		return id;
 	}

@@ -1,7 +1,7 @@
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -20,7 +20,7 @@ namespace parka
 
 	// bool TypeAnnotationSyntax::validate(const EntitySyntaxId& functionId)
 	// {
-	// 	auto& function = Storage::getFunction(functionId);
+	// 	auto& function = SyntaxRepository::getFunction(functionId);
 	// 	auto entityId = function.resolve(_identifier);
 
 	// 	if (!entityId)

@@ -1,7 +1,7 @@
 #ifndef PARKA_UTIL_HASH_HPP
 #define PARKA_UTIL_HASH_HPP
 
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 namespace parka
 {

@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_EXPRESSION_LITERAL_INTEGER_SYNTAX_HPP
 
 #include "parka/syntax/ExpressionSyntax.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #include "parka/syntax/LiteralSyntax.hpp"
 
 namespace parka

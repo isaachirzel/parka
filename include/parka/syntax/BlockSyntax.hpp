@@ -5,7 +5,7 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
 #include "parka/type/Type.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 namespace parka
 {

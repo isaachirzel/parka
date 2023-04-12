@@ -1,5 +1,5 @@
 #include "parka/syntax/SubscriptExpressionSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Print.hpp"
 
@@ -21,7 +21,7 @@ namespace parka
 			return {};
 
 		auto expression = SubscriptExpressionSyntax(std::move(primary), *index);
-		auto id = Storage::add(std::move(expression));
+		auto id = SyntaxRepository::add(std::move(expression));
 
 		if (token.type() != TokenType::RightBracket)
 		{

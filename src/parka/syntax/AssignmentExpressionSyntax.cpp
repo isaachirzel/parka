@@ -2,7 +2,7 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/ConditionalExpressionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -69,7 +69,7 @@ namespace parka
 			return {};
 
 		auto expression = AssignmentExpressionSyntax(*lhs, *rhs, *type);
-		auto id = Storage::add(std::move(expression));
+		auto id = SyntaxRepository::add(std::move(expression));
 
 		return id;
 	}
@@ -78,10 +78,10 @@ namespace parka
 	// {
 	// 	bool success = true;
 
-	// 	if (!Storage::get(_lhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_lhs).validate(functionId))
 	// 		success = false;
 
-	// 	if (!Storage::get(_rhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_rhs).validate(functionId))
 	// 		success = false;
 
 	// 	// TODO: validate type of assignment

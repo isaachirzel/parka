@@ -1,7 +1,7 @@
 #ifndef PARKA_ENTITY_EXPRESSION_ID_HPP
 #define PARKA_ENTITY_EXPRESSION_ID_HPP
 
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 namespace parka
 {
@@ -54,7 +54,7 @@ namespace parka
 		const auto& index() const { return _index; }
 		const auto& type() const { return _type; }
 
-		friend struct Storage;
+		friend struct SyntaxRepository;
 	};
 }
 

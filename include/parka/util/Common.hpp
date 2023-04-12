@@ -1,5 +1,5 @@
-#ifndef PARKA_PRIMITIVES_HPP
-#define PARKA_PRIMITIVES_HPP
+#ifndef PARKA_UTIL_COMMON_HPP
+#define PARKA_UTIL_COMMON_HPP
 
 // standard headers
 #include <cstdint>

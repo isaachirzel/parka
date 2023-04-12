@@ -4,7 +4,7 @@
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
@@ -54,7 +54,7 @@ namespace parka
 			return {};
 
 		auto function = FunctionSyntax(*prototype, *body);
-		auto id = Storage::add(std::move(function));
+		auto id = SyntaxRepository::add(std::move(function));
 
 		return id;
 	}
@@ -63,7 +63,7 @@ namespace parka
 	// {
 	// 	// TODO: Implement LocalEntity to get common functionality
 		
-	// 	auto& entity = Storage::get(entityId);
+	// 	auto& entity = SyntaxRepository::get(entityId);
 	// 	const auto& identifier = entity.identifier();
 
 	// 	print("Declaring $ $", entityId.type(), identifier);
@@ -75,7 +75,7 @@ namespace parka
 	// 	for (auto i = blockIndex; i < _localSymbols.length(); ++i)
 	// 	{
 	// 		auto previousId = _localSymbols[i];
-	// 		auto& previous = Storage::get(previousId);
+	// 		auto& previous = SyntaxRepository::get(previousId);
 
 	// 		if (entity.identifier() == previous.identifier())
 	// 		{
@@ -95,14 +95,14 @@ namespace parka
 	// bool FunctionSyntax::validate(const EntitySyntaxId& packageId)
 	// {
 	// 	auto success = true;
-	// 	auto functionId = Storage::getId(*this);
+	// 	auto functionId = Primitive::getId(*this);
 		
 	// 	_packageId = packageId;
 
 	// 	if (!_prototype.validate(functionId))
 	// 		success = false;
 
-	// 	auto& expression = Storage::get(_body);
+	// 	auto& expression = SyntaxRepository::get(_body);
 
 	// 	if (!expression.validate(functionId))
 	// 		success = false;
@@ -130,13 +130,13 @@ namespace parka
 	// 		i -= 1;
 
 	// 		auto id = _localSymbols[i];
-	// 		auto& entity = Storage::get(id);
+	// 		auto& entity = SyntaxRepository::get(id);
 
 	// 		if (entity.identifier() == identifier.text())
 	// 			return id;
 	// 	}
 
-	// 	auto& package = Storage::getPackage(*_packageId);
+	// 	auto& package = SyntaxRepository::getPackage(*_packageId);
 	// 	auto result = package.findGlobal(identifier);
 
 	// 	if (!result)
@@ -149,7 +149,7 @@ namespace parka
 	// {
 	// 	if (identifier.isAbsolute() || identifier.length() > 1)
 	// 	{
-	// 		auto& package = Storage::getPackage(*_packageId);
+	// 		auto& package = SyntaxRepository::getPackage(*_packageId);
 	// 		auto result = package.resolve(identifier);
 	// 	}
 

@@ -1,7 +1,7 @@
 #ifndef PARKA_ENTITY_STATEMENT_ID_HPP
 #define PARKA_ENTITY_STATEMENT_ID_HPP
 
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 namespace parka
 {

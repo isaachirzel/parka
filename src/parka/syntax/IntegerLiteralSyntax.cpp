@@ -1,6 +1,6 @@
 #include "parka/syntax/IntegerLiteralSyntax.hpp"
 #include "parka/type/Type.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -48,7 +48,7 @@ namespace parka
 
 		auto bits = getMinimumIntegerBytes(value);
 		auto literal = IntegerLiteralSyntax(token, *value, bits);
-		auto id = Storage::add(std::move(literal));
+		auto id = SyntaxRepository::add(std::move(literal));
 
 		token.increment();
 

@@ -1,4 +1,5 @@
-#include "parka/repository/Storage.hpp"
+#include "parka/intrinsic/Primitive.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/AssignmentExpressionSyntax.hpp"
 #include "parka/syntax/BitwiseAndExpressionSyntax.hpp"
@@ -34,28 +35,12 @@
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/repository/ExpressionSyntaxId.hpp"
 #include "parka/util/Array.hpp"
-#include "parka/syntax/PrimitiveSyntax.hpp"
+#include "parka/intrinsic/Primitive.hpp"
 #include "parka/util/Pool.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	const EntitySyntaxId Storage::voidId(EntityType::Primitive, 0);
-	const EntitySyntaxId Storage::u8Id(EntityType::Primitive, 1);
-	const EntitySyntaxId Storage::u16Id(EntityType::Primitive, 2);
-	const EntitySyntaxId Storage::u32Id(EntityType::Primitive, 3);
-	const EntitySyntaxId Storage::u64Id(EntityType::Primitive, 4);
-	const EntitySyntaxId Storage::i8Id(EntityType::Primitive, 5);
-	const EntitySyntaxId Storage::i16Id(EntityType::Primitive, 6);
-	const EntitySyntaxId Storage::i32Id(EntityType::Primitive, 7);
-	const EntitySyntaxId Storage::i64Id(EntityType::Primitive, 8);
-	const EntitySyntaxId Storage::f32Id(EntityType::Primitive, 9);
-	const EntitySyntaxId Storage::f64Id(EntityType::Primitive, 10);
-	const EntitySyntaxId Storage::boolId(EntityType::Primitive, 11);
-	const EntitySyntaxId Storage::charId(EntityType::Primitive, 12);
-	const EntitySyntaxId Storage::stringId(EntityType::Primitive, 13);
-
-	Array<Primitive> primitives(14);
 	Pool<PackageSyntax> packages(10'000);
 	Pool<StructSyntax> structs(100'000);
 	Pool<FunctionSyntax> functions(1'000'000);
@@ -89,249 +74,231 @@ namespace parka
 	Pool<IntegerLiteralSyntax> integerLiterals(1'000'000);
 	Pool<StringLiteralSyntax> stringLiterals(1'000'000);
 
-	void Storage::initialize()
-	{
-		primitives.push({ "void", PrimitiveType::Void, 0 });
-		primitives.push({ "u8", PrimitiveType::UnsignedInteger, 1 });
-		primitives.push({ "u16", PrimitiveType::UnsignedInteger, 2 });
-		primitives.push({ "u32", PrimitiveType::UnsignedInteger, 4 });
-		primitives.push({ "u64", PrimitiveType::UnsignedInteger, 8 });
-		primitives.push({ "i8", PrimitiveType::SignedInteger, 1 });
-		primitives.push({ "i16", PrimitiveType::SignedInteger, 2 });
-		primitives.push({ "i32", PrimitiveType::SignedInteger, 4 });
-		primitives.push({ "i64", PrimitiveType::SignedInteger, 8 });
-		primitives.push({ "f32", PrimitiveType::FloatingPoint, 4 });
-		primitives.push({ "f64", PrimitiveType::FloatingPoint, 8 });
-		primitives.push({ "bool", PrimitiveType::Boolean, 1 });
-		primitives.push({ "char", PrimitiveType::Character, 1 });
-		primitives.push({ "string", PrimitiveType::String, 0 });
-	}
-
-	EntitySyntaxId Storage::add(PackageSyntax&& value)
+	EntitySyntaxId SyntaxRepository::add(PackageSyntax&& value)
 	{
 		usize index = packages.add(std::move(value));
 
 		return EntitySyntaxId(EntityType::PackageSyntax, index);
 	}
 
-	EntitySyntaxId Storage::add(StructSyntax&& value)
+	EntitySyntaxId SyntaxRepository::add(StructSyntax&& value)
 	{
 		usize index = structs.add(std::move(value));
 		
 		return EntitySyntaxId(EntityType::StructSyntax, index);
 	}
 
-	EntitySyntaxId Storage::add(FunctionSyntax&& value)
+	EntitySyntaxId SyntaxRepository::add(FunctionSyntax&& value)
 	{
 		usize index = functions.add(std::move(value));
 		
 		return EntitySyntaxId(EntityType::Function, index);
 	}
 
-	EntitySyntaxId Storage::add(VariableSyntax&& value)
+	EntitySyntaxId SyntaxRepository::add(VariableSyntax&& value)
 	{
 		usize index = variables.add(std::move(value));
 		
 		return EntitySyntaxId(EntityType::Variable, index);
 	}
 
-	EntitySyntaxId Storage::add(ParameterSyntax&& value)
+	EntitySyntaxId SyntaxRepository::add(ParameterSyntax&& value)
 	{
 		usize index = parameters.add(std::move(value));
 
 		return EntitySyntaxId(EntityType::ParameterSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(AdditiveExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(AdditiveExpressionSyntax&& value)
 	{
 		auto index = additiveExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Additive, index);
 	}
 
-	ExpressionSyntaxId Storage::add(AssignmentExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(AssignmentExpressionSyntax&& value)
 	{
 		auto index = assignmentExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Assignment, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BitwiseAndExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BitwiseAndExpressionSyntax&& value)
 	{
 		auto index = bitwiseAndExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::BitwiseAnd, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BitwiseOrExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BitwiseOrExpressionSyntax&& value)
 	{
 		auto index = bitwiseOrExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::BitwiseOr, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BitwiseXorExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BitwiseXorExpressionSyntax&& value)
 	{
 		auto index = bitwiseXorExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::BitwiseXor, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BlockSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BlockSyntax&& value)
 	{
 		auto index = blockExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Block, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BooleanAndExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BooleanAndExpressionSyntax&& value)
 	{
 		auto index = booleanAndExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::BooleanAnd, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BooleanOrExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BooleanOrExpressionSyntax&& value)
 	{
 		auto index = booleanOrExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::BooleanOr, index);
 	}
 
-	ExpressionSyntaxId Storage::add(CallExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(CallExpressionSyntax&& value)
 	{
 		auto index = callExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Call, index);
 	}
 
-	ExpressionSyntaxId Storage::add(ConditionalExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(ConditionalExpressionSyntax&& value)
 	{
 		auto index = conditionalExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Conditional, index);
 	}
 
-	ExpressionSyntaxId Storage::add(EqualityExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(EqualityExpressionSyntax&& value)
 	{
 		auto index = equalityExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Equality, index);
 	}
 
-	ExpressionSyntaxId Storage::add(IdentifierExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(IdentifierExpressionSyntax&& value)
 	{
 		auto index = identifierExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::IdentifierExpressionSyntax, index);
 	}
 
-	// ExpressionSyntaxId Storage::add(IfExpressionSyntax&& value)
+	// ExpressionSyntaxId SyntaxRepository::add(IfExpressionSyntax&& value)
 	// {
 	// 	auto index = ifExpressions.add(std::move(value));
 
 	// 	return ExpressionSyntaxId(ExpressionType::If, index);
 	// }
 
-	ExpressionSyntaxId Storage::add(SubscriptExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(SubscriptExpressionSyntax&& value)
 	{
 		auto index = subscriptExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Subscript, index);
 	}
 
-	ExpressionSyntaxId Storage::add(MemberAccessExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(MemberAccessExpressionSyntax&& value)
 	{
 		auto index = memberAccessExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::MemberAccessExpressionSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(MultiplicativeExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(MultiplicativeExpressionSyntax&& value)
 	{
 		auto index = multiplicativeExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Multiplicative, index);
 	}
 
-	ExpressionSyntaxId Storage::add(PrefixExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(PrefixExpressionSyntax&& value)
 	{
 		auto index = prefixExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::PrefixExpressionSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(RelationalExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(RelationalExpressionSyntax&& value)
 	{
 		auto index = relationalExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Relational, index);
 	}
 
-	ExpressionSyntaxId Storage::add(ShiftExpressionSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(ShiftExpressionSyntax&& value)
 	{
 		auto index = shiftExpressions.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::Shift, index);
 	}
 
-	ExpressionSyntaxId Storage::add(BoolLiteralSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(BoolLiteralSyntax&& value)
 	{
 		auto index = boolLiterals.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::BoolLiteralSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(CharLiteralSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(CharLiteralSyntax&& value)
 	{
 		auto index = charLiterals.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::CharLiteralSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(FloatLiteralSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(FloatLiteralSyntax&& value)
 	{
 		auto index = floatLiterals.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::FloatLiteralSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(IntegerLiteralSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(IntegerLiteralSyntax&& value)
 	{
 		auto index = integerLiterals.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::IntegerLiteralSyntax, index);
 	}
 
-	ExpressionSyntaxId Storage::add(StringLiteralSyntax&& value)
+	ExpressionSyntaxId SyntaxRepository::add(StringLiteralSyntax&& value)
 	{
 		auto index = stringLiterals.add(std::move(value));
 
 		return ExpressionSyntaxId(ExpressionType::StringLiteralSyntax, index);
 	}
 
-	StatementSyntaxId Storage::add(DeclarationStatementSyntax&& value)
+	StatementSyntaxId SyntaxRepository::add(DeclarationStatementSyntax&& value)
 	{
 		auto index = declarationStatements.add(std::move(value));
 
 		return StatementSyntaxId(StatementType::DeclarationStatementSyntax, index);
 	}
 
-	StatementSyntaxId Storage::add(ExpressionStatementSyntax&& value)
+	StatementSyntaxId SyntaxRepository::add(ExpressionStatementSyntax&& value)
 	{
 		auto index = expressionStatements.add(std::move(value));
 
 		return StatementSyntaxId(StatementType::ExpressionSyntax, index);
 	}
 
-	StatementSyntaxId Storage::add(JumpStatementSyntax&& value)
+	StatementSyntaxId SyntaxRepository::add(JumpStatementSyntax&& value)
 	{
 		auto index = jumpStatements.add(std::move(value));
 
 		return StatementSyntaxId(StatementType::Jump, index);
 	}
 
-	EntitySyntax& Storage::get(const EntitySyntaxId& id)
+	EntitySyntax& SyntaxRepository::get(const EntitySyntaxId& id)
 	{
 		switch (id.type())
 		{
@@ -342,7 +309,7 @@ namespace parka
 				return structs[id.index()];
 
 			case EntityType::Primitive:
-				return primitives[id.index()];
+				return Primitive::primitives[id.index()];
 
 			case EntityType::Function:
 				return functions[id.index()];
@@ -360,7 +327,7 @@ namespace parka
 		exitWithError("Unable to get entity of type: $", (int)id.type());
 	}
 
-	ExpressionSyntax& Storage::get(const ExpressionSyntaxId& id)
+	ExpressionSyntax& SyntaxRepository::get(const ExpressionSyntaxId& id)
 	{
 		switch (id.type())
 		{
@@ -445,7 +412,7 @@ namespace parka
 		exitWithError("Unable to get ExpressionSyntax of type: $", (int)id.type());
 	}
 
-	StatementSyntax& Storage::get(const StatementSyntaxId& id)
+	StatementSyntax& SyntaxRepository::get(const StatementSyntaxId& id)
 	{
 		switch (id.type())
 		{
@@ -465,42 +432,42 @@ namespace parka
 		exitWithError("Unable to get Statement of type: $", (int)id.type());
 	}
 
-	PackageSyntax& Storage::getPackage(const EntitySyntaxId& id)
+	PackageSyntax& SyntaxRepository::getPackage(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::PackageSyntax);
 
 		return packages[id.index()];
 	}
 
-	StructSyntax& Storage::getStruct(const EntitySyntaxId& id)
+	StructSyntax& SyntaxRepository::getStruct(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::StructSyntax);
 
 		return structs[id.index()];
 	}
 
-	FunctionSyntax& Storage::getFunction(const EntitySyntaxId& id)
+	FunctionSyntax& SyntaxRepository::getFunction(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::Function);
 
 		return functions[id.index()];
 	}
 
-	VariableSyntax& Storage::getVariable(const EntitySyntaxId& id)
+	VariableSyntax& SyntaxRepository::getVariable(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::Variable);
 
 		return variables[id.index()];
 	}
 
-	ParameterSyntax& Storage::getParameter(const EntitySyntaxId& id)
+	ParameterSyntax& SyntaxRepository::getParameter(const EntitySyntaxId& id)
 	{
 		assert(id.type() == EntityType::ParameterSyntax);
 
 		return parameters[id.index()];
 	}
 
-	EntitySyntaxId Storage::getId(FunctionSyntax& value)
+	EntitySyntaxId SyntaxRepository::getId(FunctionSyntax& value)
 	{
 		auto index = functions.getIndex(&value);
 		auto id = EntitySyntaxId(EntityType::Function, index);
@@ -508,28 +475,11 @@ namespace parka
 		return id;
 	}
 
-	EntitySyntaxId Storage::getId(PackageSyntax& value)
+	EntitySyntaxId SyntaxRepository::getId(PackageSyntax& value)
 	{
 		auto index = packages.getIndex(&value);
 		auto id = EntitySyntaxId(EntityType::PackageSyntax, index);
 
 		return id;
-	}
-
-	void Storage::declarePrimitives(Table<String, EntitySyntaxId>& globalSymbols)
-	{
-		usize index = 0;
-
-		for (const auto& primitive: primitives)
-		{
-			globalSymbols.emplace(primitive.identifier(), EntitySyntaxId { EntityType::Primitive, index });
-			
-			index += 1;
-		}
-	}
-
-	usize Storage::getGlobalCount()
-	{
-		return packages.count() + structs.count() + functions.count();
 	}
 }

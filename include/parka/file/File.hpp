@@ -2,7 +2,7 @@
 #define PARKA_UTIL_FILE_HPP
 
 #include "parka/util/Array.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 #include "parka/file/FilePosition.hpp"
 

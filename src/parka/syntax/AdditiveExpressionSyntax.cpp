@@ -1,7 +1,7 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/MultiplicativeExpressionSyntax.hpp"
-#include "parka/syntax/PrimitiveSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/intrinsic/Primitive.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -43,7 +43,7 @@ namespace parka
 				return {};
 
 			auto expression = AdditiveExpressionSyntax(*lhs, *rhs, *type);
-			auto id = Storage::add(std::move(expression));
+			auto id = SyntaxRepository::add(std::move(expression));
 
 			lhs = std::move(id);
 			type = getAdditiveType(token);
@@ -56,10 +56,10 @@ namespace parka
 	// {
 	// 	auto success = true;
 
-	// 	if (!Storage::get(_lhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_lhs).validate(functionId))
 	// 		success = false;
 
-	// 	if (!Storage::get(_rhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_rhs).validate(functionId))
 	// 		success = false;
 
 	// 	// TODO: Test type compatibility
@@ -69,8 +69,8 @@ namespace parka
 
 	// Optional<Type> AdditiveExpressionSyntax::getType() const
 	// {
-	// 	auto& lhs = Storage::get(_lhs);
-	// 	auto& rhs = Storage::get(_rhs);
+	// 	auto& lhs = SyntaxRepository::get(_lhs);
+	// 	auto& rhs = SyntaxRepository::get(_rhs);
 	// 	auto leftType = lhs.getType();
 	// 	auto rightType = rhs.getType();
 

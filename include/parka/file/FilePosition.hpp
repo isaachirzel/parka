@@ -1,7 +1,7 @@
 #ifndef PARKA_UTIL_FILE_POSITION_HPP
 #define PARKA_UTIL_FILE_POSITION_HPP
 
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 #include <ostream>
 

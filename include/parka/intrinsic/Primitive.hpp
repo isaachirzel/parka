@@ -2,12 +2,11 @@
 #define PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
 
 #include "parka/enum/PrimitiveType.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
-#include "parka/repository/Storage.hpp"
-#include "parka/Token.hpp"
-#include "parka/util/Array.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
+#include "parka/util/Table.hpp"
 
 namespace parka
 {
@@ -25,6 +24,28 @@ namespace parka
 
 	public:
 
+		static Array<Primitive> primitives;
+
+		static const EntitySyntaxId voidId;
+		static const EntitySyntaxId u8Id;
+		static const EntitySyntaxId u16Id;
+		static const EntitySyntaxId u32Id;
+		static const EntitySyntaxId u64Id;
+		static const EntitySyntaxId i8Id;
+		static const EntitySyntaxId i16Id;
+		static const EntitySyntaxId i32Id;
+		static const EntitySyntaxId i64Id;
+		static const EntitySyntaxId f32Id;
+		static const EntitySyntaxId f64Id;
+		static const EntitySyntaxId boolId;
+		static const EntitySyntaxId charId;
+		static const EntitySyntaxId stringId;
+
+		static void initializeAll();
+		static void declareAll(Table<String, EntitySyntaxId>& globalSymbols);
+
+	public:
+
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
 		~Primitive() = default;
@@ -33,8 +54,6 @@ namespace parka
 		EntityType type() const { return EntityType::Primitive; }
 		const auto& primitiveType() const { return _type; }
 		const auto& size() const { return _size; }
-
-		friend struct Storage;
 	};
 }
 

@@ -1,6 +1,6 @@
 #include "parka/syntax/BooleanOrExpressionSyntax.hpp"
 #include "parka/syntax/BooleanAndExpressionSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -22,7 +22,7 @@ namespace parka
 				return {};
 
 			auto expression = BooleanOrExpressionSyntax(*lhs, *rhs);
-			auto id = Storage::add(std::move(expression));
+			auto id = SyntaxRepository::add(std::move(expression));
 
 			lhs = std::move(id);
 		}

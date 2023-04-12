@@ -1,7 +1,8 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
+#include "parka/intrinsic/Primitive.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 
@@ -9,7 +10,7 @@ namespace parka
 {
 	// void PackageSymbolTable::declarePackage(const EntitySyntaxId& packageId)
 	// {
-	// 	auto& package = Storage::getPackage(packageId);
+	// 	auto& package = SyntaxRepository::getPackage(packageId);
 
 	// 	_symbols.insert({ package.identifier(), packageId });
 
@@ -18,7 +19,7 @@ namespace parka
 
 	// bool PackageSymbolTable::declareEntity(const EntitySyntaxId& entityId)
 	// {
-	// 	auto& entity = Storage::get(entityId);
+	// 	auto& entity = SyntaxRepository::get(entityId);
 	// 	const auto& identifier = entity.identifier();
 
 	// 	print("Declaring $ `$`", entityId.type(), identifier);
@@ -29,7 +30,7 @@ namespace parka
 	// 	{
 	// 		// TODO: get previous entity
 	// 		// auto previousId = result.first->second;
-	// 		// auto& previous = Storage::get(previousId);
+	// 		// auto& previous = SyntaxRepository::get(previousId);
 	// 		//TODO: invalidate entity previous.invalidate();
 
 	// 		printError("`$` is already declared in this package.", identifier);
@@ -45,7 +46,7 @@ namespace parka
 
 		for (const auto& entityId : entityIds)
 		{
-			auto& entity = Storage::get(entityId);
+			auto& entity = SyntaxRepository::get(entityId);
 			const auto& identifier = entity.identifier();
 			auto result = symbols.insert({ identifier, entityId });
 
@@ -63,11 +64,11 @@ namespace parka
 	{
 		// TODO: pre-reserve symbol count
 		auto success = true;
-		auto& package = Storage::getPackage(packageId);
+		auto& package = SyntaxRepository::getPackage(packageId);
 		auto symbols = Table<String, EntitySyntaxId>();
 
 		if (parent == nullptr)
-			Storage::declarePrimitives(symbols);
+			Primitive::declareAll(symbols);
 
 		for (const auto& mod : package.modules())
 		{
@@ -80,7 +81,7 @@ namespace parka
 
 		for (const auto& packageId : package.packageIds())
 		{
-			auto& package = Storage::getPackage(packageId);
+			auto& package = SyntaxRepository::getPackage(packageId);
 
 			symbols.insert({ package.identifier(), packageId });
 
@@ -139,7 +140,7 @@ namespace parka
 
 			if (!result)
 			{
-				auto& package = Storage::get(_packageId);
+				auto& package = SyntaxRepository::get(_packageId);
 				// TODO: Output package symbol, entity type and reference highlight
 				printError("Unable to find `$` in package `$`.", part.text(), package.identifier());
 				return {};
@@ -153,7 +154,7 @@ namespace parka
 		// if (isLast)
 		// 	return result;
 
-		// auto& entity = Storage::get(*result);
+		// auto& entity = SyntaxRepository::get(*result);
 
 		// // TODO: Update for static features of other entities
 		// switch (entity.type())

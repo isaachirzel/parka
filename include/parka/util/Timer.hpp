@@ -1,7 +1,7 @@
 #ifndef PARKA_UTIL_TIMER_HPP
 #define PARKA_UTIL_TIMER_HPP
 
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 #include <chrono>
 

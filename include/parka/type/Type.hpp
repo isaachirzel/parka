@@ -2,7 +2,7 @@
 #define PARKA_TYPE_HPP
 
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka

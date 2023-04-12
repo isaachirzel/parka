@@ -3,7 +3,7 @@
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Path.hpp"
@@ -81,11 +81,11 @@ namespace parka
 	// bool ModuleSyntax::validate(const EntitySyntaxId& packageId)
 	// {
 	// 	auto success = true;
-	// 	// auto& package = Storage::getPackage(packageId);
+	// 	// auto& package = SyntaxRepository::getPackage(packageId);
 
 	// 	for (auto id : _functionIds)
 	// 	{
-	// 		auto& function = Storage::getFunction(id);
+	// 		auto& function = SyntaxRepository::getFunction(id);
 
 	// 		if (!function.validate(packageId))
 	// 			success = false;
@@ -93,7 +93,7 @@ namespace parka
 
 	// 	for (auto id : _structIds)
 	// 	{
-	// 		auto& strct = Storage::getStruct(id);
+	// 		auto& strct = SyntaxRepository::getStruct(id);
 
 	// 		if (!strct.validate(packageId))
 	// 			success = false;

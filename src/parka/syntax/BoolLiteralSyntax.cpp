@@ -1,6 +1,6 @@
 #include "parka/syntax/BoolLiteralSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
@@ -35,7 +35,7 @@ namespace parka
 			return {};
 
 		auto literal = BoolLiteralSyntax(token, *value);
-		auto id = Storage::add(std::move(literal));
+		auto id = SyntaxRepository::add(std::move(literal));
 
 		token.increment();
 

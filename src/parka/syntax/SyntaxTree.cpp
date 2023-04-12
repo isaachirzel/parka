@@ -5,7 +5,7 @@
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/util/Path.hpp"
@@ -20,7 +20,7 @@ namespace parka
 		// {
 		// 	// TODO: Check if types are referencing the base type or an indirection to it
 		// 	const auto& type = member.annotation().type();
-		// 	auto& entity = Storage::get(type.entityId());
+		// 	auto& entity = SyntaxRepository::get(type.entityId());
 
 		// 	if (entity.type() != EntityType::StructSyntax)
 		// 		continue;
@@ -41,7 +41,7 @@ namespace parka
 
 	bool validateStructRecursion(EntitySyntaxId structId)
 	{
-		auto& strct = Storage::getStruct(structId);
+		auto& strct = SyntaxRepository::getStruct(structId);
 
 		const MemberSyntax *recursiveMember = getRecursiveMember(strct.members(), structId);
 
@@ -69,7 +69,7 @@ namespace parka
 	// bool SyntaxTree::validate()
 	// {
 	// 	auto success = true;
-	// 	auto& globalPackage = Storage::getPackage(_globalPackageId);
+	// 	auto& globalPackage = SyntaxRepository::getPackage(_globalPackageId);
 
 	// 	// if (!globalPackage.declare())
 	// 	// 	success = false;

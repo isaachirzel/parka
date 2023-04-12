@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_OPERATOR_OPERATOR_SYNTAX_HPP
 
 #include "parka/enum/OperatorType.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 
 namespace parka
 {

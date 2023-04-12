@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_AST_SYNTAX_HPP
 
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Project.hpp"
 #include "parka/util/Optional.hpp"
 

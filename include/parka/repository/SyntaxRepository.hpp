@@ -45,25 +45,8 @@ namespace parka
 	class ExpressionStatementSyntax;
 	class JumpStatementSyntax;
 
-	struct Storage
+	struct SyntaxRepository
 	{
-		static const EntitySyntaxId voidId;
-		static const EntitySyntaxId u8Id;
-		static const EntitySyntaxId u16Id;
-		static const EntitySyntaxId u32Id;
-		static const EntitySyntaxId u64Id;
-		static const EntitySyntaxId i8Id;
-		static const EntitySyntaxId i16Id;
-		static const EntitySyntaxId i32Id;
-		static const EntitySyntaxId i64Id;
-		static const EntitySyntaxId f32Id;
-		static const EntitySyntaxId f64Id;
-		static const EntitySyntaxId boolId;
-		static const EntitySyntaxId charId;
-		static const EntitySyntaxId stringId;
-
-		static void initialize();
-
 		static EntitySyntaxId add(PackageSyntax&& value);
 		static EntitySyntaxId add(StructSyntax&& value);
 		static EntitySyntaxId add(FunctionSyntax&& value);
@@ -90,14 +73,12 @@ namespace parka
 		static ExpressionSyntaxId add(RelationalExpressionSyntax&& value);
 		static ExpressionSyntaxId add(ShiftExpressionSyntax&& value);
 
-		// Literals
 		static ExpressionSyntaxId add(BoolLiteralSyntax&& value);
 		static ExpressionSyntaxId add(CharLiteralSyntax&& value);
 		static ExpressionSyntaxId add(FloatLiteralSyntax&& value);
 		static ExpressionSyntaxId add(IntegerLiteralSyntax&& value);
 		static ExpressionSyntaxId add(StringLiteralSyntax&& value);
 
-		// Statements
 		static StatementSyntaxId add(DeclarationStatementSyntax&& value);
 		static StatementSyntaxId add(ExpressionStatementSyntax&& value);
 		static StatementSyntaxId add(JumpStatementSyntax&& value);
@@ -114,10 +95,6 @@ namespace parka
 
 		static EntitySyntaxId getId(FunctionSyntax& value);
 		static EntitySyntaxId getId(PackageSyntax& value);
-		
-		static void declarePrimitives(Table<String, EntitySyntaxId>& globalSymbols);
-		static usize getGlobalCount();
-		static usize getPackageCount();
 	};
 }
 

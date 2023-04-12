@@ -1,6 +1,6 @@
 #include "parka/syntax/RelationalExpressionSyntax.hpp"
 #include "parka/syntax/ShiftExpressionSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -45,7 +45,7 @@ namespace parka
 				return {};
 
 			auto expression = RelationalExpressionSyntax(*lhs, *rhs, *type);
-			auto id = Storage::add(std::move(expression));
+			auto id = SyntaxRepository::add(std::move(expression));
 
 			lhs = std::move(id);
 			type = parseRelationalType(token);

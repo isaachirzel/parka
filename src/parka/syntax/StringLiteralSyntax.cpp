@@ -1,5 +1,5 @@
 #include "parka/syntax/StringLiteralSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -13,7 +13,7 @@ namespace parka
 		}
 
 		auto literal = StringLiteralSyntax(token, token.text());
-		auto id = Storage::add(std::move(literal));
+		auto id = SyntaxRepository::add(std::move(literal));
 
 		token.increment();
 

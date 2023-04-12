@@ -4,7 +4,7 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka

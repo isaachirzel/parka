@@ -1,4 +1,4 @@
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #ifndef PARKA_ENUM_ENTITY_TYPE_HPP
 #define PARKA_ENUM_ENTITY_TYPE_HPP
 

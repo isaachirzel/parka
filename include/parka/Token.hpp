@@ -4,7 +4,7 @@
 // local includes
 #include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
-#include "parka/util/Primitives.hpp"
+#include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka

@@ -1,6 +1,6 @@
 #include "parka/syntax/MemberAccessExpressionSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -22,7 +22,7 @@ namespace parka
 		}
 
 		auto expression = MemberAccessExpressionSyntax(std::move(primary), token);
-		auto id = Storage::add(std::move(expression));
+		auto id = SyntaxRepository::add(std::move(expression));
 
 		token.increment();
 

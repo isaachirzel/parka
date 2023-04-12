@@ -3,7 +3,7 @@
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/DeclarationStatementSyntax.hpp"
 #include "parka/syntax/VariableSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -37,7 +37,7 @@ namespace parka
 		token.increment();
 
 		auto declaration = DeclarationStatementSyntax(*variableId, *value);
-		auto id = Storage::add(std::move(declaration));
+		auto id = SyntaxRepository::add(std::move(declaration));
 
 		return id;
 	}
@@ -45,9 +45,9 @@ namespace parka
 	// bool DeclarationStatementSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
-	// 	auto& function = Storage::getFunction(functionId);
-	// 	auto& variable = Storage::getVariable(_variableId);
-	// 	auto& value = Storage::get(_value);
+	// 	auto& function = SyntaxRepository::getFunction(functionId);
+	// 	auto& variable = SyntaxRepository::getVariable(_variableId);
+	// 	auto& value = SyntaxRepository::get(_value);
 		
 	// 	if (!value.validate(functionId))
 	// 		success = false;

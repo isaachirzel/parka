@@ -1,6 +1,7 @@
+#include "parka/intrinsic/Primitive.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/Token.hpp"
 #include "parka/file/File.hpp"
 #include "parka/util/Path.hpp"
@@ -18,7 +19,7 @@ void printErrorCount(const Project& project)
 
 int main(int argc, const char *argv[])
 {
-	Storage::initialize();
+	Primitive::initializeAll();
 
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");

@@ -4,7 +4,7 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/repository/Storage.hpp"
+#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/type/Type.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
@@ -97,11 +97,11 @@ namespace parka
 	// bool PrototypeSyntax::validate(const EntitySyntaxId& functionId)
 	// {
 	// 	auto success = true;
-	// 	auto& function = Storage::getFunction(functionId);
+	// 	auto& function = SyntaxRepository::getFunction(functionId);
 
 	// 	for (auto parameterId : _parameterIds)
 	// 	{
-	// 		auto& parameter = Storage::getParameter(parameterId);
+	// 		auto& parameter = SyntaxRepository::getParameter(parameterId);
 
 	// 		if (!parameter.validate(functionId))
 	// 			success = false;
