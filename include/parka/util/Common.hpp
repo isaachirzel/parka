@@ -4,6 +4,7 @@
 // standard headers
 #include <cstdint>
 #include <cstddef>
+#include <functional>
 
 namespace parka
 {

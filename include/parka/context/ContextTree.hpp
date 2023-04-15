@@ -9,8 +9,12 @@ namespace parka
 {
 	class ContextTree
 	{
-		EntityContextId _globalPackageId;
+		Array<EntityContextId> _packageIds;
 		
+		ContextTree(Array<EntityContextId>&& packageIds) :
+		_packageIds(std::move(packageIds))
+		{}
+
 	public:
 
 		static Optional<ContextTree> validate(const SyntaxTree&);

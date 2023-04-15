@@ -1,4 +1,5 @@
 #include "parka/syntax/KeywordSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
@@ -6,34 +7,39 @@
 
 namespace parka
 {
-	const Table<String, KeywordType> keywords =
+	Table<String, KeywordType> keywords(25);
+
+	void KeywordSyntax::initialize()
 	{
-		{ "break", KeywordType::Break },
-		{ "case", KeywordType::Case },
-		{ "continue", KeywordType::Continue },
-		{ "yield", KeywordType::Yield },
-		{ "else", KeywordType::Else },
-		{ "enum", KeywordType::Enum },
-		{ "import", KeywordType::Import },
-		{ "export", KeywordType::Export },
-		{ "false", KeywordType::False },
-		{ "for", KeywordType::For },
-		{ "function", KeywordType::Function },
-		{ "operator", KeywordType::Operator },
-		{ "if", KeywordType::If },
-		{ "loop", KeywordType::Loop },
-		{ "match", KeywordType::Match },
-		{ "mut", KeywordType::Mut },
-		{ "return", KeywordType::Return },
-		{ "struct", KeywordType::StructSyntax },
-		{ "then", KeywordType::Then },
-		{ "true", KeywordType::True },
-		{ "type", KeywordType::Type },
-		{ "private", KeywordType::Private },
-		{ "public", KeywordType::Public },
-		{ "var", KeywordType::Var },
-		{ "while", KeywordType::While }
-	};
+		if (keywords.count() > 0)
+			return;
+			
+		keywords.insert("break", KeywordType::Break);
+		keywords.insert("case", KeywordType::Case);
+		keywords.insert("continue", KeywordType::Continue);
+		keywords.insert("yield", KeywordType::Yield);
+		keywords.insert("else", KeywordType::Else);
+		keywords.insert("enum", KeywordType::Enum);
+		keywords.insert("import", KeywordType::Import);
+		keywords.insert("export", KeywordType::Export);
+		keywords.insert("false", KeywordType::False);
+		keywords.insert("for", KeywordType::For);
+		keywords.insert("function", KeywordType::Function);
+		keywords.insert("operator", KeywordType::Operator);
+		keywords.insert("if", KeywordType::If);
+		keywords.insert("loop", KeywordType::Loop);
+		keywords.insert("match", KeywordType::Match);
+		keywords.insert("mut", KeywordType::Mut);
+		keywords.insert("return", KeywordType::Return);
+		keywords.insert("struct", KeywordType::StructSyntax);
+		keywords.insert("then", KeywordType::Then);
+		keywords.insert("true", KeywordType::True);
+		keywords.insert("type", KeywordType::Type);
+		keywords.insert("private", KeywordType::Private);
+		keywords.insert("public", KeywordType::Public);
+		keywords.insert("var", KeywordType::Var);
+		keywords.insert("while", KeywordType::While);
+	}
 
 	KeywordType KeywordSyntax::getKeywordType(const Token& token)
 	{
@@ -41,12 +47,12 @@ namespace parka
 			return {};
 
 		auto text = token.text();
-		auto iter = keywords.find(text);
+		const auto *keywordType = keywords.find(text);
 
-		if (iter == keywords.end())
+		if (!keywordType)
 			return KeywordType::None;
 
-		return iter->second;
+		return *keywordType;
 	}
 
 	Optional<KeywordSyntax> KeywordSyntax::parseBool(Token& token)
@@ -109,6 +115,8 @@ namespace parka
 			printParseError(token, "`function`");
 			return {};
 		}
+
+		Log::addNote(token, "This is a function keyword.");
 
 		auto keyword = KeywordSyntax(token, type);
 

@@ -2,7 +2,6 @@
 #define PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
 
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/util/Hash.hpp"
 #include "parka/util/Common.hpp"
 
 #include <cassert>
@@ -35,12 +34,15 @@ namespace parka
 
 		friend bool operator==(const TypeId& left, const TypeId& right);
 	};
+}
 
+namespace std
+{
 	template <>
-	u32 hash32(const TypeId& id);
-
-	template <>
-	u64 hash64(const TypeId& id);
+	struct hash<parka::TypeId>
+	{
+		parka::usize operator()(const parka::TypeId& key) const;
+	};
 }
 
 #endif

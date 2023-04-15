@@ -1,140 +1,71 @@
 
-// #include "parka/util/Print.hpp"
-// #include "parka/util/String.hpp"
-// #include "parka/util/Table.hpp"
+#include "parka/util/Print.hpp"
+#include "parka/util/String.hpp"
+#include "parka/util/Table.hpp"
 
-// #include <cassert>
-// #include <cstdint>
-// #include <cstdlib>
-// #include <cstring>
+#include <cassert>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 
-// const usize primeNumbers[] =
-// {
-// 	11,
-// 	23,
-// 	47,
-// 	97,
-// 	197,
-// 	397,
-// 	797,
-// 	1597,
-// 	3203,
-// 	6421,
-// 	12853,
-// 	25717,
-// 	51437, 
-// 	102877,
-// 	205759,
-// 	411527,
-// 	823117,
-// 	1646237,
-// 	3292489,
-// 	6584983,
-// 	13169977,
-// 	26339969,
-// 	52679969,
-// 	105359939,
-// 	210719881,
-// 	421439783,
-// 	842879579,
-// 	1685759167,
-// 	3371518343,
-// 	6743036717
-// };
-// const usize primeNumberCount = sizeof(primeNumbers) / sizeof(*primeNumbers);
+namespace parka::table
+{
+	const usize primeNumbers[] =
+	{
+		11,
+		23,
+		47,
+		97,
+		197,
+		397,
+		797,
+		1'597,
+		3'203,
+		6'421,
+		12'853,
+		25'717,
+		51'437,
+		102'877,
+		205'759,
+		411'527,
+		823'117,
+		1'646'237,
+		3'292'489,
+		6'584'983,
+		13'169'977,
+		26'339'969,
+		52'679'969,
+		105'359'939,
+		210'719'881,
+		421'439'783,
+		842'879'579,
+		1'685'759'167,
+		3'371'518'343,
+		// 6'743'036'717 -- this would make it too big for u32
+	};
+	
+	const usize primeNumberCount = sizeof(primeNumbers) / sizeof(*primeNumbers);
 
-// TableEntry tableEntryCreate(const char *key, usize valueIndex)
-// {
-// 	assert(key != NULL);
+	usize getCapacity(usize minimumCapacity)
+	{
+		for (usize i = 1; i < primeNumberCount; ++i)
+		{
+			auto capacity = primeNumbers[i];
 
-// 	TableEntry entry =
-// 	{
-// 		.key = stringDuplicate(key),
-// 		.value = valueIndex
-// 	};
+			if (capacity >= minimumCapacity)
+				return capacity;
+		}
 
-// 	return entry;
-// }
+		usize maxCapacity = primeNumbers[primeNumberCount - 1];
 
-// void tableEntryDestroy(TableEntry *entry)
-// {
-// 	assert(entry != NULL);
-
-// 	deallocate(entry->key);
-// }
-
-// void tableEntryDelete(TableEntry *entry)
-// {
-// 	assert(entry != NULL);
-// 	deallocate(entry->key);
-
-// 	entry->key = NULL;
-// 	entry->value = 0;
-// 	entry->isDeleted = true;
-// }
-
-// usize getPrimeNumberIndex(usize minCapacity)
-// {
-// 	for (usize i = 0; i < primeNumberCount; ++i)
-// 	{
-// 		if (primeNumbers[i] > minCapacity)
-// 			return i;
-// 	}
-
-// 	usize maxCapacity = primeNumbers[primeNumberCount - 1];
-
-// 	exitWithError("Unable to get Table size, requested capacity ($) is over maximum ($).", minCapacity, maxCapacity);
-// }
-
-// Table tableCreate(usize minCapacity)
-// {
-// 	const usize primeNumberIndex = getPrimeNumberIndex(minCapacity);
-// 	const usize length = primeNumbers[primeNumberIndex];
-// 	Table table =
-// 	{
-// 		.entries = allocateArray(sizeof(TableEntry), length),
-// 		.primeNumberIndex = primeNumberIndex
-// 	};
-
-// 	return table;
-// }
-
-// void tableDestroy(Table *table)
-// {
-// 	assert(table != NULL);
-
-// 	usize length = primeNumbers[table->primeNumberIndex];
-// 	TableEntry *entries = table->entries;
-
-// 	for (usize i = 0; i < length; ++i)
-// 		tableEntryDestroy(&entries[i]);
-
-// 	deallocate(table->entries);
-// }
-
-// usize hashKey(const char * key)
-// {
-// 	assert(key != NULL);
-
-// 	const size_t p = 97;
-// 	const size_t m = 1000000009;
-// 	size_t hash = 0;
-// 	size_t pop = 1;
-
-// 	while (*key)
-// 	{
-// 		hash = (hash + (*key - 'a' + 1) * pop) $ m;
-// 		pop = (pop * p) $ m;
-// 		key += 1;
-// 	}
-
-// 	return hash;
-// }
+		exitWithError("Unable to create table with capacity $. The maximum capacity is $.", minimumCapacity, maxCapacity);
+	}
+}
 
 // TableEntry *tableGetEntry(Table *table, const char *key)
 // {
-// 	assert(table != NULL);
-// 	assert(key != NULL);
+// 	assert(table != nullptr);
+// 	assert(key != nullptr);
 
 // 	TableEntry *entries = table->entries;
 // 	usize length = primeNumbers[table->primeNumberIndex];
@@ -146,7 +77,7 @@
 // 	{
 // 		TableEntry *entry = &entries[index];
 
-// 		if (entry->key == NULL && !entry->isDeleted)
+// 		if (entry->key == nullptr && !entry->isDeleted)
 // 			break;
 
 // 		if (!strcmp(key, entry->key))
@@ -163,7 +94,7 @@
 
 // void tableResize(Table *table, usize newPrimeNumberIndex)
 // {
-// 	assert(table != NULL);
+// 	assert(table != nullptr);
 // 	assert(newPrimeNumberIndex < primeNumberCount);
 // 	assert(primeNumbers[newPrimeNumberIndex] > table->count);
 
@@ -197,12 +128,12 @@
 
 // void tableSet(Table *table, const char *key, usize value)
 // {
-// 	assert(table != NULL);
-// 	assert(key != NULL);
+// 	assert(table != nullptr);
+// 	assert(key != nullptr);
 
 // 	TableEntry *entry = tableGetEntry(table, key);
 
-// 	if (entry->key == NULL)
+// 	if (entry->key == nullptr)
 // 	{
 // 		*entry = tableEntryCreate(key, value);
 // 		return;
@@ -213,12 +144,12 @@
 
 // usize tableFind(Table *table, const char *key)
 // {
-// 	assert(table != NULL);
-// 	assert(key != NULL);
+// 	assert(table != nullptr);
+// 	assert(key != nullptr);
 	
 // 	TableEntry *entry = tableGetEntry(table, key);
 
-// 	if (entry->key == NULL)
+// 	if (entry->key == nullptr)
 // 		return NOT_FOUND;
 
 // 	return entry->value;
@@ -227,7 +158,7 @@
 
 // usize tableEntryGetValue(TableEntry *entry)
 // {
-// 	if (entry->key == NULL)
+// 	if (entry->key == nullptr)
 // 		return NOT_FOUND;
 
 // 	return entry->value;
@@ -235,8 +166,8 @@
 
 // void tableEntryInit(TableEntry *entry, const char *key, usize value)
 // {
-// 	assert(entry != NULL);
-// 	assert(entry->key == NULL);
+// 	assert(entry != nullptr);
+// 	assert(entry->key == nullptr);
 
 // 	*entry = (TableEntry)
 // 	{

@@ -49,9 +49,9 @@ namespace parka
 		{
 			auto& entity = SyntaxRepository::get(entityId);
 			const auto& identifier = entity.identifier();
-			auto result = symbols.insert({ identifier, entityId });
+			auto result = symbols.insert(identifier, entityId);
 
-			if (!result.second)
+			if (!result)
 			{
 				printError("Name `$` is already declared in this package.", identifier);
 				success = false;
@@ -84,10 +84,9 @@ namespace parka
 		{
 			auto& package = SyntaxRepository::getPackage(packageId);
 
-			symbols.insert({ package.identifier(), packageId });
+			symbols.insert(package.identifier(), packageId);
 
-			// if (!package.declare())
-			// 	success = false;
+			
 		}
 
 		if (!success)
@@ -113,17 +112,12 @@ namespace parka
 
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const Identifier& identifier) const
 	{
-		auto iter = _symbols.find(identifier.text());
-
-		if (iter == _symbols.end())
-			return {};
-
-		return iter->second;
+		return _symbols.find(identifier.text());
 	}
 
 	const PackageSymbolTable& PackageSymbolTable::getGlobalPackageSymbolTable() const
 	{
-		auto *table = this;
+		const auto *table = this;
 
 		while (table->_parent)
 			table = table->_parent;

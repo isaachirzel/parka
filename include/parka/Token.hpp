@@ -4,6 +4,7 @@
 // local includes
 #include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
+#include "parka/file/FilePosition.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
@@ -11,16 +12,14 @@ namespace parka
 {
 	class Token
 	{
-		const File& _file;
-		usize _pos;
+		FilePosition _position;
 		usize _length;
 		TokenType _type;
 
 	public:
 
-		Token(const File& file, usize pos, usize length, TokenType type) :
-		_file(file),
-		_pos(pos),
+		Token(const File& file, usize index, usize length, TokenType type) :
+		_position(file, index),
 		_length(length),
 		_type(type)
 		{}
@@ -34,17 +33,17 @@ namespace parka
 
 		bool operator ==(const Token& other) const;
 		bool operator ==(const String& other) const;
-		const auto& operator[](usize index) const { return _file[index]; }
+		const auto& operator[](usize index) const { return _position.file()[index]; }
 
-		auto text() const { return _file.text().substr(_pos, _length); }
+		auto text() const { return String(_position.ptr(), _length); }
 		String category() const;
-		const auto *begin() const { return &_file[_pos]; }
-		const auto *end() const { return &_file[_pos + _length]; }
-		const auto& file() const { return _file; }
-		const auto& pos() const { return _pos; }
+		const auto *begin() const { return _position.ptr(); }
+		const auto *end() const { return _position.ptr() + _length; }
+		const auto& file() const { return _position.file(); }
+		const auto& index() const { return _position.index(); }
 		const auto& length() const { return _length; }
 		const auto& type() const { return _type; }
-		FilePosition getFilePosition() const { return _file.getPosition(_pos); }
+		const auto& position() const { return _position; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};

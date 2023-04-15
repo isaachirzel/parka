@@ -21,7 +21,6 @@ namespace parka
 		String _identifier;
 		Array<ModuleSyntax> _modules;
 		Array<EntitySyntaxId> _packageIds;
-		// Validation
 
 		PackageSyntax(Array<EntitySyntaxId>&& packageIds) :
 		_identifier(),

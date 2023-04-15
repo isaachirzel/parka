@@ -89,7 +89,7 @@ namespace parka
 		// TODO: Optimize and safety
 		assert(!filepath.empty() && "Empty filepath");
 
-		const char *lastPoint = NULL;
+		const char *lastPoint = nullptr;
 		const char *end = &filepath[0];
 
 		while (*end)
@@ -100,7 +100,7 @@ namespace parka
 			end += 1;
 		}
 
-		if (lastPoint == NULL || end - lastPoint == 1)
+		if (lastPoint == nullptr || end - lastPoint == 1)
 			return FileType::Regular;
 		
 		const char *extension = lastPoint + 1;
@@ -173,28 +173,5 @@ namespace parka
 		}
 
 		return startPos - pos;
-	}
-
-	FilePosition File::getPosition(usize pos) const
-	{
-		assert(pos <= _text.length());
-		
-		usize line = 1;
-		usize col = 1;
-
-		usize filePos = 0;
-
-		for (auto length : _lineLengths)
-		{
-			if (filePos + length > pos)
-				break;
-
-			filePos += length + 1;
-			line += 1;
-		}
-
-		col = pos - filePos + 1;
-
-		return { line, col };
 	}
 }

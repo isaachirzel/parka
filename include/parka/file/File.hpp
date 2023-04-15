@@ -4,7 +4,6 @@
 #include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
-#include "parka/file/FilePosition.hpp"
 
 #include <cassert>
 
@@ -48,7 +47,6 @@ namespace parka
 		usize getCol(usize pos) const;
 		bool hasExtension(const char *extension) const;
 		const char& operator[](usize index) const { assert(index <= _text.length()); return _text[index]; }
-		FilePosition getPosition(usize pos) const;
 
 		const auto& path() const { return _path; }
 		const auto& text() const { return _text; }

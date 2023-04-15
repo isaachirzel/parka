@@ -2,9 +2,9 @@
 #define PARKA_UTIL_POOL_HPP
 
 #include "parka/util/Arena.hpp"
-#include "parka/util/View.hpp"
 
 #include <cassert>
+#include <type_traits>
 #include <utility>
 
 namespace parka
@@ -13,13 +13,11 @@ namespace parka
 	class Pool
 	{
 		Arena _arena;
-		usize _itemCount;
 
 	public:
 
 		Pool(usize maxItemCount) :
-		_arena(sizeof(T) * maxItemCount), // FIXME: Add size of
-		_itemCount(0)
+		_arena(sizeof(T) * maxItemCount)
 		{}
 		Pool(Pool&&) = default;
 		Pool(const Pool&) = delete;
@@ -27,23 +25,37 @@ namespace parka
 
 		usize add(T&& value)
 		{
-			auto index = _itemCount;
+			auto index = count();
 			auto *item = _arena.allocate(sizeof(T));
 
 			new (item) auto(std::move(value));
 
-			_itemCount += 1;
-
 			return index;
 		}
 
-		usize getIndex(T *ptr) const { return _arena.getOffset(ptr) / sizeof(T); }
+		void fill(usize newLength, const T& fillValue)
+		{
+			static_assert(std::is_copy_assignable_v<T>, "Value must be copy assignable to fill with default value");
 
-		T& operator[](usize index) { assert(index < _itemCount); return ((T*)_arena.data())[index]; }
-		const T& operator[](usize index) const { assert(index < _itemCount); return ((T*)_arena.data())[index]; }
+			_arena.reserve(newLength * sizeof(T));
 
-		View<T> items() { return View((T*)_arena.data(), _itemCount); }
-		usize count() const { return _itemCount; }
+			auto *data = (T*)_arena.data();
+			auto length = _arena.bytesUsed() / sizeof(T);
+
+			for (usize i = 0; i < length; ++i) 
+				data[i] = fillValue;
+		}
+
+		usize getIndex(T *ptr) const { return _arena.getOffset((byte*)ptr) / sizeof(T); }
+
+		T& operator[](usize index) { assert(index < count()); return ((T*)_arena.data())[index]; }
+		const T& operator[](usize index) const { assert(index < count()); return ((T*)_arena.data())[index]; }
+		T* begin() { return (T*)_arena.begin(); }
+		T* end() { return (T*)_arena.end(); }
+		const T* begin() const { return (const T*)_arena.begin(); }
+		const T* end() const { return (const T*)_arena.end(); }
+
+		usize count() const { return _arena.bytesUsed() / sizeof(T); }
 	};
 }
 

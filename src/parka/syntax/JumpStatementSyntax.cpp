@@ -70,7 +70,7 @@ namespace parka
 			
 			if (token.type() != TokenType::Semicolon)
 			{
-				printParseError(token, "';' after jump statement", NULL);
+				printParseError(token, "';' after jump statement", nullptr);
 				return {};
 			}
 		}
@@ -130,7 +130,7 @@ namespace parka
 	// {
 	// 	Block *currentBlock = SymbolTableGetCurrentBlock(symbols);
 
-	// 	if (currentBlock == NULL)
+	// 	if (currentBlock == nullptr)
 	// 	{
 	// 		printError(&node->token, "Yield statement must be within a block.");
 

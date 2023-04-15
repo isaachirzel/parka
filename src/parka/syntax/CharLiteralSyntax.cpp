@@ -14,7 +14,7 @@ namespace parka
 
 		if (token.length() != 3)
 		{
-			printError(token, "character literals may only contain 1 character", NULL);
+			printError(token, "character literals may only contain 1 character", nullptr);
 			return {};
 		}
 

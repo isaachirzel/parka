@@ -4,6 +4,8 @@
 #include "parka/repository/OperatorId.hpp"
 #include "parka/symbol/TypeKey.hpp"
 
+#include <functional>
+
 namespace parka
 {
 	class OperatorKey
@@ -29,10 +31,6 @@ namespace parka
 		const auto& leftKey() const { return _leftKey; }
 		const auto& rightKey() const { return _rightKey; }
 	};
-
-	template <>
-	u64 hash64(const OperatorKey& key);
-
 }
 
 namespace std
@@ -40,7 +38,7 @@ namespace std
 	template <>
 	struct hash<parka::OperatorKey>
 	{
-		parka::usize operator()(const parka::OperatorKey& key) const { return hash64(key); }
+		parka::usize operator()(const parka::OperatorKey& key) const;
 	};
 }
 

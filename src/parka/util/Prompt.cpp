@@ -1,84 +1,43 @@
-#include "parka/util/Prompt.hpp"
-#include "parka/util/Print.hpp"
-
-#define COLOR_RED		"\033[91m"
-#define COLOR_YELLOW	"\033[93m"
-#define COLOR_BLUE		"\033[94m"
-#define COLOR_PURPLE	"\033[95m"
-#define COLOR_CYAN		"\033[96m"
-#define COLOR_GREEN		"\033[32m"
-#define COLOR_RESET		"\033[0m"
-
-#define PROMPT_NOTE		"note"
-#define PROMPT_WARNING	"warning"
-#define PROMPT_ERROR	"error"
-#define PROMPT_FATAL	"fatal"
-#define PROMPT_SUCCESS	"success"
+#include "parka/log/Prompt.hpp"
+#include "parka/enum/LogEntryType.hpp"
+#include "parka/log/Color.hpp"
+#include "parka/log/Log.hpp"
 
 namespace parka
 {
-	Prompt::Prompt(PromptType type)
+	const Prompt Prompt::Note("note", Color::Cyan);
+	const Prompt Prompt::Success("success", Color::Green);
+	const Prompt Prompt::Warning("warning", Color::Purple);
+	const Prompt Prompt::Error("error", Color::Red);
+	const Prompt Prompt::Fatal("fatal", Color::Red);
+
+	Prompt Prompt::from(LogEntryType type)
 	{
 		switch (type)
 		{
-			case PromptType::Note:
-				_text = PROMPT_NOTE;
-				
-				if (isColorPrintingEnabled())
-				{
-					_color = COLOR_CYAN;
-					_reset = COLOR_RESET;
-				}
-				break;
+			case LogEntryType::Note:
+				return Prompt::Note;
 					
-			case PromptType::Warning:
-				_text = PROMPT_WARNING;
+			case LogEntryType::Success:
+				return Prompt::Success;
+
+			case LogEntryType::Warning:
+				return Prompt::Warning;
 				
-				if (isColorPrintingEnabled())
-				{
-					_color = COLOR_PURPLE;
-					_reset = COLOR_RESET;
-				}
-				break;
-				
-			case PromptType::Error:
-				_text = PROMPT_ERROR;
+			case LogEntryType::Error:
+				return Prompt::Error;
 
-				if (isColorPrintingEnabled())
-				{
-					_color = COLOR_RED;
-					_reset = COLOR_RESET;
-				}
-				break;
-
-			case PromptType::Fatal:
-				_text = PROMPT_FATAL;
-
-				if (isColorPrintingEnabled())
-				{
-					_color = COLOR_RED;
-					_reset = COLOR_RESET;
-				}
-				break;
-
-			case PromptType::Success:
-				_text = PROMPT_SUCCESS;
-
-				if (isColorPrintingEnabled())
-				{
-					_color = COLOR_GREEN;
-					_reset = COLOR_RESET;
-				}
-				break;
+			case LogEntryType::Fatal:
+				return Prompt::Fatal;
 
 			default:
-				exitWithError("Unable to create Log with PromptType: $", type);
+				exitWithError("Unable to get Prompt for LogEntryType: $", (int)type);
 		}
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Prompt& prompt)
 	{
-		out << prompt._color << prompt._text << prompt._reset << ':';
+		out << prompt._color << prompt._text << Color::Reset;
 
 		return out;
 	}

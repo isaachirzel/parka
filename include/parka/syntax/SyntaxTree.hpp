@@ -24,7 +24,7 @@ namespace parka
 
 		static Optional<SyntaxTree> parse(const Project& project);
 
-		bool validate();
+		const auto& globalPackageId() const { return _globalPackageId; }
 	};
 }
 

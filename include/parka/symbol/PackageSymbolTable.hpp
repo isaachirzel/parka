@@ -13,12 +13,15 @@ namespace parka
 	{
 		EntitySyntaxId _packageId;
 		Table<String, EntitySyntaxId> _symbols;
-		Array<PackageSymbolTable> _packages;
+		// Table<EntitySyntaxId, PackageSymbolTable> _packages;
 		const PackageSymbolTable *_parent;
+
+	private:
 
 		PackageSymbolTable(const EntitySyntaxId& entityId, Table<String, EntitySyntaxId>&& symbols, const PackageSymbolTable *parent) :
 		_packageId(entityId),
 		_symbols(std::move(symbols)),
+		// _packages(),
 		_parent(parent)
 		{}
 

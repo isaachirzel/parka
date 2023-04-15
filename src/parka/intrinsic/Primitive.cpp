@@ -43,7 +43,7 @@ namespace parka
 
 		for (const auto& primitive: primitives)
 		{
-			globalSymbols.emplace(primitive.identifier(), EntitySyntaxId { EntityType::Primitive, index });
+			globalSymbols.insert(primitive.identifier(), EntitySyntaxId(EntityType::Primitive, index));
 			
 			index += 1;
 		}

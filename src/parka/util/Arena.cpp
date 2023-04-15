@@ -30,7 +30,7 @@ namespace parka
 
 		usize bytes = getPageAlignedByteCount(minBytes);
 		_pageCount = bytes / pageSize;
-		_data = mmap(NULL, bytes, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		_data = (byte*)mmap(nullptr, bytes, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
 		if (_data == MAP_FAILED)
 			throw std::bad_alloc();
@@ -58,7 +58,7 @@ namespace parka
 			if (minBytesToCommit % pageSize > 0)
 				pagesToCommit += 1;
 
-			void *startOfPagesToCommit = (char*)_data + (_committedPages * pageSize);
+			void *startOfPagesToCommit = _data + (_committedPages * pageSize);
 			usize bytesToCommit = pagesToCommit * pageSize;
 			int code = mprotect(startOfPagesToCommit, bytesToCommit, PROT_READ | PROT_WRITE);
 
@@ -68,19 +68,30 @@ namespace parka
 			}
 		}
 
-		void *ptr = (char*)_data + _bytesUsed;
+		void *ptr = _data + _bytesUsed;
 
 		_bytesUsed += bytes;
 
 		return ptr;
 	}
 
-	usize Arena::getOffset(void *ptr) const
+	void *Arena::reserve(usize bytes)
+	{
+		if (_bytesUsed >= bytes)
+			return end();
+
+		usize difference = bytes - _bytesUsed;
+		auto *data = allocate(difference);
+
+		return data;
+	}
+
+	usize Arena::getOffset(byte *ptr) const
 	{
 		assert(ptr >= _data);
-		assert(ptr < (char*)_data + _bytesUsed);
+		assert(ptr < _data + _bytesUsed);
 
-		auto offset = (char*)ptr - (char*)_data;
+		auto offset = ptr - _data;
 
 		return offset;
 	}

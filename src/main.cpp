@@ -1,4 +1,9 @@
+#include "parka/context/ContextTree.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/log/Color.hpp"
+#include "parka/log/Link.hpp"
+#include "parka/log/Log.hpp"
+#include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/repository/SyntaxRepository.hpp"
@@ -10,16 +15,21 @@
 #include "parka/util/Table.hpp"
 #include "parka/util/Timer.hpp"
 
+#include <ios>
+
 using namespace parka;
 
 void printErrorCount(const Project& project)
 {
-	printError("Failed to compile `$`: encountered $ error(s).", project.name(), getErrorCount());
+	printError("Failed to compile `$`: encountered $ error(s).", project.name(), -1);
 }
 
 int main(int argc, const char *argv[])
 {
+	Log::addNote("This is log #$", 1);
+
 	Primitive::initializeAll();
+	KeywordSyntax::initialize();
 
 	if (argc != 2)
 		exitWithError("Please supply only a path to the project root directory.");
@@ -34,9 +44,9 @@ int main(int argc, const char *argv[])
 
 	printSuccess("Project loaded in $ seconds.", readTime);
 
-	auto ast = SyntaxTree::parse(*project);
+	auto syntax = SyntaxTree::parse(*project);
 
-	if (!ast)
+	if (!syntax)
 	{
 		printErrorCount(*project);
 		return 1;
@@ -44,7 +54,16 @@ int main(int argc, const char *argv[])
 
 	auto parseTime = timer.split();
 
-	printSuccess("Parsing completed in $ seconds.", parseTime);
+	printSuccess("Parsing completed in $s.", parseTime);
+
+	auto declareTime = timer.split();
+
+	printSuccess("Declaration completed in $s.", declareTime);
+
+	auto context = ContextTree::validate(*syntax);
+	auto validateTime = timer.split();
+
+	printSuccess("Validation completed in $s.", validateTime);
 
 	// if (!ast->validate())
 	// {
@@ -60,7 +79,9 @@ int main(int argc, const char *argv[])
 	auto linesOfCodeCount = project->getLinesOfCodeCount();
 	auto compileSpeed = (usize)(linesOfCodeCount / compileTime / 1000.0);
 
-	printSuccess("Compiled `$` in $ seconds at $k lines/sec.", project->name(), compileTime, compileSpeed);
+	printSuccess("Compiled `$` in $ seconds at $k lines/s.", project->name(), compileTime, compileSpeed);
+
+	Log::outputEntries();
 
 	return 0;
 }

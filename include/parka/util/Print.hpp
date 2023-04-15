@@ -2,19 +2,12 @@
 #define PARKA_UTIL_PRINT_HPP
 
 #include "parka/Token.hpp"
-#include "parka/util/Prompt.hpp"
+#include "parka/enum/LogEntryType.hpp"
+#include "parka/log/Prompt.hpp"
 #include "parka/util/SourceLocation.hpp"
-
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <cstdlib>
-#include <type_traits>
 
 namespace parka
 {
-	void addError();
-
 	void _output(std::ostream& out, const char * const fmt);
 
 	template <typename First, typename... Arg>
@@ -61,7 +54,9 @@ namespace parka
 	template <typename... Arg>
 	void print(const char * const fmt, Arg const&... args)
 	{
-		return _output(std::cout, fmt, args...);
+		_output(std::cout, fmt, args...);
+
+		std::cout << std::endl;
 	}
 
 	template <typename... Arg>
@@ -74,55 +69,44 @@ namespace parka
 		return out.str();
 	}
 
-	String toHighlight(const Token& token, const FilePosition& position, const Prompt& prompt);
 	void printPrompt(const Prompt& prompt, const FilePosition& position);
 
-	template <PromptType type, typename... Arg>
+	template <LogEntryType type, typename... Arg>
 	void printMessage(const char *format, Arg const&... args)
 	{
-		auto prompt = Prompt(type);
+		auto prompt = Prompt::from(type);
 
-		if constexpr (type == PromptType::Error)
-		{
-			addError();
-		}
-
-		std::cout << prompt << ' ';
+		std::cout << prompt << ": ";
 
 		_output(std::cout, format, args...);
+
+		std::cout << std::endl;
 	}
 	template <typename... Arg>
-	void printNote(const char* format, Arg const&... args) { printMessage<PromptType::Note>(format, args...); }
+	void printNote(const char* format, Arg const&... args) { printMessage<LogEntryType::Note>(format, args...); }
 	template <typename... Arg>
-	void printWarning(const char *format, Arg const&... args) { printMessage<PromptType::Warning>(format, args...); }
+	void printWarning(const char *format, Arg const&... args) { printMessage<LogEntryType::Warning>(format, args...); }
 	template <typename... Arg>
-	void printError(const char *format, Arg const&... args) { printMessage<PromptType::Error>(format, args...); }
+	void printError(const char *format, Arg const&... args) { printMessage<LogEntryType::Error>(format, args...); }
 	template <typename... Arg>
-	void printSuccess(const char *format, Arg const&... args) { printMessage<PromptType::Success>(format, args...); }
+	void printSuccess(const char *format, Arg const&... args) { printMessage<LogEntryType::Success>(format, args...); }
 
-	template <PromptType type, typename... Arg>
+	template <LogEntryType type, typename... Arg>
 	void printTokenMessage(const Token& token, const char *format, Arg const&... args)
 	{
-		auto prompt = Prompt(type);
-		auto position = token.getFilePosition();
-
-		if constexpr (type == PromptType::Error)
-		{
-			addError();
-		}
+		auto prompt = Prompt::from(type);
+		auto position = token.position();
 
 		std::cout << token.file().path() << ':' << position << ' ' << prompt << ' ';
 
 		_output(std::cout, format, args...);
-
-		std::cout << toHighlight(token, position, prompt);
 	}
 	template <typename... Arg>
-	void printNote(const Token& token, const char *format, Arg const&... args) { printTokenMessage<PromptType::Note>(token, format, args...); }
+	void printNote(const Token& token, const char *format, Arg const&... args) { printTokenMessage<LogEntryType::Note>(token, format, args...); }
 	template <typename... Arg>
-	void printWarning(const Token& token, const char *format, Arg const&... args) { printTokenMessage<PromptType::Warning>(token, format, args...); }
+	void printWarning(const Token& token, const char *format, Arg const&... args) { printTokenMessage<LogEntryType::Warning>(token, format, args...); }
 	template <typename... Arg>
-	void printError(const Token& token, const char *format, Arg const&... args) { printTokenMessage<PromptType::Error>(token, format, args...); }
+	void printError(const Token& token, const char *format, Arg const&... args) { printTokenMessage<LogEntryType::Error>(token, format, args...); }
 
 	void printParseError(const Token& token, const char *expected, const char *message = "");
 

@@ -26,9 +26,6 @@ namespace parka
 
 		friend bool operator==(const TypeKey& left, const TypeKey& right);
 	};
-
-	template <>
-	u64 hash64(const TypeKey& key);
 }
 
 namespace std
@@ -36,7 +33,7 @@ namespace std
 	template <>
 	struct hash<parka::TypeKey>
 	{
-		parka::usize operator()(const parka::TypeKey& key) const { return hash64(key); }
+		parka::usize operator()(const parka::TypeKey& key) const;
 	};
 }
 

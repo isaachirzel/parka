@@ -18,6 +18,14 @@ namespace parka
 		_hasValue(false)
 		{}
 
+		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
+		Optional(const T *value) :
+		_hasValue(!!value)
+		{
+			if (value)
+				new (_value) auto (*value);
+		}
+
 		Optional(T&& value) :
 		_hasValue(true)
 		{

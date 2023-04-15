@@ -399,9 +399,9 @@ namespace parka
 
 	void Token::increment()
 	{
-		usize nextTokenPos = getNextPos(_file, _pos + _length);
+		usize nextTokenPos = getNextPos(_position.file(), _position.index() + _length);
 
-		new (this) auto(getNextToken(_file, nextTokenPos));
+		new (this) auto(getNextToken(_position.file(), nextTokenPos));
 	}
 
 	Token Token::initial(const File& file)
@@ -560,15 +560,17 @@ namespace parka
 
 	bool Token::operator==(const Token& other) const
 	{
-		if (&_file != &other.file() || _length != other.length() || _type != other.type())
+		const auto& file = _position.file();
+		const auto& otherFile = other.file();
+		if (&file != &otherFile || _length != other.length() || _type != other.type())
 			return false;
 
-		if (_pos == other.pos())
+		if (_position.index() == other.index())
 			return true;
 
 		for (usize i = 0; i < _length; ++i)
 		{
-			if (_file[i] != other[i])
+			if (file[i] != otherFile[i])
 				return false;
 		}
 
@@ -580,7 +582,7 @@ namespace parka
 		if (_length != text.length())
 			return false;
 
-		return !strncmp(&_file[_pos], text.c_str(), _length);
+		return !strncmp(_position.ptr(), text.c_str(), _length);
 	}
 
 	std::ostream& operator<<(std::ostream& out, TokenType type)

@@ -61,8 +61,9 @@ namespace parka
 			if (_capacity >= minimum)
 				return;
 
+			usize newCapacity = minimum * 1.5;
 			auto *oldData = _data;
-			auto *newData = (T*)::operator new (sizeof(T) * minimum);
+			auto *newData = (T*)::operator new (sizeof(T) * newCapacity);
 
 			if (newData == nullptr)
 				throw std::bad_alloc();
@@ -78,7 +79,7 @@ namespace parka
 			::operator delete(oldData);
 			
 			_data = newData;
-			_capacity = minimum;
+			_capacity = newCapacity;
 		}
 
 		template <typename U = T, typename = std::enable_if_t<std::is_fundamental_v<U>>>
@@ -131,11 +132,10 @@ namespace parka
 
 		void pop()
 		{
-			if (_length > 0)
-			{
-				_data[_length  - 1].~T();
-				_length -= 1;
-			}
+			assert(_length > 0);
+			
+			_data[_length  - 1].~T();
+			_length -= 1;
 		}
 
 		void clear()

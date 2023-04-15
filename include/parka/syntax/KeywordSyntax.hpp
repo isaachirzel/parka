@@ -19,6 +19,10 @@ namespace parka
 
 	public:
 
+		static void initialize();
+
+	public:
+
 		static KeywordType getKeywordType(const Token& token);
 		static Optional<KeywordSyntax> parseBool(Token& token);
 		static Optional<KeywordSyntax> parseStruct(Token& token);

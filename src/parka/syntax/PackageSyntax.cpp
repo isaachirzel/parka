@@ -15,7 +15,7 @@ namespace parka
 	Optional<EntitySyntaxId> PackageSyntax::parse(const Directory& directory, const String& name)
 	{
 		// TODO: Add multithreading
-		print("PackageSyntax `$` has $ subpackages and $ modules", name, directory.subdirectories().length(), directory.files().length());
+		print("Package `$` has $ subpackages and $ modules", name, directory.subdirectories().length(), directory.files().length());
 		auto success = true;
 		auto modules = Array<ModuleSyntax>();
 		auto packageIds = Array<EntitySyntaxId>(directory.subdirectories().length());
