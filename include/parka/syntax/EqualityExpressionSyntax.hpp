@@ -22,7 +22,6 @@ namespace parka
 
 		EqualityExpressionSyntax(EqualityExpressionSyntax&&) = default;
 		EqualityExpressionSyntax(const EqualityExpressionSyntax&) = delete;
-		~EqualityExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

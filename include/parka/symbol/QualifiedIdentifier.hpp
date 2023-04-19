@@ -21,7 +21,6 @@ namespace parka
 
 		QualifiedIdentifier(QualifiedIdentifier&&) = default;
 		QualifiedIdentifier(const QualifiedIdentifier&) = delete;
-		~QualifiedIdentifier() = default;
 
 		static Optional<QualifiedIdentifier> parse(Token& token);
 

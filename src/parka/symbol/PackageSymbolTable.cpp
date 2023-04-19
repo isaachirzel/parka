@@ -1,75 +1,126 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	// void PackageSymbolTable::declarePackage(const EntitySyntaxId& packageId)
+	PackageEntry::PackageEntry(const EntitySyntaxId& entityId, const PackageSymbolTable& parent) :
+	_entityId(entityId)
+	{
+		auto *symbolTable = (SymbolTables*)_symbols;
+
+		switch (_entityId.type())
+		{
+			case EntityType::Package:
+				new (&symbolTable->package) PackageSymbolTable(entityId, parent);
+				break;
+
+			case EntityType::Function:
+				new (&symbolTable->function) FunctionSymbolTable(entityId, parent);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	PackageEntry::~PackageEntry()
+	{
+		auto *symbolTable = (SymbolTables*)_symbols;
+
+		switch (_entityId.type())
+		{
+			case EntityType::Package:
+				symbolTable->package.~PackageSymbolTable();
+				break;
+
+			// case EntityType::Struct:
+				// break;
+			case EntityType::Function:
+				symbolTable->function.~FunctionSymbolTable();
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	// bool declareEntities(Table<String, EntitySyntaxId>& symbols, const Array<EntitySyntaxId>& entityIds)
 	// {
-	// 	auto& package = SyntaxRepository::getPackage(packageId);
+	// 	// TODO: Invalidate symbol on failure, better error
+	// 	auto success = true;
 
-	// 	_symbols.insert({ package.identifier(), packageId });
-
-	// 	package._parentPackageId = packageId;
-	// }
-
-	// bool PackageSymbolTable::declareEntity(const EntitySyntaxId& entityId)
-	// {
-	// 	auto& entity = SyntaxRepository::get(entityId);
-	// 	const auto& identifier = entity.identifier();
-
-	// 	print("Declaring $ `$`", entityId.type(), identifier);
-
-	// 	auto result = _symbols.insert({ identifier, entityId });
-
-	// 	if (!result.second)
+	// 	for (const auto& entityId : entityIds)
 	// 	{
-	// 		// TODO: get previous entity
-	// 		// auto previousId = result.first->second;
-	// 		// auto& previous = SyntaxRepository::get(previousId);
-	// 		//TODO: invalidate entity previous.invalidate();
+	// 		auto& entity = SyntaxRepository::get(entityId);
+	// 		const auto& identifier = entity.identifier();
+	// 		auto result = symbols.insert(identifier, entityId);
 
-	// 		printError("`$` is already declared in this package.", identifier);
+	// 		if (!result)
+	// 		{
+	// 			printError("Name `$` is already declared in this package.", identifier);
+	// 			success = false;
+	// 		}
 	// 	}
 
-	// 	return result.second;
+	// 	return success;
 	// }
 
-	bool declareEntities(Table<String, EntitySyntaxId>& symbols, const Array<EntitySyntaxId>& entityIds)
+	bool PackageSymbolTable::declare(const EntitySyntaxId& entityId)
 	{
-		// TODO: Invalidate symbol on failure, better error
-		auto success = true;
+		auto& entity = *entityId;
+		auto entry = PackageEntry(entityId, _packageId);
+		auto result = _symbols.insert(entity.identifier(), std::move(entry));
 
-		for (const auto& entityId : entityIds)
+		return result;
+	}
+
+	const PackageEntry *PackageSymbolTable::findPackageEntry(const QualifiedIdentifier& identifier, usize index) const
+	{
+		auto& part = identifier[index];
+		auto result = resolve(part);
+
+		if (!result)
 		{
-			auto& entity = SyntaxRepository::get(entityId);
-			const auto& identifier = entity.identifier();
-			auto result = symbols.insert(identifier, entityId);
+			if (_parent)
+				result = _parent->resolve(part);
 
 			if (!result)
 			{
-				printError("Name `$` is already declared in this package.", identifier);
-				success = false;
+				auto& package = *_packageId;
+				// TODO: Output package symbol, entity type and reference highlight
+				printError("Unable to find `$` in package `$`.", part.text(), package.identifier());
+				return {};
 			}
 		}
 
-		return success;
+		return nullptr;
 	}
 
-	Optional<PackageSymbolTable> PackageSymbolTable::from(const EntitySyntaxId& packageId, const PackageSymbolTable *parent)
+	PackageSymbolTable PackageSymbolTable::from(const EntitySyntaxId& packageId, const PackageSymbolTable *parent)
 	{
 		// TODO: pre-reserve symbol count
 		auto success = true;
-		auto& package = SyntaxRepository::getPackage(packageId);
-		auto symbols = Table<String, EntitySyntaxId>();
+		auto& package = packageId.getPackage();
+		auto symbols = Table<String, PackageEntry>();
 
 		if (parent == nullptr)
-			Primitive::declareAll(symbols);
+		{
+			usize index = 0;
+
+			for (const auto& primitive: Primitive::primitives)
+			{
+				symbols.insert(primitive.identifier(), EntitySyntaxId::getFor(primitive));
+				
+				index += 1;
+			}
+		}
 
 		for (const auto& mod : package.modules())
 		{
@@ -82,7 +133,7 @@ namespace parka
 
 		for (const auto& packageId : package.packageIds())
 		{
-			auto& package = SyntaxRepository::getPackage(packageId);
+			auto& package = packageId.getPackage();
 
 			symbols.insert(package.identifier(), packageId);
 
@@ -133,55 +184,13 @@ namespace parka
 		return global;
 	}
 
-	Optional<EntitySyntaxId> PackageSymbolTable::resolveOffset(const QualifiedIdentifier& identifier, usize index) const
-	{
-		auto& part = identifier[index];
-		auto result = resolve(part);
-
-		if (!result)
-		{
-			if (_parent)
-				result = _parent->resolve(part);
-
-			if (!result)
-			{
-				auto& package = SyntaxRepository::get(_packageId);
-				// TODO: Output package symbol, entity type and reference highlight
-				printError("Unable to find `$` in package `$`.", part.text(), package.identifier());
-				return {};
-			}
-		}
-		
-		// FIXME: Reimplement
-
-		// auto isLast = index == identifier.length() - 1;
-
-		// if (isLast)
-		// 	return result;
-
-		// auto& entity = SyntaxRepository::get(*result);
-
-		// // TODO: Update for static features of other entities
-		// switch (entity.type())
-		// {
-		// 	case EntityType::PackageSyntax:
-		// 	{
-		// 		auto& package = (PackageSyntax&)entity;
-
-		// 		return package.resolve(identifier, index);
-		// 	}
-
-		// 	default:
-		// 		break;
-		// }
-		
-		// printError("Unable able to get static member `$` of `$`.", entity.identifier());
-
-		return {};
-	}
-
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
 	{
-		return resolveOffset(identifier, 0);
+		const auto *entry = findPackageEntry(identifier, 0);
+
+		if (!entry)
+			return {};
+
+		return entry->entityId;
 	}
 }

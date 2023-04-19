@@ -2,7 +2,7 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -62,7 +62,7 @@ namespace parka
 		token.increment();
 
 		auto strct = StructSyntax(*identifier, std::move(members));
-		auto id = SyntaxRepository::add(std::move(strct));
+		auto id = EntitySyntaxId::create(std::move(strct));
 
 		return id;
 	}

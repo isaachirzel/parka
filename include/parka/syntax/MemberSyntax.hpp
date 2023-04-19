@@ -27,7 +27,6 @@ namespace parka
 
 		MemberSyntax(MemberSyntax&&) = default;
 		MemberSyntax(const MemberSyntax&) = delete;
-		~MemberSyntax() = default;
 
 		static Optional<MemberSyntax> parse(Token& token);
 

@@ -19,7 +19,6 @@ namespace parka
 
 		BooleanOrExpressionSyntax(BooleanOrExpressionSyntax&&) = default;
 		BooleanOrExpressionSyntax(const BooleanOrExpressionSyntax&) = delete;
-		~BooleanOrExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

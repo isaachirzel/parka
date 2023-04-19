@@ -6,13 +6,15 @@ namespace parka
 {
 	enum class EntityType: u8
 	{
-		PackageSyntax,
-		StructSyntax,
+		Package,
+		Struct,
 		Primitive,
 		Function,
 		Variable,
-		ParameterSyntax
+		Parameter
 	};
+
+	std::ostream& operator<<(std::ostream& out, const EntityType& type);
 }
 
 #endif

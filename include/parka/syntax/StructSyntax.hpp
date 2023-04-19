@@ -24,7 +24,6 @@ namespace parka
 
 		StructSyntax(StructSyntax&&) = default;
 		StructSyntax(const StructSyntax&) = delete;
-		~StructSyntax() = default;
 
 		static Optional<EntitySyntaxId> parse(Token& token);
 
@@ -33,7 +32,7 @@ namespace parka
 		Optional<Type> getType() const;
 		const String& identifier() const { return _identifier.text(); }
 		const auto& members() const { return _members; }
-		EntityType type() const { return EntityType::StructSyntax; }
+		EntityType type() const { return EntityType::Struct; }
 	};
 }
 

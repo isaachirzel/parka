@@ -26,7 +26,6 @@ namespace parka
 
 		BlockSymbolTable(BlockSymbolTable&&) = default;
 		BlockSymbolTable(const BlockSymbolTable&) = delete;
-		~BlockSymbolTable() = default;
 
 		static Optional<BlockSymbolTable> from(const BlockSyntax& block);
 

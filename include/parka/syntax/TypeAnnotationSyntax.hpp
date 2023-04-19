@@ -23,7 +23,6 @@ namespace parka
 
 		TypeAnnotationSyntax(TypeAnnotationSyntax&&) = default;
 		TypeAnnotationSyntax(const TypeAnnotationSyntax&) = delete;
-		~TypeAnnotationSyntax() = default;
 
 		static Optional<TypeAnnotationSyntax> parse(Token& token);
 

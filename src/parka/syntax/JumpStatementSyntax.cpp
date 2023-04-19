@@ -2,7 +2,7 @@
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/repository/StatementSyntaxId.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
@@ -40,7 +40,7 @@ namespace parka
 		if (!type)
 			return {};
 
-		auto name = token;
+		// auto name = token;
 
 		token.increment();
 
@@ -78,7 +78,7 @@ namespace parka
 		token.increment();
 
 		auto statement = JumpStatementSyntax(token, *type, std::move(value));
-		auto id = SyntaxRepository::add(std::move(statement));
+		auto id = StatementSyntaxId::create(std::move(statement));
 
 		return id;
 	}

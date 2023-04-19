@@ -28,7 +28,6 @@ namespace parka
 
         Directory(Directory&&) = default;
         Directory(const Directory&) = delete;
-        ~Directory() = default;
 
         static Optional<Directory> read(const String& path, usize pathOffset = 0);
 

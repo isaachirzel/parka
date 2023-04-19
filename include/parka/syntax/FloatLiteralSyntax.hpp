@@ -19,7 +19,6 @@ namespace parka
 
 		FloatLiteralSyntax(FloatLiteralSyntax&&) = default;
 		FloatLiteralSyntax(const FloatLiteralSyntax&) = delete;
-		~FloatLiteralSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};

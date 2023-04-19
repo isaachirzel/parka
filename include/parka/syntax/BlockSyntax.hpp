@@ -20,7 +20,6 @@ namespace parka
 
 		BlockSyntax(BlockSyntax&&) = default;
 		BlockSyntax(const BlockSyntax&) = delete;
-		~BlockSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

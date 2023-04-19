@@ -23,7 +23,6 @@ namespace parka
 
 		DeclarationStatementSyntax(DeclarationStatementSyntax&&) = default;
 		DeclarationStatementSyntax(const DeclarationStatementSyntax&) = delete;
-		~DeclarationStatementSyntax() = default;
 
 		static Optional<StatementSyntaxId> parse(Token& token);
 

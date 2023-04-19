@@ -24,7 +24,6 @@ namespace parka
 
 		AdditiveExpressionSyntax(AdditiveExpressionSyntax&&) = default;
 		AdditiveExpressionSyntax(const AdditiveExpressionSyntax&) = delete;
-		~AdditiveExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

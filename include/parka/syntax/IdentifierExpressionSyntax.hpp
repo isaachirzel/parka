@@ -25,7 +25,6 @@ namespace parka
 
 		IdentifierExpressionSyntax(IdentifierExpressionSyntax&&) = default;
 		IdentifierExpressionSyntax(const IdentifierExpressionSyntax&) = delete;
-		~IdentifierExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

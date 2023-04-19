@@ -27,7 +27,6 @@ namespace parka
 		{}
 		TypeId(TypeId&&) = default;
 		TypeId(const TypeId&) = default;
-		~TypeId() = default;
 
 		const auto& type() const { return _type; }
 		const auto& index() const { return _index; }

@@ -22,7 +22,6 @@ namespace parka
 
 		RelationalExpressionSyntax(RelationalExpressionSyntax&&) = default;
 		RelationalExpressionSyntax(const RelationalExpressionSyntax&) = delete;
-		~RelationalExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

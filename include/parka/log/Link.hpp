@@ -19,7 +19,6 @@ namespace parka
 		{}
 		Link(Link&&) = default;
 		Link(const Link&) = default;
-		~Link() = default;
 
 		const auto& url() const { return _url; }
 		const auto& text() const { return _text; }

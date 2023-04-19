@@ -1,6 +1,6 @@
 #include "parka/syntax/IdentifierExpressionSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
@@ -12,7 +12,7 @@ namespace parka
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
 		auto expression = IdentifierExpressionSyntax(*identifier);
-		auto id = SyntaxRepository::add(std::move(expression));
+		auto id = ExpressionSyntaxId::create(std::move(expression));
 
 		return id;
 	}

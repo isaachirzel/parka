@@ -19,7 +19,6 @@ namespace parka
 		{}
 		TypeKey(TypeKey&&) = default;
 		TypeKey(const TypeKey&) = default;
-		~TypeKey() = default;
 
 		u64 hash() const;
 		const auto& id() const { return _id; }

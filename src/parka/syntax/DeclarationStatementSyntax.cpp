@@ -3,7 +3,7 @@
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/DeclarationStatementSyntax.hpp"
 #include "parka/syntax/VariableSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -36,8 +36,8 @@ namespace parka
 
 		token.increment();
 
-		auto declaration = DeclarationStatementSyntax(*variableId, *value);
-		auto id = SyntaxRepository::add(std::move(declaration));
+		auto statement = DeclarationStatementSyntax(*variableId, *value);
+		auto id = StatementSyntaxId::create(std::move(statement));
 
 		return id;
 	}

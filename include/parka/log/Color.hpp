@@ -32,7 +32,6 @@ namespace parka
 
 		Color(Color&&) = default;
 		Color(const Color&) = default;
-		~Color() = default;
 
 		const auto *code() const { return _code; }
 

@@ -25,7 +25,6 @@ namespace parka
 
 		JumpStatementSyntax(JumpStatementSyntax&&) = default;
 		JumpStatementSyntax(const JumpStatementSyntax&) = delete;
-		~JumpStatementSyntax() = default;
 
 		static Optional<StatementSyntaxId> parse(Token& token);
 

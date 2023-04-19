@@ -19,7 +19,6 @@ namespace parka
 
 		BitwiseXorExpressionSyntax(BitwiseXorExpressionSyntax&&) = default;
 		BitwiseXorExpressionSyntax(const BitwiseXorExpressionSyntax&) = delete;
-		~BitwiseXorExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

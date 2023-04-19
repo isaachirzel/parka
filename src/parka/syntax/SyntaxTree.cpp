@@ -5,7 +5,7 @@
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/util/Path.hpp"
@@ -41,7 +41,7 @@ namespace parka
 
 	bool validateStructRecursion(EntitySyntaxId structId)
 	{
-		auto& strct = SyntaxRepository::getStruct(structId);
+		auto& strct = structId.getStruct();
 
 		const MemberSyntax *recursiveMember = getRecursiveMember(strct.members(), structId);
 

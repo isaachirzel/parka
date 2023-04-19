@@ -2,7 +2,7 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/ConditionalExpressionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -69,7 +69,7 @@ namespace parka
 			return {};
 
 		auto expression = AssignmentExpressionSyntax(*lhs, *rhs, *type);
-		auto id = SyntaxRepository::add(std::move(expression));
+		auto id = ExpressionSyntaxId::create(std::move(expression));
 
 		return id;
 	}

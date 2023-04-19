@@ -25,7 +25,6 @@ namespace parka
 
 		MultiplicativeExpressionSyntax(MultiplicativeExpressionSyntax&&) = default;
 		MultiplicativeExpressionSyntax(const MultiplicativeExpressionSyntax&) = delete;
-		~MultiplicativeExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

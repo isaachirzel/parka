@@ -25,7 +25,6 @@ namespace parka
 
 		ModuleSyntax(ModuleSyntax&&) = default;
 		ModuleSyntax(const ModuleSyntax&) = delete;
-		~ModuleSyntax() = default;
 
 		static Optional<ModuleSyntax> parse(const File& file);
 

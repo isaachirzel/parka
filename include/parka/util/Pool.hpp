@@ -21,7 +21,17 @@ namespace parka
 		{}
 		Pool(Pool&&) = default;
 		Pool(const Pool&) = delete;
-		~Pool() = default;
+		~Pool()
+		{
+			if constexpr (!std::is_trivially_destructible_v<T>)
+			{
+				usize length = count();
+				auto *data = (T*)_arena.data();
+
+				for (usize i = 0; i < length; ++i)
+					data[i].~T();
+			}
+		}
 
 		usize add(T&& value)
 		{
@@ -46,7 +56,7 @@ namespace parka
 				data[i] = fillValue;
 		}
 
-		usize getIndex(T *ptr) const { return _arena.getOffset((byte*)ptr) / sizeof(T); }
+		usize getIndex(const T *ptr) const { return _arena.getOffset((byte*)ptr) / sizeof(T); }
 
 		T& operator[](usize index) { assert(index < count()); return ((T*)_arena.data())[index]; }
 		const T& operator[](usize index) const { assert(index < count()); return ((T*)_arena.data())[index]; }

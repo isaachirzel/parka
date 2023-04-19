@@ -25,7 +25,6 @@ namespace parka
 		{}
 		Token(Token&&) = default;
 		Token(const Token&) = default;
-		~Token() = default;
 
 		static Token initial(const File& file);
 

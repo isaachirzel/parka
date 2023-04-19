@@ -2,7 +2,7 @@
 #include "parka/syntax/BooleanOrExpressionSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/Token.hpp"
 #include "parka/util/Print.hpp"
 
@@ -39,7 +39,7 @@ namespace parka
 			return {};
 
 		auto expression = ConditionalExpressionSyntax(*condition, *trueCase, *falseCase);
-		auto id = SyntaxRepository::add(std::move(expression));
+		auto id = ExpressionSyntaxId::create(std::move(expression));
 
 		return id;
 	}

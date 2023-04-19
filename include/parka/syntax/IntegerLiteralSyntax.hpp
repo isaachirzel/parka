@@ -23,7 +23,6 @@ namespace parka
 
 		IntegerLiteralSyntax(IntegerLiteralSyntax&&) = default;
 		IntegerLiteralSyntax(const IntegerLiteralSyntax&) = delete;
-		~IntegerLiteralSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};

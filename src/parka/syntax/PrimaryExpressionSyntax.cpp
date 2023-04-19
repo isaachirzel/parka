@@ -2,7 +2,7 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/IdentifierExpressionSyntax.hpp"
 #include "parka/syntax/LiteralSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka

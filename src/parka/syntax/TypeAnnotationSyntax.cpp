@@ -1,7 +1,7 @@
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka

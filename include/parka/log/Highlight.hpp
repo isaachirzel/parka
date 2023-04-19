@@ -26,8 +26,6 @@ namespace parka
 		{}
 		Highlight(Highlight&&) = default;
 		Highlight(const Highlight&) = default;
-		~Highlight() = default;
-
 
 		const auto *begin() const { return _position.ptr(); }
 		const auto *end() const { return _position.ptr() + _length; }

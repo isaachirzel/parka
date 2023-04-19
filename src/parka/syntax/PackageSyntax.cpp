@@ -3,7 +3,7 @@
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/file/File.hpp"
@@ -50,7 +50,7 @@ namespace parka
 			return {};
 
 		auto package = PackageSyntax(String(name), std::move(modules), std::move(packageIds));
-		auto id = SyntaxRepository::add(std::move(package));
+		auto id = EntitySyntaxId::create(std::move(package));
 
 		return id;
 	}

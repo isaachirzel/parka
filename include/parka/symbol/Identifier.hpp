@@ -22,7 +22,6 @@ namespace parka
 
 		Identifier(Identifier&&) = default;
 		Identifier(const Identifier&) = delete;
-		~Identifier() = default;
 
 		static Optional<Identifier> parse(Token& token);
 

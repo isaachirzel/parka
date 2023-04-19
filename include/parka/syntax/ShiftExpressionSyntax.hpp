@@ -22,7 +22,6 @@ namespace parka
 
 		ShiftExpressionSyntax(ShiftExpressionSyntax&&) = default;
 		ShiftExpressionSyntax(const ShiftExpressionSyntax&) = delete;
-		~ShiftExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

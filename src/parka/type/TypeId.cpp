@@ -16,8 +16,7 @@ namespace std
 	usize hash<TypeId>::operator()(const TypeId& key) const 
 	{
 		auto seed = (u64)key.index()  | ((u64)key.type() << 32);
-		auto hasher = std::hash<usize>();
-		auto hash = hasher(seed);
+		auto hash = std::hash<usize>{}(seed);
 
 		return hash;
 	}

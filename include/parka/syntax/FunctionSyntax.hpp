@@ -29,7 +29,6 @@ namespace parka
 
 		FunctionSyntax(FunctionSyntax&&) = default;
 		FunctionSyntax(const FunctionSyntax&) = delete;
-		~FunctionSyntax() = default;
 
 		static Optional<EntitySyntaxId> parse(Token& token);
 		

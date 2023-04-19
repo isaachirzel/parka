@@ -109,7 +109,6 @@ namespace parka
 		Table() : Table(table::primeNumbers[0]) {}
 		Table(Table&&) = default;
 		Table(const Table&) = delete;
-		~Table() = default;
 
 		bool insert(const Key& key, const Value& value)
 		{
@@ -149,8 +148,10 @@ namespace parka
 			return &item.value;
 		}
 
-		const auto& capacity() const { return _slots.count(); }
-		auto count() const { return _items.count(); }
+		const auto *begin() const { return _items.begin(); }
+		const auto *end() const { return _items.end(); }
+		usize capacity() const { return _slots.count(); }
+		usize count() const { return _items.count(); }
 	};
 }
 

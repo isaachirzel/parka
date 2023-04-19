@@ -39,7 +39,6 @@ namespace parka
 		{}
 		Type(Type&&) = default;
 		Type(const Type&) = default;
-		~Type() = default;
 
 		String getName() const;
 		bool canConvertTo(const Type& other);

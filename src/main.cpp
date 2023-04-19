@@ -6,7 +6,6 @@
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
 #include "parka/Token.hpp"
 #include "parka/file/File.hpp"
 #include "parka/util/Path.hpp"
@@ -16,6 +15,7 @@
 #include "parka/util/Timer.hpp"
 
 #include <ios>
+#include <type_traits>
 
 using namespace parka;
 

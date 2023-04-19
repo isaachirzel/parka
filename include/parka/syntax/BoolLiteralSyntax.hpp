@@ -19,7 +19,6 @@ namespace parka
 
 		BoolLiteralSyntax(BoolLiteralSyntax&&) = default;
 		BoolLiteralSyntax(const BoolLiteralSyntax&) = delete;
-		~BoolLiteralSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};

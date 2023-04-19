@@ -7,6 +7,7 @@
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
+#include "parka/util/View.hpp"
 
 namespace parka
 {
@@ -24,31 +25,13 @@ namespace parka
 
 	public:
 
-		static Array<Primitive> primitives;
-
-		static const EntitySyntaxId voidId;
-		static const EntitySyntaxId u8Id;
-		static const EntitySyntaxId u16Id;
-		static const EntitySyntaxId u32Id;
-		static const EntitySyntaxId u64Id;
-		static const EntitySyntaxId i8Id;
-		static const EntitySyntaxId i16Id;
-		static const EntitySyntaxId i32Id;
-		static const EntitySyntaxId i64Id;
-		static const EntitySyntaxId f32Id;
-		static const EntitySyntaxId f64Id;
-		static const EntitySyntaxId boolId;
-		static const EntitySyntaxId charId;
-		static const EntitySyntaxId stringId;
-
-		static void initializeAll();
-		static void declareAll(Table<String, EntitySyntaxId>& globalSymbols);
+		static const Primitive primitives[];
+		static const usize primitiveCount;
 
 	public:
 
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
-		~Primitive() = default;
 
 		const String& identifier() const { return _identifier; }
 		EntityType type() const { return EntityType::Primitive; }

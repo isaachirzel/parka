@@ -22,7 +22,6 @@ namespace parka
 
 		ExpressionStatementSyntax(ExpressionStatementSyntax&&) = default;
 		ExpressionStatementSyntax(const ExpressionStatementSyntax&) = delete;
-		~ExpressionStatementSyntax() = default;
 
 		static Optional<StatementSyntaxId> parse(Token& token);
 

@@ -25,7 +25,6 @@ namespace parka
 
 		VariableSyntax(VariableSyntax&&) = default;
 		VariableSyntax(const VariableSyntax&) = delete;
-		~VariableSyntax() = default;
 
 		static Optional<EntitySyntaxId> parse(Token& token);
 

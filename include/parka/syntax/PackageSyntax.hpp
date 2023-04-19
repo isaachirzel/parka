@@ -40,12 +40,11 @@ namespace parka
 
 		PackageSyntax(PackageSyntax&&) = default;
 		PackageSyntax(const PackageSyntax&) = delete;
-		~PackageSyntax() = default;
 
 		static Optional<EntitySyntaxId> parse(const Project& project);
 
 		const String& identifier() const { return _identifier; }
-		EntityType type() const { return EntityType::PackageSyntax; }
+		EntityType type() const { return EntityType::Package; }
 		const auto& modules() const { return _modules; }
 		const auto& packageIds() const { return _packageIds; }
 	};

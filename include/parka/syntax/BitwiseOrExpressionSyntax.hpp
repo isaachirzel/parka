@@ -19,7 +19,6 @@ namespace parka
 
 		BitwiseOrExpressionSyntax(BitwiseOrExpressionSyntax&&) = default;
 		BitwiseOrExpressionSyntax(const BitwiseOrExpressionSyntax&) = delete;
-		~BitwiseOrExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

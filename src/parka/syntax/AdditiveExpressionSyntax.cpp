@@ -1,7 +1,7 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/MultiplicativeExpressionSyntax.hpp"
 #include "parka/intrinsic/Primitive.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -43,7 +43,7 @@ namespace parka
 				return {};
 
 			auto expression = AdditiveExpressionSyntax(*lhs, *rhs, *type);
-			auto id = SyntaxRepository::add(std::move(expression));
+			auto id = ExpressionSyntaxId::create(std::move(expression));
 
 			lhs = std::move(id);
 			type = getAdditiveType(token);

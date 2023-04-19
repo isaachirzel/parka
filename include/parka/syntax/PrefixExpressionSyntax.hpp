@@ -24,7 +24,6 @@ namespace parka
 
 		PrefixExpressionSyntax(PrefixExpressionSyntax&&) = default;
 		PrefixExpressionSyntax(const PrefixExpressionSyntax&) = delete;
-		~PrefixExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 		

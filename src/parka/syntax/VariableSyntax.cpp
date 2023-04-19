@@ -2,7 +2,7 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -33,7 +33,7 @@ namespace parka
 		}
 
 		auto variable = VariableSyntax(*identifier, false, std::move(annotation));
-		auto id = SyntaxRepository::add(std::move(variable));
+		auto id = EntitySyntaxId::create(std::move(variable));
 
 		return id;
 	}

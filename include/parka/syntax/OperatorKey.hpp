@@ -23,7 +23,6 @@ namespace parka
 		{}
 		OperatorKey(OperatorKey&&) = default;
 		OperatorKey(const OperatorKey&) = default;
-		~OperatorKey() = default;
 
 		friend bool operator==(const OperatorKey& left, const OperatorKey& right);
 

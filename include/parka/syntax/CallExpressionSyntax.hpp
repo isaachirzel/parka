@@ -19,7 +19,6 @@ namespace parka
 
 		CallExpressionSyntax(CallExpressionSyntax&&) = default;
 		CallExpressionSyntax(const CallExpressionSyntax&) = delete;
-		~CallExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token, ExpressionSyntaxId primary);
 

@@ -1,7 +1,7 @@
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/Token.hpp"
 #include "parka/util/Print.hpp"
 
@@ -34,7 +34,7 @@ namespace parka
 		token.increment();
 
 		auto block = BlockSyntax(std::move(statements));
-		auto id = SyntaxRepository::add(std::move(block));
+		auto id = ExpressionSyntaxId::create(std::move(block));
 
 		return id;
 	}

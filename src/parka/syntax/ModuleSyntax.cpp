@@ -3,7 +3,7 @@
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Path.hpp"
@@ -57,7 +57,7 @@ namespace parka
 				}
 
 				default:
-					print("Not a keyword: $", token);
+					print("Not a keyword: `$`", token);
 					break;
 			}
 

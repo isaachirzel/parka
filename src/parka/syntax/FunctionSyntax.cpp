@@ -4,7 +4,7 @@
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
@@ -54,7 +54,7 @@ namespace parka
 			return {};
 
 		auto function = FunctionSyntax(*prototype, *body);
-		auto id = SyntaxRepository::add(std::move(function));
+		auto id = EntitySyntaxId::create(std::move(function));
 
 		return id;
 	}

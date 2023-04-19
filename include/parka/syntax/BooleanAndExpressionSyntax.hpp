@@ -19,8 +19,7 @@ namespace parka
 
 		BooleanAndExpressionSyntax(BooleanAndExpressionSyntax&&) = default;
 		BooleanAndExpressionSyntax(const BooleanAndExpressionSyntax&) = delete;
-		~BooleanAndExpressionSyntax() = default;
-
+		
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 
 		const auto& lhs() const { return _lhs; }

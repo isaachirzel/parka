@@ -19,7 +19,6 @@ namespace parka
 		{}
 		OperatorId(OperatorId&&) = default;
 		OperatorId(const OperatorId&) = default;
-		~OperatorId() = default;
 
 		const auto& type() const { return _type; }
 		const auto& index() const { return _index; }

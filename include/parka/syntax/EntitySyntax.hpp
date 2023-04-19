@@ -1,8 +1,8 @@
-#ifndef PARKA_ENTITY_HPP
-#define PARKA_ENTITY_HPP
+#ifndef PARKA_SYNTAX_ENTITY_SYNTAX_HPP
+#define PARKA_SYNTAX_ENTITY_SYNTAX_HPP
 
 #include "parka/Token.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/enum/EntityType.hpp"
 
 namespace parka
 {
@@ -10,8 +10,6 @@ namespace parka
 	{
 		virtual ~EntitySyntax() {}
 
-		// virtual Token token() const = 0;
-		// virtual const String& symbol() const = 0;
 		virtual const String& identifier() const = 0;
 		virtual EntityType type() const = 0;
 	};

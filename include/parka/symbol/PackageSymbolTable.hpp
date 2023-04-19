@@ -1,6 +1,8 @@
 #ifndef PARKA_SYMBOLS_PACKAGE_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOLS_PACKAGE_SYMBOL_TABLE_HPP
 
+#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
@@ -9,42 +11,61 @@
 
 namespace parka
 {
+	class PackageEntry;
+
 	class PackageSymbolTable : public SymbolTable
 	{
 		EntitySyntaxId _packageId;
-		Table<String, EntitySyntaxId> _symbols;
-		// Table<EntitySyntaxId, PackageSymbolTable> _packages;
+		Table<String, PackageEntry> _symbols;
 		const PackageSymbolTable *_parent;
 
 	private:
 
-		PackageSymbolTable(const EntitySyntaxId& entityId, Table<String, EntitySyntaxId>&& symbols, const PackageSymbolTable *parent) :
+		PackageSymbolTable(const EntitySyntaxId& entityId, const PackageSymbolTable *parent) :
 		_packageId(entityId),
-		_symbols(std::move(symbols)),
-		// _packages(),
 		_parent(parent)
 		{}
 
-		void declarePackage(const EntitySyntaxId& packageId);
-		static Optional<PackageSymbolTable> declare(const EntitySyntaxId& packageId, PackageSymbolTable *parent);
-
+		bool declare(const EntitySyntaxId& entity);
 		const PackageSymbolTable& getGlobalPackageSymbolTable() const;
-		Optional<EntitySyntaxId> resolveOffset(const QualifiedIdentifier& identifier, usize index) const;
-		static Optional<PackageSymbolTable> from(const EntitySyntaxId& packageId, const PackageSymbolTable *parent);
+		const PackageEntry *findPackageEntry(const QualifiedIdentifier& identifier, usize index) const;
 
 	public:
 
+		
+		PackageSymbolTable(const EntitySyntaxId& entityId, const PackageSymbolTable& parent) :
+		_packageId(entityId),
+		_parent(&parent)
+		{}
 		PackageSymbolTable(PackageSymbolTable&&) = default;
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
-		~PackageSymbolTable() = default;
 
-		static Optional<PackageSymbolTable> from(const EntitySyntaxId& packageId);
-		static Optional<PackageSymbolTable> from(const EntitySyntaxId& packageId, const PackageSymbolTable& parent);
-
-		bool declare(const Identifier& identifier);
+		Optional<EntitySyntaxId> resolveGlobal(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
-		Optional<EntitySyntaxId> resolveGlobal(const Identifier& identifier) const;
+	};
+
+	union SymbolTables
+	{
+		PackageSymbolTable package;
+		FunctionSymbolTable function;
+
+		SymbolTables() = delete;
+	};
+
+	class PackageEntry
+	{
+		EntitySyntaxId _entityId;
+		alignas (SymbolTables) byte _symbols[sizeof(SymbolTables)];
+
+	public:
+
+		PackageEntry(const EntitySyntaxId& entityId, const PackageSymbolTable& packageId);
+		PackageEntry(PackageEntry&&) = default;
+		PackageEntry(const PackageEntry&) = default;
+		~PackageEntry();
+
+		friend class PackageSymbolTable;
 	};
 }
 

@@ -29,7 +29,6 @@ namespace parka
 
 		Prompt(Prompt&&) = default;
 		Prompt(const Prompt&) = default;
-		~Prompt() = default;
 
 		static Prompt from(LogEntryType type);
 		

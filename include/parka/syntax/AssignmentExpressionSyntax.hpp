@@ -22,7 +22,6 @@ namespace parka
 
 		AssignmentExpressionSyntax(AssignmentExpressionSyntax&&) = default;
 		AssignmentExpressionSyntax(const AssignmentExpressionSyntax&) = delete;
-		~AssignmentExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

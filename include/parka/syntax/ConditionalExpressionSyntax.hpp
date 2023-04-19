@@ -22,7 +22,6 @@ namespace parka
 
 		ConditionalExpressionSyntax(ConditionalExpressionSyntax&&) = default;
 		ConditionalExpressionSyntax(const ConditionalExpressionSyntax&) = delete;
-		~ConditionalExpressionSyntax() = default;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 

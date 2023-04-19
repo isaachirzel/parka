@@ -1,5 +1,5 @@
 #include "parka/syntax/CallExpressionSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -43,7 +43,7 @@ namespace parka
 		token.increment();
 
 		auto expression = CallExpressionSyntax(std::move(primary), std::move(arguments));
-		auto id = SyntaxRepository::add(std::move(expression));
+		auto id = ExpressionSyntaxId::create(std::move(expression));
 
 		return id;
 	}

@@ -1,6 +1,6 @@
 #include "parka/syntax/MultiplicativeExpressionSyntax.hpp"
 #include "parka/syntax/PrefixExpressionSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -42,7 +42,7 @@ namespace parka
 				return {};
 
 			auto expression = MultiplicativeExpressionSyntax(*lhs, *rhs, *type);
-			auto id = SyntaxRepository::add(std::move(expression));
+			auto id = ExpressionSyntaxId::create(std::move(expression));
 
 			lhs = std::move(id);
 			type = getMultiplicativeType(token);

@@ -12,7 +12,6 @@ namespace parka
 	{
 		virtual ~SymbolTable() {}
 
-		virtual bool declare(const Identifier& identifier) = 0;
 		virtual Optional<EntitySyntaxId> resolve(const Identifier& identifier) const = 0;
 		virtual Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const = 0;
 	};

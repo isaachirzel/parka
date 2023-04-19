@@ -1,5 +1,5 @@
 #include "parka/syntax/CharLiteralSyntax.hpp"
-#include "parka/repository/SyntaxRepository.hpp"
+
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -31,7 +31,7 @@ namespace parka
 			return {};
 
 		auto expression = CharLiteralSyntax(token, *value);
-		auto id = SyntaxRepository::add(std::move(expression));
+		auto id = ExpressionSyntaxId::create(std::move(expression));
 
 		token.increment();
 

@@ -25,7 +25,6 @@ namespace parka
 
 		PrototypeSyntax(PrototypeSyntax&&) = default;
 		PrototypeSyntax(const PrototypeSyntax&) = delete;
-		~PrototypeSyntax() = default;
 
 		static Optional<PrototypeSyntax> parse(Token& token);
 

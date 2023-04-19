@@ -17,24 +17,22 @@ namespace parka
 		Table<String, EntitySyntaxId> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
+	public:
+
 		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
 		_functionId(functionId),
 		_parent(parent)
 		{}
 
-	public:
-
 		FunctionSymbolTable(FunctionSymbolTable&&) = default;
 		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
-		~FunctionSymbolTable() = default;
-
-		static Optional<FunctionSymbolTable> from(const FunctionSyntax& function);
 
 		bool declare(const Identifier& identifier);
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		
 		void addBlock(const ExpressionSyntaxId& blockId);
+		void popBlock();
 	};
 }
 

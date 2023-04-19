@@ -20,7 +20,7 @@ namespace parka
 
 		EntityContextId(EntityContextId&&) = default;
 		EntityContextId(const EntityContextId&) = default;
-		~EntityContextId() = default;
+
 
 		const auto& type() const { return _type; }
 		const auto& index() const { return _index; }

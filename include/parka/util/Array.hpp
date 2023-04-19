@@ -4,9 +4,6 @@
 #include "parka/util/Common.hpp"
 
 #include <cassert>
-#include <initializer_list>
-#include <iostream>
-#include <new>
 #include <stdexcept>
 #include <cstdlib>
 #include <type_traits>
@@ -47,13 +44,13 @@ namespace parka
 		Array(const Array&) = delete;
 		~Array()
 		{
-			if constexpr (!std::is_fundamental_v<T>)
+			if constexpr (!std::is_trivially_destructible_v<T>)
 			{
 				for (usize i = 0; i < _length; ++i)
 					_data[i].~T();
 			}
 			
-			::operator delete (_data);
+			::operator delete(_data);
 		}
 
 		void reserve(usize minimum)
@@ -63,7 +60,7 @@ namespace parka
 
 			usize newCapacity = minimum * 1.5;
 			auto *oldData = _data;
-			auto *newData = (T*)::operator new (sizeof(T) * newCapacity);
+			auto *newData = (T*)::operator new( sizeof(T) * newCapacity);
 
 			if (newData == nullptr)
 				throw std::bad_alloc();
