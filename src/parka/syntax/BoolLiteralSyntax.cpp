@@ -1,4 +1,5 @@
 #include "parka/syntax/BoolLiteralSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 
 #include "parka/util/Optional.hpp"
@@ -22,7 +23,7 @@ namespace parka
 				break;
 		}
 
-		printParseError(token, "`true` or `false`");
+		Log::parseError(token, "`true` or `false`");
 		
 		return {};
 	}

@@ -1,4 +1,5 @@
 #include "parka/Token.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Table.hpp"
 
@@ -81,7 +82,7 @@ namespace parka
 				return TokenType::StringLiteralSyntax;
 
 			default:
-				exitWithError("Invalid quote type: $", terminal);
+				Log::fatal("Invalid quote type: $", terminal);
 		}
 	}
 
@@ -100,7 +101,7 @@ namespace parka
 			{
 				auto token = Token(file, startPos, length, TokenType::EndOfFile);
 
-				printError(token, "$ is unterminated.", type);
+				Log::error(token, "$ is unterminated.", type);
 				
 				return token;
 			}
@@ -392,7 +393,7 @@ namespace parka
 		// TODO: Rethink handling of strange characters
 		auto token = Token(file, startPos, 1, TokenType::EndOfFile);
 
-		printError(token, "An invalid character was found in the source file.");
+		Log::error(token, "An invalid character was found in the source file.");
 
 		return token;
 	}
@@ -487,7 +488,7 @@ namespace parka
 				return "string literal";
 
 			default:
-				exitWithError("Invalid TokenType: $", _type);
+				Log::fatal("Invalid TokenType: $", _type);
 		}
 	}
 

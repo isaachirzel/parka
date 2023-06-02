@@ -1,5 +1,6 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/Token.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -8,7 +9,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::Identifier)
 		{
-			printParseError(token, "identifier");
+			Log::parseError(token, "identifier");
 			return {};
 		}
 

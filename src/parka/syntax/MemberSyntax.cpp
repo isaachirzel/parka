@@ -1,4 +1,5 @@
 #include "parka/syntax/MemberSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Print.hpp"
@@ -27,7 +28,7 @@ namespace parka
 
 		if (token.type() != TokenType::Identifier)
 		{
-			printParseError(token, "member name");
+			Log::parseError(token, "member name");
 			return {};
 		}
 
@@ -37,7 +38,7 @@ namespace parka
 
 		if (token.type() != TokenType::Colon)
 		{
-			printParseError(token, "':''", "Type annotations are required for member declarations.");
+			Log::parseError(token, "':''", "Type annotations are required for member declarations.");
 			return {};
 		}
 		

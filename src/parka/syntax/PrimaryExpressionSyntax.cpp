@@ -1,4 +1,5 @@
 #include "parka/syntax/PrimaryExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/IdentifierExpressionSyntax.hpp"
 #include "parka/syntax/LiteralSyntax.hpp"
@@ -18,7 +19,7 @@ namespace parka
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			printParseError(token, "expected ')' after primary sub-expression");
+			Log::parseError(token, "expected ')' after primary sub-expression");
 			return {};
 		}
 

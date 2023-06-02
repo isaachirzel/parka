@@ -1,4 +1,5 @@
 #include "parka/syntax/OperatorSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/util/Print.hpp"
 
@@ -11,11 +12,11 @@ namespace parka
 		if (!keyword)
 			return {};
 
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 
 	bool validate(const EntitySyntaxId&)
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 }

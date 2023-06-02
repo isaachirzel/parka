@@ -1,3 +1,4 @@
+#include "parka/log/Log.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
@@ -17,7 +18,7 @@ namespace parka
 
 		if (token.type() != TokenType::Assign)
 		{
-			printParseError(token, "expected '=' after declaration", nullptr);
+			Log::parseError(token, "expected '=' after declaration", nullptr);
 			return {};
 		}
 
@@ -30,7 +31,7 @@ namespace parka
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			printParseError(token, "';'", "DeclarationStatementSyntax statements need to be ended with a ';'.");
+			Log::parseError(token, "';'", "DeclarationStatementSyntax statements need to be ended with a ';'.");
 			return {};
 		}
 
@@ -73,7 +74,7 @@ namespace parka
 	// 	{
 	// 		if (!valueType->canConvertTo(*variableType))
 	// 		{
-	// 			printError("Unable to initialize $ with $", *variableType, *valueType);
+	// 			Log::error("Unable to initialize $ with $", *variableType, *valueType);
 	// 			return false;
 	// 		}
 	// 	}

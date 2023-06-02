@@ -55,6 +55,21 @@ namespace parka
 		log::entryTable.insert(filePtr, entryIndex);
 	}
 
+	void parseError(const Token& token, const char *expected, const char *message)
+	{
+		assert(expected != nullptr);
+		assert(message != nullptr);
+
+		Log::error(token, "Expected $, found $. $", expected, token.type(), message);
+	}
+
+	void Log::notImplemented(SourceLocation &&location)
+	{
+		addEntry(LogEntry(LogEntryType::Fatal, parka::format("$ is not implemented.", location)));
+		Log::outputEntries();
+		exit(1);
+	}
+
 	void Log::outputEntries()
 	{
 		for (const auto& entry : log::entries)

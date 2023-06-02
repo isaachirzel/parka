@@ -1,4 +1,5 @@
 #include "parka/syntax/ModuleSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
@@ -11,11 +12,12 @@
 
 namespace parka
 {
-	Optional<ModuleSyntax> ModuleSyntax::parse(const File& file)
+	ModuleSyntax ModuleSyntax::parse(const File& file)
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
+
 		print("Parsing module `$`", file.path());
-		auto success = true;
+
 		auto token = Token::initial(file);
 		auto functionIds = Array<EntitySyntaxId>();
 		auto structIds = Array<EntitySyntaxId>();
@@ -31,10 +33,7 @@ namespace parka
 					auto functionId = FunctionSyntax::parse(token);
 
 					if (!functionId)
-					{
-						success = false;
 						break;
-					}
 
 					functionIds.push(*functionId);
 
@@ -46,10 +45,7 @@ namespace parka
 					auto structId = StructSyntax::parse(token);
 
 					if (!structId)
-					{
-						success = false;
 						break;
-					}
 
 					structIds.push(*structId);
 
@@ -63,15 +59,11 @@ namespace parka
 
 			if (token.type() != TokenType::EndOfFile)
 			{
-				printParseError(token, "type or function definition");
-				// success = false;
+				Log::parseError(token, "type or function definition");
 			}
 
 			break;
 		}
-
-		if (!success)
-			return {};
 
 		auto mod = ModuleSyntax(String(file.path()), std::move(functionIds), std::move(structIds));
 

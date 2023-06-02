@@ -1,4 +1,5 @@
 
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Arena.hpp"
 
@@ -64,7 +65,7 @@ namespace parka
 
 			if (code == -1)
 			{
-				exitWithError("Failed to commit $ pages in Arena.", pagesToCommit);
+				Log::fatal("Failed to commit $ pages in Arena.", pagesToCommit);
 			}
 		}
 

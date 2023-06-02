@@ -31,7 +31,7 @@ namespace parka
 				return Prompt::Fatal;
 
 			default:
-				exitWithError("Unable to get Prompt for LogEntryType: $", (int)type);
+				Log::fatal("Unable to get Prompt for LogEntryType: $", (int)type);
 		}
 	}
 

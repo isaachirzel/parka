@@ -1,3 +1,4 @@
+#include "parka/log/Log.hpp"
 #include "parka/syntax/AssignmentExpressionSyntax.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
@@ -15,7 +16,7 @@ namespace parka
 {
 	const MemberSyntax *getRecursiveMember(const Array<MemberSyntax>&, EntitySyntaxId /*parentId*/)
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 		// for (const auto& member : members)
 		// {
 		// 	// TODO: Check if types are referencing the base type or an indirection to it
@@ -47,21 +48,17 @@ namespace parka
 
 		if (recursiveMember)
 		{
-			printError(recursiveMember->name(), "DeclarationStatementSyntax of member creates recursive type.");
+			Log::error(recursiveMember->name(), "DeclarationStatementSyntax of member creates recursive type.");
 			return false;
 		}
 
 		return true;
 	}
 
-	Optional<SyntaxTree> SyntaxTree::parse(const Project& project)
+	SyntaxTree SyntaxTree::parse(const Project& project)
 	{
 		auto globalPackageId = PackageSyntax::parse(project);
-		
-		if (!globalPackageId)
-			return {};
-
-		auto ast = SyntaxTree(*globalPackageId);
+		auto ast = SyntaxTree(globalPackageId);
 
 		return ast;
 	}

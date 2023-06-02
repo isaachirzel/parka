@@ -1,5 +1,6 @@
 #include "parka/syntax/StringLiteralSyntax.hpp"
 
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -8,7 +9,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::StringLiteralSyntax)
 		{
-			printParseError(token, "string");
+			Log::parseError(token, "string");
 			return {};
 		}
 

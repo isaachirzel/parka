@@ -1,4 +1,5 @@
 #include "parka/syntax/StructSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
@@ -24,7 +25,7 @@ namespace parka
 		if (token.type() != TokenType::LeftBrace)
 		{
 			// TODO: 
-			printParseError(token, "'{' before member list", "Bodyless structs are not allowed.");
+			Log::parseError(token, "'{' before member list", "Bodyless structs are not allowed.");
 			return {};
 		}
 
@@ -54,7 +55,7 @@ namespace parka
 
 			if (token.type() != TokenType::RightBrace)
 			{
-				printParseError(token, "'}' after struct body");
+				Log::parseError(token, "'}' after struct body");
 				return {};
 			}
 		}
@@ -83,8 +84,8 @@ namespace parka
 	// 			{
 	// 				success = false;
 					
-	// 				printError(member.name(), "A member with same name is already declared in this struct.");
-	// 				printNote(previous.name(), "Previous delcaration here.");
+	// 				Log::errorprintError(member.name(), "A member with same name is already declared in this struct.");
+	// 				Log::parseError(previous.name(), "Previous delcaration here.");
 
 	// 				break;
 	// 			}

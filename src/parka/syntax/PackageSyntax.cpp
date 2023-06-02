@@ -12,11 +12,11 @@
 
 namespace parka
 {
-	Optional<EntitySyntaxId> PackageSyntax::parse(const Directory& directory, const String& name)
+	EntitySyntaxId PackageSyntax::parse(const Directory& directory, const String& name)
 	{
 		// TODO: Add multithreading
 		print("Package `$` has $ subpackages and $ modules", name, directory.subdirectories().length(), directory.files().length());
-		auto success = true;
+
 		auto modules = Array<ModuleSyntax>();
 		auto packageIds = Array<EntitySyntaxId>(directory.subdirectories().length());
 
@@ -24,30 +24,15 @@ namespace parka
 		{
 			auto mod = ModuleSyntax::parse(file);
 
-			if (!mod)
-			{
-				success = false;
-				continue;
-			}
-
-			modules.push(*mod);
+			modules.push(mod);
 		}
 
 		for (const auto& subdirectory : directory.subdirectories())
 		{
 			auto packageId = PackageSyntax::parse(subdirectory, subdirectory.name());
 
-			if (!packageId)
-			{
-				success = false;
-				continue;
-			}
-
-			packageIds.push(*packageId);
+			packageIds.push(packageId);
 		}
-
-		if (!success)
-			return {};
 
 		auto package = PackageSyntax(String(name), std::move(modules), std::move(packageIds));
 		auto id = EntitySyntaxId::create(std::move(package));
@@ -55,7 +40,7 @@ namespace parka
 		return id;
 	}
 
-	Optional<EntitySyntaxId> PackageSyntax::parse(const Project& project)
+	EntitySyntaxId PackageSyntax::parse(const Project& project)
 	{
 		return PackageSyntax::parse(project.srcDirectory(), "");
 	}

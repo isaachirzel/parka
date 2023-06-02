@@ -1,4 +1,5 @@
 #include "parka/syntax/JumpStatementSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
@@ -28,7 +29,7 @@ namespace parka
 				return JumpType::Yield;
 
 			default:
-				printParseError(token, "`return`, `break`, `continue` or `yield`");
+				Log::parseError(token, "`return`, `break`, `continue` or `yield`");
 				return {};
 		}
 	}
@@ -52,11 +53,11 @@ namespace parka
 			{
 				case JumpType::Continue:
 					// TODO: Implement continuing on labels
-					printError(token, "Continue statements cannot have a value.");
+					Log::error(token, "Continue statements cannot have a value.");
 					return {};
 				
 				case JumpType::Break:
-					printError(token, "Break statements cannot have a value.");
+					Log::error(token, "Break statements cannot have a value.");
 					return {};
 
 				default:
@@ -70,7 +71,7 @@ namespace parka
 			
 			if (token.type() != TokenType::Semicolon)
 			{
-				printParseError(token, "';' after jump statement", nullptr);
+				Log::parseError(token, "';' after jump statement", nullptr);
 				return {};
 			}
 		}
@@ -117,7 +118,7 @@ namespace parka
 	// 	{
 	// 		char *returnTypeName = typeGetName(returnType);
 
-	// 		printError("Return value is not compatible with return type `$`.", returnTypeName);
+	// 		Log::error("Return value is not compatible with return type `$`.", returnTypeName);
 	// 		deallocate(returnTypeName);
 
 	// 		return false;
@@ -132,7 +133,7 @@ namespace parka
 
 	// 	if (currentBlock == nullptr)
 	// 	{
-	// 		printError(&node->token, "Yield statement must be within a block.");
+	// 		Log::error(&node->token, "Yield statement must be within a block.");
 
 	// 		return false;
 	// 	}
@@ -158,7 +159,7 @@ namespace parka
 	// 		auto blockTypeName = blockReturnType.getName();
 	// 		// TODO: get type token
 
-	// 		printError("Yield value is not compatible with type of block expression `$`.", blockTypeName);
+	// 		Log::error("Yield value is not compatible with type of block expression `$`.", blockTypeName);
 
 	// 		return false;
 	// 	}

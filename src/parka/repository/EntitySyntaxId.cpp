@@ -1,5 +1,6 @@
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/ParameterSyntax.hpp"
@@ -166,7 +167,7 @@ namespace parka
 				break;
 		}
 		
-		exitWithError("Unable to get entity of type: $", _type);
+		Log::fatal("Unable to get entity of type: $", _type);
 	}
 
 	const EntitySyntax *EntitySyntaxId::operator->() const

@@ -43,7 +43,7 @@
 // 				break;
 // 		}
 
-// 		exitWithError("Unable to get SymbolTable with type: $", _type);
+// 		Log::fatal("Unable to get SymbolTable with type: $", _type);
 // 	}
 
 // 	const SymbolTable *SymbolTableId::operator->() const

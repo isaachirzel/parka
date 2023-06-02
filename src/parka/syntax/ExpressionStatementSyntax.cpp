@@ -1,4 +1,5 @@
 #include "parka/syntax/ExpressionStatementSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/repository/ExpressionSyntaxId.hpp"
 
 #include "parka/util/Print.hpp"
@@ -14,7 +15,7 @@ namespace parka
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			printParseError(token, "';' after expression statement", nullptr);
+			Log::parseError(token, "';' after expression statement", nullptr);
 			return {};
 		}
 

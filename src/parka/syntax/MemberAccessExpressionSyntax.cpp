@@ -1,4 +1,5 @@
 #include "parka/syntax/MemberAccessExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 
 #include "parka/util/Print.hpp"
@@ -9,7 +10,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::Dot)
 		{
-			printParseError(token, "'.'");
+			Log::parseError(token, "'.'");
 			return {};
 		}
 
@@ -17,7 +18,7 @@ namespace parka
 		
 		if (token.type() != TokenType::Identifier)
 		{
-			printParseError(token, "member, method, or property name");
+			Log::parseError(token, "member, method, or property name");
 			return {};
 		}
 

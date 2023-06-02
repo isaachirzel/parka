@@ -1,5 +1,6 @@
 #include "parka/syntax/CharLiteralSyntax.hpp"
 
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -8,13 +9,13 @@ namespace parka
 	{
 		if (token.type() != TokenType::CharacterLiteral)
 		{
-			printParseError(token, "character");
+			Log::parseError(token, "character");
 			return {};
 		}
 
 		if (token.length() != 3)
 		{
-			printError(token, "character literals may only contain 1 character", nullptr);
+			Log::error(token, "character literals may only contain 1 character", nullptr);
 			return {};
 		}
 

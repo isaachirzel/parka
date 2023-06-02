@@ -38,7 +38,7 @@ namespace parka
 
 	// 	if (typedEntity == nullptr)
 	// 	{
-	// 		printError("Unable to get type of $ `$`.", entity.type(), entity.identifier());
+	// 		Log::error("Unable to get type of $ `$`.", entity.type(), entity.identifier());
 	// 		return {};
 	// 	}
 

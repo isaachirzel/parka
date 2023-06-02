@@ -1,3 +1,4 @@
+#include "parka/log/Log.hpp"
 #include "parka/util/Path.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Common.hpp"
@@ -43,21 +44,8 @@ namespace parka
 		out << fmt;
 	}
 
-	void printParseError(const Token& token, const char *expected, const char *message)
+	void Log::parseError(const Token& token, const char *expected, const char *message)
 	{
-		if (!message)
-			message = "";
-
-		printError(token, "Expected $, found $. $", expected, token.type(), message);
-	}
-
-	[[ noreturn ]]
-	void exitNotImplemented(SourceLocation&& location)
-	{
-		std::cout << location;
-		std::cout << Prompt::Fatal << ' ';
-
-		print("$ is not implemented.", location.function());
-		exit(1);
+		
 	}
 }

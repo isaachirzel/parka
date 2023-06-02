@@ -1,5 +1,6 @@
 #include "parka/syntax/FloatLiteralSyntax.hpp"
 
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -8,7 +9,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::FloatLiteralSyntax)
 		{
-			printParseError(token, "float");
+			Log::parseError(token, "float");
 			return {};
 		}
 

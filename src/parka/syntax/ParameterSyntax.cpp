@@ -1,4 +1,5 @@
 #include "parka/syntax/ParameterSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
@@ -19,7 +20,7 @@ namespace parka
 
 		if (token.type() != TokenType::Colon)
 		{
-			printParseError(token, "':'", "Parameters require a type annotation.");
+			Log::parseError(token, "':'", "Parameters require a type annotation.");
 			return {};
 		}
 

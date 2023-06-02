@@ -1,4 +1,5 @@
 #include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Print.hpp"
 
@@ -23,26 +24,26 @@ namespace parka
 
 	bool FunctionSymbolTable::declare(const Identifier&)
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 
 	Optional<EntitySyntaxId> FunctionSymbolTable::resolve(const Identifier&) const
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 
 	Optional<EntitySyntaxId> FunctionSymbolTable::resolve(const QualifiedIdentifier&) const
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 	
 	void FunctionSymbolTable::addBlock(const ExpressionSyntaxId&)
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 
 	void FunctionSymbolTable::popBlock()
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 }

@@ -1,5 +1,6 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
@@ -19,7 +20,7 @@ namespace parka
 		auto result = _symbols.insert(identifier, std::move(entry));
 
 		if (!result)
-			printError("Name `$` is already declared in this package.", identifier);
+			Log::error("Name `$` is already declared in this package.", identifier);
 
 		return result;
 	}
@@ -38,7 +39,8 @@ namespace parka
 			{
 				auto& package = *_packageId;
 				// TODO: Output package symbol, entity type and reference highlight
-				printError("Unable to find `$` in package `$`.", part.text(), package.identifier());
+				Log::error("Unable to find `$` in package `$`.", part.text(), package.identifier());
+				
 				return {};
 			}
 		}
@@ -87,6 +89,8 @@ namespace parka
 			table = parent;
 			parent = table->parent();
 		}
+
+		// TODO: Confirm the table is the global symbol table and not just one with no parent
 
 		return *table;
 	}

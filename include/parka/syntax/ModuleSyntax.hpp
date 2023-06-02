@@ -26,7 +26,7 @@ namespace parka
 		ModuleSyntax(ModuleSyntax&&) = default;
 		ModuleSyntax(const ModuleSyntax&) = delete;
 
-		static Optional<ModuleSyntax> parse(const File& file);
+		static ModuleSyntax parse(const File& file);
 
 		const auto& filename() const { return _filepath; }
 		const auto& functionIds() const { return _functionIds; }

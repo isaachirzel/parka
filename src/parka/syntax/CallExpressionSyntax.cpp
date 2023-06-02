@@ -1,5 +1,6 @@
 #include "parka/syntax/CallExpressionSyntax.hpp"
 
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -8,7 +9,7 @@ namespace parka
 	{
 		if (token.type() == TokenType::LeftParenthesis)
 		{
-			printParseError(token, "'(' before argument list");
+			Log::parseError(token, "'(' before argument list");
 			return {};
 		}
 
@@ -34,7 +35,7 @@ namespace parka
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				printParseError(token, "')' after argument list");
+				Log::parseError(token, "')' after argument list");
 
 				return {};
 			}

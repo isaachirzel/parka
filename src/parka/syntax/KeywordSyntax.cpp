@@ -61,7 +61,7 @@ namespace parka
 
 		if (type != KeywordType::True && type != KeywordType::False)
 		{
-			printParseError(token, "`true` or `false`");
+			Log::parseError(token, "`true` or `false`");
 			return {};
 		}
 
@@ -78,7 +78,7 @@ namespace parka
 
 		if (type != KeywordType::StructSyntax)
 		{
-			printParseError(token, "`struct` keyword");
+			Log::parseError(token, "`struct` keyword");
 			return {};
 		}
 
@@ -95,7 +95,7 @@ namespace parka
 
 		if (type != KeywordType::Var)
 		{
-			printParseError(token, "`var` keyword");
+			Log::parseError(token, "`var` keyword");
 			return {};
 		}
 
@@ -112,11 +112,9 @@ namespace parka
 
 		if (type != KeywordType::Function)
 		{
-			printParseError(token, "`function`");
+			Log::parseError(token, "`function`");
 			return {};
 		}
-
-		Log::addNote(token, "This is a function keyword.");
 
 		auto keyword = KeywordSyntax(token, type);
 
@@ -131,7 +129,7 @@ namespace parka
 
 		if (type != KeywordType::Operator)
 		{
-			printParseError(token, "`operator`");
+			Log::parseError(token, "`operator`");
 			return {};
 		}
 

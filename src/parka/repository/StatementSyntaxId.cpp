@@ -1,3 +1,4 @@
+#include "parka/log/Log.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
 #include "parka/syntax/DeclarationStatementSyntax.hpp"
 #include "parka/syntax/ExpressionStatementSyntax.hpp"
@@ -34,7 +35,7 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream&, const ExpressionSyntaxId&)
 	{
-		exitNotImplemented(here());
+		Log::notImplemented(here());
 	}
 
 	bool ExpressionSyntaxId::operator==(const ExpressionSyntaxId& other) const
@@ -59,7 +60,7 @@ namespace parka
 				break;
 		}
 
-		exitWithError("Unable to get Statement of type: $", (int)_type);
+		Log::fatal("Unable to get Statement of type: $", (int)_type);
 	}
 
 	const StatementSyntax *StatementSyntaxId::operator->() const

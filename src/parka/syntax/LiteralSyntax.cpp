@@ -1,4 +1,5 @@
 #include "parka/syntax/LiteralSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/BoolLiteralSyntax.hpp"
 #include "parka/syntax/CharLiteralSyntax.hpp"
 #include "parka/syntax/FloatLiteralSyntax.hpp"
@@ -28,8 +29,10 @@ namespace parka
 				return BoolLiteralSyntax::parse(token);
 
 			default:
-				printParseError(token, "literal");
-				return {};
+				break;
 		}
+		
+		Log::parseError(token, "literal");
+		return {};
 	}
 }

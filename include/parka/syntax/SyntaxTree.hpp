@@ -20,7 +20,7 @@ namespace parka
 		SyntaxTree(SyntaxTree&&) = default;
 		SyntaxTree(const SyntaxTree&) = delete;
 
-		static Optional<SyntaxTree> parse(const Project& project);
+		static SyntaxTree parse(const Project& project);
 
 		const auto& globalPackageId() const { return _globalPackageId; }
 	};

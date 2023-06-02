@@ -68,64 +68,6 @@ namespace parka
 
 		return out.str();
 	}
-
-	void printPrompt(const Prompt& prompt, const FilePosition& position);
-
-	template <LogEntryType type, typename... Arg>
-	void printMessage(const char *format, Arg const&... args)
-	{
-		auto prompt = Prompt::from(type);
-
-		std::cout << prompt << ": ";
-
-		_output(std::cout, format, args...);
-
-		std::cout << std::endl;
-	}
-	template <typename... Arg>
-	void printNote(const char* format, Arg const&... args) { printMessage<LogEntryType::Note>(format, args...); }
-	template <typename... Arg>
-	void printWarning(const char *format, Arg const&... args) { printMessage<LogEntryType::Warning>(format, args...); }
-	template <typename... Arg>
-	void printError(const char *format, Arg const&... args) { printMessage<LogEntryType::Error>(format, args...); }
-	template <typename... Arg>
-	void printSuccess(const char *format, Arg const&... args) { printMessage<LogEntryType::Success>(format, args...); }
-
-	template <LogEntryType type, typename... Arg>
-	void printTokenMessage(const Token& token, const char *format, Arg const&... args)
-	{
-		auto prompt = Prompt::from(type);
-		auto position = token.position();
-
-		std::cout << token.file().path() << ':' << position << ' ' << prompt << ' ';
-
-		_output(std::cout, format, args...);
-	}
-	template <typename... Arg>
-	void printNote(const Token& token, const char *format, Arg const&... args) { printTokenMessage<LogEntryType::Note>(token, format, args...); }
-	template <typename... Arg>
-	void printWarning(const Token& token, const char *format, Arg const&... args) { printTokenMessage<LogEntryType::Warning>(token, format, args...); }
-	template <typename... Arg>
-	void printError(const Token& token, const char *format, Arg const&... args) { printTokenMessage<LogEntryType::Error>(token, format, args...); }
-
-	void printParseError(const Token& token, const char *expected, const char *message = "");
-
-	void enableColorPrinting(bool enabled);
-	bool isColorPrintingEnabled();
-	usize getNoteCount();
-	usize getWarningCount();
-	usize getErrorCount();
-
-	template <typename ...Arg>
-	[[ noreturn ]]
-	void exitWithError(const char *fmt, Arg... args)
-	{
-		_output(std::cout, fmt, args...);
-		exit(1);
-	}
-
-	[[ noreturn ]]
-	void exitNotImplemented(SourceLocation&& location);
 }
 
 #endif

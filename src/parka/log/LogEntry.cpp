@@ -2,6 +2,7 @@
 #include "parka/enum/LogEntryType.hpp"
 #include "parka/log/Color.hpp"
 #include "parka/log/Line.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/log/Margin.hpp"
 #include "parka/log/Prompt.hpp"
 #include "parka/log/Underline.hpp"
@@ -32,7 +33,7 @@ namespace parka
 				break;
 		}
 
-		exitWithError("Unable to get Color for LogEntryType %d", (int)type);
+		Log::fatal("Unable to get Color for LogEntryType %d", (int)type);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const LogEntry& entry)

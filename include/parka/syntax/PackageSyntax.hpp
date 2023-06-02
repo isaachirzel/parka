@@ -34,14 +34,14 @@ namespace parka
 		_packageIds(std::move(packageIds))
 		{}
 
-		static Optional<EntitySyntaxId> parse(const Directory& directory, const String& name);
+		static EntitySyntaxId parse(const Directory& directory, const String& name);
 		
 	public:
 
 		PackageSyntax(PackageSyntax&&) = default;
 		PackageSyntax(const PackageSyntax&) = delete;
 
-		static Optional<EntitySyntaxId> parse(const Project& project);
+		static EntitySyntaxId parse(const Project& project);
 
 		const String& identifier() const { return _identifier; }
 		EntityType type() const { return EntityType::Package; }

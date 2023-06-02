@@ -1,4 +1,5 @@
 #include "parka/syntax/ConditionalExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/BooleanOrExpressionSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
@@ -27,7 +28,7 @@ namespace parka
 
 		if (keyword != KeywordType::Else)
 		{
-			printError(token, "else case for conditional expression");
+			Log::error(token, "else case for conditional expression");
 			return {};
 		}
 

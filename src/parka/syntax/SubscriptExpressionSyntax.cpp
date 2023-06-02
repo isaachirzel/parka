@@ -1,6 +1,7 @@
 #include "parka/syntax/SubscriptExpressionSyntax.hpp"
 
 #include "parka/Token.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
@@ -9,7 +10,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{
-			printParseError(token, "'['");
+			Log::parseError(token, "'['");
 			return {};
 		}
 
@@ -25,7 +26,7 @@ namespace parka
 
 		if (token.type() != TokenType::RightBracket)
 		{
-			printParseError(token, "']' after subscript");
+			Log::parseError(token, "']' after subscript");
 			return {};
 		}
 

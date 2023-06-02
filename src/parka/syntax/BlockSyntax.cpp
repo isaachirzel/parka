@@ -1,7 +1,7 @@
 #include "parka/syntax/BlockSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
-
 #include "parka/Token.hpp"
 #include "parka/util/Print.hpp"
 
@@ -11,7 +11,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
-			printParseError(token, "'{' before block");
+			Log::parseError(token, "'{' before block");
 
 			return {};
 		}

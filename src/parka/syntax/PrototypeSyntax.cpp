@@ -1,4 +1,5 @@
 #include "parka/syntax/PrototypeSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/syntax/ParameterSyntax.hpp"
 #include "parka/symbol/Identifier.hpp"
@@ -15,7 +16,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			printParseError(token, "'(' after function name");
+			Log::parseError(token, "'(' after function name");
 			return {};
 		}
 
@@ -50,7 +51,7 @@ namespace parka
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			printParseError(token, "')'", "Invalid tokens in parameter list");
+			Log::parseError(token, "')'", "Invalid tokens in parameter list");
 			return {};
 		}
 

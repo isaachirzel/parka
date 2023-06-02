@@ -1,4 +1,5 @@
 #include "parka/file/File.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Path.hpp"
 #include "parka/util/String.hpp"
@@ -13,18 +14,18 @@ namespace parka
 		FILE *file = fopen(filepath.c_str(), "r");
 		
 		if (!file)
-			exitWithError("Failed to open file '$'.", filepath.c_str());
+			Log::fatal("Failed to open file '$'.", filepath.c_str());
 
 		if (fseek(file, 0, SEEK_END))
-			exitWithError("Failed to seek end of file '$'.", filepath.c_str());
+			Log::fatal("Failed to seek end of file '$'.", filepath.c_str());
 
 		long size = ftell(file);
 
 		if (size == -1)
-			exitWithError("File '$' is invalid size.", filepath.c_str());
+			Log::fatal("File '$' is invalid size.", filepath.c_str());
 
 		if (fseek(file, 0, SEEK_SET))
-			exitWithError("Failed to seek beginning of file '$'.", filepath.c_str());
+			Log::fatal("Failed to seek beginning of file '$'.", filepath.c_str());
 
 		auto text = String();
 
@@ -45,7 +46,7 @@ namespace parka
 
 		if (!file)
 		{
-			printError("Failed to open file '$' for writing.", filepath);
+			Log::error("Failed to open file '$' for writing.", filepath);
 			return false;
 		}
 
@@ -55,7 +56,7 @@ namespace parka
 
 		if (bytesWritten != content.length())
 		{
-			printError("Failed to write content to file '$'.", filepath);
+			Log::error("Failed to write content to file '$'.", filepath);
 			return false;
 		}
 

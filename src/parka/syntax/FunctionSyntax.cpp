@@ -1,4 +1,5 @@
 #include "parka/syntax/FunctionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
@@ -24,7 +25,7 @@ namespace parka
 
 			if (token.type() != TokenType::Semicolon)
 			{
-				printParseError(token, "';'", "Inline function bodies need to be ended with ';'.");
+				Log::parseError(token, "';'", "Inline function bodies need to be ended with ';'.");
 				return {};
 			}
 
@@ -36,7 +37,7 @@ namespace parka
 		if (token.type() == TokenType::LeftBrace)
 			return BlockSyntax::parse(token);
 		
-		printParseError(token, "function body", "Functions require a body.");
+		Log::parseError(token, "function body", "Functions require a body.");
 
 		return {};
 	}
@@ -81,7 +82,7 @@ namespace parka
 	// 		{
 	// 			// TODO: Show previous declaration
 	// 			// TODO: Token highlights
-	// 			printError("`$` is already declared in this block.", identifier);
+	// 			Log::error("`$` is already declared in this block.", identifier);
 
 	// 			return false;
 	// 		}
@@ -114,7 +115,7 @@ namespace parka
 
 	// Type FunctionSyntax::getReturnType() const
 	// {
-	// 	exitNotImplemented(here());
+	// 	Log::notImplemented(here());
 	// 	// auto returnType = _returnType
 	// 	// 	? _returnType->type()
 	// 	// 	: voidType;
@@ -140,7 +141,7 @@ namespace parka
 	// 	auto result = package.findGlobal(identifier);
 
 	// 	if (!result)
-	// 		printError(identifier.token(), "Unable to find $ in this scope.", identifier);
+	// 		Log::erroridentifier.token(), "Unable to find $ in this scope.", identifier);
 
 	// 	return result;
 	// }

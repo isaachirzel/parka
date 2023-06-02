@@ -19,19 +19,14 @@
 
 using namespace parka;
 
-void printErrorCount(const Project& project)
-{
-	printError("Failed to compile `$`: encountered $ error(s).", project.name(), -1);
-}
-
 int main(int argc, const char *argv[])
 {
-	Log::addNote("This is log #$", 1);
+	Log::note("This is log #$", 1);
 
 	KeywordSyntax::initialize();
 
 	if (argc != 2)
-		exitWithError("Please supply only a path to the project root directory.");
+		Log::fatal("Please supply only a path to the project root directory.");
 
 	auto timer = Timer();
 	auto project = Project::read(argv[1]);
@@ -41,46 +36,35 @@ int main(int argc, const char *argv[])
 
 	auto readTime = timer.split();
 
-	printSuccess("Project loaded in $ seconds.", readTime);
+	Log::success("Project loaded in $ seconds.", readTime);
 
 	auto syntax = SyntaxTree::parse(*project);
-
-	if (!syntax)
-	{
-		printErrorCount(*project);
-		return 1;
-	}
-
 	auto parseTime = timer.split();
+	Log::success("Parsing completed in $s.", parseTime);
 
-	printSuccess("Parsing completed in $s.", parseTime);
+	// TODO: Declare symbols
 
 	auto declareTime = timer.split();
+	Log::success("Declaration completed in $s.", declareTime);
 
-	printSuccess("Declaration completed in $s.", declareTime);
-
-	auto context = ContextTree::validate(*syntax);
+	auto context = ContextTree::validate(syntax);
 	auto validateTime = timer.split();
 
-	printSuccess("Validation completed in $s.", validateTime);
+	Log::success("Validation completed in $s.", validateTime);
 
-	// if (!ast->validate())
-	// {
-	// 	printErrorCount(*project);
-	// 	return 1;
-	// }
-
-	// auto validatetime = timer.split();
-
-	// printSuccess("Validation completed in $ seconds.", validatetime);
-
+	auto errorCount = Log::getErrorCount();
 	auto compileTime = timer.stop();
 	auto linesOfCodeCount = project->getLinesOfCodeCount();
 	auto compileSpeed = (usize)(linesOfCodeCount / compileTime / 1000.0);
 
-	printSuccess("Compiled `$` in $ seconds at $k lines/s.", project->name(), compileTime, compileSpeed);
+	if (errorCount > 0)
+	{
+		Log::fatal("Failed to compile `$`: encountered $ error(s).", project->name(), errorCount);
+	}
+	else
+	{
+		Log::success("Compiled `$` in $ seconds at $k lines/s.", project->name(), compileTime, compileSpeed);
+	}
 
 	Log::outputEntries();
-
-	return 0;
 }

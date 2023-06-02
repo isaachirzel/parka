@@ -1,4 +1,5 @@
 #include "parka/syntax/IntegerLiteralSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/type/Type.hpp"
 
 #include "parka/util/Print.hpp"
@@ -11,7 +12,7 @@ namespace parka
 
 		if (token.type() != TokenType::IntegerLiteralSyntax)
 		{
-			printParseError(token, "integer");
+			Log::parseError(token, "integer");
 			return {};
 		}
 
@@ -79,7 +80,7 @@ namespace parka
 	// 			return Type::i64Type;
 
 	// 		default:
-	// 			exitWithError("Unable to get Type of IntegerLiteralSyntax with size: $", _bytes);
+	// 			Log::fatal("Unable to get Type of IntegerLiteralSyntax with size: $", _bytes);
 	// 	}
 	// }
 }
