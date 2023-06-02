@@ -3,6 +3,7 @@
 
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/util/Common.hpp"
+#include "parka/util/View.hpp"
 
 #include <ostream>
 
@@ -55,6 +56,7 @@ namespace parka
 
 		static EntitySyntaxId getFor(const PackageSyntax&);
 		static EntitySyntaxId getFor(const FunctionSyntax&);
+		static EntitySyntaxId getFor(const Primitive&);
 
 		const PackageSyntax& getPackage() const;
 		const Primitive& getPrimitive() const;

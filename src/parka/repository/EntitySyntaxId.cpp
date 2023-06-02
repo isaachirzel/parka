@@ -27,7 +27,7 @@ namespace parka
 	const EntitySyntaxId EntitySyntaxId::stringId(EntityType::Primitive, 13);
 
 	static const View<Primitive> primitives(Primitive::primitives, Primitive::primitiveCount);
-	static Pool<PackageSyntax> packages(10'000);
+	static Pool<PackageSyntax> packages(1'000);
 	static Pool<StructSyntax> structs(100'000);
 	static Pool<FunctionSyntax> functions(1'000'000);
 	static Pool<VariableSyntax> variables(10'000'000);
@@ -80,6 +80,14 @@ namespace parka
 	{
 		auto index = functions.getIndex(&function);
 		auto id = EntitySyntaxId(EntityType::Function, index);
+
+		return id;
+	}
+
+	EntitySyntaxId EntitySyntaxId::getFor(const Primitive& primitve)
+	{
+		auto index = primitives.getIndex(&primitve);
+		auto id = EntitySyntaxId(EntityType::Primitive, index);
 
 		return id;
 	}
@@ -158,7 +166,7 @@ namespace parka
 				break;
 		}
 		
-		exitWithError("Unable to get entity of type: $", (int)_type);
+		exitWithError("Unable to get entity of type: $", _type);
 	}
 
 	const EntitySyntax *EntitySyntaxId::operator->() const

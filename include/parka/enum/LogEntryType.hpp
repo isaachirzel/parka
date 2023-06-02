@@ -11,6 +11,8 @@ namespace parka
 		Error,
 		Fatal
 	};
+
+	// TODO: Create print function
 }
 
 #endif

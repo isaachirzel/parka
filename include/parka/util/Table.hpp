@@ -129,7 +129,7 @@ namespace parka
 			if (slot != table::empty)
 				return false;
 
-			slot = _items.add({ value, key, hash });
+			slot = _items.add({ std::move(value), key, hash });
 
 			return true;
 		}

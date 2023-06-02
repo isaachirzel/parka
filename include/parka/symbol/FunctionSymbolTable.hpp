@@ -8,17 +8,22 @@
 #include "parka/util/Array.hpp"
 #include "parka/util/String.hpp"
 
+// TODO: Move constructor
+
 namespace parka
 {
+	class SymbolTableEntry;
+
 	class FunctionSymbolTable : public SymbolTable
 	{
 		EntitySyntaxId _functionId;
 		const SymbolTable& _parent;
-		Table<String, EntitySyntaxId> _symbols;
+		Table<String, SymbolTableEntry> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
 	public:
 
+		// The symbol table will be created regardless of errors
 		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
 		_functionId(functionId),
 		_parent(parent)
@@ -33,6 +38,8 @@ namespace parka
 		
 		void addBlock(const ExpressionSyntaxId& blockId);
 		void popBlock();
+		
+		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
 	};
 }
 

@@ -47,7 +47,6 @@ namespace parka
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};
 
-	const char *getTokenTypeText(TokenType type);
 	std::ostream& operator<<(std::ostream& out, TokenType type);
 }
 

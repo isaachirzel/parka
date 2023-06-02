@@ -28,7 +28,6 @@ int main(int argc, const char *argv[])
 {
 	Log::addNote("This is log #$", 1);
 
-	Primitive::initializeAll();
 	KeywordSyntax::initialize();
 
 	if (argc != 2)

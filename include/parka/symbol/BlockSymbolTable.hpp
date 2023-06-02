@@ -8,13 +8,17 @@
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
 
+// TODO: Move constructor
+
 namespace parka
 {
+	class SymbolTableEntry;
+
 	class BlockSymbolTable : public SymbolTable
 	{
 		ExpressionSyntaxId _blockId;
 		const SymbolTable& _parent;
-		Table<String, EntitySyntaxId> _symbols;
+		Table<String, SymbolTableEntry> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
 		BlockSymbolTable(const ExpressionSyntaxId& blockId, const SymbolTable& parent) :

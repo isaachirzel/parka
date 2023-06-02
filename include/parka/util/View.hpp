@@ -25,6 +25,7 @@ namespace parka
 		View(const View&) = default;
 		View() = default;
 
+		usize getIndex(const T *ptr) const { assert(ptr > _data); assert(ptr - _data < (isize)_size); return ptr - _data; }
 		const T& operator[](usize index) const { assert(index < _size); return _data[index]; }
 		const T *begin() const { return &_data[0]; }
 		const T *end() const { return &_data[_size]; }

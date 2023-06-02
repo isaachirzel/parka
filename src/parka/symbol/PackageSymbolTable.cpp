@@ -1,87 +1,30 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-
+#include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	PackageEntry::PackageEntry(const EntitySyntaxId& entityId, const PackageSymbolTable& parent) :
-	_entityId(entityId)
-	{
-		auto *symbolTable = (SymbolTables*)_symbols;
-
-		switch (_entityId.type())
-		{
-			case EntityType::Package:
-				new (&symbolTable->package) PackageSymbolTable(entityId, parent);
-				break;
-
-			case EntityType::Function:
-				new (&symbolTable->function) FunctionSymbolTable(entityId, parent);
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	PackageEntry::~PackageEntry()
-	{
-		auto *symbolTable = (SymbolTables*)_symbols;
-
-		switch (_entityId.type())
-		{
-			case EntityType::Package:
-				symbolTable->package.~PackageSymbolTable();
-				break;
-
-			// case EntityType::Struct:
-				// break;
-			case EntityType::Function:
-				symbolTable->function.~FunctionSymbolTable();
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	// bool declareEntities(Table<String, EntitySyntaxId>& symbols, const Array<EntitySyntaxId>& entityIds)
-	// {
-	// 	// TODO: Invalidate symbol on failure, better error
-	// 	auto success = true;
-
-	// 	for (const auto& entityId : entityIds)
-	// 	{
-	// 		auto& entity = SyntaxRepository::get(entityId);
-	// 		const auto& identifier = entity.identifier();
-	// 		auto result = symbols.insert(identifier, entityId);
-
-	// 		if (!result)
-	// 		{
-	// 			printError("Name `$` is already declared in this package.", identifier);
-	// 			success = false;
-	// 		}
-	// 	}
-
-	// 	return success;
-	// }
-
 	bool PackageSymbolTable::declare(const EntitySyntaxId& entityId)
 	{
-		auto& entity = *entityId;
-		auto entry = PackageEntry(entityId, _packageId);
-		auto result = _symbols.insert(entity.identifier(), std::move(entry));
+		// TODO: Invalidate symbol on failure, better error
+		auto entry = SymbolTableEntry(entityId, *this);
+		const auto& identifier = entityId->identifier();
+		auto result = _symbols.insert(identifier, std::move(entry));
+
+		if (!result)
+			printError("Name `$` is already declared in this package.", identifier);
 
 		return result;
 	}
 
-	const PackageEntry *PackageSymbolTable::findPackageEntry(const QualifiedIdentifier& identifier, usize index) const
+	const SymbolTableEntry *PackageSymbolTable::findEntry(const QualifiedIdentifier& identifier, usize index) const
 	{
 		auto& part = identifier[index];
 		auto result = resolve(part);
@@ -103,67 +46,35 @@ namespace parka
 		return nullptr;
 	}
 
-	PackageSymbolTable PackageSymbolTable::from(const EntitySyntaxId& packageId, const PackageSymbolTable *parent)
+	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const PackageSymbolTable *parent) :
+	_packageId(packageId),
+	// TODO: pre-reserve symbol count _symbols(###),
+	_parent(parent)
 	{
-		// TODO: pre-reserve symbol count
-		auto success = true;
 		auto& package = packageId.getPackage();
-		auto symbols = Table<String, PackageEntry>();
 
 		if (parent == nullptr)
 		{
-			usize index = 0;
-
-			for (const auto& primitive: Primitive::primitives)
+			for (usize i = 0; i < Primitive::primitiveCount; ++i)
 			{
-				symbols.insert(primitive.identifier(), EntitySyntaxId::getFor(primitive));
-				
-				index += 1;
+				const auto& primitive = Primitive::primitives[i];
+				auto id = EntitySyntaxId::getFor(primitive);
+
+				_symbols.insert(primitive.identifier(), SymbolTableEntry(id, *this));
 			}
 		}
 
 		for (const auto& mod : package.modules())
 		{
-			if (!declareEntities(symbols, mod.structIds()))
-				success = false;
+			for (const auto& structId : mod.structIds())
+				declare(structId);
 
-			if (!declareEntities(symbols, mod.functionIds()))
-				success = false;
+			for (const auto& functionId : mod.functionIds())
+				declare(functionId);
 		}
 
 		for (const auto& packageId : package.packageIds())
-		{
-			auto& package = packageId.getPackage();
-
-			symbols.insert(package.identifier(), packageId);
-
-			
-		}
-
-		if (!success)
-			return {};
-
-		return PackageSymbolTable(packageId, std::move(symbols), parent);
-	}
-
-	Optional<PackageSymbolTable> PackageSymbolTable::from(const EntitySyntaxId& packageId)
-	{
-		return from(packageId, nullptr);
-	}
-
-	Optional<PackageSymbolTable> PackageSymbolTable::from(const EntitySyntaxId& packageId, const PackageSymbolTable& parent)
-	{
-		return from(packageId, &parent);
-	}
-
-	bool PackageSymbolTable::declare(const Identifier&)
-	{
-		exitNotImplemented(here());
-	}
-
-	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const Identifier& identifier) const
-	{
-		return _symbols.find(identifier.text());
+			declare(packageId);
 	}
 
 	const PackageSymbolTable& PackageSymbolTable::getGlobalPackageSymbolTable() const
@@ -184,13 +95,25 @@ namespace parka
 		return global;
 	}
 
+	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const Identifier& identifier) const
+	{
+		// TODO: Confirm this makes sense. I'm not sure if resolving single identifiers should always do
+		// this or if it should seek upwards at times
+		const auto *result = _symbols.find(identifier.text());
+
+		if (!result)
+			return {};
+			
+		return result->entityId();
+	}
+
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
 	{
-		const auto *entry = findPackageEntry(identifier, 0);
+		const auto *entry = findEntry(identifier, 0);
 
 		if (!entry)
 			return {};
 
-		return entry->entityId;
+		return entry->entityId();
 	}
 }

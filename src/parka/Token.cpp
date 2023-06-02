@@ -491,73 +491,6 @@ namespace parka
 		}
 	}
 
-	const char *getTokenTypeText(TokenType type)
-	{
-		switch (type)
-		{
-			case TokenType::EndOfFile: return "end of file";
-			case TokenType::Invalid: return "invalid token";
-			case TokenType::Identifier: return "identifier";
-			case TokenType::LeftParenthesis: return "(";
-			case TokenType::RightParenthesis: return ")";
-			case TokenType::LeftBracket: return "[";
-			case TokenType::RightBracket: return "]";
-			case TokenType::LeftBrace: return "{";
-			case TokenType::RightBrace: return "}";
-			case TokenType::Semicolon: return ";";
-			case TokenType::Colon: return ":";
-			case TokenType::Comma: return ",";
-			case TokenType::Dot: return ".";
-			case TokenType::Range: return "";
-			case TokenType::Elipsis: return ".";
-			case TokenType::Ampersand: return "&";
-			case TokenType::Pipe: return "|";
-			case TokenType::Carrot: return "^";
-			case TokenType::LeftBitShift: return "<<";
-			case TokenType::RightBitShift: return ">>";
-			case TokenType::BooleanNot: return "not";
-			case TokenType::BooleanAnd: return "and";
-			case TokenType::BooleanOr: return "or";
-			case TokenType::BitwiseNot: return "~";
-			case TokenType::BitwiseXor: return "^";
-			case TokenType::Equals: return "==";
-			case TokenType::NotEquals: return "!=";
-			case TokenType::LessThanOrEqualTo: return "<=";
-			case TokenType::GreaterThanOrEqualTo: return ">=";
-			case TokenType::LessThan: return "<";
-			case TokenType::GreaterThan: return ">";
-			case TokenType::SingleArrow: return "->";
-			case TokenType::DoubleArrow: return "=>";
-			case TokenType::Option: return "??";
-			case TokenType::Question: return "?";
-			case TokenType::Assign: return "=";
-			case TokenType::AddAssign: return "+=";
-			case TokenType::SubtractAssign: return "-=";
-			case TokenType::MultiplyAssign: return "*=";
-			case TokenType::DivideAssign: return "/=";
-			case TokenType::ModulusAssign: return "$=";
-			case TokenType::LeftBitShiftAssign: return "<<=";
-			case TokenType::RightBitShiftAssign: return ">>=";
-			case TokenType::BitwiseAndAssign: return "&=";
-			case TokenType::BitwiseOrAssign: return "|=";
-			case TokenType::BitwiseXorAssign: return "^=";
-			case TokenType::BooleanOrAssign: return "||=";
-			case TokenType::BooleanAndAssign: return "&&=";
-			case TokenType::Modulus: return "$";
-			case TokenType::Slash: return "/";
-			case TokenType::Asterisk: return "*";
-			case TokenType::Plus: return "+";
-			case TokenType::Minus: return "-";
-			case TokenType::Scope: return "::";
-			case TokenType::IntegerLiteralSyntax: return "{integer}";
-			case TokenType::FloatLiteralSyntax: return "{float}";
-			case TokenType::CharacterLiteral: return "{char}";
-			case TokenType::StringLiteralSyntax: return "{string}";
-		}
-
-		exitWithError("Unable to get text for TokenType: $", (int)type);
-	}
-
 	bool Token::operator==(const Token& other) const
 	{
 		const auto& file = _position.file();
@@ -587,7 +520,244 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, TokenType type)
 	{
-		out << getTokenTypeText(type);
+		switch (type)
+		{
+			case TokenType::EndOfFile:
+				out << "end of file";
+				break;
+				
+			case TokenType::Invalid:
+				out << "invalid token";
+				break;
+				
+			case TokenType::Identifier:
+				out << "identifier";
+				break;
+				
+			case TokenType::LeftParenthesis:
+				out << "(";
+				break;
+				
+			case TokenType::RightParenthesis:
+				out << ")";
+				break;
+				
+			case TokenType::LeftBracket:
+				out << "[";
+				break;
+				
+			case TokenType::RightBracket:
+				out << "]";
+				break;
+				
+			case TokenType::LeftBrace:
+				out << "{";
+				break;
+				
+			case TokenType::RightBrace:
+				out << "}";
+				break;
+				
+			case TokenType::Semicolon:
+				out << ";";
+				break;
+				
+			case TokenType::Colon:
+				out << ":";
+				break;
+				
+			case TokenType::Comma:
+				out << ",";
+				break;
+				
+			case TokenType::Dot:
+				out << ".";
+				break;
+				
+			case TokenType::Range:
+				out << "";
+				break;
+				
+			case TokenType::Elipsis:
+				out << ".";
+				break;
+				
+			case TokenType::Ampersand:
+				out << "&";
+				break;
+				
+			case TokenType::Pipe:
+				out << "|";
+				break;
+				
+			case TokenType::Carrot:
+				out << "^";
+				break;
+				
+			case TokenType::LeftBitShift:
+				out << "<<";
+				break;
+				
+			case TokenType::RightBitShift:
+				out << ">>";
+				break;
+				
+			case TokenType::BooleanNot:
+				out << "not";
+				break;
+				
+			case TokenType::BooleanAnd:
+				out << "and";
+				break;
+				
+			case TokenType::BooleanOr:
+				out << "or";
+				break;
+				
+			case TokenType::BitwiseNot:
+				out << "~";
+				break;
+				
+			case TokenType::BitwiseXor:
+				out << "^";
+				break;
+				
+			case TokenType::Equals:
+				out << "==";
+				break;
+				
+			case TokenType::NotEquals:
+				out << "!=";
+				break;
+				
+			case TokenType::LessThanOrEqualTo:
+				out << "<=";
+				break;
+				
+			case TokenType::GreaterThanOrEqualTo:
+				out << ">=";
+				break;
+				
+			case TokenType::LessThan:
+				out << "<";
+				break;
+				
+			case TokenType::GreaterThan:
+				out << ">";
+				break;
+				
+			case TokenType::SingleArrow:
+				out << "->";
+				break;
+				
+			case TokenType::DoubleArrow:
+				out << "=>";
+				break;
+				
+			case TokenType::Option:
+				out << "??";
+				break;
+				
+			case TokenType::Question:
+				out << "?";
+				break;
+				
+			case TokenType::Assign:
+				out << "=";
+				break;
+				
+			case TokenType::AddAssign:
+				out << "+=";
+				break;
+				
+			case TokenType::SubtractAssign:
+				out << "-=";
+				break;
+				
+			case TokenType::MultiplyAssign:
+				out << "*=";
+				break;
+				
+			case TokenType::DivideAssign:
+				out << "/=";
+				break;
+				
+			case TokenType::ModulusAssign:
+				out << "$=";
+				break;
+				
+			case TokenType::LeftBitShiftAssign:
+				out << "<<=";
+				break;
+				
+			case TokenType::RightBitShiftAssign:
+				out << ">>=";
+				break;
+				
+			case TokenType::BitwiseAndAssign:
+				out << "&=";
+				break;
+				
+			case TokenType::BitwiseOrAssign:
+				out << "|=";
+				break;
+				
+			case TokenType::BitwiseXorAssign:
+				out << "^=";
+				break;
+				
+			case TokenType::BooleanOrAssign:
+				out << "||=";
+				break;
+				
+			case TokenType::BooleanAndAssign:
+				out << "&&=";
+				break;
+				
+			case TokenType::Modulus:
+				out << "$";
+				break;
+				
+			case TokenType::Slash:
+				out << "/";
+				break;
+				
+			case TokenType::Asterisk:
+				out << "*";
+				break;
+				
+			case TokenType::Plus:
+				out << "+";
+				break;
+				
+			case TokenType::Minus:
+				out << "-";
+				break;
+				
+			case TokenType::Scope:
+				out << "::";
+				break;
+				
+			case TokenType::IntegerLiteralSyntax:
+				out << "{integer}";
+				break;
+				
+			case TokenType::FloatLiteralSyntax:
+				out << "{float}";
+				break;
+				
+			case TokenType::CharacterLiteral:
+				out << "{char}";
+				break;
+				
+			case TokenType::StringLiteralSyntax:
+				out << "{string}";
+				break;
+				
+
+			default:
+				out << "invalid (" << (int)type << ')';
+		}
 
 		return out;
 	}

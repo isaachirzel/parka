@@ -15,6 +15,6 @@ namespace std
 
 	usize hash<TypeKey>::operator()(const TypeKey& key) const
 	{
-		return hash{}(key.id());
+		return hash<TypeId>{}(key.id());
 	}
 }
