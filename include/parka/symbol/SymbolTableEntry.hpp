@@ -29,6 +29,7 @@ namespace parka
 		SymbolTableEntry(const SymbolTableEntry&) = delete;
 		~SymbolTableEntry();
 
+		void setParent(const SymbolTable& parent);
 
 		// TODO: Safety asserts
 		const auto& entityId() const {  return _entityId; }

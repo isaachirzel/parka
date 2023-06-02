@@ -16,28 +16,33 @@ namespace parka
 
 	class BlockSymbolTable : public SymbolTable
 	{
+		friend class FunctionSymbolTable;
+		friend class SymbolTableEntry;
+		
 		ExpressionSyntaxId _blockId;
-		const SymbolTable& _parent;
+		const SymbolTable *_parent;
 		Table<String, SymbolTableEntry> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
-		BlockSymbolTable(const ExpressionSyntaxId& blockId, const SymbolTable& parent) :
-		_blockId(blockId),
-		_parent(parent)
-		{}
+	private:
+
+		bool declare(const Identifier& identifier);
 
 	public:
+
+		BlockSymbolTable(const ExpressionSyntaxId& blockId, const SymbolTable& parent) :
+		_blockId(blockId),
+		_parent(&parent)
+		{}
 
 		BlockSymbolTable(BlockSymbolTable&&) = default;
 		BlockSymbolTable(const BlockSymbolTable&) = delete;
 
-		static Optional<BlockSymbolTable> from(const BlockSyntax& block);
-
-		bool declare(const Identifier& identifier);
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 
-		friend class FunctionSymbolTable;
+		SymbolTableType symbolTableType() const { return SymbolTableType::Block; }
+		const SymbolTable *parent() const { return _parent; }
 	};
 }
 

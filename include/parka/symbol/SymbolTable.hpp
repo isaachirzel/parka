@@ -15,6 +15,7 @@ namespace parka
 
 		virtual Optional<EntitySyntaxId> resolve(const Identifier& identifier) const = 0;
 		virtual Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const = 0;
+		virtual const SymbolTable *parent() const = 0;
 		virtual SymbolTableType symbolTableType() const = 0;
 	};
 }

@@ -20,12 +20,32 @@ namespace parka
 	template <typename Key, typename Value>
 	class Table
 	{
-		struct Item
+	public:
+
+		class Item
 		{
-			Value value;
-			Key key;
-			usize hash;
+			Key _key;
+			Value _value;
+			usize _hash;
+
+		public:
+
+			Item(const Key& key, Value&& value, usize hash) :
+			_key(key),
+			_value(std::move(value)),
+			_hash(hash)
+			{}
+
+			const auto& key() const { return _key; }
+			const auto& value() const { return _value; }
+			const auto& hash() const { return _hash; }
+
+			auto& value() { return _value; }
+
+			friend class Table;
 		};
+
+	private:
 
 		Pool<usize> _slots;
 		Pool<Item> _items;
@@ -66,7 +86,7 @@ namespace parka
 
 				auto& item = _items[slot];
 
-				if (hash == item.hash && key == item.key)
+				if (hash == item._hash && key == item._key)
 					break;
 				
 				slotIndex = (hash + step) % slotCount;
@@ -89,7 +109,7 @@ namespace parka
 
 			for (const auto& item : _items)
 			{
-				auto& slot = getEmptySlot(item.hash);
+				auto& slot = getEmptySlot(item._hash);
 
 				slot = index;
 				index += 1;
@@ -129,7 +149,7 @@ namespace parka
 			if (slot != table::empty)
 				return false;
 
-			slot = _items.add({ std::move(value), key, hash });
+			slot = _items.add(Item(key, std::move(value), hash));
 
 			return true;
 		}
@@ -145,11 +165,13 @@ namespace parka
 
 			const auto& item = _items[slot];
 
-			return &item.value;
+			return &item._value;
 		}
 
 		const auto *begin() const { return _items.begin(); }
 		const auto *end() const { return _items.end(); }
+		auto *begin() { return _items.begin(); }
+		auto *end() { return _items.end(); }
 		usize capacity() const { return _slots.count(); }
 		usize count() const { return _items.count(); }
 	};

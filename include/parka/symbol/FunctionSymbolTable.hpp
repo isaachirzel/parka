@@ -3,6 +3,7 @@
 
 #include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
+#include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/util/Array.hpp"
@@ -17,22 +18,22 @@ namespace parka
 	class FunctionSymbolTable : public SymbolTable
 	{
 		EntitySyntaxId _functionId;
-		const SymbolTable& _parent;
+		const SymbolTable *_parent;
 		Table<String, SymbolTableEntry> _symbols;
 		Array<BlockSymbolTable> _blocks;
 
+		bool declare(const Identifier& identifier);
+
 	public:
 
-		// The symbol table will be created regardless of errors
 		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
 		_functionId(functionId),
-		_parent(parent)
+		_parent(&parent)
 		{}
 
-		FunctionSymbolTable(FunctionSymbolTable&&) = default;
+		FunctionSymbolTable(FunctionSymbolTable&&);
 		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
 
-		bool declare(const Identifier& identifier);
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		
@@ -40,6 +41,9 @@ namespace parka
 		void popBlock();
 		
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
+		const SymbolTable *parent() const { return _parent; }
+
+		friend class SymbolTableEntry;
 	};
 }
 

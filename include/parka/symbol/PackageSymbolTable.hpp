@@ -14,20 +14,20 @@
 
 namespace parka
 {
-	class SymbolTableEntry;
-
 	class PackageSymbolTable : public SymbolTable
 	{
+		friend class SymbolTableEntry;
+
 		EntitySyntaxId _packageId;
 		Table<String, SymbolTableEntry> _symbols;
-		const PackageSymbolTable *_parent;
+		const SymbolTable *_parent;
 
 	private:
 		
-		PackageSymbolTable(const EntitySyntaxId& packageId, const PackageSymbolTable *parent);
+		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent);
 
 		bool declare(const EntitySyntaxId& entity);
-		const PackageSymbolTable& getGlobalPackageSymbolTable() const;
+		const SymbolTable& getGlobalPackageSymbolTable() const;
 		const SymbolTableEntry *findEntry(const QualifiedIdentifier& identifier, usize index) const;
 
 	public:
@@ -36,7 +36,7 @@ namespace parka
 		PackageSymbolTable(packageId, nullptr)
 		{}
 		
-		PackageSymbolTable(const EntitySyntaxId& packageId, const PackageSymbolTable& parent) :
+		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent) :
 		PackageSymbolTable(packageId, &parent)
 		{}
 
@@ -47,6 +47,7 @@ namespace parka
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
+		const SymbolTable *parent() const { return _parent; }
 	};
 }
 

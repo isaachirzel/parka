@@ -46,7 +46,7 @@ namespace parka
 		return nullptr;
 	}
 
-	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const PackageSymbolTable *parent) :
+	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent) :
 	_packageId(packageId),
 	// TODO: pre-reserve symbol count _symbols(###),
 	_parent(parent)
@@ -77,12 +77,16 @@ namespace parka
 			declare(packageId);
 	}
 
-	const PackageSymbolTable& PackageSymbolTable::getGlobalPackageSymbolTable() const
+	const SymbolTable& PackageSymbolTable::getGlobalPackageSymbolTable() const
 	{
-		const auto *table = this;
+		const auto *table = (SymbolTable*)this;
+		const auto *parent = _parent;
 
-		while (table->_parent)
-			table = table->_parent;
+		while (parent)
+		{
+			table = parent;
+			parent = table->parent();
+		}
 
 		return *table;
 	}
