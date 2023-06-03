@@ -18,7 +18,7 @@ namespace parka
 
 		if (token.type() != TokenType::Assign)
 		{
-			Log::parseError(token, "expected '=' after declaration", nullptr);
+			Log::parseError(token, "expected '=' after declaration");
 			return {};
 		}
 

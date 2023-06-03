@@ -44,14 +44,18 @@ namespace parka
 			return index;
 		}
 
-		void fill(usize newLength, const T& fillValue)
+		void reserve(usize capacity)
+		{
+			_arena.reserve(capacity * sizeof(T));
+		}
+
+		void fill(const T& fillValue)
 		{
 			static_assert(std::is_copy_assignable_v<T>, "Value must be copy assignable to fill with default value");
 
-			_arena.reserve(newLength * sizeof(T));
-
+			auto s = sizeof(T);
 			auto *data = (T*)_arena.data();
-			auto length = _arena.bytesUsed() / sizeof(T);
+			auto length = _arena.bytesUsed() / s;
 
 			for (usize i = 0; i < length; ++i) 
 				data[i] = fillValue;

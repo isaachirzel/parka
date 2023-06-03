@@ -40,7 +40,7 @@ namespace parka
 		auto type = parsePrefixType(token);
 
 		if (!type)
-			return PrimaryExpressionSyntax::parse(token);
+			return PostfixExpressionSyntax::parse(token);
 
 		auto prefixToken = token;
 

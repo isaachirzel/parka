@@ -15,7 +15,7 @@ namespace parka
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			Log::parseError(token, "';' after expression statement", nullptr);
+			Log::parseError(token, "';' after expression statement");
 			return {};
 		}
 

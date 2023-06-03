@@ -6,16 +6,12 @@
 
 namespace parka
 {
-    Optional<Project> Project::read(const String& path)
+    Project Project::read(const String& path)
     {
         auto srcPath = path::join(path, "src");
         auto directory = Directory::read(srcPath, path.length() + 1);
-
-        if (!directory)
-            return {};
-
         auto name = path::getFilename(path);
-        auto project = Project(std::move(name), *directory);
+        auto project = Project(std::move(name), std::move(directory));
 
         return project;
     }

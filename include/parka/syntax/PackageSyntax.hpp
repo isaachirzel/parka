@@ -22,26 +22,18 @@ namespace parka
 		Array<ModuleSyntax> _modules;
 		Array<EntitySyntaxId> _packageIds;
 
-		PackageSyntax(Array<EntitySyntaxId>&& packageIds) :
-		_identifier(),
-		_modules(),
-		_packageIds(std::move(packageIds))
-		{}
-
 		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<EntitySyntaxId>&& packageIds) :
 		_identifier(std::move(identifier)),
 		_modules(std::move(modules)),
 		_packageIds(std::move(packageIds))
 		{}
 
-		static EntitySyntaxId parse(const Directory& directory, const String& name);
-		
 	public:
 
 		PackageSyntax(PackageSyntax&&) = default;
 		PackageSyntax(const PackageSyntax&) = delete;
 
-		static EntitySyntaxId parse(const Project& project);
+		static EntitySyntaxId parse(const Directory& directory, const String& name);
 
 		const String& identifier() const { return _identifier; }
 		EntityType type() const { return EntityType::Package; }

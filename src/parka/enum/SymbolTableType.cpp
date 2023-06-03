@@ -7,6 +7,10 @@ namespace parka
 	{
 		switch (type)
 		{
+			case SymbolTableType::Global:
+				out << "global";
+				break;
+
 			case SymbolTableType::Package:
 				out << "package";
 				break;

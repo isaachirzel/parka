@@ -55,7 +55,7 @@ namespace parka
 		log::entryTable.insert(filePtr, entryIndex);
 	}
 
-	void parseError(const Token& token, const char *expected, const char *message)
+	void Log::parseError(const Token& token, const char *expected, const char *message)
 	{
 		assert(expected != nullptr);
 		assert(message != nullptr);

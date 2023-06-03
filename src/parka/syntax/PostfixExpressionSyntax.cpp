@@ -1,4 +1,5 @@
 #include "parka/syntax/PostfixExpressionSyntax.hpp"
+#include "parka/enum/TokenType.hpp"
 #include "parka/syntax/CallExpressionSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/SubscriptExpressionSyntax.hpp"
@@ -12,11 +13,11 @@ namespace parka
 	{
 		auto postfix = PrimaryExpressionSyntax::parse(token);
 
-		if (!postfix)
-			return {};
-
 		while (true)
 		{
+			if (!postfix)
+				return {};
+				
 			switch (token.type())
 			{
 				case TokenType::LeftBracket: // Index

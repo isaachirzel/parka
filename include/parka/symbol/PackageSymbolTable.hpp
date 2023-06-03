@@ -24,26 +24,15 @@ namespace parka
 
 	private:
 		
-		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent);
-
-		bool declare(const EntitySyntaxId& entity);
-		const SymbolTable& getGlobalPackageSymbolTable() const;
+		bool declare(const EntitySyntaxId& entityId);
 		const SymbolTableEntry *findEntry(const QualifiedIdentifier& identifier, usize index) const;
 
 	public:
 
-		PackageSymbolTable(const EntitySyntaxId& packageId) :
-		PackageSymbolTable(packageId, nullptr)
-		{}
-		
-		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent) :
-		PackageSymbolTable(packageId, &parent)
-		{}
-
+		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent);
 		PackageSymbolTable(PackageSymbolTable&&) = default;
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
 
-		Optional<EntitySyntaxId> resolveGlobal(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }

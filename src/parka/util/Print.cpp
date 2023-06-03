@@ -43,9 +43,4 @@ namespace parka
 
 		out << fmt;
 	}
-
-	void Log::parseError(const Token& token, const char *expected, const char *message)
-	{
-		
-	}
 }

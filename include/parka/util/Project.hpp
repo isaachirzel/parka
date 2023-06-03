@@ -18,7 +18,7 @@ namespace parka
 
     public:
 
-        static Optional<Project> read(const String& path);
+        static Project read(const String& path);
 
         const auto& name() const { return _name; }
         const auto& srcDirectory() const { return _srcDirectory; }

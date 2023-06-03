@@ -102,8 +102,9 @@ namespace parka
 				return;
 
 			auto newCapacity = table::getCapacity(minimumCapacity);
-
-			_slots.fill(newCapacity, table::empty);
+			
+			_slots.reserve(newCapacity);
+			_slots.fill(table::empty);
 
 			usize index = 0;
 
@@ -119,12 +120,13 @@ namespace parka
 	public:
 
 		Table(usize minimumCapacity) :
-		_slots(100'000),
+		_slots(100'000), // TODO: Make this not just a static number
 		_items(100'000)
 		{
 			auto capacity = table::getCapacity(minimumCapacity);
 
-			_slots.fill(capacity, table::empty);
+			_slots.reserve(capacity);
+			_slots.fill(table::empty);
 		}
 		Table() : Table(table::primeNumbers[0]) {}
 		Table(Table&&) = default;

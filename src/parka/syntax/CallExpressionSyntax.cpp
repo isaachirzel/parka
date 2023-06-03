@@ -7,7 +7,7 @@ namespace parka
 {
 	Optional<ExpressionSyntaxId> CallExpressionSyntax::parse(Token& token, ExpressionSyntaxId primary)
 	{
-		if (token.type() == TokenType::LeftParenthesis)
+		if (token.type() != TokenType::LeftParenthesis)
 		{
 			Log::parseError(token, "'(' before argument list");
 			return {};
@@ -18,20 +18,22 @@ namespace parka
 		// TODO: Add initial capacity
 		auto arguments = Array<ExpressionSyntaxId>();
 
-		if (token.type() == TokenType::RightParenthesis)
+		if (token.type() != TokenType::RightParenthesis)
 		{
-			do
+			while (true)
 			{
-				token.increment();
-
 				auto argument = ExpressionSyntax::parse(token);
 
 				if (!argument)
-					return {}; // TODO: Continue to next argument
+					return {}; // TODO: Continue to next argument by checking for ','
 
 				arguments.push(*argument);
+
+				if (token.type() != TokenType::Comma)
+					break;
+
+				token.increment();
 			}
-			while (token.type() == TokenType::Comma);
 
 			if (token.type() != TokenType::RightParenthesis)
 			{

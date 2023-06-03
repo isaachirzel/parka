@@ -1,4 +1,5 @@
 #include "parka/file/Directory.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 #include "parka/util/Path.hpp"
@@ -37,10 +38,10 @@ namespace parka
 		return directory;
 	}
 
-	Optional<Directory> Directory::read(const String& path, usize pathOffset)
+	Directory Directory::read(const String& path, usize pathOffset)
 	{
 		if (!std::filesystem::exists(path))
-			return {};
+			Log::fatal("Directory `$` does not exist.", path);
 
 		auto directory = readSubdirectory(path, pathOffset);
 

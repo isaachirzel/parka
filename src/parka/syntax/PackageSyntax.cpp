@@ -17,32 +17,19 @@ namespace parka
 		// TODO: Add multithreading
 		print("Package `$` has $ subpackages and $ modules", name, directory.subdirectories().length(), directory.files().length());
 
-		auto modules = Array<ModuleSyntax>();
+		auto modules = Array<ModuleSyntax>(directory.files().length());
 		auto packageIds = Array<EntitySyntaxId>(directory.subdirectories().length());
 
 		for (const auto& file : directory.files())
-		{
-			auto mod = ModuleSyntax::parse(file);
-
-			modules.push(mod);
-		}
+			modules.push(ModuleSyntax::parse(file));
 
 		for (const auto& subdirectory : directory.subdirectories())
-		{
-			auto packageId = PackageSyntax::parse(subdirectory, subdirectory.name());
-
-			packageIds.push(packageId);
-		}
+			packageIds.push(PackageSyntax::parse(subdirectory, subdirectory.name()));
 
 		auto package = PackageSyntax(String(name), std::move(modules), std::move(packageIds));
 		auto id = EntitySyntaxId::create(std::move(package));
 
 		return id;
-	}
-
-	EntitySyntaxId PackageSyntax::parse(const Project& project)
-	{
-		return PackageSyntax::parse(project.srcDirectory(), "");
 	}
 
 	// bool PackageSyntax::validate()

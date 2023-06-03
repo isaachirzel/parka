@@ -48,23 +48,12 @@ namespace parka
 		return nullptr;
 	}
 
-	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent) :
+	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent) :
 	_packageId(packageId),
 	// TODO: pre-reserve symbol count _symbols(###),
-	_parent(parent)
+	_parent(&parent)
 	{
 		auto& package = packageId.getPackage();
-
-		if (parent == nullptr)
-		{
-			for (usize i = 0; i < Primitive::primitiveCount; ++i)
-			{
-				const auto& primitive = Primitive::primitives[i];
-				auto id = EntitySyntaxId::getFor(primitive);
-
-				_symbols.insert(primitive.identifier(), SymbolTableEntry(id, *this));
-			}
-		}
 
 		for (const auto& mod : package.modules())
 		{
@@ -77,30 +66,6 @@ namespace parka
 
 		for (const auto& packageId : package.packageIds())
 			declare(packageId);
-	}
-
-	const SymbolTable& PackageSymbolTable::getGlobalPackageSymbolTable() const
-	{
-		const auto *table = (SymbolTable*)this;
-		const auto *parent = _parent;
-
-		while (parent)
-		{
-			table = parent;
-			parent = table->parent();
-		}
-
-		// TODO: Confirm the table is the global symbol table and not just one with no parent
-
-		return *table;
-	}
-
-	Optional<EntitySyntaxId> PackageSymbolTable::resolveGlobal(const Identifier& identifier) const
-	{
-		auto& globalSymbols = getGlobalPackageSymbolTable(); 
-		auto global = globalSymbols.resolve(identifier);
-
-		return global;
 	}
 
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const Identifier& identifier) const

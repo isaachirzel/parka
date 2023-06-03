@@ -1,6 +1,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/syntax/AssignmentExpressionSyntax.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
+#include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
@@ -57,10 +58,21 @@ namespace parka
 
 	SyntaxTree SyntaxTree::parse(const Project& project)
 	{
-		auto globalPackageId = PackageSyntax::parse(project);
-		auto ast = SyntaxTree(globalPackageId);
+		const auto& directory = project.srcDirectory();
+		auto modules = Array<ModuleSyntax>(directory.files().length());
+		auto packageIds = Array<EntitySyntaxId>(directory.subdirectories().length());
 
-		return ast;
+		for (const auto& file : directory.files())
+			modules.push(ModuleSyntax::parse(file));
+
+		for (const auto& subdirectory : directory.subdirectories())
+			packageIds.push(PackageSyntax::parse(subdirectory, subdirectory.name()));
+		
+		// TODO: Parse external projects
+
+		auto result = SyntaxTree(std::move(modules), std::move(packageIds));
+
+		return result;
 	}
 
 	// bool SyntaxTree::validate()

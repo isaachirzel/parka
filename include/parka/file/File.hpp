@@ -16,6 +16,8 @@ namespace parka
 		Json
 	};
 
+	// TODO: Convert lineLengths to lineIndices
+
 	class File
 	{
 		String _path;

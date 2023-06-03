@@ -18,7 +18,6 @@ namespace parka
 				break;
 
 			case EntityType::Function:
-				assert(parent.symbolTableType() == SymbolTableType::Function);
 				new (&_function) FunctionSymbolTable(_entityId, parent);
 				break;
 
