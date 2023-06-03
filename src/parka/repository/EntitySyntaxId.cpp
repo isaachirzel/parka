@@ -27,7 +27,6 @@ namespace parka
 	const EntitySyntaxId EntitySyntaxId::charId(EntityType::Primitive, 12);
 	const EntitySyntaxId EntitySyntaxId::stringId(EntityType::Primitive, 13);
 
-	static const View<Primitive> primitives(Primitive::primitives, Primitive::primitiveCount);
 	static Pool<PackageSyntax> packages(1'000);
 	static Pool<StructSyntax> structs(100'000);
 	static Pool<FunctionSyntax> functions(1'000'000);
@@ -87,7 +86,7 @@ namespace parka
 
 	EntitySyntaxId EntitySyntaxId::getFor(const Primitive& primitve)
 	{
-		auto index = primitives.getIndex(&primitve);
+		auto index = Primitive::primitives.getIndex(&primitve);
 		auto id = EntitySyntaxId(EntityType::Primitive, index);
 
 		return id;

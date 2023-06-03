@@ -1,4 +1,5 @@
 #include "parka/syntax/KeywordSyntax.hpp"
+#include "parka/enum/KeywordType.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
@@ -7,12 +8,11 @@
 
 namespace parka
 {
-	Table<String, KeywordType> keywords(25);
+	const Table<String, KeywordType> KeywordSyntax::keywords = initKeywords();
 
-	void KeywordSyntax::initialize()
+	Table<String, KeywordType> KeywordSyntax::initKeywords()
 	{
-		if (keywords.count() > 0)
-			return;
+		auto keywords = Table<String, KeywordType>(25);
 			
 		keywords.insert("break", KeywordType::Break);
 		keywords.insert("case", KeywordType::Case);
@@ -39,6 +39,8 @@ namespace parka
 		keywords.insert("public", KeywordType::Public);
 		keywords.insert("var", KeywordType::Var);
 		keywords.insert("while", KeywordType::While);
+
+		return keywords;
 	}
 
 	KeywordType KeywordSyntax::getKeywordType(const Token& token)

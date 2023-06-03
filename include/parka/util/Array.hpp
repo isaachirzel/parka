@@ -155,6 +155,13 @@ namespace parka
 			return _data[index];
 		}
 
+		usize getIndex(const T *ptr) const
+		{
+			assert(ptr > _data);
+			assert(ptr - _data < (isize)_length);
+			return ptr - _data;
+		}
+		
 		T& back() { assert(_length > 0); return _data[_length - 1]; }
 		T& front() { assert(_length > 0); return _data[0]; }
 		T* begin() { return &_data[0]; }

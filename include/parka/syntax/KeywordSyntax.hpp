@@ -4,6 +4,7 @@
 #include "parka/enum/KeywordType.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/Token.hpp"
+#include "parka/util/Table.hpp"
 
 namespace parka
 {
@@ -17,9 +18,11 @@ namespace parka
 		_type(type)
 		{}
 
+		static Table<String, KeywordType> initKeywords();
+
 	public:
 
-		static void initialize();
+		static const Table<String, KeywordType> keywords;
 
 	public:
 

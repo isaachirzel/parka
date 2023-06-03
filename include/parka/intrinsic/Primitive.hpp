@@ -23,10 +23,11 @@ namespace parka
 		_size(size)
 		{}
 
+		static Array<Primitive> initPrimitives();
+
 	public:
 
-		static const Primitive primitives[];
-		static const usize primitiveCount;
+		static const Array<Primitive> primitives;
 
 	public:
 

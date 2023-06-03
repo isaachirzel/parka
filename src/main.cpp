@@ -1,30 +1,16 @@
-#include "parka/context/ContextTree.hpp"
-#include "parka/intrinsic/Primitive.hpp"
-#include "parka/log/Color.hpp"
-#include "parka/log/Link.hpp"
-#include "parka/log/Log.hpp"
 #include "parka/symbol/GlobalSymbolTable.hpp"
-#include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/Token.hpp"
-#include "parka/file/File.hpp"
-#include "parka/util/Path.hpp"
-#include "parka/util/Print.hpp"
-#include "parka/util/String.hpp"
-#include "parka/util/Table.hpp"
+#include "parka/syntax/KeywordSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Timer.hpp"
 
-#include <ios>
-#include <type_traits>
-
 using namespace parka;
+
+// TODO: Unit testing
 
 int main(int argc, const char *argv[])
 {
 	Log::note("This is log #$", 1);
-
-	KeywordSyntax::initialize();
 
 	if (argc != 2)
 		Log::fatal("Please supply only a path to the project root directory.");
