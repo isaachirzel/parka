@@ -35,7 +35,7 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream&, const ExpressionSyntaxId&)
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 
 	bool ExpressionSyntaxId::operator==(const ExpressionSyntaxId& other) const
@@ -60,7 +60,7 @@ namespace parka
 				break;
 		}
 
-		Log::fatal("Unable to get Statement of type: $", (int)_type);
+		log::fatal("Unable to get Statement of type: $", (int)_type);
 	}
 
 	const StatementSyntax *StatementSyntaxId::operator->() const

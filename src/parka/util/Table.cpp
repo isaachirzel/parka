@@ -59,7 +59,7 @@ namespace parka::table
 
 		usize maxCapacity = primeNumbers[primeNumberCount - 1];
 
-		Log::fatal("Unable to create table with capacity $. The maximum capacity is $.", minimumCapacity, maxCapacity);
+		log::fatal("Unable to create table with capacity $. The maximum capacity is $.", minimumCapacity, maxCapacity);
 	}
 }
 

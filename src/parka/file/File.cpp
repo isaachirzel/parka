@@ -14,18 +14,18 @@ namespace parka
 		FILE *file = fopen(filepath.c_str(), "r");
 		
 		if (!file)
-			Log::fatal("Failed to open file '$'.", filepath.c_str());
+			log::fatal("Failed to open file '$'.", filepath.c_str());
 
 		if (fseek(file, 0, SEEK_END))
-			Log::fatal("Failed to seek end of file '$'.", filepath.c_str());
+			log::fatal("Failed to seek end of file '$'.", filepath.c_str());
 
 		long size = ftell(file);
 
 		if (size == -1)
-			Log::fatal("File '$' is invalid size.", filepath.c_str());
+			log::fatal("File '$' is invalid size.", filepath.c_str());
 
 		if (fseek(file, 0, SEEK_SET))
-			Log::fatal("Failed to seek beginning of file '$'.", filepath.c_str());
+			log::fatal("Failed to seek beginning of file '$'.", filepath.c_str());
 
 		auto text = String();
 
@@ -46,7 +46,7 @@ namespace parka
 
 		if (!file)
 		{
-			Log::error("Failed to open file '$' for writing.", filepath);
+			log::error("Failed to open file '$' for writing.", filepath);
 			return false;
 		}
 
@@ -56,7 +56,7 @@ namespace parka
 
 		if (bytesWritten != content.length())
 		{
-			Log::error("Failed to write content to file '$'.", filepath);
+			log::error("Failed to write content to file '$'.", filepath);
 			return false;
 		}
 

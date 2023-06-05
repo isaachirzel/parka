@@ -1,15 +1,11 @@
 #include "parka/log/Color.hpp"
 #include "parka/util/Array.hpp"
+
+#include <cstring>
 #include <ios>
 
 namespace parka
 {
-	namespace color
-	{
-		bool isEnabled = true;
-		Array<Color> stack(8);
-	};
-
 	const Color Color::Cyan = "\033[96m";
 	const Color Color::Blue = "\033[94m";
 	const Color Color::Green = "\033[32m";
@@ -18,36 +14,44 @@ namespace parka
 	const Color Color::Yellow = "\033[93m";
 	const Color Color::Default = "\033[0m";
 	const Color Color::Reset = nullptr;
-
-	void Color::setEnabled(bool enabled)
-	{
-		color::isEnabled = enabled;
-	}
-
-	bool Color::isEnabled()
-	{
-		return color::isEnabled;
-	}
+	const int Color::xIndex = std::ios_base::xalloc();
+	
+	Color::Color(const char *code) :
+	_code(code)
+	{}
 
 	std::ostream& operator<<(std::ostream& out, const Color& color)
 	{
-		if (color.code() == nullptr)
-		{
-			color::stack.pop();
+		auto *&colorsRef = (Array<Color>*&)out.pword(Color::xIndex);
 
-			const auto& previousColor =  color::stack.length() > 0
-				? color::stack.back()
-				: Color::Default;
-			
-			out << previousColor.code();
-		}
-		else
-		{
-			color::stack.push(Color(color));
+		if (colorsRef == nullptr)
+			colorsRef = new Array<Color>(8);
 
+		auto *colors = colorsRef;
+
+		if (color)
+		{
+			colors->push(color);
 			out << color.code();
+
+			return out;
 		}
 
+		if (colors->length() == 0)
+		{
+			out << Color::Default.code();
+			
+			return out;
+		}
+
+		colors->pop();
+	
+		auto* code = colors->length() > 0
+			? colors->back().code()
+			: Color::Default.code();
+
+		out << code;
+		
 		return out;
 	}
 }

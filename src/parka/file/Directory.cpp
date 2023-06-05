@@ -41,7 +41,7 @@ namespace parka
 	Directory Directory::read(const String& path, usize pathOffset)
 	{
 		if (!std::filesystem::exists(path))
-			Log::fatal("Directory `$` does not exist.", path);
+			log::fatal("Directory `$` does not exist.", path);
 
 		auto directory = readSubdirectory(path, pathOffset);
 

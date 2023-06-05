@@ -9,7 +9,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::Identifier)
 		{
-			Log::parseError(token, "identifier");
+			log::parseError(token, "identifier");
 			return {};
 		}
 

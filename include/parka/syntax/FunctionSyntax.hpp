@@ -32,9 +32,11 @@ namespace parka
 
 		static Optional<EntitySyntaxId> parse(Token& token);
 		
+		const auto& prototype() const { return _prototype; }
+		const auto& body() const { return _body; }
+
 		const String& identifier() const { return _prototype.identifier().text(); }
 		EntityType type() const { return EntityType::Function; }
-		const auto& body() const { return _body; }
 	};
 }
 

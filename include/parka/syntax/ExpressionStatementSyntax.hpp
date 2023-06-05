@@ -26,6 +26,7 @@ namespace parka
 		static Optional<StatementSyntaxId> parse(Token& token);
 
 		const auto& expression() const { return _expression; }
+		StatementType statementType() const { return StatementType::Expression; }
 	};
 }
 

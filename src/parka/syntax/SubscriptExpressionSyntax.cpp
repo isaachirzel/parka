@@ -10,7 +10,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{
-			Log::parseError(token, "'['");
+			log::parseError(token, "'['");
 			return {};
 		}
 
@@ -26,7 +26,7 @@ namespace parka
 
 		if (token.type() != TokenType::RightBracket)
 		{
-			Log::parseError(token, "']' after subscript");
+			log::parseError(token, "']' after subscript");
 			return {};
 		}
 

@@ -9,13 +9,13 @@ namespace parka
 	{
 		if (token.type() != TokenType::CharacterLiteral)
 		{
-			Log::parseError(token, "character");
+			log::parseError(token, "character");
 			return {};
 		}
 
 		if (token.length() != 3)
 		{
-			Log::error(token, "character literals may only contain 1 character", nullptr);
+			log::error(token, "character literals may only contain 1 character", nullptr);
 			return {};
 		}
 

@@ -75,6 +75,7 @@ namespace parka
 		const EntitySyntax& operator*() const;
 		const EntitySyntax *operator->() const;
 
+		friend std::ostream& operator<<(std::ostream& out, const EntitySyntaxId& id);
 		friend class std::hash<EntitySyntaxId>;
 	};
 }

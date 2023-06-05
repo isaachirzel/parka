@@ -79,4 +79,40 @@ namespace parka
 				break;
 		}
 	}
+
+	const SymbolTable *SymbolTableEntry::getSymbolTable() const
+	{
+		switch (_type)
+		{
+			case EntityType::Function:
+				return &_function;
+
+			case EntityType::Package:
+				return &_package;
+
+			default:
+				break;
+		}
+
+		return nullptr;
+	}
+
+	// static std::ostream& scope(std::ostream& out, const SymbolTable *)
+	// {
+	// 	// if (symbolTable != nullptr)
+	// 	// 	scope(out, symbolTable->getParent()) << "::" << symbolTable->;
+
+	// 	return out;
+	// }
+
+	std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry)
+	{
+		// const auto *symbolTable = entry.getSymbolTable();
+
+		out << entry._entityId->identifier() << ": " << entry._entityId.type() << '\n';
+
+		// TODO: Implement outputting tables
+
+		return out;
+	}
 }

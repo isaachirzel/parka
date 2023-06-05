@@ -16,7 +16,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			Log::parseError(token, "'(' after function name");
+			log::parseError(token, "'(' after function name");
 			return {};
 		}
 
@@ -51,7 +51,7 @@ namespace parka
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			Log::parseError(token, "')'", "Invalid tokens in parameter list");
+			log::parseError(token, "')'", "Invalid tokens in parameter list");
 			return {};
 		}
 

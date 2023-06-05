@@ -6,6 +6,6 @@ namespace parka
 {
 	void PackageContext::validate(Array<EntityContextId>&, const EntitySyntaxId&)
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 }

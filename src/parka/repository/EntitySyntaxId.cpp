@@ -166,7 +166,7 @@ namespace parka
 				break;
 		}
 		
-		Log::fatal("Unable to get entity of type: $", _type);
+		log::fatal("Unable to get entity of type: $", _type);
 	}
 
 	const EntitySyntax *EntitySyntaxId::operator->() const

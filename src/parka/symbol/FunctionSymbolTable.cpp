@@ -1,49 +1,59 @@
 #include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/enum/ExpressionType.hpp"
+#include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	FunctionSymbolTable::FunctionSymbolTable(FunctionSymbolTable&& other) :
-	_functionId(std::move(other._functionId)),
-	_parent(other._parent),
-	_symbols(std::move(other._symbols)),
-	_blocks(std::move(other._blocks))
+	FunctionSymbolTable::FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
+	_functionId(functionId),
+	_parent(&parent),
+	_symbols(16),
+	_blockIndexes(8)
+	{}
+
+	void FunctionSymbolTable::declare(const EntitySyntaxId& entityId)
 	{
-		for (auto& tuple : _symbols)
+		const auto& identifier = entityId->identifier();
+		auto blockIndex = _blockIndexes.length() > 0
+			? _blockIndexes.back()
+			: 0;
+		
+		for (usize i = _symbols.length(); i-- > blockIndex;)
 		{
-			auto& entry = tuple.value();
+			const auto& prevId = _symbols[i];
 
-			entry.setParent(*this);
+			if (identifier == prevId->identifier())
+			{
+				log::error("Value `$` has previously been delcared in this scope.", identifier);
+				// TODO: Maybe insert it anyway so that references to it will show the correct error
+				return;
+			}
 		}
-
-		for (auto& _block : _blocks)
-			_block._parent = this;
-	}
-
-	bool FunctionSymbolTable::declare(const Identifier&)
-	{
-		Log::notImplemented(here());
+			
+		_symbols.push(entityId);
 	}
 
 	Optional<EntitySyntaxId> FunctionSymbolTable::resolve(const Identifier&) const
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 
 	Optional<EntitySyntaxId> FunctionSymbolTable::resolve(const QualifiedIdentifier&) const
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 	
 	void FunctionSymbolTable::addBlock(const ExpressionSyntaxId&)
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 
 	void FunctionSymbolTable::popBlock()
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 }

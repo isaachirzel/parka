@@ -32,7 +32,7 @@ namespace parka
 				break;
 		}
 		
-		Log::parseError(token, "literal");
+		log::parseError(token, "literal");
 		return {};
 	}
 }

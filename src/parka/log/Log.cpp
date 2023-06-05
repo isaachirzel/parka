@@ -1,37 +1,35 @@
 #include "parka/log/Log.hpp"
+#include "parka/log/ArenaStreamBuffer.hpp"
 #include "parka/log/LogEntry.hpp"
+#include "parka/util/Arena.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Pool.hpp"
 #include "parka/util/Table.hpp"
+#include <ostream>
 
-#include <iostream>
-
-namespace parka
+namespace parka::log
 {
-	namespace log
-	{
-		usize noteCount = 0;
-		usize successCount = 0;
-		usize warningCount = 0;
-		usize errorCount = 0;
-		usize fatalCount = 0;
-		Pool<LogEntry> entries(1'000'000);
+	usize noteCount = 0;
+	usize successCount = 0;
+	usize warningCount = 0;
+	usize errorCount = 0;
+	usize fatalCount = 0;
+	Pool<LogEntry> entries(1'000'000);
+	Table<usize, usize> entryTable;
 
-		Table<usize, usize> entryTable;
-	}
 	// TODO: Organize by files
 	// TODO: Thread safety
 	
-	void Log::addEntry(LogEntry&& entry)
+	void addEntry(LogEntry&& entry)
 	{
-		switch (entry._type)
+		switch (entry.type())
 		{
-			case LogEntryType::Note:
-				log::noteCount += 1;
+			case LogEntryType::Success:
+				log::successCount  += 1;
 				break;
 
-			case LogEntryType::Success:
-				log::successCount += 1;
+			case LogEntryType::Note:
+				log::noteCount += 1;
 				break;
 
 			case LogEntryType::Warning:
@@ -47,40 +45,63 @@ namespace parka
 				break;
 		}
 
-		auto filePtr = entry._highlight
-			? (usize)&entry._highlight->position().file()
-			: 0;
-		auto entryIndex = log::entries.add(std::move(entry));
+		// TODO: Sort the entries by using :
+		//entry.highlight()->position().file().path();
+		// as key so that when validation of that file is complete,
+		// it can dump them into the console
 
-		log::entryTable.insert(filePtr, entryIndex);
+		// auto filePtr = entry.highlight()
+		// 	? (usize)&entry.highlight()->position().file()
+		// 	: 0; // No file association
+		log::entries.add(std::move(entry));
+
+		// log::entryTable.insert(filePtr, entryIndex);
 	}
 
-	void Log::parseError(const Token& token, const char *expected, const char *message)
+	void parseError(const Token& token, const char *expected, const char *message)
 	{
 		assert(expected != nullptr);
 		assert(message != nullptr);
 
-		Log::error(token, "Expected $, found $. $", expected, token.type(), message);
+		log::error(token, "Expected $, found $. $", expected, token.type(), message);
 	}
 
-	void Log::notImplemented(SourceLocation &&location)
+	void outputEntries()
 	{
-		addEntry(LogEntry(LogEntryType::Fatal, parka::format("$ is not implemented.", location)));
-		Log::outputEntries();
-		exit(1);
-	}
-
-	void Log::outputEntries()
-	{
-		for (const auto& entry : log::entries)
+		for (const auto& entry : entries)
 		{
 			std::cout << entry;
 		}
 	}
 
-	usize Log::getNoteCount() { return log::noteCount; }
-	usize Log::getSuccessCount() { return log::successCount; }
-	usize Log::getWarningCount() { return log::warningCount; }
-	usize Log::getErrorCount() { return log::errorCount; }
-	usize Log::getFatalCount() { return log::fatalCount; }
+	void notImplemented(SourceLocation&& location)
+	{
+		addEntry(LogEntry(LogEntryType::Fatal, parka::format("$ is not implemented.", location)));
+		outputEntries();
+		exit(1);
+	}
+
+	// Arena generate()
+	// {
+	// 	auto buffer = ArenaStreamBuffer(1 << 30); // 1 GB
+	// 	auto stream = std::ostream(&buffer);
+	// 	Array<Color*> colors;
+	// 	usize indent = 0;
+	// 	usize lineNumber = 0;
+
+	// 	// TODO: Sort entries
+	// 	for (const auto& entry : log::entries)
+	// 	{
+	// 		stream << entry;
+	// 	}
+
+
+	// 	return buffer;
+	// }
+
+	usize getNoteCount() { return noteCount; }
+	usize getSuccessCount() { return successCount; }
+	usize getWarningCount() { return warningCount; }
+	usize getErrorCount() { return errorCount; }
+	usize getFatalCount() { return fatalCount; }
 }

@@ -28,7 +28,7 @@ namespace parka
 
 		if (token.type() != TokenType::Identifier)
 		{
-			Log::parseError(token, "member name");
+			log::parseError(token, "member name");
 			return {};
 		}
 
@@ -38,7 +38,7 @@ namespace parka
 
 		if (token.type() != TokenType::Colon)
 		{
-			Log::parseError(token, "':''", "Type annotations are required for member declarations.");
+			log::parseError(token, "':''", "Type annotations are required for member declarations.");
 			return {};
 		}
 		

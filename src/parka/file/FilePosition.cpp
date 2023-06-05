@@ -27,8 +27,8 @@ namespace parka
 	}
 
 	std::ostream& operator<<(std::ostream& out, const FilePosition& position)
-	{
-		out << Color::Yellow << position._file.path() << ':' << position._line << ':' << position._col << Color::Reset;
+	{		
+		out << Color::Yellow << position.file().path() << ':' << position.line() << ':' << position.col() << Color::Reset;
 
 		return out;
 	}

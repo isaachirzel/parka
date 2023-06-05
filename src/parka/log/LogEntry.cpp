@@ -33,7 +33,7 @@ namespace parka
 				break;
 		}
 
-		Log::fatal("Unable to get Color for LogEntryType %d", (int)type);
+		log::fatal("Unable to get Color for LogEntryType %d", (int)type);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const LogEntry& entry)

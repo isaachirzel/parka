@@ -84,7 +84,7 @@ namespace parka
 
 	// 	if (!rightType->canConvertTo(*leftType))
 	// 	{
-	// 		Log::error("A value of type $ cannot be added to $", *rightType, *leftType);
+	// 		log::error("A value of type $ cannot be added to $", *rightType, *leftType);
 	// 		return {};
 	// 	}
 		

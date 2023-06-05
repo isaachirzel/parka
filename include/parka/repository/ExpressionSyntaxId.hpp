@@ -76,6 +76,11 @@ namespace parka
 		static ExpressionSyntaxId create(IntegerLiteralSyntax&&);
 		static ExpressionSyntaxId create(StringLiteralSyntax&&);
 
+		const BlockSyntax& getBlock() const;
+
+		const auto& type() const { return _type; }
+		const auto& index() const { return _index; }
+
 		ExpressionSyntaxId& operator=(ExpressionSyntaxId&&) = default;
 		ExpressionSyntaxId& operator=(const ExpressionSyntaxId&) = default;
 		friend std::ostream& operator<<(std::ostream& out, const ExpressionSyntaxId& id);

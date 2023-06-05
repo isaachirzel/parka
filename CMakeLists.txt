@@ -42,7 +42,6 @@ foreach(TARGET ${TARGETS})
 	set_target_properties(${TARGET} PROPERTIES CXX_STANDARD 17)
 	target_include_directories(${TARGET} PRIVATE ${INCLUDE_DIRS})
 	target_precompile_headers(${TARGET} PRIVATE
-		"<iostream>"
 		"<stdexcept>"
 		"<utility>"
 		"<ostream>"

@@ -31,11 +31,11 @@ namespace parka
 
 		void setParent(const SymbolTable& parent);
 
-		// TODO: Safety asserts
 		const auto& entityId() const {  return _entityId; }
-		const auto& package() const { return _package; }
-		const auto& function() const { return _function; }
+		const SymbolTable *getSymbolTable() const;
 		const auto& type() const { return _type; }
+
+		friend std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry);
 	};
 }
 

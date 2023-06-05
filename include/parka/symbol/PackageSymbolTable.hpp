@@ -16,8 +16,6 @@ namespace parka
 {
 	class PackageSymbolTable : public SymbolTable
 	{
-		friend class SymbolTableEntry;
-
 		EntitySyntaxId _packageId;
 		Table<String, SymbolTableEntry> _symbols;
 		const SymbolTable *_parent;
@@ -36,7 +34,9 @@ namespace parka
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
-		const SymbolTable *parent() const { return _parent; }
+		const SymbolTable *getParent() const { return _parent; }
+
+		friend class SymbolTableEntry;
 	};
 }
 

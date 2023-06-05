@@ -7,76 +7,68 @@
 #include "parka/util/Print.hpp"
 #include "parka/util/SourceLocation.hpp"
 
-namespace parka
+
+/*
+	Colors
+	Indent
+	Line number for margins
+*/
+
+
+namespace parka::log
 {
-	struct Log
+	extern void addEntry(LogEntry&& entry);
+
+	template <typename ...Arg>
+	void note(const char *fmt, Arg const&... args)
 	{
-	private:
+		return addEntry(LogEntry(LogEntryType::Note, parka::format(fmt, args...)));
+	}
 
-		static void addEntry(LogEntry&& entry);
+	template <typename ...Arg>
+	void note(Highlight&& token, const char *fmt, Arg const&... args)
+	{
+		return addEntry(LogEntry(LogEntryType::Note, format(fmt, args...), token));
+	}
 
-	public:
+	template <typename ...Arg>
+	void error(const char *format, Arg const&... args)
+	{
+		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...)));
+	}
 
-		template <typename ...Arg>
-		static void note(const char *fmt, Arg const&... args)
-		{
-			return addEntry(LogEntry(LogEntryType::Note, parka::format(fmt, args...)));
-		}
+	template <typename ...Arg>
+	void error(Highlight&& highlight, const char *format, Arg const&... args)
+	{
+		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), highlight));
+	}
 
-		template <typename ...Arg>
-		static void note(Highlight&& token, const char *fmt, Arg const&... args)
-		{
-			return addEntry(LogEntry(LogEntryType::Note, format(fmt, args...), token));
-		}
+	void parseError(const Token& token, const char *expected, const char *message = "");
 
-		template <typename ...Arg>
-		static void error(const char *format, Arg const&... args)
-		{
-			return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...)));
-		}
+	template <typename ...Arg>
+	void success(const char *format, Arg const&...args)
+	{
+		return addEntry(LogEntry(LogEntryType::Success, parka::format(format, args...)));
+	}
 
-		template <typename ...Arg>
-		static void error(Highlight&& highlight, const char *format, Arg const&... args)
-		{
-			return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), highlight));
-		}
+	template <typename ...Arg>
+	[[ noreturn ]]
+	void fatal(const char *format, Arg const&...args)
+	{
+		addEntry(LogEntry(LogEntryType::Fatal, parka::format(format, args...)));
+		// FIXME: Output entries
+		// log::outputEntries();
+		exit(1);
+	}
 
-		static void parseError(const Token& token, const char *expected, const char *message = "");
+	[[ noreturn ]]
+	void notImplemented(SourceLocation&& location);
 
-		template <typename ...Arg>
-		static void success(const char *format, Arg const&...args)
-		{
-			return addEntry(LogEntry(LogEntryType::Success, parka::format(format, args...)));
-		}
-
-		template <typename ...Arg>
-		[[ noreturn ]]
-		static void fatal(const char *format, Arg const&...args)
-		{
-			addEntry(LogEntry(LogEntryType::Fatal, parka::format(format, args...)));
-			Log::outputEntries();
-			exit(1);
-		}
-
-		[[ noreturn ]]
-		static void notImplemented(SourceLocation&& location);
-
-		static void outputEntries();
-
-		// static void addNote(Token& token, const char *format);
-		// static void addWarning(const char *format);
-		// static void addWarning(Token& token, const char *format);
-		// static void addError(const char *format);
-		// static void addError(Token& token, const char *format);
-
-		static bool isColorEnabled();
-
-		static usize getNoteCount();
-		static usize getSuccessCount();
-		static usize getWarningCount();
-		static usize getErrorCount();
-		static usize getFatalCount();
-	};
+	usize getNoteCount();
+	usize getSuccessCount();
+	usize getWarningCount();
+	usize getErrorCount();
+	usize getFatalCount();
 }
 
 #endif

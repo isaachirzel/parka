@@ -1,4 +1,5 @@
 #include "parka/log/Log.hpp"
+#include "parka/repository/ExpressionSyntaxId.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/AssignmentExpressionSyntax.hpp"
@@ -295,6 +296,13 @@ namespace parka
 				break;
 		}
 
-		Log::fatal("Unable to get ExpressionSyntax of type: $", (int)_type);
+		log::fatal("Unable to get ExpressionSyntax of type: $", (int)_type);
+	}
+
+	const BlockSyntax& ExpressionSyntaxId::getBlock() const
+	{
+		assert(_type == ExpressionType::Block);
+		
+		return blockExpressions[_index];
 	}
 }

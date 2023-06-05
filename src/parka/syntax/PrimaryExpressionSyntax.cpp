@@ -19,7 +19,7 @@ namespace parka
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			Log::parseError(token, "expected ')' after primary sub-expression");
+			log::parseError(token, "expected ')' after primary sub-expression");
 			return {};
 		}
 

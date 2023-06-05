@@ -12,11 +12,11 @@ namespace parka
 		if (!keyword)
 			return {};
 
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 
 	bool validate(const EntitySyntaxId&)
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 	}
 }

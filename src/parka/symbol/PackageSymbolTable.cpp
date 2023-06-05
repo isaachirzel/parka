@@ -1,14 +1,12 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/intrinsic/Primitive.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Print.hpp"
-#include "parka/util/String.hpp"
 
 namespace parka
 {
@@ -20,7 +18,7 @@ namespace parka
 		auto result = _symbols.insert(identifier, std::move(entry));
 
 		if (!result)
-			Log::error("Name `$` is already declared in this package.", identifier);
+			log::error("Name `$` is already declared in this package.", identifier);
 
 		return result;
 	}
@@ -39,9 +37,9 @@ namespace parka
 			{
 				auto& package = *_packageId;
 				// TODO: Output package symbol, entity type and reference highlight
-				Log::error("Unable to find `$` in package `$`.", part.text(), package.identifier());
+				log::error("Unable to find `$` in package `$`.", part.text(), package.identifier());
 				
-				return {};
+				return nullptr;
 			}
 		}
 
@@ -50,7 +48,7 @@ namespace parka
 
 	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent) :
 	_packageId(packageId),
-	// TODO: pre-reserve symbol count _symbols(###),
+	_symbols(),// TODO: pre-reserve symbol count
 	_parent(&parent)
 	{
 		auto& package = packageId.getPackage();
@@ -82,6 +80,7 @@ namespace parka
 
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
 	{
+		// TODO: Make this logic work
 		const auto *entry = findEntry(identifier, 0);
 
 		if (!entry)

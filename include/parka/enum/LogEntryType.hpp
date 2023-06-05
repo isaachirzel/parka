@@ -5,8 +5,8 @@ namespace parka
 {
 	enum class LogEntryType
 	{
-		Note,
 		Success,
+		Note,
 		Warning,
 		Error,
 		Fatal

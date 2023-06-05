@@ -28,7 +28,7 @@ namespace parka
 
 		if (keyword != KeywordType::Else)
 		{
-			Log::error(token, "else case for conditional expression");
+			log::error(token, "else case for conditional expression");
 			return {};
 		}
 

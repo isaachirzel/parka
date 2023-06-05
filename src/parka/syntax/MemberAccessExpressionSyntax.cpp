@@ -10,7 +10,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::Dot)
 		{
-			Log::parseError(token, "'.'");
+			log::parseError(token, "'.'");
 			return {};
 		}
 
@@ -18,7 +18,7 @@ namespace parka
 		
 		if (token.type() != TokenType::Identifier)
 		{
-			Log::parseError(token, "member, method, or property name");
+			log::parseError(token, "member, method, or property name");
 			return {};
 		}
 

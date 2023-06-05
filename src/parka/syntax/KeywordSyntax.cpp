@@ -63,7 +63,7 @@ namespace parka
 
 		if (type != KeywordType::True && type != KeywordType::False)
 		{
-			Log::parseError(token, "`true` or `false`");
+			log::parseError(token, "`true` or `false`");
 			return {};
 		}
 
@@ -80,7 +80,7 @@ namespace parka
 
 		if (type != KeywordType::StructSyntax)
 		{
-			Log::parseError(token, "`struct` keyword");
+			log::parseError(token, "`struct` keyword");
 			return {};
 		}
 
@@ -97,7 +97,7 @@ namespace parka
 
 		if (type != KeywordType::Var)
 		{
-			Log::parseError(token, "`var` keyword");
+			log::parseError(token, "`var` keyword");
 			return {};
 		}
 
@@ -114,7 +114,7 @@ namespace parka
 
 		if (type != KeywordType::Function)
 		{
-			Log::parseError(token, "`function`");
+			log::parseError(token, "`function`");
 			return {};
 		}
 
@@ -131,7 +131,7 @@ namespace parka
 
 		if (type != KeywordType::Operator)
 		{
-			Log::parseError(token, "`operator`");
+			log::parseError(token, "`operator`");
 			return {};
 		}
 

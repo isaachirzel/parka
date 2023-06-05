@@ -32,6 +32,7 @@ namespace parka
 		bool hasValue() const { return _value; }
 		const auto& value() const { return _value; }
 		const auto& type() const { return _type; }
+		StatementType statementType() const { return StatementType::Jump; }
 	};
 }
 

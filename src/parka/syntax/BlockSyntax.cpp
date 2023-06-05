@@ -11,7 +11,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
-			Log::parseError(token, "'{' before block");
+			log::parseError(token, "'{' before block");
 
 			return {};
 		}

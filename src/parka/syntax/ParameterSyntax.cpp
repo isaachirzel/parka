@@ -20,7 +20,7 @@ namespace parka
 
 		if (token.type() != TokenType::Colon)
 		{
-			Log::parseError(token, "':'", "Parameters require a type annotation.");
+			log::parseError(token, "':'", "Parameters require a type annotation.");
 			return {};
 		}
 

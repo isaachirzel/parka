@@ -1,4 +1,6 @@
 #include "parka/log/Highlight.hpp"
+#include "parka/log/Log.hpp"
+#include "parka/util/SourceLocation.hpp"
 
 #include <sstream>
 
@@ -71,11 +73,15 @@ namespace parka
 		return text + " | ";
 	}
 
-	std::ostream& operator<<(std::ostream& out, const Highlight& highlight)
+	std::ostream& operator<<(std::ostream& out, const Highlight&)
 	{
-		const auto* ptr = highlight._position.ptr();
+		log::notImplemented(here());
 
-		out.write(ptr, highlight._length);
+		// const auto* ptr = highlight._position.ptr();
+		// out.write(ptr, highlight._length);
+
+		// return out;
+
 		// // TODO: Handle multiline tokens
 		// const auto& position = highlight._position;
 		// const auto& file = position.file();

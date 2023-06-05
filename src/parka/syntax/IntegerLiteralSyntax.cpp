@@ -12,7 +12,7 @@ namespace parka
 
 		if (token.type() != TokenType::IntegerLiteralSyntax)
 		{
-			Log::parseError(token, "integer");
+			log::parseError(token, "integer");
 			return {};
 		}
 
@@ -80,7 +80,7 @@ namespace parka
 	// 			return Type::i64Type;
 
 	// 		default:
-	// 			Log::fatal("Unable to get Type of IntegerLiteralSyntax with size: $", _bytes);
+	// 			log::fatal("Unable to get Type of IntegerLiteralSyntax with size: $", _bytes);
 	// 	}
 	// }
 }

@@ -18,7 +18,7 @@ namespace parka
 
 		if (token.type() != TokenType::Assign)
 		{
-			Log::parseError(token, "expected '=' after declaration");
+			log::parseError(token, "expected '=' after declaration");
 			return {};
 		}
 
@@ -31,7 +31,7 @@ namespace parka
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			Log::parseError(token, "';'", "DeclarationStatementSyntax statements need to be ended with a ';'.");
+			log::parseError(token, "';'", "DeclarationStatementSyntax statements need to be ended with a ';'.");
 			return {};
 		}
 
@@ -74,7 +74,7 @@ namespace parka
 	// 	{
 	// 		if (!valueType->canConvertTo(*variableType))
 	// 		{
-	// 			Log::error("Unable to initialize $ with $", *variableType, *valueType);
+	// 			log::error("Unable to initialize $ with $", *variableType, *valueType);
 	// 			return false;
 	// 		}
 	// 	}

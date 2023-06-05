@@ -25,7 +25,7 @@ namespace parka
 		if (token.type() != TokenType::LeftBrace)
 		{
 			// TODO: 
-			Log::parseError(token, "'{' before member list", "Bodyless structs are not allowed.");
+			log::parseError(token, "'{' before member list", "Bodyless structs are not allowed.");
 			return {};
 		}
 
@@ -55,7 +55,7 @@ namespace parka
 
 			if (token.type() != TokenType::RightBrace)
 			{
-				Log::parseError(token, "'}' after struct body");
+				log::parseError(token, "'}' after struct body");
 				return {};
 			}
 		}
@@ -84,8 +84,8 @@ namespace parka
 	// 			{
 	// 				success = false;
 					
-	// 				Log::errorprintError(member.name(), "A member with same name is already declared in this struct.");
-	// 				Log::parseError(previous.name(), "Previous delcaration here.");
+	// 				log::errorprintError(member.name(), "A member with same name is already declared in this struct.");
+	// 				log::parseError(previous.name(), "Previous delcaration here.");
 
 	// 				break;
 	// 			}

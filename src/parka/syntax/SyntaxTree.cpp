@@ -17,7 +17,7 @@ namespace parka
 {
 	const MemberSyntax *getRecursiveMember(const Array<MemberSyntax>&, EntitySyntaxId /*parentId*/)
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 		// for (const auto& member : members)
 		// {
 		// 	// TODO: Check if types are referencing the base type or an indirection to it
@@ -49,7 +49,7 @@ namespace parka
 
 		if (recursiveMember)
 		{
-			Log::error(recursiveMember->name(), "DeclarationStatementSyntax of member creates recursive type.");
+			log::error(recursiveMember->name(), "DeclarationStatementSyntax of member creates recursive type.");
 			return false;
 		}
 

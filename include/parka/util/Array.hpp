@@ -79,7 +79,7 @@ namespace parka
 			_capacity = newCapacity;
 		}
 
-		template <typename U = T, typename = std::enable_if_t<std::is_fundamental_v<U>>>
+		template <typename U = T, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
 		T& push(const T& value)
 		{
 			if (_length >= _capacity)

@@ -16,11 +16,16 @@ namespace parka
 		Color _color;
 		LogEntryType _type;
 
+		static Color getColor(LogEntryType type);
+
+	public:
+
 		LogEntry(LogEntryType type, String&& message) :
 		_message(std::move(message)),
 		_color(getColor(type)),
 		_type(type)
 		{}
+
 		LogEntry(LogEntryType type, String&& message, const Highlight& highlight) :
 		_message(std::move(message)),
 		_highlight(highlight),
@@ -28,13 +33,12 @@ namespace parka
 		_type(type)
 		{}
 
-		static Color getColor(LogEntryType type);
-
-	public:
-
+		const auto& message() const { return _message; }
+		const auto& highlight() const { return _highlight; }
+		const auto& color() const { return _color; }
+		const auto& type() const { return _type; }
+		
 		friend std::ostream& operator<<(std::ostream& out, const LogEntry& entry);
-
-		friend struct Log;
 	};
 }
 

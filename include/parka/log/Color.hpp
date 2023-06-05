@@ -1,6 +1,8 @@
 #ifndef PARKA_LOG_COLOR_HPP
 #define PARKA_LOG_COLOR_HPP
 
+#include "parka/util/Common.hpp"
+
 #include <ostream>
 
 namespace parka
@@ -10,9 +12,7 @@ namespace parka
 
 		const char *_code;
 
-		Color(const char *code) :
-		_code(code)
-		{}
+		Color(const char *code);
 
 	public:
 
@@ -24,16 +24,12 @@ namespace parka
 		static const Color Yellow;
 		static const Color Default;
 		static const Color Reset;
-
-		static void setEnabled(bool enabled);
-		static bool isEnabled();
+		static const int xIndex;
 
 	public:
 
-		Color(Color&&) = default;
-		Color(const Color&) = default;
-
 		const auto *code() const { return _code; }
+		operator bool() const { return !!_code; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Color& color);
 	};

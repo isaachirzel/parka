@@ -29,7 +29,7 @@ namespace parka
 				return JumpType::Yield;
 
 			default:
-				Log::parseError(token, "`return`, `break`, `continue` or `yield`");
+				log::parseError(token, "`return`, `break`, `continue` or `yield`");
 				return {};
 		}
 	}
@@ -53,11 +53,11 @@ namespace parka
 			{
 				case JumpType::Continue:
 					// TODO: Implement continuing on labels
-					Log::error(token, "Continue statements cannot have a value.");
+					log::error(token, "Continue statements cannot have a value.");
 					return {};
 				
 				case JumpType::Break:
-					Log::error(token, "Break statements cannot have a value.");
+					log::error(token, "Break statements cannot have a value.");
 					return {};
 
 				default:
@@ -71,7 +71,7 @@ namespace parka
 			
 			if (token.type() != TokenType::Semicolon)
 			{
-				Log::parseError(token, "';' after jump statement");
+				log::parseError(token, "';' after jump statement");
 				return {};
 			}
 		}
@@ -118,7 +118,7 @@ namespace parka
 	// 	{
 	// 		char *returnTypeName = typeGetName(returnType);
 
-	// 		Log::error("Return value is not compatible with return type `$`.", returnTypeName);
+	// 		log::error("Return value is not compatible with return type `$`.", returnTypeName);
 	// 		deallocate(returnTypeName);
 
 	// 		return false;
@@ -133,7 +133,7 @@ namespace parka
 
 	// 	if (currentBlock == nullptr)
 	// 	{
-	// 		Log::error(&node->token, "Yield statement must be within a block.");
+	// 		log::error(&node->token, "Yield statement must be within a block.");
 
 	// 		return false;
 	// 	}
@@ -159,7 +159,7 @@ namespace parka
 	// 		auto blockTypeName = blockReturnType.getName();
 	// 		// TODO: get type token
 
-	// 		Log::error("Yield value is not compatible with type of block expression `$`.", blockTypeName);
+	// 		log::error("Yield value is not compatible with type of block expression `$`.", blockTypeName);
 
 	// 		return false;
 	// 	}

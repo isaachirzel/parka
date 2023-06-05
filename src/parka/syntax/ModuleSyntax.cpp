@@ -59,7 +59,7 @@ namespace parka
 
 			if (token.type() != TokenType::EndOfFile)
 			{
-				Log::parseError(token, "type or function definition");
+				log::parseError(token, "type or function definition");
 			}
 
 			break;

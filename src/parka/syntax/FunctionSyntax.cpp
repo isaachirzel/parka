@@ -25,7 +25,7 @@ namespace parka
 
 			if (token.type() != TokenType::Semicolon)
 			{
-				Log::parseError(token, "';'", "Inline function bodies need to be ended with ';'.");
+				log::parseError(token, "';'", "Inline function bodies need to be ended with ';'.");
 				return {};
 			}
 
@@ -37,7 +37,7 @@ namespace parka
 		if (token.type() == TokenType::LeftBrace)
 			return BlockSyntax::parse(token);
 		
-		Log::parseError(token, "function body", "Functions require a body.");
+		log::parseError(token, "function body", "Functions require a body.");
 
 		return {};
 	}
@@ -82,7 +82,7 @@ namespace parka
 	// 		{
 	// 			// TODO: Show previous declaration
 	// 			// TODO: Token highlights
-	// 			Log::error("`$` is already declared in this block.", identifier);
+	// 			log::error("`$` is already declared in this block.", identifier);
 
 	// 			return false;
 	// 		}
@@ -115,7 +115,7 @@ namespace parka
 
 	// Type FunctionSyntax::getReturnType() const
 	// {
-	// 	Log::notImplemented(here());
+	// 	log::notImplemented(here());
 	// 	// auto returnType = _returnType
 	// 	// 	? _returnType->type()
 	// 	// 	: voidType;
@@ -141,7 +141,7 @@ namespace parka
 	// 	auto result = package.findGlobal(identifier);
 
 	// 	if (!result)
-	// 		Log::erroridentifier.token(), "Unable to find $ in this scope.", identifier);
+	// 		log::erroridentifier.token(), "Unable to find $ in this scope.", identifier);
 
 	// 	return result;
 	// }

@@ -1,9 +1,8 @@
 #ifndef PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 
-#include "parka/symbol/BlockSymbolTable.hpp"
+#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/Identifier.hpp"
-#include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/util/Array.hpp"
@@ -19,19 +18,18 @@ namespace parka
 	{
 		EntitySyntaxId _functionId;
 		const SymbolTable *_parent;
-		Table<String, SymbolTableEntry> _symbols;
-		Array<BlockSymbolTable> _blocks;
+		Array<EntitySyntaxId> _symbols;
+		Array<usize> _blockIndexes;
 
-		bool declare(const Identifier& identifier);
+	private:
+
+		void declare(const EntitySyntaxId& entityId);
 
 	public:
 
-		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
-		_functionId(functionId),
-		_parent(&parent)
-		{}
+		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent);
 
-		FunctionSymbolTable(FunctionSymbolTable&&);
+		FunctionSymbolTable(FunctionSymbolTable&&) = default;
 		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
 
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
@@ -41,7 +39,7 @@ namespace parka
 		void popBlock();
 		
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
-		const SymbolTable *parent() const { return _parent; }
+		const SymbolTable *getParent() const { return _parent; }
 
 		friend class SymbolTableEntry;
 	};

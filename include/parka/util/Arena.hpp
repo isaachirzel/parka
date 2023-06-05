@@ -7,10 +7,9 @@ namespace parka
 {
 	class Arena
 	{
-		const usize _pageSize;
-		usize _reservedPageCount;
-		usize _committedPageCount;
-		usize _usedByteCount;
+		usize _maxCapacity;
+		usize _capacity;
+		usize _length;
 		byte *_data;
 
 	public:
@@ -20,19 +19,19 @@ namespace parka
 		Arena(const Arena&) = delete;
 		~Arena();
 
-		void *allocate(const usize length);
+		byte *allocate(const usize length);
 		void reserve(const usize length);
 		usize getOffset(const byte * const ptr) const;
 
 		auto *data() { return _data; }
 		const auto *data() const { return _data; }
-		const auto& pageCount() const { return _reservedPageCount; }
-		const auto& committedPages() const { return _committedPageCount; }
-		const auto& bytesUsed() const { return _usedByteCount; }
+		const auto& maxCapacity() const { return _maxCapacity; }
+		const auto& capacity() const { return _capacity; }
+		const auto& length() const { return _length; }
 		auto *begin() { return _data; }
-		auto *end() { return _data + _usedByteCount; }
+		auto *end() { return _data + _length; }
 		const auto *begin() const { return _data; }
-		const auto *end() const { return _data + _usedByteCount; }
+		const auto *end() const { return _data + _length; }
 	};
 }
 

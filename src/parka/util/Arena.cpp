@@ -7,6 +7,7 @@
 #include <cassert>
 #include <exception>
 #include <new>
+#include <stdexcept>
 #include <unistd.h>
 
 // TODO: Cross platform includes
@@ -14,7 +15,7 @@
 
 namespace parka
 {
-	usize getPageSize()
+	static usize getPageSize()
 	{
 		// TODO: Make getPageSize() platform
 		static usize pageSize;
@@ -25,87 +26,78 @@ namespace parka
 		return pageSize;
 	}
 
-	usize getReservedPageCount(usize minBytes, usize pageSize)
+	static usize getPageAlignedLength(const usize length)
 	{
-		const bool hasPageRemainder = minBytes % pageSize > 0;
-		usize pageCount = minBytes / pageSize;
+		const usize pageSize = getPageSize();
+		const bool hasPageRemainder = length % pageSize > 0;
+		const usize pageAlignedLength = length / pageSize + hasPageRemainder * pageSize;
 
-		if (hasPageRemainder)
-			pageCount += 1;
-
-		return pageCount;
+		return pageAlignedLength;
 	}
 
-	byte *allocateArena(usize pageCount, usize pageSize)
+	static byte *allocateArena(const usize maxCapacity)
 	{
 		// TODO: make allocateArena() cross platform
-		const auto byteCount = pageCount * pageSize;
-		auto * const data = (byte*)mmap(nullptr, byteCount, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		auto * const data = (byte*)mmap(nullptr, maxCapacity, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
 		if (data == MAP_FAILED)
-			Log::fatal("Failed to allocate $ bytes.", byteCount);
+			throw std::runtime_error("Failed to allocate Arena with max capacity of " + std::to_string(maxCapacity) + " bytes.");
 
 		return data;
 	}
 
 	// TODO: Implement reallocateArena
 
-	void deallocateArena(byte *data, const usize length)
+	static void deallocateArena(byte *data, const usize length)
 	{
 		munmap(data, length);
 	}
 
 	Arena::Arena(usize length) :
-	_pageSize(getPageSize()),
-	_reservedPageCount(getReservedPageCount(length, _pageSize)),
-	_committedPageCount(0),
-	_usedByteCount(0),
-	_data(allocateArena(_reservedPageCount, _pageSize))
+	_maxCapacity(getPageAlignedLength(length)),
+	_capacity(0),
+	_length(0),
+	_data(allocateArena(_maxCapacity))
 	{}
 
 	Arena::~Arena()
 	{
-		const usize reservedByteCount = _reservedPageCount * _pageSize;
+		const usize reservedByteCount = _maxCapacity;
 
 		deallocateArena(_data, reservedByteCount);
 	}
 
-	void *Arena::allocate(const usize length)
+	byte *Arena::allocate(const usize length)
 	{
-		assert(_reservedPageCount > 0);
+		assert(_maxCapacity > 0);
 
-		const usize committedByteCount = _committedPageCount * _pageSize;
-		const usize requiredByteCount = _usedByteCount + length;
+		const usize newLength = _length + length;
 
-		// TODO: Implement reallocation if the arena fills up
+		// TODO: Implement reallocation if newLength > _maxCapacity
 
-		if (requiredByteCount > committedByteCount)
+		if (newLength > _capacity)
 		{
-			const usize minBytesToCommit = requiredByteCount - committedByteCount;
-			const bool hasPageRemainder = minBytesToCommit % _pageSize > 0;
-			const usize pagesToCommit = minBytesToCommit / _pageSize + hasPageRemainder;
-
-			auto * const startOfPagesToCommit = _data + (_committedPageCount * _pageSize);
-			const auto bytesToCommit = pagesToCommit * _pageSize;
-			const auto code = mprotect(startOfPagesToCommit, bytesToCommit, PROT_READ | PROT_WRITE);
+			const usize bytesToCommit = getPageAlignedLength(newLength - _capacity);
+			auto *startOfRegion = _data + _capacity;
+			const auto code = mprotect(startOfRegion, bytesToCommit, PROT_READ | PROT_WRITE);
 
 			if (code == -1)
-				Log::fatal("Failed to commit $ pages in Arena.", pagesToCommit);
+				log::fatal("Failed to commit $ bytes in Arena.", bytesToCommit);
 		}
 
-		auto * const ptr = _data + _usedByteCount;
+		auto * const ptr = _data + _length;
 
-		_usedByteCount = requiredByteCount;
+		_length = newLength;
 
 		return ptr;
 	}
 
 	void Arena::reserve(const usize length)
 	{
-		if (_usedByteCount >= length)
+		if (_length >= length)
 			return;
 
-		const usize difference = length - _usedByteCount;
+		const usize difference = length - _length;
 
 		allocate(difference);
 	}
@@ -113,7 +105,7 @@ namespace parka
 	usize Arena::getOffset(const byte * const ptr) const
 	{
 		assert(ptr >= _data);
-		assert(ptr < _data + _usedByteCount);
+		assert(ptr < _data + _length);
 
 		const auto offset = ptr - _data;
 

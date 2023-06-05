@@ -5,6 +5,8 @@
 #include "parka/enum/LogEntryType.hpp"
 #include "parka/log/Prompt.hpp"
 #include "parka/util/SourceLocation.hpp"
+#include <iostream>
+#include <stdexcept>
 
 namespace parka
 {
@@ -24,10 +26,8 @@ namespace parka
 					break;
 
 				case '\0':
-					// std::cout << fmt << "<--" << std::endl;
 					// TODO: put argument in exception message
-					std::cout << "Not format specifier was given for argument: " << first << std::endl;
-					exit(1);
+					throw std::runtime_error("No format specifier was given for argument");
 
 				default:
 					iter += 1;

@@ -23,7 +23,7 @@ namespace parka
 				break;
 		}
 
-		Log::parseError(token, "`true` or `false`");
+		log::parseError(token, "`true` or `false`");
 		
 		return {};
 	}

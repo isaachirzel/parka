@@ -9,7 +9,7 @@ namespace parka
 {
 	Optional<ContextTree> ContextTree::validate(const SyntaxTree&)
 	{
-		Log::notImplemented(here());
+		log::notImplemented(here());
 		// auto packageIds = Array<EntityContextId>(8);
 
 		// for (const auto&  : syntax.packageIds())

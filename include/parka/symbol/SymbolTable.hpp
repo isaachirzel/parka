@@ -15,18 +15,18 @@ namespace parka
 
 		virtual Optional<EntitySyntaxId> resolve(const Identifier& identifier) const = 0;
 		virtual Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const = 0;
-		virtual const SymbolTable *parent() const = 0;
+		virtual const SymbolTable *getParent() const = 0;		
 		virtual SymbolTableType symbolTableType() const = 0;
 
 		const SymbolTable& getGlobalSymbolTable() const
 		{
 			const auto *table = this;
-			const auto *parentTable = table->parent();
+			const auto *parentTable = table->getParent();
 
 			while (parentTable)
 			{
 				table = parentTable;
-				parentTable = table->parent();
+				parentTable = table->getParent();
 			}
 
 			assert(table->symbolTableType() == SymbolTableType::Global);

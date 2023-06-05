@@ -9,7 +9,7 @@ namespace parka
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			Log::parseError(token, "'(' before argument list");
+			log::parseError(token, "'(' before argument list");
 			return {};
 		}
 
@@ -37,7 +37,7 @@ namespace parka
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				Log::parseError(token, "')' after argument list");
+				log::parseError(token, "')' after argument list");
 
 				return {};
 			}

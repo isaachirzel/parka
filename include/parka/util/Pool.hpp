@@ -53,9 +53,8 @@ namespace parka
 		{
 			static_assert(std::is_copy_assignable_v<T>, "Value must be copy assignable to fill with default value");
 
-			auto s = sizeof(T);
 			auto *data = (T*)_arena.data();
-			auto length = _arena.bytesUsed() / s;
+			auto length = _arena.length() / sizeof(T);
 
 			for (usize i = 0; i < length; ++i) 
 				data[i] = fillValue;
@@ -70,7 +69,7 @@ namespace parka
 		const T* begin() const { return (const T*)_arena.begin(); }
 		const T* end() const { return (const T*)_arena.end(); }
 
-		usize count() const { return _arena.bytesUsed() / sizeof(T); }
+		usize count() const { return _arena.length() / sizeof(T); }
 	};
 }
 
