@@ -10,8 +10,6 @@ namespace parka
 {
 	Optional<EntitySyntaxId> StructSyntax::parse(Token& token)
 	{
-		print("Parse struct");
-		
 		auto keyword = KeywordSyntax::parseStruct(token);
 
 		if (!keyword)

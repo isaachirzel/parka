@@ -1,4 +1,4 @@
-#include "parka/symbol/GlobalSymbolTable.hpp"
+#include "parka/context/ContextTree.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/log/Log.hpp"
@@ -12,12 +12,6 @@ using namespace parka;
 
 int main(int argc, const char *argv[])
 {
-	auto buffer = ArenaStreamBuffer(1 << 30);
-	auto stream = std::ostream(&buffer);
-
-	stream << 1;
-	stream << ' ' << "Hello :)";
-
 	log::note("This is log #$", 1);
 
 	if (argc != 2)
@@ -34,16 +28,10 @@ int main(int argc, const char *argv[])
 
 	log::success("Parsing completed in $s.", parseTime);
 
-	auto symbolTable = GlobalSymbolTable(syntax);
-	auto declareTime = timer.split();
+	auto context = ContextTree::validate(syntax);
+	auto validateTime = timer.split();
 
-	log::success("Declaration completed in $s.", declareTime);
-
-	std::cout << '\n' << symbolTable << "\n\n";
-	// auto context = ContextTree::validate(syntax);
-	// auto validateTime = timer.split();
-
-	// log::success("Validation completed in $s.", validateTime);
+	log::success("Validation completed in $s.", validateTime);
 
 	auto errorCount = log::getErrorCount();
 	auto compileTime = timer.stop();

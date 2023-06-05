@@ -58,19 +58,10 @@ namespace parka
 
 	SyntaxTree SyntaxTree::parse(const Project& project)
 	{
-		const auto& directory = project.srcDirectory();
-		auto modules = Array<ModuleSyntax>(directory.files().length());
-		auto packageIds = Array<EntitySyntaxId>(directory.subdirectories().length());
-
-		for (const auto& file : directory.files())
-			modules.push(ModuleSyntax::parse(file));
-
-		for (const auto& subdirectory : directory.subdirectories())
-			packageIds.push(PackageSyntax::parse(subdirectory, subdirectory.name()));
-		
+		auto packageId = PackageSyntax::parse(project.srcDirectory(), "");
 		// TODO: Parse external projects
 
-		auto result = SyntaxTree(std::move(modules), std::move(packageIds));
+		auto result = SyntaxTree(packageId);
 
 		return result;
 	}

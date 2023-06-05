@@ -1,5 +1,6 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
@@ -10,6 +11,26 @@
 
 namespace parka
 {
+	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent) :
+	_packageId(packageId),
+	_symbols(), // TODO: pre-reserve symbol count
+	_parent(parent)
+	{
+		auto& package = packageId.getPackage();
+
+		for (const auto& mod : package.modules())
+		{
+			for (const auto& structId : mod.structIds())
+				declare(structId);
+
+			for (const auto& functionId : mod.functionIds())
+				declare(functionId);
+		}
+
+		for (const auto& packageId : package.packageIds())
+			declare(packageId);
+	}
+
 	bool PackageSymbolTable::declare(const EntitySyntaxId& entityId)
 	{
 		// TODO: Invalidate symbol on failure, better error
@@ -46,26 +67,6 @@ namespace parka
 		return nullptr;
 	}
 
-	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent) :
-	_packageId(packageId),
-	_symbols(),// TODO: pre-reserve symbol count
-	_parent(&parent)
-	{
-		auto& package = packageId.getPackage();
-
-		for (const auto& mod : package.modules())
-		{
-			for (const auto& structId : mod.structIds())
-				declare(structId);
-
-			for (const auto& functionId : mod.functionIds())
-				declare(functionId);
-		}
-
-		for (const auto& packageId : package.packageIds())
-			declare(packageId);
-	}
-
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const Identifier& identifier) const
 	{
 		// TODO: Confirm this makes sense. I'm not sure if resolving single identifiers should always do
@@ -87,5 +88,21 @@ namespace parka
 			return {};
 
 		return entry->entityId();
+	}
+
+	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbols)
+	{
+		// TODO: Implement printing other packages
+		auto indent = Indent(out);
+		const auto& identifier = symbols._packageId->identifier();
+
+		out << (identifier.length() > 0 ? identifier : "Global Scope") << ":\n";
+
+		for (const auto& entry : symbols._symbols)
+		{
+			out << indent << entry.value();
+		}
+
+		return out;
 	}
 }

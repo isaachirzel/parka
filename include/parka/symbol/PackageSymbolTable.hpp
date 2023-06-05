@@ -27,14 +27,17 @@ namespace parka
 
 	public:
 
-		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable& parent);
+		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent);
 		PackageSymbolTable(PackageSymbolTable&&) = default;
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
 
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
+
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
 		const SymbolTable *getParent() const { return _parent; }
+
+		friend std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbols);
 
 		friend class SymbolTableEntry;
 	};

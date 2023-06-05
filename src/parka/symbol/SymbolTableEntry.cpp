@@ -14,7 +14,7 @@ namespace parka
 		{
 			case EntityType::Package:
 				assert(parent.symbolTableType() == SymbolTableType::Package);
-				new (&_package) PackageSymbolTable(_entityId, parent);
+				new (&_package) PackageSymbolTable(_entityId, &parent);
 				break;
 
 			case EntityType::Function:

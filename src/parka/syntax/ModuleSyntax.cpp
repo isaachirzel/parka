@@ -15,9 +15,6 @@ namespace parka
 	ModuleSyntax ModuleSyntax::parse(const File& file)
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
-
-		print("Parsing module `$`", file.path());
-
 		auto token = Token::initial(file);
 		auto functionIds = Array<EntitySyntaxId>();
 		auto structIds = Array<EntitySyntaxId>();
@@ -53,7 +50,6 @@ namespace parka
 				}
 
 				default:
-					print("Not a keyword: `$`", token);
 					break;
 			}
 

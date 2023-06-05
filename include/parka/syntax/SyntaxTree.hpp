@@ -11,15 +11,13 @@ namespace parka
 	class SyntaxTree
 	{
 		// TODO: Project metadata
-		Array<ModuleSyntax> _modules;
-		Array<EntitySyntaxId> _packageIds;
+		EntitySyntaxId _globalPackageId;
 		// TODO: External package ids
 
 	private:
 
-		SyntaxTree(Array<ModuleSyntax>&& modules, Array<EntitySyntaxId> packageIds) :
-		_modules(std::move(modules)),
-		_packageIds(std::move(packageIds))
+		SyntaxTree(const EntitySyntaxId& packageId) :
+		_globalPackageId(packageId)
 		{}
 
 	public:
@@ -29,8 +27,7 @@ namespace parka
 
 		static SyntaxTree parse(const Project& project);
 
-		const auto& modules() const { return _modules; }
-		const auto& packageIds() const { return _packageIds; }
+		const auto& globalPackageId() const { return _globalPackageId; }
 	};
 }
 

@@ -53,9 +53,11 @@ namespace parka::log
 		// auto filePtr = entry.highlight()
 		// 	? (usize)&entry.highlight()->position().file()
 		// 	: 0; // No file association
-		log::entries.add(std::move(entry));
+		// log::entries.add(std::move(entry));
 
 		// log::entryTable.insert(filePtr, entryIndex);
+
+		std::cout << entry;
 	}
 
 	void parseError(const Token& token, const char *expected, const char *message)
