@@ -3,16 +3,16 @@
 
 #include "parka/Token.hpp"
 #include "parka/repository/ExpressionSyntaxId.hpp"
-#include "parka/type/Type.hpp"
+#include "parka/type/ValueType.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
 {
 	struct ExpressionSyntax
 	{
-		static Optional<ExpressionSyntaxId> parse(Token& token);
-
 		virtual ~ExpressionSyntax() {}
+
+		static Optional<ExpressionSyntaxId> parse(Token& token);
 	};
 }
 

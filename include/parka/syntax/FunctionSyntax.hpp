@@ -6,7 +6,7 @@
 #include "parka/symbol/QualifiedIdentifier.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/type/Type.hpp"
+#include "parka/type/ValueType.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Array.hpp"

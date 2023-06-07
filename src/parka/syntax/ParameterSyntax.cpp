@@ -12,7 +12,6 @@ namespace parka
 	{
 		auto mutKeyword = KeywordSyntax::parseMut(token);
 		auto isMutable = !!mutKeyword;
-
 		auto identifier = Identifier::parse(token);
 
 		if (!identifier)
@@ -47,7 +46,7 @@ namespace parka
 	// 	return success;
 	// }
 
-	// Optional<Type> ParameterSyntax::getType() const
+	// Optional<ValueType> ParameterSyntax::getType() const
 	// {
 	// 	if (!_type)
 	// 		return {};

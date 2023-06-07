@@ -3,24 +3,25 @@
 
 #include "parka/enum/EntityType.hpp"
 #include "parka/enum/SymbolTableEntryType.hpp"
+#include "parka/repository/EntityContextId.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
+#include "parka/symbol/StructSymbolTable.hpp"
 #include <cassert>
 
 namespace parka
 {
 	class SymbolTableEntry
 	{
-		EntitySyntaxId _entityId;
+		EntitySyntaxId _syntaxId;
+		Optional<EntityContextId> _contextId;
 		
 		union
 		{
 			PackageSymbolTable _package;
-			FunctionSymbolTable _function;
+			StructSymbolTable _struct;
 		};
-
-		EntityType _type;
 
 	public:
 
@@ -31,9 +32,13 @@ namespace parka
 
 		void setParent(const SymbolTable& parent);
 
-		const auto& entityId() const {  return _entityId; }
-		const SymbolTable *getSymbolTable() const;
-		const auto& type() const { return _type; }
+		const auto& syntaxId() const {  return _syntaxId; }
+		const auto& contextId() const {  return _contextId; }
+		const auto& type() const { return _syntaxId.type(); }
+
+		auto& contextId() {  return _contextId; }
+		auto& packageSymbolTable() { assert(_syntaxId.type() == EntityType::Package); return _package; }
+		auto& structSymbolTable() { assert(_syntaxId.type() == EntityType::Struct); return _struct; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry);
 	};

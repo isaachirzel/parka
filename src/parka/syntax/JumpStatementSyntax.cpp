@@ -90,9 +90,9 @@ namespace parka
 	// 		return false;
 
 	// 	FunctionSyntax *function = symbols->function;
-	// 	const Type *returnType = functionGetReturnType(function);
+	// 	const ValueType *returnType = functionGetReturnType(function);
 
-	// 	Type valueType;
+	// 	ValueType valueType;
 		
 	// 	if (node->hasValue)
 	// 	{
@@ -142,7 +142,7 @@ namespace parka
 	// 		? &currentBlock->returnType
 	// 		: &voidType;
 	// 	// TODO: Confirm copying type is OK
-	// 	Type valueType;
+	// 	ValueType valueType;
 		
 	// 	if (node->hasValue)
 	// 	{

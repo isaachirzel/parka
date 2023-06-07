@@ -1,6 +1,6 @@
 #include "parka/syntax/IntegerLiteralSyntax.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/type/Type.hpp"
+#include "parka/type/ValueType.hpp"
 
 #include "parka/util/Print.hpp"
 
@@ -61,26 +61,26 @@ namespace parka
 	// 	return true;
 	// }
 
-	// Optional<Type> IntegerLiteralSyntax::getType() const
+	// Optional<ValueType> IntegerLiteralSyntax::getType() const
 	// {
 	// 	switch (_bytes)
 	// 	{
 	// 		case 0:
 	// 		case 1:
-	// 			return Type::i8Type;
+	// 			return ValueType::i8Type;
 	// 		case 2:
-	// 			return Type::i16Type;
+	// 			return ValueType::i16Type;
 	// 		case 3:
 	// 		case 4:
-	// 			return Type::i32Type;
+	// 			return ValueType::i32Type;
 	// 		case 5:
 	// 		case 6:
 	// 		case 7:
 	// 		case 8:
-	// 			return Type::i64Type;
+	// 			return ValueType::i64Type;
 
 	// 		default:
-	// 			log::fatal("Unable to get Type of IntegerLiteralSyntax with size: $", _bytes);
+	// 			log::fatal("Unable to get ValueType of IntegerLiteralSyntax with size: $", _bytes);
 	// 	}
 	// }
 }

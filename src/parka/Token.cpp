@@ -757,7 +757,7 @@ namespace parka
 				
 
 			default:
-				out << "invalid (" << (int)type << ')';
+				out << '(' << (int)type << ") invalid";
 		}
 
 		return out;

@@ -7,10 +7,6 @@ namespace parka
 	{
 		switch (type)
 		{
-			case SymbolTableType::Global:
-				out << "global";
-				break;
-
 			case SymbolTableType::Package:
 				out << "package";
 				break;
@@ -24,7 +20,7 @@ namespace parka
 				break;
 
 			default:
-				out << "invalid (" << (int)type << ')';
+				out << '(' << (int)type << ") invalid";
 		}
 
 		return out;

@@ -29,7 +29,7 @@ namespace parka
 				parentTable = table->getParent();
 			}
 
-			assert(table->symbolTableType() == SymbolTableType::Global);
+			assert(table->symbolTableType() == SymbolTableType::Package);
 
 			return *table;
 		}

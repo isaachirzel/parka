@@ -8,14 +8,14 @@
 
 namespace parka
 {
-	FunctionSymbolTable::FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent) :
-	_functionId(functionId),
+	FunctionSymbolTable::FunctionSymbolTable(const EntitySyntaxId& syntaxId, const SymbolTable& parent) :
+	_syntaxId(syntaxId),
 	_parent(&parent),
 	_symbols(16),
 	_blockIndexes(8)
 	{}
 
-	void FunctionSymbolTable::declare(const EntitySyntaxId& entityId)
+	bool FunctionSymbolTable::declare(const EntitySyntaxId& entityId)
 	{
 		const auto& identifier = entityId->identifier();
 		auto blockIndex = _blockIndexes.length() > 0
@@ -28,13 +28,15 @@ namespace parka
 
 			if (identifier == prevId->identifier())
 			{
-				log::error("Value `$` has previously been delcared in this scope.", identifier);
+				log::error("`$` has previously been delcared in this block.", identifier);
 				// TODO: Maybe insert it anyway so that references to it will show the correct error
-				return;
+				return false;
 			}
 		}
 			
 		_symbols.push(entityId);
+		
+		return true;
 	}
 
 	Optional<EntitySyntaxId> FunctionSymbolTable::resolve(const Identifier&) const

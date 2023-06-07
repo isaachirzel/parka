@@ -29,49 +29,4 @@ namespace parka
 
 		return id;
 	}
-
-	// bool PackageSyntax::validate()
-	// {
-	// 	auto success = true;
-	// 	auto id = Primitive::getId(*this);
-
-	// 	for (auto& mod : _modules)
-	// 	{
-	// 		if (!mod.validate(id))
-	// 			success = false;
-	// 	}
-
-	// 	for (const auto& packageId : _packageIds)
-	// 	{
-	// 		auto& package = SyntaxRepository::getPackage(packageId);
-
-	// 		if (!package.validate(id))
-	// 			success = false;
-	// 	}
-
-	// 	return success;
-	// }
-
-	// bool PackageSyntax::validate(const EntitySyntaxId& parentPackageId)
-	// {
-	// 	// TODO: Multithreading
-	// 	auto success = true;
-	// 	auto id = Primitive::getId(*this);
-
-	// 	for (auto& mod : _modules)
-	// 	{
-	// 		if (!mod.validate(id))
-	// 			success = false;
-	// 	}
-
-	// 	for (const auto& packageId : _packageIds)
-	// 	{
-	// 		auto& package = SyntaxRepository::getPackage(packageId);
-
-	// 		if (!package.validate(id))
-	// 			success = false;
-	// 	}
-
-	// 	return success;
-	// }
 }

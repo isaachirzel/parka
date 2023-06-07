@@ -12,8 +12,6 @@
 #include "parka/util/Optional.hpp"
 #include "parka/util/Project.hpp"
 
-#include <stdexcept>
-
 namespace parka
 {
 	class PackageSyntax : public EntitySyntax

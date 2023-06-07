@@ -28,9 +28,6 @@ namespace parka
 
 		static Optional<EntitySyntaxId> parse(Token& token);
 
-		bool validate(const EntitySyntaxId& functionId);
-
-		Optional<Type> getType() const;
 		const String& identifier() const { return _identifier.text(); }
 		EntityType type() const { return EntityType::Parameter; }
 

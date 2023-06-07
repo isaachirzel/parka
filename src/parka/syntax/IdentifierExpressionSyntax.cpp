@@ -31,7 +31,7 @@ namespace parka
 	// 	return true;
 	// }
 
-	// Optional<Type> IdentifierExpressionSyntax::getType() const
+	// Optional<ValueType> IdentifierExpressionSyntax::getType() const
 	// {
 	// 	auto& entity = SyntaxRepository::get(*_entityId);
 	// 	auto *typedEntity = dynamic_cast<TypedEntity*>(&entity);

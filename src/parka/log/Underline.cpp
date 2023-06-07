@@ -8,10 +8,14 @@ namespace parka
 	std::ostream& operator<<(std::ostream& out, const Underline& underline)
 	{
 		out << Margin();
-		// TODO: Handle tabs
+		
 		auto iterator = std::ostream_iterator<char>(out);
 
-		std::fill_n(iterator, underline._preLength, ' ');
+		for (const auto& ch : underline._preText)
+		{
+			out << (ch == '\t' ? ch : ' ');
+		}
+
 		std::fill_n(iterator, underline._length, '~');
 
 		out << '\n';

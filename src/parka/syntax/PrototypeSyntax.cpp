@@ -6,7 +6,7 @@
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 
-#include "parka/type/Type.hpp"
+#include "parka/type/ValueType.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
 

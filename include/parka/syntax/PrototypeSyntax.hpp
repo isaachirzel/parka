@@ -28,8 +28,6 @@ namespace parka
 
 		static Optional<PrototypeSyntax> parse(Token& token);
 
-		bool validate(const EntitySyntaxId& functionId);
-
 		const auto& identifier() const { return _identifier; }
 		const auto& parameters() const { return _parameterIds; }
 		const auto& returnType() const { return _returnType; }

@@ -11,7 +11,7 @@ namespace parka
 	enum class TypeType : u8
 	{
 		Primitive,
-		StructSyntax
+		Struct
 	};
 
 	class TypeId

@@ -26,9 +26,6 @@ namespace parka
 		PrefixExpressionSyntax(const PrefixExpressionSyntax&) = delete;
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
-		
-		bool validate(const EntitySyntaxId& functionId);
-		Optional<Type> getType() const;
 
 		const auto& token() const { return _token; }
 		const auto& expression() const { return _expression; }

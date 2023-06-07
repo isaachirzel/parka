@@ -10,16 +10,16 @@ namespace parka
 {
 	class Underline
 	{
-		usize _preLength;
+		StringView _preText;
 		usize _length;
 
 	public:
 
 		Underline(const Line& line) :
-		_preLength(line.preText().length()),
+		_preText(line.preText()),
 		_length(line.highlight().length())
 		{}
-
+		
 		friend std::ostream& operator<<(std::ostream& out, const Underline& underline);
 	};
 }

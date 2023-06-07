@@ -1,14 +1,18 @@
 #ifndef PARKA_CONTEXT_PACKAGE_CONTEXT_HPP
 #define PARKA_CONTEXT_PACKAGE_CONTEXT_HPP
 
+#include "parka/repository/EntityContext.hpp"
 #include "parka/repository/EntityContextId.hpp"
+#include "parka/symbol/PackageSymbolTable.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka
 {
-	class PackageContext
+	class PackageContext : public EntityContext
 	{
+		Array<EntityContextId> _packageIds;
 		Array<EntityContextId> _functionIds;
 		Array<EntityContextId> _structIds;
 
@@ -19,7 +23,9 @@ namespace parka
 
 	public:
 
-		static void validate(Array<EntityContextId>& packageIds, const EntitySyntaxId& syntax);
+		static Optional<EntityContextId> validate(PackageSymbolTable& symbols);
+
+		EntityType type() const { return EntityType::Package; }
 	};
 }
 

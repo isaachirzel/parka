@@ -53,10 +53,12 @@ namespace parka
 			}
 		}
 
-		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Optional(const Optional& other)
+		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
+		Optional(const Optional& other) :
+		_hasValue(other._value)
 		{
-			new (this) auto(other);
+			if (_hasValue)
+				_value = other._value;
 		}
 
 		~Optional()
@@ -70,15 +72,16 @@ namespace parka
 			}
 		}
 
-		Optional& operator =(Optional&& other)
+		Optional& operator=(Optional&& other)
 		{
 			new (this) auto(std::move(other));
 
 			return *this;
 		}
 
-		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Optional& operator =(const Optional& other)
+		// template <typename U = T, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
+		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
+		Optional& operator=(const Optional& other)
 		{
 			new (this) auto (other);
 			return *this;

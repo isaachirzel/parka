@@ -3,38 +3,38 @@
 
 namespace parka
 {
-	static const char *getEntityTypeText(EntityType type)
+	std::ostream& operator<<(std::ostream& out, const EntityType& type)
 	{
 		switch (type)
 		{
 			case EntityType::Package:
-				return "package";
+				out << "package";
+				break;
 
 			case EntityType::Struct:
-				return "struct";
+				out << "struct";
+				break;
 
 			case EntityType::Primitive:
-				return "primitive";
+				out << "primitive";
+				break;
 
 			case EntityType::Function:
-				return "function";
+				out << "function";
+				break;
 
 			case EntityType::Variable:
-				return "variable";
+				out << "variable";
+				break;
 
 			case EntityType::Parameter:
-				return "parameter";
+				out << "parameter";
+				break;
 			
 			default:
-				return "";
+				out << "(" << (int)type << ") invalid";
+				break;
 		}
-	}
-
-	std::ostream& operator<<(std::ostream& out, const EntityType& type)
-	{
-		const auto *text = getEntityTypeText(type);
-
-		out << text;
 
 		return out;
 	}

@@ -10,6 +10,8 @@ namespace parka
 	class Margin
 	{
 		usize _lineNumber;
+		
+		static const int xIndex;
 
 	public:
 

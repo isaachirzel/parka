@@ -2,23 +2,22 @@
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
+#include "parka/symbol/StructSymbolTable.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
 	SymbolTableEntry::SymbolTableEntry(const EntitySyntaxId& entityId, const SymbolTable& parent) :
-	_entityId(entityId),
-	_type(entityId->type())
+	_syntaxId(entityId)
 	{
-		switch (_type)
+		switch (entityId.type())
 		{
 			case EntityType::Package:
-				assert(parent.symbolTableType() == SymbolTableType::Package);
-				new (&_package) PackageSymbolTable(_entityId, &parent);
+				new (&_package) PackageSymbolTable(_syntaxId, &parent);
 				break;
 
-			case EntityType::Function:
-				new (&_function) FunctionSymbolTable(_entityId, parent);
+			case EntityType::Struct:
+				new (&_struct) StructSymbolTable(_syntaxId, parent);
 				break;
 
 			default:
@@ -27,18 +26,17 @@ namespace parka
 	}
 
 	SymbolTableEntry::SymbolTableEntry(SymbolTableEntry&& other) :
-	_entityId(std::move(other._entityId)),
-	_type(other._type)
+	_syntaxId(std::move(other._syntaxId))
 	{
 		// TODO: Implement for other table types
-		switch (_type)
+		switch (_syntaxId.type())
 		{
-			case EntityType::Function:
-				new (&_function) auto(std::move(other._function));
-				break;
-
 			case EntityType::Package:
 				new (&_package) auto(std::move(other._package));
+				break;
+
+			case EntityType::Struct:
+				new (&_struct) auto(std::move(other._struct));
 				break;
 
 			default:
@@ -48,14 +46,14 @@ namespace parka
 
 	SymbolTableEntry::~SymbolTableEntry()
 	{
-		switch (_type)
+		switch (_syntaxId.type())
 		{
-			case EntityType::Function:
-				_function.~FunctionSymbolTable();
-				break;
-
 			case EntityType::Package:
 				_package.~PackageSymbolTable();
+				break;
+
+			case EntityType::Struct:
+				_struct.~StructSymbolTable();
 				break;
 
 			default:
@@ -65,36 +63,19 @@ namespace parka
 
 	void SymbolTableEntry::setParent(const SymbolTable& parent)
 	{
-		switch (_type)
+		switch (_syntaxId.type())
 		{
-			case EntityType::Function:
-				_function._parent = &parent;
-				break;
-
 			case EntityType::Package:
 				_package._parent = &parent;
 				break;
 
-			default:
+			case EntityType::Struct:
+				_struct._parent = &parent;
 				break;
-		}
-	}
-
-	const SymbolTable *SymbolTableEntry::getSymbolTable() const
-	{
-		switch (_type)
-		{
-			case EntityType::Function:
-				return &_function;
-
-			case EntityType::Package:
-				return &_package;
 
 			default:
 				break;
 		}
-
-		return nullptr;
 	}
 
 	// static std::ostream& scope(std::ostream& out, const SymbolTable *)
@@ -109,7 +90,7 @@ namespace parka
 	{
 		// const auto *symbolTable = entry.getSymbolTable();
 
-		out << entry._entityId->identifier() << ": " << entry._entityId.type() << '\n';
+		out << entry._syntaxId->identifier() << ":\t\t" << entry._syntaxId.type() << '\n';
 
 		// TODO: Implement outputting tables
 

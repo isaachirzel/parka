@@ -157,8 +157,9 @@ namespace parka
 
 		usize getIndex(const T *ptr) const
 		{
-			assert(ptr > _data);
+			assert(ptr >= _data);
 			assert(ptr - _data < (isize)_length);
+			
 			return ptr - _data;
 		}
 		

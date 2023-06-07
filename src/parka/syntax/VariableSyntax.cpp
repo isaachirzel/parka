@@ -55,7 +55,7 @@ namespace parka
 	// 	return true;
 	// }
 
-	// Optional<Type> VariableSyntax::getType() const
+	// Optional<ValueType> VariableSyntax::getType() const
 	// {
 	// 	if (!_type)
 	// 		return {};

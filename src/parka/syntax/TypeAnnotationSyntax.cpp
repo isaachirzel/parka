@@ -26,7 +26,7 @@ namespace parka
 	// 	if (!entityId)
 	// 		return false;
 
-	// 	_type = Type(*entityId);
+	// 	_type = ValueType(*entityId);
 
 	// 	return true;
 	// }

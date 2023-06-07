@@ -4,6 +4,22 @@
 
 namespace parka
 {
+	const int Margin::xIndex = std::ios_base::xalloc();
+
+	usize getNumberWidth(usize number)
+	{
+		// TODO: get line count to make sure it doesn't overflow
+		usize out = 1;
+		
+		while (number > 9)
+		{
+			out += 1;
+			number /= 10;
+		}
+
+		return out;
+	}
+
 	std::ostream& operator<<(std::ostream& out, const Margin& margin)
 	{
 		out << Color::Blue;

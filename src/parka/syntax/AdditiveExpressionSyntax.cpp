@@ -67,7 +67,7 @@ namespace parka
 	// 	return success;
 	// }
 
-	// Optional<Type> AdditiveExpressionSyntax::getType() const
+	// Optional<ValueType> AdditiveExpressionSyntax::getType() const
 	// {
 	// 	auto& lhs = SyntaxRepository::get(_lhs);
 	// 	auto& rhs = SyntaxRepository::get(_rhs);

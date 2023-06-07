@@ -25,9 +25,6 @@ namespace parka
 
 		static Optional<ExpressionSyntaxId> parse(Token& token);
 
-		bool validate(const EntitySyntaxId& functionId);
-		Optional<Type> getType() const;
-
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 	};

@@ -12,25 +12,20 @@
 
 namespace parka
 {
-	class SymbolTableEntry;
-
 	class FunctionSymbolTable : public SymbolTable
 	{
-		EntitySyntaxId _functionId;
+		EntitySyntaxId _syntaxId;
 		const SymbolTable *_parent;
 		Array<EntitySyntaxId> _symbols;
 		Array<usize> _blockIndexes;
 
-	private:
-
-		void declare(const EntitySyntaxId& entityId);
-
 	public:
 
-		FunctionSymbolTable(const EntitySyntaxId& functionId, const SymbolTable& parent);
-
+		FunctionSymbolTable(const EntitySyntaxId& syntaxId, const SymbolTable& parent);
 		FunctionSymbolTable(FunctionSymbolTable&&) = default;
 		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
+
+		bool declare(const EntitySyntaxId& entityId);
 
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
@@ -41,7 +36,7 @@ namespace parka
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
 		const SymbolTable *getParent() const { return _parent; }
 
-		friend class SymbolTableEntry;
+		const auto& syntaxId() const { return _syntaxId; }
 	};
 }
 

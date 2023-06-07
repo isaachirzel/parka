@@ -8,6 +8,7 @@
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Print.hpp"
+#include "parka/util/String.hpp"
 
 namespace parka
 {
@@ -16,9 +17,20 @@ namespace parka
 	_symbols(), // TODO: pre-reserve symbol count
 	_parent(parent)
 	{
-		auto& package = packageId.getPackage();
+		const auto isGlobalPackage = parent == nullptr;
 
-		for (const auto& mod : package.modules())
+		if (isGlobalPackage)
+		{
+			for (const auto& primitive : Primitive::primitives)
+			{
+				const auto& id = EntitySyntaxId::getFor(primitive);
+				_symbols.insert(primitive.identifier(), SymbolTableEntry(id, *this));
+			}
+		}
+
+		const auto& syntax = packageId.getPackage();
+
+		for (const auto& mod : syntax.modules())
 		{
 			for (const auto& structId : mod.structIds())
 				declare(structId);
@@ -27,7 +39,7 @@ namespace parka
 				declare(functionId);
 		}
 
-		for (const auto& packageId : package.packageIds())
+		for (const auto& packageId : syntax.packageIds())
 			declare(packageId);
 	}
 
@@ -76,7 +88,7 @@ namespace parka
 		if (!result)
 			return {};
 			
-		return result->entityId();
+		return result->syntaxId();
 	}
 
 	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
@@ -87,7 +99,7 @@ namespace parka
 		if (!entry)
 			return {};
 
-		return entry->entityId();
+		return entry->syntaxId();
 	}
 
 	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbols)

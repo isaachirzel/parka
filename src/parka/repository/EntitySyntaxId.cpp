@@ -127,6 +127,13 @@ namespace parka
 		return parameters[_index];
 	}
 
+	const Primitive& EntitySyntaxId::getPrimitive() const
+	{
+		assert(_type == EntityType::Primitive);
+
+		return Primitive::primitives[_index];
+	}
+
 	std::ostream& operator<<(std::ostream& out, const EntitySyntaxId& id)
 	{
 

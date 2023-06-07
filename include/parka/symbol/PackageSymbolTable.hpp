@@ -14,6 +14,8 @@
 
 namespace parka
 {
+	class SymbolTableEntry;
+
 	class PackageSymbolTable : public SymbolTable
 	{
 		EntitySyntaxId _packageId;
@@ -34,8 +36,11 @@ namespace parka
 		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
 		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
 
-		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
+		const auto& packageId() const { return _packageId; }
+		const auto& symbols() const { return _symbols; }
+		auto& symbols() { return _symbols; }
 		const SymbolTable *getParent() const { return _parent; }
+		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
 
 		friend std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbols);
 

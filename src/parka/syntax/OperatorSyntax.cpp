@@ -14,9 +14,4 @@ namespace parka
 
 		log::notImplemented(here());
 	}
-
-	bool validate(const EntitySyntaxId&)
-	{
-		log::notImplemented(here());
-	}
 }

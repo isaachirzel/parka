@@ -21,7 +21,7 @@ namespace parka
 		static usize pageSize;
 
 		if (pageSize == 0)
-			pageSize = getpagesize();
+			pageSize = sysconf(_SC_PAGESIZE);
 
 		return pageSize;
 	}

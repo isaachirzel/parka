@@ -9,11 +9,10 @@
 using namespace parka;
 
 // TODO: Unit testing
+// TODO: Convert log fatals to exceptions and add catch that will print out a single log fatal
 
 int main(int argc, const char *argv[])
 {
-	log::note("This is log #$", 1);
-
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
 
@@ -46,7 +45,4 @@ int main(int argc, const char *argv[])
 	{
 		log::success("Compiled `$` in $ seconds at $k lines/s.", project.name(), compileTime, compileSpeed);
 	}
-
-	// TODO: Figure out better method for outputting log
-	// log::outputEntries();
 }

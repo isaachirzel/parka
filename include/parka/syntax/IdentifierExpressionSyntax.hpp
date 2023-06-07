@@ -6,7 +6,7 @@
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/Token.hpp"
-#include "parka/type/Type.hpp"
+#include "parka/type/ValueType.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka

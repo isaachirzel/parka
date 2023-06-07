@@ -7,9 +7,9 @@ namespace parka
 {
 	enum class SymbolTableType
 	{
-		Global,
 		Package,
 		Function,
+		Struct,
 		Block
 	};
 

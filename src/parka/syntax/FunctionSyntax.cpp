@@ -60,60 +60,7 @@ namespace parka
 		return id;
 	}
 
-	// bool FunctionSyntax::declare(const EntitySyntaxId& entityId)
-	// {
-	// 	// TODO: Implement LocalEntity to get common functionality
-		
-	// 	auto& entity = SyntaxRepository::get(entityId);
-	// 	const auto& identifier = entity.identifier();
-
-	// 	print("Declaring $ $", entityId.type(), identifier);
-
-	// 	auto blockIndex = _blocks.length() > 0
-	// 		? _blocks.back()
-	// 		: 0;
-
-	// 	for (auto i = blockIndex; i < _localSymbols.length(); ++i)
-	// 	{
-	// 		auto previousId = _localSymbols[i];
-	// 		auto& previous = SyntaxRepository::get(previousId);
-
-	// 		if (entity.identifier() == previous.identifier())
-	// 		{
-	// 			// TODO: Show previous declaration
-	// 			// TODO: Token highlights
-	// 			log::error("`$` is already declared in this block.", identifier);
-
-	// 			return false;
-	// 		}
-	// 	}
-
-	// 	_localSymbols.push(EntitySyntaxId(entityId));
-
-	// 	return true;
-	// }
-
-	// bool FunctionSyntax::validate(const EntitySyntaxId& packageId)
-	// {
-	// 	auto success = true;
-	// 	auto functionId = Primitive::getId(*this);
-		
-	// 	_packageId = packageId;
-
-	// 	if (!_prototype.validate(functionId))
-	// 		success = false;
-
-	// 	auto& expression = SyntaxRepository::get(_body);
-
-	// 	if (!expression.validate(functionId))
-	// 		success = false;
-
-	// 	// TODO: Validate return type
-
-	// 	return success;
-	// }
-
-	// Type FunctionSyntax::getReturnType() const
+	// ValueType FunctionSyntax::getReturnType() const
 	// {
 	// 	log::notImplemented(here());
 	// 	// auto returnType = _returnType

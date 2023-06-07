@@ -5,7 +5,7 @@
 #include "parka/syntax/MemberSyntax.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/type/Type.hpp"
+#include "parka/type/ValueType.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka
@@ -27,9 +27,6 @@ namespace parka
 
 		static Optional<EntitySyntaxId> parse(Token& token);
 
-		bool validate(const EntitySyntaxId& packageId);
-
-		Optional<Type> getType() const;
 		const String& identifier() const { return _identifier.text(); }
 		const auto& members() const { return _members; }
 		EntityType type() const { return EntityType::Struct; }

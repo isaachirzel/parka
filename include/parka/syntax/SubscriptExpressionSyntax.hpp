@@ -19,10 +19,10 @@ namespace parka
 
 	public:
 
-		static Optional<ExpressionSyntaxId> parse(Token& token, ExpressionSyntaxId primary);
+		SubscriptExpressionSyntax(SubscriptExpressionSyntax&&) = default;
+		SubscriptExpressionSyntax(const SubscriptExpressionSyntax&) = delete;
 
-		bool validate(const EntitySyntaxId& functionId);
-		Optional<Type> getType() const;
+		static Optional<ExpressionSyntaxId> parse(Token& token, ExpressionSyntaxId primary);
 
 		const auto& expression() const { return _primary; }
 		const auto& index() const { return _index; }

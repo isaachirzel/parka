@@ -2,6 +2,7 @@
 #define PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
 
 #include "parka/enum/PrimitiveType.hpp"
+#include "parka/repository/EntityContext.hpp"
 #include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/util/Common.hpp"
@@ -11,7 +12,7 @@
 
 namespace parka
 {
-	class Primitive : public EntitySyntax
+	class Primitive : public EntitySyntax, public EntityContext
 	{
 		String _identifier;
 		PrimitiveType _type;
