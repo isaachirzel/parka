@@ -5,7 +5,6 @@
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
@@ -18,12 +17,14 @@ namespace parka
 	{
 		String _identifier;
 		Array<ModuleSyntax> _modules;
-		Array<EntitySyntaxId> _packageIds;
+		Array<const PackageSyntax*> _packages;
 
-		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<EntitySyntaxId>&& packageIds) :
+	private:
+
+		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<const PackageSyntax*>&& packages) :
 		_identifier(std::move(identifier)),
 		_modules(std::move(modules)),
-		_packageIds(std::move(packageIds))
+		_packages(std::move(packages))
 		{}
 
 	public:
@@ -31,12 +32,12 @@ namespace parka
 		PackageSyntax(PackageSyntax&&) = default;
 		PackageSyntax(const PackageSyntax&) = delete;
 
-		static EntitySyntaxId parse(const Directory& directory, const String& name);
+		static const PackageSyntax *parse(const Directory& directory, const String& name);
 
-		const String& identifier() const { return _identifier; }
 		EntityType type() const { return EntityType::Package; }
+		const String& identifier() const { return _identifier; }
 		const auto& modules() const { return _modules; }
-		const auto& packageIds() const { return _packageIds; }
+		const auto& packages() const { return _packages; }
 	};
 }
 

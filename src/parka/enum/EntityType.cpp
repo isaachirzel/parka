@@ -32,7 +32,7 @@ namespace parka
 				break;
 			
 			default:
-				out << "(" << (int)type << ") invalid";
+				out << "(" << (int)type << ") Invalid";
 				break;
 		}
 

@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> BitwiseAndExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *BitwiseAndExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = EqualityExpressionSyntax::parse(token);
 
@@ -25,9 +25,9 @@ namespace parka
 				return {};
 
 			auto expression = BitwiseAndExpressionSyntax(*lhs, *rhs);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 		}
 
 		return lhs;

@@ -7,7 +7,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> BlockSyntax::parse(Token& token)
+	const ExpressionSyntax *BlockSyntax::parse(Token& token)
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
@@ -19,7 +19,7 @@ namespace parka
 		token.increment();
 
 		// TODO: Add initial capacity
-		auto statements = Array<StatementSyntaxId>();
+		auto statements = Array<const StatementSyntax*>();
 
 		while (token.type() != TokenType::RightBrace)
 		{
@@ -28,20 +28,20 @@ namespace parka
 			if (!statement)
 				return {};
 
-			statements.push(*statement);
+			statements.push(statement);
 		}
 
 		token.increment();
 
 		auto block = BlockSyntax(std::move(statements));
-		auto id = ExpressionSyntaxId::create(std::move(block));
+		auto& syntax = ExpressionSyntax::create(std::move(block));
 
-		return id;
+		return &syntax;
 	}
 
-	// bool Block::validate(const EntitySyntaxId& functionId)
+	// bool Block::validate(const EntitySyntax& function)
 	// {
-	// 	auto& function = SyntaxRepository::getFunction(functionId);
+	// 	auto& function = SyntaxRepository::getFunction(function);
 		
 	// 	function.pushBlock();
 
@@ -49,7 +49,7 @@ namespace parka
 
 	// 	for (auto statement : _statements)
 	// 	{
-	// 		if (!SyntaxRepository::get(statement).validate(functionId))
+	// 		if (!SyntaxRepository::get(statement).validate(function))
 	// 			success = false;
 	// 	}
 

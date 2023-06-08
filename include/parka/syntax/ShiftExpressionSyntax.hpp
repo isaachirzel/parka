@@ -8,13 +8,13 @@ namespace parka
 {
 	class ShiftExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _lhs;
-		ExpressionSyntaxId _rhs;
+		const ExpressionSyntax& _lhs;
+		const ExpressionSyntax& _rhs;
 		ShiftType _type;
 
-		ShiftExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, ShiftType type) :
-		_lhs(std::move(lhs)),
-		_rhs(std::move(rhs)),
+		ShiftExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, ShiftType type) :
+		_lhs(lhs),
+		_rhs(rhs),
 		_type(type)
 		{}
 
@@ -23,8 +23,9 @@ namespace parka
 		ShiftExpressionSyntax(ShiftExpressionSyntax&&) = default;
 		ShiftExpressionSyntax(const ShiftExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Shift; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 	};

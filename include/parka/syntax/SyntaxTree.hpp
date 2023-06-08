@@ -1,8 +1,8 @@
 #ifndef PARKA_SYNTAX_AST_SYNTAX_HPP
 #define PARKA_SYNTAX_AST_SYNTAX_HPP
 
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
+#include "parka/syntax/PackageSyntax.hpp"
 #include "parka/util/Project.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -11,13 +11,13 @@ namespace parka
 	class SyntaxTree
 	{
 		// TODO: Project metadata
-		EntitySyntaxId _globalPackageId;
+		const PackageSyntax& _globalPackage;
 		// TODO: External package ids
 
 	private:
 
-		SyntaxTree(const EntitySyntaxId& packageId) :
-		_globalPackageId(packageId)
+		SyntaxTree(const PackageSyntax& globalPackage) :
+		_globalPackage(globalPackage)
 		{}
 
 	public:
@@ -27,7 +27,7 @@ namespace parka
 
 		static SyntaxTree parse(const Project& project);
 
-		const auto& globalPackageId() const { return _globalPackageId; }
+		const auto& globalPackage() const { return _globalPackage; }
 	};
 }
 

@@ -20,7 +20,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionSyntaxId> EqualityExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *EqualityExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = RelationalExpressionSyntax::parse(token);
 
@@ -39,9 +39,9 @@ namespace parka
 				return {};
 
 			auto expression = EqualityExpressionSyntax(*lhs, *rhs, *type);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 			type = getEqualityType(token);
 		}
 

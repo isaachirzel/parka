@@ -7,12 +7,12 @@ namespace parka
 {
 	class BitwiseAndExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _lhs;
-		ExpressionSyntaxId _rhs;
+		const ExpressionSyntax& _lhs;
+		const ExpressionSyntax& _rhs;
 
-		BitwiseAndExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs) :
-		_lhs(std::move(lhs)),
-		_rhs(std::move(rhs))
+		BitwiseAndExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs) :
+		_lhs(lhs),
+		_rhs(rhs)
 		{}
 
 	public:
@@ -20,8 +20,9 @@ namespace parka
 		BitwiseAndExpressionSyntax(BitwiseAndExpressionSyntax&&) = default;
 		BitwiseAndExpressionSyntax(const BitwiseAndExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::BitwiseAnd; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 	};

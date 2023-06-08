@@ -40,7 +40,7 @@ namespace parka
 		return bits;
 	}
 
-	Optional<ExpressionSyntaxId> IntegerLiteralSyntax::parse(Token& token)
+	const ExpressionSyntax *IntegerLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseInteger(token);
 
@@ -49,14 +49,14 @@ namespace parka
 
 		auto bits = getMinimumIntegerBytes(value);
 		auto literal = IntegerLiteralSyntax(token, *value, bits);
-		auto id = ExpressionSyntaxId::create(std::move(literal));
+		auto& syntax = ExpressionSyntax::create(std::move(literal));
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 
-	// bool IntegerLiteralSyntax::validate(const EntitySyntaxId&)
+	// bool IntegerLiteralSyntax::validate(const EntitySyntax&)
 	// {
 	// 	return true;
 	// }

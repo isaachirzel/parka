@@ -6,7 +6,6 @@
 #include "parka/log/Margin.hpp"
 #include "parka/log/Prompt.hpp"
 #include "parka/log/Underline.hpp"
-#include "parka/util/Print.hpp"
 
 namespace parka
 {

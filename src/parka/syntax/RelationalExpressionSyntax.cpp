@@ -26,7 +26,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionSyntaxId> RelationalExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *RelationalExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = ShiftExpressionSyntax::parse(token);
 
@@ -45,9 +45,9 @@ namespace parka
 				return {};
 
 			auto expression = RelationalExpressionSyntax(*lhs, *rhs, *type);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 			type = parseRelationalType(token);
 		}
 

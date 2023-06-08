@@ -1,12 +1,9 @@
 #include "parka/syntax/ExpressionStatementSyntax.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/repository/ExpressionSyntaxId.hpp"
-
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<StatementSyntaxId> ExpressionStatementSyntax::parse(Token& token)
+	const StatementSyntax *ExpressionStatementSyntax::parse(Token& token)
 	{
 		auto expression = ExpressionSyntax::parse(token);
 
@@ -22,8 +19,8 @@ namespace parka
 		token.increment();
 
 		auto statement = ExpressionStatementSyntax(*expression);
-		auto id = StatementSyntaxId::create(std::move(statement));
+		auto& syntax = StatementSyntax::create(std::move(statement));
 
-		return id;
+		return &syntax;
 	}
 }

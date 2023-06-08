@@ -8,32 +8,32 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> IdentifierExpressionSyntax::parse(Token& token)
+	const IdentifierExpressionSyntax *IdentifierExpressionSyntax::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
 		auto expression = IdentifierExpressionSyntax(*identifier);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-		return id;
+		return (const IdentifierExpressionSyntax*)&syntax;
 	}
 
-	// bool IdentifierExpressionSyntax::validate(const EntitySyntaxId& functionId)
+	// bool IdentifierExpressionSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	print("Validate identifier");
-	// 	auto& function = SyntaxRepository::getFunction(functionId);
-	// 	auto entityId = function.resolve(_identifier);
+	// 	auto& function = SyntaxRepository::getFunction(function);
+	// 	auto entity = function.resolve(_identifier);
 
-	// 	if (!entityId)
+	// 	if (!entity)
 	// 		return false;
 
-	// 	_entityId = *entityId;
+	// 	_entity = *entity;
 
 	// 	return true;
 	// }
 
 	// Optional<ValueType> IdentifierExpressionSyntax::getType() const
 	// {
-	// 	auto& entity = SyntaxRepository::get(*_entityId);
+	// 	auto& entity = SyntaxRepository::get(*_entity);
 	// 	auto *typedEntity = dynamic_cast<TypedEntity*>(&entity);
 
 	// 	if (typedEntity == nullptr)

@@ -34,14 +34,13 @@ namespace parka
 			}
 		}
 
-		usize add(T&& value)
+		T& add(T&& value)
 		{
-			auto index = count();
-			auto *item = _arena.allocate(sizeof(T));
+			auto *item = (T*)_arena.allocate(sizeof(T));
 
 			new (item) auto(std::move(value));
 
-			return index;
+			return *item;
 		}
 
 		void reserve(usize capacity)
@@ -60,7 +59,7 @@ namespace parka
 				data[i] = fillValue;
 		}
 
-		usize getIndex(const T *ptr) const { return _arena.getOffset((byte*)ptr) / sizeof(T); }
+		usize indexFor(const T *ptr) const { return _arena.getOffset((byte*)ptr) / sizeof(T); }
 
 		T& operator[](usize index) { assert(index < count()); return ((T*)_arena.data())[index]; }
 		const T& operator[](usize index) const { assert(index < count()); return ((T*)_arena.data())[index]; }

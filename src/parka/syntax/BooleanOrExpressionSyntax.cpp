@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> BooleanOrExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *BooleanOrExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = BooleanAndExpressionSyntax::parse(token);
 
@@ -22,9 +22,9 @@ namespace parka
 				return {};
 
 			auto expression = BooleanOrExpressionSyntax(*lhs, *rhs);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 		}
 
 		return lhs;

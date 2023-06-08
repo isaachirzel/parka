@@ -1,6 +1,8 @@
 #ifndef PARKA_ENUM_EXPRESSION_TYPE_HPP
 #define PARKA_ENUM_EXPRESSION_TYPE_HPP
 
+#include <ostream>
+
 namespace parka
 {
 	enum class ExpressionType
@@ -16,12 +18,12 @@ namespace parka
 		Call,
 		Conditional,
 		Equality,
-		IdentifierExpression,
+		Identifier,
 		If,
 		Subscript,
-		MemberAccessExpression,
+		MemberAccess,
 		Multiplicative,
-		PrefixExpression,
+		Prefix,
 		Relational,
 		Shift,
 		BoolLiteral,
@@ -31,7 +33,7 @@ namespace parka
 		StringLiteral
 	};
 
-	// TODO: Create print function
+	std::ostream& operator<<(std::ostream& out, const ExpressionType& type);
 }
 
 #endif

@@ -9,7 +9,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> ConditionalExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *ConditionalExpressionSyntax::parse(Token& token)
 	{
 		auto condition = BooleanOrExpressionSyntax::parse(token);
 		auto keyword = KeywordSyntax::getKeywordType(token);
@@ -40,8 +40,8 @@ namespace parka
 			return {};
 
 		auto expression = ConditionalExpressionSyntax(*condition, *trueCase, *falseCase);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-		return id;
+		return &syntax;
 	}
 }

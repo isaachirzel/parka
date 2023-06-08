@@ -23,7 +23,7 @@ namespace parka
 
 	public:
 
-		static Optional<EntityContextId> validate(PackageSymbolTable& symbols);
+		static const PackageContext *validate(PackageSymbolTable& symbols);
 
 		EntityType type() const { return EntityType::Package; }
 	};

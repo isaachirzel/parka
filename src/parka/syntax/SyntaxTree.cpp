@@ -6,8 +6,6 @@
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
-
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/util/Path.hpp"
@@ -15,14 +13,14 @@
 
 namespace parka
 {
-	const MemberSyntax *getRecursiveMember(const Array<MemberSyntax>&, EntitySyntaxId /*parentId*/)
+	const MemberSyntax *getRecursiveMember(const Array<MemberSyntax>&, StructSyntax& /*parent*/)
 	{
 		log::notImplemented(here());
 		// for (const auto& member : members)
 		// {
 		// 	// TODO: Check if types are referencing the base type or an indirection to it
 		// 	const auto& type = member.annotation().type();
-		// 	auto& entity = SyntaxRepository::get(type.entityId());
+		// 	auto& entity = SyntaxRepository::get(type.entity());
 
 		// 	if (entity.type() != EntityType::StructSyntax)
 		// 		continue;
@@ -41,27 +39,28 @@ namespace parka
 		// return nullptr;
 	}
 
-	bool validateStructRecursion(EntitySyntaxId structId)
+	bool validateStructRecursion(const StructSyntax& strct)
 	{
-		auto& strct = structId.getStruct();
+		log::notImplemented(here());
+		// const MemberSyntax *recursiveMember = getRecursiveMember(strct.members(), strct);
 
-		const MemberSyntax *recursiveMember = getRecursiveMember(strct.members(), structId);
+		// if (recursiveMember)
+		// {
+		// 	log::error(recursiveMember->name(), "DeclarationStatementSyntax of member creates recursive type.");
+		// 	return false;
+		// }
 
-		if (recursiveMember)
-		{
-			log::error(recursiveMember->name(), "DeclarationStatementSyntax of member creates recursive type.");
-			return false;
-		}
-
-		return true;
+		// return true;
 	}
 
 	SyntaxTree SyntaxTree::parse(const Project& project)
 	{
-		auto packageId = PackageSyntax::parse(project.srcDirectory(), "");
 		// TODO: Parse external projects
+		const auto *package = PackageSyntax::parse(project.srcDirectory(), "");
 
-		auto result = SyntaxTree(packageId);
+		assert(package != nullptr);
+
+		auto result = SyntaxTree(*package);
 
 		return result;
 	}
@@ -69,7 +68,7 @@ namespace parka
 	// bool SyntaxTree::validate()
 	// {
 	// 	auto success = true;
-	// 	auto& globalPackage = SyntaxRepository::getPackage(_globalPackageId);
+	// 	auto& globalPackage = SyntaxRepository::getPackage(_globalPackage);
 
 	// 	// if (!globalPackage.declare())
 	// 	// 	success = false;

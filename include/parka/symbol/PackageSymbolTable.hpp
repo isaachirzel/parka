@@ -2,7 +2,6 @@
 #define PARKA_SYMBOLS_PACKAGE_SYMBOL_TABLE_HPP
 
 #include "parka/enum/SymbolTableType.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
@@ -18,25 +17,25 @@ namespace parka
 
 	class PackageSymbolTable : public SymbolTable
 	{
-		EntitySyntaxId _packageId;
+		const PackageSyntax& _syntax;
 		Table<String, SymbolTableEntry> _symbols;
 		const SymbolTable *_parent;
 
 	private:
 		
-		bool declare(const EntitySyntaxId& entityId);
+		bool declare(const EntitySyntax& entity);
 		const SymbolTableEntry *findEntry(const QualifiedIdentifier& identifier, usize index) const;
 
 	public:
 
-		PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent);
+		PackageSymbolTable(const PackageSyntax& syntax, const SymbolTable *parent);
 		PackageSymbolTable(PackageSymbolTable&&) = default;
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
 
-		Optional<EntitySyntaxId> resolve(const Identifier& identifier) const;
-		Optional<EntitySyntaxId> resolve(const QualifiedIdentifier& identifier) const;
+		const EntitySyntax *resolve(const Identifier& identifier) const;
+		const EntitySyntax *resolve(const QualifiedIdentifier& identifier) const;
 
-		const auto& packageId() const { return _packageId; }
+		const auto& syntax() const { return _syntax; }
 		const auto& symbols() const { return _symbols; }
 		auto& symbols() { return _symbols; }
 		const SymbolTable *getParent() const { return _parent; }

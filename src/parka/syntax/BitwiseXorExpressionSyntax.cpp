@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> BitwiseXorExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *BitwiseXorExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = BitwiseAndExpressionSyntax::parse(token);
 
@@ -22,9 +22,9 @@ namespace parka
 				return {};
 
 			auto expression = BitwiseXorExpressionSyntax(*lhs, *rhs);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 		}
 
 		return lhs;

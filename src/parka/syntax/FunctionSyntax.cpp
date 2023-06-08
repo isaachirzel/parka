@@ -4,15 +4,13 @@
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
-
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> parseBody(Token& token)
+	const ExpressionSyntax *parseBody(Token& token)
 	{
 		if (token.type() == TokenType::DoubleArrow)
 		{
@@ -42,7 +40,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<EntitySyntaxId> FunctionSyntax::parse(Token& token)
+	const FunctionSyntax *FunctionSyntax::parse(Token& token)
 	{
 		auto prototype = PrototypeSyntax::parse(token);
 
@@ -55,9 +53,9 @@ namespace parka
 			return {};
 
 		auto function = FunctionSyntax(*prototype, *body);
-		auto id = EntitySyntaxId::create(std::move(function));
+		auto& syntax = EntitySyntax::create(std::move(function));
 
-		return id;
+		return (const FunctionSyntax*)&syntax;
 	}
 
 	// ValueType FunctionSyntax::getReturnType() const
@@ -69,7 +67,7 @@ namespace parka
 
 	// 	// return returnType;
 	// }
-	// Optional<EntitySyntaxId> FunctionSyntax::resolve(const Identifier& identifier)
+	// EntitySyntax *FunctionSyntax::resolve(const Identifier& identifier)
 	// {
 	// 	auto i = _localSymbols.length();
 
@@ -84,7 +82,7 @@ namespace parka
 	// 			return id;
 	// 	}
 
-	// 	auto& package = SyntaxRepository::getPackage(*_packageId);
+	// 	auto& package = SyntaxRepository::getPackage(*_package);
 	// 	auto result = package.findGlobal(identifier);
 
 	// 	if (!result)
@@ -93,11 +91,11 @@ namespace parka
 	// 	return result;
 	// }
 
-	// Optional<EntitySyntaxId> FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	// EntitySyntax *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
 	// {
 	// 	if (identifier.isAbsolute() || identifier.length() > 1)
 	// 	{
-	// 		auto& package = SyntaxRepository::getPackage(*_packageId);
+	// 		auto& package = SyntaxRepository::getPackage(*_package);
 	// 		auto result = package.resolve(identifier);
 	// 	}
 

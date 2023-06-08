@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	Optional<EntitySyntaxId> ParameterSyntax::parse(Token& token)
+	const ParameterSyntax *ParameterSyntax::parse(Token& token)
 	{
 		auto mutKeyword = KeywordSyntax::parseMut(token);
 		auto isMutable = !!mutKeyword;
@@ -31,16 +31,16 @@ namespace parka
 			return {};
 		
 		auto parameter = ParameterSyntax(*identifier, *annotation, isMutable);
-		auto id = EntitySyntaxId::create(std::move(parameter));
+		auto& syntax = EntitySyntax::create(std::move(parameter));
 		
-		return id;
+		return (const ParameterSyntax*)&syntax;
 	}
 
-	// bool ParameterSyntax::validate(const EntitySyntaxId& functionId)
+	// bool ParameterSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	auto success = true;
 
-	// 	if (!_annotation.validate(functionId))
+	// 	if (!_annotation.validate(function))
 	// 		success = false;
 
 	// 	return success;

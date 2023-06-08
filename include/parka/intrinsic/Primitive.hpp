@@ -3,8 +3,8 @@
 
 #include "parka/enum/PrimitiveType.hpp"
 #include "parka/repository/EntityContext.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
+#include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
@@ -24,11 +24,27 @@ namespace parka
 		_size(size)
 		{}
 
-		static Array<Primitive> initPrimitives();
+		static Array<const Primitive*> initPrimitives();
 
 	public:
 
-		static const Array<Primitive> primitives;
+		static const Primitive voidPrimitive;
+		static const Primitive u8Primitive;
+		static const Primitive u16Primitive;
+		static const Primitive u32Primitive;
+		static const Primitive u64Primitive;
+		static const Primitive i8Primitive;
+		static const Primitive i16Primitive;
+		static const Primitive i32Primitive;
+		static const Primitive i64Primitive;
+		static const Primitive f32Primitive;
+		static const Primitive f64Primitive;
+		static const Primitive boolPrimitive;
+		static const Primitive charPrimitive;
+		static const Primitive stringPrimitive;
+
+
+		static const Array<const Primitive*> primitives;
 
 	public:
 

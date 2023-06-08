@@ -8,14 +8,14 @@ namespace parka
 {
 	class ConditionalExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _condition;
-		ExpressionSyntaxId _trueCase;
-		ExpressionSyntaxId _falseCase;
+		const ExpressionSyntax& _condition;
+		const ExpressionSyntax& _trueCase;
+		const ExpressionSyntax& _falseCase;
 
-		ConditionalExpressionSyntax(ExpressionSyntaxId&& condition, ExpressionSyntaxId&& trueCase, ExpressionSyntaxId&& falseCase) :
-		_condition(std::move(condition)),
-		_trueCase(std::move(trueCase)),
-		_falseCase(std::move(falseCase))
+		ConditionalExpressionSyntax(const ExpressionSyntax& condition, const ExpressionSyntax& trueCase, const ExpressionSyntax& falseCase) :
+		_condition(condition),
+		_trueCase(trueCase),
+		_falseCase(falseCase)
 		{}
 
 	public:
@@ -23,8 +23,9 @@ namespace parka
 		ConditionalExpressionSyntax(ConditionalExpressionSyntax&&) = default;
 		ConditionalExpressionSyntax(const ConditionalExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Conditional; }
 		const auto& condition() const { return _condition; }
 		const auto& trueCase() const { return _trueCase; }
 		const auto& falseCase() const { return _falseCase; }

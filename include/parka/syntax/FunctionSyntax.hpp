@@ -5,7 +5,6 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/type/ValueType.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
@@ -18,11 +17,13 @@ namespace parka
 	class FunctionSyntax : public EntitySyntax
 	{
 		PrototypeSyntax _prototype;
-		ExpressionSyntaxId _body;
+		const ExpressionSyntax& _body;
 
-		FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntaxId&& body) :
+	private:
+
+		FunctionSyntax(PrototypeSyntax&& prototype, const ExpressionSyntax& body) :
 		_prototype(std::move(prototype)),
-		_body(std::move(body))
+		_body(body)
 		{}
 
 	public:
@@ -30,13 +31,13 @@ namespace parka
 		FunctionSyntax(FunctionSyntax&&) = default;
 		FunctionSyntax(const FunctionSyntax&) = delete;
 
-		static Optional<EntitySyntaxId> parse(Token& token);
+		static const FunctionSyntax *parse(Token& token);
 		
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }
 
-		const String& identifier() const { return _prototype.identifier().text(); }
 		EntityType type() const { return EntityType::Function; }
+		const String& identifier() const { return _prototype.identifier().text(); }
 	};
 }
 

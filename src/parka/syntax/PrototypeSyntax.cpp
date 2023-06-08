@@ -12,7 +12,7 @@
 
 namespace parka
 {
-	Optional<Array<EntitySyntaxId>> parseParameterList(Token& token)
+	Optional<Array<const ParameterSyntax*>> parseParameterList(Token& token)
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
@@ -22,7 +22,7 @@ namespace parka
 
 		token.increment();
 
-		auto parameters = Array<EntitySyntaxId>();
+		auto parameters = Array<const ParameterSyntax*>();
 
 		if (token.type() == TokenType::RightParenthesis)
 		{
@@ -33,12 +33,12 @@ namespace parka
 		
 		while (true)
 		{
-			auto parameterId = ParameterSyntax::parse(token);
+			auto parameter = ParameterSyntax::parse(token);
 
-			if (!parameterId) // TODO: Attempt to fast forward to parameter
+			if (!parameter) // TODO: Attempt to fast forward to parameter
 				return {};
 
-			parameters.push(*parameterId);
+			parameters.push(parameter);
 
 			if (token.type() == TokenType::Comma)
 			{
@@ -95,23 +95,23 @@ namespace parka
 		return prototype;
 	}
 
-	// bool PrototypeSyntax::validate(const EntitySyntaxId& functionId)
+	// bool PrototypeSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	auto success = true;
-	// 	auto& function = SyntaxRepository::getFunction(functionId);
+	// 	auto& function = SyntaxRepository::getFunction(function);
 
-	// 	for (auto parameterId : _parameterIds)
+	// 	for (auto parameter : _parameters)
 	// 	{
-	// 		auto& parameter = SyntaxRepository::getParameter(parameterId);
+	// 		auto& parameter = SyntaxRepository::getParameter(parameter);
 
-	// 		if (!parameter.validate(functionId))
+	// 		if (!parameter.validate(function))
 	// 			success = false;
 
-	// 		if (!function.declare(parameterId))
+	// 		if (!function.declare(parameter))
 	// 			success = false;
 	// 	}
 
-	// 	if (_returnType && !_returnType->validate(functionId))
+	// 	if (_returnType && !_returnType->validate(function))
 	// 		success = false;
 
 	// 	return success;

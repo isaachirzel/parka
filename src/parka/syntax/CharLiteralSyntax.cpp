@@ -24,7 +24,7 @@ namespace parka
 		return character;
 	}
 
-	Optional<ExpressionSyntaxId> CharLiteralSyntax::parse(Token& token)
+	const ExpressionSyntax *CharLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseChar(token);
 
@@ -32,10 +32,10 @@ namespace parka
 			return {};
 
 		auto expression = CharLiteralSyntax(token, *value);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 }

@@ -1,3 +1,4 @@
+#include "parka/log/Log.hpp"
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 #include "parka/syntax/LiteralSyntax.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
@@ -5,44 +6,36 @@
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/type/ValueType.hpp"
 
-#include "parka/util/Print.hpp"
-
 namespace parka
 {
-	const ValueType ValueType::voidType(EntitySyntaxId::voidId);
-	const ValueType ValueType::u8Type(EntitySyntaxId::u8Id);
-	const ValueType ValueType::u16Type(EntitySyntaxId::u16Id);
-	const ValueType ValueType::u32Type(EntitySyntaxId::u32Id);
-	const ValueType ValueType::u64Type(EntitySyntaxId::u64Id);
-	const ValueType ValueType::i8Type(EntitySyntaxId::i8Id);
-	const ValueType ValueType::i16Type(EntitySyntaxId::i16Id);
-	const ValueType ValueType::i32Type(EntitySyntaxId::i32Id);
-	const ValueType ValueType::i64Type(EntitySyntaxId::i64Id);
-	const ValueType ValueType::f32Type(EntitySyntaxId::f32Id);
-	const ValueType ValueType::f64Type(EntitySyntaxId::f64Id);
-	const ValueType ValueType::boolType(EntitySyntaxId::boolId);
-	const ValueType ValueType::charType(EntitySyntaxId::charId);
-	const ValueType ValueType::stringType(EntitySyntaxId::stringId);
-
-	String ValueType::getName() const
-	{
-		auto& entity = *_entityId;
-
-		return entity.identifier();
-	}
+	const ValueType ValueType::voidType(Primitive::voidPrimitive);
+	const ValueType ValueType::u8Type(Primitive::u8Primitive);
+	const ValueType ValueType::u16Type(Primitive::u16Primitive);
+	const ValueType ValueType::u32Type(Primitive::u32Primitive);
+	const ValueType ValueType::u64Type(Primitive::u64Primitive);
+	const ValueType ValueType::i8Type(Primitive::i8Primitive);
+	const ValueType ValueType::i16Type(Primitive::i16Primitive);
+	const ValueType ValueType::i32Type(Primitive::i32Primitive);
+	const ValueType ValueType::i64Type(Primitive::i64Primitive);
+	const ValueType ValueType::f32Type(Primitive::f32Primitive);
+	const ValueType ValueType::f64Type(Primitive::f64Primitive);
+	const ValueType ValueType::boolType(Primitive::boolPrimitive);
+	const ValueType ValueType::charType(Primitive::charPrimitive);
+	const ValueType ValueType::stringType(Primitive::stringPrimitive);
 
 	bool ValueType::canConvertTo(const ValueType& to)
 	{
-		return _entityId == to.entityId();
+		return &_entity == &to._entity;
 	}
 
 	std::ostream& operator<<(std::ostream& out, const ValueType& type)
 	{
+		log::notImplemented(here());
 		// output symbol
-		auto& entity = *type.entityId();
-		const auto& identifier = entity.identifier();
+		// auto& entity = *type.entityId();
+		// const auto& identifier = entity.identifier();
 
-		out << '`' << identifier << '`';
+		// out << '`' << identifier << '`';
 
 		return out;
 	}

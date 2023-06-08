@@ -20,7 +20,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionSyntaxId> ShiftExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *ShiftExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = AdditiveExpressionSyntax::parse(token);
 
@@ -39,9 +39,9 @@ namespace parka
 				return {};
 
 			auto expression = ShiftExpressionSyntax(*lhs, *rhs, *type);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 			type = parseBitShiftType(token);
 		}
 

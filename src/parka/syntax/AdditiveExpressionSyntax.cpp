@@ -24,7 +24,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<ExpressionSyntaxId> AdditiveExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *AdditiveExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = MultiplicativeExpressionSyntax::parse(token);
 
@@ -43,23 +43,23 @@ namespace parka
 				return {};
 
 			auto expression = AdditiveExpressionSyntax(*lhs, *rhs, *type);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 			type = getAdditiveType(token);
 		}
 
 		return lhs;
 	}
 
-	// bool AdditiveExpressionSyntax::validate(const EntitySyntaxId& functionId)
+	// bool AdditiveExpressionSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	auto success = true;
 
-	// 	if (!SyntaxRepository::get(_lhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_lhs).validate(function))
 	// 		success = false;
 
-	// 	if (!SyntaxRepository::get(_rhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_rhs).validate(function))
 	// 		success = false;
 
 	// 	// TODO: Test type compatibility

@@ -151,7 +151,9 @@ namespace parka
 			if (slot != table::empty)
 				return false;
 
-			slot = _items.add(Item(key, std::move(value), hash));
+			slot = _items.count();
+			
+			_items.add(Item(key, std::move(value), hash));
 
 			return true;
 		}

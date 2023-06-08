@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_STATEMENT_DECLARATION_SYNTAX_HPP
 #define PARKA_SYNTAX_STATEMENT_DECLARATION_SYNTAX_HPP
 
+#include "parka/syntax/EntitySyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
@@ -11,11 +12,11 @@ namespace parka
 {
 	class DeclarationStatementSyntax : public StatementSyntax
 	{
-		EntitySyntaxId _variableId;
-		ExpressionSyntaxId _value;
+		const EntitySyntax& _variable;
+		const ExpressionSyntax& _value;
 
-		DeclarationStatementSyntax(EntitySyntaxId variableId, ExpressionSyntaxId value) :
-		_variableId(variableId),
+		DeclarationStatementSyntax(const EntitySyntax& variable, const ExpressionSyntax& value) :
+		_variable(variable),
 		_value(value)
 		{}
 
@@ -24,11 +25,10 @@ namespace parka
 		DeclarationStatementSyntax(DeclarationStatementSyntax&&) = default;
 		DeclarationStatementSyntax(const DeclarationStatementSyntax&) = delete;
 
-		static Optional<StatementSyntaxId> parse(Token& token);
+		static const StatementSyntax *parse(Token& token);
 
 		StatementType statementType() const { return StatementType::Declaration; }
-
-		const auto& variableId() const { return _variableId; }
+		const auto& variable() const { return _variable; }
 		const auto& value() const { return _value; }
 	};
 }

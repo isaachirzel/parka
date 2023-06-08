@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> parseEnclosedExpressionSyntax(Token& token)
+	static const ExpressionSyntax *parseEnclosedExpressionSyntax(Token& token)
 	{
 		token.increment();
 
@@ -26,7 +26,7 @@ namespace parka
 		return expression;
 	}
 
-	Optional<ExpressionSyntaxId> PrimaryExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *PrimaryExpressionSyntax::parse(Token& token)
 	{
 		switch (token.type())
 		{

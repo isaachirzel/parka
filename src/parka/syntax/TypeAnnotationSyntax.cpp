@@ -18,15 +18,15 @@ namespace parka
 		return annotation;
 	}
 
-	// bool TypeAnnotationSyntax::validate(const EntitySyntaxId& functionId)
+	// bool TypeAnnotationSyntax::validate(const EntitySyntax& function)
 	// {
-	// 	auto& function = SyntaxRepository::getFunction(functionId);
-	// 	auto entityId = function.resolve(_identifier);
+	// 	auto& function = SyntaxRepository::getFunction(function);
+	// 	auto entity = function.resolve(_identifier);
 
-	// 	if (!entityId)
+	// 	if (!entity)
 	// 		return false;
 
-	// 	_type = ValueType(*entityId);
+	// 	_type = ValueType(*entity);
 
 	// 	return true;
 	// }

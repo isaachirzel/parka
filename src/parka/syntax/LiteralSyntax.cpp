@@ -9,7 +9,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> LiteralSyntax::parse(Token& token)
+	const ExpressionSyntax *LiteralSyntax::parse(Token& token)
 	{
 		switch (token.type())
 		{

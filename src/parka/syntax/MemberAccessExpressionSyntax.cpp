@@ -6,7 +6,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> MemberAccessExpressionSyntax::parse(Token& token, ExpressionSyntaxId primary)
+	const ExpressionSyntax *MemberAccessExpressionSyntax::parse(Token& token, const ExpressionSyntax& primary)
 	{
 		if (token.type() != TokenType::Dot)
 		{
@@ -23,10 +23,10 @@ namespace parka
 		}
 
 		auto expression = MemberAccessExpressionSyntax(std::move(primary), token);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 }

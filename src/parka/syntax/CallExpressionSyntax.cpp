@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> CallExpressionSyntax::parse(Token& token, ExpressionSyntaxId primary)
+	const ExpressionSyntax *CallExpressionSyntax::parse(Token& token, const ExpressionSyntax& primary)
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
@@ -16,7 +16,7 @@ namespace parka
 		token.increment();
 
 		// TODO: Add initial capacity
-		auto arguments = Array<ExpressionSyntaxId>();
+		auto arguments = Array<const ExpressionSyntax*>();
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
@@ -27,7 +27,7 @@ namespace parka
 				if (!argument)
 					return {}; // TODO: Continue to next argument by checking for ','
 
-				arguments.push(*argument);
+				arguments.push(argument);
 
 				if (token.type() != TokenType::Comma)
 					break;
@@ -46,8 +46,8 @@ namespace parka
 		token.increment();
 
 		auto expression = CallExpressionSyntax(std::move(primary), std::move(arguments));
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-		return id;
+		return &syntax;
 	}
 }

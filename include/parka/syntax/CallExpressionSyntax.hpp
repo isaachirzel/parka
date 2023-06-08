@@ -7,11 +7,11 @@ namespace parka
 {
 	class CallExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _primary;
-		Array<ExpressionSyntaxId> _arguments;
+		const ExpressionSyntax& _primary;
+		Array<const ExpressionSyntax*> _arguments;
 
-		CallExpressionSyntax(ExpressionSyntaxId&& primary, Array<ExpressionSyntaxId>&& arguments) :
-		_primary(std::move(primary)),
+		CallExpressionSyntax(const ExpressionSyntax& primary, Array<const ExpressionSyntax*>&& arguments) :
+		_primary(primary),
 		_arguments(std::move(arguments))
 		{}
 
@@ -20,8 +20,9 @@ namespace parka
 		CallExpressionSyntax(CallExpressionSyntax&&) = default;
 		CallExpressionSyntax(const CallExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token, ExpressionSyntaxId primary);
+		static const ExpressionSyntax *parse(Token& token, const ExpressionSyntax& primary);
 
+		ExpressionType expressionType() const { return ExpressionType::Call; }
 		const auto& arguments() const { return _arguments; }
 	};
 }

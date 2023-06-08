@@ -7,17 +7,17 @@
 
 namespace parka
 {
-	SymbolTableEntry::SymbolTableEntry(const EntitySyntaxId& entityId, const SymbolTable& parent) :
-	_syntaxId(entityId)
+	SymbolTableEntry::SymbolTableEntry(const EntitySyntax& syntax, const SymbolTable& parent) :
+	_syntax(syntax)
 	{
-		switch (entityId.type())
+		switch (syntax.type())
 		{
 			case EntityType::Package:
-				new (&_package) PackageSymbolTable(_syntaxId, &parent);
+				new (&_package) PackageSymbolTable((PackageSyntax&)_syntax, &parent);
 				break;
 
 			case EntityType::Struct:
-				new (&_struct) StructSymbolTable(_syntaxId, parent);
+				new (&_struct) StructSymbolTable((StructSyntax&)_syntax, parent);
 				break;
 
 			default:
@@ -26,10 +26,11 @@ namespace parka
 	}
 
 	SymbolTableEntry::SymbolTableEntry(SymbolTableEntry&& other) :
-	_syntaxId(std::move(other._syntaxId))
+	_syntax(other._syntax),
+	_context(other._context)
 	{
 		// TODO: Implement for other table types
-		switch (_syntaxId.type())
+		switch (_syntax.type())
 		{
 			case EntityType::Package:
 				new (&_package) auto(std::move(other._package));
@@ -46,7 +47,7 @@ namespace parka
 
 	SymbolTableEntry::~SymbolTableEntry()
 	{
-		switch (_syntaxId.type())
+		switch (_syntax.type())
 		{
 			case EntityType::Package:
 				_package.~PackageSymbolTable();
@@ -63,7 +64,7 @@ namespace parka
 
 	void SymbolTableEntry::setParent(const SymbolTable& parent)
 	{
-		switch (_syntaxId.type())
+		switch (_syntax.type())
 		{
 			case EntityType::Package:
 				_package._parent = &parent;
@@ -90,7 +91,12 @@ namespace parka
 	{
 		// const auto *symbolTable = entry.getSymbolTable();
 
-		out << entry._syntaxId->identifier() << ":\t\t" << entry._syntaxId.type() << '\n';
+		out << entry._syntax.identifier() << ":\t\t" << entry._syntax.type();
+		
+		if (entry._context != nullptr)
+			out << " [validated]";
+
+		out << '\n';
 
 		// TODO: Implement outputting tables
 

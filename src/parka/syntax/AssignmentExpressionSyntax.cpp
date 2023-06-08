@@ -49,7 +49,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionSyntaxId> AssignmentExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *AssignmentExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = ConditionalExpressionSyntax::parse(token);
 
@@ -69,19 +69,19 @@ namespace parka
 			return {};
 
 		auto expression = AssignmentExpressionSyntax(*lhs, *rhs, *type);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-		return id;
+		return &syntax;
 	}
 
-	// bool Assignment::validate(const EntitySyntaxId& functionId)
+	// bool Assignment::validate(const EntitySyntax& function)
 	// {
 	// 	bool success = true;
 
-	// 	if (!SyntaxRepository::get(_lhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_lhs).validate(function))
 	// 		success = false;
 
-	// 	if (!SyntaxRepository::get(_rhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_rhs).validate(function))
 	// 		success = false;
 
 	// 	// TODO: validate type of assignment

@@ -24,7 +24,7 @@ namespace parka
 		FunctionContext(FunctionContext&&) = default;
 		FunctionContext(const FunctionContext&) = delete;
 
-		static Optional<EntityContextId> validate(FunctionSymbolTable& symbolTable);
+		static const FunctionContext *validate(FunctionSymbolTable& symbolTable);
 
 		EntityType type() const { return EntityType::Function; }
 	};

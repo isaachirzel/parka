@@ -6,11 +6,6 @@
 
 namespace parka
 {
-	struct StatementSyntax;
-	class DeclarationStatementSyntax;
-	class ExpressionStatementSyntax;
-	class JumpStatementSyntax;
-	
 	class StatementSyntaxId
 	{
 		usize _index;
@@ -28,16 +23,12 @@ namespace parka
 		StatementSyntaxId(StatementSyntaxId&&) = default;
 		StatementSyntaxId(const StatementSyntaxId&) = default;
 
-		static StatementSyntaxId create(DeclarationStatementSyntax&&);
-		static StatementSyntaxId create(ExpressionStatementSyntax&&);
-		static StatementSyntaxId create(JumpStatementSyntax&&);
-
 		StatementSyntaxId& operator=(StatementSyntaxId&&) = default;
 		StatementSyntaxId& operator=(const StatementSyntaxId&) = default;
 		friend std::ostream& operator<<(std::ostream& out, const StatementSyntaxId& id);
 		bool operator==(const StatementSyntaxId& other) const;
-		const StatementSyntax& operator*() const;
-		const StatementSyntax *operator->() const;
+
+		friend struct StatementSyntax;
 	};
 }
 

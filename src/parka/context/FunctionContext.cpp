@@ -3,7 +3,7 @@
 
 namespace parka
 {
-	Optional<EntityContextId> FunctionContext::validate(FunctionSymbolTable& symbolTable)
+	const FunctionContext *FunctionContext::validate(FunctionSymbolTable& symbolTable)
 	{
 		// bool success = true;
 		// const auto& syntax = symbolTable.syntaxId().getFunction();

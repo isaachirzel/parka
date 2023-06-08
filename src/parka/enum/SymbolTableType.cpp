@@ -1,5 +1,4 @@
 #include "parka/enum/SymbolTableType.hpp"
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
@@ -20,7 +19,7 @@ namespace parka
 				break;
 
 			default:
-				out << '(' << (int)type << ") invalid";
+				out << '(' << (int)type << ") Invalid";
 		}
 
 		return out;

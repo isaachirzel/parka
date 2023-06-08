@@ -26,7 +26,7 @@ namespace parka
 		ParameterSyntax(ParameterSyntax&&) = default;
 		ParameterSyntax(const ParameterSyntax&) = delete;
 
-		static Optional<EntitySyntaxId> parse(Token& token);
+		static const ParameterSyntax *parse(Token& token);
 
 		const String& identifier() const { return _identifier.text(); }
 		EntityType type() const { return EntityType::Parameter; }

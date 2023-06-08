@@ -11,13 +11,13 @@ namespace parka
 {
 	class MultiplicativeExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _lhs;
-		ExpressionSyntaxId _rhs;
+		const ExpressionSyntax& _lhs;
+		const ExpressionSyntax& _rhs;
 		MultiplicativeType _type;
 
-		MultiplicativeExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, MultiplicativeType type):
-		_lhs(std::move(lhs)),
-		_rhs(std::move(rhs)),
+		MultiplicativeExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, MultiplicativeType type) :
+		_lhs(lhs),
+		_rhs(rhs),
 		_type(type)
 		{}
 
@@ -26,8 +26,9 @@ namespace parka
 		MultiplicativeExpressionSyntax(MultiplicativeExpressionSyntax&&) = default;
 		MultiplicativeExpressionSyntax(const MultiplicativeExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Multiplicative; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }

@@ -8,8 +8,6 @@
 
 namespace parka
 {
-	class File;
-
 	class FilePosition
 	{
 		const File& _file;

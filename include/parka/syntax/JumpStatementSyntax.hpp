@@ -12,12 +12,12 @@ namespace parka
 	class JumpStatementSyntax : public StatementSyntax
 	{
 		Token _token;
-		Optional<ExpressionSyntaxId> _value;
+		const ExpressionSyntax *_value;
 		JumpType _type;
 
-		JumpStatementSyntax(const Token& token, JumpType type, Optional<ExpressionSyntaxId>&& value) :
+		JumpStatementSyntax(const Token& token, JumpType type, const ExpressionSyntax *value) :
 		_token(token),
-		_value(std::move(value)),
+		_value(value),
 		_type(type)
 		{}
 
@@ -26,13 +26,13 @@ namespace parka
 		JumpStatementSyntax(JumpStatementSyntax&&) = default;
 		JumpStatementSyntax(const JumpStatementSyntax&) = delete;
 
-		static Optional<StatementSyntaxId> parse(Token& token);
+		static const StatementSyntax *parse(Token& token);
 
-		const auto& token() const { return _token; }
-		bool hasValue() const { return _value; }
-		const auto& value() const { return _value; }
-		const auto& type() const { return _type; }
 		StatementType statementType() const { return StatementType::Jump; }
+		const auto& token() const { return _token; }
+		bool hasValue() const { return !!_value; }
+		const auto& value() const { assert(_value != nullptr); return *_value; }
+		const auto& type() const { return _type; }
 	};
 }
 

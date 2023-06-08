@@ -10,13 +10,13 @@ namespace parka
 {
 	class AdditiveExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _lhs;
-		ExpressionSyntaxId _rhs;
-		AdditiveType _type;
+		const ExpressionSyntax& _lhs;
+		const ExpressionSyntax& _rhs;
+		const AdditiveType _type;
 
-		AdditiveExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, AdditiveType type) :
-		_lhs(std::move(lhs)),
-		_rhs(std::move(rhs)),
+		AdditiveExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, AdditiveType type) :
+		_lhs(lhs),
+		_rhs(rhs),
 		_type(type)
 		{}
 		
@@ -25,8 +25,9 @@ namespace parka
 		AdditiveExpressionSyntax(AdditiveExpressionSyntax&&) = default;
 		AdditiveExpressionSyntax(const AdditiveExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Additive; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }

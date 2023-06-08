@@ -3,8 +3,6 @@
 #include "parka/syntax/BlockSyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-
-#include "parka/repository/StatementSyntaxId.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/Print.hpp"
 
@@ -34,7 +32,7 @@ namespace parka
 		}
 	}
 
-	Optional<StatementSyntaxId> JumpStatementSyntax::parse(Token& token)
+	const StatementSyntax *JumpStatementSyntax::parse(Token& token)
 	{
 		auto type = getJumpType(token);
 
@@ -45,7 +43,7 @@ namespace parka
 
 		token.increment();
 
-		Optional<ExpressionSyntaxId> value;
+		const ExpressionSyntax *value = nullptr;
 
 		if (token.type() != TokenType::Semicolon)
 		{
@@ -79,9 +77,9 @@ namespace parka
 		token.increment();
 
 		auto statement = JumpStatementSyntax(token, *type, std::move(value));
-		auto id = StatementSyntaxId::create(std::move(statement));
+		auto& syntax = StatementSyntax::create(std::move(statement));
 
-		return id;
+		return &syntax;
 	}
 
 	// bool validateReturnStatement(LocalSymbolTable& symbols)

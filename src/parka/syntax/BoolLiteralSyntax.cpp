@@ -28,7 +28,7 @@ namespace parka
 		return {};
 	}
 
-	Optional<ExpressionSyntaxId> BoolLiteralSyntax::parse(Token& token)
+	const ExpressionSyntax *BoolLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseBool(token);
 
@@ -36,10 +36,10 @@ namespace parka
 			return {};
 
 		auto literal = BoolLiteralSyntax(token, *value);
-		auto id = ExpressionSyntaxId::create(std::move(literal));
+		auto& syntax = ExpressionSyntax::create(std::move(literal));
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 }

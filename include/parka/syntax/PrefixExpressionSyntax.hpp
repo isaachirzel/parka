@@ -11,12 +11,12 @@ namespace parka
 	class PrefixExpressionSyntax : public ExpressionSyntax
 	{
 		Token _token;
-		ExpressionSyntaxId _expression;
+		const ExpressionSyntax& _expression;
 		PrefixType _type;
 
-		PrefixExpressionSyntax(PrefixType type, ExpressionSyntaxId&& expression, const Token& token) :
+		PrefixExpressionSyntax(PrefixType type, const ExpressionSyntax& expression, const Token& token) :
 		_token(token),
-		_expression(std::move(expression)),
+		_expression(expression),
 		_type(type)
 		{}
 
@@ -25,8 +25,9 @@ namespace parka
 		PrefixExpressionSyntax(PrefixExpressionSyntax&&) = default;
 		PrefixExpressionSyntax(const PrefixExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Prefix; }
 		const auto& token() const { return _token; }
 		const auto& expression() const { return _expression; }
 		const auto& type() const { return _type; }

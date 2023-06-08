@@ -4,7 +4,7 @@
 namespace parka
 {
 	// TODO
-	Optional<EntityContextId> StructContext::validate(StructSymbolTable& symbolTable)
+	const StructContext *StructContext::validate(StructSymbolTable& symbolTable)
 	{
 		log::notImplemented(here());
 	}

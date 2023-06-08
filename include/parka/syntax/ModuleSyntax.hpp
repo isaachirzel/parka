@@ -1,7 +1,9 @@
 #ifndef PARKA_SYNTAX_MODULE_SYNTAX_HPP
 #define PARKA_SYNTAX_MODULE_SYNTAX_HPP
 
-#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/syntax/FunctionSyntax.hpp"
+#include "parka/syntax/StructSyntax.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/File.hpp"
 #include "parka/util/Optional.hpp"
@@ -12,13 +14,13 @@ namespace parka
 	class ModuleSyntax
 	{
 		String _filepath;
-		Array<EntitySyntaxId> _functionIds;
-		Array<EntitySyntaxId> _structIds;
+		Array<const FunctionSyntax*> _functions;
+		Array<const StructSyntax*> _structs;
 
-		ModuleSyntax(String&& filepath, Array<EntitySyntaxId>&& functionIds, Array<EntitySyntaxId>&& structIds) :
+		ModuleSyntax(String&& filepath, Array<const FunctionSyntax*>&& functions, Array<const StructSyntax*>&& structs) :
 		_filepath(std::move(filepath)),
-		_functionIds(std::move(functionIds)),
-		_structIds(std::move(structIds))
+		_functions(std::move(functions)),
+		_structs(std::move(structs))
 		{}
 
 	public:
@@ -29,8 +31,8 @@ namespace parka
 		static ModuleSyntax parse(const File& file);
 
 		const auto& filename() const { return _filepath; }
-		const auto& functionIds() const { return _functionIds; }
-		const auto& structIds() const { return _structIds; }
+		const auto& functions() const { return _functions; }
+		const auto& structs() const { return _structs; }
 	};
 }
 

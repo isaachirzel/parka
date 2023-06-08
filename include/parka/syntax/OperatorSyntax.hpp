@@ -1,8 +1,8 @@
 #ifndef PARKA_SYNTAX_FUNCTION_OPERATOR_SYNTAX_HPP
 #define PARKA_SYNTAX_FUNCTION_OPERATOR_SYNTAX_HPP
 
-#include "parka/repository/ExpressionSyntaxId.hpp"
-#include "parka/repository/OperatorId.hpp"
+#include "parka/enum/OperatorType.hpp"
+#include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/type/ValueType.hpp"
 #include "parka/Token.hpp"
 #include "parka/util/Optional.hpp"
@@ -13,12 +13,12 @@ namespace parka
 	{
 		ValueType _leftType;
 		ValueType _rightType;
-		Optional<ExpressionSyntaxId> _body;
+		const ExpressionSyntax *_body;
 		OperatorType _type;
 
 	public:
 
-		Operator(ValueType&& leftType, ValueType&& rightType, Optional<ExpressionSyntaxId>&& body, OperatorType type) :
+		Operator(ValueType&& leftType, ValueType&& rightType, const ExpressionSyntax *body, OperatorType type) :
 		_leftType(std::move(leftType)),
 		_rightType(std::move(rightType)),
 		_body(std::move(body)),

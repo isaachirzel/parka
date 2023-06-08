@@ -7,28 +7,27 @@
 #include "parka/repository/EntityContextId.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
-#include "parka/util/Array.hpp"
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<EntityContextId> PackageContext::validate(PackageSymbolTable& symbolTable)
+	const PackageContext *PackageContext::validate(PackageSymbolTable& symbolTable)
 	{
 		auto success = true;
 		// const auto& packageSyntax = symbolTable.packageId().getPackage();
-		auto functionIds = Array<EntityContextId>();
-		auto structIds = Array<EntityContextId>();
+		auto functions = Array<EntityContextId>();
+		auto structs = Array<EntityContextId>();
 
 		for (auto& tuple : symbolTable.symbols())
 		{
 			auto& entry = tuple.value();
-			const auto& type = entry.type();
-			auto contextId = Optional<EntityContextId>();
+			const auto& syntax = entry.syntax();
+			const auto& type = syntax.type();
+			const auto *context = (const EntityContext*)nullptr;
 
 			switch (type)
 			{
 				case EntityType::Package:
-					contextId = PackageContext::validate(entry.packageSymbolTable());
+					context = PackageContext::validate(entry.packageSymbolTable());
 					break;
 
 				case EntityType::Struct:
@@ -36,15 +35,15 @@ namespace parka
 					// contextId = StructContext::validate(entry.structSymbolTable());
 					break;
 
-				case EntityType::Primitive:				
-					contextId = EntityContextId::get(entry.syntaxId().getPrimitive());
+				case EntityType::Primitive:
+					context = (const Primitive*)&entry.syntax();
 					break;
 
 				case EntityType::Function:
 				{
-					auto functionSymbolTable = FunctionSymbolTable(entry.syntaxId(), symbolTable);
+					auto functionSymbolTable = FunctionSymbolTable((const FunctionSyntax&)syntax, symbolTable);
 
-					contextId = FunctionContext::validate(functionSymbolTable);
+					context = FunctionContext::validate(functionSymbolTable);
 					break;
 				}
 
@@ -53,21 +52,21 @@ namespace parka
 					break;
 			}
 
-			if (!contextId)
+			if (!context)
 			{
 				success = false;
 				continue;
 			}
 			
-			entry.contextId() = *contextId;
+			entry.context() = context;
 		}
 
 		if (!success)
 			return {};
 
-		auto result = PackageContext(std::move(functionIds), std::move(structIds));
-		auto contextId = EntityContextId::create(std::move(result));
+		auto result = PackageContext(std::move(functions), std::move(structs));
+		auto& context = EntityContext::create(std::move(result));
 
-		return contextId;
+		return (const PackageContext*)&context;
 	}
 }

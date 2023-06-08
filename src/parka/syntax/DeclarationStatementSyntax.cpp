@@ -9,11 +9,11 @@
 
 namespace parka
 {
-	Optional<StatementSyntaxId> DeclarationStatementSyntax::parse(Token& token)
+	const StatementSyntax *DeclarationStatementSyntax::parse(Token& token)
 	{
-		auto variableId = VariableSyntax::parse(token);
+		auto variable = VariableSyntax::parse(token);
 
-		if (!variableId)
+		if (!variable)
 			return {};
 
 		if (token.type() != TokenType::Assign)
@@ -37,27 +37,27 @@ namespace parka
 
 		token.increment();
 
-		auto statement = DeclarationStatementSyntax(*variableId, *value);
-		auto id = StatementSyntaxId::create(std::move(statement));
+		auto statement = DeclarationStatementSyntax(*variable, *value);
+		auto& id = StatementSyntax::create(std::move(statement));
 
-		return id;
+		return &id;
 	}
 
-	// bool DeclarationStatementSyntax::validate(const EntitySyntaxId& functionId)
+	// bool DeclarationStatementSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	auto success = true;
-	// 	auto& function = SyntaxRepository::getFunction(functionId);
-	// 	auto& variable = SyntaxRepository::getVariable(_variableId);
+	// 	auto& function = SyntaxRepository::getFunction(function);
+	// 	auto& variable = SyntaxRepository::getVariable(_variable);
 	// 	auto& value = SyntaxRepository::get(_value);
 		
-	// 	if (!value.validate(functionId))
+	// 	if (!value.validate(function))
 	// 		success = false;
 
-	// 	if (!variable.validate(functionId))
+	// 	if (!variable.validate(function))
 	// 		success = false;
 
 	// 	// The declaration comes after expression validation so it can't access the declaration
-	// 	if (!function.declare(_variableId))
+	// 	if (!function.declare(_variable))
 	// 		success = false;
 
 	// 	if (!success)

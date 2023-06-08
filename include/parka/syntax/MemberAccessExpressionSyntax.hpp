@@ -9,18 +9,19 @@ namespace parka
 {
 	class MemberAccessExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _expression;
+		const ExpressionSyntax& _expression;
 		Token _member;
 
-		MemberAccessExpressionSyntax(ExpressionSyntaxId&& expression, const Token& member) :
-		_expression(std::move(expression)),
+		MemberAccessExpressionSyntax(const ExpressionSyntax& expression, const Token& member) :
+		_expression(expression),
 		_member(member)
 		{}
 
 	public:
 
-		static Optional<ExpressionSyntaxId> parse(Token& token, ExpressionSyntaxId primary);
+		static const ExpressionSyntax *parse(Token& token, const ExpressionSyntax& primary);
 
+		ExpressionType expressionType() const { return ExpressionType::MemberAccess; }
 		const auto& expression() const { return _expression; }
 		const auto& member() const { return _member; }
 	};

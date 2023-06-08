@@ -16,8 +16,8 @@ namespace parka
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
 		auto token = Token::initial(file);
-		auto functionIds = Array<EntitySyntaxId>();
-		auto structIds = Array<EntitySyntaxId>();
+		auto functions = Array<const FunctionSyntax*>();
+		auto structs = Array<const StructSyntax*>();
 
 		while (true)
 		{
@@ -27,24 +27,24 @@ namespace parka
 			{
 				case KeywordType::Function:
 				{
-					auto functionId = FunctionSyntax::parse(token);
+					auto function = FunctionSyntax::parse(token);
 
-					if (!functionId)
+					if (!function)
 						break;
 
-					functionIds.push(*functionId);
+					functions.push(function);
 
 					continue;
 				}
 
 				case KeywordType::StructSyntax:
 				{
-					auto structId = StructSyntax::parse(token);
+					const auto *strct = StructSyntax::parse(token);
 
-					if (!structId)
+					if (!strct)
 						break;
 
-					structIds.push(*structId);
+					structs.push(strct);
 
 					continue;
 				}
@@ -61,32 +61,8 @@ namespace parka
 			break;
 		}
 
-		auto mod = ModuleSyntax(String(file.path()), std::move(functionIds), std::move(structIds));
+		auto mod = ModuleSyntax(String(file.path()), std::move(functions), std::move(structs));
 
 		return mod;
 	}
-
-	// bool ModuleSyntax::validate(const EntitySyntaxId& packageId)
-	// {
-	// 	auto success = true;
-	// 	// auto& package = SyntaxRepository::getPackage(packageId);
-
-	// 	for (auto id : _functionIds)
-	// 	{
-	// 		auto& function = SyntaxRepository::getFunction(id);
-
-	// 		if (!function.validate(packageId))
-	// 			success = false;
-	// 	}
-
-	// 	for (auto id : _structIds)
-	// 	{
-	// 		auto& strct = SyntaxRepository::getStruct(id);
-
-	// 		if (!strct.validate(packageId))
-	// 			success = false;
-	// 	}
-
-	// 	return success;
-	// }
 }

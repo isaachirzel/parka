@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	Optional<EntitySyntaxId> StructSyntax::parse(Token& token)
+	const StructSyntax *StructSyntax::parse(Token& token)
 	{
 		auto keyword = KeywordSyntax::parseStruct(token);
 
@@ -61,12 +61,12 @@ namespace parka
 		token.increment();
 
 		auto strct = StructSyntax(*identifier, std::move(members));
-		auto id = EntitySyntaxId::create(std::move(strct));
+		auto& syntax = EntitySyntax::create(std::move(strct));
 
-		return id;
+		return (const StructSyntax*)&syntax;
 	}
 
-	// bool StructSyntax::validate(const EntitySyntaxId& functionId)
+	// bool StructSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	bool success = true;
 
@@ -89,7 +89,7 @@ namespace parka
 	// 			}
 	// 		}
 
-	// 		if (member.validate(functionId))
+	// 		if (member.validate(function))
 	// 			success = false;
 
 	// 		index += 1;

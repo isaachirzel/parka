@@ -20,7 +20,8 @@ namespace parka
 		StringLiteralSyntax(StringLiteralSyntax&&) = default;
 		StringLiteralSyntax(const StringLiteralSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
+		static const ExpressionSyntax *parse(Token& token);
 	};
 }
 

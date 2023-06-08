@@ -3,26 +3,24 @@
 #include "parka/enum/EntityType.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/repository/EntityContextId.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/intrinsic/Primitive.hpp"
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
 	Optional<ContextTree> ContextTree::validate(const SyntaxTree& syntax)
 	{
-		auto symbolTable = PackageSymbolTable(syntax.globalPackageId(), nullptr);
+		auto symbolTable = PackageSymbolTable(syntax.globalPackage(), nullptr);
 
 		std::cout << symbolTable << std::endl;
 
-		auto globalPackageId = PackageContext::validate(symbolTable);
+		const auto *globalPackage = PackageContext::validate(symbolTable);
 
-		if (!globalPackageId)
+		if (!globalPackage)
 			return {};
 
-		auto context = ContextTree(*globalPackageId);
+		auto context = ContextTree(*globalPackage);
 
 		return context;
 	}

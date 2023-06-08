@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> StringLiteralSyntax::parse(Token& token)
+	const ExpressionSyntax *StringLiteralSyntax::parse(Token& token)
 	{
 		if (token.type() != TokenType::StringLiteralSyntax)
 		{
@@ -14,10 +14,10 @@ namespace parka
 		}
 
 		auto literal = StringLiteralSyntax(token, token.text());
-		auto id = ExpressionSyntaxId::create(std::move(literal));
+		auto& syntax = ExpressionSyntax::create(std::move(literal));
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 }

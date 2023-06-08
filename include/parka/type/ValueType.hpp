@@ -1,7 +1,7 @@
 #ifndef PARKA_TYPE_HPP
 #define PARKA_TYPE_HPP
 
-#include "parka/repository/EntitySyntaxId.hpp"
+#include "parka/repository/EntityContext.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
@@ -28,22 +28,21 @@ namespace parka
 
 	private:
 
-		EntitySyntaxId _entityId;
+		const EntityContext& _entity;
 
 		// TODO: Add pointer info
 		// TODO: Add LiteralSyntax for better type inference?
 	public:
 
-		ValueType(EntitySyntaxId entityId) :
-		_entityId(entityId)
+		ValueType(const EntityContext& entity) :
+		_entity(entity)
 		{}
 		ValueType(ValueType&&) = default;
 		ValueType(const ValueType&) = default;
 
-		String getName() const;
 		bool canConvertTo(const ValueType& other);
 
-		const auto& entityId() const { return _entityId; }
+		const auto& entityId() const { return _entity; }
 
 		friend std::ostream& operator<<(std::ostream& out, const ValueType& type);
 

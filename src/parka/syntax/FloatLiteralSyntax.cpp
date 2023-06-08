@@ -44,7 +44,7 @@ namespace parka
 		
 	}
 
-	Optional<ExpressionSyntaxId> FloatLiteralSyntax::parse(Token& token)
+	const ExpressionSyntax *FloatLiteralSyntax::parse(Token& token)
 	{
 		auto value = parseFloat(token);
 
@@ -52,10 +52,10 @@ namespace parka
 			return {};
 
 		auto expression = FloatLiteralSyntax(token, value);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 }

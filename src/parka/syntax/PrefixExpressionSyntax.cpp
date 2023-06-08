@@ -35,7 +35,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionSyntaxId> PrefixExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *PrefixExpressionSyntax::parse(Token& token)
 	{
 		auto type = parsePrefixType(token);
 
@@ -48,8 +48,8 @@ namespace parka
 
 		auto inner = PrefixExpressionSyntax::parse(token);
 		auto expression = PrefixExpressionSyntax(*type, *inner, prefixToken);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-		return id;
+		return &syntax;
 	}
 }

@@ -6,7 +6,7 @@
 
 namespace parka
 {
-	Optional<ExpressionSyntaxId> SubscriptExpressionSyntax::parse(Token& token, ExpressionSyntaxId primary)
+	const ExpressionSyntax *SubscriptExpressionSyntax::parse(Token& token, const ExpressionSyntax& primary)
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{
@@ -21,8 +21,8 @@ namespace parka
 		if (!index)
 			return {};
 
-		auto expression = SubscriptExpressionSyntax(std::move(primary), *index);
-		auto id = ExpressionSyntaxId::create(std::move(expression));
+		auto expression = SubscriptExpressionSyntax(primary, *index);
+		auto& syntax = ExpressionSyntax::create(std::move(expression));
 
 		if (token.type() != TokenType::RightBracket)
 		{
@@ -32,6 +32,6 @@ namespace parka
 
 		token.increment();
 
-		return id;
+		return &syntax;
 	}
 }

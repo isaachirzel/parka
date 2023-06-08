@@ -3,6 +3,7 @@
 
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
+#include "parka/syntax/ParameterSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 
 namespace parka
@@ -11,13 +12,13 @@ namespace parka
 	{
 		KeywordSyntax _keyword;
 		Identifier _identifier;
-		Array<EntitySyntaxId> _parameterIds;
+		Array<const ParameterSyntax*> _parameters;
 		Optional<TypeAnnotationSyntax> _returnType;
 
-		PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<EntitySyntaxId>&& parameterIds, Optional<TypeAnnotationSyntax>&& returnType) :
+		PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<const ParameterSyntax*>&& parameters, Optional<TypeAnnotationSyntax>&& returnType) :
 		_keyword(std::move(keyword)),
 		_identifier(std::move(identifier)),
-		_parameterIds(std::move(parameterIds)),
+		_parameters(std::move(parameters)),
 		_returnType(std::move(returnType))
 		{}
 
@@ -29,7 +30,7 @@ namespace parka
 		static Optional<PrototypeSyntax> parse(Token& token);
 
 		const auto& identifier() const { return _identifier; }
-		const auto& parameters() const { return _parameterIds; }
+		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }
 	};
 }

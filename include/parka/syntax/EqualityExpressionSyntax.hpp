@@ -8,13 +8,13 @@ namespace parka
 {
 	class EqualityExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _lhs;
-		ExpressionSyntaxId _rhs;
+		const ExpressionSyntax& _lhs;
+		const ExpressionSyntax& _rhs;
 		EqualityType _type;
 
-		EqualityExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, EqualityType type) :
-		_lhs(std::move(lhs)),
-		_rhs(std::move(rhs)),
+		EqualityExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, EqualityType type) :
+		_lhs(lhs),
+		_rhs(rhs),
 		_type(type)
 		{}
 
@@ -23,8 +23,9 @@ namespace parka
 		EqualityExpressionSyntax(EqualityExpressionSyntax&&) = default;
 		EqualityExpressionSyntax(const EqualityExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Equality; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }

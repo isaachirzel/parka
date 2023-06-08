@@ -5,15 +5,15 @@
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/SymbolTableEntry.hpp"
+#include "parka/syntax/StructSyntax.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	PackageSymbolTable::PackageSymbolTable(const EntitySyntaxId& packageId, const SymbolTable *parent) :
-	_packageId(packageId),
+	PackageSymbolTable::PackageSymbolTable(const PackageSyntax& syntax, const SymbolTable *parent) :
+	_syntax(syntax),
 	_symbols(), // TODO: pre-reserve symbol count
 	_parent(parent)
 	{
@@ -21,33 +21,30 @@ namespace parka
 
 		if (isGlobalPackage)
 		{
-			for (const auto& primitive : Primitive::primitives)
+			for (const auto *primitive : Primitive::primitives)
 			{
-				const auto& id = EntitySyntaxId::getFor(primitive);
-				_symbols.insert(primitive.identifier(), SymbolTableEntry(id, *this));
+				_symbols.insert(primitive->identifier(), SymbolTableEntry(*primitive, *this));
 			}
 		}
 
-		const auto& syntax = packageId.getPackage();
-
-		for (const auto& mod : syntax.modules())
+		for (const auto& mod : _syntax.modules())
 		{
-			for (const auto& structId : mod.structIds())
-				declare(structId);
+			for (const auto *strct : mod.structs())
+				declare(*strct);
 
-			for (const auto& functionId : mod.functionIds())
-				declare(functionId);
+			for (const auto *function : mod.functions())
+				declare(*function);
 		}
 
-		for (const auto& packageId : syntax.packageIds())
-			declare(packageId);
+		for (const auto *package : syntax.packages())
+			declare(*package);
 	}
 
-	bool PackageSymbolTable::declare(const EntitySyntaxId& entityId)
+	bool PackageSymbolTable::declare(const EntitySyntax& entity)
 	{
 		// TODO: Invalidate symbol on failure, better error
-		auto entry = SymbolTableEntry(entityId, *this);
-		const auto& identifier = entityId->identifier();
+		auto entry = SymbolTableEntry(entity,  *this);
+		const auto& identifier = entity.identifier();
 		auto result = _symbols.insert(identifier, std::move(entry));
 
 		if (!result)
@@ -68,9 +65,8 @@ namespace parka
 
 			if (!result)
 			{
-				auto& package = *_packageId;
 				// TODO: Output package symbol, entity type and reference highlight
-				log::error("Unable to find `$` in package `$`.", part.text(), package.identifier());
+				log::error("Unable to find `$` in package `$`.", part.text(), _syntax.identifier());
 				
 				return nullptr;
 			}
@@ -79,7 +75,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const Identifier& identifier) const
+	const EntitySyntax *PackageSymbolTable::resolve(const Identifier& identifier) const
 	{
 		// TODO: Confirm this makes sense. I'm not sure if resolving single identifiers should always do
 		// this or if it should seek upwards at times
@@ -88,10 +84,10 @@ namespace parka
 		if (!result)
 			return {};
 			
-		return result->syntaxId();
+		return &result->syntax();
 	}
 
-	Optional<EntitySyntaxId> PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
+	const EntitySyntax *PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
 	{
 		// TODO: Make this logic work
 		const auto *entry = findEntry(identifier, 0);
@@ -99,14 +95,14 @@ namespace parka
 		if (!entry)
 			return {};
 
-		return entry->syntaxId();
+		return &entry->syntax();
 	}
 
 	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbols)
 	{
 		// TODO: Implement printing other packages
 		auto indent = Indent(out);
-		const auto& identifier = symbols._packageId->identifier();
+		const auto& identifier = symbols.syntax().identifier();
 
 		out << (identifier.length() > 0 ? identifier : "Global Scope") << ":\n";
 

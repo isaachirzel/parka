@@ -3,7 +3,6 @@
 
 #include "parka/repository/EntityContext.hpp"
 #include "parka/repository/EntityContextId.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/StructSymbolTable.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -18,7 +17,7 @@ namespace parka
 		StructContext(StructContext&&) = default;
 		StructContext(const StructContext&) = delete;
 
-		static Optional<EntityContextId> validate(StructSymbolTable& symbolTable);
+		static const StructContext *validate(StructSymbolTable& symbolTable);
 		
 		EntityType type() const { return EntityType::Struct; }
 	};

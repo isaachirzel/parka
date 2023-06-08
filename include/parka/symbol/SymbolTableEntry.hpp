@@ -3,8 +3,8 @@
 
 #include "parka/enum/EntityType.hpp"
 #include "parka/enum/SymbolTableEntryType.hpp"
+#include "parka/repository/EntityContext.hpp"
 #include "parka/repository/EntityContextId.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/StructSymbolTable.hpp"
@@ -14,8 +14,8 @@ namespace parka
 {
 	class SymbolTableEntry
 	{
-		EntitySyntaxId _syntaxId;
-		Optional<EntityContextId> _contextId;
+		const EntitySyntax& _syntax;
+		const EntityContext *_context;
 		
 		union
 		{
@@ -25,20 +25,19 @@ namespace parka
 
 	public:
 
-		SymbolTableEntry(const EntitySyntaxId& entityId, const SymbolTable& parent);
+		SymbolTableEntry(const EntitySyntax& entity, const SymbolTable& parent);
 		SymbolTableEntry(SymbolTableEntry&&);
 		SymbolTableEntry(const SymbolTableEntry&) = delete;
 		~SymbolTableEntry();
 
 		void setParent(const SymbolTable& parent);
 
-		const auto& syntaxId() const {  return _syntaxId; }
-		const auto& contextId() const {  return _contextId; }
-		const auto& type() const { return _syntaxId.type(); }
+		const auto& syntax() const {  return _syntax; }
+		const auto& context() const {  return _context; }
 
-		auto& contextId() {  return _contextId; }
-		auto& packageSymbolTable() { assert(_syntaxId.type() == EntityType::Package); return _package; }
-		auto& structSymbolTable() { assert(_syntaxId.type() == EntityType::Struct); return _struct; }
+		auto& context() {  return _context; }
+		auto& packageSymbolTable() { assert(_syntax.type() == EntityType::Package); return _package; }
+		auto& structSymbolTable() { assert(_syntax.type() == EntityType::Struct); return _struct; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry);
 	};

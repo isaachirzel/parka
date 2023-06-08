@@ -4,8 +4,6 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
-#include "parka/repository/EntitySyntaxId.hpp"
-#include "parka/repository/ExpressionSyntaxId.hpp"
 
 namespace parka
 {
@@ -26,7 +24,7 @@ namespace parka
 		VariableSyntax(VariableSyntax&&) = default;
 		VariableSyntax(const VariableSyntax&) = delete;
 
-		static Optional<EntitySyntaxId> parse(Token& token);
+		static const VariableSyntax *parse(Token& token);
 
 		const String& identifier() const { return _identifier.text(); }
 		EntityType type() const { return EntityType::Variable; }

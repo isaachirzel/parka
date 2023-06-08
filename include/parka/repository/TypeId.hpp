@@ -1,7 +1,6 @@
 #ifndef PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
 #define PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
 
-#include "parka/repository/EntitySyntaxId.hpp"
 #include "parka/util/Common.hpp"
 
 #include <cassert>

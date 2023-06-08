@@ -1,6 +1,7 @@
 #ifndef PARKA_CONTEXT_CONTEXT_TREE_HPP
 #define PARKA_CONTEXT_CONTEXT_TREE_HPP
 
+#include "parka/context/PackageContext.hpp"
 #include "parka/repository/EntityContextId.hpp"
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/util/Optional.hpp"
@@ -9,9 +10,11 @@ namespace parka
 {
 	class ContextTree
 	{
-		EntityContextId _globalPackageId;
+		const PackageContext& _globalPackageId;
 		
-		ContextTree(const EntityContextId& globalPackageId) :
+	private:
+
+		ContextTree(const PackageContext& globalPackageId) :
 		_globalPackageId(globalPackageId)
 		{}
 
@@ -22,7 +25,7 @@ namespace parka
 
 		static Optional<ContextTree> validate(const SyntaxTree& syntax);
 
-		const auto& globalPackageId() const { return _globalPackageId; }
+		const auto& globalPackage() const { return _globalPackageId; }
 	};
 }
 

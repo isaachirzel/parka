@@ -23,7 +23,7 @@ namespace parka
 		}
 	}
 
-	Optional<ExpressionSyntaxId> MultiplicativeExpressionSyntax::parse(Token& token)
+	const ExpressionSyntax *MultiplicativeExpressionSyntax::parse(Token& token)
 	{
 		auto lhs = PrefixExpressionSyntax::parse(token);
 
@@ -42,23 +42,23 @@ namespace parka
 				return {};
 
 			auto expression = MultiplicativeExpressionSyntax(*lhs, *rhs, *type);
-			auto id = ExpressionSyntaxId::create(std::move(expression));
+			auto& syntax = ExpressionSyntax::create(std::move(expression));
 
-			lhs = std::move(id);
+			lhs = &syntax;
 			type = getMultiplicativeType(token);
 		}
 
 		return lhs;
 	}
 
-	// bool MultiplicativeExpressionSyntax::validate(const EntitySyntaxId& functionId)
+	// bool MultiplicativeExpressionSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	auto success = true;
 
-	// 	if (!SyntaxRepository::get(_lhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_lhs).validate(function))
 	// 		success = false;
 
-	// 	if (!SyntaxRepository::get(_rhs).validate(functionId))
+	// 	if (!SyntaxRepository::get(_rhs).validate(function))
 	// 		success = false;
 
 	// 	return success;

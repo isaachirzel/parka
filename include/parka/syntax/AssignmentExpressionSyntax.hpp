@@ -8,13 +8,13 @@ namespace parka
 {
 	class AssignmentExpressionSyntax : public ExpressionSyntax
 	{
-		ExpressionSyntaxId _lhs;
-		ExpressionSyntaxId _rhs;
+		const ExpressionSyntax& _lhs;
+		const ExpressionSyntax& _rhs;
 		AssignmentType _type;
 
-		AssignmentExpressionSyntax(ExpressionSyntaxId&& lhs, ExpressionSyntaxId&& rhs, AssignmentType type) :
-		_lhs(std::move(lhs)),
-		_rhs(std::move(rhs)),
+		AssignmentExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, AssignmentType type) :
+		_lhs(lhs),
+		_rhs(rhs),
 		_type(type)
 		{}
 
@@ -23,8 +23,9 @@ namespace parka
 		AssignmentExpressionSyntax(AssignmentExpressionSyntax&&) = default;
 		AssignmentExpressionSyntax(const AssignmentExpressionSyntax&) = delete;
 
-		static Optional<ExpressionSyntaxId> parse(Token& token);
+		static const ExpressionSyntax *parse(Token& token);
 
+		ExpressionType expressionType() const { return ExpressionType::Assignment; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }
