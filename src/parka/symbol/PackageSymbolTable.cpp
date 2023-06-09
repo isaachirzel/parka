@@ -12,10 +12,10 @@
 
 namespace parka
 {
-	PackageSymbolTable::PackageSymbolTable(const PackageSyntax& syntax, const SymbolTable *parent) :
+	PackageSymbolTable::PackageSymbolTable(const PackageSyntax& syntax, SymbolTable *parent) :
+	_parent(parent),
 	_syntax(syntax),
-	_symbols(), // TODO: pre-reserve symbol count
-	_parent(parent)
+	_symbols() // TODO: pre-reserve symbol count
 	{
 		const auto isGlobalPackage = parent == nullptr;
 
@@ -53,10 +53,10 @@ namespace parka
 		return result;
 	}
 
-	const SymbolTableEntry *PackageSymbolTable::findEntry(const QualifiedIdentifier& identifier, usize index) const
+	SymbolTableEntry *PackageSymbolTable::findEntry(const QualifiedIdentifier& identifier, usize index)
 	{
 		auto& part = identifier[index];
-		auto result = resolve(part);
+		auto *result = resolve(part);
 
 		if (!result)
 		{
@@ -75,7 +75,7 @@ namespace parka
 		return nullptr;
 	}
 
-	const EntitySyntax *PackageSymbolTable::resolve(const Identifier& identifier) const
+	const EntityContext *PackageSymbolTable::resolve(const Identifier& identifier)
 	{
 		// TODO: Confirm this makes sense. I'm not sure if resolving single identifiers should always do
 		// this or if it should seek upwards at times
@@ -84,18 +84,25 @@ namespace parka
 		if (!result)
 			return {};
 			
-		return &result->syntax();
+		if (result->context())
+			return result->context();
+
+		log::notImplemented(here());
+		// return &result->syntax();
 	}
 
-	const EntitySyntax *PackageSymbolTable::resolve(const QualifiedIdentifier& identifier) const
+	const EntityContext *PackageSymbolTable::resolve(const QualifiedIdentifier& identifier)
 	{
 		// TODO: Make this logic work
-		const auto *entry = findEntry(identifier, 0);
+		const auto *result = findEntry(identifier, 0);
 
-		if (!entry)
+		if (!result)
 			return {};
 
-		return &entry->syntax();
+		if (result->context())
+			return result->context();
+
+		log::notImplemented(here());
 	}
 
 	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbols)

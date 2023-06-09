@@ -4,11 +4,13 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/StructSymbolTable.hpp"
 #include "parka/util/Print.hpp"
+#include <cassert>
 
 namespace parka
 {
-	SymbolTableEntry::SymbolTableEntry(const EntitySyntax& syntax, const SymbolTable& parent) :
-	_syntax(syntax)
+	SymbolTableEntry::SymbolTableEntry(const EntitySyntax& syntax, SymbolTable& parent) :
+	_syntax(syntax),
+	_context(nullptr)
 	{
 		switch (syntax.type())
 		{
@@ -62,7 +64,7 @@ namespace parka
 		}
 	}
 
-	void SymbolTableEntry::setParent(const SymbolTable& parent)
+	void SymbolTableEntry::setParent(SymbolTable& parent)
 	{
 		switch (_syntax.type())
 		{
@@ -79,13 +81,13 @@ namespace parka
 		}
 	}
 
-	// static std::ostream& scope(std::ostream& out, const SymbolTable *)
-	// {
-	// 	// if (symbolTable != nullptr)
-	// 	// 	scope(out, symbolTable->getParent()) << "::" << symbolTable->;
+	void SymbolTableEntry::setContext(const EntityContext& context)
+	{
+		assert(_context == nullptr);
+		assert(context.type() == _syntax.type());
 
-	// 	return out;
-	// }
+		_context = &context;
+	}
 
 	std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry)
 	{

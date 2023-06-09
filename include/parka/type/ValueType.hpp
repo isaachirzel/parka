@@ -1,14 +1,23 @@
-#ifndef PARKA_TYPE_HPP
-#define PARKA_TYPE_HPP
+#ifndef PARKA_TYPE_VALUE_TYPE_HPP
+#define PARKA_TYPE_VALUE_TYPE_HPP
 
 #include "parka/repository/EntityContext.hpp"
+#include "parka/symbol/SymbolTable.hpp"
+#include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Common.hpp"
+#include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
 	class ValueType
 	{
+	private:
+
+		const EntityContext& _entity;
+		// TODO: Add pointer info
+		// TODO: Add LiteralSyntax for better type inference?
+
 	public:
 
 		static const ValueType voidType;
@@ -25,20 +34,14 @@ namespace parka
 		static const ValueType boolType;
 		static const ValueType charType;
 		static const ValueType stringType;
-
-	private:
-
-		const EntityContext& _entity;
-
-		// TODO: Add pointer info
-		// TODO: Add LiteralSyntax for better type inference?
+		
 	public:
 
-		ValueType(const EntityContext& entity) :
-		_entity(entity)
-		{}
+		ValueType(const EntityContext& entity);
 		ValueType(ValueType&&) = default;
 		ValueType(const ValueType&) = default;
+
+		static Optional<ValueType> validate(const TypeAnnotationSyntax& syntax, SymbolTable& symbolTable);
 
 		bool canConvertTo(const ValueType& other);
 

@@ -23,6 +23,22 @@ namespace parka
 	const ValueType ValueType::charType(Primitive::charPrimitive);
 	const ValueType ValueType::stringType(Primitive::stringPrimitive);
 
+	ValueType::ValueType(const EntityContext& entity) :
+	_entity(entity)
+	{}
+
+	Optional<ValueType> ValueType::validate(const TypeAnnotationSyntax& syntax, SymbolTable& symbolTable)
+	{
+		const auto *entity = symbolTable.resolve(syntax.identifier());
+
+		if (!entity)
+			return {};
+
+		auto result = ValueType(*entity);
+
+		return result;
+	}
+
 	bool ValueType::canConvertTo(const ValueType& to)
 	{
 		return &_entity == &to._entity;

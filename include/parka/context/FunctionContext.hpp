@@ -1,11 +1,10 @@
 #ifndef PARKA_CONTEXT_FUNCTION_CONTEXT_HPP
 #define PARKA_CONTEXT_FUNCTION_CONTEXT_HPP
 
+#include "parka/context/ExpressionContext.hpp"
 #include "parka/context/PrototypeContext.hpp"
 #include "parka/enum/EntityType.hpp"
 #include "parka/repository/EntityContext.hpp"
-#include "parka/repository/EntityContextId.hpp"
-#include "parka/repository/ExpressionContextId.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -14,9 +13,11 @@ namespace parka
 	class FunctionContext : public EntityContext
 	{
 		PrototypeContext _prototype;
-		ExpressionContextId _bodyId;
+		const ExpressionContext& _body;
 
-		FunctionContext()
+		FunctionContext(PrototypeContext&& prototype, const ExpressionContext& body) :
+		_prototype(std::move(prototype)),
+		_body(body)
 		{}
 
 	public:

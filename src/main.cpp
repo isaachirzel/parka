@@ -20,17 +20,17 @@ int main(int argc, const char *argv[])
 	auto project = Project::read(argv[1]);
 	auto readTime = timer.split();
 
-	log::success("Project loaded in $ seconds.", readTime);
+	log::note("Project loaded in $ seconds.", readTime);
 
 	auto syntax = SyntaxTree::parse(project);
 	auto parseTime = timer.split();
 
-	log::success("Parsing completed in $s.", parseTime);
+	log::note("Parsing completed in $s.", parseTime);
 
 	auto context = ContextTree::validate(syntax);
 	auto validateTime = timer.split();
 
-	log::success("Validation completed in $s.", validateTime);
+	log::note("Validation completed in $s.", validateTime);
 
 	auto errorCount = log::getErrorCount();
 	auto compileTime = timer.stop();

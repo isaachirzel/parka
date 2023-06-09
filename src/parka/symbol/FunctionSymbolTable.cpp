@@ -7,43 +7,37 @@
 
 namespace parka
 {
-	FunctionSymbolTable::FunctionSymbolTable(const FunctionSyntax& syntax, const SymbolTable& parent) :
-	_syntax(syntax),
+	FunctionSymbolTable::FunctionSymbolTable(const FunctionSyntax& syntax, SymbolTable& parent) :
 	_parent(&parent),
-	_symbols(16),
-	_blockIndexes(8)
+	_syntax(syntax),
+	_symbols(16)
 	{}
 
 	bool FunctionSymbolTable::declare(const EntitySyntax& entity)
 	{
 		const auto& identifier = entity.identifier();
-		auto blockIndex = _blockIndexes.length() > 0
-			? _blockIndexes.back()
-			: 0;
-		
-		for (usize i = _symbols.length(); i-- > blockIndex;)
-		{
-			const auto& prevId = _symbols[i];
 
-			if (identifier == prevId->identifier())
+		for (const auto *symbol : _symbols)
+		{
+			if (identifier == symbol->identifier())
 			{
-				log::error("`$` has previously been delcared in this block.", identifier);
-				// TODO: Maybe insert it anyway so that references to it will show the correct error
+				log::error("A parameter with the name `$` has already been declared in this prototype.", identifier);
+				// TODO: maybe just insert it anyways?
 				return false;
 			}
 		}
-			
+
 		_symbols.push(&entity);
 		
 		return true;
 	}
 
-	const EntitySyntax *FunctionSymbolTable::resolve(const Identifier&) const
+	const EntityContext *FunctionSymbolTable::resolve(const Identifier&)
 	{
 		log::notImplemented(here());
 	}
 
-	const EntitySyntax *FunctionSymbolTable::resolve(const QualifiedIdentifier&) const
+	const EntityContext *FunctionSymbolTable::resolve(const QualifiedIdentifier&)
 	{
 		log::notImplemented(here());
 	}

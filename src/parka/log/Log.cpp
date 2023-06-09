@@ -37,7 +37,7 @@ namespace parka::log
 				break;
 
 			case LogEntryType::Error:
-				log::warningCount += 1;
+				log::errorCount += 1;
 				break;
 
 			case LogEntryType::Fatal:

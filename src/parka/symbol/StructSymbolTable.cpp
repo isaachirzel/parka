@@ -5,9 +5,9 @@
 
 namespace parka
 {
-	StructSymbolTable::StructSymbolTable(const StructSyntax& syntax, const SymbolTable& parent) :
-	_syntax(syntax),
-	_parent(&parent)
+	StructSymbolTable::StructSymbolTable(const StructSyntax& syntax, SymbolTable& parent) :
+	_parent(&parent),
+	_syntax(syntax)
 	{
 		for (const auto& memberSyntax : syntax.members())
 		{
@@ -16,12 +16,12 @@ namespace parka
 		}
 	}
 
-	EntitySyntax *StructSymbolTable::resolve(const Identifier& identifier) const
+	const EntityContext *StructSymbolTable::resolve(const Identifier& identifier)
 	{
 		log::notImplemented(here());
 	}
 
-	EntitySyntax *StructSymbolTable::resolve(const QualifiedIdentifier& identifier) const
+	const EntityContext *StructSymbolTable::resolve(const QualifiedIdentifier& identifier)
 	{
 		log::notImplemented(here());
 	}

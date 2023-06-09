@@ -10,18 +10,18 @@ namespace parka
 {
 	class StructSymbolTable : public SymbolTable
 	{
+		SymbolTable *_parent;
 		const StructSyntax& _syntax;
-		const SymbolTable *_parent;
 		Table<String, const EntitySyntax*> _symbols;
 
-		StructSymbolTable(const StructSyntax& syntax, const SymbolTable& parent);
+		StructSymbolTable(const StructSyntax& syntax, SymbolTable& parent);
 
 	public:
 
-		EntitySyntax *resolve(const Identifier& identifier) const;
-		EntitySyntax *resolve(const QualifiedIdentifier& identifier) const;
+		const EntityContext *resolve(const Identifier& identifier);
+		const EntityContext *resolve(const QualifiedIdentifier& identifier);
 		
-		const SymbolTable *getParent() const { return _parent; }
+		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Struct; }
 
 		friend class SymbolTableEntry;

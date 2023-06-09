@@ -6,6 +6,10 @@
 
 namespace parka
 {
+	TypeAnnotationSyntax::TypeAnnotationSyntax(QualifiedIdentifier&& identifier) :
+	_identifier(std::move(identifier))
+	{}
+
 	Optional<TypeAnnotationSyntax> TypeAnnotationSyntax::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);

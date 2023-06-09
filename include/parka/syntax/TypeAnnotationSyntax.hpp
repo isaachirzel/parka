@@ -3,7 +3,6 @@
 
 #include "parka/symbol/QualifiedIdentifier.hpp"
 #include "parka/Token.hpp"
-#include "parka/type/ValueType.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
@@ -11,13 +10,10 @@ namespace parka
 	class TypeAnnotationSyntax
 	{
 		QualifiedIdentifier _identifier;
-		// TODO: Add type after validation
-		Optional<ValueType> _type; // Having an optional type is causing this a free warning to come up
 
-		TypeAnnotationSyntax(QualifiedIdentifier&& identifier) :
-		_identifier(std::move(identifier)),
-		_type()
-		{}
+	private:
+
+		TypeAnnotationSyntax(QualifiedIdentifier&& identifier);
 
 	public:
 

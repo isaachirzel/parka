@@ -58,7 +58,7 @@ namespace parka
 				continue;
 			}
 			
-			entry.context() = context;
+			entry.setContext(*context);
 		}
 
 		if (!success)

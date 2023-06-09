@@ -1,41 +1,38 @@
 #ifndef PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 
-#include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/util/Array.hpp"
-#include "parka/util/String.hpp"
-
-// TODO: Move constructor
 
 namespace parka
 {
 	class FunctionSymbolTable : public SymbolTable
 	{
+		SymbolTable *_parent;
 		const FunctionSyntax& _syntax;
-		const SymbolTable *_parent;
-		Array<const EntitySyntax*> _symbols;
-		Array<usize> _blockIndexes;
+		Array<const EntitySyntax*> _symbols;		
 
 	public:
 
-		FunctionSymbolTable(const FunctionSyntax& syntax, const SymbolTable& parent);
+		FunctionSymbolTable(const FunctionSyntax& syntax, SymbolTable& parent);
 		FunctionSymbolTable(FunctionSymbolTable&&) = default;
 		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
 
-		bool declare(const EntitySyntax& entityId);
+		bool declare(const EntitySyntax& entity);
 
-		const EntitySyntax *resolve(const Identifier& identifier) const;
-		const EntitySyntax *resolve(const QualifiedIdentifier& identifier) const;
+		const EntityContext *resolve(const Identifier& identifier);
+		const EntityContext *resolve(const QualifiedIdentifier& identifier);
 		
 		void addBlock(const ExpressionSyntax& blockId);
 		void popBlock();
 		
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
-		const SymbolTable *getParent() const { return _parent; }
+		SymbolTable *parent() { return _parent; }
 
 		const auto& syntax() const { return (const FunctionSyntax&)_syntax; }
+
+		friend class BlockSymbolTable;
 	};
 }
 

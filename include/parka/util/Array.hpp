@@ -143,6 +143,19 @@ namespace parka
 			_length = 0;
 		}
 
+		void truncate(const usize newLength)
+		{
+			assert(newLength <= _length);
+
+			if (_length == newLength)
+				return;
+
+			for (usize i = newLength; i < _length; ++i)
+				_data[i].~T();
+
+			_length = newLength;
+		}
+
 		constexpr T& operator[](usize index)
 		{
 			assert(index < _length);

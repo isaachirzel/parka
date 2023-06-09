@@ -2,9 +2,9 @@
 #define PARKA_SYMBOL_LOCAL_SYMBOL_TABLE_HPP
 
 #include "parka/enum/SymbolTableType.hpp"
+#include "parka/repository/EntityContext.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/syntax/EntitySyntax.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
@@ -13,20 +13,20 @@ namespace parka
 	{
 		virtual ~SymbolTable() {}
 
-		virtual const EntitySyntax *resolve(const Identifier& identifier) const = 0;
-		virtual const EntitySyntax *resolve(const QualifiedIdentifier& identifier) const = 0;
-		virtual const SymbolTable *getParent() const = 0;		
+		virtual const EntityContext *resolve(const Identifier& identifier) = 0;
+		virtual const EntityContext *resolve(const QualifiedIdentifier& identifier) = 0;
+		virtual SymbolTable *parent() = 0;		
 		virtual SymbolTableType symbolTableType() const = 0;
 
-		const SymbolTable& getGlobalSymbolTable() const
+		SymbolTable& getGlobalSymbolTable()
 		{
-			const auto *table = this;
-			const auto *parentTable = table->getParent();
+			auto *table = this;
+			auto *parentTable = table->parent();
 
 			while (parentTable)
 			{
 				table = parentTable;
-				parentTable = table->getParent();
+				parentTable = table->parent();
 			}
 
 			assert(table->symbolTableType() == SymbolTableType::Package);

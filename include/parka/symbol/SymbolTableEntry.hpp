@@ -25,17 +25,17 @@ namespace parka
 
 	public:
 
-		SymbolTableEntry(const EntitySyntax& entity, const SymbolTable& parent);
+		SymbolTableEntry(const EntitySyntax& entity, SymbolTable& parent);
 		SymbolTableEntry(SymbolTableEntry&&);
 		SymbolTableEntry(const SymbolTableEntry&) = delete;
 		~SymbolTableEntry();
 
-		void setParent(const SymbolTable& parent);
+		void setParent(SymbolTable& parent);
+		void setContext(const EntityContext& context);
 
 		const auto& syntax() const {  return _syntax; }
 		const auto& context() const {  return _context; }
 
-		auto& context() {  return _context; }
 		auto& packageSymbolTable() { assert(_syntax.type() == EntityType::Package); return _package; }
 		auto& structSymbolTable() { assert(_syntax.type() == EntityType::Struct); return _struct; }
 
