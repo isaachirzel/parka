@@ -23,7 +23,7 @@ namespace parka
 		{
 			if (identifier == entry->identifier())
 			{
-				log::error("Declaration of `$` shadows a previously declared $.", identifier, entry->type());
+				log::error("Declaration of `$` shadows a previously declared $.", identifier, entry->entityType());
 				// TODO: Show previous declaration
 				// TODO: Maybe insert anyway?
 				return false;

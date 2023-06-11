@@ -3,29 +3,19 @@
 
 #include "parka/context/PackageContext.hpp"
 #include "parka/repository/EntityContextId.hpp"
-#include "parka/syntax/SyntaxTree.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
 {
 	class ContextTree
 	{
-		const PackageContext& _globalPackageId;
+		PackageContext& _globalPackage;
 		
-	private:
-
-		ContextTree(const PackageContext& globalPackageId) :
-		_globalPackageId(globalPackageId)
-		{}
-
 	public:
 
+		ContextTree(PackageContext& globalPackage);
 		ContextTree(ContextTree&&) = default;
 		ContextTree(const ContextTree&) = default;
-
-		static Optional<ContextTree> validate(const SyntaxTree& syntax);
-
-		const auto& globalPackage() const { return _globalPackageId; }
 	};
 }
 

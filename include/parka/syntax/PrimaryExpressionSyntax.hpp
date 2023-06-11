@@ -7,7 +7,7 @@ namespace parka
 {
 	struct PrimaryExpressionSyntax
 	{
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 	};
 }
 

@@ -7,24 +7,23 @@
 
 namespace parka
 {
-	class IntegerLiteralSyntax : public LiteralSyntax
+	class IntegerLiteralSyntax : public ExpressionSyntax
 	{
 		Token _token;
 		u64 _value;
 		u32 _bytes;
+
+	public:
 
 		IntegerLiteralSyntax(const Token& token, u64 value, u32 bytes) :
 		_token(token),
 		_value(value),
 		_bytes(bytes)
 		{}
-
-	public:
-
 		IntegerLiteralSyntax(IntegerLiteralSyntax&&) = default;
 		IntegerLiteralSyntax(const IntegerLiteralSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::IntegerLiteral; }
 		const auto& token() const { return _token; }

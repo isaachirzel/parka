@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_AST_SYNTAX_HPP
 #define PARKA_SYNTAX_AST_SYNTAX_HPP
 
+#include "parka/context/ContextTree.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/util/Project.hpp"
@@ -11,23 +12,17 @@ namespace parka
 	class SyntaxTree
 	{
 		// TODO: Project metadata
-		const PackageSyntax& _globalPackage;
+		PackageSyntax& _globalPackage;
 		// TODO: External package ids
-
-	private:
-
-		SyntaxTree(const PackageSyntax& globalPackage) :
-		_globalPackage(globalPackage)
-		{}
-
+		
 	public:
 
+		SyntaxTree(PackageSyntax& globalPackage);
 		SyntaxTree(SyntaxTree&&) = default;
 		SyntaxTree(const SyntaxTree&) = delete;
 
 		static SyntaxTree parse(const Project& project);
-
-		const auto& globalPackage() const { return _globalPackage; }
+		Optional<ContextTree> validate();
 	};
 }
 

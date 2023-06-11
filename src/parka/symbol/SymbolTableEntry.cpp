@@ -12,7 +12,7 @@ namespace parka
 	_syntax(syntax),
 	_context(nullptr)
 	{
-		switch (syntax.type())
+		switch (syntax.entityType())
 		{
 			case EntityType::Package:
 				new (&_package) PackageSymbolTable((PackageSyntax&)_syntax, &parent);
@@ -32,7 +32,7 @@ namespace parka
 	_context(other._context)
 	{
 		// TODO: Implement for other table types
-		switch (_syntax.type())
+		switch (_syntax.entityType())
 		{
 			case EntityType::Package:
 				new (&_package) auto(std::move(other._package));
@@ -49,7 +49,7 @@ namespace parka
 
 	SymbolTableEntry::~SymbolTableEntry()
 	{
-		switch (_syntax.type())
+		switch (_syntax.entityType())
 		{
 			case EntityType::Package:
 				_package.~PackageSymbolTable();
@@ -66,7 +66,7 @@ namespace parka
 
 	void SymbolTableEntry::setParent(SymbolTable& parent)
 	{
-		switch (_syntax.type())
+		switch (_syntax.entityType())
 		{
 			case EntityType::Package:
 				_package._parent = &parent;
@@ -84,7 +84,7 @@ namespace parka
 	void SymbolTableEntry::setContext(const EntityContext& context)
 	{
 		assert(_context == nullptr);
-		assert(context.type() == _syntax.type());
+		assert(context.entityType() == _syntax.entityType());
 
 		_context = &context;
 	}
@@ -93,7 +93,7 @@ namespace parka
 	{
 		// const auto *symbolTable = entry.getSymbolTable();
 
-		out << entry._syntax.identifier() << ":\t\t" << entry._syntax.type();
+		out << entry._syntax.identifier() << ":\t\t" << entry._syntax.entityType();
 		
 		if (entry._context != nullptr)
 			out << " [validated]";

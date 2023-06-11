@@ -13,9 +13,7 @@ namespace parka
 		virtual ~StatementSyntax() {}
 		virtual StatementType statementType() const = 0;
 
-		static const StatementSyntax *parse(Token& token);
-		static const StatementSyntax& create(StatementSyntax&& syntax);
-		static StatementSyntaxId idFor(const StatementSyntax& syntax); 
+		static StatementSyntax *parse(Token& token);
 	};
 }
 

@@ -36,8 +36,8 @@ namespace parka
 		const auto& syntax() const {  return _syntax; }
 		const auto& context() const {  return _context; }
 
-		auto& packageSymbolTable() { assert(_syntax.type() == EntityType::Package); return _package; }
-		auto& structSymbolTable() { assert(_syntax.type() == EntityType::Struct); return _struct; }
+		auto& packageSymbolTable() { assert(_syntax.entityType() == EntityType::Package); return _package; }
+		auto& structSymbolTable() { assert(_syntax.entityType() == EntityType::Struct); return _struct; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry);
 	};

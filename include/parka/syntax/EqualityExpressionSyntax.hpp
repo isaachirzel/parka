@@ -8,22 +8,21 @@ namespace parka
 {
 	class EqualityExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 		EqualityType _type;
 
-		EqualityExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, EqualityType type) :
+	public:
+
+		EqualityExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, EqualityType type) :
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-
-	public:
-
 		EqualityExpressionSyntax(EqualityExpressionSyntax&&) = default;
 		EqualityExpressionSyntax(const EqualityExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::Equality; }
 		const auto& lhs() const { return _lhs; }

@@ -5,14 +5,20 @@
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
-
 #include "parka/type/ValueType.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
-	Optional<Array<const ParameterSyntax*>> parseParameterList(Token& token)
+	PrototypeSyntax::PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<ParameterSyntax*>&& parameters, Optional<TypeAnnotationSyntax>&& returnType) :
+	_keyword(std::move(keyword)),
+	_identifier(std::move(identifier)),
+	_parameters(std::move(parameters)),
+	_returnType(std::move(returnType))
+	{}
+
+	Optional<Array<ParameterSyntax*>> parseParameterList(Token& token)
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
@@ -22,7 +28,7 @@ namespace parka
 
 		token.increment();
 
-		auto parameters = Array<const ParameterSyntax*>();
+		auto parameters = Array<ParameterSyntax*>();
 
 		if (token.type() == TokenType::RightParenthesis)
 		{
@@ -90,30 +96,51 @@ namespace parka
 			return {};
 
 		auto returnType = parseReturnType(token);
+
+		// TODO: Handle returnType error?
+
 		auto prototype = PrototypeSyntax(*keyword, *identifier, *parameters, std::move(returnType));
 
 		return prototype;
 	}
 
-	// bool PrototypeSyntax::validate(const EntitySyntax& function)
-	// {
-	// 	auto success = true;
-	// 	auto& function = SyntaxRepository::getFunction(function);
+	static Optional<ValueType> validateReturnType(Optional<TypeAnnotationSyntax>& syntax, SymbolTable& symbolTable)
+	{
+		if (!syntax)
+			return ValueType::voidType;
 
-	// 	for (auto parameter : _parameters)
-	// 	{
-	// 		auto& parameter = SyntaxRepository::getParameter(parameter);
+		return syntax->validate(symbolTable);
+	}
 
-	// 		if (!parameter.validate(function))
-	// 			success = false;
+	Optional<PrototypeContext> PrototypeSyntax::validate(FunctionSymbolTable& symbolTable)
+	{
+		auto success = true;
+		const auto parameterCount = _parameters.length();
+		auto parameters = Array<ParameterContext*>(parameterCount);
 
-	// 		if (!function.declare(parameter))
-	// 			success = false;
-	// 	}
+		for (auto *parameterSyntax : _parameters)
+		{
+			auto *parameterContext = parameterSyntax->validate(symbolTable);
 
-	// 	if (_returnType && !_returnType->validate(function))
-	// 		success = false;
+			if (parameterContext == nullptr)
+			{
+				success = false;
+				continue;
+			}
 
-	// 	return success;
-	// }
+			parameters.push(parameterContext);
+		}
+
+		auto returnType = validateReturnType(_returnType, symbolTable);
+
+		if (!returnType)
+			success = false;
+
+		if (!success)
+			return {};
+
+		auto context = PrototypeContext(std::move(parameters), *returnType);
+
+		return context;
+	}
 }

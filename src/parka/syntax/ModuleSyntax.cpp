@@ -16,8 +16,8 @@ namespace parka
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
 		auto token = Token::initial(file);
-		auto functions = Array<const FunctionSyntax*>();
-		auto structs = Array<const StructSyntax*>();
+		auto functions = Array<FunctionSyntax*>();
+		auto structs = Array<StructSyntax*>();
 
 		while (true)
 		{
@@ -27,7 +27,7 @@ namespace parka
 			{
 				case KeywordType::Function:
 				{
-					auto function = FunctionSyntax::parse(token);
+					auto *function = FunctionSyntax::parse(token);
 
 					if (!function)
 						break;
@@ -39,7 +39,7 @@ namespace parka
 
 				case KeywordType::StructSyntax:
 				{
-					const auto *strct = StructSyntax::parse(token);
+					auto *strct = StructSyntax::parse(token);
 
 					if (!strct)
 						break;

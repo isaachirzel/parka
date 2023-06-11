@@ -1,11 +1,19 @@
 #include "parka/syntax/MemberSyntax.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/StructSymbolTable.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka
 {
+	MemberSyntax::MemberSyntax(const Token& name, String&& symbol, TypeAnnotationSyntax&& annotation, bool isPublic) :
+	_name(name),
+	_symbol(std::move(symbol)),
+	_annotation(std::move(annotation)),
+	_isPublic(isPublic)
+	{}
+
 	bool parsePublicity(Token& token)
 	{
 		auto keywordType = KeywordSyntax::getKeywordType(token);
@@ -49,13 +57,13 @@ namespace parka
 		if (!annotation)
 			return {};
 
-		auto member = MemberSyntax(name, name.text(), *annotation, isPublic);
+		auto syntax = MemberSyntax(name, name.text(), *annotation, isPublic);
 
-		return member;
+		return syntax;
 	}
 
-	// bool MemberSyntax::validate(const EntitySyntax& function)
-	// {
-	// 	return _annotation.validate(function);
-	// }
+	Optional<MemberSyntax> MemberSyntax::validate(SymbolTable& symbolTable) const
+	{
+		log::notImplemented(here());
+	}
 }

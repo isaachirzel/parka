@@ -8,22 +8,21 @@ namespace parka
 {
 	class RelationalExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 		RelationalType _type;
 
-		RelationalExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, RelationalType type) :
+	public:
+
+		RelationalExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, RelationalType type) :
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-
-	public:
-
 		RelationalExpressionSyntax(RelationalExpressionSyntax&&) = default;
 		RelationalExpressionSyntax(const RelationalExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::Relational; }
 		const auto& lhs() const { return _lhs; }

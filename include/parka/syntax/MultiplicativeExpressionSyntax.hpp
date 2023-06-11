@@ -11,22 +11,22 @@ namespace parka
 {
 	class MultiplicativeExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 		MultiplicativeType _type;
 
-		MultiplicativeExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, MultiplicativeType type) :
+	public:
+
+		MultiplicativeExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, MultiplicativeType type) :
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-
-	public:
-
 		MultiplicativeExpressionSyntax(MultiplicativeExpressionSyntax&&) = default;
 		MultiplicativeExpressionSyntax(const MultiplicativeExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable&) const;
 
 		ExpressionType expressionType() const { return ExpressionType::Multiplicative; }
 		const auto& lhs() const { return _lhs; }

@@ -3,12 +3,9 @@
 
 #include "parka/syntax/ExpressionSyntax.hpp"
 
-namespace parka
+namespace parka::PostfixExpressionSyntax
 {
-	struct PostfixExpressionSyntax
-	{
-		static const ExpressionSyntax *parse(Token& token);
-	};
+	ExpressionSyntax *parse(Token& token);
 }
 
 #endif

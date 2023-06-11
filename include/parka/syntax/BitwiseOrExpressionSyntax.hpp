@@ -7,20 +7,19 @@ namespace parka
 {
 	class BitwiseOrExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
-
-		BitwiseOrExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs) :
-		_lhs(lhs),
-		_rhs(rhs)
-		{}
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 
 	public:
 
+		BitwiseOrExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
+		_lhs(lhs),
+		_rhs(rhs)
+		{}
 		BitwiseOrExpressionSyntax(BitwiseOrExpressionSyntax&&) = default;
 		BitwiseOrExpressionSyntax(const BitwiseOrExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::BitwiseOr; }
 		const auto& lhs() const { return _lhs; }

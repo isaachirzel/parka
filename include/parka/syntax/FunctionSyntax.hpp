@@ -17,27 +17,22 @@ namespace parka
 	class FunctionSyntax : public EntitySyntax
 	{
 		PrototypeSyntax _prototype;
-		const ExpressionSyntax& _body;
-
-	private:
-
-		FunctionSyntax(PrototypeSyntax&& prototype, const ExpressionSyntax& body) :
-		_prototype(std::move(prototype)),
-		_body(body)
-		{}
+		ExpressionSyntax& _body;
 
 	public:
 
+		FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body);
 		FunctionSyntax(FunctionSyntax&&) = default;
 		FunctionSyntax(const FunctionSyntax&) = delete;
 
-		static const FunctionSyntax *parse(Token& token);
+		static FunctionSyntax *parse(Token& token);
 		
+		
+
+		EntityType entityType() const { return EntityType::Function; }
+		const String& identifier() const { return _prototype.identifier().text(); }
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }
-
-		EntityType type() const { return EntityType::Function; }
-		const String& identifier() const { return _prototype.identifier().text(); }
 	};
 }
 

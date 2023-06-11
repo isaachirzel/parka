@@ -5,23 +5,23 @@
 
 namespace parka
 {
-	class StringLiteralSyntax : public LiteralSyntax
+	class StringLiteralSyntax : public ExpressionSyntax
 	{
 		Token _token;
 		String _value;
+
+	public:
 
 		StringLiteralSyntax(Token token, String&& value) :
 		_token(token),
 		_value(std::move(value))
 		{}
-
-	public:
-
 		StringLiteralSyntax(StringLiteralSyntax&&) = default;
 		StringLiteralSyntax(const StringLiteralSyntax&) = delete;
 
+		static ExpressionSyntax *parse(Token& token);
+		
 		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
-		static const ExpressionSyntax *parse(Token& token);
 	};
 }
 

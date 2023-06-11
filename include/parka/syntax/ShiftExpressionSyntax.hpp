@@ -8,22 +8,21 @@ namespace parka
 {
 	class ShiftExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 		ShiftType _type;
 
-		ShiftExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, ShiftType type) :
+	public:
+
+		ShiftExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, ShiftType type) :
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-
-	public:
-
 		ShiftExpressionSyntax(ShiftExpressionSyntax&&) = default;
 		ShiftExpressionSyntax(const ShiftExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::Shift; }
 		const auto& lhs() const { return _lhs; }

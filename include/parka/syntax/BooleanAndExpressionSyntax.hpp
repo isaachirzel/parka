@@ -7,20 +7,19 @@ namespace parka
 {
 	class BooleanAndExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
-
-		BooleanAndExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs) :
-		_lhs(lhs),
-		_rhs(rhs)
-		{}
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 
 	public:
 
+		BooleanAndExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
+		_lhs(lhs),
+		_rhs(rhs)
+		{}
 		BooleanAndExpressionSyntax(BooleanAndExpressionSyntax&&) = default;
 		BooleanAndExpressionSyntax(const BooleanAndExpressionSyntax&) = delete;
 		
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::BooleanAnd; }
 		const auto& lhs() const { return _lhs; }

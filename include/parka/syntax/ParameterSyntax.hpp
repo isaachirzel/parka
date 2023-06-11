@@ -1,6 +1,9 @@
 #ifndef PARKA_SYNTAX_PARAMETER_SYNTAX_HPP
 #define PARKA_SYNTAX_PARAMETER_SYNTAX_HPP
 
+#include "parka/context/ParameterContext.hpp"
+#include "parka/repository/EntityContext.hpp"
+#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Array.hpp"
@@ -15,22 +18,19 @@ namespace parka
 		TypeAnnotationSyntax _annotation;
 		bool _isMutable;
 
-		ParameterSyntax(Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable) :
-		_identifier(std::move(identifier)),
-		_annotation(std::move(annotation)),
-		_isMutable(isMutable)
-		{}
-
 	public:
 
+		ParameterSyntax(Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable);
 		ParameterSyntax(ParameterSyntax&&) = default;
 		ParameterSyntax(const ParameterSyntax&) = delete;
 
-		static const ParameterSyntax *parse(Token& token);
+		static ParameterSyntax *parse(Token& token);
+
+		ParameterContext *validate(FunctionSymbolTable& symbolTable);
 
 		const String& identifier() const { return _identifier.text(); }
-		EntityType type() const { return EntityType::Parameter; }
-
+		const auto& token() const { return _identifier.token(); }
+		EntityType entityType() const { return EntityType::Parameter; }
 		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
 	};

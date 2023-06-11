@@ -47,4 +47,6 @@ namespace parka
 	};
 }
 
+#include "parka/symbol/SymbolTableEntry.hpp"
+
 #endif

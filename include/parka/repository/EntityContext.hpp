@@ -10,7 +10,7 @@ namespace parka
 	{
 		virtual ~EntityContext() {}
 
-		virtual EntityType type() const = 0;
+		virtual EntityType entityType() const = 0;
 
 		static const EntityContext& create(EntityContext&& context);
 		static const EntityContext& get(const EntityContextId& id);

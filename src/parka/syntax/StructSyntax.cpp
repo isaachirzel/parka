@@ -8,7 +8,7 @@
 
 namespace parka
 {
-	const StructSyntax *StructSyntax::parse(Token& token)
+	StructSyntax *StructSyntax::parse(Token& token)
 	{
 		auto keyword = KeywordSyntax::parseStruct(token);
 
@@ -60,10 +60,9 @@ namespace parka
 
 		token.increment();
 
-		auto strct = StructSyntax(*identifier, std::move(members));
-		auto& syntax = EntitySyntax::create(std::move(strct));
+		auto *syntax = new StructSyntax(*identifier, std::move(members));
 
-		return (const StructSyntax*)&syntax;
+		return syntax;
 	}
 
 	// bool StructSyntax::validate(const EntitySyntax& function)

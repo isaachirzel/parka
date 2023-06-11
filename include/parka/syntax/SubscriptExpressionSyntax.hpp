@@ -9,22 +9,19 @@ namespace parka
 {
 	class SubscriptExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _primary;
-		const ExpressionSyntax& _index;
-
-	private:
-
-		SubscriptExpressionSyntax(const ExpressionSyntax& primary, const ExpressionSyntax& index) :
-		_primary(primary),
-		_index(index)
-		{}
+		ExpressionSyntax& _primary;
+		ExpressionSyntax& _index;
 
 	public:
 
+		SubscriptExpressionSyntax(ExpressionSyntax& primary, ExpressionSyntax& index) :
+		_primary(primary),
+		_index(index)
+		{}
 		SubscriptExpressionSyntax(SubscriptExpressionSyntax&&) = default;
 		SubscriptExpressionSyntax(const SubscriptExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token, const ExpressionSyntax& primary);
+		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
 
 		ExpressionType expressionType() const { return ExpressionType::Subscript; }
 		const auto& expression() const { return _primary; }

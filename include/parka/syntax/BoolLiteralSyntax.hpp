@@ -5,22 +5,21 @@
 
 namespace parka
 {
-	class BoolLiteralSyntax : public LiteralSyntax
+	class BoolLiteralSyntax : public ExpressionSyntax
 	{
 		Token _token;
 		bool _value;
+
+	public:
 
 		BoolLiteralSyntax(const Token& token, bool value) :
 		_token(token),
 		_value(value)
 		{}
-
-	public:
-
 		BoolLiteralSyntax(BoolLiteralSyntax&&) = default;
 		BoolLiteralSyntax(const BoolLiteralSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::BoolLiteral; }
 		const auto& token() const { return _token; }

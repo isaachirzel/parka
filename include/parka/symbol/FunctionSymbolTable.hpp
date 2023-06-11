@@ -2,11 +2,14 @@
 #define PARKA_SYMBOLS_FUNCTION_SYMBOL_TABLE_HPP
 
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/syntax/FunctionSyntax.hpp"
+#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka
 {
+	class FunctionSyntax;
+	
 	class FunctionSymbolTable : public SymbolTable
 	{
 		SymbolTable *_parent;

@@ -13,15 +13,15 @@ namespace parka
 	{
 		ValueType _leftType;
 		ValueType _rightType;
-		const ExpressionSyntax *_body;
+		ExpressionSyntax *_body;
 		OperatorType _type;
 
 	public:
 
-		Operator(ValueType&& leftType, ValueType&& rightType, const ExpressionSyntax *body, OperatorType type) :
+		Operator(ValueType&& leftType, ValueType&& rightType, ExpressionSyntax *body, OperatorType type) :
 		_leftType(std::move(leftType)),
 		_rightType(std::move(rightType)),
-		_body(std::move(body)),
+		_body(body),
 		_type(type)
 		{}
 

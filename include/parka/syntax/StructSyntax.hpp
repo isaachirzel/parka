@@ -14,21 +14,18 @@ namespace parka
 		Identifier _identifier;
 		Array<MemberSyntax> _members;
 
-	private:
+	public:
 
 		StructSyntax(Identifier&& identifier, Array<MemberSyntax>&& members) :
 		_identifier(std::move(identifier)),
 		_members(std::move(members))
 		{}
-
-	public:
-
 		StructSyntax(StructSyntax&&) = default;
 		StructSyntax(const StructSyntax&) = delete;
 
-		static const StructSyntax *parse(Token& token);
+		static StructSyntax *parse(Token& token);
 
-		EntityType type() const { return EntityType::Struct; }
+		EntityType entityType() const { return EntityType::Struct; }
 		const String& identifier() const { return _identifier.text(); }
 		const auto& members() const { return _members; }
 	};

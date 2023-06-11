@@ -13,18 +13,22 @@ namespace parka
 		Token _token;
 		KeywordType _type;
 
-		KeywordSyntax(const Token& token, KeywordType type) :
-		_token(token),
-		_type(type)
-		{}
+	public:
+
+		static const Table<String, KeywordType> keywords;
+
+	private:
 
 		static Table<String, KeywordType> initKeywords();
 
 	public:
 
-		static const Table<String, KeywordType> keywords;
-
-	public:
+		KeywordSyntax(const Token& token, KeywordType type) :
+		_token(token),
+		_type(type)
+		{}
+		KeywordSyntax(KeywordSyntax&&) = default;
+		KeywordSyntax(const KeywordSyntax&) = delete;
 
 		static KeywordType getKeywordType(const Token& token);
 		static Optional<KeywordSyntax> parseBool(Token& token);

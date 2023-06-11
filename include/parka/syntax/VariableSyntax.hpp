@@ -13,21 +13,20 @@ namespace parka
 		Optional<TypeAnnotationSyntax> _annotation;
 		bool _isMutable;
 
+	public:
+
 		VariableSyntax(Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation) :
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
 		_isMutable(isMutable)
 		{}
-
-	public:
-
 		VariableSyntax(VariableSyntax&&) = default;
 		VariableSyntax(const VariableSyntax&) = delete;
 
-		static const VariableSyntax *parse(Token& token);
+		static VariableSyntax *parse(Token& token);
 
 		const String& identifier() const { return _identifier.text(); }
-		EntityType type() const { return EntityType::Variable; }
+		EntityType entityType() const { return EntityType::Variable; }
 		const auto& isExplicitlyTyped() const { return _annotation.hasValue(); }
 		const auto& annotation() const { return *_annotation; }
 		const auto& isMutable() const { return _isMutable; }

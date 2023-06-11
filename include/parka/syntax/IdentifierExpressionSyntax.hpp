@@ -14,16 +14,15 @@ namespace parka
 	{
 		QualifiedIdentifier _identifier;
 
+	public:
+
 		IdentifierExpressionSyntax(QualifiedIdentifier&& identifier) :
 		_identifier(std::move(identifier))
 		{}
-
-	public:
-
 		IdentifierExpressionSyntax(IdentifierExpressionSyntax&&) = default;
 		IdentifierExpressionSyntax(const IdentifierExpressionSyntax&) = delete;
 
-		static const IdentifierExpressionSyntax *parse(Token& token);
+		static IdentifierExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::Identifier; }
 		const auto& identifier() const { return _identifier; }

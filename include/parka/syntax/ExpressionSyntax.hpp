@@ -2,6 +2,7 @@
 #define PARKA_SYNTAX_EXPRESSION_SYNTAX_HPP
 
 #include "parka/Token.hpp"
+#include "parka/context/ExpressionContext.hpp"
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/repository/ExpressionSyntaxId.hpp"
 #include "parka/type/ValueType.hpp"
@@ -14,9 +15,7 @@ namespace parka
 		virtual ~ExpressionSyntax() {}
 		virtual ExpressionType expressionType() const = 0;
 
-		static const ExpressionSyntax *parse(Token& token);
-		static const ExpressionSyntax& create(ExpressionSyntax&& syntax);
-		static ExpressionSyntaxId idFor(const ExpressionSyntax& syntax);
+		static ExpressionSyntax *parse(Token& token);
 	};
 }
 

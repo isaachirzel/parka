@@ -9,7 +9,7 @@
 
 namespace parka
 {
-	const ExpressionSyntax *PostfixExpressionSyntax::parse(Token& token)
+	ExpressionSyntax *PostfixExpressionSyntax::parse(Token& token)
 	{
 		auto postfix = PrimaryExpressionSyntax::parse(token);
 

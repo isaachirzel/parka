@@ -3,7 +3,6 @@
 
 #include "parka/repository/EntityContext.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
@@ -14,34 +13,32 @@ namespace parka
 	{
 	private:
 
-		const EntityContext& _entity;
+		EntityContext& _entity;
 		// TODO: Add pointer info
 		// TODO: Add LiteralSyntax for better type inference?
 
 	public:
 
-		static const ValueType voidType;
-		static const ValueType u8Type;
-		static const ValueType u16Type;
-		static const ValueType u32Type;
-		static const ValueType u64Type;
-		static const ValueType i8Type;
-		static const ValueType i16Type;
-		static const ValueType i32Type;
-		static const ValueType i64Type;
-		static const ValueType f32Type;
-		static const ValueType f64Type;
-		static const ValueType boolType;
-		static const ValueType charType;
-		static const ValueType stringType;
+		static ValueType voidType;
+		static ValueType u8Type;
+		static ValueType u16Type;
+		static ValueType u32Type;
+		static ValueType u64Type;
+		static ValueType i8Type;
+		static ValueType i16Type;
+		static ValueType i32Type;
+		static ValueType i64Type;
+		static ValueType f32Type;
+		static ValueType f64Type;
+		static ValueType boolType;
+		static ValueType charType;
+		static ValueType stringType;
 		
 	public:
 
-		ValueType(const EntityContext& entity);
+		ValueType(EntityContext& entity);
 		ValueType(ValueType&&) = default;
 		ValueType(const ValueType&) = default;
-
-		static Optional<ValueType> validate(const TypeAnnotationSyntax& syntax, SymbolTable& symbolTable);
 
 		bool canConvertTo(const ValueType& other);
 

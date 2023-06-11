@@ -5,23 +5,22 @@
 
 namespace parka
 {
-	class CharLiteralSyntax : public LiteralSyntax
+	class CharLiteralSyntax : public ExpressionSyntax
 	{
 		Token _token;
 		char _value;
 		// TODO: UTF-8
 
+	public:
+
 		CharLiteralSyntax(const Token& token, char value) :
 		_token(token),
 		_value(value)
 		{}
-
-	public:
-
 		CharLiteralSyntax(CharLiteralSyntax&&) = default;
 		CharLiteralSyntax(const CharLiteralSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::CharLiteral; }
 		const auto& token() const { return _token; }

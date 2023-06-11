@@ -13,19 +13,18 @@ namespace parka
 	class FunctionContext : public EntityContext
 	{
 		PrototypeContext _prototype;
-		const ExpressionContext& _body;
-
-		FunctionContext(PrototypeContext&& prototype, const ExpressionContext& body) :
-		_prototype(std::move(prototype)),
-		_body(body)
-		{}
+		ExpressionContext& _body;
 
 	public:
 
+		FunctionContext(PrototypeContext&& prototype, ExpressionContext& body) :
+		_prototype(std::move(prototype)),
+		_body(body)
+		{}
 		FunctionContext(FunctionContext&&) = default;
 		FunctionContext(const FunctionContext&) = delete;
 
-		static const FunctionContext *validate(FunctionSymbolTable& symbolTable);
+		static FunctionContext *validate(FunctionSymbolTable& symbolTable);
 
 		EntityType type() const { return EntityType::Function; }
 	};

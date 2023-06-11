@@ -3,14 +3,11 @@
 
 #include "parka/syntax/ExpressionSyntax.hpp"
 
-namespace parka
+namespace parka::LiteralSyntax
 {
-	struct LiteralSyntax : public ExpressionSyntax
-	{
-		virtual ~LiteralSyntax() {}
 
-		static const ExpressionSyntax *parse(Token& token);
-	};
+	ExpressionSyntax *parse(Token& token);
+
 }
 
 #endif

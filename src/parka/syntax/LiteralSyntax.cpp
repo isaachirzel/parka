@@ -7,9 +7,9 @@
 #include "parka/syntax/StringLiteralSyntax.hpp"
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::LiteralSyntax
 {
-	const ExpressionSyntax *LiteralSyntax::parse(Token& token)
+	ExpressionSyntax *parse(Token& token)
 	{
 		switch (token.type())
 		{
@@ -33,6 +33,7 @@ namespace parka
 		}
 		
 		log::parseError(token, "literal");
+		
 		return {};
 	}
 }

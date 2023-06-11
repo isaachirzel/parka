@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_PACKAGE_SYNTAX_HPP
 #define PARKA_SYNTAX_PACKAGE_SYNTAX_HPP
 
+#include "parka/context/PackageContext.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
@@ -17,24 +18,19 @@ namespace parka
 	{
 		String _identifier;
 		Array<ModuleSyntax> _modules;
-		Array<const PackageSyntax*> _packages;
-
-	private:
-
-		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<const PackageSyntax*>&& packages) :
-		_identifier(std::move(identifier)),
-		_modules(std::move(modules)),
-		_packages(std::move(packages))
-		{}
+		Array<PackageSyntax*> _packages;
 
 	public:
 
+		PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<PackageSyntax*>&& packages);
 		PackageSyntax(PackageSyntax&&) = default;
 		PackageSyntax(const PackageSyntax&) = delete;
 
-		static const PackageSyntax *parse(const Directory& directory, const String& name);
+		static PackageSyntax *parse(const Directory& directory, const String& name);
 
-		EntityType type() const { return EntityType::Package; }
+		PackageContext *validate(SymbolTable& symbolTable);
+
+		EntityType entityType() const { return EntityType::Package; }
 		const String& identifier() const { return _identifier; }
 		const auto& modules() const { return _modules; }
 		const auto& packages() const { return _packages; }

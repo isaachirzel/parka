@@ -2,6 +2,7 @@
 #define PARKA_SYMBOL_STRUCT_SYMBOL_TABLE_HPP
 
 #include "parka/symbol/SymbolTable.hpp"
+#include "parka/syntax/MemberSyntax.hpp"
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/util/Table.hpp"
 
@@ -11,12 +12,14 @@ namespace parka
 	class StructSymbolTable : public SymbolTable
 	{
 		SymbolTable *_parent;
-		const StructSyntax& _syntax;
-		Table<String, const EntitySyntax*> _symbols;
-
-		StructSymbolTable(const StructSyntax& syntax, SymbolTable& parent);
+		StructSyntax& _syntax;
+		Table<String, MemberSyntax*> _symbols;
 
 	public:
+
+		StructSymbolTable(StructSyntax& syntax, SymbolTable& parent);
+		StructSymbolTable(StructSymbolTable&&) = default;
+		StructSymbolTable(const StructSymbolTable&) = delete;
 
 		const EntityContext *resolve(const Identifier& identifier);
 		const EntityContext *resolve(const QualifiedIdentifier& identifier);

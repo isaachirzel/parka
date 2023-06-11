@@ -8,22 +8,22 @@ namespace parka
 {
 	class AssignmentExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 		AssignmentType _type;
 
-		AssignmentExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs, AssignmentType type) :
+	public:
+
+		AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType type) :
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-
-	public:
-
 		AssignmentExpressionSyntax(AssignmentExpressionSyntax&&) = default;
 		AssignmentExpressionSyntax(const AssignmentExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable) const;
 
 		ExpressionType expressionType() const { return ExpressionType::Assignment; }
 		const auto& lhs() const { return _lhs; }

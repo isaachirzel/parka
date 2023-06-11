@@ -1,31 +1,27 @@
 #ifndef PARKA_CONTEXT_PACKAGE_CONTEXT_HPP
 #define PARKA_CONTEXT_PACKAGE_CONTEXT_HPP
 
+#include "parka/context/FunctionContext.hpp"
+#include "parka/context/StructContext.hpp"
 #include "parka/repository/EntityContext.hpp"
 #include "parka/repository/EntityContextId.hpp"
-#include "parka/symbol/PackageSymbolTable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/syntax/PackageSyntax.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka
 {
 	class PackageContext : public EntityContext
 	{
-		Array<EntityContextId> _packageIds;
-		Array<EntityContextId> _functionIds;
-		Array<EntityContextId> _structIds;
-
-		PackageContext(Array<EntityContextId>&& functionIds, Array<EntityContextId>&& structIds) :
-		_functionIds(std::move(functionIds)),
-		_structIds(std::move(structIds))
-		{}
+		Array<PackageContext*> _packages;
+		Array<FunctionContext*> _functions;
+		Array<StructContext*> _structs;
 
 	public:
 
-		static const PackageContext *validate(PackageSymbolTable& symbols);
+		PackageContext(Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs);
+		PackageContext(PackageContext&&) = default;
+		PackageContext(const PackageContext&) = delete;
 
-		EntityType type() const { return EntityType::Package; }
+		EntityType entityType() const { return EntityType::Package; }
 	};
 }
 

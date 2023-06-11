@@ -8,11 +8,11 @@
 
 namespace parka
 {
-	static const ExpressionSyntax *parseEnclosedExpressionSyntax(Token& token)
+	static ExpressionSyntax *parseEnclosedExpressionSyntax(Token& token)
 	{
 		token.increment();
 
-		auto expression = ExpressionSyntax::parse(token);
+		auto *expression = ExpressionSyntax::parse(token);
 
 		if (!expression)
 			return {};
@@ -26,7 +26,7 @@ namespace parka
 		return expression;
 	}
 
-	const ExpressionSyntax *PrimaryExpressionSyntax::parse(Token& token)
+	ExpressionSyntax *PrimaryExpressionSyntax::parse(Token& token)
 	{
 		switch (token.type())
 		{

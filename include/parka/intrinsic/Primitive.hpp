@@ -18,33 +18,33 @@ namespace parka
 		PrimitiveType _type;
 		u32 _size;
 
+	public:
+
+		static Primitive voidPrimitive;
+		static Primitive u8Primitive;
+		static Primitive u16Primitive;
+		static Primitive u32Primitive;
+		static Primitive u64Primitive;
+		static Primitive i8Primitive;
+		static Primitive i16Primitive;
+		static Primitive i32Primitive;
+		static Primitive i64Primitive;
+		static Primitive f32Primitive;
+		static Primitive f64Primitive;
+		static Primitive boolPrimitive;
+		static Primitive charPrimitive;
+		static Primitive stringPrimitive;
+		static const Array<Primitive*> primitives;
+
+	private:
+
+		static Array<Primitive*> initPrimitives();
+
 		Primitive(const char *identifier, PrimitiveType type, u32 size) :
 		_identifier(identifier),
 		_type(type),
 		_size(size)
 		{}
-
-		static Array<const Primitive*> initPrimitives();
-
-	public:
-
-		static const Primitive voidPrimitive;
-		static const Primitive u8Primitive;
-		static const Primitive u16Primitive;
-		static const Primitive u32Primitive;
-		static const Primitive u64Primitive;
-		static const Primitive i8Primitive;
-		static const Primitive i16Primitive;
-		static const Primitive i32Primitive;
-		static const Primitive i64Primitive;
-		static const Primitive f32Primitive;
-		static const Primitive f64Primitive;
-		static const Primitive boolPrimitive;
-		static const Primitive charPrimitive;
-		static const Primitive stringPrimitive;
-
-
-		static const Array<const Primitive*> primitives;
 
 	public:
 
@@ -52,7 +52,7 @@ namespace parka
 		Primitive(const Primitive&) = delete;
 
 		const String& identifier() const { return _identifier; }
-		EntityType type() const { return EntityType::Primitive; }
+		EntityType entityType() const { return EntityType::Primitive; }
 		const auto& primitiveType() const { return _type; }
 		const auto& size() const { return _size; }
 	};

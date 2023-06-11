@@ -5,9 +5,10 @@
 
 namespace parka
 {
-	StructSymbolTable::StructSymbolTable(const StructSyntax& syntax, SymbolTable& parent) :
+	StructSymbolTable::StructSymbolTable(StructSyntax& syntax, SymbolTable& parent) :
 	_parent(&parent),
-	_syntax(syntax)
+	_syntax(syntax),
+	_symbols()
 	{
 		for (const auto& memberSyntax : syntax.members())
 		{

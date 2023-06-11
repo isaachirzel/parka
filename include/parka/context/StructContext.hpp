@@ -10,14 +10,13 @@ namespace parka
 {
 	class StructContext : public EntityContext
 	{
-		StructContext()
-		{}
-
 	public:
+
+		StructContext() = default;
 		StructContext(StructContext&&) = default;
 		StructContext(const StructContext&) = delete;
 
-		static const StructContext *validate(StructSymbolTable& symbolTable);
+		static StructContext *validate(StructSymbolTable& symbolTable);
 		
 		EntityType type() const { return EntityType::Struct; }
 	};

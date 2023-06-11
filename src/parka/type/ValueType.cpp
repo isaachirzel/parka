@@ -8,36 +8,24 @@
 
 namespace parka
 {
-	const ValueType ValueType::voidType(Primitive::voidPrimitive);
-	const ValueType ValueType::u8Type(Primitive::u8Primitive);
-	const ValueType ValueType::u16Type(Primitive::u16Primitive);
-	const ValueType ValueType::u32Type(Primitive::u32Primitive);
-	const ValueType ValueType::u64Type(Primitive::u64Primitive);
-	const ValueType ValueType::i8Type(Primitive::i8Primitive);
-	const ValueType ValueType::i16Type(Primitive::i16Primitive);
-	const ValueType ValueType::i32Type(Primitive::i32Primitive);
-	const ValueType ValueType::i64Type(Primitive::i64Primitive);
-	const ValueType ValueType::f32Type(Primitive::f32Primitive);
-	const ValueType ValueType::f64Type(Primitive::f64Primitive);
-	const ValueType ValueType::boolType(Primitive::boolPrimitive);
-	const ValueType ValueType::charType(Primitive::charPrimitive);
-	const ValueType ValueType::stringType(Primitive::stringPrimitive);
+	ValueType ValueType::voidType(Primitive::voidPrimitive);
+	ValueType ValueType::u8Type(Primitive::u8Primitive);
+	ValueType ValueType::u16Type(Primitive::u16Primitive);
+	ValueType ValueType::u32Type(Primitive::u32Primitive);
+	ValueType ValueType::u64Type(Primitive::u64Primitive);
+	ValueType ValueType::i8Type(Primitive::i8Primitive);
+	ValueType ValueType::i16Type(Primitive::i16Primitive);
+	ValueType ValueType::i32Type(Primitive::i32Primitive);
+	ValueType ValueType::i64Type(Primitive::i64Primitive);
+	ValueType ValueType::f32Type(Primitive::f32Primitive);
+	ValueType ValueType::f64Type(Primitive::f64Primitive);
+	ValueType ValueType::boolType(Primitive::boolPrimitive);
+	ValueType ValueType::charType(Primitive::charPrimitive);
+	ValueType ValueType::stringType(Primitive::stringPrimitive);
 
-	ValueType::ValueType(const EntityContext& entity) :
+	ValueType::ValueType(EntityContext& entity) :
 	_entity(entity)
 	{}
-
-	Optional<ValueType> ValueType::validate(const TypeAnnotationSyntax& syntax, SymbolTable& symbolTable)
-	{
-		const auto *entity = symbolTable.resolve(syntax.identifier());
-
-		if (!entity)
-			return {};
-
-		auto result = ValueType(*entity);
-
-		return result;
-	}
 
 	bool ValueType::canConvertTo(const ValueType& to)
 	{

@@ -7,20 +7,16 @@ namespace parka
 {
 	class BitwiseXorExpressionSyntax : public ExpressionSyntax
 	{
-		const ExpressionSyntax& _lhs;
-		const ExpressionSyntax& _rhs;
-
-		BitwiseXorExpressionSyntax(const ExpressionSyntax& lhs, const ExpressionSyntax& rhs) :
-		_lhs(lhs),
-		_rhs(rhs)
-		{}
+		ExpressionSyntax& _lhs;
+		ExpressionSyntax& _rhs;
 
 	public:
 
+		BitwiseXorExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs);
 		BitwiseXorExpressionSyntax(BitwiseXorExpressionSyntax&&) = default;
 		BitwiseXorExpressionSyntax(const BitwiseXorExpressionSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::BitwiseXor; }
 		const auto& lhs() const { return _lhs; }

@@ -5,22 +5,21 @@
 
 namespace parka
 {
-	class FloatLiteralSyntax : public LiteralSyntax
+	class FloatLiteralSyntax : public ExpressionSyntax
 	{
 		Token _token;
 		double _value;
+
+	public:
 
 		FloatLiteralSyntax(const Token& token, double value) :
 		_token(token),
 		_value(value)
 		{}
-
-	public:
-
 		FloatLiteralSyntax(FloatLiteralSyntax&&) = default;
 		FloatLiteralSyntax(const FloatLiteralSyntax&) = delete;
 
-		static const ExpressionSyntax *parse(Token& token);
+		static ExpressionSyntax *parse(Token& token);
 
 		ExpressionType expressionType() const { return ExpressionType::FloatLiteral; }
 	};

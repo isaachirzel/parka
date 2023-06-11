@@ -13,22 +13,17 @@ namespace parka
 		String _symbol;
 		TypeAnnotationSyntax _annotation;
 		bool _isPublic;
-
 		// TODO: Add read/write count
-
-		MemberSyntax(const Token& name, String&& symbol, TypeAnnotationSyntax&& annotation, bool isPublic) :
-		_name(name),
-		_symbol(std::move(symbol)),
-		_annotation(std::move(annotation)),
-		_isPublic(isPublic)
-		{}
 
 	public:
 
+		MemberSyntax(const Token& name, String&& symbol, TypeAnnotationSyntax&& annotation, bool isPublic);
 		MemberSyntax(MemberSyntax&&) = default;
 		MemberSyntax(const MemberSyntax&) = delete;
 
 		static Optional<MemberSyntax> parse(Token& token);
+
+		Optional<MemberSyntax> validate(SymbolTable& symbolTable) const;
 
 		const auto& name() const { return _name; }
 		const auto& symbol() const { return _symbol; }

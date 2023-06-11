@@ -7,7 +7,7 @@
 
 namespace parka
 {
-	const VariableSyntax *VariableSyntax::parse(Token& token)
+	VariableSyntax *VariableSyntax::parse(Token& token)
 	{
 		// TODO: VariableSyntax mutability
 		auto keyword = KeywordSyntax::parseVar(token);
@@ -32,34 +32,8 @@ namespace parka
 				return {};
 		}
 
-		auto variable = VariableSyntax(*identifier, false, std::move(annotation));
-		auto& syntax = EntitySyntax::create(std::move(variable));
+		auto *syntax = new VariableSyntax(*identifier, false, std::move(annotation));
 
-		return (const VariableSyntax*)&syntax;
+		return syntax;
 	}
-
-	// bool VariableSyntax::validate(const EntitySyntax& function)
-	// {
-	// 	_isValidated = true;
-
-	// 	if (_annotation)
-	// 	{
-	// 		if (!_annotation->validate(function))
-	// 			return false;
-
-	// 		auto type = _annotation->getType();
-
-	// 		_type = type;
-	// 	}
-
-	// 	return true;
-	// }
-
-	// Optional<ValueType> VariableSyntax::getType() const
-	// {
-	// 	if (!_type)
-	// 		return {};
-
-	// 	return *_type;
-	// }
 }

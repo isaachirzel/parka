@@ -1,4 +1,5 @@
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
 
@@ -22,16 +23,8 @@ namespace parka
 		return annotation;
 	}
 
-	// bool TypeAnnotationSyntax::validate(const EntitySyntax& function)
-	// {
-	// 	auto& function = SyntaxRepository::getFunction(function);
-	// 	auto entity = function.resolve(_identifier);
-
-	// 	if (!entity)
-	// 		return false;
-
-	// 	_type = ValueType(*entity);
-
-	// 	return true;
-	// }
+	Optional<ValueType> TypeAnnotationSyntax::validate(SymbolTable& symbolTable) const
+	{
+		log::notImplemented(here());
+	}
 }
