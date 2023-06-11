@@ -14,10 +14,7 @@ namespace parka
 
 	public:
 
-		MemberAccessExpressionSyntax(ExpressionSyntax& expression, const Token& member) :
-		_expression(expression),
-		_member(member)
-		{}
+		MemberAccessExpressionSyntax(ExpressionSyntax& expression, const Token& member);
 		MemberAccessExpressionSyntax(MemberAccessExpressionSyntax&&) = default;
 		MemberAccessExpressionSyntax(const MemberAccessExpressionSyntax&) = delete;
 

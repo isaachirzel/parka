@@ -14,7 +14,7 @@ namespace parka
 	_isPublic(isPublic)
 	{}
 
-	bool parsePublicity(Token& token)
+	static bool parsePublicity(Token& token)
 	{
 		auto keywordType = KeywordSyntax::getKeywordType(token);
 

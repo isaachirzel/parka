@@ -1,12 +1,6 @@
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/syntax/BlockExpressionSyntax.hpp"
-#include "parka/syntax/ExpressionSyntax.hpp"
-#include "parka/syntax/PackageSyntax.hpp"
-#include "parka/syntax/TypeAnnotationSyntax.hpp"
-#include "parka/util/Array.hpp"
-#include "parka/util/Optional.hpp"
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
@@ -14,7 +8,8 @@ namespace parka
 	_prototype(std::move(prototype)),
 	_body(body)
 	{}
-	ExpressionSyntax *parseBody(Token& token)
+
+	static ExpressionSyntax *parseFunctionBody(Token& token)
 	{
 		if (token.type() == TokenType::DoubleArrow)
 		{
@@ -51,7 +46,7 @@ namespace parka
 		if (!prototype)
 			return {};
 
-		auto body = parseBody(token);
+		auto body = parseFunctionBody(token);
 
 		if (!body)
 			return {};

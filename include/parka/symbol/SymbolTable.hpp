@@ -12,7 +12,6 @@ namespace parka
 	struct SymbolTable
 	{
 		virtual ~SymbolTable() {}
-
 		virtual const EntityContext *resolve(const Identifier& identifier) = 0;
 		virtual const EntityContext *resolve(const QualifiedIdentifier& identifier) = 0;
 		virtual SymbolTable *parent() = 0;		

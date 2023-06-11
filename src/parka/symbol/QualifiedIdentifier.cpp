@@ -3,7 +3,7 @@
 
 namespace parka
 {
-	bool parseAbsolute(Token& token)
+	static bool parseAbsolute(Token& token)
 	{
 		if (token.type() == TokenType::Scope)
 		{

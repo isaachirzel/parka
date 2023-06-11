@@ -13,15 +13,12 @@ namespace parka
 {
 	class DeclarationStatementSyntax : public StatementSyntax
 	{
-		EntitySyntax& _variable;
-		VariableSyntax& _value;
+		VariableSyntax& _variable;
+		ExpressionSyntax& _value;
 
 	public:
 
-		DeclarationStatementSyntax(EntitySyntax& variable, ExpressionSyntax& value) :
-		_variable(variable),
-		_value(value)
-		{}
+		DeclarationStatementSyntax(VariableSyntax& variable, ExpressionSyntax& value);
 		DeclarationStatementSyntax(DeclarationStatementSyntax&&) = default;
 		DeclarationStatementSyntax(const DeclarationStatementSyntax&) = delete;
 

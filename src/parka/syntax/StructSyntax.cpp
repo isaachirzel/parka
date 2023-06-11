@@ -1,14 +1,10 @@
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
-#include "parka/syntax/MemberSyntax.hpp"
-
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
-	StructSyntax *StructSyntax::parse(Token& token)
+	StructSyntax *StructSyntax::parse(Token &token)
 	{
 		auto keyword = KeywordSyntax::parseStruct(token);
 

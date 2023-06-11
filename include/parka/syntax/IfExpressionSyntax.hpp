@@ -9,6 +9,8 @@ namespace parka
 {
 	class IfExpressionSyntax : public ExpressionSyntax
 	{
+		static ExpressionSyntax	*parse(Token& token);
+
 		ExpressionType expressionType() const { return ExpressionType::If; }
 	};
 }

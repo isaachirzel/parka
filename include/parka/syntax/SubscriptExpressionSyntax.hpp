@@ -14,10 +14,7 @@ namespace parka
 
 	public:
 
-		SubscriptExpressionSyntax(ExpressionSyntax& primary, ExpressionSyntax& index) :
-		_primary(primary),
-		_index(index)
-		{}
+		SubscriptExpressionSyntax(ExpressionSyntax& primary, ExpressionSyntax& index);
 		SubscriptExpressionSyntax(SubscriptExpressionSyntax&&) = default;
 		SubscriptExpressionSyntax(const SubscriptExpressionSyntax&) = delete;
 

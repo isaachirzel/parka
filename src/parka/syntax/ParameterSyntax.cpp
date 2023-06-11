@@ -14,26 +14,35 @@ namespace parka
 	_isMutable(isMutable)
 	{}
 
+	ParameterSyntax *ParameterSyntax::parse(Token& token)
+	{
+		auto mutKeyword = KeywordSyntax::parseMut(token);
+		auto isMutable = !!mutKeyword;
+		auto identifier = Identifier::parse(token);
+
+		if (!identifier)
+			return {};
+
+		if (token.type() != TokenType::Colon)
+		{
+			log::parseError(token, "':'", "Parameters require a type annotation.");
+			return {};
+		}
+
+		token.increment();
+
+		auto annotation = TypeAnnotationSyntax::parse(token);
+
+		if (!annotation)
+			return {};
+		
+		auto *syntax = new ParameterSyntax(*identifier, *annotation, isMutable);
+		
+		return syntax;
+	}
+
 	ParameterContext *ParameterSyntax::validate(FunctionSymbolTable& symbolTable)
 	{
 		log::notImplemented(here());
 	}
-
-	// bool ParameterSyntax::validate(const EntitySyntax& function)
-	// {
-	// 	auto success = true;
-
-	// 	if (!_annotation.validate(function))
-	// 		success = false;
-
-	// 	return success;
-	// }
-
-	// Optional<ValueType> ParameterSyntax::getType() const
-	// {
-	// 	if (!_type)
-	// 		return {};
-
-	// 	return *_type;
-	// }
 }

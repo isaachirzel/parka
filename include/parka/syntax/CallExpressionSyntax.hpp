@@ -12,10 +12,7 @@ namespace parka
 
 	public:
 
-		CallExpressionSyntax(ExpressionSyntax& primary, Array<ExpressionSyntax*>&& arguments) :
-		_primary(primary),
-		_arguments(std::move(arguments))
-		{}
+		CallExpressionSyntax(ExpressionSyntax& primary, Array<ExpressionSyntax*>&& arguments);
 		CallExpressionSyntax(CallExpressionSyntax&&) = default;
 		CallExpressionSyntax(const CallExpressionSyntax&) = delete;
 

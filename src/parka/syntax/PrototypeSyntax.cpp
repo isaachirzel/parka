@@ -18,7 +18,7 @@ namespace parka
 	_returnType(std::move(returnType))
 	{}
 
-	Optional<Array<ParameterSyntax*>> parseParameterList(Token& token)
+	static Optional<Array<ParameterSyntax*>> parseParameterList(Token& token)
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
@@ -66,7 +66,7 @@ namespace parka
 		return parameters;
 	}
 
-	Optional<TypeAnnotationSyntax> parseReturnType(Token& token)
+	static Optional<TypeAnnotationSyntax> parseReturnType(Token& token)
 	{
 		if (token.type() != TokenType::SingleArrow)
 			return {};

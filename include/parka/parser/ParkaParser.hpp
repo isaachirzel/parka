@@ -19,6 +19,9 @@ namespace parka
 
 	public:
 
+		ParkaParser(const Project& project) :
+		_	
+
 		SyntaxTree parseSyntaxTree(const Project& project);
 		PackageSyntax parsePackage(const Directory& directory, const String& name);
 		ModuleSyntax parseModule(const File& file);
