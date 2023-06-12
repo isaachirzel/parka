@@ -41,7 +41,7 @@ namespace parka
 		return syntax;
 	}
 
-	ParameterContext *ParameterSyntax::validate(FunctionSymbolTable& symbolTable)
+	ParameterContext *ParameterSyntax::validate(SymbolTable& symbolTable)
 	{
 		log::notImplemented(here());
 	}

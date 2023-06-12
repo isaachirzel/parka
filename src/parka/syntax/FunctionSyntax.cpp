@@ -6,7 +6,9 @@ namespace parka
 {
 	FunctionSyntax::FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body) :
 	_prototype(std::move(prototype)),
-	_body(body)
+	_body(body),
+	_parent(nullptr),
+	_symbols()
 	{}
 
 	static ExpressionSyntax *parseFunctionBody(Token& token)
@@ -54,5 +56,34 @@ namespace parka
 		auto *syntax = new FunctionSyntax(*prototype, *body);
 
 		return syntax;
+	}
+
+	bool FunctionSyntax::declare(EntitySyntax& entity)
+	{
+		const auto& identifier = entity.identifier();
+
+		for (const auto *symbol : _symbols)
+		{
+			if (identifier == symbol->identifier())
+			{
+				log::error("A parameter with the name `$` has already been declared in this prototype.", identifier);
+				// TODO: maybe just insert it anyways?
+				return false;
+			}
+		}
+
+		_symbols.push(&entity);
+		
+		return true;
+	}
+
+	const EntityContext *FunctionSyntax::resolve(const Identifier& identifier)
+	{
+		log::notImplemented(here());
+	}
+
+	const EntityContext *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	{
+		log::notImplemented(here());
 	}
 }

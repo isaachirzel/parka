@@ -1,16 +1,8 @@
 #include "parka/syntax/PackageSyntax.hpp"
-#include "parka/context/PackageContext.hpp"
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/PackageSymbolTable.hpp"
-#include "parka/syntax/FunctionSyntax.hpp"
-#include "parka/syntax/ModuleSyntax.hpp"
-#include "parka/syntax/StructSyntax.hpp"
-#include "parka/util/Array.hpp"
-#include "parka/file/Directory.hpp"
-#include "parka/file/File.hpp"
-#include "parka/util/Optional.hpp"
-#include "parka/util/Print.hpp"
+#include "parka/symbol/SymbolTableEntry.hpp"
 
 namespace parka
 {
@@ -37,17 +29,14 @@ namespace parka
 		return syntax;
 	}
 
-	PackageContext *PackageSyntax::validate(SymbolTable& symbolTable)
+	PackageContext *PackageSyntax::validate()
 	{
-		assert(symbolTable.symbolTableType() == SymbolTableType::Package);
-
-		auto& packageSymbolTable = static_cast<PackageSymbolTable&>(symbolTable);
 		auto success = true;
 		auto packages = Array<PackageContext*>();
 		auto functions = Array<FunctionContext*>();
 		auto structs = Array<StructContext*>();
 
-		for (auto& tuple : packageSymbolTable.symbols())
+		for (auto& tuple : _symbols)
 		{
 			auto& entry = tuple.value();
 			const auto& syntax = entry.syntax();
@@ -59,7 +48,7 @@ namespace parka
 				// case EntityType::Package:
 				// {
 				// 	auto& package = (PackageSyntax&)*entry.syntax();
-				// 	context = syntax.validate(entry.packageSymbolTable());
+				// 	context = syntax.validate(entry.PackageSyntax());
 				// 	break;
 				// }
 
@@ -100,5 +89,111 @@ namespace parka
 		auto *context = new PackageContext(std::move(packages), std::move(functions), std::move(structs));
 
 		return context;
+	}
+
+	void PackageSyntax::declare()
+	{
+		const auto isGlobalPackage = _parent == nullptr;
+
+		if (isGlobalPackage)
+		{
+			for (const auto *primitive : Primitive::primitives)
+			{
+				_symbols.insert(primitive->identifier(), SymbolTableEntry(*primitive, *this));
+			}
+		}
+
+		for (const auto& mod : _modules)
+		{
+			for (const auto *strct : mod.structs())
+				declare(*strct);
+
+			for (const auto *function : mod.functions())
+				declare(*function);
+		}
+
+		for (const auto *package : _packages)
+			declare(*package);
+	}
+
+	bool PackageSyntax::declare(const EntitySyntax& entity)
+	{
+		// TODO: Invalidate symbol on failure, better error
+		auto entry = SymbolTableEntry(entity, *this);
+		const auto& identifier = entity.identifier();
+		auto result = _symbols.insert(identifier, std::move(entry));
+
+		if (!result)
+			log::error("Name `$` is already declared in this package.", identifier);
+
+		return result;
+	}
+
+	SymbolTableEntry *PackageSyntax::findEntry(const QualifiedIdentifier& identifier, usize index)
+	{
+		auto& part = identifier[index];
+		auto *result = resolve(part);
+
+		if (!result)
+		{
+			if (_parent)
+				result = _parent->resolve(part);
+
+			if (!result)
+			{
+				// TODO: Output package symbol, entity type and reference highlight
+				log::error("Unable to find `$` in package `$`.", part.text(), _identifier);
+				
+				return nullptr;
+			}
+		}
+
+		return nullptr;
+	}
+
+	const EntityContext *PackageSyntax::resolve(const Identifier& identifier)
+	{
+		// TODO: Confirm this makes sense. I'm not sure if resolving single identifiers should always do
+		// this or if it should seek upwards at times
+		const auto *result = _symbols.find(identifier.text());
+
+		if (!result)
+			return {};
+			
+		if (result->context())
+			return result->context();
+
+		log::notImplemented(here());
+		// return &result->syntax();
+	}
+
+	const EntityContext *PackageSyntax::resolve(const QualifiedIdentifier& identifier)
+	{
+		// TODO: Make this logic work
+		const auto *result = findEntry(identifier, 0);
+
+		if (!result)
+			return {};
+
+		if (result->context())
+			return result->context();
+
+		log::notImplemented(here());
+	}
+
+	std::ostream& operator<<(std::ostream& out, const PackageSyntax& package)
+	{
+		// TODO: Implement printing other packages
+		auto indent = Indent(out);
+		const auto& identifier = package._identifier;
+
+		out << (identifier.length() > 0 ? identifier : "Global Scope") << ":\n";
+
+		for (const auto& entry : package._symbols)
+		{
+			out << indent << entry.value();
+		}
+
+		return out;
 	}
 }

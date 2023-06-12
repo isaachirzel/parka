@@ -112,7 +112,7 @@ namespace parka
 		return syntax->validate(symbolTable);
 	}
 
-	Optional<PrototypeContext> PrototypeSyntax::validate(FunctionSymbolTable& symbolTable)
+	Optional<PrototypeContext> PrototypeSyntax::validate(SymbolTable& symbolTable)
 	{
 		auto success = true;
 		const auto parameterCount = _parameters.length();

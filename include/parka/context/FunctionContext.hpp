@@ -5,7 +5,6 @@
 #include "parka/context/PrototypeContext.hpp"
 #include "parka/enum/EntityType.hpp"
 #include "parka/repository/EntityContext.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
@@ -24,9 +23,9 @@ namespace parka
 		FunctionContext(FunctionContext&&) = default;
 		FunctionContext(const FunctionContext&) = delete;
 
-		static FunctionContext *validate(FunctionSymbolTable& symbolTable);
-
-		EntityType type() const { return EntityType::Function; }
+		EntityType entityType() const { return EntityType::Function; }
+		const auto& prototype() const { return _prototype; }
+		const auto& body() const { return _body; }
 	};
 }
 

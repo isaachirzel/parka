@@ -1,84 +1,30 @@
 #include "parka/symbol/SymbolTableEntry.hpp"
-#include "parka/enum/SymbolTableType.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
-#include "parka/symbol/PackageSymbolTable.hpp"
-#include "parka/symbol/StructSymbolTable.hpp"
-#include "parka/util/Print.hpp"
-#include <cassert>
+#include "parka/log/Log.hpp"
 
 namespace parka
 {
 	SymbolTableEntry::SymbolTableEntry(const EntitySyntax& syntax, SymbolTable& parent) :
 	_syntax(syntax),
 	_context(nullptr)
-	{
-		switch (syntax.entityType())
-		{
-			case EntityType::Package:
-				new (&_package) PackageSymbolTable((PackageSyntax&)_syntax, &parent);
-				break;
-
-			case EntityType::Struct:
-				new (&_struct) StructSymbolTable((StructSyntax&)_syntax, parent);
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	SymbolTableEntry::SymbolTableEntry(SymbolTableEntry&& other) :
-	_syntax(other._syntax),
-	_context(other._context)
-	{
-		// TODO: Implement for other table types
-		switch (_syntax.entityType())
-		{
-			case EntityType::Package:
-				new (&_package) auto(std::move(other._package));
-				break;
-
-			case EntityType::Struct:
-				new (&_struct) auto(std::move(other._struct));
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	SymbolTableEntry::~SymbolTableEntry()
-	{
-		switch (_syntax.entityType())
-		{
-			case EntityType::Package:
-				_package.~PackageSymbolTable();
-				break;
-
-			case EntityType::Struct:
-				_struct.~StructSymbolTable();
-				break;
-
-			default:
-				break;
-		}
-	}
+	{}
 
 	void SymbolTableEntry::setParent(SymbolTable& parent)
 	{
 		switch (_syntax.entityType())
 		{
-			case EntityType::Package:
-				_package._parent = &parent;
-				break;
+			// case EntityType::Package:
+			// 	_package._parent = &parent;
+			// 	break;
 
-			case EntityType::Struct:
-				_struct._parent = &parent;
-				break;
+			// case EntityType::Struct:
+			// 	_struct._parent = &parent;
+			// 	break;
 
 			default:
 				break;
 		}
+
+		log::fatal("Unable to set parent of Entity with Type: $", _syntax.entityType());
 	}
 
 	void SymbolTableEntry::setContext(const EntityContext& context)
