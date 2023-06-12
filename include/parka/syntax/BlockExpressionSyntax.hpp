@@ -26,7 +26,6 @@ namespace parka
 		BlockExpressionSyntax(const BlockExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
-
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		const EntityContext *resolve(const Identifier& identifier);

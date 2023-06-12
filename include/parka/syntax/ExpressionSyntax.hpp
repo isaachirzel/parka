@@ -16,6 +16,7 @@ namespace parka
 		virtual ExpressionType expressionType() const = 0;
 
 		static ExpressionSyntax *parse(Token& token);
+		virtual ExpressionContext *validate(SymbolTable& symbolTable) = 0;
 	};
 }
 

@@ -21,6 +21,7 @@ namespace parka
 		CharLiteralSyntax(const CharLiteralSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::CharLiteral; }
 		const auto& token() const { return _token; }

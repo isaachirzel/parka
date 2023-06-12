@@ -17,4 +17,9 @@ namespace parka
 
 		return syntax;
 	}
+
+	ExpressionContext *StringLiteralSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
 }

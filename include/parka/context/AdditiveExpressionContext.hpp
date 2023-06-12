@@ -14,11 +14,7 @@ namespace parka
 
 	public:
 
-		AdditiveExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AdditiveType type) :
-		_lhs(lhs),
-		_rhs(rhs),
-		_type(type)
-		{}
+		AdditiveExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AdditiveType type);
 		AdditiveExpressionContext(AdditiveExpressionContext&&) = default;
 		AdditiveExpressionContext(const AdditiveExpressionContext&) = delete;
 

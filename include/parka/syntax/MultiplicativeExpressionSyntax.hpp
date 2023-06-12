@@ -26,7 +26,7 @@ namespace parka
 		MultiplicativeExpressionSyntax(const MultiplicativeExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable&) const;
+		ExpressionContext *validate(SymbolTable&);
 
 		ExpressionType expressionType() const { return ExpressionType::Multiplicative; }
 		const auto& lhs() const { return _lhs; }

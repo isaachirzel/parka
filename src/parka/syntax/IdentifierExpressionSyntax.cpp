@@ -1,4 +1,5 @@
 #include "parka/syntax/IdentifierExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 
 
 namespace parka
@@ -9,5 +10,10 @@ namespace parka
 		auto *syntax = new IdentifierExpressionSyntax(*identifier);
 
 		return syntax;
+	}
+
+	ExpressionContext *IdentifierExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

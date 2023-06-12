@@ -15,9 +15,8 @@ namespace parka
 		String _identifier;
 		Array<ModuleSyntax> _modules;
 		Array<PackageSyntax*> _packages;
-
-		SymbolTable *_parent;
 		Table<String, SymbolTableEntry> _symbols;
+		SymbolTable *_parent;
 
 	private:
 
@@ -31,9 +30,9 @@ namespace parka
 		PackageSyntax(const PackageSyntax&) = delete;
 
 		static PackageSyntax *parse(const Directory& directory, const String& name);
+		PackageContext *validate();
 
 		void declare();
-		PackageContext *validate();
 		const EntityContext *resolve(const Identifier& identifier);
 		const EntityContext *resolve(const QualifiedIdentifier& identifier);
 		SymbolTable *parent() { return _parent; }

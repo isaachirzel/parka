@@ -1,4 +1,5 @@
 #include "parka/syntax/BitwiseAndExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/EqualityExpressionSyntax.hpp"
 
 namespace parka
@@ -23,5 +24,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *BitwiseAndExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

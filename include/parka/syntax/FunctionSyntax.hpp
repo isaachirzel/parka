@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_FUNCTION_SYNTAX_HPP
 #define PARKA_SYNTAX_FUNCTION_SYNTAX_HPP
 
+#include "parka/context/FunctionContext.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
@@ -12,7 +13,6 @@ namespace parka
 	{
 		PrototypeSyntax _prototype;
 		ExpressionSyntax& _body;
-
 		// Symbol table data
 		SymbolTable *_parent;
 		Array<EntitySyntax*> _symbols;
@@ -24,6 +24,7 @@ namespace parka
 		FunctionSyntax(const FunctionSyntax&) = delete;
 
 		static FunctionSyntax *parse(Token& token);
+		FunctionContext *validate();
 
 		bool declare(EntitySyntax& entity);
 		const EntityContext *resolve(const Identifier& identifier);

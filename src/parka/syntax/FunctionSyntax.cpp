@@ -1,4 +1,5 @@
 #include "parka/syntax/FunctionSyntax.hpp"
+#include "parka/context/FunctionContext.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/syntax/BlockExpressionSyntax.hpp"
 
@@ -56,6 +57,19 @@ namespace parka
 		auto *syntax = new FunctionSyntax(*prototype, *body);
 
 		return syntax;
+	}
+
+	FunctionContext *FunctionSyntax::validate()
+	{
+		auto prototype = _prototype.validate(*this);
+		auto *body = _body.validate(*this);
+
+		if (!prototype || !body)
+			return {};
+
+		auto *context = new FunctionContext(*prototype, *body);
+
+		return context;
 	}
 
 	bool FunctionSyntax::declare(EntitySyntax& entity)

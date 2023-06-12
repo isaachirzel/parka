@@ -20,6 +20,7 @@ namespace parka
 		BitwiseAndExpressionSyntax(const BitwiseAndExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BitwiseAnd; }
 		const auto& lhs() const { return _lhs; }

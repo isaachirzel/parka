@@ -1,4 +1,5 @@
 #include "parka/syntax/PrefixExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/PostfixExpressionSyntax.hpp"
 
 namespace parka
@@ -45,5 +46,10 @@ namespace parka
 		auto *syntax = new PrefixExpressionSyntax(*type, *inner, prefixToken);
 
 		return syntax;
+	}
+
+	ExpressionContext *PrefixExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

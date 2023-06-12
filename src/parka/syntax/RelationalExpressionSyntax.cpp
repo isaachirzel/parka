@@ -1,4 +1,5 @@
 #include "parka/syntax/RelationalExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/ShiftExpressionSyntax.hpp"
 
 namespace parka
@@ -47,5 +48,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *RelationalExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

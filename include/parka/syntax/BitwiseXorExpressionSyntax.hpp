@@ -17,6 +17,7 @@ namespace parka
 		BitwiseXorExpressionSyntax(const BitwiseXorExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BitwiseXor; }
 		const auto& lhs() const { return _lhs; }

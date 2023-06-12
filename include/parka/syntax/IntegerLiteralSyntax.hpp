@@ -15,15 +15,12 @@ namespace parka
 
 	public:
 
-		IntegerLiteralSyntax(const Token& token, u64 value, u32 bytes) :
-		_token(token),
-		_value(value),
-		_bytes(bytes)
-		{}
+		IntegerLiteralSyntax(const Token& token, u64 value, u32 bytes);
 		IntegerLiteralSyntax(IntegerLiteralSyntax&&) = default;
 		IntegerLiteralSyntax(const IntegerLiteralSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::IntegerLiteral; }
 		const auto& token() const { return _token; }

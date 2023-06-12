@@ -36,51 +36,43 @@ namespace parka
 		auto functions = Array<FunctionContext*>();
 		auto structs = Array<StructContext*>();
 
-		for (auto& tuple : _symbols)
+		for (auto& mod : _modules)
 		{
-			auto& entry = tuple.value();
-			const auto& syntax = entry.syntax();
-			const auto& type = syntax.entityType();
-			auto *context = (const EntityContext*)nullptr;
-
-			switch (type)
+			for (auto *syntax : mod.functions())
 			{
-				// case EntityType::Package:
-				// {
-				// 	auto& package = (PackageSyntax&)*entry.syntax();
-				// 	context = syntax.validate(entry.PackageSyntax());
-				// 	break;
-				// }
+				auto *context = syntax->validate();
 
-				// case EntityType::Struct:
-				// 	// TODO: Implement struct support
-				// 	// contextId = StructContext::validate(entry.structSymbolTable());
-				// 	break;
+				if (!context)
+				{
+					success = false;
+					continue;
+				}
 
-				// case EntityType::Primitive:
-				// 	context = (Primitive*)&entry.syntax();
-				// 	break;
-
-				// case EntityType::Function:
-				// {
-				// 	auto functionSymbolTable = FunctionSymbolTable((const FunctionSyntax&)syntax, symbolTable);
-
-				// 	context = FunctionContext::validate(functionSymbolTable);
-				// 	break;
-				// }
-
-				default:
-					log::fatal("Unable to validate package SymbolTableEntry of type: $", type);
-					break;
+				functions.push(context);
 			}
+
+			// for (auto *syntax : mod.structs())
+			// {
+			// 	auto *context = syntax->validate(*this);
+
+			// 	if (!context)
+			// 		continue;
+
+			// 	structs.push(context);
+			// }
+		}
+
+		for (auto *syntax : _packages)
+		{
+			auto *context = syntax->validate();
 
 			if (!context)
 			{
 				success = false;
 				continue;
 			}
-			
-			entry.setContext(*context);
+
+			packages.push(context);
 		}
 
 		if (!success)
@@ -89,6 +81,19 @@ namespace parka
 		auto *context = new PackageContext(std::move(packages), std::move(functions), std::move(structs));
 
 		return context;
+	}
+
+	bool PackageSyntax::declare(const EntitySyntax& entity)
+	{
+		// TODO: Invalidate symbol on failure, better error
+		auto entry = SymbolTableEntry(entity, *this);
+		const auto& identifier = entity.identifier();
+		auto result = _symbols.insert(identifier, std::move(entry));
+
+		if (!result)
+			log::error("Name `$` is already declared in this package.", identifier);
+
+		return result;
 	}
 
 	void PackageSyntax::declare()
@@ -114,19 +119,6 @@ namespace parka
 
 		for (const auto *package : _packages)
 			declare(*package);
-	}
-
-	bool PackageSyntax::declare(const EntitySyntax& entity)
-	{
-		// TODO: Invalidate symbol on failure, better error
-		auto entry = SymbolTableEntry(entity, *this);
-		const auto& identifier = entity.identifier();
-		auto result = _symbols.insert(identifier, std::move(entry));
-
-		if (!result)
-			log::error("Name `$` is already declared in this package.", identifier);
-
-		return result;
 	}
 
 	SymbolTableEntry *PackageSyntax::findEntry(const QualifiedIdentifier& identifier, usize index)
@@ -155,16 +147,17 @@ namespace parka
 	{
 		// TODO: Confirm this makes sense. I'm not sure if resolving single identifiers should always do
 		// this or if it should seek upwards at times
-		const auto *result = _symbols.find(identifier.text());
+		auto result = _symbols.find(identifier.text());
 
 		if (!result)
+		{
+			log::error("Unable to find symbol `$`.", identifier);
 			return {};
-			
-		if (result->context())
-			return result->context();
+		}
 
-		log::notImplemented(here());
-		// return &result->syntax();
+		
+		
+		return result->context();
 	}
 
 	const EntityContext *PackageSyntax::resolve(const QualifiedIdentifier& identifier)

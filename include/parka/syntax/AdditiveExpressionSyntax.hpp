@@ -24,8 +24,7 @@ namespace parka
 		AdditiveExpressionSyntax(AdditiveExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
-
-		ExpressionContext *validate() const;
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Additive; }
 		const auto& lhs() const { return _lhs; }

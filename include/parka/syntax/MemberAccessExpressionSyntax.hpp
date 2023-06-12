@@ -19,6 +19,7 @@ namespace parka
 		MemberAccessExpressionSyntax(const MemberAccessExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::MemberAccess; }
 		const auto& expression() const { return _expression; }

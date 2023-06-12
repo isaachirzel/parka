@@ -17,6 +17,7 @@ namespace parka
 		CallExpressionSyntax(const CallExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Call; }
 		const auto& arguments() const { return _arguments; }

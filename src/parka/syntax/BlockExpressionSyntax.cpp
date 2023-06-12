@@ -41,6 +41,11 @@ namespace parka
 		return syntax;
 	}
 
+	ExpressionContext *BlockExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
+
 	bool BlockExpressionSyntax::declare(EntitySyntax& entity)
 	{
 		const auto& identifier = entity.identifier();

@@ -12,7 +12,8 @@ namespace parka
 		Primitive,
 		Function,
 		Variable,
-		Parameter
+		Parameter,
+		Member
 	};
 
 	std::ostream& operator<<(std::ostream& out, const EntityType& type);

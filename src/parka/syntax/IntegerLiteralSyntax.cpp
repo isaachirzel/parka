@@ -3,6 +3,12 @@
 
 namespace parka
 {
+	IntegerLiteralSyntax::IntegerLiteralSyntax(const Token& token, u64 value, u32 bytes) :
+	_token(token),
+	_value(value),
+	_bytes(bytes)
+	{}
+
 	static Optional<u64> parseInteger(Token& token)
 	{
 		// TODO: Handle overflow
@@ -50,5 +56,10 @@ namespace parka
 		token.increment();
 
 		return syntax;
+	}
+
+	ExpressionContext *IntegerLiteralSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

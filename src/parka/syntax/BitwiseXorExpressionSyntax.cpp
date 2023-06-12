@@ -1,4 +1,5 @@
 #include "parka/syntax/BitwiseXorExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/BitwiseAndExpressionSyntax.hpp"
 
 namespace parka
@@ -28,5 +29,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *BitwiseXorExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

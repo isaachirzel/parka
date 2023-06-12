@@ -1,4 +1,5 @@
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/MultiplicativeExpressionSyntax.hpp"
 
 namespace parka
@@ -43,5 +44,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *AdditiveExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

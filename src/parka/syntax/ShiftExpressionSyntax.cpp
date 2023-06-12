@@ -1,4 +1,5 @@
 #include "parka/syntax/ShiftExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/AdditiveExpressionSyntax.hpp"
 
 namespace parka
@@ -41,5 +42,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *ShiftExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

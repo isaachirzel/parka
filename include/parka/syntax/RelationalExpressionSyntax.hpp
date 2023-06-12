@@ -23,6 +23,7 @@ namespace parka
 		RelationalExpressionSyntax(const RelationalExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Relational; }
 		const auto& lhs() const { return _lhs; }

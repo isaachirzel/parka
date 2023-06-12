@@ -10,6 +10,7 @@ namespace parka
 	class IfExpressionSyntax : public ExpressionSyntax
 	{
 		static ExpressionSyntax	*parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::If; }
 	};

@@ -5,6 +5,7 @@
 #include "parka/context/PrototypeContext.hpp"
 #include "parka/enum/EntityType.hpp"
 #include "parka/repository/EntityContext.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
@@ -16,10 +17,7 @@ namespace parka
 
 	public:
 
-		FunctionContext(PrototypeContext&& prototype, ExpressionContext& body) :
-		_prototype(std::move(prototype)),
-		_body(body)
-		{}
+		FunctionContext(PrototypeContext&& prototype, ExpressionContext& body);
 		FunctionContext(FunctionContext&&) = default;
 		FunctionContext(const FunctionContext&) = delete;
 

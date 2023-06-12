@@ -20,6 +20,7 @@ namespace parka
 		BooleanOrExpressionSyntax(const BooleanOrExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BooleanOr; }
 		const auto& lhs() const { return _lhs; }

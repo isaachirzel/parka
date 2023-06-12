@@ -5,9 +5,7 @@
 
 namespace parka::LiteralSyntax
 {
-
 	ExpressionSyntax *parse(Token& token);
-
 }
 
 #endif

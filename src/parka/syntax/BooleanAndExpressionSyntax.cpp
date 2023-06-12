@@ -1,4 +1,5 @@
 #include "parka/syntax/BooleanAndExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/BitwiseOrExpressionSyntax.hpp"
 
 namespace parka
@@ -23,5 +24,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *BooleanAndExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

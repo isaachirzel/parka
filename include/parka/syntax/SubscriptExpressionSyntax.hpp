@@ -19,6 +19,7 @@ namespace parka
 		SubscriptExpressionSyntax(const SubscriptExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Subscript; }
 		const auto& expression() const { return _primary; }

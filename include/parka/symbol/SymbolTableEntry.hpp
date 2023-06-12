@@ -23,7 +23,7 @@ namespace parka
 		void setContext(const EntityContext& context);
 
 		const auto& syntax() const {  return _syntax; }
-		const auto& context() const {  return _context; }
+		const auto *context() const { return _context; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry);
 	};

@@ -5,6 +5,11 @@
 
 namespace parka
 {
+	Identifier::Identifier(const Token& token) :
+	_token(token),
+	_text(token.text())
+	{}
+
 	Optional<Identifier> Identifier::parse(Token& token)
 	{
 		if (token.type() != TokenType::Identifier)
@@ -22,7 +27,7 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, const Identifier& identifier)
 	{
-		out << '`' << identifier.text() << '`';
+		out << identifier.text();
 
 		return out;
 	}

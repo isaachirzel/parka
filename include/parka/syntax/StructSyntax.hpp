@@ -2,6 +2,7 @@
 #define PARKA_SYNTAX_STRUCT_SYNTAX_HPP
 
 #include "parka/symbol/Identifier.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/type/ValueType.hpp"
@@ -24,6 +25,7 @@ namespace parka
 		StructSyntax(const StructSyntax&) = delete;
 
 		static StructSyntax *parse(Token& token);
+		// StructContext *validate(SymbolTable& symbolTable);
 
 		EntityType entityType() const { return EntityType::Struct; }
 		const String& identifier() const { return _identifier.text(); }

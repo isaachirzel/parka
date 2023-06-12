@@ -23,6 +23,7 @@ namespace parka
 		IdentifierExpressionSyntax(const IdentifierExpressionSyntax&) = delete;
 
 		static IdentifierExpressionSyntax *parse(Token& token);
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Identifier; }
 		const auto& identifier() const { return _identifier; }

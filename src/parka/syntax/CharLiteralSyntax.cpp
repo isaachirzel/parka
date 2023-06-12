@@ -35,4 +35,9 @@ namespace parka
 
 		return syntax;
 	}
+
+	ExpressionContext *CharLiteralSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
 }

@@ -14,16 +14,12 @@ namespace parka
 
 	public:
 
-		AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType type) :
-		_lhs(lhs),
-		_rhs(rhs),
-		_type(type)
-		{}
+		AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType type);
 		AssignmentExpressionSyntax(AssignmentExpressionSyntax&&) = default;
 		AssignmentExpressionSyntax(const AssignmentExpressionSyntax&) = delete;
 
 		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable) const;
+		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Assignment; }
 		const auto& lhs() const { return _lhs; }

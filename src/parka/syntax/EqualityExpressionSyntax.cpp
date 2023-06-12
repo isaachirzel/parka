@@ -1,4 +1,5 @@
 #include "parka/syntax/EqualityExpressionSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/RelationalExpressionSyntax.hpp"
 
 namespace parka
@@ -41,5 +42,10 @@ namespace parka
 		}
 
 		return lhs;
+	}
+
+	ExpressionContext *EqualityExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

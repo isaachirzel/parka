@@ -1,8 +1,16 @@
 #include "parka/syntax/AssignmentExpressionSyntax.hpp"
+#include "parka/context/AssignmentExpressionContext.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/syntax/ConditionalExpressionSyntax.hpp"
 
 namespace parka
 {
+	AssignmentExpressionSyntax::AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType type) :
+	_lhs(lhs),
+	_rhs(rhs),
+	_type(type)
+	{}
+
 	static Optional<AssignmentType> getAssignmentType(Token& token)
 	{
 		switch (token.type())
@@ -67,5 +75,18 @@ namespace parka
 		auto *expression = new AssignmentExpressionSyntax(*lhs, *rhs, *type);
 
 		return expression;
+	}
+
+	ExpressionContext *AssignmentExpressionSyntax::validate(SymbolTable& symbolTable)
+	{
+		auto *lhs = _lhs.validate(symbolTable);
+		auto *rhs = _rhs.validate(symbolTable);
+
+		if (!lhs || !rhs)
+			return {};
+
+		auto *context = new AssignmentExpressionContext(*lhs, *rhs, _type);
+
+		return context;
 	}
 }
