@@ -32,6 +32,8 @@ namespace parka
 		EntityType entityType() const { return EntityType::Struct; }
 		const String& identifier() const { return _identifier.text(); }
 		const auto& members() const { return _members; }
+
+		friend std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax);
 	};
 }
 

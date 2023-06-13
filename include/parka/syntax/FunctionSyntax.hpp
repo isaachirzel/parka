@@ -41,6 +41,8 @@ namespace parka
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }
 
+		friend std::ostream& operator<<(std::ostream& out, const FunctionSyntax& syntax);
+
 		friend class BlockExpressionSyntax;
 	};
 }

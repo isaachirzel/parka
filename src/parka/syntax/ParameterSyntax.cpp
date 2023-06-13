@@ -45,4 +45,15 @@ namespace parka
 	{
 		log::notImplemented(here());
 	}
+
+	std::ostream& operator<<(std::ostream& out, const ParameterSyntax& syntax)
+	{
+		if (syntax._isMutable)
+			out << "mut ";
+
+		out << syntax._identifier;
+		// TODO: Add annotation
+
+		return out;
+	}
 }

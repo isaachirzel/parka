@@ -24,6 +24,8 @@ namespace parka
 		static SyntaxTree parse(const Project& project);
 		void declare();
 		Optional<ContextTree> validate();
+
+		friend std::ostream& operator<<(std::ostream& out, const SyntaxTree& syntax);
 	};
 }
 

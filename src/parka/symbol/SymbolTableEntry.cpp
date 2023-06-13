@@ -1,5 +1,6 @@
 #include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/log/Log.hpp"
+#include <iomanip>
 
 namespace parka
 {
@@ -37,16 +38,10 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry)
 	{
-		// const auto *symbolTable = entry.getSymbolTable();
-
-		out << entry._syntax.identifier() << ":\t\t" << entry._syntax.entityType();
+		out << entry._syntax.identifier() << ": " << entry._syntax.entityType();
 		
 		if (entry._context != nullptr)
 			out << " [validated]";
-
-		out << '\n';
-
-		// TODO: Implement outputting tables
 
 		return out;
 	}

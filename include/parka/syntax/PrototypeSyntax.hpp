@@ -30,6 +30,8 @@ namespace parka
 		const auto& identifier() const { return _identifier; }
 		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }
+
+		friend std::ostream& operator<<(std::ostream& out, const PrototypeSyntax& syntax);
 	};
 }
 

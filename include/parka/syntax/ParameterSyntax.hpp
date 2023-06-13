@@ -29,6 +29,8 @@ namespace parka
 		EntityType entityType() const { return EntityType::Parameter; }
 		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
+
+		friend std::ostream& operator<<(std::ostream& out, const ParameterSyntax& syntax);
 	};
 }
 

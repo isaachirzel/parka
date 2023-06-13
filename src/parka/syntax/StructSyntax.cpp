@@ -98,7 +98,7 @@ namespace parka
 
 	// 			if (member.name() == previous.name())
 	// 			{
-	// 				success = false;
+	// 			friend std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax);	success = false;
 					
 	// 				log::errorprintError(member.name(), "A member with same name is already declared in this struct.");
 	// 				log::parseError(previous.name(), "Previous delcaration here.");
@@ -115,4 +115,11 @@ namespace parka
 
 	// 	return success;
 	// }
+
+	std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax)
+	{
+		out << "struct " << syntax._identifier << " {}";
+
+		return out;
+	}
 }

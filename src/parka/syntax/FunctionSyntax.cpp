@@ -1,5 +1,6 @@
 #include "parka/syntax/FunctionSyntax.hpp"
 #include "parka/context/FunctionContext.hpp"
+#include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/syntax/BlockExpressionSyntax.hpp"
 
@@ -99,5 +100,12 @@ namespace parka
 	const EntityContext *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		log::notImplemented(here());
+	}
+
+	std::ostream& operator<<(std::ostream& out, const FunctionSyntax& syntax)
+	{
+		out << syntax._prototype;
+
+		return out;
 	}
 }

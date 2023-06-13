@@ -176,18 +176,46 @@ namespace parka
 		log::notImplemented(here());
 	}
 
-	std::ostream& operator<<(std::ostream& out, const PackageSyntax& package)
+	std::ostream& operator<<(std::ostream& out, const PackageSyntax& syntax)
 	{
 		// TODO: Implement printing other packages
 		auto indent = Indent(out);
-		const auto& identifier = package._identifier;
 
-		out << (identifier.length() > 0 ? identifier : "Global Scope") << ":\n";
+		out << indent << "package `" << syntax._identifier << "`\n";
+		out << indent << "{\n";
 
-		for (const auto& entry : package._symbols)
 		{
-			out << indent << entry.value();
+			auto subindent = Indent(out);
+
+			out << subindent << "symbols\n";
+			out << subindent << "{\n";
+
+			{
+				auto subsubindent = Indent(out);
+
+				for (const auto& entry : syntax._symbols)
+				{
+					out << subsubindent << entry.value() << '\n';
+				}
+
+			}
+
+			out << subindent << "}\n\n";
+
 		}
+
+
+		for (const auto& mod : syntax._modules)
+		{
+			out << mod << '\n';
+		}
+
+		for (const auto *package : syntax._packages)
+		{
+			out << *package << '\n';
+		}
+
+		out << indent << "}";
 
 		return out;
 	}

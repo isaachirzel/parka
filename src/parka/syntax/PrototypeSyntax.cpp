@@ -143,4 +143,25 @@ namespace parka
 
 		return context;
 	}
+
+	std::ostream& operator<<(std::ostream& out, const PrototypeSyntax& syntax)
+	{
+		out << "function " << syntax._identifier << '(';
+
+		bool isFirst = true;
+
+		for (const auto *parameter : syntax._parameters)
+		{
+			if (!isFirst)
+				out << ", ";
+
+			out << *parameter;
+
+			isFirst = false;
+		}
+
+		out << ")";
+
+		return out;
+	}
 }

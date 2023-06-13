@@ -45,4 +45,11 @@ namespace parka
 
 		return context;
 	}
+
+	std::ostream& operator<<(std::ostream& out, const SyntaxTree& syntax)
+	{
+		out << syntax._globalPackage;
+
+		return out;
+	}
 }

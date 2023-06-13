@@ -2,6 +2,7 @@
 #include "parka/syntax/SyntaxTree.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/util/Print.hpp"
 #include "parka/util/Timer.hpp"
 #include "parka/log/ArenaStreamBuffer.hpp"
 
@@ -30,6 +31,8 @@ int main(int argc, const char *argv[])
 	auto declareTime = timer.split();
 
 	log::note("Declaration completed in $s.", declareTime);
+
+	print("$\n", syntax);
 
 	auto context = syntax.validate();
 	auto validateTime = timer.split();

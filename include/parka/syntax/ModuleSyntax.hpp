@@ -9,6 +9,8 @@
 #include "parka/util/Optional.hpp"
 #include "parka/util/Table.hpp"
 
+#include <ostream>
+
 namespace parka
 {
 	class ModuleSyntax
@@ -28,6 +30,8 @@ namespace parka
 		const auto& filename() const { return _filepath; }
 		const auto& functions() const { return _functions; }
 		const auto& structs() const { return _structs; }
+
+		friend std::ostream& operator<<(std::ostream& out, const ModuleSyntax& mod);
 	};
 }
 
