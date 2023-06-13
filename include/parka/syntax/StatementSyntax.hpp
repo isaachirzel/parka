@@ -1,9 +1,11 @@
 #ifndef PARKA_SYNTAX_STATEMENT_SYNTAX_HPP
 #define PARKA_SYNTAX_STATEMENT_SYNTAX_HPP
 
+#include "parka/context/StatementContext.hpp"
 #include "parka/enum/StatementType.hpp"
 #include "parka/Token.hpp"
 #include "parka/repository/StatementSyntaxId.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
@@ -14,6 +16,7 @@ namespace parka
 		virtual StatementType statementType() const = 0;
 
 		static StatementSyntax *parse(Token& token);
+		virtual StatementContext *validate(SymbolTable& symbolTable) = 0;
 	};
 }
 

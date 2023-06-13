@@ -23,7 +23,7 @@ namespace parka
 		DeclarationStatementSyntax(const DeclarationStatementSyntax&) = delete;
 
 		static StatementSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		StatementContext *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Declaration; }
 		const auto& variable() const { return _variable; }

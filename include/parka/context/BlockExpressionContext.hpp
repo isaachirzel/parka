@@ -12,12 +12,11 @@ namespace parka
 
 	public:
 
-		BlockExpressionContext(Array<StatementContext*>&& statements) :
-		_statements(std::move(statements))
-		{}
+		BlockExpressionContext(Array<StatementContext*>&& statements);
 		BlockExpressionContext(BlockExpressionContext&&) = default;
 		BlockExpressionContext(const BlockExpressionContext&) = delete;
 
+		ExpressionType expressionType() const { return ExpressionType::Block; }
 		const auto& statements() const { return _statements; }
 	};
 }

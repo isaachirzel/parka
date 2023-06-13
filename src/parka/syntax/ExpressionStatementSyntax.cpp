@@ -3,6 +3,10 @@
 
 namespace parka
 {
+	ExpressionStatementSyntax::ExpressionStatementSyntax(ExpressionSyntax& expression) :
+	_expression(expression)
+	{}
+
 	StatementSyntax *ExpressionStatementSyntax::parse(Token& token)
 	{
 		auto expression = ExpressionSyntax::parse(token);
@@ -21,5 +25,10 @@ namespace parka
 		auto *syntax = new ExpressionStatementSyntax(*expression);
 
 		return syntax;
+	}
+
+	StatementContext *ExpressionStatementSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
 	}
 }

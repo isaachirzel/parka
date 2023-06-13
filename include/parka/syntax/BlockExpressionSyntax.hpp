@@ -17,7 +17,7 @@ namespace parka
 
 	private:
 
-		bool declare(EntitySyntax& entity);
+		bool declareEntity(EntitySyntax& entity);
 
 	public:
 

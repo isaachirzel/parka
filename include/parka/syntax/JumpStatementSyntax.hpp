@@ -2,6 +2,7 @@
 #define PARKA_SYNTAX_STATEMENT_JUMP_SYNTAX_HPP
 
 #include "parka/enum/JumpType.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/ExpressionSyntax.hpp"
 #include "parka/syntax/StatementSyntax.hpp"
 #include "parka/Token.hpp"
@@ -26,6 +27,7 @@ namespace parka
 		JumpStatementSyntax(const JumpStatementSyntax&) = delete;
 
 		static StatementSyntax *parse(Token& token);
+		StatementContext *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Jump; }
 		const auto& token() const { return _token; }

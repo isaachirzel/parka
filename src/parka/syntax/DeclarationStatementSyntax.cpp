@@ -41,4 +41,8 @@ namespace parka
 		return syntax;
 	}
 
+	StatementContext *DeclarationStatementSyntax::validate(SymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
 }

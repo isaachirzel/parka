@@ -1,5 +1,7 @@
 #include "parka/syntax/BlockExpressionSyntax.hpp"
+#include "parka/context/BlockExpressionContext.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/syntax/StatementSyntax.hpp"
 
 namespace parka
 {
@@ -43,10 +45,31 @@ namespace parka
 
 	ExpressionContext *BlockExpressionSyntax::validate(SymbolTable& symbolTable)
 	{
-		log::notImplemented(here());
+		bool success = false;
+		auto statements = Array<StatementContext*>(_statements.length());
+
+		for (auto *syntax : _statements)
+		{
+			auto *context = syntax->validate(symbolTable);
+
+			if (!context)
+			{
+				success = false;
+				continue;
+			}
+
+			statements.push(context);
+		}
+
+		if (!success)
+			return {};
+
+		auto *context = new BlockExpressionContext(std::move(statements));
+
+		return context;
 	}
 
-	bool BlockExpressionSyntax::declare(EntitySyntax& entity)
+	bool BlockExpressionSyntax::declareEntity(EntitySyntax& entity)
 	{
 		const auto& identifier = entity.identifier();
 

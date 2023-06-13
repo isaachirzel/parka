@@ -16,13 +16,12 @@ namespace parka
 
 	public:
 
-		ExpressionStatementSyntax(ExpressionSyntax& expression) :
-		_expression(expression)
-		{}
+		ExpressionStatementSyntax(ExpressionSyntax& expression);
 		ExpressionStatementSyntax(ExpressionStatementSyntax&&) = default;
 		ExpressionStatementSyntax(const ExpressionStatementSyntax&) = delete;
 
 		static StatementSyntax *parse(Token& token);
+		StatementContext *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Expression; }
 		const auto& expression() const { return _expression; }

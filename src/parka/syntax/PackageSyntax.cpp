@@ -91,7 +91,10 @@ namespace parka
 		auto result = _symbols.insert(identifier, std::move(entry));
 
 		if (!result)
+		{
+			// TODO: Show previous
 			log::error("Name `$` is already declared in this package.", identifier);
+		}
 
 		return result;
 	}
