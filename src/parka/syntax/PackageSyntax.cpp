@@ -83,7 +83,7 @@ namespace parka
 		return context;
 	}
 
-	bool PackageSyntax::declare(const EntitySyntax& entity)
+	bool PackageSyntax::declareEntity(const EntitySyntax& entity)
 	{
 		// TODO: Invalidate symbol on failure, better error
 		auto entry = SymbolTableEntry(entity, *this);
@@ -96,8 +96,10 @@ namespace parka
 		return result;
 	}
 
-	void PackageSyntax::declare()
+	void PackageSyntax::declare(PackageSyntax *parent)
 	{
+		_parent = parent;
+
 		const auto isGlobalPackage = _parent == nullptr;
 
 		if (isGlobalPackage)
@@ -111,14 +113,14 @@ namespace parka
 		for (const auto& mod : _modules)
 		{
 			for (const auto *strct : mod.structs())
-				declare(*strct);
+				declareEntity(*strct);
 
 			for (const auto *function : mod.functions())
-				declare(*function);
+				declareEntity(*function);
 		}
 
 		for (const auto *package : _packages)
-			declare(*package);
+			declareEntity(*package);
 	}
 
 	SymbolTableEntry *PackageSyntax::findEntry(const QualifiedIdentifier& identifier, usize index)

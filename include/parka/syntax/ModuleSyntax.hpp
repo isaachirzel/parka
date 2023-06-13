@@ -19,11 +19,7 @@ namespace parka
 
 	public:
 
-		ModuleSyntax(String&& filepath, Array<FunctionSyntax*>&& functions, Array<StructSyntax*>&& structs) :
-		_filepath(std::move(filepath)),
-		_functions(std::move(functions)),
-		_structs(std::move(structs))
-		{}
+		ModuleSyntax(String&& filepath, Array<FunctionSyntax*>&& functions, Array<StructSyntax*>&& structs);
 		ModuleSyntax(ModuleSyntax&&) = default;
 		ModuleSyntax(const ModuleSyntax&) = delete;
 

@@ -22,6 +22,9 @@ namespace parka
 		PackageContext(const PackageContext&) = delete;
 
 		EntityType entityType() const { return EntityType::Package; }
+		const auto& packages() const { return _packages; }
+		const auto& functions() const { return _functions; }
+		const auto& structs() const { return _structs; }
 	};
 }
 

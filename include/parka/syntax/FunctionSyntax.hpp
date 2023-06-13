@@ -17,6 +17,10 @@ namespace parka
 		SymbolTable *_parent;
 		Array<EntitySyntax*> _symbols;
 
+	private:
+
+		bool declareEntity(EntitySyntax& entity);
+
 	public:
 
 		FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body);
@@ -24,9 +28,9 @@ namespace parka
 		FunctionSyntax(const FunctionSyntax&) = delete;
 
 		static FunctionSyntax *parse(Token& token);
+		void declare(SymbolTable& parent);
 		FunctionContext *validate();
 
-		bool declare(EntitySyntax& entity);
 		const EntityContext *resolve(const Identifier& identifier);
 		const EntityContext *resolve(const QualifiedIdentifier& identifier);
 

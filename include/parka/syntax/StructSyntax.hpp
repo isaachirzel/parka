@@ -7,24 +7,26 @@
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/type/ValueType.hpp"
 #include "parka/util/Array.hpp"
+#include "parka/util/Table.hpp"
 
 namespace parka
 {
 	class StructSyntax : public EntitySyntax
 	{
 		Identifier _identifier;
-		Array<MemberSyntax> _members;
+		Array<MemberSyntax*> _members;
+
+		SymbolTable *_parent;
+		Table<String, EntitySyntax*> _symbols;
 
 	public:
 
-		StructSyntax(Identifier&& identifier, Array<MemberSyntax>&& members) :
-		_identifier(std::move(identifier)),
-		_members(std::move(members))
-		{}
+		StructSyntax(Identifier&& identifier, Array<MemberSyntax*>&& members);
 		StructSyntax(StructSyntax&&) = default;
 		StructSyntax(const StructSyntax&) = delete;
 
 		static StructSyntax *parse(Token& token);
+		void declare(SymbolTable& parent);
 		// StructContext *validate(SymbolTable& symbolTable);
 
 		EntityType entityType() const { return EntityType::Struct; }

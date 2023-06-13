@@ -28,4 +28,21 @@ namespace parka
 
 		return result;
 	}
+
+	void SyntaxTree::declare()
+	{
+		return _globalPackage.declare(nullptr);
+	}
+
+	Optional<ContextTree> SyntaxTree::validate()
+	{
+		auto *package = _globalPackage.validate();
+
+		if (!package)
+			return {};
+
+		auto context = ContextTree(*package);
+
+		return context;
+	}
 }

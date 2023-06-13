@@ -22,6 +22,7 @@ namespace parka
 		SyntaxTree(const SyntaxTree&) = delete;
 
 		static SyntaxTree parse(const Project& project);
+		void declare();
 		Optional<ContextTree> validate();
 	};
 }

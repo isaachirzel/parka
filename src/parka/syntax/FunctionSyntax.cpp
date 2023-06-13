@@ -72,7 +72,7 @@ namespace parka
 		return context;
 	}
 
-	bool FunctionSyntax::declare(EntitySyntax& entity)
+	bool FunctionSyntax::declareEntity(EntitySyntax& entity)
 	{
 		const auto& identifier = entity.identifier();
 

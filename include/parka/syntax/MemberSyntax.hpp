@@ -23,13 +23,12 @@ namespace parka
 		MemberSyntax(MemberSyntax&&) = default;
 		MemberSyntax(const MemberSyntax&) = delete;
 
-		static Optional<MemberSyntax> parse(Token& token);
-
-		Optional<MemberSyntax> validate(SymbolTable& symbolTable) const;
+		static MemberSyntax *parse(Token& token);
+		EntityContext *validate(SymbolTable& symbolTable) const;
 
 		const String& identifier() const { return _symbol; }
 		EntityType entityType() const { return EntityType::Member; }
-		const auto& name() const { return _name; }
+		const auto& token() const { return _name; }
 		const auto& annotation() const { return _annotation; }
 		const auto& isPublic() const { return _isPublic; }
 	};

@@ -1,9 +1,17 @@
 #include "parka/syntax/StructSyntax.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
+#include "parka/syntax/PackageSyntax.hpp"
 
 namespace parka
 {
+	StructSyntax::StructSyntax(Identifier&& identifier, Array<MemberSyntax*>&& members) :
+	_identifier(std::move(identifier)),
+	_members(std::move(members)),
+	_parent(nullptr),
+	_symbols()
+	{}
+
 	StructSyntax *StructSyntax::parse(Token &token)
 	{
 		auto keyword = KeywordSyntax::parseStruct(token);
@@ -23,7 +31,7 @@ namespace parka
 			return {};
 		}
 
-		auto members = Array<MemberSyntax>();
+		auto members = Array<MemberSyntax*>();
 
 		token.increment();
 
@@ -36,7 +44,7 @@ namespace parka
 				if (!member)
 					return {};
 
-				members.push(*member);
+				members.push(member);
 
 				if (token.type() == TokenType::Comma)
 				{
@@ -59,6 +67,21 @@ namespace parka
 		auto *syntax = new StructSyntax(*identifier, std::move(members));
 
 		return syntax;
+	}
+
+	void StructSyntax::declare(SymbolTable& parent)
+	{
+		_parent = &parent;
+
+		for (auto *member : _members)
+		{
+			const auto& identifier = member->identifier();
+			const auto result = _symbols.insert(identifier, member);
+
+			if (!result)
+				log::error(member->token(), "Member `$` has already been declared in struct ``.", identifier, _identifier);
+				// TODO: Previous delcaration
+		}
 	}
 
 	// bool StructSyntax::validate(const EntitySyntax& function)

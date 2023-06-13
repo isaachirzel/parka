@@ -30,7 +30,7 @@ namespace parka
 		return false;
 	}
 
-	Optional<MemberSyntax> MemberSyntax::parse(Token& token)
+	MemberSyntax *MemberSyntax::parse(Token& token)
 	{
 		bool isPublic = parsePublicity(token);
 
@@ -57,12 +57,12 @@ namespace parka
 		if (!annotation)
 			return {};
 
-		auto syntax = MemberSyntax(name, name.text(), *annotation, isPublic);
+		auto *syntax = new MemberSyntax(name, name.text(), *annotation, isPublic);
 
 		return syntax;
 	}
 
-	Optional<MemberSyntax> MemberSyntax::validate(SymbolTable& symbolTable) const
+	EntityContext *MemberSyntax::validate(SymbolTable& symbolTable) const
 	{
 		log::notImplemented(here());
 	}
