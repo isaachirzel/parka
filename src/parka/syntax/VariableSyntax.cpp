@@ -1,4 +1,5 @@
 #include "parka/syntax/VariableSyntax.hpp"
+#include "parka/context/VariableContext.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
@@ -44,13 +45,42 @@ namespace parka
 		return syntax;
 	}
 
-	VariableContext *VariableSyntax::validate(SymbolTable& symbolTable)
+	static Optional<ValueType> validateType(Optional<TypeAnnotationSyntax>& annotation, ExpressionContext *value, SymbolTable& symbolTable)
 	{
-		if (!_annotation)
+		if (!annotation)
 		{
-
+			if (!value)			
+				return {};
+			
+			return value->valueType();
 		}
 
-		log::notImplemented(here());
+		auto annotationType = annotation->validate(symbolTable);
+
+		if (!annotationType || !value)
+			return {};
+
+		auto valueType = value->valueType();
+
+		if (!valueType.canConvertTo(*annotationType))
+		{
+			log::error("Unable to initialize variable of type $ with type $.", annotationType, valueType);
+			return {};
+		}
+
+		return annotationType;
+	}
+
+	VariableContext *VariableSyntax::validate(SymbolTable &symbolTable, ExpressionContext *value)
+	{
+		auto declared = symbolTable.declare(*this);
+		auto type = validateType(_annotation, value, symbolTable);
+
+		if (!type || !declared)
+			return nullptr;
+
+		auto *context = new VariableContext(*type);
+
+		return context;
 	}
 }

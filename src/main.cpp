@@ -27,7 +27,7 @@ int main(int argc, const char *argv[])
 
 	log::note("Parsing completed in $s.", parseTime);
 
-	syntax.declare();
+	syntax.declareSelf();
 	auto declareTime = timer.split();
 
 	log::note("Declaration completed in $s.", declareTime);

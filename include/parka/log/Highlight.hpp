@@ -7,6 +7,8 @@
 #include "parka/util/Common.hpp"
 #include <ostream>
 
+// TODO: Rename to Snippet and add one to each expression type
+
 namespace parka
 {
 	class Highlight

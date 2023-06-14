@@ -120,15 +120,16 @@ namespace parka
 
 		for (auto *parameterSyntax : _parameters)
 		{
-			auto *parameterContext = parameterSyntax->validate(symbolTable);
+			parameterSyntax->declare(symbolTable);
+			auto *context = parameterSyntax->validate();
 
-			if (parameterContext == nullptr)
+			if (context == nullptr)
 			{
 				success = false;
 				continue;
 			}
 
-			parameters.push(parameterContext);
+			parameters.push(context);
 		}
 
 		auto returnType = validateReturnType(_returnType, symbolTable);

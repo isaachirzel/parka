@@ -2,6 +2,8 @@
 #define PARKA_SYNTAX_AST_SYNTAX_HPP
 
 #include "parka/context/ContextTree.hpp"
+#include "parka/enum/SymbolTableType.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/ModuleSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
 #include "parka/util/Project.hpp"
@@ -9,7 +11,7 @@
 
 namespace parka
 {
-	class SyntaxTree
+	class SyntaxTree : public SymbolTable
 	{
 		// TODO: Project metadata
 		PackageSyntax& _globalPackage;
@@ -22,8 +24,16 @@ namespace parka
 		SyntaxTree(const SyntaxTree&) = delete;
 
 		static SyntaxTree parse(const Project& project);
-		void declare();
+
+		bool declare(EntitySyntax& syntax);
+		bool declareSelf();
+		EntitySyntax *resolve(const Identifier& identifier);
+		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
+
 		Optional<ContextTree> validate();
+
+		SymbolTableType symbolTableType() const { return SymbolTableType::Global; }
+		SymbolTable *parent() { return nullptr; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SyntaxTree& syntax);
 	};

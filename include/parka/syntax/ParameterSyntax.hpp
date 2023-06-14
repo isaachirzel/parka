@@ -11,6 +11,7 @@ namespace parka
 	{
 		Identifier _identifier;
 		TypeAnnotationSyntax _annotation;
+		SymbolTable *_parent;
 		bool _isMutable;
 
 	public:
@@ -21,8 +22,8 @@ namespace parka
 
 		static ParameterSyntax *parse(Token& token);
 
-		ParameterContext *validate(SymbolTable& symbolTable);
-		void declare();
+		bool declare(SymbolTable& parent);
+		ParameterContext *validate();
 
 		const String& identifier() const { return _identifier.text(); }
 		const auto& token() const { return _identifier.token(); }

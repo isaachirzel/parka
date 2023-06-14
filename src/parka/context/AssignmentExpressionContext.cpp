@@ -2,9 +2,9 @@
 
 namespace parka
 {
-	AssignmentExpressionContext::AssignmentExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AssignmentType type) :
+	AssignmentExpressionContext::AssignmentExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AssignmentType assignmentType) :
 	_lhs(lhs),
 	_rhs(rhs),
-	_type(type)
+	_assignmentType(assignmentType)
 	{}
 }

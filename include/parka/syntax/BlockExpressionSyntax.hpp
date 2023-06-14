@@ -28,6 +28,7 @@ namespace parka
 		static ExpressionSyntax *parse(Token& token);
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
+		bool declare(EntitySyntax& entity);
 		EntitySyntax *resolve(const Identifier& identifier);
 		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
 

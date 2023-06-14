@@ -47,9 +47,11 @@ namespace parka
 	{
 		bool success = false;
 		auto statements = Array<StatementContext*>(_statements.length());
+		const auto& valueType = ValueType::voidType;
 
 		for (auto *syntax : _statements)
 		{
+			// TODO: Get and update valueType
 			auto *context = syntax->validate(symbolTable);
 
 			if (!context)
@@ -64,7 +66,7 @@ namespace parka
 		if (!success)
 			return {};
 
-		auto *context = new BlockExpressionContext(std::move(statements));
+		auto *context = new BlockExpressionContext(std::move(statements), ValueType(valueType));
 
 		return context;
 	}
@@ -87,6 +89,11 @@ namespace parka
 		_symbols->push(&entity);
 
 		return true;
+	}
+
+	bool BlockExpressionSyntax::declare(EntitySyntax& entity)
+	{
+		return _parent->declare(entity);
 	}
 
 	EntitySyntax *BlockExpressionSyntax::resolve(const Identifier& identifier)

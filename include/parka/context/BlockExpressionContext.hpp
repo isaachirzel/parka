@@ -9,13 +9,15 @@ namespace parka
 	class BlockExpressionContext : public ExpressionContext
 	{
 		Array<StatementContext*> _statements;
+		ValueType _valueType;
 
 	public:
 
-		BlockExpressionContext(Array<StatementContext*>&& statements);
+		BlockExpressionContext(Array<StatementContext*>&& statements, ValueType&& valueType);
 		BlockExpressionContext(BlockExpressionContext&&) = default;
 		BlockExpressionContext(const BlockExpressionContext&) = delete;
 
+		const ValueType& valueType() const { return _valueType; }
 		ExpressionType expressionType() const { return ExpressionType::Block; }
 		const auto& statements() const { return _statements; }
 	};

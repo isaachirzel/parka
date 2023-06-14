@@ -13,12 +13,12 @@ namespace parka
 		auto *variable = VariableSyntax::parse(token);
 
 		if (!variable)
-			return {};
+			return nullptr;
 
 		if (token.type() != TokenType::Assign)
 		{
 			log::parseError(token, "expected '=' after declaration");
-			return {};
+			return nullptr;
 		}
 
 		token.increment();
@@ -26,12 +26,12 @@ namespace parka
 		auto value = ExpressionSyntax::parse(token);
 
 		if (!value)
-			return {};
+			return nullptr;
 
 		if (token.type() != TokenType::Semicolon)
 		{
 			log::parseError(token, "';'", "DeclarationStatementSyntax statements need to be ended with a ';'.");
-			return {};
+			return nullptr;
 		}
 
 		token.increment();
@@ -43,7 +43,12 @@ namespace parka
 
 	StatementContext *DeclarationStatementSyntax::validate(SymbolTable& symbolTable)
 	{
-		// auto *variable = _variable.validate(symbolTable);
+		auto *value = _value.validate(symbolTable);
+		auto *variable = _variable.validate(symbolTable, value);
+
+		if (!variable || !value)
+			return nullptr;
+
 		log::notImplemented(here());
 	}
 }

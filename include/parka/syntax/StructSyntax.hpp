@@ -28,7 +28,7 @@ namespace parka
 
 		static StructSyntax *parse(Token& token);
 		void declare(SymbolTable& parent);
-		// StructContext *validate();
+		StructContext *validate();
 
 		EntityType entityType() const { return EntityType::Struct; }
 		const String& identifier() const { return _identifier.text(); }

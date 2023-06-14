@@ -3,6 +3,7 @@
 
 #include "parka/enum/PrimitiveType.hpp"
 #include "parka/repository/EntityContext.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
@@ -50,6 +51,8 @@ namespace parka
 
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
+
+		EntityContext *validate() { return this; }
 
 		const String& identifier() const { return _identifier; }
 		EntityType entityType() const { return EntityType::Primitive; }

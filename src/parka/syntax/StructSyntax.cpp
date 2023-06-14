@@ -1,4 +1,5 @@
 #include "parka/syntax/StructSyntax.hpp"
+#include "parka/context/StructContext.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/PackageSyntax.hpp"
@@ -83,6 +84,11 @@ namespace parka
 				log::error(member->token(), "Member `$` has already been declared in struct ``.", identifier, _identifier);
 				// TODO: Previous delcaration
 		}
+	}
+
+	StructContext *StructSyntax::validate()
+	{
+		log::notImplemented(here());
 	}
 
 	// bool StructSyntax::validate(const EntitySyntax& function)

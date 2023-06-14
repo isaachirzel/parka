@@ -16,6 +16,7 @@ namespace parka
 		VariableContext(VariableContext&&) = default;
 		VariableContext(const VariableContext&) = delete;
 
+		EntityType entityType() const { return EntityType::Variable; }
 		const auto& type() const { return _type; }
 	};
 }

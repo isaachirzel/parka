@@ -62,7 +62,7 @@ namespace parka
 		return syntax;
 	}
 
-	EntityContext *MemberSyntax::validate(SymbolTable& symbolTable) const
+	EntityContext *MemberSyntax::validate()
 	{
 		log::notImplemented(here());
 	}

@@ -10,17 +10,20 @@ namespace parka
 	{
 		ExpressionContext& _lhs;
 		ExpressionContext& _rhs;
-		AdditiveType _type;
+		AdditiveType _additiveType;
+		ValueType _valueType;
 
 	public:
 
-		AdditiveExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AdditiveType type);
+		AdditiveExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AdditiveType additiveType, ValueType&& valueType);
 		AdditiveExpressionContext(AdditiveExpressionContext&&) = default;
 		AdditiveExpressionContext(const AdditiveExpressionContext&) = delete;
 
+		ExpressionType expressionType() const { return ExpressionType::Additive; }
+		const ValueType& valueType() const { return _valueType; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
-		const auto& type() const { return _type; }
+		const auto& additiveType() const { return _additiveType; }
 	};
 }
 

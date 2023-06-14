@@ -19,20 +19,20 @@ namespace parka
 
 	public:
 
-		static ValueType voidType;
-		static ValueType u8Type;
-		static ValueType u16Type;
-		static ValueType u32Type;
-		static ValueType u64Type;
-		static ValueType i8Type;
-		static ValueType i16Type;
-		static ValueType i32Type;
-		static ValueType i64Type;
-		static ValueType f32Type;
-		static ValueType f64Type;
-		static ValueType boolType;
-		static ValueType charType;
-		static ValueType stringType;
+		static const ValueType voidType;
+		static const ValueType u8Type;
+		static const ValueType u16Type;
+		static const ValueType u32Type;
+		static const ValueType u64Type;
+		static const ValueType i8Type;
+		static const ValueType i16Type;
+		static const ValueType i32Type;
+		static const ValueType i64Type;
+		static const ValueType f32Type;
+		static const ValueType f64Type;
+		static const ValueType boolType;
+		static const ValueType charType;
+		static const ValueType stringType;
 		
 	public:
 
@@ -40,12 +40,9 @@ namespace parka
 		ValueType(ValueType&&) = default;
 		ValueType(const ValueType&) = default;
 
-		bool canConvertTo(const ValueType& other);
-
-		const auto& entityId() const { return _entity; }
+		bool canConvertTo(const ValueType& other) const;
 
 		friend std::ostream& operator<<(std::ostream& out, const ValueType& type);
-
 	};
 }
 

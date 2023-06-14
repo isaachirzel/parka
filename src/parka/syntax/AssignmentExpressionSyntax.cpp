@@ -5,10 +5,10 @@
 
 namespace parka
 {
-	AssignmentExpressionSyntax::AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType type) :
+	AssignmentExpressionSyntax::AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType assignmentType) :
 	_lhs(lhs),
 	_rhs(rhs),
-	_type(type)
+	_assignmentType(assignmentType)
 	{}
 
 	static Optional<AssignmentType> getAssignmentType(Token& token)
@@ -85,7 +85,17 @@ namespace parka
 		if (!lhs || !rhs)
 			return {};
 
-		auto *context = new AssignmentExpressionContext(*lhs, *rhs, _type);
+		// TODO: Operators and actualy get return type
+		const auto& lhsType = lhs->valueType();
+		const auto& rhsType = rhs->valueType();
+
+		if (!rhsType.canConvertTo(lhsType))
+		{
+			log::error("Unable to add $ to $.", rhsType, lhsType);
+			return nullptr;
+		}
+
+		auto *context = new AssignmentExpressionContext(*lhs, *rhs, _assignmentType);
 
 		return context;
 	}

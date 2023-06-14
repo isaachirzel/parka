@@ -15,6 +15,7 @@ namespace parka
 		String _symbol;
 		TypeAnnotationSyntax _annotation;
 		bool _isPublic;
+		SymbolTable *_parent;
 		// TODO: Add read/write count
 
 	public:
@@ -24,7 +25,8 @@ namespace parka
 		MemberSyntax(const MemberSyntax&) = delete;
 
 		static MemberSyntax *parse(Token& token);
-		EntityContext *validate(SymbolTable& symbolTable) const;
+		void declare(SymbolTable& parent);
+		EntityContext *validate();
 
 		const String& identifier() const { return _symbol; }
 		EntityType entityType() const { return EntityType::Member; }

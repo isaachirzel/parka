@@ -29,9 +29,24 @@ namespace parka
 		return result;
 	}
 
-	void SyntaxTree::declare()
+	bool SyntaxTree::declare(EntitySyntax& entity)
 	{
-		return _globalPackage.declare(nullptr);
+		return _globalPackage.declare(entity);
+	}
+
+	bool SyntaxTree::declareSelf()
+	{
+		return _globalPackage.declareSelf(nullptr);
+	}
+
+	EntitySyntax *SyntaxTree::resolve(const Identifier& identifier)
+	{
+		return _globalPackage.resolve(identifier);
+	}
+
+	EntitySyntax *SyntaxTree::resolve(const QualifiedIdentifier& identifier)
+	{
+		return _globalPackage.resolve(identifier);
 	}
 
 	Optional<ContextTree> SyntaxTree::validate()

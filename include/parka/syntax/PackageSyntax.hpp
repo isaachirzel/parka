@@ -22,7 +22,6 @@ namespace parka
 
 	private:
 
-		bool declareEntity(EntitySyntax& entity);
 		EntitySyntax *find(const String& key);
 
 	public:
@@ -32,11 +31,13 @@ namespace parka
 		PackageSyntax(const PackageSyntax&) = delete;
 
 		static PackageSyntax *parse(const Directory& directory, const String& name);
-		void declare(PackageSyntax *parent);
-		PackageContext *validate();
 
+		bool declare(EntitySyntax& entity);
+		bool declareSelf(PackageSyntax *parent);
 		EntitySyntax *resolve(const Identifier& identifier);
 		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
+
+		PackageContext *validate();
 		
 		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }

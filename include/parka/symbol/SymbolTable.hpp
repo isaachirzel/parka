@@ -9,9 +9,11 @@
 
 namespace parka
 {
+	// TODO: Implement getting symbols for entity
 	struct SymbolTable
 	{
 		virtual ~SymbolTable() {}
+		virtual bool declare(EntitySyntax& entity) = 0;
 		virtual EntitySyntax *resolve(const Identifier& identifier) = 0;
 		virtual EntitySyntax *resolve(const QualifiedIdentifier& identifier) = 0;
 		virtual SymbolTable *parent() = 0;		

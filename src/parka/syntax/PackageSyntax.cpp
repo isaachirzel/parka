@@ -88,7 +88,7 @@ namespace parka
 		return context;
 	}
 
-	bool PackageSyntax::declareEntity(EntitySyntax& entity)
+	bool PackageSyntax::declare(EntitySyntax& entity)
 	{
 		// TODO: Invalidate symbol on failure, better error
 		const auto& identifier = entity.identifier();
@@ -103,11 +103,10 @@ namespace parka
 		return result;
 	}
 
-	void PackageSyntax::declare(PackageSyntax *parent)
+	bool PackageSyntax::declareSelf(PackageSyntax *parent)
 	{
-		_parent = parent;
-
-		const auto isGlobalPackage = _parent == nullptr;
+		// TODO: Actual error checking
+		const auto isGlobalPackage = parent == nullptr;
 
 		if (isGlobalPackage)
 		{
@@ -116,18 +115,25 @@ namespace parka
 				_symbols.insert(primitive->identifier(), primitive);
 			}
 		}
+		else
+		{
+			_parent = parent;
+			_parent->declare(*this);
+		}
 
 		for (auto& mod : _modules)
 		{
 			for (auto *strct : mod.structs())
-				declareEntity(*strct);
+				declare(*strct);
 
 			for (auto *function : mod.functions())
-				declareEntity(*function);
+				function->declareSelf(*this);
 		}
 
 		for (auto *package : _packages)
-			declareEntity(*package);
+			package->declareSelf(this);
+
+		return true;
 	}
 
 	// SymbolTableEntry *PackageSyntax::findEntry(const QualifiedIdentifier& identifier, usize index)

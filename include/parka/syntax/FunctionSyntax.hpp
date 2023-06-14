@@ -28,9 +28,10 @@ namespace parka
 		FunctionSyntax(const FunctionSyntax&) = delete;
 
 		static FunctionSyntax *parse(Token& token);
-		void declare(SymbolTable& parent);
 		FunctionContext *validate();
 
+		bool declare(EntitySyntax& entity);
+		bool declareSelf(SymbolTable& parent);
 		EntitySyntax *resolve(const Identifier& identifier);
 		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
 

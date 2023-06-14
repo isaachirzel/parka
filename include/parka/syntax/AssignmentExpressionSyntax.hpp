@@ -10,11 +10,11 @@ namespace parka
 	{
 		ExpressionSyntax& _lhs;
 		ExpressionSyntax& _rhs;
-		AssignmentType _type;
+		AssignmentType _assignmentType;
 
 	public:
 
-		AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType type);
+		AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType assignmentType);
 		AssignmentExpressionSyntax(AssignmentExpressionSyntax&&) = default;
 		AssignmentExpressionSyntax(const AssignmentExpressionSyntax&) = delete;
 
@@ -24,7 +24,7 @@ namespace parka
 		ExpressionType expressionType() const { return ExpressionType::Assignment; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
-		const auto& type() const { return _type; }
+		const auto& assignmentType() const { return _assignmentType; }
 	};
 }
 

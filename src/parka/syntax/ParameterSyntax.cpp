@@ -1,6 +1,7 @@
 #include "parka/syntax/ParameterSyntax.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/Identifier.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 
@@ -11,6 +12,7 @@ namespace parka
 	ParameterSyntax::ParameterSyntax(Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable) :
 	_identifier(std::move(identifier)),
 	_annotation(std::move(annotation)),
+	_parent(nullptr),
 	_isMutable(isMutable)
 	{}
 
@@ -41,7 +43,12 @@ namespace parka
 		return syntax;
 	}
 
-	ParameterContext *ParameterSyntax::validate(SymbolTable& symbolTable)
+	bool ParameterSyntax::declare(SymbolTable& parent)
+	{
+		log::notImplemented(here());
+	}
+
+	ParameterContext *ParameterSyntax::validate()
 	{
 		log::notImplemented(here());
 	}

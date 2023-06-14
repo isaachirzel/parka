@@ -2,6 +2,7 @@
 #include "parka/context/FunctionContext.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/BlockExpressionSyntax.hpp"
 
 namespace parka
@@ -73,7 +74,14 @@ namespace parka
 		return context;
 	}
 
-	bool FunctionSyntax::declareEntity(EntitySyntax& entity)
+	bool FunctionSyntax::declareSelf(SymbolTable& parent)
+	{
+		_parent = &parent;
+
+		return parent.declare(*this);
+	}
+
+	bool FunctionSyntax::declare(EntitySyntax& entity)
 	{
 		const auto& identifier = entity.identifier();
 

@@ -22,6 +22,8 @@ namespace parka
 		static ExpressionSyntax *parse(Token& token);
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
+		// TODO: Actually determine size of float
+		const ValueType& valueType() const { return ValueType::f64Type; }
 		ExpressionType expressionType() const { return ExpressionType::FloatLiteral; }
 	};
 }

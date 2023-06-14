@@ -1,8 +1,10 @@
 #ifndef PARKA_SYNTAX_VARIABLE_SYNTAX_HPP
 #define PARKA_SYNTAX_VARIABLE_SYNTAX_HPP
 
+#include "parka/context/ExpressionContext.hpp"
 #include "parka/context/VariableContext.hpp"
 #include "parka/symbol/Identifier.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
 
@@ -21,7 +23,7 @@ namespace parka
 		VariableSyntax(const VariableSyntax&) = delete;
 
 		static VariableSyntax *parse(Token& token);
-		VariableContext *validate(SymbolTable& symbolTable);
+		VariableContext *validate(SymbolTable& symbolTable, ExpressionContext *value);
 
 		const String& identifier() const { return _identifier.text(); }
 		EntityType entityType() const { return EntityType::Variable; }
