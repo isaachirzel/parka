@@ -2,8 +2,6 @@
 #define PARKA_CONTEXT_STRUCT_cONTEXT_HPP
 
 #include "parka/repository/EntityContext.hpp"
-#include "parka/repository/EntityContextId.hpp"
-#include "parka/symbol/StructSymbolTable.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
@@ -16,7 +14,7 @@ namespace parka
 		StructContext(StructContext&&) = default;
 		StructContext(const StructContext&) = delete;
 
-		static StructContext *validate(StructSymbolTable& symbolTable);
+		static StructContext *validate();
 		
 		EntityType type() const { return EntityType::Struct; }
 	};

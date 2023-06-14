@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_VARIABLE_SYNTAX_HPP
 #define PARKA_SYNTAX_VARIABLE_SYNTAX_HPP
 
+#include "parka/context/VariableContext.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
 #include "parka/syntax/EntitySyntax.hpp"
@@ -15,15 +16,12 @@ namespace parka
 
 	public:
 
-		VariableSyntax(Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation) :
-		_identifier(std::move(identifier)),
-		_annotation(std::move(annotation)),
-		_isMutable(isMutable)
-		{}
+		VariableSyntax(Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation);
 		VariableSyntax(VariableSyntax&&) = default;
 		VariableSyntax(const VariableSyntax&) = delete;
 
 		static VariableSyntax *parse(Token& token);
+		VariableContext *validate(SymbolTable& symbolTable);
 
 		const String& identifier() const { return _identifier.text(); }
 		EntityType entityType() const { return EntityType::Variable; }

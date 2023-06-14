@@ -117,6 +117,15 @@ namespace parka
 			}
 		}
 
+		usize getSlot(const Key& key) const
+		{
+			auto hash = _hash(key);
+			auto slotIndex = getSlotIndex(key, hash);
+			const auto& slot = _slots[slotIndex];
+
+			return slot;
+		}
+
 	public:
 
 		Table(usize minimumCapacity) :
@@ -158,16 +167,26 @@ namespace parka
 			return true;
 		}
 
-		const Value *find(const Key& key) const
+		Value *find(const Key& key)
 		{
-			auto hash = _hash(key);
-			auto slotIndex = getSlotIndex(key, hash);
-			const auto& slot = _slots[slotIndex];
+			auto slot = getSlot(key);
 
 			if (slot == table::empty)
 				return nullptr;
 
-			const auto& item = _items[slot];
+			auto& item = _items[slot];
+
+			return &item._value;
+		}
+
+		const Value *find(const Key& key) const
+		{
+			auto slot = getSlot(key);
+
+			if (slot == table::empty)
+				return nullptr;
+
+			auto& item = _items[slot];
 
 			return &item._value;
 		}

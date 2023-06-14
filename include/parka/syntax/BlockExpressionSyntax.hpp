@@ -28,8 +28,8 @@ namespace parka
 		static ExpressionSyntax *parse(Token& token);
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
-		const EntityContext *resolve(const Identifier& identifier);
-		const EntityContext *resolve(const QualifiedIdentifier& identifier);
+		EntitySyntax *resolve(const Identifier& identifier);
+		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
 
 		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Block; };

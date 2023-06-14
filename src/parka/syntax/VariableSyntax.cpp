@@ -1,4 +1,5 @@
 #include "parka/syntax/VariableSyntax.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/syntax/KeywordSyntax.hpp"
 #include "parka/syntax/TypeAnnotationSyntax.hpp"
@@ -7,6 +8,12 @@
 
 namespace parka
 {
+	VariableSyntax::VariableSyntax(Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation) :
+	_identifier(std::move(identifier)),
+	_annotation(std::move(annotation)),
+	_isMutable(isMutable)
+	{}
+
 	VariableSyntax *VariableSyntax::parse(Token& token)
 	{
 		// TODO: VariableSyntax mutability
@@ -35,5 +42,15 @@ namespace parka
 		auto *syntax = new VariableSyntax(*identifier, false, std::move(annotation));
 
 		return syntax;
+	}
+
+	VariableContext *VariableSyntax::validate(SymbolTable& symbolTable)
+	{
+		if (!_annotation)
+		{
+
+		}
+
+		log::notImplemented(here());
 	}
 }

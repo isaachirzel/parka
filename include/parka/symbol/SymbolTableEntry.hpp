@@ -10,8 +10,8 @@ namespace parka
 {
 	class SymbolTableEntry
 	{
-		const EntitySyntax& _syntax;
-		const EntityContext *_context;
+		EntitySyntax& _syntax;
+		EntityContext *_context;
 	
 	public:
 
@@ -26,6 +26,8 @@ namespace parka
 		const auto *context() const { return _context; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry);
+
+		friend class PackageSyntax;
 	};
 }
 

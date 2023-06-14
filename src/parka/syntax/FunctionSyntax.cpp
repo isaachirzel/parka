@@ -92,12 +92,12 @@ namespace parka
 		return true;
 	}
 
-	const EntityContext *FunctionSyntax::resolve(const Identifier& identifier)
+	EntitySyntax *FunctionSyntax::resolve(const Identifier& identifier)
 	{
 		log::notImplemented(here());
 	}
 
-	const EntityContext *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	EntitySyntax *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		log::notImplemented(here());
 	}

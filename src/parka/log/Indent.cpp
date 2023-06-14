@@ -5,6 +5,7 @@ namespace parka
 {
 	const int Indent::xIndex = std::ios_base::xalloc();
 
+
 	Indent::Indent(std::ostream& stream) :
 	_amount(stream.iword(Indent::xIndex))
 	{
@@ -19,7 +20,7 @@ namespace parka
 	std::ostream& operator<<(std::ostream& out, const Indent& indent)
 	{
 		// TODO: Optimize
-		for (isize i = 0; i < indent._amount; ++i)
+		for (isize i = 0; i < indent._amount - 1; ++i)
 			out.put('\t');
 
 		return out;

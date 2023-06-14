@@ -11,6 +11,7 @@ namespace parka
 		virtual ~EntitySyntax() {}
 		virtual const String& identifier() const = 0;
 		virtual EntityType entityType() const = 0;
+		friend std::ostream& operator<<(std::ostream& out, const EntitySyntax& syntax);
 	};
 }
 

@@ -15,13 +15,15 @@ namespace parka
 		String _identifier;
 		Array<ModuleSyntax> _modules;
 		Array<PackageSyntax*> _packages;
-		Table<String, SymbolTableEntry> _symbols;
-		SymbolTable *_parent;
+		// Symbol table data
+		Table<String, EntitySyntax*> _symbols;
+		PackageSyntax *_parent;
+		PackageContext *_context;
 
 	private:
 
-		bool declareEntity(const EntitySyntax& entity);
-		SymbolTableEntry *findEntry(const QualifiedIdentifier& identifier, usize index);
+		bool declareEntity(EntitySyntax& entity);
+		EntitySyntax *find(const String& key);
 
 	public:
 
@@ -33,8 +35,8 @@ namespace parka
 		void declare(PackageSyntax *parent);
 		PackageContext *validate();
 
-		const EntityContext *resolve(const Identifier& identifier);
-		const EntityContext *resolve(const QualifiedIdentifier& identifier);
+		EntitySyntax *resolve(const Identifier& identifier);
+		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
 		
 		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }

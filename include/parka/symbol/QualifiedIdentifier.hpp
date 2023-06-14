@@ -12,26 +12,21 @@ namespace parka
 		Array<Identifier> _parts;
 		bool _isAbsolute;
 
-		QualifiedIdentifier(Array<Identifier>&& parts, bool isAbsolute) :
-		_parts(std::move(parts)),
-		_isAbsolute(isAbsolute)
-		{}
-
 	public:
 
+		QualifiedIdentifier(Array<Identifier>&& parts, bool isAbsolute);
 		QualifiedIdentifier(QualifiedIdentifier&&) = default;
 		QualifiedIdentifier(const QualifiedIdentifier&) = delete;
 
 		static Optional<QualifiedIdentifier> parse(Token& token);
 
-		const auto& operator[](usize index) const { return _parts[index]; }
 		const auto *begin() const { return _parts.begin(); }
 		const auto *end() const { return _parts.end(); }
-
-		friend std::ostream& operator<<(std::ostream& out, const QualifiedIdentifier& identifier);
-
 		const auto& length() const { return _parts.length(); }
 		const auto& isAbsolute() const { return _isAbsolute; }
+
+		const auto& operator[](usize index) const { return _parts[index]; }
+		friend std::ostream& operator<<(std::ostream& out, const QualifiedIdentifier& identifier);
 	};
 }
 

@@ -43,6 +43,7 @@ namespace parka
 
 	StatementContext *DeclarationStatementSyntax::validate(SymbolTable& symbolTable)
 	{
+		// auto *variable = _variable.validate(symbolTable);
 		log::notImplemented(here());
 	}
 }

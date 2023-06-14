@@ -3,6 +3,11 @@
 
 namespace parka
 {
+	QualifiedIdentifier::QualifiedIdentifier(Array<Identifier>&& parts, bool isAbsolute) :
+	_parts(std::move(parts)),
+	_isAbsolute(isAbsolute)
+	{}
+
 	static bool parseAbsolute(Token& token)
 	{
 		if (token.type() == TokenType::Scope)

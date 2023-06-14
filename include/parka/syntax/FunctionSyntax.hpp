@@ -31,8 +31,8 @@ namespace parka
 		void declare(SymbolTable& parent);
 		FunctionContext *validate();
 
-		const EntityContext *resolve(const Identifier& identifier);
-		const EntityContext *resolve(const QualifiedIdentifier& identifier);
+		EntitySyntax *resolve(const Identifier& identifier);
+		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
 
 		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }

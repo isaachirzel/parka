@@ -1,6 +1,7 @@
 #ifndef PARKA_SYNTAX_STRUCT_SYNTAX_HPP
 #define PARKA_SYNTAX_STRUCT_SYNTAX_HPP
 
+#include "parka/context/StructContext.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/syntax/MemberSyntax.hpp"
@@ -15,9 +16,9 @@ namespace parka
 	{
 		Identifier _identifier;
 		Array<MemberSyntax*> _members;
-
-		SymbolTable *_parent;
 		Table<String, EntitySyntax*> _symbols;
+		SymbolTable *_parent;
+		StructContext *_context;
 
 	public:
 
@@ -27,7 +28,7 @@ namespace parka
 
 		static StructSyntax *parse(Token& token);
 		void declare(SymbolTable& parent);
-		// StructContext *validate(SymbolTable& symbolTable);
+		// StructContext *validate();
 
 		EntityType entityType() const { return EntityType::Struct; }
 		const String& identifier() const { return _identifier.text(); }

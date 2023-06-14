@@ -8,8 +8,9 @@ namespace parka
 	StructSyntax::StructSyntax(Identifier&& identifier, Array<MemberSyntax*>&& members) :
 	_identifier(std::move(identifier)),
 	_members(std::move(members)),
+	_symbols(),
 	_parent(nullptr),
-	_symbols()
+	_context(nullptr)
 	{}
 
 	StructSyntax *StructSyntax::parse(Token &token)
