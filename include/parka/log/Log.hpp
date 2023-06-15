@@ -2,7 +2,7 @@
 #define PARKA_ERROR_ERROR_LOG_HPP
 
 #include "parka/enum/LogEntryType.hpp"
-#include "parka/log/Highlight.hpp"
+#include "parka/file/Snippet.hpp"
 #include "parka/log/LogEntry.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/SourceLocation.hpp"
@@ -26,7 +26,7 @@ namespace parka::log
 	}
 
 	template <typename ...Arg>
-	void note(Highlight&& token, const char *fmt, Arg const&... args)
+	void note(Snippet&& token, const char *fmt, Arg const&... args)
 	{
 		return addEntry(LogEntry(LogEntryType::Note, format(fmt, args...), token));
 	}
@@ -38,9 +38,9 @@ namespace parka::log
 	}
 
 	template <typename ...Arg>
-	void error(Highlight&& highlight, const char *format, Arg const&... args)
+	void error(Snippet&& snippet, const char *format, Arg const&... args)
 	{
-		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), highlight));
+		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), snippet));
 	}
 
 	void parseError(const Token& token, const char *expected, const char *message = "");

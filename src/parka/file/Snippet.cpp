@@ -1,4 +1,4 @@
-#include "parka/log/Highlight.hpp"
+#include "parka/file/Snippet.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/SourceLocation.hpp"
 
@@ -31,11 +31,11 @@ namespace parka
 		return iter;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const Highlight& highlight)
+	std::ostream& operator<<(std::ostream& out, const Snippet& snippet)
 	{
-		const auto *start = highlight.begin();
+		const auto *start = snippet.begin();
 		
-		out.write(start, highlight._length);
+		out.write(start, snippet._length);
 
 		return out;
 	}

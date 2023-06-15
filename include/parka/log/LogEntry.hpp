@@ -2,7 +2,7 @@
 #define PARKA_ERROR_ERROR_HPP
 
 #include "parka/enum/LogEntryType.hpp"
-#include "parka/log/Highlight.hpp"
+#include "parka/file/Snippet.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 #include <ostream>
@@ -12,7 +12,7 @@ namespace parka
 	class LogEntry
 	{
 		String _message;
-		Optional<Highlight> _highlight;
+		Optional<Snippet> _highlight;
 		Color _color;
 		LogEntryType _type;
 
@@ -26,15 +26,15 @@ namespace parka
 		_type(type)
 		{}
 
-		LogEntry(LogEntryType type, String&& message, const Highlight& highlight) :
+		LogEntry(LogEntryType type, String&& message, const Snippet& snippet) :
 		_message(std::move(message)),
-		_highlight(highlight),
+		_highlight(snippet),
 		_color(getColor(type)),
 		_type(type)
 		{}
 
 		const auto& message() const { return _message; }
-		const auto& highlight() const { return _highlight; }
+		const auto& snippet() const { return _highlight; }
 		const auto& color() const { return _color; }
 		const auto& type() const { return _type; }
 		

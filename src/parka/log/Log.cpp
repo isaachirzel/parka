@@ -46,12 +46,12 @@ namespace parka::log
 		}
 
 		// TODO: Sort the entries by using :
-		//entry.highlight()->position().file().path();
+		//entry.snippet()->position().file().path();
 		// as key so that when validation of that file is complete,
 		// it can dump them into the console
 
-		// auto filePtr = entry.highlight()
-		// 	? (usize)&entry.highlight()->position().file()
+		// auto filePtr = entry.snippet()
+		// 	? (usize)&entry.snippet()->position().file()
 		// 	: 0; // No file association
 		// log::entries.add(std::move(entry));
 

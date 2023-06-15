@@ -1,5 +1,5 @@
-#ifndef PARKA_FILE_HIGHLIGHT_HPP
-#define PARKA_FILE_HIGHLIGHT_HPP
+#ifndef PARKA_FILE_SNIPPET_HPP
+#define PARKA_FILE_SNIPPET_HPP
 
 #include "parka/Token.hpp"
 #include "parka/file/File.hpp"
@@ -11,30 +11,30 @@
 
 namespace parka
 {
-	class Highlight
+	class Snippet
 	{
 		FilePosition _position;
 		usize _length;
 
 	public:
 
-		Highlight(const Token& token) :
+		Snippet(const Token& token) :
 		_position(token.position()),
 		_length(token.length())
 		{}
-		Highlight(const File& file, usize index, usize length) :
+		Snippet(const File& file, usize index, usize length) :
 		_position(file, index),
 		_length(length)
 		{}
-		Highlight(Highlight&&) = default;
-		Highlight(const Highlight&) = default;
+		Snippet(Snippet&&) = default;
+		Snippet(const Snippet&) = default;
 
 		const auto *begin() const { return _position.ptr(); }
 		const auto *end() const { return _position.ptr() + _length; }
 		const auto& position() const { return _position; }
 		const auto& length() const { return _length; }
 
-		friend std::ostream& operator<<(std::ostream& out, const Highlight& highlight);
+		friend std::ostream& operator<<(std::ostream& out, const Snippet& snippet);
 	};
 }
 

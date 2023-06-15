@@ -3,9 +3,9 @@
 
 namespace parka
 {
-	StringView Line::getPreText(const Highlight& highlight)
+	StringView Line::getPreText(const Snippet& snippet)
 	{
-		const auto& position = highlight.position();
+		const auto& position = snippet.position();
 		const char *base = position.file().text().c_str();
 		const char *end = position.ptr();
 		const char *iter = end;
@@ -21,10 +21,10 @@ namespace parka
 		return StringView(iter, end - iter);
 	}
 
-	StringView Line::getPostText(const Highlight& highlight)
+	StringView Line::getPostText(const Snippet& snippet)
 	{
-		const auto& position = highlight.position();
-		const char *start = position.ptr() + highlight.length();
+		const auto& position = snippet.position();
+		const char *start = position.ptr() + snippet.length();
 		const char *iter = start;
 
 		while (iter[0])
