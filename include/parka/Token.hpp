@@ -5,6 +5,7 @@
 #include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
 #include "parka/file/FilePosition.hpp"
+#include "parka/file/Snippet.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
@@ -12,17 +13,12 @@ namespace parka
 {
 	class Token
 	{
-		FilePosition _position;
-		usize _length;
+		Snippet _snippet;
 		TokenType _type;
 
 	public:
 
-		Token(const File& file, usize index, usize length, TokenType type) :
-		_position(file, index),
-		_length(length),
-		_type(type)
-		{}
+		Token(const File& file, usize index, usize length, TokenType type);
 		Token(Token&&) = default;
 		Token(const Token&) = default;
 
@@ -30,21 +26,21 @@ namespace parka
 
 		void increment();
 
-		bool operator ==(const Token& other) const;
-		bool operator ==(const String& other) const;
-		const auto& operator[](usize index) const { return _position.file()[index]; }
-
-		String substr(usize pos, usize length) const;
 		String text() const;
 		String category() const;
-		const auto *begin() const { return _position.ptr(); }
-		const auto *end() const { return _position.ptr() + _length; }
-		const auto& file() const { return _position.file(); }
-		const auto& index() const { return _position.index(); }
-		const auto& length() const { return _length; }
+		// const auto *begin() const { return _snippet.ptr(); }
+		// const auto *end() const { return _position.ptr() + _length; }
+		// const auto& index() const { return _position.index(); }
+		// const auto& file() const { return _snippet.position().file(); }
+		// const auto& length() const { return _snippet.length(); }
+		const auto& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }
-		const auto& position() const { return _position; }
+		// const auto& position() const { return _snippet.position(); }
 
+		operator const Snippet&() const { return _snippet; }
+		// bool operator ==(const Token& other) const;
+		// bool operator ==(const String& other) const;
+		const auto& operator[](usize index) const { return _snippet[index]; }
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};
 

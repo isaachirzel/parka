@@ -29,7 +29,8 @@ namespace parka
 	ExpressionContext *StringLiteralSyntax::validate(SymbolTable&)
 	{
 		// TODO: Handle escapes
-		auto text = _token.substr(1, _token.length() - 2);
+		const auto& snippet = _token.snippet();
+		auto text = snippet.substr(1, snippet.length() - 2);
 		auto *context = new StringLiteralContext(std::move(text));
 
 		return context;

@@ -11,7 +11,7 @@ namespace parka
 			return {};
 		}
 
-		if (token.length() != 3)
+		if (token.snippet().length() != 3)
 		{
 			log::error(token, "character literals may only contain 1 character", nullptr);
 			return {};

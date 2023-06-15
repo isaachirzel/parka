@@ -25,6 +25,7 @@ namespace parka
 		const auto& col() const { return _col; }
 		const auto* ptr() const { return &_file[_index]; }
 
+		bool operator==(const FilePosition& other) const;
 		friend std::ostream& operator<<(std::ostream& out, const FilePosition& position);
 	};
 }

@@ -1,8 +1,8 @@
 #ifndef PARKA_FILE_SNIPPET_HPP
 #define PARKA_FILE_SNIPPET_HPP
 
-#include "parka/Token.hpp"
 #include "parka/file/File.hpp"
+#include "parka/file/FilePosition.hpp"
 #include "parka/log/Color.hpp"
 #include "parka/util/Common.hpp"
 #include <ostream>
@@ -18,22 +18,20 @@ namespace parka
 
 	public:
 
-		Snippet(const Token& token) :
-		_position(token.position()),
-		_length(token.length())
-		{}
-		Snippet(const File& file, usize index, usize length) :
-		_position(file, index),
-		_length(length)
-		{}
+		Snippet(const File& file, usize index, usize length);
 		Snippet(Snippet&&) = default;
 		Snippet(const Snippet&) = default;
 
-		const auto *begin() const { return _position.ptr(); }
-		const auto *end() const { return _position.ptr() + _length; }
+		String text() const;
+		String substr(usize pos, usize length) const;
+		const char *ptr() const { return _position.ptr(); }
+		const char *begin() const { return _position.ptr(); }
+		const char *end() const { return _position.ptr() + _length; }
 		const auto& position() const { return _position; }
 		const auto& length() const { return _length; }
 
+		bool operator==(const Snippet& other) const;
+		const auto& operator[](usize index) const { return _position.file()[index]; }
 		friend std::ostream& operator<<(std::ostream& out, const Snippet& snippet);
 	};
 }

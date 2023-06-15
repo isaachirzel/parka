@@ -7,7 +7,12 @@
 
 namespace parka
 {
-	usize getEndOfLinePos(const File& file, usize pos)
+	Token::Token(const File& file, usize index, usize length, TokenType type) :
+	_snippet(file, index, length),
+	_type(type)
+	{}
+
+	static usize getEndOfLinePos(const File& file, usize pos)
 	{
 		for (usize i = pos; i < file.length(); ++i)
 		{
@@ -18,7 +23,7 @@ namespace parka
 		return file.length();
 	}
 
-	usize getEndOfBlockCommentPos(const File& file, usize pos)
+	static usize getEndOfBlockCommentPos(const File& file, usize pos)
 	{
 		for (usize i = pos; i < file.length(); ++i)
 		{
@@ -29,7 +34,7 @@ namespace parka
 		return file.length();
 	}
 
-	usize getNextPos(const File& file, usize pos)
+	static usize getNextPos(const File& file, usize pos)
 	{
 		for (usize i = pos; i < file.length(); ++i)
 		{
@@ -400,9 +405,12 @@ namespace parka
 
 	void Token::increment()
 	{
-		usize nextTokenPos = getNextPos(_position.file(), _position.index() + _length);
+		const auto& position = _snippet.position();
+		const auto& file = position.file();
 
-		new (this) auto(getNextToken(_position.file(), nextTokenPos));
+		usize nextTokenPos = getNextPos(file, position.index() + _snippet.length());
+
+		new (this) auto(getNextToken(file, nextTokenPos));
 	}
 
 	Token Token::initial(const File& file)
@@ -413,17 +421,9 @@ namespace parka
 		return token;
 	}
 
-	String Token::substr(usize pos, usize length) const
-	{
-		assert(pos < _length);
-		assert(pos + length < _length);
-
-		return String(_position.ptr() + pos, length);
-	}
-
 	String Token::text() const
 	{
-		return String(_position.ptr(), _length);
+		return _snippet.text();
 	}
 
 	String Token::category() const
@@ -505,32 +505,13 @@ namespace parka
 		}
 	}
 
-	bool Token::operator==(const Token& other) const
-	{
-		const auto& file = _position.file();
-		const auto& otherFile = other.file();
-		if (&file != &otherFile || _length != other.length() || _type != other.type())
-			return false;
+	// bool Token::operator ==(const String& text) const
+	// {
+	// 	if (_length != text.length())
+	// 		return false;
 
-		if (_position.index() == other.index())
-			return true;
-
-		for (usize i = 0; i < _length; ++i)
-		{
-			if (file[i] != otherFile[i])
-				return false;
-		}
-
-		return true;
-	}
-
-	bool Token::operator ==(const String& text) const
-	{
-		if (_length != text.length())
-			return false;
-
-		return !strncmp(_position.ptr(), text.c_str(), _length);
-	}
+	// 	return !strncmp(_position.ptr(), text.c_str(), _length);
+	// }
 
 	std::ostream& operator<<(std::ostream& out, TokenType type)
 	{
@@ -778,7 +759,7 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, const Token& token)
 	{
-		out.write(token.begin(), token.length());
+		out << token._type << " `" << token._snippet << "`";
 
 		return out;
 	}

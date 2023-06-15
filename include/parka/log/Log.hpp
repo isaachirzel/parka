@@ -26,7 +26,7 @@ namespace parka::log
 	}
 
 	template <typename ...Arg>
-	void note(Snippet&& token, const char *fmt, Arg const&... args)
+	void note(const Snippet& token, const char *fmt, Arg const&... args)
 	{
 		return addEntry(LogEntry(LogEntryType::Note, format(fmt, args...), token));
 	}
@@ -38,7 +38,7 @@ namespace parka::log
 	}
 
 	template <typename ...Arg>
-	void error(Snippet&& snippet, const char *format, Arg const&... args)
+	void error(const Snippet& snippet, const char *format, Arg const&... args)
 	{
 		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), snippet));
 	}

@@ -26,6 +26,11 @@ namespace parka
 		_col = index - filePos + 1;
 	}
 
+	bool FilePosition::operator==(const FilePosition& other) const
+	{
+		return &_file == &other._file && _index == other._index;
+	}
+
 	std::ostream& operator<<(std::ostream& out, const FilePosition& position)
 	{		
 		out << Color::Yellow << position.file().path() << ':' << position.line() << ':' << position.col() << Color::Reset;

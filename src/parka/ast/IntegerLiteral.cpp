@@ -22,8 +22,9 @@ namespace parka
 		assert(token.type() == TokenType::IntegerLiteralSyntax);
 
 		u64 value = 0;
+		const auto length = token.snippet().length();
 
-		for (usize i = 0; i < token.length(); ++i)
+		for (usize i = 0; i < length; ++i)
 		{
 			auto previousValue = value;
 

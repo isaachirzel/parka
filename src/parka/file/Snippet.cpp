@@ -6,6 +6,11 @@
 
 namespace parka
 {
+	Snippet::Snippet(const File& file, usize index, usize length) :
+	_position(file, index),
+	_length(length)
+	{}
+
 	usize getStartOfLine(const char *text, usize pos)
 	{
 		while (pos > 1)
@@ -29,6 +34,24 @@ namespace parka
 		}
 
 		return iter;
+	}
+
+	String Snippet::text() const
+	{
+		return String(_position.ptr(), _length);
+	}
+
+	String Snippet::substr(usize pos, usize length) const
+	{
+		assert(pos < _length);
+		assert(pos + length < _length);
+
+		return String(_position.ptr() + pos, length);
+	}
+
+	bool Snippet::operator==(const Snippet& other) const
+	{
+		return _position == other._position && _length == other._length;
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Snippet& snippet)

@@ -15,7 +15,7 @@ namespace parka
 		usize partLens[2] = { 0, 0 };
 		u32 partIndex = 0;
 
-		for (const auto& c : token)
+		for (const auto& c : token.snippet())
 		{
 			if (c == '.')
 			{
