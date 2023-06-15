@@ -3,7 +3,7 @@
 
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 
 namespace parka
 {
@@ -29,9 +29,10 @@ namespace parka
 		MemberSyntax(const MemberSyntax&) = delete;
 
 		static MemberSyntax *parse(Token& token);
-		void declare(SymbolTable& parent);
+		bool declareSelf(SymbolTable& parent);
 		MemberContext *validate();
 		EntityContext *context() { return validate(); }
+		String getSymbol() const;
 
 		const Identifier& identifier() const { return _identifier; }
 		const String& name() const { return _identifier.text(); }

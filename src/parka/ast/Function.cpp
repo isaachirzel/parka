@@ -1,9 +1,10 @@
 #include "parka/ast/Function.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/BlockExpression.hpp"
+#include "parka/ast/Package.hpp"
 
 namespace parka
 {
@@ -14,7 +15,8 @@ namespace parka
 	_symbols()
 	{}
 
-	FunctionContext::FunctionContext(PrototypeContext&& prototype, ExpressionContext& body) :
+	FunctionContext::FunctionContext(String&& symbol, PrototypeContext&& prototype, ExpressionContext& body) :
+	_symbol(std::move(symbol)),
 	_prototype(std::move(prototype)),
 	_body(body)
 	{}
@@ -69,19 +71,18 @@ namespace parka
 	FunctionContext *FunctionSyntax::validate()
 	{
 		// TODO: Mutex
-
 		auto prototype = _prototype.validate(*this);
 		auto *body = _body.validate(*this);
 
 		if (!prototype || !body)
 			return {};
 
-		auto *context = new FunctionContext(*prototype, *body);
+		auto *context = new FunctionContext(getSymbol(), *prototype, *body);
 
 		return context;
 	}
 
-	bool FunctionSyntax::declareSelf(SymbolTable& parent)
+	bool FunctionSyntax::declareSelf(PackageSyntax& parent)
 	{
 		_parent = &parent;
 
@@ -90,13 +91,19 @@ namespace parka
 
 	bool FunctionSyntax::declare(EntitySyntax& entity)
 	{
-		const auto& name = entity.name();
+		const auto& identifier = entity.identifier();
+		const auto& name = identifier.text();
 
-		for (const auto *symbol : _symbols)
+		for (auto *symbol : _symbols)
 		{
 			if (name == symbol->name())
 			{
-				log::error("A $ `$` has already been declared in this function.", entity.entityType(), name);
+				log::error(identifier.token(), "A $ `$` has already been declared in this function.", entity.entityType(), name);
+
+				auto *previous = dynamic_cast<EntitySyntax*>(symbol);
+
+				if (previous != nullptr)
+					log::note(previous->identifier().token(), "Previous declaration here:");
 				// TODO: maybe just insert it anyways?
 				return false;
 			}
@@ -107,7 +114,7 @@ namespace parka
 		return true;
 	}
 
-	EntitySyntax *FunctionSyntax::resolve(const Identifier& identifier)
+	EntityEntry *FunctionSyntax::resolve(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -120,7 +127,7 @@ namespace parka
 		return nullptr;
 	}
 
-	EntitySyntax *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	EntityEntry *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		if (identifier.isAbsolute() || identifier.length() > 1)
 			return _parent->resolve(identifier);
@@ -133,6 +140,18 @@ namespace parka
 		auto *global = _parent->resolve(identifier);
 
 		return global;
+	}
+
+	String FunctionSyntax::getSymbol() const
+	{
+		assert(_parent != nullptr);
+
+		auto symbol = _parent->getSymbol();
+
+		symbol += "::";
+		symbol += name();
+
+		return symbol;
 	}
 
 	std::ostream& operator<<(std::ostream& out, const FunctionSyntax& syntax)

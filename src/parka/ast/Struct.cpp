@@ -1,10 +1,15 @@
 #include "parka/ast/Struct.hpp"
+#include "parka/ast/Member.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/Package.hpp"
 
 namespace parka
 {
+	StructContext::StructContext(String&& symbol) :
+	_symbol(std::move(symbol))
+	{}
+
 	StructSyntax::StructSyntax(Identifier&& identifier, Array<MemberSyntax*>&& members) :
 	_identifier(std::move(identifier)),
 	_members(std::move(members)),
@@ -70,24 +75,59 @@ namespace parka
 		return syntax;
 	}
 
-	void StructSyntax::declare(SymbolTable& parent)
+	bool StructSyntax::declare(EntitySyntax& entity)
+	{
+		// TODO: Token snippet
+		const auto& name = entity.name();
+		auto isDeclared = _symbols.insert(name, &entity);
+
+		if (!isDeclared)
+		{
+			log::error("Member `$` has already been declared in struct $.", name, _identifier);
+		}
+
+		return isDeclared;
+	}
+
+	bool StructSyntax::declareSelf(PackageSyntax& parent)
 	{
 		_parent = &parent;
 
+		bool success = _parent->declare(*this);
+
 		for (auto *member : _members)
 		{
-			const auto& name = member->name();
-			const auto result = _symbols.insert(name, member);
-
-			if (!result)
-				log::error(member->token(), "Member `$` has already been declared in struct ``.", name, _identifier);
+			if (!member->declareSelf(*this))
+				success = false;
 				// TODO: Previous delcaration
 		}
+
+		return success;
+	}
+
+	EntityEntry *StructSyntax::resolve(const Identifier& identifier)
+	{
+		log::notImplemented(here());
+	}
+
+	EntityEntry *StructSyntax::resolve(const QualifiedIdentifier& identifier)
+	{
+		log::notImplemented(here());
 	}
 
 	StructContext *StructSyntax::validate()
 	{
 		log::notImplemented(here());
+	}
+
+	String StructSyntax::getSymbol() const
+	{
+		auto symbol = _parent->getSymbol();
+
+		symbol += "::";
+		symbol += name();
+
+		return symbol;
 	}
 
 	// bool StructSyntax::validate(const EntitySyntax& function)

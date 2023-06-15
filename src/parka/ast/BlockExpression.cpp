@@ -76,37 +76,17 @@ namespace parka
 		return context;
 	}
 
-	bool BlockExpressionSyntax::declareEntity(EntitySyntax& entity)
-	{
-		const auto& name = entity.name();
-
-		for (const auto *entry : *_symbols)
-		{
-			if (name == entry->name())
-			{
-				log::error("Declaration of `$` shadows a previously declared $.", name, entry->entityType());
-				// TODO: Show previous declaration
-				// TODO: Maybe insert anyway?
-				return false;
-			}
-		}
-
-		_symbols->push(&entity);
-
-		return true;
-	}
-
 	bool BlockExpressionSyntax::declare(EntitySyntax& entity)
 	{
 		return _parent->declare(entity);
 	}
 
-	EntitySyntax *BlockExpressionSyntax::resolve(const Identifier& identifier)
+	EntityEntry *BlockExpressionSyntax::resolve(const Identifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}
 
-	EntitySyntax *BlockExpressionSyntax::resolve(const QualifiedIdentifier& identifier)
+	EntityEntry *BlockExpressionSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}

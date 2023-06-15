@@ -1,7 +1,7 @@
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Function.hpp"
-#include "parka/symbol/QualifiedIdentifier.hpp"
+#include "parka/ast/QualifiedIdentifier.hpp"
 
 #include "parka/util/Print.hpp"
 

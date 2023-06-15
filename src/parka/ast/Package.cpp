@@ -2,9 +2,8 @@
 #include "parka/intrinsic/Primitive.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/ast/Entity.hpp"
 
 namespace parka
@@ -18,7 +17,8 @@ namespace parka
 	_context(nullptr)
 	{}
 
-	PackageContext::PackageContext(Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs) :
+	PackageContext::PackageContext(String&& symbol, Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs) :
+	_symbol(std::move(symbol)),
 	_packages(std::move(packages)),
 	_functions(std::move(functions)),
 	_structs(std::move(structs))
@@ -90,7 +90,7 @@ namespace parka
 		if (!success)
 			return {};
 
-		auto *context = new PackageContext(std::move(packages), std::move(functions), std::move(structs));
+		auto *context = new PackageContext(getSymbol(), std::move(packages), std::move(functions), std::move(structs));
 
 		return context;
 	}
@@ -125,13 +125,13 @@ namespace parka
 		else
 		{
 			_parent = parent;
-			_parent->declare(*this);
+			_symbols.insert(_name, this);
 		}
 
 		for (auto& mod : _modules)
 		{
 			for (auto *strct : mod.structs())
-				declare(*strct);
+				strct->declareSelf(*this);
 
 			for (auto *function : mod.functions())
 				function->declareSelf(*this);
@@ -143,17 +143,17 @@ namespace parka
 		return true;
 	}
 
-	EntitySyntax *PackageSyntax::find(const Identifier& identifier)
+	EntityEntry *PackageSyntax::find(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = this;
 
 		do
 		{
-			auto *entity = package->resolve(identifier);
+			auto *entry = package->resolve(identifier);
 
-			if (entity != nullptr)
-				return entity;
+			if (entry != nullptr)
+				return entry;
 
 			if (package->name() == name)
 				return package;
@@ -165,7 +165,7 @@ namespace parka
 		return nullptr;
 	}
 
-	EntitySyntax *PackageSyntax::findAbsolute(const Identifier& identifier)
+	EntityEntry *PackageSyntax::findAbsolute(const Identifier& identifier)
 	{
 		auto *package = this;
 		auto *parent = _parent;
@@ -183,7 +183,7 @@ namespace parka
 		return entry;
 	}
 
-	EntitySyntax *PackageSyntax::resolve(const Identifier& identifier)
+	EntityEntry *PackageSyntax::resolve(const Identifier& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -193,7 +193,7 @@ namespace parka
 		return nullptr;
 	}
 
-	EntitySyntax *PackageSyntax::resolve(const QualifiedIdentifier& qualifiedIdentifier)
+	EntityEntry *PackageSyntax::resolve(const QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];
@@ -225,6 +225,26 @@ namespace parka
 		log::error("Unable to find $ in this scope.", qualifiedIdentifier);
 
 		return entry;
+	}
+
+	String PackageSyntax::getSymbol() const
+	{
+		if (_parent == nullptr)
+		{
+			auto symbol = String();
+
+			symbol.reserve(128);
+			symbol += _name;
+
+			return symbol;
+		}
+
+		auto symbol = _parent->getSymbol();
+
+		symbol += "::";
+		symbol += _name;
+		
+		return symbol;
 	}
 
 	std::ostream& operator<<(std::ostream& out, const PackageSyntax& syntax)

@@ -2,9 +2,16 @@
 
 namespace parka
 {
-	std::ostream& operator<<(std::ostream& out, const EntitySyntax& syntax)
+	// std::ostream& operator<<(std::ostream& out, const EntitySyntax& syntax)
+	// {
+	// 	out << syntax.name() << ": " << syntax.entityType();
+
+	// 	return out;
+	// }
+
+	std::ostream& operator<<(std::ostream& out, const EntityEntry &entry)
 	{
-		out << syntax.name() << ": " << syntax.entityType();
+		out << entry.name() << ": " << entry.entityType();
 
 		return out;
 	}

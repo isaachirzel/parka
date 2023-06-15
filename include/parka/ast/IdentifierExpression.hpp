@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_EXPRESSION_IDENTIFIER_SYNTAX_HPP
 
 #include "parka/ast/Expression.hpp"
-#include "parka/symbol/QualifiedIdentifier.hpp"
+#include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/Token.hpp"
 #include "parka/type/ValueType.hpp"

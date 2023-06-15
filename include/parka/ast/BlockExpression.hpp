@@ -10,14 +10,9 @@ namespace parka
 	class BlockExpressionSyntax : public ExpressionSyntax, public SymbolTable
 	{
 		Array<StatementSyntax*> _statements;
-
 		SymbolTable *_parent;
-		Array<EntitySyntax*> *_symbols;
+		Array<EntityEntry*> *_symbols;
 		usize _baseIndex;
-
-	private:
-
-		bool declareEntity(EntitySyntax& entity);
 
 	public:
 
@@ -29,10 +24,9 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		bool declare(EntitySyntax& entity);
-		EntitySyntax *resolve(const Identifier& identifier);
-		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *resolve(const Identifier& identifier);
+		EntityEntry *resolve(const QualifiedIdentifier& identifier);
 
-		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Block; };
 		ExpressionType expressionType() const { return ExpressionType::Block; }
 		const auto& statements() const { return _statements; }

@@ -413,6 +413,19 @@ namespace parka
 		return token;
 	}
 
+	String Token::substr(usize pos, usize length) const
+	{
+		assert(pos < _length);
+		assert(pos + length < _length);
+
+		return String(_position.ptr() + pos, length);
+	}
+
+	String Token::text() const
+	{
+		return String(_position.ptr(), _length);
+	}
+
 	String Token::category() const
 	{
 		switch (_type)

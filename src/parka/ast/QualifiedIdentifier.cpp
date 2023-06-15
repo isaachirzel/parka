@@ -1,5 +1,5 @@
-#include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/QualifiedIdentifier.hpp"
+#include "parka/ast/Identifier.hpp"
 
 namespace parka
 {

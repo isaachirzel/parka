@@ -1,21 +1,32 @@
 #ifndef PARKA_SYNTAX_EXPRESSION_LITERAL_STRING_SYNTAX_HPP
 #define PARKA_SYNTAX_EXPRESSION_LITERAL_STRING_SYNTAX_HPP
 
-#include "parka/ast/Literal.hpp"
+#include "parka/ast/Expression.hpp"
 
 namespace parka
 {
-	class StringLiteralSyntax : public ExpressionSyntax
+	class StringLiteralContext : public ExpressionContext
 	{
-		Token _token;
 		String _value;
 
 	public:
 
-		StringLiteralSyntax(Token token, String&& value) :
-		_token(token),
-		_value(std::move(value))
-		{}
+		StringLiteralContext(String&& value);
+		StringLiteralContext(StringLiteralContext&&) = default;
+		StringLiteralContext(const StringLiteralContext&) = delete;
+
+		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
+		const ValueType& valueType() const { return ValueType::stringType; }
+		const auto& value() const { return _value; }
+	};
+
+	class StringLiteralSyntax : public ExpressionSyntax
+	{
+		Token _token;
+
+	public:
+
+		StringLiteralSyntax(const Token& token);
 		StringLiteralSyntax(StringLiteralSyntax&&) = default;
 		StringLiteralSyntax(const StringLiteralSyntax&) = delete;
 

@@ -37,13 +37,12 @@ namespace parka
 
 		bool declare(EntitySyntax& syntax);
 		bool declareSelf();
-		EntitySyntax *resolve(const Identifier& identifier);
-		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *resolve(const Identifier& identifier);
+		EntityEntry *resolve(const QualifiedIdentifier& identifier);
 
 		Optional<ContextTree> validate();
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Global; }
-		SymbolTable *parent() { return nullptr; }
 
 		friend std::ostream& operator<<(std::ostream& out, const SyntaxTree& syntax);
 	};

@@ -34,13 +34,9 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, const ValueType& type)
 	{
-		// TODO: Get Symbols
-		log::notImplemented(here());
-		// output symbol
-		// auto& entity = *type.entityId();
-		// const auto& identifier = entity.identifier();
-
-		// out << '`' << identifier << '`';
+		out << '`';
+		out << type._entity.symbol();
+		out << '`';
 
 		return out;
 	}

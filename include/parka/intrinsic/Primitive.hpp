@@ -17,7 +17,7 @@ namespace parka
 		String
 	};
 
-	class Primitive : public EntitySyntax, public EntityContext
+	class Primitive : public EntityEntry, public EntityContext
 	{
 		String _name;
 		u32 _size;
@@ -54,6 +54,8 @@ namespace parka
 
 		EntityContext *context() { return this; }
 
+		String getSymbol() const { return _name; }
+		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
 		EntityType entityType() const { return EntityType::Primitive; }
 		const auto& primitiveType() const { return _type; }

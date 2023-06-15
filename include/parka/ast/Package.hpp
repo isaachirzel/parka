@@ -2,9 +2,8 @@
 #define PARKA_SYNTAX_PACKAGE_SYNTAX_HPP
 
 #include "parka/file/Directory.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Module.hpp"
 
@@ -12,36 +11,37 @@ namespace parka
 {
 	class PackageContext : public EntityContext
 	{
+		String _symbol;
 		Array<PackageContext*> _packages;
 		Array<FunctionContext*> _functions;
 		Array<StructContext*> _structs;
 
 	public:
 
-		PackageContext(Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs);
+		PackageContext(String&& symbol, Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs);
 		PackageContext(PackageContext&&) = default;
 		PackageContext(const PackageContext&) = delete;
 
+		const String& symbol() const { return _symbol; }
 		EntityType entityType() const { return EntityType::Package; }
 		const auto& packages() const { return _packages; }
 		const auto& functions() const { return _functions; }
 		const auto& structs() const { return _structs; }
 	};
 
-	class PackageSyntax : public EntitySyntax, public SymbolTable
+	class PackageSyntax : public EntityEntry, public SymbolTable
 	{
 		String _name;
 		Array<ModuleSyntax> _modules;
 		Array<PackageSyntax*> _packages;
-		// Symbol table data
-		Table<String, EntitySyntax*> _symbols;
+		Table<String, EntityEntry*> _symbols;
 		PackageSyntax *_parent;
 		PackageContext *_context;
 
 	private:
 
-		EntitySyntax *find(const Identifier& identifier);
-		EntitySyntax *findAbsolute(const Identifier& identifier);
+		EntityEntry *find(const Identifier& identifier);
+		EntityEntry *findAbsolute(const Identifier& identifier);
 
 	public:
 
@@ -53,13 +53,13 @@ namespace parka
 
 		bool declare(EntitySyntax& entity);
 		bool declareSelf(PackageSyntax *parent);
-		EntitySyntax *resolve(const Identifier& identifier);
-		EntitySyntax *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *resolve(const Identifier& identifier);
+		EntityEntry *resolve(const QualifiedIdentifier& identifier);
+		String getSymbol() const;
 
 		PackageContext *validate();
 		EntityContext *context() { return validate(); }
 		
-		SymbolTable *parent() { return _parent; }
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
 		EntityType entityType() const { return EntityType::Package; }
 		const String& name() const { return _name; }

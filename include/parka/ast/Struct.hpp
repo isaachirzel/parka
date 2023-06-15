@@ -1,7 +1,8 @@
 #ifndef PARKA_SYNTAX_STRUCT_SYNTAX_HPP
 #define PARKA_SYNTAX_STRUCT_SYNTAX_HPP
 
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
+#include "parka/enum/SymbolTableType.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Member.hpp"
 #include "parka/ast/Entity.hpp"
@@ -11,25 +12,30 @@
 
 namespace parka
 {
+	class PackageSyntax;
+
 	class StructContext : public EntityContext
 	{
+		String _symbol;
+
 	public:
 
-		StructContext() = default;
+		StructContext(String&& symbol);
 		StructContext(StructContext&&) = default;
 		StructContext(const StructContext&) = delete;
 
 		static StructContext *validate();
 		
 		EntityType type() const { return EntityType::Struct; }
+		const String& symbol() const { return _symbol; }
 	};
 
-	class StructSyntax : public EntitySyntax
+	class StructSyntax : public EntitySyntax, public SymbolTable
 	{
 		Identifier _identifier;
 		Array<MemberSyntax*> _members;
-		Table<String, EntitySyntax*> _symbols;
-		SymbolTable *_parent;
+		Table<String, EntityEntry*> _symbols;
+		PackageSyntax *_parent;
 		StructContext *_context;
 
 	public:
@@ -39,13 +45,18 @@ namespace parka
 		StructSyntax(const StructSyntax&) = delete;
 
 		static StructSyntax *parse(Token& token);
-		void declare(SymbolTable& parent);
+		bool declare(EntitySyntax& entity);
+		bool declareSelf(PackageSyntax& parent);
+		EntityEntry *resolve(const Identifier& identifier);
+		EntityEntry *resolve(const QualifiedIdentifier& identifier);
 		StructContext *validate();
 		EntityContext *context() { return validate(); }
+		String getSymbol() const;
 
+		SymbolTableType symbolTableType() const { return SymbolTableType::Struct; }
 		EntityType entityType() const { return EntityType::Struct; }
 		const String& name() const { return _identifier.text(); }
-		const auto& identifier() const { return _identifier; }
+		const Identifier& identifier() const { return _identifier; }
 		const auto& members() const { return _members; }
 
 		friend std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax);

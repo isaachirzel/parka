@@ -1,6 +1,6 @@
 #include "parka/ast/Parameter.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
@@ -58,6 +58,11 @@ namespace parka
 		auto *context = new ParameterContext(*valueType);
 
 		return context;
+	}
+
+	String ParameterSyntax::getSymbol() const
+	{
+		return name();
 	}
 
 	std::ostream& operator<<(std::ostream& out, const ParameterSyntax& syntax)

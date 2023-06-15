@@ -1,4 +1,4 @@
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/Token.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"

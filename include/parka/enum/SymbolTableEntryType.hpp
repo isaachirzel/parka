@@ -3,7 +3,7 @@
 
 namespace parka
 {
-	enum class SymbolTableEntryType
+	enum class EntityEntryType
 	{
 		Package,
 		Function,

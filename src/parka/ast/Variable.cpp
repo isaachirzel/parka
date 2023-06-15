@@ -1,6 +1,6 @@
 #include "parka/ast/Variable.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 
@@ -14,7 +14,8 @@ namespace parka
 	_isMutable(isMutable)
 	{}
 
-	VariableContext::VariableContext(ValueType&& type) :
+	VariableContext::VariableContext(String&& symbol, ValueType&& type) :
+	_symbol(std::move(symbol)),
 	_type(std::move(type))
 	{}
 
@@ -82,7 +83,7 @@ namespace parka
 		if (!type || !declared)
 			return nullptr;
 
-		auto *context = new VariableContext(*type);
+		auto *context = new VariableContext(String(name()), *type);
 
 		return context;
 	}

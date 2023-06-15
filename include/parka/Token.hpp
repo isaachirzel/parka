@@ -34,7 +34,8 @@ namespace parka
 		bool operator ==(const String& other) const;
 		const auto& operator[](usize index) const { return _position.file()[index]; }
 
-		auto text() const { return String(_position.ptr(), _length); }
+		String substr(usize pos, usize length) const;
+		String text() const;
 		String category() const;
 		const auto *begin() const { return _position.ptr(); }
 		const auto *end() const { return _position.ptr() + _length; }

@@ -1,7 +1,7 @@
 #ifndef PARKA_SYNTAX_FUNCTION_PROTOTYPE_SYNTAX_HPP
 #define PARKA_SYNTAX_FUNCTION_PROTOTYPE_SYNTAX_HPP
 
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/Parameter.hpp"

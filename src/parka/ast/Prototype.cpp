@@ -2,7 +2,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/Function.hpp"
 #include "parka/ast/Parameter.hpp"
-#include "parka/symbol/Identifier.hpp"
+#include "parka/ast/Identifier.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/type/ValueType.hpp"

@@ -61,6 +61,22 @@ namespace parka
 
 	ExpressionContext *AdditiveExpressionSyntax::validate(SymbolTable& symbolTable)
 	{
+		auto *lhs = _lhs.validate(symbolTable);
+		auto *rhs = _rhs.validate(symbolTable);
+
+		// TODO: Operators
+
+		if (!lhs || !rhs)
+			return nullptr;
+
+		const auto& lhsType = lhs->valueType();
+		const auto& rhsType = rhs->valueType();
+
+		if (!rhsType.canConvertTo(lhsType))
+		{
+			log::error("$ cannot be added to $.", rhsType, lhsType);
+			return nullptr;
+		}
 		log::notImplemented(here());
 	}
 }
