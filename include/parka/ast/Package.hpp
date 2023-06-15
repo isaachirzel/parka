@@ -38,11 +38,6 @@ namespace parka
 		PackageSyntax *_parent;
 		PackageContext *_context;
 
-	private:
-
-		EntityEntry *find(const Identifier& identifier);
-		EntityEntry *findAbsolute(const Identifier& identifier);
-
 	public:
 
 		PackageSyntax(String&& name, Array<ModuleSyntax>&& modules, Array<PackageSyntax*>&& packages);
@@ -53,8 +48,10 @@ namespace parka
 
 		bool declare(EntitySyntax& entity);
 		bool declareSelf(PackageSyntax *parent);
-		EntityEntry *resolve(const Identifier& identifier);
-		EntityEntry *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *find(const Identifier& identifier);
+		EntityEntry *findInitial(const Identifier& identifier);
+		EntityEntry *findAbsolute(const Identifier& identifier);
+		EntityContext *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 
 		PackageContext *validate();

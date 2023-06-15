@@ -81,12 +81,12 @@ namespace parka
 		return _parent->declare(entity);
 	}
 
-	EntityEntry *BlockExpressionSyntax::resolve(const Identifier& identifier)
+	EntityEntry *BlockExpressionSyntax::find(const Identifier& identifier)
 	{
-		return _parent->resolve(identifier);
+		return _parent->find(identifier);
 	}
 
-	EntityEntry *BlockExpressionSyntax::resolve(const QualifiedIdentifier& identifier)
+	EntityContext *BlockExpressionSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}

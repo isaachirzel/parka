@@ -30,12 +30,7 @@ namespace parka
 		if (!entity)
 			return {};
 
-		auto *context = entity->context();
-
-		if (!context)
-			return {};
-
-		auto valueType = ValueType(*context);
+		auto valueType = ValueType(*entity);
 
 		return valueType;
 	}

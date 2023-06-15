@@ -37,8 +37,8 @@ namespace parka
 
 		bool declare(EntitySyntax& syntax);
 		bool declareSelf();
-		EntityEntry *resolve(const Identifier& identifier);
-		EntityEntry *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *find(const Identifier& identifier);
+		EntityContext *resolve(const QualifiedIdentifier& identifier);
 
 		Optional<ContextTree> validate();
 

@@ -24,8 +24,8 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		bool declare(EntitySyntax& entity);
-		EntityEntry *resolve(const Identifier& identifier);
-		EntityEntry *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *find(const Identifier& identifier);
+		EntityContext *resolve(const QualifiedIdentifier& identifier);
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Block; };
 		ExpressionType expressionType() const { return ExpressionType::Block; }

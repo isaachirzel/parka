@@ -49,8 +49,8 @@ namespace parka
 
 		bool declare(EntitySyntax& entity);
 		bool declareSelf(PackageSyntax& parent);
-		EntityEntry *resolve(const Identifier& identifier);
-		EntityEntry *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *find(const Identifier& identifier);
+		EntityContext *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }

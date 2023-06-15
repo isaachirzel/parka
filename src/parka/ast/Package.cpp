@@ -143,14 +143,14 @@ namespace parka
 		return true;
 	}
 
-	EntityEntry *PackageSyntax::find(const Identifier& identifier)
+	EntityEntry *PackageSyntax::findInitial(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = this;
 
 		do
 		{
-			auto *entry = package->resolve(identifier);
+			auto *entry = package->find(identifier);
 
 			if (entry != nullptr)
 				return entry;
@@ -178,12 +178,12 @@ namespace parka
 
 		assert(package->name().empty() && "Package with no parent must be the global package");
 
-		auto *entry = package->resolve(identifier);
+		auto *entry = package->find(identifier);
 
 		return entry;
 	}
 
-	EntityEntry *PackageSyntax::resolve(const Identifier& identifier)
+	EntityEntry *PackageSyntax::find(const Identifier& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -193,12 +193,12 @@ namespace parka
 		return nullptr;
 	}
 
-	EntityEntry *PackageSyntax::resolve(const QualifiedIdentifier& qualifiedIdentifier)
+	EntityContext *PackageSyntax::resolve(const QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];
 		auto *entry = qualifiedIdentifier.isAbsolute()
-			? find(first)
+			? findInitial(first)
 			: findAbsolute(first);
 
 		for (usize i = 1; i < qualifiedIdentifier.length(); ++i)
@@ -215,16 +215,16 @@ namespace parka
 				return nullptr;
 			}
 
-			entry = table->resolve(identifier);
+			entry = table->find(identifier);
 		}
 
 		if (entry != nullptr)
-			return entry;
+			return entry->context();
 
 		// TODO: Use index to shorten the symbol so it is more specific what could not be found
 		log::error("Unable to find $ in this scope.", qualifiedIdentifier);
 
-		return entry;
+		return nullptr;
 	}
 
 	String PackageSyntax::getSymbol() const

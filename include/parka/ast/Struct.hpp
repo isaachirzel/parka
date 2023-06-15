@@ -47,8 +47,8 @@ namespace parka
 		static StructSyntax *parse(Token& token);
 		bool declare(EntitySyntax& entity);
 		bool declareSelf(PackageSyntax& parent);
-		EntityEntry *resolve(const Identifier& identifier);
-		EntityEntry *resolve(const QualifiedIdentifier& identifier);
+		EntityEntry *find(const Identifier& identifier);
+		EntityContext *resolve(const QualifiedIdentifier& identifier);
 		StructContext *validate();
 		EntityContext *context() { return validate(); }
 		String getSymbol() const;

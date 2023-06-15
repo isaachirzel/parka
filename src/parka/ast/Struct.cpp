@@ -105,12 +105,12 @@ namespace parka
 		return success;
 	}
 
-	EntityEntry *StructSyntax::resolve(const Identifier& identifier)
+	EntityEntry *StructSyntax::find(const Identifier& identifier)
 	{
 		log::notImplemented(here());
 	}
 
-	EntityEntry *StructSyntax::resolve(const QualifiedIdentifier& identifier)
+	EntityContext *StructSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		log::notImplemented(here());
 	}

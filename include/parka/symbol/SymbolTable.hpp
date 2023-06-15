@@ -15,8 +15,8 @@ namespace parka
 		virtual ~SymbolTable() {}
 		virtual SymbolTableType symbolTableType() const = 0;
 		virtual bool declare(EntitySyntax& entity) = 0;
-		virtual EntityEntry *resolve(const Identifier& identifier) = 0;
-		virtual EntityEntry *resolve(const QualifiedIdentifier& identifier) = 0;
+		virtual EntityEntry *find(const Identifier& identifier) = 0;
+		virtual EntityContext *resolve(const QualifiedIdentifier& identifier) = 0;
 	};
 }
 

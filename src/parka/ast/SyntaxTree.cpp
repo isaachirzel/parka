@@ -43,12 +43,12 @@ namespace parka
 		return _globalPackage.declareSelf(nullptr);
 	}
 
-	EntityEntry *SyntaxTree::resolve(const Identifier& identifier)
+	EntityEntry *SyntaxTree::find(const Identifier& identifier)
 	{
-		return _globalPackage.resolve(identifier);
+		return _globalPackage.find(identifier);
 	}
 
-	EntityEntry *SyntaxTree::resolve(const QualifiedIdentifier& identifier)
+	EntityContext *SyntaxTree::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _globalPackage.resolve(identifier);
 	}

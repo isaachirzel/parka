@@ -114,7 +114,7 @@ namespace parka
 		return true;
 	}
 
-	EntityEntry *FunctionSyntax::resolve(const Identifier& identifier)
+	EntityEntry *FunctionSyntax::find(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -127,15 +127,15 @@ namespace parka
 		return nullptr;
 	}
 
-	EntityEntry *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	EntityContext *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
 		if (identifier.isAbsolute() || identifier.length() > 1)
 			return _parent->resolve(identifier);
 
-		auto *local = resolve(identifier[0]);
+		auto *local = find(identifier[0]);
 
 		if (local != nullptr)
-			return local;
+			return local->context();
 
 		auto *global = _parent->resolve(identifier);
 
