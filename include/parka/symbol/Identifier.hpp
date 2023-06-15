@@ -24,6 +24,7 @@ namespace parka
 		const auto& token() const { return _token; }
 		const auto& text() const { return _text; }
 
+		bool operator==(const Identifier& other) const;
 		friend std::ostream& operator<<(std::ostream& out, const Identifier& identifier);
 	};
 }

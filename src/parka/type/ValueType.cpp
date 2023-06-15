@@ -1,9 +1,9 @@
 #include "parka/log/Log.hpp"
-#include "parka/syntax/AdditiveExpressionSyntax.hpp"
-#include "parka/syntax/LiteralSyntax.hpp"
-#include "parka/syntax/FunctionSyntax.hpp"
+#include "parka/ast/AdditiveExpression.hpp"
+#include "parka/ast/Literal.hpp"
+#include "parka/ast/Function.hpp"
 #include "parka/intrinsic/Primitive.hpp"
-#include "parka/syntax/TypeAnnotationSyntax.hpp"
+#include "parka/ast/TypeAnnotation.hpp"
 #include "parka/type/ValueType.hpp"
 
 namespace parka

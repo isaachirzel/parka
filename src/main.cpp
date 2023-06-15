@@ -1,6 +1,5 @@
-#include "parka/context/ContextTree.hpp"
-#include "parka/syntax/SyntaxTree.hpp"
-#include "parka/syntax/KeywordSyntax.hpp"
+#include "parka/ast/SyntaxTree.hpp"
+#include "parka/ast/Keyword.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Timer.hpp"

@@ -2,8 +2,8 @@
 #define PARKA_SYMBOL_STRUCT_SYMBOL_TABLE_HPP
 
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/syntax/MemberSyntax.hpp"
-#include "parka/syntax/StructSyntax.hpp"
+#include "parka/ast/Member.hpp"
+#include "parka/ast/Struct.hpp"
 #include "parka/util/Table.hpp"
 
 // TODO: Figure out what to do here. Perhaps add member to entity list

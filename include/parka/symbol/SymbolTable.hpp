@@ -4,14 +4,14 @@
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/symbol/Identifier.hpp"
 #include "parka/symbol/QualifiedIdentifier.hpp"
-#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/ast/Entity.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka
 {
 	// TODO: Implement getting symbols for entity
 	struct SymbolTable
-	{
+	{	
 		virtual ~SymbolTable() {}
 		virtual bool declare(EntitySyntax& entity) = 0;
 		virtual EntitySyntax *resolve(const Identifier& identifier) = 0;

@@ -2,7 +2,7 @@
 #define PARKA_SYBMOL_SYMBOL_TABLE_ENTRY_HPP
 
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/ast/Entity.hpp"
 
 #include <cassert>
 

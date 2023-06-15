@@ -41,4 +41,10 @@ namespace parka
 
 		return primitives;
 	}
+
+	Primitive::Primitive(const char *name, PrimitiveType type, u32 size) :
+	_name(name),
+	_size(size),
+	_type(type)
+	{}
 }

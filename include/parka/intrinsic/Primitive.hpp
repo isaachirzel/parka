@@ -1,23 +1,27 @@
 #ifndef PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
 #define PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
 
-#include "parka/enum/PrimitiveType.hpp"
-#include "parka/repository/EntityContext.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/syntax/EntitySyntax.hpp"
+#include "parka/ast/Entity.hpp"
 #include "parka/util/Array.hpp"
-#include "parka/util/Common.hpp"
-#include "parka/util/String.hpp"
-#include "parka/util/Table.hpp"
-#include "parka/util/View.hpp"
 
 namespace parka
 {
+	enum class PrimitiveType : u8
+	{
+		Void,
+		UnsignedInteger,
+		SignedInteger,
+		FloatingPoint,
+		Boolean,
+		Character,
+		String
+	};
+
 	class Primitive : public EntitySyntax, public EntityContext
 	{
-		String _identifier;
-		PrimitiveType _type;
+		String _name;
 		u32 _size;
+		PrimitiveType _type;
 
 	public:
 
@@ -41,20 +45,16 @@ namespace parka
 
 		static Array<Primitive*> initPrimitives();
 
-		Primitive(const char *identifier, PrimitiveType type, u32 size) :
-		_identifier(identifier),
-		_type(type),
-		_size(size)
-		{}
+		Primitive(const char *name, PrimitiveType type, u32 size);
 
 	public:
 
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
 
-		EntityContext *validate() { return this; }
+		EntityContext *context() { return this; }
 
-		const String& identifier() const { return _identifier; }
+		const String& name() const { return _name; }
 		EntityType entityType() const { return EntityType::Primitive; }
 		const auto& primitiveType() const { return _type; }
 		const auto& size() const { return _size; }
