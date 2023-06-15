@@ -36,7 +36,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *CharLiteralSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *CharLiteralSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

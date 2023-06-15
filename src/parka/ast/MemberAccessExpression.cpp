@@ -31,7 +31,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *MemberAccessExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *MemberAccessExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

@@ -12,7 +12,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *IdentifierExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *IdentifierExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

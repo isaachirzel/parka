@@ -44,7 +44,7 @@ namespace parka
 		return lhs;
 	}
 
-	ExpressionContext *EqualityExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *EqualityExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

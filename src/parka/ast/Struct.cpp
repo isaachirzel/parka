@@ -107,12 +107,17 @@ namespace parka
 
 	EntityEntry *StructSyntax::find(const Identifier& identifier)
 	{
-		log::notImplemented(here());
+		auto *result = _symbols.find(identifier.text());
+
+		if (result != nullptr)
+			return *result;
+
+		return nullptr;
 	}
 
 	EntityContext *StructSyntax::resolve(const QualifiedIdentifier& identifier)
 	{
-		log::notImplemented(here());
+		return _parent->resolve(identifier);
 	}
 
 	StructContext *StructSyntax::validate()

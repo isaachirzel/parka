@@ -37,7 +37,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *SubscriptExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *SubscriptExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

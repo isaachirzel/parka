@@ -72,7 +72,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *IntegerLiteralSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *IntegerLiteralSyntax::validate(SymbolTable&)
 	{
 		auto value = getIntegerValue(_token);
 

@@ -54,7 +54,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *CallExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *CallExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

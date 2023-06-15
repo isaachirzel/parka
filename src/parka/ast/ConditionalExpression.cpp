@@ -40,7 +40,7 @@ namespace parka
 		return syntax;
 	}
 
-	ExpressionContext *ConditionalExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *ConditionalExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

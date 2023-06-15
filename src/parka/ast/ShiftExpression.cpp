@@ -44,7 +44,7 @@ namespace parka
 		return lhs;
 	}
 
-	ExpressionContext *ShiftExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *ShiftExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

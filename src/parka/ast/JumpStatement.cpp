@@ -77,7 +77,7 @@ namespace parka
 		return syntax;
 	}
 
-	StatementContext *JumpStatementSyntax::validate(SymbolTable& symbolTable)
+	StatementContext *JumpStatementSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

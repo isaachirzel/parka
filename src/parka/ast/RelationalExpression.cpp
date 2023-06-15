@@ -50,7 +50,7 @@ namespace parka
 		return lhs;
 	}
 
-	ExpressionContext *RelationalExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *RelationalExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

@@ -3,7 +3,7 @@
 
 namespace parka
 {
-	ExpressionSyntax *IfExpressionSyntax::parse(Token& token)
+	ExpressionSyntax *IfExpressionSyntax::parse(Token&)
 	{
 		log::notImplemented(here());
 	}

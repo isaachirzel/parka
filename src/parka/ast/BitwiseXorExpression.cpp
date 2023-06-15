@@ -31,7 +31,7 @@ namespace parka
 		return lhs;
 	}
 
-	ExpressionContext *BitwiseXorExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *BitwiseXorExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

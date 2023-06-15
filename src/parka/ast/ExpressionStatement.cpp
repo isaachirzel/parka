@@ -27,7 +27,7 @@ namespace parka
 		return syntax;
 	}
 
-	StatementContext *ExpressionStatementSyntax::validate(SymbolTable& symbolTable)
+	StatementContext *ExpressionStatementSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

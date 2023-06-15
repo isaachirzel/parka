@@ -47,7 +47,7 @@ namespace parka
 		return lhs;
 	}
 
-	ExpressionContext *MultiplicativeExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *MultiplicativeExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

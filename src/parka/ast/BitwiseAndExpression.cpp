@@ -26,7 +26,7 @@ namespace parka
 		return lhs;
 	}
 
-	ExpressionContext *BitwiseAndExpressionSyntax::validate(SymbolTable& symbolTable)
+	ExpressionContext *BitwiseAndExpressionSyntax::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

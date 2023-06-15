@@ -19,6 +19,7 @@ namespace parka
 
 	struct ExpressionSyntax
 	{
+		// TODO: Add snippets to expression
 		virtual ~ExpressionSyntax() {}
 		virtual ExpressionType expressionType() const = 0;
 		virtual ExpressionContext *validate(SymbolTable& symbolTable) = 0;
