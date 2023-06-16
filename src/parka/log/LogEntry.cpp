@@ -41,16 +41,22 @@ namespace parka
 
 		out << entry._color;
 
-		if (entry._highlight)
-			out << entry._highlight->position() << '\n';
+		if (entry._snippet)
+		{
+			const auto& snippet = *entry._snippet;
+
+			out << Color::Yellow;
+			out << snippet.file().path() << ":" << snippet.line() << ":" << snippet.col();
+			out << Color::Reset;
+		}
 
 		out << prompt << Color::Default << ": " << entry._message << Color::Reset << '\n';
 
-		if (entry._highlight)
+		if (entry._snippet)
 		{
 			// TODO: Different color for type
-			auto line = Line(*entry._highlight);
-			auto underline = Underline(*entry._highlight);
+			auto line = Line(*entry._snippet);
+			auto underline = Underline(*entry._snippet);
 			out << Margin() << '\n';
 			out << line;
 			out << underline;

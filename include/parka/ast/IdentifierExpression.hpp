@@ -10,6 +10,20 @@
 
 namespace parka
 {
+	class IdentifierExpressionContext : public ExpressionContext
+	{
+		EntityContext& _entity;
+
+	public:
+
+		IdentifierExpressionContext(EntityContext& entity);
+		IdentifierExpressionContext(IdentifierExpressionContext&&) = default;
+		IdentifierExpressionContext(const IdentifierExpressionContext&) = delete;
+
+		ExpressionType expressionType() const { return ExpressionType::Identifier; }
+		const ValueType& valueType() const;
+	};
+
 	class IdentifierExpressionSyntax : public ExpressionSyntax
 	{
 		QualifiedIdentifier _identifier;

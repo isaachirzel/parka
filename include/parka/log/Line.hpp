@@ -10,7 +10,7 @@ namespace parka
 {
 	class Line
 	{
-		Snippet _highlight;
+		Snippet _snippet;
 		StringView _preText;
 		StringView _postText;
 
@@ -20,12 +20,12 @@ namespace parka
 	public:
 
 		Line(const Snippet& snippet) :
-		_highlight(snippet),
+		_snippet(snippet),
 		_preText(getPreText(snippet)),
 		_postText(getPostText(snippet))
 		{}
 
-		const auto& snippet() const { return _highlight; }
+		const auto& snippet() const { return _snippet; }
 		const auto& preText() const { return _preText; }
 		const auto& postText() const { return _preText; }
 

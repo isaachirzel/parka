@@ -7,51 +7,35 @@
 namespace parka
 {
 	Snippet::Snippet(const File& file, usize index, usize length) :
-	_position(file, index),
+	_file(file),
+	_index(index),
 	_length(length)
 	{}
 
-	usize getStartOfLine(const char *text, usize pos)
+	Snippet Snippet::operator+(const Snippet& other) const
 	{
-		while (pos > 1)
-		{
-			if (text[pos - 1] == '\n')
-				return pos;
+		assert(&_file == &other._file);
 
-			--pos;
-		}
+		const auto thisEnd = _index + _length;
+		const auto otherEnd = other._index + other._length;
+		const auto end = thisEnd >= otherEnd
+			? thisEnd
+			: otherEnd;
+		const auto index = _index >= other._index
+			? other._index
+			: _index;
+		auto snippet = Snippet(_file, index, end - index);
 
-		return 0;
+		return snippet;
 	}
-
-	const char *getEndOfLine(const char *iter)
-	{
-		while (*iter)
-		{
-			if (*iter == '\n')
-				break;
-			iter += 1;
-		}
-
-		return iter;
-	}
-
-	String Snippet::text() const
-	{
-		return String(_position.ptr(), _length);
-	}
-
-	String Snippet::substr(usize pos, usize length) const
-	{
-		assert(pos < _length);
-		assert(pos + length < _length);
-
-		return String(_position.ptr() + pos, length);
-	}
-
+	
 	bool Snippet::operator==(const Snippet& other) const
 	{
-		return _position == other._position && _length == other._length;
+		const auto isSame = &_file == &other._file
+			&& _index == other._index
+			&& _length == other._length;
+
+		return isSame;
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Snippet& snippet)

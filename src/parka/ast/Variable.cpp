@@ -85,6 +85,8 @@ namespace parka
 
 		auto *context = new VariableContext(String(name()), *type);
 
+		_context = context;
+
 		return context;
 	}
 }

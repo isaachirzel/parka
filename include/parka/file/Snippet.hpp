@@ -2,7 +2,6 @@
 #define PARKA_FILE_SNIPPET_HPP
 
 #include "parka/file/File.hpp"
-#include "parka/file/FilePosition.hpp"
 #include "parka/log/Color.hpp"
 #include "parka/util/Common.hpp"
 #include <ostream>
@@ -13,8 +12,9 @@ namespace parka
 {
 	class Snippet
 	{
-		FilePosition _position;
-		usize _length;
+		const File& _file;
+		const usize _index;
+		const usize _length;
 
 	public:
 
@@ -22,16 +22,22 @@ namespace parka
 		Snippet(Snippet&&) = default;
 		Snippet(const Snippet&) = default;
 
-		String text() const;
-		String substr(usize pos, usize length) const;
-		const char *ptr() const { return _position.ptr(); }
-		const char *begin() const { return _position.ptr(); }
-		const char *end() const { return _position.ptr() + _length; }
-		const auto& position() const { return _position; }
+		String text() const { return _file.substr(_index, _length); }
+		String substr(const usize index, const usize length) const { return _file.substr(_index + index, length); }
+		usize line() const { return _file.getLine(_index); }
+		usize col() const { return _file.getCol(_index); }
+
+		const char *ptr() const { return &_file[_index]; }
+		const char *begin() const { return &_file[_index]; }
+		const char *end() const { return &_file[_index + _length]; }
+
+		const auto& file() const { return _file; }
+		const auto& index() const { return _index; }
 		const auto& length() const { return _length; }
 
+		Snippet operator+(const Snippet& other) const;
 		bool operator==(const Snippet& other) const;
-		const auto& operator[](usize index) const { return _position.file()[index]; }
+		const auto& operator[](usize index) const { return _file[_index + index]; }
 		friend std::ostream& operator<<(std::ostream& out, const Snippet& snippet);
 	};
 }

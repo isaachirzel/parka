@@ -66,6 +66,9 @@ namespace parka
 
 		// TODO: Operators
 
+		// print("lhs: $", lhs);
+		// print("rhs: $", rhs);
+
 		if (!lhs || !rhs)
 			return nullptr;
 

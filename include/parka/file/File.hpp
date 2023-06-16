@@ -47,6 +47,7 @@ namespace parka
 		usize getLine(usize pos) const;
 		usize getCol(usize pos) const;
 		bool hasExtension(const char *extension) const;
+		String substr(const usize index, const usize length) const;
 		const char& operator[](usize index) const { assert(index <= _text.length()); return _text[index]; }
 
 		const auto& path() const { return _path; }

@@ -4,7 +4,6 @@
 // local includes
 #include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
-#include "parka/file/FilePosition.hpp"
 #include "parka/file/Snippet.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"

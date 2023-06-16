@@ -40,7 +40,7 @@ namespace parka
 
 		static VariableSyntax *parse(Token& token);
 		VariableContext *validate(SymbolTable& symbolTable, ExpressionContext *value);
-		EntityContext *context() { assert(_context != nullptr); return _context; }
+		EntityContext *context() { return _context; }
 		String getSymbol() const { return _identifier.text(); }
 
 		EntityType entityType() const { return EntityType::Variable; }

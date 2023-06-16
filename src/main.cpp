@@ -31,7 +31,7 @@ int main(int argc, const char *argv[])
 
 	log::note("Declaration completed in $s.", declareTime);
 
-	print("$\n", syntax);
+	// print("$\n", syntax);
 
 	auto context = syntax.validate();
 	auto validateTime = timer.split();

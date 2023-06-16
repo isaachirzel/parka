@@ -12,7 +12,7 @@ namespace parka
 	class LogEntry
 	{
 		String _message;
-		Optional<Snippet> _highlight;
+		Optional<Snippet> _snippet;
 		Color _color;
 		LogEntryType _type;
 
@@ -28,13 +28,13 @@ namespace parka
 
 		LogEntry(LogEntryType type, String&& message, const Snippet& snippet) :
 		_message(std::move(message)),
-		_highlight(snippet),
+		_snippet(snippet),
 		_color(getColor(type)),
 		_type(type)
 		{}
 
 		const auto& message() const { return _message; }
-		const auto& snippet() const { return _highlight; }
+		const auto& snippet() const { return _snippet; }
 		const auto& color() const { return _color; }
 		const auto& type() const { return _type; }
 		

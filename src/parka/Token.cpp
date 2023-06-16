@@ -405,12 +405,9 @@ namespace parka
 
 	void Token::increment()
 	{
-		const auto& position = _snippet.position();
-		const auto& file = position.file();
+		usize nextTokenPos = getNextPos(_snippet.file(), _snippet.index() + _snippet.length());
 
-		usize nextTokenPos = getNextPos(file, position.index() + _snippet.length());
-
-		new (this) auto(getNextToken(file, nextTokenPos));
+		new (this) auto(getNextToken(_snippet.file(), nextTokenPos));
 	}
 
 	Token Token::initial(const File& file)
