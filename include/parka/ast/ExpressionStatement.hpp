@@ -3,7 +3,7 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
 #include <utility>

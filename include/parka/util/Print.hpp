@@ -1,7 +1,7 @@
 #ifndef PARKA_UTIL_PRINT_HPP
 #define PARKA_UTIL_PRINT_HPP
 
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/enum/LogEntryType.hpp"
 #include "parka/log/Prompt.hpp"
 #include "parka/util/SourceLocation.hpp"

@@ -141,6 +141,11 @@ namespace parka
 		return symbol;
 	}
 
+	const ValueType *FunctionContext::valueType() const
+	{
+		log::notImplemented(here());
+	}
+
 	std::ostream& operator<<(std::ostream& out, const FunctionSyntax& syntax)
 	{
 		out << syntax._prototype;

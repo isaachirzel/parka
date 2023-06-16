@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_TYPE_ANNOTATION_SYNTAX_HPP
 
 #include "parka/ast/QualifiedIdentifier.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/type/ValueType.hpp"
 #include "parka/util/Optional.hpp"

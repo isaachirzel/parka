@@ -4,7 +4,7 @@
 #include "parka/enum/PrefixType.hpp"
 #include "parka/ast/Expression.hpp"
 
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 
 namespace parka
 {

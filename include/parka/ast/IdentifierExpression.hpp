@@ -4,7 +4,7 @@
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Entity.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/type/ValueType.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -13,15 +13,20 @@ namespace parka
 	class IdentifierExpressionContext : public ExpressionContext
 	{
 		EntityContext& _entity;
+		ValueType _valueType;
 
 	public:
 
-		IdentifierExpressionContext(EntityContext& entity);
+		IdentifierExpressionContext(EntityContext& entity, ValueType&& valueType) :
+		_entity(entity),
+		_valueType(std::move(valueType))
+		{}
 		IdentifierExpressionContext(IdentifierExpressionContext&&) = default;
 		IdentifierExpressionContext(const IdentifierExpressionContext&) = delete;
 
 		ExpressionType expressionType() const { return ExpressionType::Identifier; }
-		const ValueType& valueType() const;
+		const auto& entity() const { return _entity; }
+		const ValueType& valueType() const { return _valueType; }
 	};
 
 	class IdentifierExpressionSyntax : public ExpressionSyntax

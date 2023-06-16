@@ -1,12 +1,9 @@
 #include "parka/ast/IdentifierExpression.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/type/ValueType.hpp"
 
 namespace parka
 {
-	IdentifierExpressionContext::IdentifierExpressionContext(EntityContext& entity) :
-	_entity(entity)
-	{}
-
 	IdentifierExpressionSyntax *IdentifierExpressionSyntax::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
@@ -22,13 +19,13 @@ namespace parka
 		if (entity == nullptr)
 			return nullptr;
 
-		auto *context = new IdentifierExpressionContext(*entity);
+		const auto *valueType = entity->valueType();
+
+		if (!valueType)
+			return nullptr;
+
+		auto *context = new IdentifierExpressionContext(*entity, ValueType(*valueType));
 
 		return context;
-	}
-
-	const ValueType& IdentifierExpressionContext::valueType() const
-	{
-		log::notImplemented(here());
 	}
 }

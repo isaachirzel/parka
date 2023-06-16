@@ -1,7 +1,7 @@
 #ifndef PARKA_SYNTAX_EXPRESSION_SYNTAX_HPP
 #define PARKA_SYNTAX_EXPRESSION_SYNTAX_HPP
 
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/repository/ExpressionSyntaxId.hpp"
 #include "parka/symbol/SymbolTable.hpp"

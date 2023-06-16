@@ -1,4 +1,5 @@
 #include "parka/intrinsic/Primitive.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka
@@ -47,4 +48,11 @@ namespace parka
 	_size(size),
 	_type(type)
 	{}
+
+	const ValueType *Primitive::valueType() const
+	{
+		log::error("Unable to get value of primitive `$`.", _name);
+		
+		return nullptr;
+	}
 }

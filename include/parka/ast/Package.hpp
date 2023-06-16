@@ -24,6 +24,7 @@ namespace parka
 
 		const String& symbol() const { return _symbol; }
 		EntityType entityType() const { return EntityType::Package; }
+		const ValueType *valueType() const;
 		const auto& packages() const { return _packages; }
 		const auto& functions() const { return _functions; }
 		const auto& structs() const { return _structs; }

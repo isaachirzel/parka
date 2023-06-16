@@ -125,6 +125,13 @@ namespace parka
 		return symbol;
 	}
 
+	const ValueType *StructContext::valueType() const
+	{
+		log::error("Unable to get value of struct `$`.", _symbol);
+		
+		return nullptr;
+	}
+
 	// bool StructSyntax::validate(const EntitySyntax& function)
 	// {
 	// 	bool success = true;

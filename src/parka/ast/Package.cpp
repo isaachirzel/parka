@@ -247,6 +247,12 @@ namespace parka
 		return symbol;
 	}
 
+	const ValueType *PackageContext::valueType() const
+	{
+		log::error("Unable to get value of package `$`.", _symbol);
+		return nullptr;
+	}
+
 	std::ostream& operator<<(std::ostream& out, const PackageSyntax& syntax)
 	{
 		auto indent = Indent(out);

@@ -1,13 +1,14 @@
 #ifndef PARKA_TYPE_VALUE_TYPE_HPP
 #define PARKA_TYPE_VALUE_TYPE_HPP
 
-#include "parka/ast/Entity.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
+	struct EntityContext;
+
 	class ValueType
 	{
 	private:
@@ -15,7 +16,7 @@ namespace parka
 		EntityContext& _entity;
 		// TODO: Add pointer info
 		// TODO: Add LiteralSyntax for better type inference?
-
+		
 	public:
 
 		static const ValueType voidType;

@@ -2,7 +2,7 @@
 #define PARKA_SYNTAX_EXPRESSION_MEMBER_ACCESS_SYNTAX_HPP
 
 #include "parka/ast/Expression.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka

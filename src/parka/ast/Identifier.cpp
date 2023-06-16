@@ -1,5 +1,5 @@
 #include "parka/ast/Identifier.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 

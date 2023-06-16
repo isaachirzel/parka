@@ -2,6 +2,7 @@
 #define PARKA_SYNTAX_ENTITY_SYNTAX_HPP
 
 #include "parka/ast/Identifier.hpp"
+#include "parka/type/ValueType.hpp"
 
 namespace parka
 {
@@ -21,6 +22,7 @@ namespace parka
 		virtual ~EntityContext() {}
 		virtual EntityType entityType() const = 0;
 		virtual const String& symbol() const = 0;
+		virtual const ValueType *valueType() const = 0;
 	};
 
 	struct EntityEntry

@@ -28,6 +28,7 @@ namespace parka
 		FunctionContext(const FunctionContext&) = delete;
 
 		EntityType entityType() const { return EntityType::Function; }
+		const ValueType *valueType() const;
 		const String& symbol() const { return _symbol; }
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }

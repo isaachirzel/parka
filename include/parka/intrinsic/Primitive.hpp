@@ -58,6 +58,7 @@ namespace parka
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
 		EntityType entityType() const { return EntityType::Primitive; }
+		const ValueType *valueType() const;
 		const auto& primitiveType() const { return _type; }
 		const auto& size() const { return _size; }
 	};

@@ -4,7 +4,7 @@
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/type/ValueType.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka

@@ -9,9 +9,18 @@ namespace parka
 {
 	class MemberContext : public EntityContext
 	{
+		ValueType _valueType;
+
 	public:
 
+		MemberContext(ValueType&& valueType) :
+		_valueType(std::move(valueType))
+		{}
+		MemberContext(MemberContext&&) = default;
+		MemberContext(const MemberContext&) = delete;
+
 		EntityType entityType() const { return EntityType::Member; }
+		const ValueType *valueType() const { return &_valueType; }
 	};
 
 	class MemberSyntax : public EntitySyntax

@@ -6,7 +6,7 @@
 #include "parka/ast/Package.hpp"
 #include "parka/ast/Struct.hpp"
 
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Path.hpp"
 #include "parka/util/Print.hpp"

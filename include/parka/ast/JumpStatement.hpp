@@ -5,7 +5,7 @@
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka

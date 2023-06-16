@@ -25,7 +25,7 @@ namespace parka
 
 		const String& symbol() const { return _symbol; }
 		EntityType entityType() const { return EntityType::Variable; }
-		const auto& valueType() const { return _type; }
+		const ValueType *valueType() const { return &_type; }
 	};
 
 	class VariableSyntax : public EntitySyntax

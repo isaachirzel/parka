@@ -30,6 +30,7 @@ namespace parka
 		
 		EntityType type() const { return EntityType::Struct; }
 		const String& symbol() const { return _symbol; }
+		const ValueType *valueType() const;
 	};
 
 	class StructSyntax : public EntitySyntax, public SymbolTable

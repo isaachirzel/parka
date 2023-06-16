@@ -1,7 +1,7 @@
 #ifndef PARKA_SYNTAX_IDENTIFIER_SYNTAX_HPP
 #define PARKA_SYNTAX_IDENTIFIER_SYNTAX_HPP
 
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
 #include <ostream>

@@ -3,7 +3,7 @@
 
 #include "parka/enum/KeywordType.hpp"
 #include "parka/util/Optional.hpp"
-#include "parka/Token.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Table.hpp"
 
 namespace parka
