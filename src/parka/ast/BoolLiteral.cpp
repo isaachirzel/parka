@@ -4,15 +4,6 @@
 
 namespace parka
 {
-	BoolLiteralSyntax::BoolLiteralSyntax(const Token& token, bool value) :
-	_token(token),
-	_value(value)
-	{}
-
-	BoolLiteralContext::BoolLiteralContext(bool value) :
-	_value(value)
-	{}
-
 	static Optional<bool> parseBool(Token& token)
 	{
 		auto type = KeywordSyntax::getKeywordType(token);

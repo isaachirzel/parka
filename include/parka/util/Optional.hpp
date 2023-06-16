@@ -1,7 +1,6 @@
 #ifndef PARKA_UTIL_RESULT_HPP
 #define PARKA_UTIL_RESULT_HPP
 
-#include <cassert>
 #include <type_traits>
 
 namespace parka

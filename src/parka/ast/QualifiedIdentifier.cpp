@@ -3,13 +3,6 @@
 
 namespace parka
 {
-	QualifiedIdentifier::QualifiedIdentifier(Array<Identifier>&& parts, bool isAbsolute) :
-	_parts(std::move(parts)),
-	_isAbsolute(isAbsolute)
-	{
-		assert(_parts.length() > 0);
-	}
-
 	static bool parseAbsolute(Token& token)
 	{
 		if (token.type() != TokenType::Scope)
@@ -21,6 +14,7 @@ namespace parka
 
 	Optional<QualifiedIdentifier> QualifiedIdentifier::parse(Token& token)
 	{
+		auto start = Snippet(token);
 		auto isAbsolute = parseAbsolute(token);
 		auto parts = Array<Identifier>(8);
 		
@@ -42,7 +36,9 @@ namespace parka
 			break;
 		}
 
-		auto qualifiedIdentifier = QualifiedIdentifier(std::move(parts), isAbsolute);
+		// Parts is guaranteed to be at least 1 long
+		auto snippet = start + parts.back().snippet();
+		auto qualifiedIdentifier = QualifiedIdentifier(snippet, std::move(parts), isAbsolute);
 
 		return qualifiedIdentifier;
 	}

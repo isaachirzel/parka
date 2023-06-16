@@ -1,6 +1,5 @@
 #include "parka/log/Link.hpp"
 #include "parka/log/Color.hpp"
-#include <cassert>
 
 namespace parka
 {

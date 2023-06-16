@@ -11,7 +11,9 @@ namespace parka
 
 	public:
 
-		StringLiteralContext(String&& value);
+		StringLiteralContext(String&& value) :
+		_value(std::move(value))
+		{}
 		StringLiteralContext(StringLiteralContext&&) = default;
 		StringLiteralContext(const StringLiteralContext&) = delete;
 
@@ -22,11 +24,13 @@ namespace parka
 
 	class StringLiteralSyntax : public ExpressionSyntax
 	{
-		Token _token;
+		Snippet _snippet;
 
 	public:
 
-		StringLiteralSyntax(const Token& token);
+		StringLiteralSyntax(const Snippet& snippet) :
+		_snippet(snippet)
+		{}
 		StringLiteralSyntax(StringLiteralSyntax&&) = default;
 		StringLiteralSyntax(const StringLiteralSyntax&) = delete;
 
@@ -34,6 +38,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 		
 		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
+		const Snippet& snippet() const { return _snippet; }
 	};
 }
 

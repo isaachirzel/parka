@@ -39,6 +39,7 @@ namespace parka
 		operator const Snippet&() const { return _snippet; }
 		// bool operator ==(const Token& other) const;
 		// bool operator ==(const String& other) const;
+		Snippet operator+(const Token& other) const { return _snippet + other._snippet; }
 		const auto& operator[](usize index) const { return _snippet[index]; }
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 	};

@@ -12,6 +12,12 @@ namespace parka
 	_length(length)
 	{}
 
+	Snippet& Snippet::operator=(const Snippet& other)
+	{
+		new(this) auto(other);
+		return *this;
+	}
+
 	Snippet Snippet::operator+(const Snippet& other) const
 	{
 		assert(&_file == &other._file);

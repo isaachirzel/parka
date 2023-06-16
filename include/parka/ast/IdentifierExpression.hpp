@@ -40,6 +40,8 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Identifier; }
+		const Snippet& snippet() const { return _identifier.snippet(); }
+
 		const auto& identifier() const { return _identifier; }
 	};
 }

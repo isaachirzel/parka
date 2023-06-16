@@ -9,12 +9,17 @@ namespace parka
 {
 	class SubscriptExpressionSyntax : public ExpressionSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _primary;
 		ExpressionSyntax& _index;
 
 	public:
 
-		SubscriptExpressionSyntax(ExpressionSyntax& primary, ExpressionSyntax& index);
+		SubscriptExpressionSyntax(const Snippet& snippet, ExpressionSyntax& primary, ExpressionSyntax& index) :
+		_snippet(snippet),
+		_primary(primary),
+		_index(index)
+		{}
 		SubscriptExpressionSyntax(SubscriptExpressionSyntax&&) = default;
 		SubscriptExpressionSyntax(const SubscriptExpressionSyntax&) = delete;
 
@@ -22,6 +27,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Subscript; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _primary; }
 		const auto& index() const { return _index; }
 	};

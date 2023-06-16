@@ -3,7 +3,6 @@
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>

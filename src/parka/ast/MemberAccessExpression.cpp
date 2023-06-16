@@ -3,11 +3,6 @@
 
 namespace parka
 {
-	MemberAccessExpressionSyntax::MemberAccessExpressionSyntax(ExpressionSyntax& expression, const Token& member) :
-	_expression(expression),
-	_member(member)
-	{}
-
 	ExpressionSyntax *MemberAccessExpressionSyntax::parse(Token& token, ExpressionSyntax& primary)
 	{
 		if (token.type() != TokenType::Dot)
@@ -23,8 +18,8 @@ namespace parka
 			log::parseError(token, "member, method, or property name");
 			return {};
 		}
-
-		auto *syntax = new MemberAccessExpressionSyntax(primary, token);
+		
+		auto *syntax = new MemberAccessExpressionSyntax(primary, Identifier(token));
 
 		token.increment();
 

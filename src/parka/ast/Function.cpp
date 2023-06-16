@@ -8,19 +8,6 @@
 
 namespace parka
 {
-	FunctionSyntax::FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body) :
-	_prototype(std::move(prototype)),
-	_body(body),
-	_parent(nullptr),
-	_symbols()
-	{}
-
-	FunctionContext::FunctionContext(String&& symbol, PrototypeContext&& prototype, ExpressionContext& body) :
-	_symbol(std::move(symbol)),
-	_prototype(std::move(prototype)),
-	_body(body)
-	{}
-
 	static ExpressionSyntax *parseFunctionBody(Token& token)
 	{
 		if (token.type() == TokenType::DoubleArrow)
@@ -98,12 +85,12 @@ namespace parka
 		{
 			if (name == symbol->name())
 			{
-				log::error(identifier.token(), "A $ `$` has already been declared in this function.", entity.entityType(), name);
+				log::error(identifier, "A $ `$` has already been declared in this function.", entity.entityType(), name);
 
 				auto *previous = dynamic_cast<EntitySyntax*>(symbol);
 
 				if (previous != nullptr)
-					log::note(previous->identifier().token(), "Previous declaration here:");
+					log::note(previous->identifier(), "Previous declaration here:");
 				// TODO: maybe just insert it anyways?
 				return false;
 			}

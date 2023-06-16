@@ -12,14 +12,14 @@ namespace parka
 {
 	class JumpStatementSyntax : public StatementSyntax
 	{
-		Token _token;
+		Snippet _snippet;
 		ExpressionSyntax *_value;
 		JumpType _type;
 
 	public:
 
-		JumpStatementSyntax(const Token& token, JumpType type, ExpressionSyntax *value) :
-		_token(token),
+		JumpStatementSyntax(const Snippet& snippet, JumpType type, ExpressionSyntax *value) :
+		_snippet(snippet),
 		_value(value),
 		_type(type)
 		{}
@@ -30,7 +30,8 @@ namespace parka
 		StatementContext *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Jump; }
-		const auto& token() const { return _token; }
+		const Snippet& snippet() const { return _snippet; }
+
 		bool hasValue() const { return !!_value; }
 		const auto& value() const { assert(_value != nullptr); return *_value; }
 		const auto& type() const { return _type; }

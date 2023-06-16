@@ -24,6 +24,7 @@ namespace parka
 	{
 		virtual ~StatementSyntax() {}
 		virtual StatementType statementType() const = 0;
+		virtual const Snippet& snippet() const = 0;
 		virtual StatementContext *validate(SymbolTable& symbolTable) = 0;
 
 		static StatementSyntax *parse(Token& token);

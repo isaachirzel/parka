@@ -3,6 +3,7 @@
 
 #include "parka/enum/LogEntryType.hpp"
 #include "parka/file/Snippet.hpp"
+#include "parka/log/Color.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 #include <ostream>

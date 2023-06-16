@@ -7,12 +7,6 @@
 
 namespace parka
 {
-	MemberSyntax::MemberSyntax(Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isPublic) :
-	_identifier(std::move(identifier)),
-	_annotation(std::move(annotation)),
-	_isPublic(isPublic)
-	{}
-
 	static bool parsePublicity(Token& token)
 	{
 		auto keywordType = KeywordSyntax::getKeywordType(token);
@@ -31,6 +25,7 @@ namespace parka
 
 	MemberSyntax *MemberSyntax::parse(Token& token)
 	{
+		auto first = Snippet(token);
 		bool isPublic = parsePublicity(token);
 
 		auto identifier = Identifier::parse(token);
@@ -50,8 +45,9 @@ namespace parka
 
 		if (!annotation)
 			return {};
-
-		auto *syntax = new MemberSyntax(*identifier, *annotation, isPublic);
+			
+		auto snippet = first + annotation->snippet();
+		auto *syntax = new MemberSyntax(snippet, *identifier, *annotation, isPublic);
 
 		return syntax;
 	}

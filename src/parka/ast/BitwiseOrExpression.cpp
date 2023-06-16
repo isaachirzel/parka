@@ -19,7 +19,7 @@ namespace parka
 
 			if (!rhs)
 				return {};
-
+			
 			lhs = new BitwiseOrExpressionSyntax(*lhs, *rhs);
 		}
 

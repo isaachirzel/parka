@@ -5,8 +5,6 @@
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
-#include <cassert>
-
 namespace parka
 {
 	enum class FileType

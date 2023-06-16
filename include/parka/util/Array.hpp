@@ -3,7 +3,6 @@
 
 #include "parka/util/Common.hpp"
 
-#include <cassert>
 #include <stdexcept>
 #include <cstdlib>
 #include <type_traits>

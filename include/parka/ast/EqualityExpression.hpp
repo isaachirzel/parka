@@ -8,6 +8,7 @@ namespace parka
 {
 	class EqualityExpressionSyntax : public ExpressionSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _lhs;
 		ExpressionSyntax& _rhs;
 		EqualityType _type;
@@ -15,6 +16,7 @@ namespace parka
 	public:
 
 		EqualityExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, EqualityType type) :
+		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
@@ -26,6 +28,8 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Equality; }
+		const Snippet& snippet() const { return _snippet; }
+		
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }

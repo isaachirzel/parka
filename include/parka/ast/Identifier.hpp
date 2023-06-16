@@ -10,20 +10,24 @@ namespace parka
 {
 	class Identifier
 	{
-		Token _token;
+		Snippet _snippet;
 		String _text;
 
 	public:
 
-		Identifier(const Token& token);
+		Identifier(const Snippet& snippet) :
+		_snippet(snippet),
+		_text(snippet.text())
+		{}
 		Identifier(Identifier&&) = default;
 		Identifier(const Identifier&) = delete;
 
 		static Optional<Identifier> parse(Token& token);
 
-		const auto& token() const { return _token; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& text() const { return _text; }
 
+		operator const Snippet&() const { return _snippet; }
 		bool operator==(const Identifier& other) const;
 		friend std::ostream& operator<<(std::ostream& out, const Identifier& identifier);
 	};

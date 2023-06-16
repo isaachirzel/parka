@@ -12,11 +12,15 @@ namespace parka
 {
 	class ExpressionStatementSyntax : public StatementSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _expression;
 
 	public:
 
-		ExpressionStatementSyntax(ExpressionSyntax& expression);
+		ExpressionStatementSyntax(const Snippet& snippet, ExpressionSyntax& expression) :
+		_snippet(snippet),
+		_expression(expression)
+		{}
 		ExpressionStatementSyntax(ExpressionStatementSyntax&&) = default;
 		ExpressionStatementSyntax(const ExpressionStatementSyntax&) = delete;
 
@@ -24,6 +28,8 @@ namespace parka
 		StatementContext *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Expression; }
+		const Snippet& snippet() const { return _snippet; }
+
 		const auto& expression() const { return _expression; }
 	};
 }

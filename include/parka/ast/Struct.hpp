@@ -20,7 +20,9 @@ namespace parka
 
 	public:
 
-		StructContext(String&& symbol);
+		StructContext(String&& symbol) :
+		_symbol(std::move(symbol))
+		{}
 		StructContext(StructContext&&) = default;
 		StructContext(const StructContext&) = delete;
 
@@ -32,6 +34,7 @@ namespace parka
 
 	class StructSyntax : public EntitySyntax, public SymbolTable
 	{
+		Snippet _snippet;
 		Identifier _identifier;
 		Array<MemberSyntax*> _members;
 		Table<String, EntityEntry*> _symbols;
@@ -40,7 +43,14 @@ namespace parka
 
 	public:
 
-		StructSyntax(Identifier&& identifier, Array<MemberSyntax*>&& members);
+		StructSyntax(const Snippet& snippet, Identifier&& identifier, Array<MemberSyntax*>&& members) :
+		_snippet(snippet),
+		_identifier(std::move(identifier)),
+		_members(std::move(members)),
+		_symbols(),
+		_parent(nullptr),
+		_context(nullptr)
+		{}
 		StructSyntax(StructSyntax&&) = default;
 		StructSyntax(const StructSyntax&) = delete;
 
@@ -55,6 +65,7 @@ namespace parka
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Struct; }
 		EntityType entityType() const { return EntityType::Struct; }
+		const Snippet& snippet() const { return _snippet; }
 		const String& name() const { return _identifier.text(); }
 		const Identifier& identifier() const { return _identifier; }
 		const auto& members() const { return _members; }

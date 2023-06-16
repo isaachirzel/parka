@@ -6,18 +6,6 @@
 
 namespace parka
 {
-	StructContext::StructContext(String&& symbol) :
-	_symbol(std::move(symbol))
-	{}
-
-	StructSyntax::StructSyntax(Identifier&& identifier, Array<MemberSyntax*>&& members) :
-	_identifier(std::move(identifier)),
-	_members(std::move(members)),
-	_symbols(),
-	_parent(nullptr),
-	_context(nullptr)
-	{}
-
 	StructSyntax *StructSyntax::parse(Token &token)
 	{
 		auto keyword = KeywordSyntax::parseStruct(token);
@@ -68,9 +56,11 @@ namespace parka
 			}
 		}
 
+		auto snippet = keyword->snippet() + Snippet(token);
+
 		token.increment();
 
-		auto *syntax = new StructSyntax(*identifier, std::move(members));
+		auto *syntax = new StructSyntax(snippet, *identifier, std::move(members));
 
 		return syntax;
 	}

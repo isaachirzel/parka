@@ -14,7 +14,9 @@ namespace parka
 
 	public:
 
-		ParameterContext(ValueType&& type);
+		ParameterContext(ValueType&& type) :
+		_type(std::move(type))
+		{}
 		ParameterContext(ParameterContext&&) = default;
 		ParameterContext(const ParameterContext&) = delete;
 
@@ -25,6 +27,7 @@ namespace parka
 
 	class ParameterSyntax : public EntitySyntax
 	{
+		Snippet _snippet;
 		Identifier _identifier;
 		TypeAnnotationSyntax _annotation;
 		SymbolTable *_parent;
@@ -33,7 +36,13 @@ namespace parka
 
 	public:
 
-		ParameterSyntax(Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable);
+		ParameterSyntax(const Snippet& snippet, Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable) :
+		_snippet(snippet),
+		_identifier(std::move(identifier)),
+		_annotation(std::move(annotation)),
+		_parent(nullptr),
+		_isMutable(isMutable)
+		{}
 		ParameterSyntax(ParameterSyntax&&) = default;
 		ParameterSyntax(const ParameterSyntax&) = delete;
 
@@ -46,6 +55,8 @@ namespace parka
 		const String& name() const { return _identifier.text(); }
 		const Identifier& identifier() const { return _identifier; }
 		EntityType entityType() const { return EntityType::Parameter; }
+		const Snippet& snippet() const { return _snippet; }
+
 		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
 

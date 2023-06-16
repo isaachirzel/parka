@@ -3,8 +3,6 @@
 
 #include "parka/util/Common.hpp"
 
-#include <cassert>
-
 namespace parka
 {
 	enum class TypeType : u8

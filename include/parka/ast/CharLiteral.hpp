@@ -7,14 +7,14 @@ namespace parka
 {
 	class CharLiteralSyntax : public ExpressionSyntax
 	{
-		Token _token;
+		Snippet _snippet;
 		char _value;
 		// TODO: UTF-8
 
 	public:
 
-		CharLiteralSyntax(const Token& token, char value) :
-		_token(token),
+		CharLiteralSyntax(const Snippet& snippet, char value) :
+		_snippet(snippet),
 		_value(value)
 		{}
 		CharLiteralSyntax(CharLiteralSyntax&&) = default;
@@ -24,7 +24,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::CharLiteral; }
-		const auto& token() const { return _token; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& value() const { return _value; }
 	};
 }

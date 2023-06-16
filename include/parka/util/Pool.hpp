@@ -3,7 +3,6 @@
 
 #include "parka/util/Arena.hpp"
 
-#include <cassert>
 #include <type_traits>
 #include <utility>
 

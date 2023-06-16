@@ -10,7 +10,7 @@ namespace parka
 {
 	class KeywordSyntax
 	{
-		Token _token;
+		Snippet _snippet;
 		KeywordType _type;
 
 	public:
@@ -23,8 +23,8 @@ namespace parka
 
 	public:
 
-		KeywordSyntax(const Token& token, KeywordType type) :
-		_token(token),
+		KeywordSyntax(const Snippet& snippet, KeywordType type) :
+		_snippet(snippet),
 		_type(type)
 		{}
 		KeywordSyntax(KeywordSyntax&&) = default;
@@ -38,7 +38,7 @@ namespace parka
 		static Optional<KeywordSyntax> parseOperator(Token& token);
 		static Optional<KeywordSyntax> parseMut(Token& token);
 
-		const auto& token() const { return _token; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }
 	};
 }

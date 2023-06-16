@@ -19,7 +19,11 @@ namespace parka
 
 	public:
 
-		FunctionContext(String&& symbol, PrototypeContext&& prototype, ExpressionContext& body);
+		FunctionContext(String&& symbol, PrototypeContext&& prototype, ExpressionContext& body) :
+		_symbol(std::move(symbol)),
+		_prototype(std::move(prototype)),
+		_body(body)
+		{}
 		FunctionContext(FunctionContext&&) = default;
 		FunctionContext(const FunctionContext&) = delete;
 
@@ -31,6 +35,7 @@ namespace parka
 
 	class FunctionSyntax : public EntitySyntax, public SymbolTable
 	{
+		Snippet _snippet;
 		PrototypeSyntax _prototype;
 		ExpressionSyntax& _body;
 		// Symbol table data
@@ -39,7 +44,13 @@ namespace parka
 
 	public:
 
-		FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body);
+		FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body) :
+		_snippet(prototype.snippet() + body.snippet()),
+		_prototype(std::move(prototype)),
+		_body(body),
+		_parent(nullptr),
+		_symbols()
+		{}
 		FunctionSyntax(FunctionSyntax&&) = default;
 		FunctionSyntax(const FunctionSyntax&) = delete;
 
@@ -55,8 +66,10 @@ namespace parka
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
 		EntityType entityType() const { return EntityType::Function; }
+		const Snippet& snippet() const { return _snippet; }
 		const String& name() const { return _prototype.identifier().text(); }
 		const Identifier& identifier() const { return _prototype.identifier(); }
+		
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }
 

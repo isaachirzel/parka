@@ -3,20 +3,7 @@
 #include "parka/ast/MultiplicativeExpression.hpp"
 
 namespace parka
-{
-	AdditiveExpressionSyntax::AdditiveExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AdditiveType type) :
-	_lhs(lhs),
-	_rhs(rhs),
-	_type(type)
-	{}
-
-	AdditiveExpressionContext::AdditiveExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AdditiveType additiveType, ValueType&& valueType) :
-	_lhs(lhs),
-	_rhs(rhs),
-	_additiveType(additiveType),
-	_valueType(std::move(valueType))
-	{}
-
+{	
 	static Optional<AdditiveType> getAdditiveType(Token& token)
 	{
 		switch (token.type())
@@ -52,7 +39,7 @@ namespace parka
 			if (!rhs)
 				return {};
 
-			lhs = new AdditiveExpressionSyntax(*lhs, *rhs, *type);;
+			lhs = new AdditiveExpressionSyntax(*lhs, *rhs, *type);
 			type = getAdditiveType(token);
 		}
 

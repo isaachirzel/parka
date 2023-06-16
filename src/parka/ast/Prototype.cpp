@@ -11,73 +11,6 @@
 
 namespace parka
 {
-	PrototypeSyntax::PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<ParameterSyntax*>&& parameters, Optional<TypeAnnotationSyntax>&& returnType) :
-	_keyword(std::move(keyword)),
-	_identifier(std::move(identifier)),
-	_parameters(std::move(parameters)),
-	_returnType(std::move(returnType))
-	{}
-
-	static Optional<Array<ParameterSyntax*>> parseParameterList(Token& token)
-	{
-		if (token.type() != TokenType::LeftParenthesis)
-		{
-			log::parseError(token, "'(' after function name");
-			return {};
-		}
-
-		token.increment();
-
-		auto parameters = Array<ParameterSyntax*>();
-
-		if (token.type() == TokenType::RightParenthesis)
-		{
-			token.increment();
-
-			return parameters;
-		}
-		
-		while (true)
-		{
-			auto parameter = ParameterSyntax::parse(token);
-
-			if (!parameter) // TODO: Attempt to fast forward to parameter
-				return {};
-
-			parameters.push(parameter);
-
-			if (token.type() == TokenType::Comma)
-			{
-				token.increment();
-				continue;
-			}
-
-			break;
-		}
-
-		if (token.type() != TokenType::RightParenthesis)
-		{
-			log::parseError(token, "')'", "Invalid tokens in parameter list");
-			return {};
-		}
-
-		token.increment();
-
-		return parameters;
-	}
-
-	static Optional<TypeAnnotationSyntax> parseReturnType(Token& token)
-	{
-		if (token.type() != TokenType::SingleArrow)
-			return {};
-
-		token.increment();
-		
-		auto returnType = TypeAnnotationSyntax::parse(token);
-
-		return returnType;
-	}
-
 	Optional<PrototypeSyntax> PrototypeSyntax::parse(Token& token)
 	{
 		auto keyword = KeywordSyntax::parseFunction(token);
@@ -90,16 +23,63 @@ namespace parka
 		if (!identifier)
 			return {};
 
-		auto parameters = parseParameterList(token);
-		
-		if (!parameters)
+		if (token.type() != TokenType::LeftParenthesis)
+		{
+			log::parseError(token, "'(' after function name");
 			return {};
+		}
 
-		auto returnType = parseReturnType(token);
+		token.increment();
 
-		// TODO: Handle returnType error?
+		auto parameters = Array<ParameterSyntax*>();
 
-		auto prototype = PrototypeSyntax(*keyword, *identifier, *parameters, std::move(returnType));
+		if (token.type() != TokenType::RightParenthesis)
+		{
+			while (true)
+			{
+				auto parameter = ParameterSyntax::parse(token);
+
+				if (!parameter) // TODO: Attempt to fast forward to parameter
+					return {};
+
+				parameters.push(parameter);
+
+				if (token.type() == TokenType::Comma)
+				{
+					token.increment();
+					continue;
+				}
+
+				break;
+			}
+
+			if (token.type() != TokenType::RightParenthesis)
+			{
+				log::parseError(token, "')'", "Invalid tokens in parameter list");
+				return {};
+			}
+		}
+
+		auto end = Snippet(token);
+		
+		token.increment();
+
+		Optional<TypeAnnotationSyntax> returnType;
+
+		if (token.type() == TokenType::SingleArrow)
+		{
+			token.increment();
+
+			returnType = TypeAnnotationSyntax::parse(token);
+
+			if (!returnType)
+				return {};
+
+			end = returnType->snippet();
+		}
+
+		auto snippet = keyword->snippet() + end;
+		auto prototype = PrototypeSyntax(snippet, *identifier, std::move(parameters), std::move(returnType));
 
 		return prototype;
 	}

@@ -4,13 +4,9 @@
 
 namespace parka
 {
-	CallExpressionSyntax::CallExpressionSyntax(ExpressionSyntax& primary, Array<ExpressionSyntax*>&& arguments) :
-	_primary(primary),
-	_arguments(std::move(arguments))
-	{}
-
 	ExpressionSyntax *CallExpressionSyntax::parse(Token& token, ExpressionSyntax& primary)
 	{
+		auto first = Token(token);
 		if (token.type() != TokenType::LeftParenthesis)
 		{
 			log::parseError(token, "'(' before argument list");
@@ -47,9 +43,11 @@ namespace parka
 			}
 		}
 
+		auto snippet = first + token;
+
 		token.increment();
 
-		auto *syntax = new CallExpressionSyntax(primary, std::move(arguments));
+		auto *syntax = new CallExpressionSyntax(snippet, primary, std::move(arguments));
 
 		return syntax;
 	}

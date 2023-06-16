@@ -4,7 +4,6 @@
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
 
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>

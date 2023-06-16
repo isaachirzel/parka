@@ -4,7 +4,6 @@
 #include "parka/util/Print.hpp"
 #include "parka/util/Arena.hpp"
 
-#include <cassert>
 #include <exception>
 #include <new>
 #include <stdexcept>

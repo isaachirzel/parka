@@ -3,7 +3,6 @@
 #include "parka/util/Path.hpp"
 #include "parka/util/String.hpp"
 
-#include <cassert>
 #include <cstring>
 
 namespace parka

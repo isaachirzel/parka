@@ -4,18 +4,6 @@
 
 namespace parka
 {
-	AssignmentExpressionSyntax::AssignmentExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AssignmentType assignmentType) :
-	_lhs(lhs),
-	_rhs(rhs),
-	_assignmentType(assignmentType)
-	{}
-
-	AssignmentExpressionContext::AssignmentExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AssignmentType assignmentType) :
-	_lhs(lhs),
-	_rhs(rhs),
-	_assignmentType(assignmentType)
-	{}
-
 	static Optional<AssignmentType> getAssignmentType(Token& token)
 	{
 		switch (token.type())
@@ -99,7 +87,7 @@ namespace parka
 			log::error("Unable to add $ to $.", rhsType, lhsType);
 			return nullptr;
 		}
-
+		
 		auto *context = new AssignmentExpressionContext(*lhs, *rhs, _assignmentType);
 
 		return context;

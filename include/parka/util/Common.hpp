@@ -2,6 +2,7 @@
 #define PARKA_UTIL_COMMON_HPP
 
 // standard headers
+#include <cassert>
 #include <cstdint>
 #include <cstddef>
 #include <functional>

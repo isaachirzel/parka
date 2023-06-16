@@ -11,12 +11,12 @@ namespace parka
 		u64 _value;
 		ValueType _valueType;
 
-	private:
-
-		IntegerLiteralContext(u64 value, ValueType&& valueType);
-
 	public:
 
+		IntegerLiteralContext(u64 value, ValueType&& valueType) :
+		_value(value),
+		_valueType(std::move(valueType))
+		{}
 		IntegerLiteralContext(IntegerLiteralContext&&) = default;
 		IntegerLiteralContext(const IntegerLiteralContext&) = delete;
 		
@@ -29,11 +29,13 @@ namespace parka
 
 	class IntegerLiteralSyntax : public ExpressionSyntax
 	{
-		Token _token;
+		Snippet _snippet;
 
 	public:
 
-		IntegerLiteralSyntax(const Token& token);
+		IntegerLiteralSyntax(const Snippet& snippet) :
+		_snippet(snippet)
+		{}
 		IntegerLiteralSyntax(IntegerLiteralSyntax&&) = default;
 		IntegerLiteralSyntax(const IntegerLiteralSyntax&) = delete;
 
@@ -41,7 +43,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::IntegerLiteral; }
-		const auto& token() const { return _token; }
+		const Snippet& snippet() const { return _snippet; }
 	};
 }
 

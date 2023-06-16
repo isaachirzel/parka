@@ -8,17 +8,6 @@
 
 namespace parka
 {
-	VariableSyntax::VariableSyntax(Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation) :
-	_identifier(std::move(identifier)),
-	_annotation(std::move(annotation)),
-	_isMutable(isMutable)
-	{}
-
-	VariableContext::VariableContext(String&& symbol, ValueType&& type) :
-	_symbol(std::move(symbol)),
-	_type(std::move(type))
-	{}
-
 	VariableSyntax *VariableSyntax::parse(Token& token)
 	{
 		// TODO: VariableSyntax mutability
@@ -32,6 +21,8 @@ namespace parka
 		if (!identifier)
 			return {};
 
+		auto end = identifier->snippet();
+
 		Optional<TypeAnnotationSyntax> annotation;
 
 		if (token.type() == TokenType::Colon)
@@ -42,9 +33,12 @@ namespace parka
 
 			if (!annotation)
 				return {};
+
+			end = annotation->snippet();
 		}
 
-		auto *syntax = new VariableSyntax(*identifier, false, std::move(annotation));
+		auto snippet = keyword->snippet() +  end;
+		auto *syntax = new VariableSyntax(snippet, *identifier, false, std::move(annotation));
 
 		return syntax;
 	}

@@ -1,4 +1,5 @@
 #include "parka/log/Line.hpp"
+#include "parka/log/Color.hpp"
 #include "parka/log/Margin.hpp"
 
 namespace parka

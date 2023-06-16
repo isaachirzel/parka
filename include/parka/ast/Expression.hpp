@@ -22,6 +22,7 @@ namespace parka
 		// TODO: Add snippets to expression
 		virtual ~ExpressionSyntax() {}
 		virtual ExpressionType expressionType() const = 0;
+		virtual const Snippet& snippet() const = 0;
 		virtual ExpressionContext *validate(SymbolTable& symbolTable) = 0;
 		
 		static ExpressionSyntax *parse(Token& token);

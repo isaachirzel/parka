@@ -5,11 +5,6 @@
 
 namespace parka
 {
-	Identifier::Identifier(const Token& token) :
-	_token(token),
-	_text(token.text())
-	{}
-
 	Optional<Identifier> Identifier::parse(Token& token)
 	{
 		if (token.type() != TokenType::Identifier)

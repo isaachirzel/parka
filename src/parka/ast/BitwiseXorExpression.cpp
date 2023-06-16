@@ -4,11 +4,6 @@
 
 namespace parka
 {
-	BitwiseXorExpressionSyntax::BitwiseXorExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
-	_lhs(lhs),
-	_rhs(rhs)
-	{}
-
 	ExpressionSyntax *BitwiseXorExpressionSyntax::parse(Token& token)
 	{
 		auto *lhs = BitwiseAndExpressionSyntax::parse(token);

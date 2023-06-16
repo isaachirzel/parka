@@ -9,19 +9,9 @@
 
 namespace parka
 {
-	ParameterContext::ParameterContext(ValueType&& type) :
-	_type(std::move(type))
-	{}
-
-	ParameterSyntax::ParameterSyntax(Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable) :
-	_identifier(std::move(identifier)),
-	_annotation(std::move(annotation)),
-	_parent(nullptr),
-	_isMutable(isMutable)
-	{}
-
 	ParameterSyntax *ParameterSyntax::parse(Token& token)
 	{
+		auto first = Snippet(token);
 		auto mutKeyword = KeywordSyntax::parseMut(token);
 		auto isMutable = !!mutKeyword;
 		auto identifier = Identifier::parse(token);
@@ -41,8 +31,9 @@ namespace parka
 
 		if (!annotation)
 			return {};
-		
-		auto *syntax = new ParameterSyntax(*identifier, *annotation, isMutable);
+
+		auto snippet = first + annotation->snippet();
+		auto *syntax = new ParameterSyntax(snippet, *identifier, *annotation, isMutable);
 		
 		return syntax;
 	}

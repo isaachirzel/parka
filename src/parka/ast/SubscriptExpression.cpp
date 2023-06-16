@@ -4,10 +4,7 @@
 
 namespace parka
 {
-	SubscriptExpressionSyntax::SubscriptExpressionSyntax(ExpressionSyntax& primary, ExpressionSyntax& index) :
-	_primary(primary),
-	_index(index)
-	{}
+	SubscriptExpressionSyntax::
 
 	ExpressionSyntax *SubscriptExpressionSyntax::parse(Token& token, ExpressionSyntax& primary)
 	{
@@ -24,13 +21,15 @@ namespace parka
 		if (!index)
 			return {};
 
-		auto *syntax = new SubscriptExpressionSyntax(primary, *index);
 
 		if (token.type() != TokenType::RightBracket)
 		{
 			log::parseError(token, "']' after subscript");
 			return {};
 		}
+
+		auto snippet = primary.snippet() + Snippet(token);
+		auto *syntax = new SubscriptExpressionSyntax(snippet, primary, *index);
 
 		token.increment();
 

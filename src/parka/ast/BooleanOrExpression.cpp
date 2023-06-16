@@ -19,9 +19,10 @@ namespace parka
 
 			if (!rhs)
 				return {};
-
+			
 			lhs = new BooleanOrExpressionSyntax(*lhs, *rhs);
 		}
+
 
 		return lhs;
 	}

@@ -11,11 +11,15 @@ namespace parka
 {
 	class TypeAnnotationSyntax
 	{
+		Snippet _snippet;
 		QualifiedIdentifier _identifier;
 
 	public:
 
-		TypeAnnotationSyntax(QualifiedIdentifier&& identifier);
+		TypeAnnotationSyntax(const Snippet& snippet, QualifiedIdentifier&& identifier) :
+		_snippet(snippet),
+		_identifier(std::move(identifier))
+		{}
 		TypeAnnotationSyntax(TypeAnnotationSyntax&&) = default;
 		TypeAnnotationSyntax(const TypeAnnotationSyntax&) = delete;
 
@@ -23,6 +27,7 @@ namespace parka
 
 		Optional<ValueType> validate(SymbolTable& symbolTable) const;
 
+		const Snippet& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }
 	};
 }

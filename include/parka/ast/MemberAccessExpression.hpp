@@ -9,12 +9,17 @@ namespace parka
 {
 	class MemberAccessExpressionSyntax : public ExpressionSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _expression;
-		Token _member;
+		Identifier _identifier;
 
 	public:
 
-		MemberAccessExpressionSyntax(ExpressionSyntax& expression, const Token& member);
+		MemberAccessExpressionSyntax(ExpressionSyntax& expression, Identifier&& identifier) :
+		_snippet(expression.snippet() + identifier.snippet()),
+		_expression(expression),
+		_identifier(std::move(identifier))
+		{}
 		MemberAccessExpressionSyntax(MemberAccessExpressionSyntax&&) = default;
 		MemberAccessExpressionSyntax(const MemberAccessExpressionSyntax&) = delete;
 
@@ -22,8 +27,10 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::MemberAccess; }
+		const Snippet& snippet() const { return _snippet; }
+
 		const auto& expression() const { return _expression; }
-		const auto& member() const { return _member; }
+		const auto& identifier() const { return _identifier; }
 	};
 }
 

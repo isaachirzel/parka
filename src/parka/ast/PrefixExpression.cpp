@@ -33,17 +33,21 @@ namespace parka
 
 	ExpressionSyntax *PrefixExpressionSyntax::parse(Token& token)
 	{
+		auto start = Snippet(token);
 		auto type = parsePrefixType(token);
 
 		if (!type)
 			return PostfixExpressionSyntax::parse(token);
 
-		auto prefixToken = token;
-
 		token.increment();
 
 		auto *inner = PrefixExpressionSyntax::parse(token);
-		auto *syntax = new PrefixExpressionSyntax(*type, *inner, prefixToken);
+
+		if (inner == nullptr)
+			return nullptr;
+
+		auto snippet = start + inner->snippet();
+		auto *syntax = new PrefixExpressionSyntax(snippet, *type, *inner);
 
 		return syntax;
 	}

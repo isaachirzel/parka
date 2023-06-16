@@ -8,6 +8,7 @@ namespace parka
 {
 	class ConditionalExpressionSyntax : public ExpressionSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _condition;
 		ExpressionSyntax& _trueCase;
 		ExpressionSyntax& _falseCase;
@@ -15,6 +16,7 @@ namespace parka
 	public:
 
 		ConditionalExpressionSyntax(ExpressionSyntax& condition, ExpressionSyntax& trueCase, ExpressionSyntax& falseCase) :
+		_snippet(condition.snippet() + falseCase.snippet()),
 		_condition(condition),
 		_trueCase(trueCase),
 		_falseCase(falseCase)
@@ -26,6 +28,8 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Conditional; }
+		const Snippet& snippet() const { return _snippet; }
+
 		const auto& condition() const { return _condition; }
 		const auto& trueCase() const { return _trueCase; }
 		const auto& falseCase() const { return _falseCase; }

@@ -7,14 +7,12 @@ namespace parka
 {
 	class FloatLiteralSyntax : public ExpressionSyntax
 	{
-		Token _token;
-		double _value;
+		Snippet _snippet;
 
 	public:
 
-		FloatLiteralSyntax(const Token& token, double value) :
-		_token(token),
-		_value(value)
+		FloatLiteralSyntax(const Snippet& snippet) :
+		_snippet(snippet)
 		{}
 		FloatLiteralSyntax(FloatLiteralSyntax&&) = default;
 		FloatLiteralSyntax(const FloatLiteralSyntax&) = delete;
@@ -23,8 +21,8 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		// TODO: Actually determine size of float
-		const ValueType& valueType() const { return ValueType::f64Type; }
 		ExpressionType expressionType() const { return ExpressionType::FloatLiteral; }
+		const Snippet& snippet() const { return _snippet; }
 	};
 }
 

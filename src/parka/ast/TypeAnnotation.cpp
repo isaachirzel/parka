@@ -7,10 +7,6 @@
 
 namespace parka
 {
-	TypeAnnotationSyntax::TypeAnnotationSyntax(QualifiedIdentifier&& identifier) :
-	_identifier(std::move(identifier))
-	{}
-
 	Optional<TypeAnnotationSyntax> TypeAnnotationSyntax::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
@@ -18,7 +14,7 @@ namespace parka
 		if (!identifier)
 			return {};
 
-		auto annotation = TypeAnnotationSyntax(*identifier);
+		auto annotation = TypeAnnotationSyntax(identifier->snippet(), *identifier);
 
 		return annotation;
 	}

@@ -5,18 +5,6 @@
 
 namespace parka
 {
-	BlockExpressionSyntax::BlockExpressionSyntax(Array<StatementSyntax*>&& statements) :
-	_statements(std::move(statements)),
-	_parent(nullptr),
-	_symbols(nullptr),
-	_baseIndex(0)
-	{}
-
-	BlockExpressionContext::BlockExpressionContext(Array<StatementContext*>&& statements, ValueType&& valueType) :
-	_statements(std::move(statements)),
-	_valueType(std::move(valueType))
-	{}
-
 	ExpressionSyntax *BlockExpressionSyntax::parse(Token& token)
 	{
 		if (token.type() != TokenType::LeftBrace)
@@ -25,6 +13,8 @@ namespace parka
 
 			return {};
 		}
+
+		auto first = Token(token);
 
 		token.increment();
 
@@ -41,9 +31,11 @@ namespace parka
 			statements.push(statement);
 		}
 
+		auto last = Token(token);
+
 		token.increment();
 
-		auto *syntax = new BlockExpressionSyntax(std::move(statements));
+		auto *syntax = new BlockExpressionSyntax(first + last, std::move(statements));
 
 		return syntax;
 	}

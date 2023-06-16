@@ -29,14 +29,19 @@ namespace parka
 
 	class PrototypeSyntax
 	{
-		KeywordSyntax _keyword;
+		Snippet _snippet;
 		Identifier _identifier;
 		Array<ParameterSyntax*> _parameters;
 		Optional<TypeAnnotationSyntax> _returnType;
 
 	public:
 
-		PrototypeSyntax(KeywordSyntax&& keyword, Identifier&& identifier, Array<ParameterSyntax*>&& parameters, Optional<TypeAnnotationSyntax>&& returnType);
+		PrototypeSyntax(const Snippet& snippet, Identifier&& identifier, Array<ParameterSyntax*>&& parameters, Optional<TypeAnnotationSyntax>&& returnType) :
+		_snippet(snippet),
+		_identifier(std::move(identifier)),
+		_parameters(std::move(parameters)),
+		_returnType(std::move(returnType))
+		{}
 		PrototypeSyntax(PrototypeSyntax&&) = default;
 		PrototypeSyntax(const PrototypeSyntax&) = delete;
 
@@ -44,6 +49,7 @@ namespace parka
 
 		Optional<PrototypeContext> validate(SymbolTable& symbolTable);
 
+		const auto& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }
 		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }

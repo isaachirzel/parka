@@ -3,16 +3,6 @@
 
 namespace parka
 {
-	DeclarationStatementSyntax::DeclarationStatementSyntax(VariableSyntax& variable, ExpressionSyntax& value) :
-	_variable(variable),
-	_value(value)
-	{}
-
-	DeclarationStatementContext::DeclarationStatementContext(VariableContext& variable, ExpressionContext& value) :
-	_variable(variable),
-	_value(value)
-	{}
-
 	StatementSyntax *DeclarationStatementSyntax::parse(Token& token)
 	{
 		auto *variable = VariableSyntax::parse(token);
@@ -39,9 +29,11 @@ namespace parka
 			return nullptr;
 		}
 
+		auto snippet = variable->snippet() + Snippet(token);
+
 		token.increment();
 
-		auto *syntax = new DeclarationStatementSyntax(*variable, *value);
+		auto *syntax = new DeclarationStatementSyntax(snippet, *variable, *value);
 
 		return syntax;
 	}

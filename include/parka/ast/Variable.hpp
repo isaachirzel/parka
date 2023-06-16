@@ -16,7 +16,10 @@ namespace parka
 	
 	public:
 
-		VariableContext(String&& symbol, ValueType&& type);
+		VariableContext(String&& symbol, ValueType&& type) :
+		_symbol(std::move(symbol)),
+		_type(std::move(type))
+		{}
 		VariableContext(VariableContext&&) = default;
 		VariableContext(const VariableContext&) = delete;
 
@@ -27,6 +30,7 @@ namespace parka
 
 	class VariableSyntax : public EntitySyntax
 	{
+		Snippet _snippet;
 		Identifier _identifier;
 		Optional<TypeAnnotationSyntax> _annotation;
 		VariableContext *_context;
@@ -34,7 +38,12 @@ namespace parka
 
 	public:
 
-		VariableSyntax(Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation);
+		VariableSyntax(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationSyntax> annotation) :
+		_snippet(snippet),
+		_identifier(std::move(identifier)),
+		_annotation(std::move(annotation)),
+		_isMutable(isMutable)
+		{}
 		VariableSyntax(VariableSyntax&&) = default;
 		VariableSyntax(const VariableSyntax&) = delete;
 
@@ -44,6 +53,7 @@ namespace parka
 		String getSymbol() const { return _identifier.text(); }
 
 		EntityType entityType() const { return EntityType::Variable; }
+		const Snippet& snippet() const { return _snippet; }
 		const String& name() const { return _identifier.text(); }
 		const Identifier& identifier() const { return _identifier; }
 		const auto& isExplicitlyTyped() const { return _annotation.hasValue(); }

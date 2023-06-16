@@ -8,34 +8,23 @@ namespace parka
 	constexpr u64 u16MaxValue =	0x0000FFFF;
 	constexpr u64 u32MaxValue =	0xFFFFFFFF;
 
-	IntegerLiteralSyntax::IntegerLiteralSyntax(const Token& token) :
-	_token(token)
-	{}
-
-	IntegerLiteralContext::IntegerLiteralContext(u64 value, ValueType&& valueType) :
-	_value(value),
-	_valueType(std::move(valueType))
-	{}
-
-	static Optional<u64> getIntegerValue(const Token& token)
+	static Optional<u64> getIntegerValue(const Snippet& snippet)
 	{
-		assert(token.type() == TokenType::IntegerLiteralSyntax);
-
 		u64 value = 0;
-		const auto length = token.snippet().length();
+		const auto length = snippet.length();
 
 		for (usize i = 0; i < length; ++i)
 		{
 			auto previousValue = value;
 
 			value *= 10;
-			value += token[i] - '0';
+			value += snippet[i] - '0';
 
 			auto isOverflown = value < previousValue;
 
 			if (isOverflown)
 			{
-				log::error(token, "Integer literal is too large to fit in a 64 bit value.");
+				log::error(snippet, "Integer literal is too large to fit in a 64 bit value.");
 				return {};
 			} 
 		}
@@ -74,7 +63,7 @@ namespace parka
 
 	ExpressionContext *IntegerLiteralSyntax::validate(SymbolTable&)
 	{
-		auto value = getIntegerValue(_token);
+		auto value = getIntegerValue(_snippet);
 
 		if (!value)
 			return {};

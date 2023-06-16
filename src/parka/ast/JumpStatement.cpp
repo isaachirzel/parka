@@ -35,8 +35,6 @@ namespace parka
 		if (!type)
 			return {};
 
-		// auto name = token;
-
 		token.increment();
 
 		ExpressionSyntax *value = nullptr;

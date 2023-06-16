@@ -7,12 +7,14 @@ namespace parka
 {
 	class BooleanOrExpressionSyntax : public ExpressionSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _lhs;
 		ExpressionSyntax& _rhs;
 
 	public:
 
 		BooleanOrExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
+		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs)
 		{}
@@ -23,6 +25,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BooleanOr; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 	};

@@ -3,10 +3,6 @@
 
 namespace parka
 {
-	ExpressionStatementSyntax::ExpressionStatementSyntax(ExpressionSyntax& expression) :
-	_expression(expression)
-	{}
-
 	StatementSyntax *ExpressionStatementSyntax::parse(Token& token)
 	{
 		auto expression = ExpressionSyntax::parse(token);
@@ -20,9 +16,11 @@ namespace parka
 			return {};
 		}
 
+		auto snippet = expression->snippet() + Snippet(token);
+
 		token.increment();
 
-		auto *syntax = new ExpressionStatementSyntax(*expression);
+		auto *syntax = new ExpressionStatementSyntax(snippet, *expression);
 
 		return syntax;
 	}

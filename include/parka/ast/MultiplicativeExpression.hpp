@@ -11,6 +11,7 @@ namespace parka
 {
 	class MultiplicativeExpressionSyntax : public ExpressionSyntax
 	{
+		Snippet _snippet;
 		ExpressionSyntax& _lhs;
 		ExpressionSyntax& _rhs;
 		MultiplicativeType _type;
@@ -18,6 +19,7 @@ namespace parka
 	public:
 
 		MultiplicativeExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, MultiplicativeType type) :
+		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
@@ -29,6 +31,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable&);
 
 		ExpressionType expressionType() const { return ExpressionType::Multiplicative; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }

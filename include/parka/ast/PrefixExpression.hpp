@@ -10,14 +10,14 @@ namespace parka
 {
 	class PrefixExpressionSyntax : public ExpressionSyntax
 	{
-		Token _token;
+		Snippet _snippet;
 		ExpressionSyntax& _expression;
 		PrefixType _type;
 
 	public:
 
-		PrefixExpressionSyntax(PrefixType type, ExpressionSyntax& expression, const Token& token) :
-		_token(token),
+		PrefixExpressionSyntax(const Snippet& snippet, PrefixType type, ExpressionSyntax& expression) :
+		_snippet(snippet),
 		_expression(expression),
 		_type(type)
 		{}
@@ -28,7 +28,7 @@ namespace parka
 		ExpressionContext *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Prefix; }
-		const auto& token() const { return _token; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _expression; }
 		const auto& type() const { return _type; }
 	};

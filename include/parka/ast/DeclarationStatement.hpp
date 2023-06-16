@@ -14,7 +14,10 @@ namespace parka
 
 	public:
 
-		DeclarationStatementContext(VariableContext& variable, ExpressionContext& value);
+		DeclarationStatementContext(VariableContext& variable, ExpressionContext& value) :
+		_variable(variable),
+		_value(value)
+		{}
 		DeclarationStatementContext(DeclarationStatementContext&&) = default;
 		DeclarationStatementContext(const DeclarationStatementContext&) = delete;
 
@@ -23,12 +26,17 @@ namespace parka
 
 	class DeclarationStatementSyntax : public StatementSyntax
 	{
+		Snippet _snippet;
 		VariableSyntax& _variable;
 		ExpressionSyntax& _value;
 
 	public:
 
-		DeclarationStatementSyntax(VariableSyntax& variable, ExpressionSyntax& value);
+		DeclarationStatementSyntax(const Snippet& snippet, VariableSyntax& variable, ExpressionSyntax& value) :
+		_snippet(snippet),
+		_variable(variable),
+		_value(value)
+		{}
 		DeclarationStatementSyntax(DeclarationStatementSyntax&&) = default;
 		DeclarationStatementSyntax(const DeclarationStatementSyntax&) = delete;
 
@@ -36,6 +44,7 @@ namespace parka
 		StatementContext *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Declaration; }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& variable() const { return _variable; }
 		const auto& value() const { return _value; }
 	};

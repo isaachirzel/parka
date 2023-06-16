@@ -9,16 +9,25 @@ namespace parka
 {
 	class QualifiedIdentifier
 	{
+		Snippet _snippet;
 		Array<Identifier> _parts;
 		bool _isAbsolute;
 
 	public:
 
-		QualifiedIdentifier(Array<Identifier>&& parts, bool isAbsolute);
+		QualifiedIdentifier(const Snippet& snippet, Array<Identifier>&& parts, bool isAbsolute) :
+		_snippet(snippet),
+		_parts(std::move(parts)),
+		_isAbsolute(isAbsolute)
+		{
+			assert(_parts.length() > 0);
+		}
 		QualifiedIdentifier(QualifiedIdentifier&&) = default;
 		QualifiedIdentifier(const QualifiedIdentifier&) = delete;
 
 		static Optional<QualifiedIdentifier> parse(Token& token);
+
+		const auto& snippet() const { return _snippet; }
 
 		const auto *begin() const { return _parts.begin(); }
 		const auto *end() const { return _parts.end(); }

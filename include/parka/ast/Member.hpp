@@ -16,6 +16,7 @@ namespace parka
 
 	class MemberSyntax : public EntitySyntax
 	{
+		Snippet _snippet;
 		Identifier _identifier;
 		TypeAnnotationSyntax _annotation;
 		bool _isPublic;
@@ -24,7 +25,12 @@ namespace parka
 
 	public:
 
-		MemberSyntax(Identifier&& symbol, TypeAnnotationSyntax&& annotation, bool isPublic);
+		MemberSyntax(const Snippet& snippet, Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isPublic) :
+		_snippet(snippet),
+		_identifier(std::move(identifier)),
+		_annotation(std::move(annotation)),
+		_isPublic(isPublic)
+		{}
 		MemberSyntax(MemberSyntax&&) = default;
 		MemberSyntax(const MemberSyntax&) = delete;
 
@@ -37,7 +43,7 @@ namespace parka
 		const Identifier& identifier() const { return _identifier; }
 		const String& name() const { return _identifier.text(); }
 		EntityType entityType() const { return EntityType::Member; }
-		const auto& token() const { return _identifier.token(); }
+		const Snippet& snippet() const { return _snippet; }
 		const auto& annotation() const { return _annotation; }
 		const auto& isPublic() const { return _isPublic; }
 	};
