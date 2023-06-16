@@ -7,10 +7,7 @@ namespace parka
 {
 	enum class EntityType: u8
 	{
-		Package,
-		Struct,
-		Primitive,
-		Function,
+		// Function,
 		Variable,
 		Parameter,
 		Member

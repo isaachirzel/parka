@@ -1,19 +1,18 @@
 #ifndef PARKA_TYPE_VALUE_TYPE_HPP
 #define PARKA_TYPE_VALUE_TYPE_HPP
 
+#include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka::ir
 {
-	struct EntityIr;
-
 	class ValueType
 	{
 	private:
 
-		EntityIr& _entity;
+		SymbolTableEntry& _entity;
 		// TODO: Add pointer info
 		// TODO: Add LiteralAst for better type inference?
 		
@@ -36,7 +35,9 @@ namespace parka::ir
 		
 	public:
 
-		ValueType(EntityIr& entity);
+		ValueType(SymbolTableEntry& entity) :
+		_entity(entity)
+		{}
 		ValueType(ValueType&&) = default;
 		ValueType(const ValueType&) = default;
 

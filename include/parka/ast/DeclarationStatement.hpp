@@ -16,6 +16,7 @@ namespace parka::ast
 	public:
 
 		DeclarationStatementAst(const Snippet& snippet, VariableAst& variable, ExpressionAst& value) :
+		StatementAst(StatementType::Declaration),
 		_snippet(snippet),
 		_variable(variable),
 		_value(value)
@@ -26,7 +27,6 @@ namespace parka::ast
 		static StatementAst *parse(Token& token);
 		ir::StatementIr *validate(SymbolTable& symbolTable);
 
-		StatementType statementType() const { return StatementType::Declaration; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& variable() const { return _variable; }
 		const auto& value() const { return _value; }

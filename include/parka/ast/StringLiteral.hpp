@@ -12,6 +12,7 @@ namespace parka::ast
 	public:
 
 		StringLiteralAst(const Snippet& snippet) :
+		ExpressionAst(ExpressionType::StringLiteral),
 		_snippet(snippet)
 		{}
 		StringLiteralAst(StringLiteralAst&&) = default;
@@ -20,7 +21,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 		
-		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
 		const Snippet& snippet() const { return _snippet; }
 	};
 }

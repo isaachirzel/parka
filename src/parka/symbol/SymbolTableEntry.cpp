@@ -2,9 +2,9 @@
 
 namespace parka
 {
-	std::ostream& operator<<(std::ostream& out, const SymbolTableEntry &entry)
+	std::ostream& operator<<(std::ostream& out, const SymbolTableEntry& entry)
 	{
-		out << entry.name() << ": " << entry.entityType();
+		out << entry.name() << ": " << entry.symbolTableEntryType;
 
 		return out;
 	}

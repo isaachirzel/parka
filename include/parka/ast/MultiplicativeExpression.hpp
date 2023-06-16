@@ -17,6 +17,7 @@ namespace parka::ast
 	public:
 
 		MultiplicativeExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, MultiplicativeType type) :
+		ExpressionAst(ExpressionType::Multiplicative),
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
@@ -28,7 +29,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable&);
 
-		ExpressionType expressionType() const { return ExpressionType::Multiplicative; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

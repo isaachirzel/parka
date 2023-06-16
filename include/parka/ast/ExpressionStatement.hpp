@@ -15,6 +15,7 @@ namespace parka::ast
 	public:
 
 		ExpressionStatementAst(const Snippet& snippet, ExpressionAst& expression) :
+		StatementAst(StatementType::Expression),
 		_snippet(snippet),
 		_expression(expression)
 		{}
@@ -24,9 +25,7 @@ namespace parka::ast
 		static StatementAst *parse(Token& token);
 		ir::StatementIr *validate(SymbolTable& symbolTable);
 
-		StatementType statementType() const { return StatementType::Expression; }
 		const Snippet& snippet() const { return _snippet; }
-
 		const auto& expression() const { return _expression; }
 	};
 }

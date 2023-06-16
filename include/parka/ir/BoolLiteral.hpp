@@ -12,13 +12,13 @@ namespace parka::ir
 	public:
 
 		BoolLiteralIr(bool value) :
+		ExpressionIr(ExpressionType::BoolLiteral),
 		_value(value)
 		{}
 		BoolLiteralIr(BoolLiteralIr&&) = default;
 		BoolLiteralIr(const BoolLiteralIr&) = delete;
 
 		const ValueType& valueType() const { return ValueType::boolType; }
-		ExpressionType expressionType() const { return ExpressionType::BoolLiteral; }
 		const auto& value() const { return _value; }
 	};
 }

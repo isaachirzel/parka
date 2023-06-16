@@ -17,6 +17,7 @@ namespace parka::ast
 	public:
 
 		RelationalExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, RelationalType type) :
+		ExpressionAst(ExpressionType::Relational),
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
@@ -28,9 +29,7 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::Relational; }
 		const Snippet& snippet() const { return _snippet; }
-		
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& type() const { return _type; }

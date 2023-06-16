@@ -17,6 +17,7 @@ namespace parka::ir
 	public:
 
 		AdditiveExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, AdditiveType additiveType, ValueType&& valueType) :
+		ExpressionIr(ExpressionType::Additive),
 		_lhs(lhs),
 		_rhs(rhs),
 		_additiveType(additiveType),
@@ -25,7 +26,6 @@ namespace parka::ir
 		AdditiveExpressionIr(AdditiveExpressionIr&&) = default;
 		AdditiveExpressionIr(const AdditiveExpressionIr&) = delete;
 
-		ExpressionType expressionType() const { return ExpressionType::Additive; }
 		const ValueType& valueType() const { return _valueType; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

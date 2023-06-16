@@ -44,6 +44,7 @@ namespace parka::ir
 	}
 
 	Primitive::Primitive(const char *name, PrimitiveType type, u32 size) :
+	SymbolTableEntry(SymbolTableEntryType::Primitive),
 	_name(name),
 	_size(size),
 	_type(type)

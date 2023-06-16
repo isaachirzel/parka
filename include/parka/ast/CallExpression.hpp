@@ -2,6 +2,7 @@
 #define PARKA_AST_EXPRESSION_CALL_HPP
 
 #include "parka/ast/Expression.hpp"
+#include "parka/enum/ExpressionType.hpp"
 
 namespace parka::ast
 {
@@ -14,6 +15,7 @@ namespace parka::ast
 	public:
 
 		CallExpressionAst(const Snippet& snippet, ExpressionAst& primary, Array<ExpressionAst*>&& arguments) :
+		ExpressionAst(ExpressionType::Call),
 		_snippet(snippet),
 		_primary(primary),
 		_arguments(std::move(arguments))
@@ -25,7 +27,6 @@ namespace parka::ast
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		const Snippet& snippet() const { return _snippet; }
-		ExpressionType expressionType() const { return ExpressionType::Call; }
 		const auto& arguments() const { return _arguments; }
 	};
 }

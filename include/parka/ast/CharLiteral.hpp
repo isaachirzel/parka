@@ -2,6 +2,7 @@
 #define PARKA_AST_EXPRESSION_LITERAL_CHAR_HPP
 
 #include "parka/ast/Expression.hpp"
+#include "parka/enum/ExpressionType.hpp"
 
 namespace parka::ast
 {
@@ -14,6 +15,7 @@ namespace parka::ast
 	public:
 
 		CharLiteralAst(const Snippet& snippet, char value) :
+		ExpressionAst(ExpressionType::CharLiteral),
 		_snippet(snippet),
 		_value(value)
 		{}
@@ -23,7 +25,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::CharLiteral; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& value() const { return _value; }
 	};

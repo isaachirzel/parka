@@ -1,10 +1,5 @@
-#include "parka/ir/Primitive.hpp"
-#include "parka/log/Log.hpp"
-#include "parka/ast/AdditiveExpression.hpp"
-#include "parka/ast/Function.hpp"
-#include "parka/ir/Primitive.hpp"
-#include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ir/ValueType.hpp"
+#include "parka/ir/Primitive.hpp"
 
 namespace parka::ir
 {
@@ -23,10 +18,6 @@ namespace parka::ir
 	const ValueType ValueType::charType(Primitive::charPrimitive);
 	const ValueType ValueType::stringType(Primitive::stringPrimitive);
 
-	ValueType::ValueType(EntityIr& entity) :
-	_entity(entity)
-	{}
-
 	bool ValueType::canConvertTo(const ValueType& to) const
 	{
 		return &_entity == &to._entity;
@@ -35,7 +26,7 @@ namespace parka::ir
 	std::ostream& operator<<(std::ostream& out, const ValueType& type)
 	{
 		out << '`';
-		out << type._entity.symbol();
+		out << type._entity.name();
 		out << '`';
 
 		return out;

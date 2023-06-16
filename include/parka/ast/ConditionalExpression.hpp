@@ -3,6 +3,7 @@
 #define PARKA_AST_EXPRESSION_CONDITIONAL_HPP
 
 #include "parka/ast/Expression.hpp"
+#include "parka/enum/ExpressionType.hpp"
 
 namespace parka::ast
 {
@@ -16,6 +17,7 @@ namespace parka::ast
 	public:
 
 		ConditionalExpressionAst(ExpressionAst& condition, ExpressionAst& trueCase, ExpressionAst& falseCase) :
+		ExpressionAst(ExpressionType::Conditional),
 		_snippet(condition.snippet() + falseCase.snippet()),
 		_condition(condition),
 		_trueCase(trueCase),
@@ -27,7 +29,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::Conditional; }
 		const Snippet& snippet() const { return _snippet; }
 
 		const auto& condition() const { return _condition; }

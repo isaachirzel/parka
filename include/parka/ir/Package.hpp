@@ -8,7 +8,7 @@
 
 namespace parka::ir
 {
-	class PackageIr : public EntityIr
+	class PackageIr
 	{
 		String _symbol;
 		Array<PackageIr*> _packages;
@@ -27,7 +27,6 @@ namespace parka::ir
 		PackageIr(const PackageIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		EntityType entityType() const { return EntityType::Package; }
 		const ValueType *valueType() const;
 		const auto& packages() const { return _packages; }
 		const auto& functions() const { return _functions; }

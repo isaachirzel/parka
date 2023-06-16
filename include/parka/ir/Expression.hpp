@@ -8,9 +8,16 @@ namespace parka::ir
 {
 	struct ExpressionIr
 	{
+		const ExpressionType expressionType;
+
+	public:
+
+		ExpressionIr(ExpressionType expressionType) :
+		expressionType(expressionType)
+		{}
 		virtual ~ExpressionIr() {}
+
 		virtual const ValueType& valueType() const = 0;
-		virtual ExpressionType expressionType() const = 0;
 	};
 };
 

@@ -2,6 +2,7 @@
 #define PARKA_AST_STATEMENT_JUMP_HPP
 
 #include "parka/enum/JumpType.hpp"
+#include "parka/enum/StatementType.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
@@ -19,6 +20,7 @@ namespace parka::ast
 	public:
 
 		JumpStatementAst(const Snippet& snippet, JumpType type, ExpressionAst *value) :
+		StatementAst(StatementType::Jump),
 		_snippet(snippet),
 		_value(value),
 		_type(type)
@@ -29,9 +31,7 @@ namespace parka::ast
 		static StatementAst *parse(Token& token);
 		ir::StatementIr *validate(SymbolTable& symbolTable);
 
-		StatementType statementType() const { return StatementType::Jump; }
 		const Snippet& snippet() const { return _snippet; }
-
 		bool hasValue() const { return !!_value; }
 		const auto& value() const { assert(_value != nullptr); return *_value; }
 		const auto& type() const { return _type; }

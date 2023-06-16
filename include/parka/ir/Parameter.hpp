@@ -13,13 +13,13 @@ namespace parka::ir
 	public:
 
 		ParameterIr(ValueType&& type) :
+		EntityIr(EntityType::Parameter),
 		_type(std::move(type))
 		{}
 		ParameterIr(ParameterIr&&) = default;
 		ParameterIr(const ParameterIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		EntityType entityType() const { return EntityType::Parameter; }
 		const ValueType *valueType() const { return &_type; }
 	};
 }

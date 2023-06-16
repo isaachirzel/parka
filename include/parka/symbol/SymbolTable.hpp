@@ -10,9 +10,16 @@ namespace parka
 {
 	// TODO: Implement getting symbols for entity
 	struct SymbolTable
-	{	
+	{
+		const SymbolTableType symbolTableType;
+
+	public:
+
+		SymbolTable(SymbolTableType symbolTableType) :
+		symbolTableType(symbolTableType)
+		{}
 		virtual ~SymbolTable() {}
-		virtual SymbolTableType symbolTableType() const = 0;
+
 		virtual bool declare(ast::EntityAst& entity) = 0;
 		virtual SymbolTableEntry *find(const ast::Identifier& identifier) = 0;
 		virtual ir::EntityIr *resolve(const ast::QualifiedIdentifier& identifier) = 0;

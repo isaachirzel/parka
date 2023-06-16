@@ -7,7 +7,7 @@
 
 namespace parka::ir
 {
-	class FunctionIr : public EntityIr
+	class FunctionIr
 	{
 		String _symbol;
 		PrototypeIr _prototype;
@@ -23,7 +23,6 @@ namespace parka::ir
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;
 
-		EntityType entityType() const { return EntityType::Function; }
 		const ValueType *valueType() const;
 		const String& symbol() const { return _symbol; }
 		const auto& prototype() const { return _prototype; }

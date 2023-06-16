@@ -71,11 +71,12 @@ namespace parka::ast
 		return context;
 	}
 
-	bool FunctionAst::declareSelf(PackageAst& parent)
+	bool FunctionAst::declareSelf(PackageAst&)//parent)
 	{
-		_parent = &parent;
+		log::notImplemented(here());
+		// _parent = &parent;
 
-		return parent.declare(*this);
+		// return parent.declare(*this);
 	}
 
 	bool FunctionAst::declare(EntityAst& entity)
@@ -87,7 +88,7 @@ namespace parka::ast
 		{
 			if (name == symbol->name())
 			{
-				log::error(identifier, "A $ `$` has already been declared in this function.", entity.entityType(), name);
+				log::error(identifier, "A $ `$` has already been declared in this function.", entity.entityType, name);
 
 				auto *previous = dynamic_cast<EntityAst*>(symbol);
 
@@ -116,19 +117,20 @@ namespace parka::ast
 		return nullptr;
 	}
 
-	ir::EntityIr *FunctionAst::resolve(const QualifiedIdentifier& identifier)
+	ir::EntityIr *FunctionAst::resolve(const QualifiedIdentifier&)
 	{
-		if (identifier.isAbsolute() || identifier.length() > 1)
-			return _parent->resolve(identifier);
+		log::notImplemented(here());
+		// if (identifier.isAbsolute() || identifier.length() > 1)
+		// 	return _parent->resolve(identifier);
 
-		auto *local = find(identifier[0]);
+		// auto *local = find(identifier[0]);
 
-		if (local != nullptr)
-			return local->context();
+		// if (local != nullptr)
+		// 	return local->context();
 
-		auto *global = _parent->resolve(identifier);
+		// auto *global = _parent->resolve(identifier);
 
-		return global;
+		// return global;
 	}
 
 	String FunctionAst::getSymbol() const

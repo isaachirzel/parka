@@ -13,13 +13,13 @@ namespace parka::ir
 	public:
 
 		IntegerLiteralIr(u64 value, ValueType&& valueType) :
+		ExpressionIr(ExpressionType::IntegerLiteral),
 		_value(value),
 		_valueType(std::move(valueType))
 		{}
 		IntegerLiteralIr(IntegerLiteralIr&&) = default;
 		IntegerLiteralIr(const IntegerLiteralIr&) = delete;
 		
-		ExpressionType expressionType() const { return ExpressionType::IntegerLiteral; }
 		// TODO: Actually check size of literal
 		const ValueType& valueType() const { return ValueType::i32Type; }
 

@@ -12,6 +12,7 @@ namespace parka::ast
 	public:
 
 		FloatLiteralAst(const Snippet& snippet) :
+		ExpressionAst(ExpressionType::FloatLiteral),
 		_snippet(snippet)
 		{}
 		FloatLiteralAst(FloatLiteralAst&&) = default;
@@ -20,8 +21,7 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		// TODO: Actually determine size of float
-		ExpressionType expressionType() const { return ExpressionType::FloatLiteral; }
+		// TODO: Determine size of float
 		const Snippet& snippet() const { return _snippet; }
 	};
 }

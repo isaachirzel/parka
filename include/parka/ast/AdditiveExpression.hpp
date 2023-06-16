@@ -16,6 +16,7 @@ namespace parka::ast
 	public:
 
 		AdditiveExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, AdditiveType additiveType) :
+		ExpressionAst(ExpressionType::Additive),
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
@@ -28,7 +29,6 @@ namespace parka::ast
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		const Snippet& snippet() const { return _snippet; }
-		ExpressionType expressionType() const { return ExpressionType::Additive; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& additiveType() const { return _additiveType; }

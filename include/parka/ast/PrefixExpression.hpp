@@ -17,6 +17,7 @@ namespace parka::ast
 	public:
 
 		PrefixExpressionAst(const Snippet& snippet, PrefixType type, ExpressionAst& expression) :
+		ExpressionAst(ExpressionType::Prefix),
 		_snippet(snippet),
 		_expression(expression),
 		_type(type)
@@ -27,7 +28,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::Prefix; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _expression; }
 		const auto& type() const { return _type; }

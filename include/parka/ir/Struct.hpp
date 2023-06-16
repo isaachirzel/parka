@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class StructIr : public EntityIr
+	class StructIr
 	{
 		String _symbol;
 
@@ -19,7 +19,6 @@ namespace parka::ir
 
 		static StructIr *validate();
 		
-		EntityType type() const { return EntityType::Struct; }
 		const String& symbol() const { return _symbol; }
 		const ValueType *valueType() const;
 	};

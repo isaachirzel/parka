@@ -79,20 +79,21 @@ namespace parka::ast
 		return isDeclared;
 	}
 
-	bool StructAst::declareSelf(PackageAst& parent)
+	bool StructAst::declareSelf(PackageAst&)// parent)
 	{
-		_parent = &parent;
+		log::notImplemented(here());
+		// _parent = &parent;
 
-		bool success = _parent->declare(*this);
+		// bool success = _parent->declare(*this);
 
-		for (auto *member : _members)
-		{
-			if (!member->declareSelf(*this))
-				success = false;
-				// TODO: Previous delcaration
-		}
+		// for (auto *member : _members)
+		// {
+		// 	if (!member->declareSelf(*this))
+		// 		success = false;
+		// 		// TODO: Previous delcaration
+		// }
 
-		return success;
+		// return success;
 	}
 
 	SymbolTableEntry *StructAst::find(const Identifier& identifier)

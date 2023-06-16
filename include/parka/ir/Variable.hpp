@@ -13,6 +13,7 @@ namespace parka::ir
 	public:
 
 		VariableIr(String&& symbol, ValueType&& type) :
+		EntityIr(EntityType::Variable),
 		_symbol(std::move(symbol)),
 		_type(std::move(type))
 		{}
@@ -20,7 +21,6 @@ namespace parka::ir
 		VariableIr(const VariableIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		EntityType entityType() const { return EntityType::Variable; }
 		const ValueType *valueType() const { return &_type; }
 	};
 }

@@ -13,13 +13,13 @@ namespace parka::ir
 	public:
 
 		IdentifierExpressionIr(EntityIr& entity, ValueType&& valueType) :
+		ExpressionIr(ExpressionType::Identifier),
 		_entity(entity),
 		_valueType(std::move(valueType))
 		{}
 		IdentifierExpressionIr(IdentifierExpressionIr&&) = default;
 		IdentifierExpressionIr(const IdentifierExpressionIr&) = delete;
 
-		ExpressionType expressionType() const { return ExpressionType::Identifier; }
 		const auto& entity() const { return _entity; }
 		const ValueType& valueType() const { return _valueType; }
 	};

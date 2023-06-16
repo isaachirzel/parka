@@ -17,6 +17,7 @@ namespace parka::ast
 	public:
 
 		IdentifierExpressionAst(QualifiedIdentifier&& identifier) :
+		ExpressionAst(ExpressionType::Identifier),
 		_identifier(std::move(identifier))
 		{}
 		IdentifierExpressionAst(IdentifierExpressionAst&&) = default;
@@ -25,7 +26,6 @@ namespace parka::ast
 		static IdentifierExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::Identifier; }
 		const Snippet& snippet() const { return _identifier.snippet(); }
 
 		const auto& identifier() const { return _identifier; }

@@ -14,6 +14,7 @@ namespace parka::ast
 	public:
 
 		BooleanOrExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs) :
+		ExpressionAst(ExpressionType::BooleanOr),
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs)
@@ -24,7 +25,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::BooleanOr; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

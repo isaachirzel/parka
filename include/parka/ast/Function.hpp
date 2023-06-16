@@ -2,17 +2,19 @@
 #define PARKA_AST_FUNCTION_HPP
 
 #include "parka/ast/Identifier.hpp"
+#include "parka/enum/SymbolTableType.hpp"
 #include "parka/ir/Function.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
+#include "parka/symbol/SymbolTableEntry.hpp"
 
 namespace parka::ast
 {
 	class PackageAst;
 
-	class FunctionAst : public EntityAst, public SymbolTable
+	class FunctionAst : public SymbolTableEntry, public SymbolTable
 	{
 		Snippet _snippet;
 		PrototypeAst _prototype;
@@ -24,6 +26,8 @@ namespace parka::ast
 	public:
 
 		FunctionAst(PrototypeAst&& prototype, ExpressionAst& body) :
+		SymbolTableEntry(SymbolTableEntryType::Function),
+		SymbolTable(SymbolTableType::Function),
 		_snippet(prototype.snippet() + body.snippet()),
 		_prototype(std::move(prototype)),
 		_body(body),
@@ -35,7 +39,7 @@ namespace parka::ast
 
 		static FunctionAst *parse(Token& token);
 		ir::FunctionIr *validate();
-		ir::EntityIr *context() { return validate(); }
+		// ir::EntityIr *context() { return validate(); }
 
 		bool declare(EntityAst& entity);
 		bool declareSelf(PackageAst& parent);
@@ -43,8 +47,6 @@ namespace parka::ast
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 
-		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
-		EntityType entityType() const { return EntityType::Function; }
 		const Snippet& snippet() const { return _snippet; }
 		const String& name() const { return _prototype.identifier().text(); }
 		const Identifier& identifier() const { return _prototype.identifier(); }

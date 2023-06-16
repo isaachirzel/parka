@@ -196,7 +196,7 @@ namespace parka::ast
 
 			if (table == nullptr)
 			{
-				log::error("Unable to resolve $ in $ $.", identifier, entry->entityType(), entry->name());
+				log::error("Unable to resolve $ in $ $.", identifier, entry->symbolTableEntryType, entry->name());
 				return nullptr;
 			}
 
@@ -204,7 +204,8 @@ namespace parka::ast
 		}
 
 		if (entry != nullptr)
-			return entry->context();
+			log::notImplemented(here());
+			// return entry->context();
 
 		// TODO: Use index to shorten the symbol so it is more specific what could not be found
 		log::error("Unable to find $ in this scope.", qualifiedIdentifier);

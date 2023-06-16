@@ -6,20 +6,8 @@ namespace parka
 	{
 		switch (type)
 		{
-			case EntityType::Package:
-				out << "package";
-				break;
-
-			case EntityType::Struct:
-				out << "struct";
-				break;
-
-			case EntityType::Primitive:
-				out << "primitive";
-				break;
-
-			case EntityType::Function:
-				out << "function";
+			case EntityType::Member:
+				out << "member";
 				break;
 
 			case EntityType::Variable:

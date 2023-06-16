@@ -16,6 +16,7 @@ namespace parka::ast
 	public:
 
 		AssignmentExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, AssignmentType assignmentType) :
+		ExpressionAst(ExpressionType::Assignment),
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
@@ -27,7 +28,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::Assignment; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

@@ -21,6 +21,7 @@ namespace parka::ast
 	public:
 
 		Ast(PackageAst& globalPackage) :
+		SymbolTable(SymbolTableType::Global),
 		_globalPackage(globalPackage)
 		{}
 		Ast(Ast&&) = default;
@@ -34,8 +35,6 @@ namespace parka::ast
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 
 		Optional<ir::Ir> validate();
-
-		SymbolTableType symbolTableType() const { return SymbolTableType::Global; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Ast& syntax);
 	};

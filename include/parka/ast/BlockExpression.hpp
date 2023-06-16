@@ -4,6 +4,7 @@
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
+#include "parka/enum/SymbolTableType.hpp"
 #include <exception>
 
 // TODO: Make block a statement
@@ -22,6 +23,8 @@ namespace parka::ast
 	public:
 
 		BlockExpressionAst(const Snippet& snippet, Array<StatementAst*>&& statements) :
+		ExpressionAst(ExpressionType::Block),
+		SymbolTable(SymbolTableType::Block),
 		_snippet(snippet),
 		_statements(std::move(statements)),
 		_parent(nullptr),
@@ -38,8 +41,6 @@ namespace parka::ast
 		SymbolTableEntry *find(const Identifier& identifier);
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 
-		SymbolTableType symbolTableType() const { return SymbolTableType::Block; };
-		ExpressionType expressionType() const { return ExpressionType::Block; }
 		const Snippet &snippet() const { return _snippet; }
 		const auto& statements() const { return _statements; }
 	};

@@ -12,12 +12,12 @@ namespace parka::ir
 	public:
 
 		MemberIr(ValueType&& valueType) :
+		EntityIr(EntityType::Member),
 		_valueType(std::move(valueType))
 		{}
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;
 
-		EntityType entityType() const { return EntityType::Member; }
 		const ValueType *valueType() const { return &_valueType; }
 	};
 }

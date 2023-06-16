@@ -13,10 +13,14 @@ namespace parka::ast
 
 	public:
 
-		static ExpressionAst	*parse(Token& token);
+		IfExpressionAst(const Snippet& snippet) :
+		ExpressionAst(ExpressionType::If),
+		_snippet(snippet)
+		{}
+
+		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::If; }
 		const Snippet& snippet() const { return _snippet; }
 	};
 }

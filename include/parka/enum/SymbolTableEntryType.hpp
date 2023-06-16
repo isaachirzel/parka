@@ -1,15 +1,21 @@
 #ifndef PARKA_SYMBOL_TABLE_ENTRY_TYPE_HPP
 #define PARKA_SYMBOL_TABLE_ENTRY_TYPE_HPP
 
+#include <ostream>
 namespace parka
 {
 	enum class SymbolTableEntryType
 	{
 		Package,
+		Struct,
+		Primitive,
 		Function,
-		Entity
+		Variable,
+		Parameter,
+		Member
 	};
-	// TODO: Add print function
+
+	std::ostream& operator<<(std::ostream& out, const SymbolTableEntryType& type);
 }
 
 #endif

@@ -22,6 +22,7 @@ namespace parka::ast
 	public:
 
 		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation) :
+		EntityAst(EntityType::Variable, SymbolTableEntryType::Variable),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
@@ -35,7 +36,6 @@ namespace parka::ast
 		ir::EntityIr *context() { return _context; }
 		String getSymbol() const { return _identifier.text(); }
 
-		EntityType entityType() const { return EntityType::Variable; }
 		const Snippet& snippet() const { return _snippet; }
 		const String& name() const { return _identifier.text(); }
 		const Identifier& identifier() const { return _identifier; }

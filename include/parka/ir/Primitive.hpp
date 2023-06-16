@@ -2,6 +2,7 @@
 #define PARKA_AST_PRIMITIVE_HPP
 
 #include "parka/ast/Entity.hpp"
+#include "parka/symbol/SymbolTableEntry.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
@@ -17,7 +18,7 @@ namespace parka::ir
 		String
 	};
 
-	class Primitive : public SymbolTableEntry, public EntityIr
+	class Primitive : public SymbolTableEntry
 	{
 		String _name;
 		u32 _size;
@@ -52,12 +53,9 @@ namespace parka::ir
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
 
-		EntityIr *context() { return this; }
-
 		String getSymbol() const { return _name; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
-		EntityType entityType() const { return EntityType::Primitive; }
 		const ValueType *valueType() const;
 		const auto& primitiveType() const { return _type; }
 		const auto& size() const { return _size; }

@@ -10,8 +10,15 @@ namespace parka::ast
 {
 	struct StatementAst
 	{
+		const StatementType statementType;
+
+	public:
+
+		StatementAst(StatementType statementType) :
+		statementType(statementType)
+		{}
 		virtual ~StatementAst() {}
-		virtual StatementType statementType() const = 0;
+
 		virtual const Snippet& snippet() const = 0;
 		virtual ir::StatementIr *validate(SymbolTable& symbolTable) = 0;
 

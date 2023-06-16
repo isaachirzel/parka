@@ -7,8 +7,14 @@ namespace parka::ir
 {
 	struct StatementIr
 	{
+		const StatementType statementType;
+
+	public:
+
+		StatementIr(StatementType statementType) :
+		statementType(statementType)
+		{}
 		virtual ~StatementIr() {}
-		virtual StatementType statementType() const = 0;
 	};
 }
 

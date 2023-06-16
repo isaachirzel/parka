@@ -19,15 +19,16 @@ namespace parka::ast
 		return annotation;
 	}
 
-	Optional<ir::ValueType> TypeAnnotationAst::validate(SymbolTable& symbolTable) const
+	Optional<ir::ValueType> TypeAnnotationAst::validate(SymbolTable&) const
 	{
-		auto *entity = symbolTable.resolve(_identifier);
+		log::notImplemented(here());
+		// auto *entity = symbolTable.resolve(_identifier);
 
-		if (!entity)
-			return {};
+		// if (!entity)
+		// 	return {};
 
-		auto valueType = ir::ValueType(*entity);
+		// auto valueType = ir::ValueType(*entity);
 
-		return valueType;
+		// return valueType;
 	}
 }

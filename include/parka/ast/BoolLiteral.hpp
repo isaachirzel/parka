@@ -14,6 +14,7 @@ namespace parka::ast
 	public:
 
 		BoolLiteralAst(const Snippet& snippet, bool value) :
+		ExpressionAst(ExpressionType::BoolLiteral),
 		_snippet(snippet),
 		_value(value)
 		{}
@@ -23,7 +24,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::BoolLiteral; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& value() const { return _value; }
 	};

@@ -9,8 +9,15 @@ namespace parka::ast
 {
 	struct ExpressionAst
 	{
+		const ExpressionType expressionType;
+
+	public:
+
+		ExpressionAst(ExpressionType expressionType) :
+		expressionType(expressionType)
+		{}
 		virtual ~ExpressionAst() {}
-		virtual ExpressionType expressionType() const = 0;
+		
 		virtual const Snippet& snippet() const = 0;
 		virtual ir::ExpressionIr *validate(SymbolTable& symbolTable) = 0;
 		

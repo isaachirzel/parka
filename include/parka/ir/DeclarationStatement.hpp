@@ -2,6 +2,9 @@
 #define PARKA_IR_DECLARATION_STATEMENT_HPP
 
 #include "parka/ast/Statement.hpp"
+#include "parka/ir/Expression.hpp"
+#include "parka/ir/Statement.hpp"
+#include "parka/ir/Variable.hpp"
 
 namespace parka::ir
 {
@@ -13,13 +16,15 @@ namespace parka::ir
 	public:
 
 		DeclarationStatementIr(VariableIr& variable, ExpressionIr& value) :
+		StatementIr(StatementType::Declaration),
 		_variable(variable),
 		_value(value)
 		{}
 		DeclarationStatementIr(DeclarationStatementIr&&) = default;
 		DeclarationStatementIr(const DeclarationStatementIr&) = delete;
 
-		StatementType statementType() const { return StatementType::Declaration; }
+		const auto& variable() const { return _variable; }
+		const auto& value() const { return _value; }
 	};
 }
 

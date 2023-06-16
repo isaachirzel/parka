@@ -1,6 +1,7 @@
 #ifndef PARKA_AST_PACKAGE_HPP
 #define PARKA_AST_PACKAGE_HPP
 
+#include "parka/enum/EntityType.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/ir/Entity.hpp"
@@ -23,6 +24,8 @@ namespace parka::ast
 	public:
 
 		PackageAst(String&& identifier, Array<ModuleAst>&& modules, Array<PackageAst*>&& packages) :
+		SymbolTableEntry(SymbolTableEntryType::Package),
+		SymbolTable(SymbolTableType::Package),
 		_name(std::move(identifier)),
 		_modules(std::move(modules)),
 		_packages(std::move(packages)),
@@ -44,10 +47,8 @@ namespace parka::ast
 		String getSymbol() const;
 
 		ir::PackageIr *validate();
-		ir::EntityIr *context() { return validate(); }
+		// ir::EntityIr *context() { return validate(); }
 		
-		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
-		EntityType entityType() const { return EntityType::Package; }
 		const String& name() const { return _name; }
 		const auto& modules() const { return _modules; }
 		const auto& packages() const { return _packages; }

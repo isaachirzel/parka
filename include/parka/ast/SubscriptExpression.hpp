@@ -17,6 +17,7 @@ namespace parka::ast
 	public:
 
 		SubscriptExpressionAst(const Snippet& snippet, ExpressionAst& primary, ExpressionAst& index) :
+		ExpressionAst(ExpressionType::Subscript),
 		_snippet(snippet),
 		_primary(primary),
 		_index(index)
@@ -27,7 +28,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::Subscript; }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _primary; }
 		const auto& index() const { return _index; }

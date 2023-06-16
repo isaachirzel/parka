@@ -12,12 +12,12 @@ namespace parka::ir
 	public:
 
 		StringLiteralIr(String&& value) :
+		ExpressionIr(ExpressionType::StringLiteral),
 		_value(std::move(value))
 		{}
 		StringLiteralIr(StringLiteralIr&&) = default;
 		StringLiteralIr(const StringLiteralIr&) = delete;
 
-		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
 		const ValueType& valueType() const { return ValueType::stringType; }
 		const auto& value() const { return _value; }
 	};

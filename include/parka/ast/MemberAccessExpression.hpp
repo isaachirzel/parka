@@ -16,6 +16,7 @@ namespace parka::ast
 	public:
 
 		MemberAccessExpressionAst(ExpressionAst& expression, Identifier&& identifier) :
+		ExpressionAst(ExpressionType::MemberAccess),
 		_snippet(expression.snippet() + identifier.snippet()),
 		_expression(expression),
 		_identifier(std::move(identifier))
@@ -26,7 +27,6 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		ExpressionType expressionType() const { return ExpressionType::MemberAccess; }
 		const Snippet& snippet() const { return _snippet; }
 
 		const auto& expression() const { return _expression; }

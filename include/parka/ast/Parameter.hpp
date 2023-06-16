@@ -4,6 +4,7 @@
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/enum/SymbolTableEntryType.hpp"
 #include "parka/ir/Parameter.hpp"
 
 namespace parka::ast
@@ -20,6 +21,7 @@ namespace parka::ast
 	public:
 
 		ParameterAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isMutable) :
+		EntityAst(EntityType::Parameter, SymbolTableEntryType::Parameter),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
@@ -36,8 +38,7 @@ namespace parka::ast
 		String getSymbol() const;
 
 		const String& name() const { return _identifier.text(); }
-		const Identifier& identifier() const { return _identifier; }
-		EntityType entityType() const { return EntityType::Parameter; }
+		const Identifier& identifier() const { return _identifier; }		
 		const Snippet& snippet() const { return _snippet; }
 
 		const auto& annotation() const { return _annotation; }
