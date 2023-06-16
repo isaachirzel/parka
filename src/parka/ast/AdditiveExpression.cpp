@@ -53,9 +53,6 @@ namespace parka
 
 		// TODO: Operators
 
-		// print("lhs: $", lhs);
-		// print("rhs: $", rhs);
-
 		if (!lhs || !rhs)
 			return nullptr;
 
@@ -64,9 +61,12 @@ namespace parka
 
 		if (!rhsType.canConvertTo(lhsType))
 		{
-			log::error("$ cannot be added to $.", rhsType, lhsType);
+			log::error(_snippet, "$ cannot be added to $.", rhsType, lhsType);
 			return nullptr;
 		}
-		log::notImplemented(here());
+
+		auto *context = new AdditiveExpressionContext(*lhs, *rhs, _additiveType, ValueType(lhsType));
+
+		return context;
 	}
 }

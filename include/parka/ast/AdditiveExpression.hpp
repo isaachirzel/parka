@@ -41,15 +41,15 @@ namespace parka
 		Snippet _snippet;
 		ExpressionSyntax& _lhs;
 		ExpressionSyntax& _rhs;
-		AdditiveType _type;
+		AdditiveType _additiveType;
 		
 	public:
 
-		AdditiveExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AdditiveType type) :
+		AdditiveExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AdditiveType additiveType) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
-		_type(type)
+		_additiveType(additiveType)
 		{}
 		AdditiveExpressionSyntax(AdditiveExpressionSyntax&&) = default;
 		AdditiveExpressionSyntax(AdditiveExpressionSyntax&) = delete;
@@ -61,7 +61,7 @@ namespace parka
 		ExpressionType expressionType() const { return ExpressionType::Additive; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
-		const auto& type() const { return _type; }
+		const auto& additiveType() const { return _additiveType; }
 	};
 }
 

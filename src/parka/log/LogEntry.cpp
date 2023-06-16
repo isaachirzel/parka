@@ -48,6 +48,7 @@ namespace parka
 			out << Color::Yellow;
 			out << snippet.file().path() << ":" << snippet.line() << ":" << snippet.col();
 			out << Color::Reset;
+			out << "\n";
 		}
 
 		out << prompt << Color::Default << ": " << entry._message << Color::Reset << '\n';
