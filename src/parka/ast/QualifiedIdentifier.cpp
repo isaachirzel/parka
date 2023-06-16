@@ -1,7 +1,7 @@
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Identifier.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static bool parseAbsolute(Token& token)
 	{

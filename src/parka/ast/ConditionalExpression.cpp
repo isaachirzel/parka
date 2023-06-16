@@ -3,24 +3,24 @@
 #include "parka/ast/Keyword.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *ConditionalExpressionSyntax::parse(Token& token)
+	ExpressionAst *ConditionalExpressionAst::parse(Token& token)
 	{
-		auto condition = BooleanOrExpressionSyntax::parse(token);
-		auto keyword = KeywordSyntax::getKeywordType(token);
+		auto condition = BooleanOrExpressionAst::parse(token);
+		auto keyword = KeywordAst::getKeywordType(token);
 
 		if (keyword != KeywordType::Then)
 			return condition;
 
 		token.increment();
 
-		auto trueCase = ConditionalExpressionSyntax::parse(token);
+		auto trueCase = ConditionalExpressionAst::parse(token);
 
 		if (!trueCase)
 			return {};
 
-		keyword = KeywordSyntax::getKeywordType(token);
+		keyword = KeywordAst::getKeywordType(token);
 
 		if (keyword != KeywordType::Else)
 		{
@@ -30,17 +30,17 @@ namespace parka
 
 		token.increment();
 
-		auto falseCase = ConditionalExpressionSyntax::parse(token);
+		auto falseCase = ConditionalExpressionAst::parse(token);
 
 		if (!falseCase)
 			return {};
 
-		auto *syntax = new ConditionalExpressionSyntax(*condition, *trueCase, *falseCase);
+		auto *syntax = new ConditionalExpressionAst(*condition, *trueCase, *falseCase);
 
 		return syntax;
 	}
 
-	ExpressionContext *ConditionalExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *ConditionalExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

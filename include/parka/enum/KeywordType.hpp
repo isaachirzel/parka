@@ -25,7 +25,7 @@ namespace parka
 		Private,
 		Public,
 		Return,
-		StructSyntax,
+		StructAst,
 		Then,
 		True,
 		ValueType,

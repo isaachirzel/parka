@@ -1,8 +1,8 @@
-// #include "parka/repository/EntitySyntaxId.hpp"
+// #include "parka/repository/EntityAstId.hpp"
 
 // namespace parka
 // {
-// 	std::ostream& operator<<(std::ostream& out, const EntitySyntaxId& id)
+// 	std::ostream& operator<<(std::ostream& out, const EntityAstId& id)
 // 	{
 
 // 		out << id._type << "s[" << id._index << ']';
@@ -10,7 +10,7 @@
 // 		return out;
 // 	}
 
-// 	bool EntitySyntaxId::operator==(const EntitySyntaxId& other) const
+// 	bool EntityAstId::operator==(const EntityAstId& other) const
 // 	{
 // 		return _type == other._type && _index == other._index;
 // 	}
@@ -20,7 +20,7 @@
 // {
 // 	using namespace parka;
 
-// 	usize hash<EntitySyntaxId>::operator()(const EntitySyntaxId& key) const
+// 	usize hash<EntityAstId>::operator()(const EntityAstId& key) const
 // 	{
 // 		auto seed = (u64)key._index  | ((u64)key._type << 32);
 // 		auto hash = std::hash<usize>{}(seed);

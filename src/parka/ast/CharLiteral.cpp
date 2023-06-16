@@ -1,7 +1,7 @@
 #include "parka/ast/CharLiteral.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<char> parseChar(Token& token)
 	{
@@ -22,21 +22,21 @@ namespace parka
 		return character;
 	}
 
-	ExpressionSyntax *CharLiteralSyntax::parse(Token& token)
+	ExpressionAst *CharLiteralAst::parse(Token& token)
 	{
 		auto value = parseChar(token);
 
 		if (!value)
 			return {};
 
-		auto *syntax = new CharLiteralSyntax(token, *value);
+		auto *syntax = new CharLiteralAst(token, *value);
 
 		token.increment();
 
 		return syntax;
 	}
 
-	ExpressionContext *CharLiteralSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *CharLiteralAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

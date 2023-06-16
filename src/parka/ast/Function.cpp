@@ -1,4 +1,6 @@
 #include "parka/ast/Function.hpp"
+#include "parka/ir/Entity.hpp"
+#include "parka/ir/Function.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Identifier.hpp"
@@ -6,15 +8,15 @@
 #include "parka/ast/BlockExpression.hpp"
 #include "parka/ast/Package.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	static ExpressionSyntax *parseFunctionBody(Token& token)
+	static ExpressionAst *parseFunctionBody(Token& token)
 	{
 		if (token.type() == TokenType::DoubleArrow)
 		{
 			token.increment();
 
-			auto body = ExpressionSyntax::parse(token);
+			auto body = ExpressionAst::parse(token);
 
 			if (!body)
 				return {};
@@ -31,16 +33,16 @@ namespace parka
 		}
 
 		if (token.type() == TokenType::LeftBrace)
-			return BlockExpressionSyntax::parse(token);
+			return BlockExpressionAst::parse(token);
 		
 		log::parseError(token, "function body", "Functions require a body.");
 
 		return {};
 	}
 
-	FunctionSyntax *FunctionSyntax::parse(Token& token)
+	FunctionAst *FunctionAst::parse(Token& token)
 	{
-		auto prototype = PrototypeSyntax::parse(token);
+		auto prototype = PrototypeAst::parse(token);
 
 		if (!prototype)
 			return {};
@@ -50,12 +52,12 @@ namespace parka
 		if (!body)
 			return {};
 
-		auto *syntax = new FunctionSyntax(*prototype, *body);
+		auto *syntax = new FunctionAst(*prototype, *body);
 
 		return syntax;
 	}
 
-	FunctionContext *FunctionSyntax::validate()
+	ir::FunctionIr *FunctionAst::validate()
 	{
 		// TODO: Mutex
 		auto prototype = _prototype.validate(*this);
@@ -64,19 +66,19 @@ namespace parka
 		if (!prototype || !body)
 			return {};
 
-		auto *context = new FunctionContext(getSymbol(), *prototype, *body);
+		auto *context = new ir::FunctionIr(getSymbol(), *prototype, *body);
 
 		return context;
 	}
 
-	bool FunctionSyntax::declareSelf(PackageSyntax& parent)
+	bool FunctionAst::declareSelf(PackageAst& parent)
 	{
 		_parent = &parent;
 
 		return parent.declare(*this);
 	}
 
-	bool FunctionSyntax::declare(EntitySyntax& entity)
+	bool FunctionAst::declare(EntityAst& entity)
 	{
 		const auto& identifier = entity.identifier();
 		const auto& name = identifier.text();
@@ -87,7 +89,7 @@ namespace parka
 			{
 				log::error(identifier, "A $ `$` has already been declared in this function.", entity.entityType(), name);
 
-				auto *previous = dynamic_cast<EntitySyntax*>(symbol);
+				auto *previous = dynamic_cast<EntityAst*>(symbol);
 
 				if (previous != nullptr)
 					log::note(previous->identifier(), "Previous declaration here:");
@@ -101,7 +103,7 @@ namespace parka
 		return true;
 	}
 
-	EntityEntry *FunctionSyntax::find(const Identifier& identifier)
+	SymbolTableEntry *FunctionAst::find(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -114,7 +116,7 @@ namespace parka
 		return nullptr;
 	}
 
-	EntityContext *FunctionSyntax::resolve(const QualifiedIdentifier& identifier)
+	ir::EntityIr *FunctionAst::resolve(const QualifiedIdentifier& identifier)
 	{
 		if (identifier.isAbsolute() || identifier.length() > 1)
 			return _parent->resolve(identifier);
@@ -129,7 +131,7 @@ namespace parka
 		return global;
 	}
 
-	String FunctionSyntax::getSymbol() const
+	String FunctionAst::getSymbol() const
 	{
 		assert(_parent != nullptr);
 
@@ -141,12 +143,7 @@ namespace parka
 		return symbol;
 	}
 
-	const ValueType *FunctionContext::valueType() const
-	{
-		log::notImplemented(here());
-	}
-
-	std::ostream& operator<<(std::ostream& out, const FunctionSyntax& syntax)
+	std::ostream& operator<<(std::ostream& out, const FunctionAst& syntax)
 	{
 		out << syntax._prototype;
 

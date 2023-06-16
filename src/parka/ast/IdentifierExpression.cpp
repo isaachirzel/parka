@@ -1,18 +1,19 @@
 #include "parka/ast/IdentifierExpression.hpp"
+#include "parka/ir/IdentifierExpression.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	IdentifierExpressionSyntax *IdentifierExpressionSyntax::parse(Token& token)
+	IdentifierExpressionAst *IdentifierExpressionAst::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
-		auto *syntax = new IdentifierExpressionSyntax(*identifier);
+		auto *syntax = new IdentifierExpressionAst(*identifier);
 
 		return syntax;
 	}
 
-	ExpressionContext *IdentifierExpressionSyntax::validate(SymbolTable& symbolTable)
+	ir::ExpressionIr *IdentifierExpressionAst::validate(SymbolTable& symbolTable)
 	{
 		auto *entity = symbolTable.resolve(_identifier);
 
@@ -24,7 +25,7 @@ namespace parka
 		if (!valueType)
 			return nullptr;
 
-		auto *context = new IdentifierExpressionContext(*entity, ValueType(*valueType));
+		auto *context = new ir::IdentifierExpressionIr(*entity, ir::ValueType(*valueType));
 
 		return context;
 	}

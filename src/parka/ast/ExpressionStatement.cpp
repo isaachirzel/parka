@@ -1,11 +1,11 @@
 #include "parka/ast/ExpressionStatement.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	StatementSyntax *ExpressionStatementSyntax::parse(Token& token)
+	StatementAst *ExpressionStatementAst::parse(Token& token)
 	{
-		auto expression = ExpressionSyntax::parse(token);
+		auto expression = ExpressionAst::parse(token);
 
 		if (!expression)
 			return {};
@@ -20,12 +20,12 @@ namespace parka
 
 		token.increment();
 
-		auto *syntax = new ExpressionStatementSyntax(snippet, *expression);
+		auto *syntax = new ExpressionStatementAst(snippet, *expression);
 
 		return syntax;
 	}
 
-	StatementContext *ExpressionStatementSyntax::validate(SymbolTable&)
+	ir::StatementIr *ExpressionStatementAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

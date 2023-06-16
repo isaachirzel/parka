@@ -1,11 +1,11 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_LITERAL_CHAR_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_LITERAL_CHAR_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_LITERAL_CHAR_HPP
+#define PARKA_AST_EXPRESSION_LITERAL_CHAR_HPP
 
-#include "parka/ast/Literal.hpp"
+#include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class CharLiteralSyntax : public ExpressionSyntax
+	class CharLiteralAst : public ExpressionAst
 	{
 		Snippet _snippet;
 		char _value;
@@ -13,15 +13,15 @@ namespace parka
 
 	public:
 
-		CharLiteralSyntax(const Snippet& snippet, char value) :
+		CharLiteralAst(const Snippet& snippet, char value) :
 		_snippet(snippet),
 		_value(value)
 		{}
-		CharLiteralSyntax(CharLiteralSyntax&&) = default;
-		CharLiteralSyntax(const CharLiteralSyntax&) = delete;
+		CharLiteralAst(CharLiteralAst&&) = default;
+		CharLiteralAst(const CharLiteralAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::CharLiteral; }
 		const Snippet& snippet() const { return _snippet; }

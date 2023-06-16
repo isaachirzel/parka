@@ -1,12 +1,12 @@
-#ifndef PARKA_SYNTAX_IDENTIFIER_SYNTAX_HPP
-#define PARKA_SYNTAX_IDENTIFIER_SYNTAX_HPP
+#ifndef PARKA_AST_IDENTIFIER_HPP
+#define PARKA_AST_IDENTIFIER_HPP
 
 #include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
 #include <ostream>
 
-namespace parka
+namespace parka::ast
 {
 	class Identifier
 	{

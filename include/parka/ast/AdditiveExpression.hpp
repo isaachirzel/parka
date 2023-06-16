@@ -1,61 +1,31 @@
-#ifndef PARKA_SYNTAX_ADDITIVE_EXPRESSION_SYNTAX_HPP
-#define PARKA_SYNTAX_ADDITIVE_EXPRESSION_SYNTAX_HPP
+#ifndef PARKA_AST_ADDITIVE_EXPRESSION_HPP
+#define PARKA_AST_ADDITIVE_EXPRESSION_HPP
 
 #include "parka/ast/Expression.hpp"
+#include "parka/enum/AdditiveType.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	enum class AdditiveType
-	{
-		Add,
-		Subtract
-	};
-
-	class AdditiveExpressionContext : public ExpressionContext
-	{
-		ExpressionContext& _lhs;
-		ExpressionContext& _rhs;
-		AdditiveType _additiveType;
-		ValueType _valueType;
-
-	public:
-
-		AdditiveExpressionContext(ExpressionContext& lhs, ExpressionContext& rhs, AdditiveType additiveType, ValueType&& valueType) :
-		_lhs(lhs),
-		_rhs(rhs),
-		_additiveType(additiveType),
-		_valueType(std::move(valueType))
-		{}
-		AdditiveExpressionContext(AdditiveExpressionContext&&) = default;
-		AdditiveExpressionContext(const AdditiveExpressionContext&) = delete;
-
-		ExpressionType expressionType() const { return ExpressionType::Additive; }
-		const ValueType& valueType() const { return _valueType; }
-		const auto& lhs() const { return _lhs; }
-		const auto& rhs() const { return _rhs; }
-		const auto& additiveType() const { return _additiveType; }
-	};
-
-	class AdditiveExpressionSyntax : public ExpressionSyntax
+	class AdditiveExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 		AdditiveType _additiveType;
 		
 	public:
 
-		AdditiveExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, AdditiveType additiveType) :
+		AdditiveExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, AdditiveType additiveType) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
 		_additiveType(additiveType)
 		{}
-		AdditiveExpressionSyntax(AdditiveExpressionSyntax&&) = default;
-		AdditiveExpressionSyntax(AdditiveExpressionSyntax&) = delete;
+		AdditiveExpressionAst(AdditiveExpressionAst&&) = default;
+		AdditiveExpressionAst(AdditiveExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		const Snippet& snippet() const { return _snippet; }
 		ExpressionType expressionType() const { return ExpressionType::Additive; }

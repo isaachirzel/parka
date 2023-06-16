@@ -1,50 +1,32 @@
-#ifndef PARKA_SYNTAX_STRUCT_SYNTAX_HPP
-#define PARKA_SYNTAX_STRUCT_SYNTAX_HPP
+#ifndef PARKA_AST_STRUCT_HPP
+#define PARKA_AST_STRUCT_HPP
 
 #include "parka/ast/Identifier.hpp"
 #include "parka/enum/SymbolTableType.hpp"
+#include "parka/ir/Struct.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Member.hpp"
 #include "parka/ast/Entity.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Table.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class PackageSyntax;
+	class PackageAst;
 
-	class StructContext : public EntityContext
-	{
-		String _symbol;
-
-	public:
-
-		StructContext(String&& symbol) :
-		_symbol(std::move(symbol))
-		{}
-		StructContext(StructContext&&) = default;
-		StructContext(const StructContext&) = delete;
-
-		static StructContext *validate();
-		
-		EntityType type() const { return EntityType::Struct; }
-		const String& symbol() const { return _symbol; }
-		const ValueType *valueType() const;
-	};
-
-	class StructSyntax : public EntitySyntax, public SymbolTable
+	class StructAst : public EntityAst, public SymbolTable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
-		Array<MemberSyntax*> _members;
-		Table<String, EntityEntry*> _symbols;
-		PackageSyntax *_parent;
-		StructContext *_context;
+		Array<MemberAst*> _members;
+		Table<String, SymbolTableEntry*> _symbols;
+		PackageAst *_parent;
+		ir::StructIr *_context;
 
 	public:
 
-		StructSyntax(const Snippet& snippet, Identifier&& identifier, Array<MemberSyntax*>&& members) :
+		StructAst(const Snippet& snippet, Identifier&& identifier, Array<MemberAst*>&& members) :
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_members(std::move(members)),
@@ -52,16 +34,16 @@ namespace parka
 		_parent(nullptr),
 		_context(nullptr)
 		{}
-		StructSyntax(StructSyntax&&) = default;
-		StructSyntax(const StructSyntax&) = delete;
+		StructAst(StructAst&&) = default;
+		StructAst(const StructAst&) = delete;
 
-		static StructSyntax *parse(Token& token);
-		bool declare(EntitySyntax& entity);
-		bool declareSelf(PackageSyntax& parent);
-		EntityEntry *find(const Identifier& identifier);
-		EntityContext *resolve(const QualifiedIdentifier& identifier);
-		StructContext *validate();
-		EntityContext *context() { return validate(); }
+		static StructAst *parse(Token& token);
+		bool declare(EntityAst& entity);
+		bool declareSelf(PackageAst& parent);
+		SymbolTableEntry *find(const Identifier& identifier);
+		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
+		ir::StructIr *validate();
+		ir::EntityIr *context() { return validate(); }
 		String getSymbol() const;
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Struct; }
@@ -71,7 +53,7 @@ namespace parka
 		const Identifier& identifier() const { return _identifier; }
 		const auto& members() const { return _members; }
 
-		friend std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax);
+		friend std::ostream& operator<<(std::ostream& out, const StructAst& syntax);
 	};
 }
 

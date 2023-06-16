@@ -1,41 +1,24 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_LITERAL_STRING_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_LITERAL_STRING_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_LITERAL_STRING_HPP
+#define PARKA_AST_EXPRESSION_LITERAL_STRING_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class StringLiteralContext : public ExpressionContext
-	{
-		String _value;
-
-	public:
-
-		StringLiteralContext(String&& value) :
-		_value(std::move(value))
-		{}
-		StringLiteralContext(StringLiteralContext&&) = default;
-		StringLiteralContext(const StringLiteralContext&) = delete;
-
-		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
-		const ValueType& valueType() const { return ValueType::stringType; }
-		const auto& value() const { return _value; }
-	};
-
-	class StringLiteralSyntax : public ExpressionSyntax
+	class StringLiteralAst : public ExpressionAst
 	{
 		Snippet _snippet;
 
 	public:
 
-		StringLiteralSyntax(const Snippet& snippet) :
+		StringLiteralAst(const Snippet& snippet) :
 		_snippet(snippet)
 		{}
-		StringLiteralSyntax(StringLiteralSyntax&&) = default;
-		StringLiteralSyntax(const StringLiteralSyntax&) = delete;
+		StringLiteralAst(StringLiteralAst&&) = default;
+		StringLiteralAst(const StringLiteralAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 		
 		ExpressionType expressionType() const { return ExpressionType::StringLiteral; }
 		const Snippet& snippet() const { return _snippet; }

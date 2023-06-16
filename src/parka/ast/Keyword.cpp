@@ -6,11 +6,11 @@
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	const Table<String, KeywordType> KeywordSyntax::keywords = initKeywords();
+	const Table<String, KeywordType> KeywordAst::keywords = initKeywords();
 
-	Table<String, KeywordType> KeywordSyntax::initKeywords()
+	Table<String, KeywordType> KeywordAst::initKeywords()
 	{
 		auto keywords = Table<String, KeywordType>(25);
 			
@@ -31,7 +31,7 @@ namespace parka
 		keywords.insert("match", KeywordType::Match);
 		keywords.insert("mut", KeywordType::Mut);
 		keywords.insert("return", KeywordType::Return);
-		keywords.insert("struct", KeywordType::StructSyntax);
+		keywords.insert("struct", KeywordType::StructAst);
 		keywords.insert("then", KeywordType::Then);
 		keywords.insert("true", KeywordType::True);
 		keywords.insert("type", KeywordType::ValueType);
@@ -43,7 +43,7 @@ namespace parka
 		return keywords;
 	}
 
-	KeywordType KeywordSyntax::getKeywordType(const Token& token)
+	KeywordType KeywordAst::getKeywordType(const Token& token)
 	{
 		if (token.type() != TokenType::Identifier)
 			return {};
@@ -57,7 +57,7 @@ namespace parka
 		return *keywordType;
 	}
 
-	Optional<KeywordSyntax> KeywordSyntax::parseBool(Token& token)
+	Optional<KeywordAst> KeywordAst::parseBool(Token& token)
 	{
 		auto type = getKeywordType(token);
 
@@ -67,31 +67,31 @@ namespace parka
 			return {};
 		}
 
-		auto keyword = KeywordSyntax(token, type);
+		auto keyword = KeywordAst(token, type);
 
 		token.increment();
 		
 		return keyword;
 	}
 
-	Optional<KeywordSyntax> KeywordSyntax::parseStruct(Token& token)
+	Optional<KeywordAst> KeywordAst::parseStruct(Token& token)
 	{
 		auto type = getKeywordType(token);
 
-		if (type != KeywordType::StructSyntax)
+		if (type != KeywordType::StructAst)
 		{
 			log::parseError(token, "`struct` keyword");
 			return {};
 		}
 
-		auto keyword = KeywordSyntax(token, type);
+		auto keyword = KeywordAst(token, type);
 
 		token.increment();
 
 		return keyword;
 	}
 
-	Optional<KeywordSyntax> KeywordSyntax::parseVar(Token& token)
+	Optional<KeywordAst> KeywordAst::parseVar(Token& token)
 	{
 		auto type = getKeywordType(token);
 
@@ -101,14 +101,14 @@ namespace parka
 			return {};
 		}
 
-		auto keyword = KeywordSyntax(token, type);
+		auto keyword = KeywordAst(token, type);
 
 		token.increment();
 
 		return keyword;
 	}
 
-	Optional<KeywordSyntax> KeywordSyntax::parseFunction(Token &token)
+	Optional<KeywordAst> KeywordAst::parseFunction(Token &token)
 	{
 		auto type = getKeywordType(token);
 
@@ -118,14 +118,14 @@ namespace parka
 			return {};
 		}
 
-		auto keyword = KeywordSyntax(token, type);
+		auto keyword = KeywordAst(token, type);
 
 		token.increment();
 		
 		return keyword;
 	}
 
-	Optional<KeywordSyntax> KeywordSyntax::parseOperator(Token &token)
+	Optional<KeywordAst> KeywordAst::parseOperator(Token &token)
 	{
 		auto type = getKeywordType(token);
 
@@ -135,21 +135,21 @@ namespace parka
 			return {};
 		}
 
-		auto keyword = KeywordSyntax(token, type);
+		auto keyword = KeywordAst(token, type);
 
 		token.increment();
 
 		return keyword;
 	}
 
-	Optional<KeywordSyntax> KeywordSyntax::parseMut(Token &token)
+	Optional<KeywordAst> KeywordAst::parseMut(Token &token)
 	{
 		auto type = getKeywordType(token);
 
 		if (type != KeywordType::Mut)
 			return {};
 
-		auto keyword = KeywordSyntax(token, type);
+		auto keyword = KeywordAst(token, type);
 
 		token.increment();
 

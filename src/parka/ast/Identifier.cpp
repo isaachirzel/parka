@@ -3,7 +3,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	Optional<Identifier> Identifier::parse(Token& token)
 	{

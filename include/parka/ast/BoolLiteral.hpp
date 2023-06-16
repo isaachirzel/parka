@@ -1,43 +1,27 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_LITERAL_BOOL_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_LITERAL_BOOL_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_LITERAL_BOOL_HPP
+#define PARKA_AST_EXPRESSION_LITERAL_BOOL_HPP
 
 #include "parka/ast/Expression.hpp"
+#include "parka/ir/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class BoolLiteralContext : public ExpressionContext
-	{
-		bool _value;
-
-	public:
-
-		BoolLiteralContext(bool value) :
-		_value(value)
-		{}
-		BoolLiteralContext(BoolLiteralContext&&) = default;
-		BoolLiteralContext(const BoolLiteralContext&) = delete;
-
-		const ValueType& valueType() const { return ValueType::boolType; }
-		ExpressionType expressionType() const { return ExpressionType::BoolLiteral; }
-		const auto& value() const { return _value; }
-	};
-
-	class BoolLiteralSyntax : public ExpressionSyntax
+	class BoolLiteralAst : public ExpressionAst
 	{
 		Snippet _snippet;
 		bool _value;
 
 	public:
 
-		BoolLiteralSyntax(const Snippet& snippet, bool value) :
+		BoolLiteralAst(const Snippet& snippet, bool value) :
 		_snippet(snippet),
 		_value(value)
 		{}
-		BoolLiteralSyntax(BoolLiteralSyntax&&) = default;
-		BoolLiteralSyntax(const BoolLiteralSyntax&) = delete;
+		BoolLiteralAst(BoolLiteralAst&&) = default;
+		BoolLiteralAst(const BoolLiteralAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BoolLiteral; }
 		const Snippet& snippet() const { return _snippet; }

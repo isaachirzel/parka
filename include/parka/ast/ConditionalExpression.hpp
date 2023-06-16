@@ -1,31 +1,31 @@
 
-#ifndef PARKA_SYNTAX_EXPRESSION_CONDITIONAL_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_CONDITIONAL_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_CONDITIONAL_HPP
+#define PARKA_AST_EXPRESSION_CONDITIONAL_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class ConditionalExpressionSyntax : public ExpressionSyntax
+	class ConditionalExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _condition;
-		ExpressionSyntax& _trueCase;
-		ExpressionSyntax& _falseCase;
+		ExpressionAst& _condition;
+		ExpressionAst& _trueCase;
+		ExpressionAst& _falseCase;
 
 	public:
 
-		ConditionalExpressionSyntax(ExpressionSyntax& condition, ExpressionSyntax& trueCase, ExpressionSyntax& falseCase) :
+		ConditionalExpressionAst(ExpressionAst& condition, ExpressionAst& trueCase, ExpressionAst& falseCase) :
 		_snippet(condition.snippet() + falseCase.snippet()),
 		_condition(condition),
 		_trueCase(trueCase),
 		_falseCase(falseCase)
 		{}
-		ConditionalExpressionSyntax(ConditionalExpressionSyntax&&) = default;
-		ConditionalExpressionSyntax(const ConditionalExpressionSyntax&) = delete;
+		ConditionalExpressionAst(ConditionalExpressionAst&&) = default;
+		ConditionalExpressionAst(const ConditionalExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Conditional; }
 		const Snippet& snippet() const { return _snippet; }

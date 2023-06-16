@@ -1,31 +1,31 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_EQUALITY_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_EQUALITY_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_EQUALITY_HPP
+#define PARKA_AST_EXPRESSION_EQUALITY_HPP
 
 #include "parka/enum/EqualityType.hpp"
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class EqualityExpressionSyntax : public ExpressionSyntax
+	class EqualityExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 		EqualityType _type;
 
 	public:
 
-		EqualityExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, EqualityType type) :
+		EqualityExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, EqualityType type) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-		EqualityExpressionSyntax(EqualityExpressionSyntax&&) = default;
-		EqualityExpressionSyntax(const EqualityExpressionSyntax&) = delete;
+		EqualityExpressionAst(EqualityExpressionAst&&) = default;
+		EqualityExpressionAst(const EqualityExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Equality; }
 		const Snippet& snippet() const { return _snippet; }

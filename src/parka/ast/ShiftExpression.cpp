@@ -2,7 +2,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/AdditiveExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<ShiftType> parseBitShiftType(Token& token)
 	{
@@ -19,9 +19,9 @@ namespace parka
 		}
 	}
 
-	ExpressionSyntax *ShiftExpressionSyntax::parse(Token& token)
+	ExpressionAst *ShiftExpressionAst::parse(Token& token)
 	{
-		auto *lhs = AdditiveExpressionSyntax::parse(token);
+		auto *lhs = AdditiveExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -32,19 +32,19 @@ namespace parka
 		{
 			token.increment();
 
-			auto rhs = AdditiveExpressionSyntax::parse(token);
+			auto rhs = AdditiveExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 
-			lhs = new ShiftExpressionSyntax(*lhs, *rhs, *type);
+			lhs = new ShiftExpressionAst(*lhs, *rhs, *type);
 			type = parseBitShiftType(token);
 		}
 
 		return lhs;
 	}
 
-	ExpressionContext *ShiftExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *ShiftExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

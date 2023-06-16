@@ -2,7 +2,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/RelationalExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<EqualityType> getEqualityType(Token& token)
 	{
@@ -19,9 +19,9 @@ namespace parka
 		}
 	}
 
-	ExpressionSyntax *EqualityExpressionSyntax::parse(Token& token)
+	ExpressionAst *EqualityExpressionAst::parse(Token& token)
 	{
-		auto *lhs = RelationalExpressionSyntax::parse(token);
+		auto *lhs = RelationalExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -32,19 +32,19 @@ namespace parka
 		{
 			token.increment();
 
-			auto rhs = RelationalExpressionSyntax::parse(token);
+			auto rhs = RelationalExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 
-			lhs = new EqualityExpressionSyntax(*lhs, *rhs, *type);
+			lhs = new EqualityExpressionAst(*lhs, *rhs, *type);
 			type = getEqualityType(token);
 		}
 
 		return lhs;
 	}
 
-	ExpressionContext *EqualityExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *EqualityExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

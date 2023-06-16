@@ -1,52 +1,37 @@
 #include "parka/ast/Package.hpp"
-#include "parka/intrinsic/Primitive.hpp"
+#include "parka/ir/Package.hpp"
+#include "parka/ir/Primitive.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Entity.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	PackageSyntax::PackageSyntax(String&& identifier, Array<ModuleSyntax>&& modules, Array<PackageSyntax*>&& packages) :
-	_name(std::move(identifier)),
-	_modules(std::move(modules)),
-	_packages(std::move(packages)),
-	_symbols(),
-	_parent(nullptr),
-	_context(nullptr)
-	{}
-
-	PackageContext::PackageContext(String&& symbol, Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs) :
-	_symbol(std::move(symbol)),
-	_packages(std::move(packages)),
-	_functions(std::move(functions)),
-	_structs(std::move(structs))
-	{}
-
-	PackageSyntax *PackageSyntax::parse(const Directory& directory, const String& name)
+	PackageAst *PackageAst::parse(const Directory& directory, const String& name)
 	{
 		// TODO: Add multithreading
-		auto modules = Array<ModuleSyntax>(directory.files().length());
-		auto packages = Array<PackageSyntax*>(directory.subdirectories().length());
+		auto modules = Array<ModuleAst>(directory.files().length());
+		auto packages = Array<PackageAst*>(directory.subdirectories().length());
 
 		for (const auto& file : directory.files())
-			modules.push(ModuleSyntax::parse(file));
+			modules.push(ModuleAst::parse(file));
 
 		for (const auto& subdirectory : directory.subdirectories())
-			packages.push(PackageSyntax::parse(subdirectory, subdirectory.name()));
+			packages.push(PackageAst::parse(subdirectory, subdirectory.name()));
 
-		auto *syntax = new PackageSyntax(String(name), std::move(modules), std::move(packages));
+		auto *syntax = new PackageAst(String(name), std::move(modules), std::move(packages));
 
 		return syntax;
 	}
 
-	PackageContext *PackageSyntax::validate()
+	ir::PackageIr *PackageAst::validate()
 	{
 		auto success = true;
-		auto packages = Array<PackageContext*>();
-		auto functions = Array<FunctionContext*>();
-		auto structs = Array<StructContext*>();
+		auto packages = Array<ir::PackageIr*>();
+		auto functions = Array<ir::FunctionIr*>();
+		auto structs = Array<ir::StructIr*>();
 
 		for (auto& mod : _modules)
 		{
@@ -90,12 +75,12 @@ namespace parka
 		if (!success)
 			return {};
 
-		auto *context = new PackageContext(getSymbol(), std::move(packages), std::move(functions), std::move(structs));
+		auto *context = new ir::PackageIr(getSymbol(), std::move(packages), std::move(functions), std::move(structs));
 
 		return context;
 	}
 
-	bool PackageSyntax::declare(EntitySyntax& entity)
+	bool PackageAst::declare(EntityAst& entity)
 	{
 		// TODO: Invalidate symbol on failure, better error
 		const auto& identifier = entity.name();
@@ -110,14 +95,14 @@ namespace parka
 		return result;
 	}
 
-	bool PackageSyntax::declareSelf(PackageSyntax *parent)
+	bool PackageAst::declareSelf(PackageAst *parent)
 	{
 		// TODO: Actual error checking
 		const auto isGlobalPackage = parent == nullptr;
 
 		if (isGlobalPackage)
 		{
-			for (auto *primitive : Primitive::primitives)
+			for (auto *primitive : ir::Primitive::primitives)
 			{
 				_symbols.insert(primitive->name(), primitive);
 			}
@@ -143,7 +128,7 @@ namespace parka
 		return true;
 	}
 
-	EntityEntry *PackageSyntax::findInitial(const Identifier& identifier)
+	SymbolTableEntry *PackageAst::findInitial(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = this;
@@ -165,7 +150,7 @@ namespace parka
 		return nullptr;
 	}
 
-	EntityEntry *PackageSyntax::findAbsolute(const Identifier& identifier)
+	SymbolTableEntry *PackageAst::findAbsolute(const Identifier& identifier)
 	{
 		auto *package = this;
 		auto *parent = _parent;
@@ -183,7 +168,7 @@ namespace parka
 		return entry;
 	}
 
-	EntityEntry *PackageSyntax::find(const Identifier& identifier)
+	SymbolTableEntry *PackageAst::find(const Identifier& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -193,7 +178,7 @@ namespace parka
 		return nullptr;
 	}
 
-	EntityContext *PackageSyntax::resolve(const QualifiedIdentifier& qualifiedIdentifier)
+	ir::EntityIr *PackageAst::resolve(const QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];
@@ -227,7 +212,7 @@ namespace parka
 		return nullptr;
 	}
 
-	String PackageSyntax::getSymbol() const
+	String PackageAst::getSymbol() const
 	{
 		if (_parent == nullptr)
 		{
@@ -247,13 +232,7 @@ namespace parka
 		return symbol;
 	}
 
-	const ValueType *PackageContext::valueType() const
-	{
-		log::error("Unable to get value of package `$`.", _symbol);
-		return nullptr;
-	}
-
-	std::ostream& operator<<(std::ostream& out, const PackageSyntax& syntax)
+	std::ostream& operator<<(std::ostream& out, const PackageAst& syntax)
 	{
 		auto indent = Indent(out);
 

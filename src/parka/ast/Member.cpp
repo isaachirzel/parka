@@ -1,15 +1,16 @@
 #include "parka/ast/Member.hpp"
+#include "parka/ir/Member.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static bool parsePublicity(Token& token)
 	{
-		auto keywordType = KeywordSyntax::getKeywordType(token);
+		auto keywordType = KeywordAst::getKeywordType(token);
 
 		if (keywordType == KeywordType::Public)
 		{
@@ -23,7 +24,7 @@ namespace parka
 		return false;
 	}
 
-	MemberSyntax *MemberSyntax::parse(Token& token)
+	MemberAst *MemberAst::parse(Token& token)
 	{
 		auto first = Snippet(token);
 		bool isPublic = parsePublicity(token);
@@ -41,30 +42,30 @@ namespace parka
 		
 		token.increment();
 
-		auto annotation = TypeAnnotationSyntax::parse(token);
+		auto annotation = TypeAnnotationAst::parse(token);
 
 		if (!annotation)
 			return {};
 			
 		auto snippet = first + annotation->snippet();
-		auto *syntax = new MemberSyntax(snippet, *identifier, *annotation, isPublic);
+		auto *syntax = new MemberAst(snippet, *identifier, *annotation, isPublic);
 
 		return syntax;
 	}
 
-	bool MemberSyntax::declareSelf(SymbolTable& parent)
+	bool MemberAst::declareSelf(SymbolTable& parent)
 	{
 		_parent = &parent;
 
 		return parent.declare(*this);
 	}
 
-	MemberContext *MemberSyntax::validate()
+	ir::MemberIr *MemberAst::validate()
 	{
 		log::notImplemented(here());
 	}
 
-	String MemberSyntax::getSymbol() const
+	String MemberAst::getSymbol() const
 	{
 		// TODO: Differentiate between static and regular
 

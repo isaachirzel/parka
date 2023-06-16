@@ -5,15 +5,15 @@
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	Optional<PrototypeSyntax> PrototypeSyntax::parse(Token& token)
+	Optional<PrototypeAst> PrototypeAst::parse(Token& token)
 	{
-		auto keyword = KeywordSyntax::parseFunction(token);
+		auto keyword = KeywordAst::parseFunction(token);
 
 		if (!keyword)
 			return {};
@@ -31,13 +31,13 @@ namespace parka
 
 		token.increment();
 
-		auto parameters = Array<ParameterSyntax*>();
+		auto parameters = Array<ParameterAst*>();
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
 			while (true)
 			{
-				auto parameter = ParameterSyntax::parse(token);
+				auto parameter = ParameterAst::parse(token);
 
 				if (!parameter) // TODO: Attempt to fast forward to parameter
 					return {};
@@ -64,13 +64,13 @@ namespace parka
 		
 		token.increment();
 
-		Optional<TypeAnnotationSyntax> returnType;
+		Optional<TypeAnnotationAst> returnType;
 
 		if (token.type() == TokenType::SingleArrow)
 		{
 			token.increment();
 
-			returnType = TypeAnnotationSyntax::parse(token);
+			returnType = TypeAnnotationAst::parse(token);
 
 			if (!returnType)
 				return {};
@@ -79,28 +79,28 @@ namespace parka
 		}
 
 		auto snippet = keyword->snippet() + end;
-		auto prototype = PrototypeSyntax(snippet, *identifier, std::move(parameters), std::move(returnType));
+		auto prototype = PrototypeAst(snippet, *identifier, std::move(parameters), std::move(returnType));
 
 		return prototype;
 	}
 
-	static Optional<ValueType> validateReturnType(Optional<TypeAnnotationSyntax>& syntax, SymbolTable& symbolTable)
+	static Optional<ir::ValueType> validateReturnType(Optional<TypeAnnotationAst>& syntax, SymbolTable& symbolTable)
 	{
 		if (!syntax)
-			return ValueType::voidType;
+			return ir::ValueType::voidType;
 
 		return syntax->validate(symbolTable);
 	}
 
-	Optional<PrototypeContext> PrototypeSyntax::validate(SymbolTable& symbolTable)
+	Optional<ir::PrototypeIr> PrototypeAst::validate(SymbolTable& symbolTable)
 	{
 		auto success = true;
 		const auto parameterCount = _parameters.length();
-		auto parameters = Array<ParameterContext*>(parameterCount);
+		auto parameters = Array<ir::ParameterIr*>(parameterCount);
 
-		for (auto *parameterSyntax : _parameters)
+		for (auto *parameterAst : _parameters)
 		{
-			auto *context = parameterSyntax->validate(symbolTable);
+			auto *context = parameterAst->validate(symbolTable);
 
 			if (context == nullptr)
 			{
@@ -119,12 +119,12 @@ namespace parka
 		if (!success)
 			return {};
 
-		auto context = PrototypeContext(std::move(parameters), *returnType);
+		auto context = ir::PrototypeIr(std::move(parameters), *returnType);
 
 		return context;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const PrototypeSyntax& syntax)
+	std::ostream& operator<<(std::ostream& out, const PrototypeAst& syntax)
 	{
 		out << "function " << syntax._identifier << '(';
 

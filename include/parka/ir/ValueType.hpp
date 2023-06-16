@@ -5,17 +5,17 @@
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
 
-namespace parka
+namespace parka::ir
 {
-	struct EntityContext;
+	struct EntityIr;
 
 	class ValueType
 	{
 	private:
 
-		EntityContext& _entity;
+		EntityIr& _entity;
 		// TODO: Add pointer info
-		// TODO: Add LiteralSyntax for better type inference?
+		// TODO: Add LiteralAst for better type inference?
 		
 	public:
 
@@ -36,7 +36,7 @@ namespace parka
 		
 	public:
 
-		ValueType(EntityContext& entity);
+		ValueType(EntityIr& entity);
 		ValueType(ValueType&&) = default;
 		ValueType(const ValueType&) = default;
 

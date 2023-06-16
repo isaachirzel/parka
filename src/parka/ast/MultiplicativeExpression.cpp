@@ -2,7 +2,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/PrefixExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<MultiplicativeType> getMultiplicativeType(Token& token)
 	{
@@ -22,9 +22,9 @@ namespace parka
 		}
 	}
 
-	ExpressionSyntax *MultiplicativeExpressionSyntax::parse(Token& token)
+	ExpressionAst *MultiplicativeExpressionAst::parse(Token& token)
 	{
-		auto *lhs = PrefixExpressionSyntax::parse(token);
+		auto *lhs = PrefixExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -35,19 +35,19 @@ namespace parka
 		{
 			token.increment();
 			
-			auto rhs = PrefixExpressionSyntax::parse(token);
+			auto rhs = PrefixExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 
-			lhs = new MultiplicativeExpressionSyntax(*lhs, *rhs, *type);
+			lhs = new MultiplicativeExpressionAst(*lhs, *rhs, *type);
 			type = getMultiplicativeType(token);
 		}
 
 		return lhs;
 	}
 
-	ExpressionContext *MultiplicativeExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *MultiplicativeExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

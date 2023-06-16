@@ -1,5 +1,5 @@
-#ifndef PARKA_SYNTAX_MODULE_SYNTAX_HPP
-#define PARKA_SYNTAX_MODULE_SYNTAX_HPP
+#ifndef PARKA_AST_MODULE_HPP
+#define PARKA_AST_MODULE_HPP
 
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Function.hpp"
@@ -11,27 +11,27 @@
 
 #include <ostream>
 
-namespace parka
+namespace parka::ast
 {
-	class ModuleSyntax
+	class ModuleAst
 	{
 		String _filepath;
-		Array<FunctionSyntax*> _functions;
-		Array<StructSyntax*> _structs;
+		Array<FunctionAst*> _functions;
+		Array<StructAst*> _structs;
 
 	public:
 
-		ModuleSyntax(String&& filepath, Array<FunctionSyntax*>&& functions, Array<StructSyntax*>&& structs);
-		ModuleSyntax(ModuleSyntax&&) = default;
-		ModuleSyntax(const ModuleSyntax&) = delete;
+		ModuleAst(String&& filepath, Array<FunctionAst*>&& functions, Array<StructAst*>&& structs);
+		ModuleAst(ModuleAst&&) = default;
+		ModuleAst(const ModuleAst&) = delete;
 
-		static ModuleSyntax parse(const File& file);
+		static ModuleAst parse(const File& file);
 
 		const auto& filename() const { return _filepath; }
 		const auto& functions() const { return _functions; }
 		const auto& structs() const { return _structs; }
 
-		friend std::ostream& operator<<(std::ostream& out, const ModuleSyntax& mod);
+		friend std::ostream& operator<<(std::ostream& out, const ModuleAst& mod);
 	};
 }
 

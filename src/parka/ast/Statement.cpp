@@ -3,28 +3,28 @@
 #include "parka/ast/JumpStatement.hpp"
 #include "parka/ast/Keyword.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	StatementSyntax *StatementSyntax::parse(Token& token)
+	StatementAst *StatementAst::parse(Token& token)
 	{
-		auto keywordType = KeywordSyntax::getKeywordType(token);
+		auto keywordType = KeywordAst::getKeywordType(token);
 
 		switch (keywordType)
 		{
 			case KeywordType::Var:
-				return DeclarationStatementSyntax::parse(token);
+				return DeclarationStatementAst::parse(token);
 
 			case KeywordType::Return:
 			case KeywordType::Break:
 			case KeywordType::Continue:
 			case KeywordType::Yield:
-				return JumpStatementSyntax::parse(token);
+				return JumpStatementAst::parse(token);
 
 			default:
 				break;
 		}
 
-		return ExpressionStatementSyntax::parse(token);
+		return ExpressionStatementAst::parse(token);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const StatementType& type)

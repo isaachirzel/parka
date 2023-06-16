@@ -1,5 +1,5 @@
-#ifndef PARKA_SYNTAX_STATEMENT_JUMP_SYNTAX_HPP
-#define PARKA_SYNTAX_STATEMENT_JUMP_SYNTAX_HPP
+#ifndef PARKA_AST_STATEMENT_JUMP_HPP
+#define PARKA_AST_STATEMENT_JUMP_HPP
 
 #include "parka/enum/JumpType.hpp"
 #include "parka/symbol/SymbolTable.hpp"
@@ -8,26 +8,26 @@
 #include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class JumpStatementSyntax : public StatementSyntax
+	class JumpStatementAst : public StatementAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax *_value;
+		ExpressionAst *_value;
 		JumpType _type;
 
 	public:
 
-		JumpStatementSyntax(const Snippet& snippet, JumpType type, ExpressionSyntax *value) :
+		JumpStatementAst(const Snippet& snippet, JumpType type, ExpressionAst *value) :
 		_snippet(snippet),
 		_value(value),
 		_type(type)
 		{}
-		JumpStatementSyntax(JumpStatementSyntax&&) = default;
-		JumpStatementSyntax(const JumpStatementSyntax&) = delete;
+		JumpStatementAst(JumpStatementAst&&) = default;
+		JumpStatementAst(const JumpStatementAst&) = delete;
 
-		static StatementSyntax *parse(Token& token);
-		StatementContext *validate(SymbolTable& symbolTable);
+		static StatementAst *parse(Token& token);
+		ir::StatementIr *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Jump; }
 		const Snippet& snippet() const { return _snippet; }

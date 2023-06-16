@@ -1,24 +1,24 @@
-#ifndef PARKA_SYNTAX_FUNCTION_OPERATOR_SYNTAX_HPP
-#define PARKA_SYNTAX_FUNCTION_OPERATOR_SYNTAX_HPP
+#ifndef PARKA_AST_FUNCTION_OPERATOR_HPP
+#define PARKA_AST_FUNCTION_OPERATOR_HPP
 
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ast/Expression.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	class Operator
 	{
-		ValueType _leftType;
-		ValueType _rightType;
-		ExpressionSyntax *_body;
+		ir::ValueType _leftType;
+		ir::ValueType _rightType;
+		ExpressionAst *_body;
 		OperatorType _type;
 
 	public:
 
-		Operator(ValueType&& leftType, ValueType&& rightType, ExpressionSyntax *body, OperatorType type) :
+		Operator(ir::ValueType&& leftType, ir::ValueType&& rightType, ExpressionAst *body, OperatorType type) :
 		_leftType(std::move(leftType)),
 		_rightType(std::move(rightType)),
 		_body(body),

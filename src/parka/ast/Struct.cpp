@@ -4,11 +4,11 @@
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/Package.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	StructSyntax *StructSyntax::parse(Token &token)
+	StructAst *StructAst::parse(Token &token)
 	{
-		auto keyword = KeywordSyntax::parseStruct(token);
+		auto keyword = KeywordAst::parseStruct(token);
 
 		if (!keyword)
 			return {};
@@ -25,7 +25,7 @@ namespace parka
 			return {};
 		}
 
-		auto members = Array<MemberSyntax*>();
+		auto members = Array<MemberAst*>();
 
 		token.increment();
 
@@ -33,7 +33,7 @@ namespace parka
 		{
 			while (true)
 			{
-				auto member = MemberSyntax::parse(token);
+				auto member = MemberAst::parse(token);
 
 				if (!member)
 					return {};
@@ -60,12 +60,12 @@ namespace parka
 
 		token.increment();
 
-		auto *syntax = new StructSyntax(snippet, *identifier, std::move(members));
+		auto *syntax = new StructAst(snippet, *identifier, std::move(members));
 
 		return syntax;
 	}
 
-	bool StructSyntax::declare(EntitySyntax& entity)
+	bool StructAst::declare(EntityAst& entity)
 	{
 		// TODO: Token snippet
 		const auto& name = entity.name();
@@ -79,7 +79,7 @@ namespace parka
 		return isDeclared;
 	}
 
-	bool StructSyntax::declareSelf(PackageSyntax& parent)
+	bool StructAst::declareSelf(PackageAst& parent)
 	{
 		_parent = &parent;
 
@@ -95,7 +95,7 @@ namespace parka
 		return success;
 	}
 
-	EntityEntry *StructSyntax::find(const Identifier& identifier)
+	SymbolTableEntry *StructAst::find(const Identifier& identifier)
 	{
 		auto *result = _symbols.find(identifier.text());
 
@@ -105,17 +105,17 @@ namespace parka
 		return nullptr;
 	}
 
-	EntityContext *StructSyntax::resolve(const QualifiedIdentifier& identifier)
+	ir::EntityIr *StructAst::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}
 
-	StructContext *StructSyntax::validate()
+	ir::StructIr *StructAst::validate()
 	{
 		log::notImplemented(here());
 	}
 
-	String StructSyntax::getSymbol() const
+	String StructAst::getSymbol() const
 	{
 		auto symbol = _parent->getSymbol();
 
@@ -125,14 +125,7 @@ namespace parka
 		return symbol;
 	}
 
-	const ValueType *StructContext::valueType() const
-	{
-		log::error("Unable to get value of struct `$`.", _symbol);
-		
-		return nullptr;
-	}
-
-	// bool StructSyntax::validate(const EntitySyntax& function)
+	// bool StructAst::validate(const EntityAst& function)
 	// {
 	// 	bool success = true;
 
@@ -146,7 +139,7 @@ namespace parka
 
 	// 			if (member.name() == previous.name())
 	// 			{
-	// 			friend std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax);	success = false;
+	// 			friend std::ostream& operator<<(std::ostream& out, const StructAst& syntax);	success = false;
 					
 	// 				log::errorprintError(member.name(), "A member with same name is already declared in this struct.");
 	// 				log::parseError(previous.name(), "Previous delcaration here.");
@@ -164,7 +157,7 @@ namespace parka
 	// 	return success;
 	// }
 
-	std::ostream& operator<<(std::ostream& out, const StructSyntax& syntax)
+	std::ostream& operator<<(std::ostream& out, const StructAst& syntax)
 	{
 		out << "struct " << syntax._identifier << " {}";
 

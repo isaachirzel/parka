@@ -11,30 +11,30 @@
 #include "parka/util/Path.hpp"
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ModuleSyntax::ModuleSyntax(String&& filepath, Array<FunctionSyntax*>&& functions, Array<StructSyntax*>&& structs) :
+	ModuleAst::ModuleAst(String&& filepath, Array<FunctionAst*>&& functions, Array<StructAst*>&& structs) :
 	_filepath(std::move(filepath)),
 	_functions(std::move(functions)),
 	_structs(std::move(structs))
 	{}
 
-	ModuleSyntax ModuleSyntax::parse(const File& file)
+	ModuleAst ModuleAst::parse(const File& file)
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
 		auto token = Token::initial(file);
-		auto functions = Array<FunctionSyntax*>();
-		auto structs = Array<StructSyntax*>();
+		auto functions = Array<FunctionAst*>();
+		auto structs = Array<StructAst*>();
 
 		while (true)
 		{
-			auto keywordType = KeywordSyntax::getKeywordType(token);
+			auto keywordType = KeywordAst::getKeywordType(token);
 
 			switch (keywordType)
 			{
 				case KeywordType::Function:
 				{
-					auto *function = FunctionSyntax::parse(token);
+					auto *function = FunctionAst::parse(token);
 
 					if (!function)
 						break;
@@ -44,9 +44,9 @@ namespace parka
 					continue;
 				}
 
-				case KeywordType::StructSyntax:
+				case KeywordType::StructAst:
 				{
-					auto *strct = StructSyntax::parse(token);
+					auto *strct = StructAst::parse(token);
 
 					if (!strct)
 						break;
@@ -68,12 +68,12 @@ namespace parka
 			break;
 		}
 
-		auto mod = ModuleSyntax(String(file.path()), std::move(functions), std::move(structs));
+		auto mod = ModuleAst(String(file.path()), std::move(functions), std::move(structs));
 
 		return mod;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const ModuleSyntax& mod)
+	std::ostream& operator<<(std::ostream& out, const ModuleAst& mod)
 	{
 		auto indent = Indent(out);
 

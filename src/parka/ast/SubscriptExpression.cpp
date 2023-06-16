@@ -2,11 +2,11 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	SubscriptExpressionSyntax::
+	SubscriptExpressionAst::
 
-	ExpressionSyntax *SubscriptExpressionSyntax::parse(Token& token, ExpressionSyntax& primary)
+	ExpressionAst *SubscriptExpressionAst::parse(Token& token, ExpressionAst& primary)
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{
@@ -16,7 +16,7 @@ namespace parka
 
 		token.increment();
 
-		auto index = ExpressionSyntax::parse(token);
+		auto index = ExpressionAst::parse(token);
 
 		if (!index)
 			return {};
@@ -29,14 +29,14 @@ namespace parka
 		}
 
 		auto snippet = primary.snippet() + Snippet(token);
-		auto *syntax = new SubscriptExpressionSyntax(snippet, primary, *index);
+		auto *syntax = new SubscriptExpressionAst(snippet, primary, *index);
 
 		token.increment();
 
 		return syntax;
 	}
 
-	ExpressionContext *SubscriptExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *SubscriptExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

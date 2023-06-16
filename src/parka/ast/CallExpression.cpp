@@ -2,9 +2,9 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *CallExpressionSyntax::parse(Token& token, ExpressionSyntax& primary)
+	ExpressionAst *CallExpressionAst::parse(Token& token, ExpressionAst& primary)
 	{
 		auto first = Token(token);
 		if (token.type() != TokenType::LeftParenthesis)
@@ -16,13 +16,13 @@ namespace parka
 		token.increment();
 
 		// TODO: Add initial capacity
-		auto arguments = Array<ExpressionSyntax*>();
+		auto arguments = Array<ExpressionAst*>();
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
 			while (true)
 			{
-				auto *argument = ExpressionSyntax::parse(token);
+				auto *argument = ExpressionAst::parse(token);
 
 				if (!argument)
 					return {}; // TODO: Continue to next argument by checking for ','
@@ -47,12 +47,12 @@ namespace parka
 
 		token.increment();
 
-		auto *syntax = new CallExpressionSyntax(snippet, primary, std::move(arguments));
+		auto *syntax = new CallExpressionAst(snippet, primary, std::move(arguments));
 
 		return syntax;
 	}
 
-	ExpressionContext *CallExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *CallExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

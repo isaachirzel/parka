@@ -1,11 +1,13 @@
 #include "parka/ast/DeclarationStatement.hpp"
+#include "parka/ir/DeclarationStatement.hpp"
+#include "parka/ir/Statement.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	StatementSyntax *DeclarationStatementSyntax::parse(Token& token)
+	StatementAst *DeclarationStatementAst::parse(Token& token)
 	{
-		auto *variable = VariableSyntax::parse(token);
+		auto *variable = VariableAst::parse(token);
 
 		if (!variable)
 			return nullptr;
@@ -18,14 +20,14 @@ namespace parka
 
 		token.increment();
 
-		auto value = ExpressionSyntax::parse(token);
+		auto value = ExpressionAst::parse(token);
 
 		if (!value)
 			return nullptr;
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			log::parseError(token, "';'", "DeclarationStatementSyntax statements need to be ended with a ';'.");
+			log::parseError(token, "';'", "DeclarationStatementAst statements need to be ended with a ';'.");
 			return nullptr;
 		}
 
@@ -33,12 +35,12 @@ namespace parka
 
 		token.increment();
 
-		auto *syntax = new DeclarationStatementSyntax(snippet, *variable, *value);
+		auto *syntax = new DeclarationStatementAst(snippet, *variable, *value);
 
 		return syntax;
 	}
 
-	StatementContext *DeclarationStatementSyntax::validate(SymbolTable& symbolTable)
+	ir::StatementIr *DeclarationStatementAst::validate(SymbolTable& symbolTable)
 	{
 		auto *value = _value.validate(symbolTable);
 		auto *variable = _variable.validate(symbolTable, value);
@@ -46,7 +48,7 @@ namespace parka
 		if (!variable || !value)
 			return nullptr;
 
-		auto *context = new DeclarationStatementContext(*variable, *value);
+		auto *context = new ir::DeclarationStatementIr(*variable, *value);
 
 		return context;
 	}

@@ -1,4 +1,5 @@
 #include "parka/ast/Parameter.hpp"
+#include "parka/ir/Parameter.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
@@ -7,12 +8,12 @@
 
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ParameterSyntax *ParameterSyntax::parse(Token& token)
+	ParameterAst *ParameterAst::parse(Token& token)
 	{
 		auto first = Snippet(token);
-		auto mutKeyword = KeywordSyntax::parseMut(token);
+		auto mutKeyword = KeywordAst::parseMut(token);
 		auto isMutable = !!mutKeyword;
 		auto identifier = Identifier::parse(token);
 
@@ -27,18 +28,18 @@ namespace parka
 
 		token.increment();
 
-		auto annotation = TypeAnnotationSyntax::parse(token);
+		auto annotation = TypeAnnotationAst::parse(token);
 
 		if (!annotation)
 			return {};
 
 		auto snippet = first + annotation->snippet();
-		auto *syntax = new ParameterSyntax(snippet, *identifier, *annotation, isMutable);
+		auto *syntax = new ParameterAst(snippet, *identifier, *annotation, isMutable);
 		
 		return syntax;
 	}
 
-	ParameterContext *ParameterSyntax::validate(SymbolTable& symbolTable)
+	ir::ParameterIr *ParameterAst::validate(SymbolTable& symbolTable)
 	{
 		auto isDeclared = _parent->declare(*this);
 		auto valueType = _annotation.validate(symbolTable);
@@ -46,17 +47,17 @@ namespace parka
 		if (!isDeclared || !valueType)
 			return nullptr;
 
-		auto *context = new ParameterContext(*valueType);
+		auto *context = new ir::ParameterIr(*valueType);
 
 		return context;
 	}
 
-	String ParameterSyntax::getSymbol() const
+	String ParameterAst::getSymbol() const
 	{
 		return name();
 	}
 
-	std::ostream& operator<<(std::ostream& out, const ParameterSyntax& syntax)
+	std::ostream& operator<<(std::ostream& out, const ParameterAst& syntax)
 	{
 		if (syntax._isMutable)
 			out << "mut ";

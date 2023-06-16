@@ -1,28 +1,28 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_BITWISE_XOR_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_BITWISE_XOR_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_BITWISE_XOR_HPP
+#define PARKA_AST_EXPRESSION_BITWISE_XOR_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class BitwiseXorExpressionSyntax : public ExpressionSyntax
+	class BitwiseXorExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 
 	public:
 
-		BitwiseXorExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
+		BitwiseXorExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs)
 		{}
-		BitwiseXorExpressionSyntax(BitwiseXorExpressionSyntax&&) = default;
-		BitwiseXorExpressionSyntax(const BitwiseXorExpressionSyntax&) = delete;
+		BitwiseXorExpressionAst(BitwiseXorExpressionAst&&) = default;
+		BitwiseXorExpressionAst(const BitwiseXorExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BitwiseXor; }
 		const Snippet& snippet() const { return _snippet; }

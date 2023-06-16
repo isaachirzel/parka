@@ -1,30 +1,31 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_INDEX_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_INDEX_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_INDEX_HPP
+#define PARKA_AST_EXPRESSION_INDEX_HPP
 
 #include "parka/ast/Expression.hpp"
+#include "parka/ir/Expression.hpp"
 
 #include <utility>
 
-namespace parka
+namespace parka::ast
 {
-	class SubscriptExpressionSyntax : public ExpressionSyntax
+	class SubscriptExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _primary;
-		ExpressionSyntax& _index;
+		ExpressionAst& _primary;
+		ExpressionAst& _index;
 
 	public:
 
-		SubscriptExpressionSyntax(const Snippet& snippet, ExpressionSyntax& primary, ExpressionSyntax& index) :
+		SubscriptExpressionAst(const Snippet& snippet, ExpressionAst& primary, ExpressionAst& index) :
 		_snippet(snippet),
 		_primary(primary),
 		_index(index)
 		{}
-		SubscriptExpressionSyntax(SubscriptExpressionSyntax&&) = default;
-		SubscriptExpressionSyntax(const SubscriptExpressionSyntax&) = delete;
+		SubscriptExpressionAst(SubscriptExpressionAst&&) = default;
+		SubscriptExpressionAst(const SubscriptExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Subscript; }
 		const Snippet& snippet() const { return _snippet; }

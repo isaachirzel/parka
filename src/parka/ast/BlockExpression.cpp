@@ -1,11 +1,12 @@
 #include "parka/ast/BlockExpression.hpp"
 #include "parka/ast/IdentifierExpression.hpp"
+#include "parka/ir/BlockExpression.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Statement.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *BlockExpressionSyntax::parse(Token& token)
+	ExpressionAst *BlockExpressionAst::parse(Token& token)
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
@@ -19,11 +20,11 @@ namespace parka
 		token.increment();
 
 		// TODO: Add initial capacity
-		auto statements = Array<StatementSyntax*>();
+		auto statements = Array<StatementAst*>();
 
 		while (token.type() != TokenType::RightBrace)
 		{
-			auto *statement = StatementSyntax::parse(token);
+			auto *statement = StatementAst::parse(token);
 
 			if (!statement)
 				return {};
@@ -35,16 +36,16 @@ namespace parka
 
 		token.increment();
 
-		auto *syntax = new BlockExpressionSyntax(first + last, std::move(statements));
+		auto *syntax = new BlockExpressionAst(first + last, std::move(statements));
 
 		return syntax;
 	}
 
-	ExpressionContext *BlockExpressionSyntax::validate(SymbolTable& symbolTable)
+	ir::ExpressionIr *BlockExpressionAst::validate(SymbolTable& symbolTable)
 	{
 		bool success = false;
-		auto statements = Array<StatementContext*>(_statements.length());
-		const auto& valueType = ValueType::voidType;
+		auto statements = Array<ir::StatementIr*>(_statements.length());
+		const auto& valueType = ir::ValueType::voidType;
 
 		for (auto *syntax : _statements)
 		{
@@ -63,22 +64,22 @@ namespace parka
 		if (!success)
 			return {};
 
-		auto *context = new BlockExpressionContext(std::move(statements), ValueType(valueType));
+		auto *context = new ir::BlockExpressionIr(std::move(statements), ir::ValueType(valueType));
 
 		return context;
 	}
 
-	bool BlockExpressionSyntax::declare(EntitySyntax& entity)
+	bool BlockExpressionAst::declare(EntityAst& entity)
 	{
 		return _parent->declare(entity);
 	}
 
-	EntityEntry *BlockExpressionSyntax::find(const Identifier& identifier)
+	SymbolTableEntry *BlockExpressionAst::find(const Identifier& identifier)
 	{
 		return _parent->find(identifier);
 	}
 
-	EntityContext *BlockExpressionSyntax::resolve(const QualifiedIdentifier& identifier)
+	ir::EntityIr *BlockExpressionAst::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}

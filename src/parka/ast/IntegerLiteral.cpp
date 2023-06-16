@@ -1,8 +1,9 @@
 #include "parka/ast/IntegerLiteral.hpp"
+#include "parka/ir/IntegerLiteral.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	constexpr u64 u8MaxValue =	0x000000FF;
 	constexpr u64 u16MaxValue =	0x0000FFFF;
@@ -32,8 +33,10 @@ namespace parka
 		return value;
 	}
 
-	static const ValueType& getIntegerValueType(u64 value)
+	static const ir::ValueType& getIntegerValueType(u64 value)
 	{
+		using ir::ValueType;
+
 		if (value > u32MaxValue)
 			return ValueType::u64Type;
 
@@ -46,22 +49,22 @@ namespace parka
 		return ValueType::u8Type;
 	}
 
-	ExpressionSyntax *IntegerLiteralSyntax::parse(Token& token)
+	ExpressionAst *IntegerLiteralAst::parse(Token& token)
 	{
-		if (token.type() != TokenType::IntegerLiteralSyntax)
+		if (token.type() != TokenType::IntegerLiteralAst)
 		{
 			log::parseError(token, "integer");
 			return {};
 		}
 
-		auto *syntax = new IntegerLiteralSyntax(token);
+		auto *syntax = new IntegerLiteralAst(token);
 
 		token.increment();
 
 		return syntax;
 	}
 
-	ExpressionContext *IntegerLiteralSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *IntegerLiteralAst::validate(SymbolTable&)
 	{
 		auto value = getIntegerValue(_snippet);
 
@@ -70,7 +73,7 @@ namespace parka
 
 		const auto& type = getIntegerValueType(*value);
 
-		auto *context = new IntegerLiteralContext(*value, ValueType(type));
+		auto *context = new ir::IntegerLiteralIr(*value, ir::ValueType(type));
 
 		return context;
 	}

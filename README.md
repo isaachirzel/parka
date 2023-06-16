@@ -13,7 +13,7 @@ to machine code is planned.
 This project has primary been made as a learning tool for myself to better understand
 compiler design, programming language principles, and software development in C.
 
-# Syntax
+# Ast
 
 The syntax is a mix between several langauges such as GO, Rust, and C with the intention of making
 the code easy to read for this familiar with C like languages, but allow for a more modern syntax.
@@ -21,31 +21,24 @@ the code easy to read for this familiar with C like languages, but allow for a m
 The syntax of a hello world program is as follows:
 
 ```
-import std::io as io;
+import std::io;
 
 function main()
 {
-	var message = get_greeting();
+	var message = getGreeting();
 
-	io::print(message);
+	print(message);
 }
 
-function get_greeting(): char[]
-{
-	return "Hello, world!";
-}
+function getGreeting(): string => "Hello, world!";
+
 ```
 
-# To-Do
+# To-Do in the Short Run
 
-- Separate SymbolTable structure into contexts
-- Make SymbolTable thread-safe
-- Implement thread pool for tasks
-- Implement while-var and if-var expression parsing, validation
-- Implement hash table for performance increase
-- Finish parser
-- Finish validator
-- Implement C generator
+- Implementing operators for expression validation
+- Move parsing/validation to Visitors or some other better abstraction pattern
+- Make everything work
 
 # License
 

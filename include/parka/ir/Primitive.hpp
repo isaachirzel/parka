@@ -1,10 +1,10 @@
-#ifndef PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
-#define PARKA_SYNTAX_PRIMITIVE_SYNTAX_HPP
+#ifndef PARKA_AST_PRIMITIVE_HPP
+#define PARKA_AST_PRIMITIVE_HPP
 
 #include "parka/ast/Entity.hpp"
 #include "parka/util/Array.hpp"
 
-namespace parka
+namespace parka::ir
 {
 	enum class PrimitiveType : u8
 	{
@@ -17,7 +17,7 @@ namespace parka
 		String
 	};
 
-	class Primitive : public EntityEntry, public EntityContext
+	class Primitive : public SymbolTableEntry, public EntityIr
 	{
 		String _name;
 		u32 _size;
@@ -52,7 +52,7 @@ namespace parka
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
 
-		EntityContext *context() { return this; }
+		EntityIr *context() { return this; }
 
 		String getSymbol() const { return _name; }
 		const String& symbol() const { return _name; }

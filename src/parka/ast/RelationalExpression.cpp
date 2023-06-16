@@ -2,7 +2,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/ShiftExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<RelationalType> parseRelationalType(Token& token)
 	{
@@ -25,9 +25,9 @@ namespace parka
 		}
 	}
 	
-	ExpressionSyntax *RelationalExpressionSyntax::parse(Token& token)
+	ExpressionAst *RelationalExpressionAst::parse(Token& token)
 	{
-		auto *lhs = ShiftExpressionSyntax::parse(token);
+		auto *lhs = ShiftExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -38,19 +38,19 @@ namespace parka
 		{
 			token.increment();
 
-			auto rhs = ShiftExpressionSyntax::parse(token);
+			auto rhs = ShiftExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 
-			lhs = new RelationalExpressionSyntax(*lhs, *rhs, *type);
+			lhs = new RelationalExpressionAst(*lhs, *rhs, *type);
 			type = parseRelationalType(token);
 		}
 
 		return lhs;
 	}
 
-	ExpressionContext *RelationalExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *RelationalExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

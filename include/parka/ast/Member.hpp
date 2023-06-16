@@ -1,52 +1,37 @@
-#ifndef PARKA_SYNTAX_MEMBER_SYNTAX_HPP
-#define PARKA_SYNTAX_MEMBER_SYNTAX_HPP
+#ifndef PARKA_AST_MEMBER_HPP
+#define PARKA_AST_MEMBER_HPP
 
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/ir/Member.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class MemberContext : public EntityContext
-	{
-		ValueType _valueType;
-
-	public:
-
-		MemberContext(ValueType&& valueType) :
-		_valueType(std::move(valueType))
-		{}
-		MemberContext(MemberContext&&) = default;
-		MemberContext(const MemberContext&) = delete;
-
-		EntityType entityType() const { return EntityType::Member; }
-		const ValueType *valueType() const { return &_valueType; }
-	};
-
-	class MemberSyntax : public EntitySyntax
+	class MemberAst : public EntityAst
 	{
 		Snippet _snippet;
 		Identifier _identifier;
-		TypeAnnotationSyntax _annotation;
+		TypeAnnotationAst _annotation;
 		bool _isPublic;
 		SymbolTable *_parent;
 		// TODO: Add read/write count
 
 	public:
 
-		MemberSyntax(const Snippet& snippet, Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isPublic) :
+		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic) :
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
 		_isPublic(isPublic)
 		{}
-		MemberSyntax(MemberSyntax&&) = default;
-		MemberSyntax(const MemberSyntax&) = delete;
+		MemberAst(MemberAst&&) = default;
+		MemberAst(const MemberAst&) = delete;
 
-		static MemberSyntax *parse(Token& token);
+		static MemberAst *parse(Token& token);
 		bool declareSelf(SymbolTable& parent);
-		MemberContext *validate();
-		EntityContext *context() { return validate(); }
+		ir::MemberIr *validate();
+		ir::EntityIr *context() { return validate(); }
 		String getSymbol() const;
 
 		const Identifier& identifier() const { return _identifier; }

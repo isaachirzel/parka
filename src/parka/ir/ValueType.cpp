@@ -1,12 +1,12 @@
+#include "parka/ir/Primitive.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/AdditiveExpression.hpp"
-#include "parka/ast/Literal.hpp"
 #include "parka/ast/Function.hpp"
-#include "parka/intrinsic/Primitive.hpp"
+#include "parka/ir/Primitive.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 
-namespace parka
+namespace parka::ir
 {
 	const ValueType ValueType::voidType(Primitive::voidPrimitive);
 	const ValueType ValueType::u8Type(Primitive::u8Primitive);
@@ -23,7 +23,7 @@ namespace parka
 	const ValueType ValueType::charType(Primitive::charPrimitive);
 	const ValueType ValueType::stringType(Primitive::stringPrimitive);
 
-	ValueType::ValueType(EntityContext& entity) :
+	ValueType::ValueType(EntityIr& entity) :
 	_entity(entity)
 	{}
 

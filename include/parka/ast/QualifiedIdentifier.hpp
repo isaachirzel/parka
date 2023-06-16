@@ -1,11 +1,11 @@
-#ifndef PARKA_SYNTAX_QUALIFIED_IDENTIFIER_SYNTAX_HPP
-#define PARKA_SYNTAX_QUALIFIED_IDENTIFIER_SYNTAX_HPP
+#ifndef PARKA_AST_QUALIFIED_IDENTIFIER_HPP
+#define PARKA_AST_QUALIFIED_IDENTIFIER_HPP
 
 #include "parka/ast/Identifier.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Optional.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	class QualifiedIdentifier
 	{

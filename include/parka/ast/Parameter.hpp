@@ -1,55 +1,38 @@
-#ifndef PARKA_SYNTAX_PARAMETER_SYNTAX_HPP
-#define PARKA_SYNTAX_PARAMETER_SYNTAX_HPP
+#ifndef PARKA_AST_PARAMETER_HPP
+#define PARKA_AST_PARAMETER_HPP
 
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/ir/Parameter.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class ParameterContext : public EntityContext
-	{
-		String _symbol;
-		ValueType _type;
-
-	public:
-
-		ParameterContext(ValueType&& type) :
-		_type(std::move(type))
-		{}
-		ParameterContext(ParameterContext&&) = default;
-		ParameterContext(const ParameterContext&) = delete;
-
-		const String& symbol() const { return _symbol; }
-		EntityType entityType() const { return EntityType::Parameter; }
-		const ValueType *valueType() const { return &_type; }
-	};
-
-	class ParameterSyntax : public EntitySyntax
+	class ParameterAst : public EntityAst
 	{
 		Snippet _snippet;
 		Identifier _identifier;
-		TypeAnnotationSyntax _annotation;
+		TypeAnnotationAst _annotation;
 		SymbolTable *_parent;
-		ParameterContext *_context;
+		ir::ParameterIr *_context;
 		bool _isMutable;
 
 	public:
 
-		ParameterSyntax(const Snippet& snippet, Identifier&& identifier, TypeAnnotationSyntax&& annotation, bool isMutable) :
+		ParameterAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isMutable) :
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
 		_parent(nullptr),
 		_isMutable(isMutable)
 		{}
-		ParameterSyntax(ParameterSyntax&&) = default;
-		ParameterSyntax(const ParameterSyntax&) = delete;
+		ParameterAst(ParameterAst&&) = default;
+		ParameterAst(const ParameterAst&) = delete;
 
-		static ParameterSyntax *parse(Token& token);
+		static ParameterAst *parse(Token& token);
 
-		ParameterContext *validate(SymbolTable& symbolTable);
-		EntityContext *context() { assert(_context != nullptr); return _context; }
+		ir::ParameterIr *validate(SymbolTable& symbolTable);
+		ir::EntityIr *context() { assert(_context != nullptr); return _context; }
 		String getSymbol() const;
 
 		const String& name() const { return _identifier.text(); }
@@ -60,7 +43,7 @@ namespace parka
 		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
 
-		friend std::ostream& operator<<(std::ostream& out, const ParameterSyntax& syntax);
+		friend std::ostream& operator<<(std::ostream& out, const ParameterAst& syntax);
 	};
 }
 

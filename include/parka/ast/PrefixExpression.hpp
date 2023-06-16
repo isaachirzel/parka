@@ -1,31 +1,31 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_PREFIX_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_PREFIX_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_PREFIX_HPP
+#define PARKA_AST_EXPRESSION_PREFIX_HPP
 
 #include "parka/enum/PrefixType.hpp"
 #include "parka/ast/Expression.hpp"
-
+#include "parka/ir/Expression.hpp"
 #include "parka/parser/Token.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class PrefixExpressionSyntax : public ExpressionSyntax
+	class PrefixExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _expression;
+		ExpressionAst& _expression;
 		PrefixType _type;
 
 	public:
 
-		PrefixExpressionSyntax(const Snippet& snippet, PrefixType type, ExpressionSyntax& expression) :
+		PrefixExpressionAst(const Snippet& snippet, PrefixType type, ExpressionAst& expression) :
 		_snippet(snippet),
 		_expression(expression),
 		_type(type)
 		{}
-		PrefixExpressionSyntax(PrefixExpressionSyntax&&) = default;
-		PrefixExpressionSyntax(const PrefixExpressionSyntax&) = delete;
+		PrefixExpressionAst(PrefixExpressionAst&&) = default;
+		PrefixExpressionAst(const PrefixExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Prefix; }
 		const Snippet& snippet() const { return _snippet; }

@@ -1,30 +1,30 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_MEMBER_ACCESS_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_MEMBER_ACCESS_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_MEMBER_ACCESS_HPP
+#define PARKA_AST_EXPRESSION_MEMBER_ACCESS_HPP
 
 #include "parka/ast/Expression.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class MemberAccessExpressionSyntax : public ExpressionSyntax
+	class MemberAccessExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _expression;
+		ExpressionAst& _expression;
 		Identifier _identifier;
 
 	public:
 
-		MemberAccessExpressionSyntax(ExpressionSyntax& expression, Identifier&& identifier) :
+		MemberAccessExpressionAst(ExpressionAst& expression, Identifier&& identifier) :
 		_snippet(expression.snippet() + identifier.snippet()),
 		_expression(expression),
 		_identifier(std::move(identifier))
 		{}
-		MemberAccessExpressionSyntax(MemberAccessExpressionSyntax&&) = default;
-		MemberAccessExpressionSyntax(const MemberAccessExpressionSyntax&) = delete;
+		MemberAccessExpressionAst(MemberAccessExpressionAst&&) = default;
+		MemberAccessExpressionAst(const MemberAccessExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::MemberAccess; }
 		const Snippet& snippet() const { return _snippet; }

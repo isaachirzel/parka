@@ -1,28 +1,28 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_CALL_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_CALL_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_CALL_HPP
+#define PARKA_AST_EXPRESSION_CALL_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class CallExpressionSyntax : public ExpressionSyntax
+	class CallExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _primary;
-		Array<ExpressionSyntax*> _arguments;
+		ExpressionAst& _primary;
+		Array<ExpressionAst*> _arguments;
 
 	public:
 
-		CallExpressionSyntax(const Snippet& snippet, ExpressionSyntax& primary, Array<ExpressionSyntax*>&& arguments) :
+		CallExpressionAst(const Snippet& snippet, ExpressionAst& primary, Array<ExpressionAst*>&& arguments) :
 		_snippet(snippet),
 		_primary(primary),
 		_arguments(std::move(arguments))
 		{}
-		CallExpressionSyntax(CallExpressionSyntax&&) = default;
-		CallExpressionSyntax(const CallExpressionSyntax&) = delete;
+		CallExpressionAst(CallExpressionAst&&) = default;
+		CallExpressionAst(const CallExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token, ExpressionSyntax& primary);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		const Snippet& snippet() const { return _snippet; }
 		ExpressionType expressionType() const { return ExpressionType::Call; }

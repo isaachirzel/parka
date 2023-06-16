@@ -1,71 +1,64 @@
+#include "parka/ir/Entity.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/AssignmentExpression.hpp"
 #include "parka/ast/Member.hpp"
 #include "parka/ast/Module.hpp"
 #include "parka/ast/Package.hpp"
 #include "parka/ast/Struct.hpp"
-#include "parka/ast/SyntaxTree.hpp"
+#include "parka/ast/Ast.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/util/Path.hpp"
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	SyntaxTree::SyntaxTree(PackageSyntax& globalPackage) :
-	_globalPackage(globalPackage)
-	{}
-
-	ContextTree::ContextTree(PackageContext& globalPackage) :
-	_globalPackage(globalPackage)
-	{}
-	
-	SyntaxTree SyntaxTree::parse(const Project& project)
+	Ast Ast::parse(const Project& project)
 	{
 		// TODO: Parse external projects
-		auto *package = PackageSyntax::parse(project.srcDirectory(), "");
+		auto *package = PackageAst::parse(project.srcDirectory(), "");
 
 		assert(package != nullptr);
 
-		auto result = SyntaxTree(*package);
+		auto result = Ast(*package);
 
 		return result;
 	}
 
-	bool SyntaxTree::declare(EntitySyntax& entity)
+	bool Ast::declare(EntityAst& entity)
 	{
 		return _globalPackage.declare(entity);
 	}
 
-	bool SyntaxTree::declareSelf()
+	bool Ast::declareSelf()
 	{
 		return _globalPackage.declareSelf(nullptr);
 	}
 
-	EntityEntry *SyntaxTree::find(const Identifier& identifier)
+	SymbolTableEntry *Ast::find(const Identifier& identifier)
 	{
 		return _globalPackage.find(identifier);
 	}
 
-	EntityContext *SyntaxTree::resolve(const QualifiedIdentifier& identifier)
+	ir::EntityIr *Ast::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _globalPackage.resolve(identifier);
 	}
 
-	Optional<ContextTree> SyntaxTree::validate()
+	Optional<ir::Ir> Ast::validate()
 	{
 		auto *package = _globalPackage.validate();
 
 		if (!package)
 			return {};
 
-		auto context = ContextTree(*package);
+		auto context = ir::Ir(*package);
 
 		return context;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const SyntaxTree& syntax)
+	std::ostream& operator<<(std::ostream& out, const Ast& syntax)
 	{
 		out << syntax._globalPackage;
 

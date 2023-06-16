@@ -6,34 +6,34 @@
 
 // namespace parka
 // {
-// 	class EntityContextId
+// 	class EntityIrId
 // 	{
 // 		usize _index;
 // 		EntityType _type;
 
 // 	private:
 
-// 		EntityContextId(EntityType type, usize index) :
+// 		EntityIrId(EntityType type, usize index) :
 // 		_index(index),
 // 		_type(type)
 // 		{}
 
 // 	public:
 
-// 		EntityContextId(EntityContextId&&) = default;
-// 		EntityContextId(const EntityContextId&) = default;
+// 		EntityIrId(EntityIrId&&) = default;
+// 		EntityIrId(const EntityIrId&) = default;
 
 // 		const auto& type() const { return _type; }
 // 		const auto& index() const { return _index; }
 		
-// 		EntityContextId& operator=(EntityContextId&&) = default;
-// 		EntityContextId& operator=(const EntityContextId&) = default;
-// 		bool operator==(const EntityContextId&);
-// 		// const EntityContext& operator*() const;
-// 		// const EntityContext *operator->() const;
-// 		friend std::ostream& operator<<(std::ostream& out, const EntityContextId& id);
+// 		EntityIrId& operator=(EntityIrId&&) = default;
+// 		EntityIrId& operator=(const EntityIrId&) = default;
+// 		bool operator==(const EntityIrId&);
+// 		// const EntityIr& operator*() const;
+// 		// const EntityIr *operator->() const;
+// 		friend std::ostream& operator<<(std::ostream& out, const EntityIrId& id);
 
-// 		friend struct EntityContext;
+// 		friend struct EntityIr;
 // 	};
 // };
 

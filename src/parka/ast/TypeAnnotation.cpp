@@ -5,28 +5,28 @@
 
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	Optional<TypeAnnotationSyntax> TypeAnnotationSyntax::parse(Token& token)
+	Optional<TypeAnnotationAst> TypeAnnotationAst::parse(Token& token)
 	{
 		auto identifier = QualifiedIdentifier::parse(token);
 
 		if (!identifier)
 			return {};
 
-		auto annotation = TypeAnnotationSyntax(identifier->snippet(), *identifier);
+		auto annotation = TypeAnnotationAst(identifier->snippet(), *identifier);
 
 		return annotation;
 	}
 
-	Optional<ValueType> TypeAnnotationSyntax::validate(SymbolTable& symbolTable) const
+	Optional<ir::ValueType> TypeAnnotationAst::validate(SymbolTable& symbolTable) const
 	{
 		auto *entity = symbolTable.resolve(_identifier);
 
 		if (!entity)
 			return {};
 
-		auto valueType = ValueType(*entity);
+		auto valueType = ir::ValueType(*entity);
 
 		return valueType;
 	}

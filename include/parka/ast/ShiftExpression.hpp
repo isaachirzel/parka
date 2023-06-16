@@ -1,31 +1,31 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_SHIFT_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_SHIFT_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_SHIFT_HPP
+#define PARKA_AST_EXPRESSION_SHIFT_HPP
 
 #include "parka/enum/ShiftType.hpp"
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class ShiftExpressionSyntax : public ExpressionSyntax
+	class ShiftExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 		ShiftType _type;
 
 	public:
 
-		ShiftExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, ShiftType type) :
+		ShiftExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, ShiftType type) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-		ShiftExpressionSyntax(ShiftExpressionSyntax&&) = default;
-		ShiftExpressionSyntax(const ShiftExpressionSyntax&) = delete;
+		ShiftExpressionAst(ShiftExpressionAst&&) = default;
+		ShiftExpressionAst(const ShiftExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::Shift; }
 		const Snippet& snippet() const { return _snippet; }

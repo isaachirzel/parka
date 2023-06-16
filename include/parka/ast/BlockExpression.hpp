@@ -1,58 +1,42 @@
-#ifndef PARKA_SYNTAX_BLOCK_SYNTAX_HPP
-#define PARKA_SYNTAX_BLOCK_SYNTAX_HPP
+#ifndef PARKA_AST_BLOCK_HPP
+#define PARKA_AST_BLOCK_HPP
 
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
 #include <exception>
 
-namespace parka
+// TODO: Make block a statement
+
+namespace parka::ast
 {
-	class BlockExpressionContext : public ExpressionContext
-	{
-		Array<StatementContext*> _statements;
-		ValueType _valueType;
-
-	public:
-
-		BlockExpressionContext(Array<StatementContext*>&& statements, ValueType&& valueType) :
-		_statements(std::move(statements)),
-		_valueType(std::move(valueType))
-		{}
-		BlockExpressionContext(BlockExpressionContext&&) = default;
-		BlockExpressionContext(const BlockExpressionContext&) = delete;
-		const ValueType& valueType() const { return _valueType; }
-		ExpressionType expressionType() const { return ExpressionType::Block; }
-		const auto& statements() const { return _statements; }
-	};
-
-	class BlockExpressionSyntax : public ExpressionSyntax, public SymbolTable
+	class BlockExpressionAst : public ExpressionAst, public SymbolTable
 	{
 		Snippet _snippet;
-		Array<StatementSyntax*> _statements;
+		Array<StatementAst*> _statements;
 
 		SymbolTable *_parent;
-		Array<EntityEntry*> *_symbols;
+		Array<SymbolTableEntry*> *_symbols;
 		usize _baseIndex;
 
 	public:
 
-		BlockExpressionSyntax(const Snippet& snippet, Array<StatementSyntax*>&& statements) :
+		BlockExpressionAst(const Snippet& snippet, Array<StatementAst*>&& statements) :
 		_snippet(snippet),
 		_statements(std::move(statements)),
 		_parent(nullptr),
 		_symbols(nullptr),
 		_baseIndex(0)
 		{}
-		BlockExpressionSyntax(BlockExpressionSyntax&&) = default;
-		BlockExpressionSyntax(const BlockExpressionSyntax&) = delete;
+		BlockExpressionAst(BlockExpressionAst&&) = default;
+		BlockExpressionAst(const BlockExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		bool declare(EntitySyntax& entity);
-		EntityEntry *find(const Identifier& identifier);
-		EntityContext *resolve(const QualifiedIdentifier& identifier);
+		bool declare(EntityAst& entity);
+		SymbolTableEntry *find(const Identifier& identifier);
+		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Block; };
 		ExpressionType expressionType() const { return ExpressionType::Block; }

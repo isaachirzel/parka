@@ -1,8 +1,8 @@
-#include "parka/intrinsic/Primitive.hpp"
+#include "parka/ir/Primitive.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Array.hpp"
 
-namespace parka
+namespace parka::ir
 {
 	const Array<Primitive*> Primitive::primitives = initPrimitives();
 

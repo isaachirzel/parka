@@ -9,42 +9,42 @@
 
 // namespace parka
 // {
-// 	class EntitySyntaxId
+// 	class EntityAstId
 // 	{
 // 		u32 _index;
 // 		EntityType _type;
 
 // 	private:
 
-// 		EntitySyntaxId(EntityType type, usize index) :
+// 		EntityAstId(EntityType type, usize index) :
 // 		_index(index),
 // 		_type(type)
 // 		{}
 
 // 	public: 
 
-// 		EntitySyntaxId(EntitySyntaxId&&) = default;
-// 		EntitySyntaxId(const EntitySyntaxId&) = default;
+// 		EntityAstId(EntityAstId&&) = default;
+// 		EntityAstId(const EntityAstId&) = default;
 
 // 		const auto& type() const { return _type; }
 // 		const auto& index() const { return _index; }
 
-// 		EntitySyntaxId& operator=(EntitySyntaxId&& other) = default;
-// 		EntitySyntaxId& operator=(const EntitySyntaxId& other) = default;
-// 		friend std::ostream& operator<<(std::ostream& out, const EntitySyntaxId& id);
-// 		bool operator==(const EntitySyntaxId& other) const;
+// 		EntityAstId& operator=(EntityAstId&& other) = default;
+// 		EntityAstId& operator=(const EntityAstId& other) = default;
+// 		friend std::ostream& operator<<(std::ostream& out, const EntityAstId& id);
+// 		bool operator==(const EntityAstId& other) const;
 
-// 		friend struct EntitySyntax;
-// 		friend class std::hash<EntitySyntaxId>;
+// 		friend struct EntityAst;
+// 		friend class std::hash<EntityAstId>;
 // 	};
 // }
 
 // namespace std
 // {
 // 	template <>
-// 	struct hash<parka::EntitySyntaxId>
+// 	struct hash<parka::EntityAstId>
 // 	{
-// 		parka::usize operator()(const parka::EntitySyntaxId& key) const;
+// 		parka::usize operator()(const parka::EntityAstId& key) const;
 // 	};
 // }
 

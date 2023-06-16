@@ -1,33 +1,21 @@
-#ifndef PARKA_SYNTAX_STATEMENT_SYNTAX_HPP
-#define PARKA_SYNTAX_STATEMENT_SYNTAX_HPP
+#ifndef PARKA_AST_STATEMENT_HPP
+#define PARKA_AST_STATEMENT_HPP
 
+#include "parka/ir/Statement.hpp"
 #include "parka/parser/Token.hpp"
+#include "parka/enum/StatementType.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/util/Optional.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	enum class StatementType
+	struct StatementAst
 	{
-		Declaration,
-		Expression,
-		Jump
-	};
-
-	struct StatementContext
-	{
-		virtual ~StatementContext() {}
-		virtual StatementType statementType() const = 0;
-	};
-
-	struct StatementSyntax
-	{
-		virtual ~StatementSyntax() {}
+		virtual ~StatementAst() {}
 		virtual StatementType statementType() const = 0;
 		virtual const Snippet& snippet() const = 0;
-		virtual StatementContext *validate(SymbolTable& symbolTable) = 0;
+		virtual ir::StatementIr *validate(SymbolTable& symbolTable) = 0;
 
-		static StatementSyntax *parse(Token& token);
+		static StatementAst *parse(Token& token);
 	};
 
 	std::ostream& operator<<(std::ostream& out, const StatementType& type);

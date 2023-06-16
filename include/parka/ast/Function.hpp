@@ -1,68 +1,46 @@
-#ifndef PARKA_SYNTAX_FUNCTION_SYNTAX_HPP
-#define PARKA_SYNTAX_FUNCTION_SYNTAX_HPP
+#ifndef PARKA_AST_FUNCTION_HPP
+#define PARKA_AST_FUNCTION_HPP
 
 #include "parka/ast/Identifier.hpp"
+#include "parka/ir/Function.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class PackageSyntax;
+	class PackageAst;
 
-	class FunctionContext : public EntityContext
-	{
-		String _symbol;
-		PrototypeContext _prototype;
-		ExpressionContext& _body;
-
-	public:
-
-		FunctionContext(String&& symbol, PrototypeContext&& prototype, ExpressionContext& body) :
-		_symbol(std::move(symbol)),
-		_prototype(std::move(prototype)),
-		_body(body)
-		{}
-		FunctionContext(FunctionContext&&) = default;
-		FunctionContext(const FunctionContext&) = delete;
-
-		EntityType entityType() const { return EntityType::Function; }
-		const ValueType *valueType() const;
-		const String& symbol() const { return _symbol; }
-		const auto& prototype() const { return _prototype; }
-		const auto& body() const { return _body; }
-	};
-
-	class FunctionSyntax : public EntitySyntax, public SymbolTable
+	class FunctionAst : public EntityAst, public SymbolTable
 	{
 		Snippet _snippet;
-		PrototypeSyntax _prototype;
-		ExpressionSyntax& _body;
+		PrototypeAst _prototype;
+		ExpressionAst& _body;
 		// Symbol table data
-		PackageSyntax *_parent;
-		Array<EntityEntry*> _symbols;
+		PackageAst *_parent;
+		Array<SymbolTableEntry*> _symbols;
 
 	public:
 
-		FunctionSyntax(PrototypeSyntax&& prototype, ExpressionSyntax& body) :
+		FunctionAst(PrototypeAst&& prototype, ExpressionAst& body) :
 		_snippet(prototype.snippet() + body.snippet()),
 		_prototype(std::move(prototype)),
 		_body(body),
 		_parent(nullptr),
 		_symbols()
 		{}
-		FunctionSyntax(FunctionSyntax&&) = default;
-		FunctionSyntax(const FunctionSyntax&) = delete;
+		FunctionAst(FunctionAst&&) = default;
+		FunctionAst(const FunctionAst&) = delete;
 
-		static FunctionSyntax *parse(Token& token);
-		FunctionContext *validate();
-		EntityContext *context() { return validate(); }
+		static FunctionAst *parse(Token& token);
+		ir::FunctionIr *validate();
+		ir::EntityIr *context() { return validate(); }
 
-		bool declare(EntitySyntax& entity);
-		bool declareSelf(PackageSyntax& parent);
-		EntityEntry *find(const Identifier& identifier);
-		EntityContext *resolve(const QualifiedIdentifier& identifier);
+		bool declare(EntityAst& entity);
+		bool declareSelf(PackageAst& parent);
+		SymbolTableEntry *find(const Identifier& identifier);
+		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 
 		SymbolTableType symbolTableType() const { return SymbolTableType::Function; }
@@ -74,9 +52,9 @@ namespace parka
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }
 
-		friend std::ostream& operator<<(std::ostream& out, const FunctionSyntax& syntax);
+		friend std::ostream& operator<<(std::ostream& out, const FunctionAst& syntax);
 
-		friend class BlockExpressionSyntax;
+		friend class BlockExpressionAst;
 	};
 }
 

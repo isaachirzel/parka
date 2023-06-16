@@ -6,29 +6,29 @@
 
 // namespace parka
 // {
-// 	class StatementSyntaxId
+// 	class StatementAstId
 // 	{
 // 		usize _index;
 // 		StatementType _type;
 
 // 	private:
 
-// 		StatementSyntaxId(StatementType type, usize index) :
+// 		StatementAstId(StatementType type, usize index) :
 // 		_index(index),
 // 		_type(type)
 // 		{}
 
 // 	public:
 		
-// 		StatementSyntaxId(StatementSyntaxId&&) = default;
-// 		StatementSyntaxId(const StatementSyntaxId&) = default;
+// 		StatementAstId(StatementAstId&&) = default;
+// 		StatementAstId(const StatementAstId&) = default;
 
-// 		StatementSyntaxId& operator=(StatementSyntaxId&&) = default;
-// 		StatementSyntaxId& operator=(const StatementSyntaxId&) = default;
-// 		friend std::ostream& operator<<(std::ostream& out, const StatementSyntaxId& id);
-// 		bool operator==(const StatementSyntaxId& other) const;
+// 		StatementAstId& operator=(StatementAstId&&) = default;
+// 		StatementAstId& operator=(const StatementAstId&) = default;
+// 		friend std::ostream& operator<<(std::ostream& out, const StatementAstId& id);
+// 		bool operator==(const StatementAstId& other) const;
 
-// 		friend struct StatementSyntax;
+// 		friend struct StatementAst;
 // 	};
 // }
 

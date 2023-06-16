@@ -3,7 +3,7 @@
 
 namespace parka
 {
-	class ExpressionContextId
+	class ExpressionIrId
 	{
 	};
 }

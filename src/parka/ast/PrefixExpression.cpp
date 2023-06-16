@@ -1,8 +1,8 @@
 #include "parka/ast/PrefixExpression.hpp"
+#include "parka/ast/Expression.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/ast/PostfixExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<PrefixType> parsePrefixType(Token& token)
 	{
@@ -31,28 +31,28 @@ namespace parka
 		}
 	}
 
-	ExpressionSyntax *PrefixExpressionSyntax::parse(Token& token)
+	ExpressionAst *PrefixExpressionAst::parse(Token& token)
 	{
 		auto start = Snippet(token);
 		auto type = parsePrefixType(token);
 
 		if (!type)
-			return PostfixExpressionSyntax::parse(token);
+			return ExpressionAst::parsePostfixExpression(token);
 
 		token.increment();
 
-		auto *inner = PrefixExpressionSyntax::parse(token);
+		auto *inner = PrefixExpressionAst::parse(token);
 
 		if (inner == nullptr)
 			return nullptr;
 
 		auto snippet = start + inner->snippet();
-		auto *syntax = new PrefixExpressionSyntax(snippet, *type, *inner);
+		auto *syntax = new PrefixExpressionAst(snippet, *type, *inner);
 
 		return syntax;
 	}
 
-	ExpressionContext *PrefixExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *PrefixExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

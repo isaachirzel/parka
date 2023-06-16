@@ -1,28 +1,28 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_BITWISE_AND_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_BITWISE_AND_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_BITWISE_AND_HPP
+#define PARKA_AST_EXPRESSION_BITWISE_AND_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class BitwiseAndExpressionSyntax : public ExpressionSyntax
+	class BitwiseAndExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 
 	public:
 
-		BitwiseAndExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
+		BitwiseAndExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs)
 		{}
-		BitwiseAndExpressionSyntax(BitwiseAndExpressionSyntax&&) = default;
-		BitwiseAndExpressionSyntax(const BitwiseAndExpressionSyntax&) = delete;
+		BitwiseAndExpressionAst(BitwiseAndExpressionAst&&) = default;
+		BitwiseAndExpressionAst(const BitwiseAndExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BitwiseAnd; }
 		const Snippet& snippet() const { return _snippet; }

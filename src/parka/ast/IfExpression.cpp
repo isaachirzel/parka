@@ -1,9 +1,9 @@
 #include "parka/ast/IfExpression.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *IfExpressionSyntax::parse(Token&)
+	ExpressionAst *IfExpressionAst::parse(Token&)
 	{
 		log::notImplemented(here());
 	}

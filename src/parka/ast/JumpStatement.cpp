@@ -1,12 +1,13 @@
 #include "parka/ast/JumpStatement.hpp"
 #include "parka/ast/Keyword.hpp"
+#include "parka/ir/Statement.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<JumpType> getJumpType(Token& token)
 	{
-		auto keywordType = KeywordSyntax::getKeywordType(token);
+		auto keywordType = KeywordAst::getKeywordType(token);
 
 		switch (keywordType)
 		{
@@ -28,7 +29,7 @@ namespace parka
 		}
 	}
 
-	StatementSyntax *JumpStatementSyntax::parse(Token& token)
+	StatementAst *JumpStatementAst::parse(Token& token)
 	{
 		auto type = getJumpType(token);
 
@@ -37,7 +38,7 @@ namespace parka
 
 		token.increment();
 
-		ExpressionSyntax *value = nullptr;
+		ExpressionAst *value = nullptr;
 
 		if (token.type() != TokenType::Semicolon)
 		{
@@ -56,7 +57,7 @@ namespace parka
 					break;
 			}
 			
-			value = ExpressionSyntax::parse(token);
+			value = ExpressionAst::parse(token);
 
 			if (!value)
 				return {};
@@ -70,12 +71,12 @@ namespace parka
 
 		token.increment();
 
-		auto *syntax = new JumpStatementSyntax(token, *type, value);
+		auto *syntax = new JumpStatementAst(token, *type, value);
 
 		return syntax;
 	}
 
-	StatementContext *JumpStatementSyntax::validate(SymbolTable&)
+	ir::StatementIr *JumpStatementAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

@@ -1,8 +1,9 @@
 #include "parka/ast/AssignmentExpression.hpp"
+#include "parka/ir/AssignmentExpression.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/ConditionalExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<AssignmentType> getAssignmentType(Token& token)
 	{
@@ -46,9 +47,9 @@ namespace parka
 		}
 	}
 
-	ExpressionSyntax *AssignmentExpressionSyntax::parse(Token& token)
+	ExpressionAst *AssignmentExpressionAst::parse(Token& token)
 	{
-		auto *lhs = ConditionalExpressionSyntax::parse(token);
+		auto *lhs = ConditionalExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -60,17 +61,17 @@ namespace parka
 
 		token.increment();
 
-		auto rhs = ConditionalExpressionSyntax::parse(token);
+		auto rhs = ConditionalExpressionAst::parse(token);
 
 		if (!rhs)
 			return {};
 
-		auto *expression = new AssignmentExpressionSyntax(*lhs, *rhs, *type);
+		auto *expression = new AssignmentExpressionAst(*lhs, *rhs, *type);
 
 		return expression;
 	}
 
-	ExpressionContext *AssignmentExpressionSyntax::validate(SymbolTable& symbolTable)
+	ir::ExpressionIr *AssignmentExpressionAst::validate(SymbolTable& symbolTable)
 	{
 		auto *lhs = _lhs.validate(symbolTable);
 		auto *rhs = _rhs.validate(symbolTable);
@@ -88,7 +89,7 @@ namespace parka
 			return nullptr;
 		}
 		
-		auto *context = new AssignmentExpressionContext(*lhs, *rhs, _assignmentType);
+		auto *context = new ir::AssignmentExpressionIr(*lhs, *rhs, _assignmentType);
 
 		return context;
 	}

@@ -1,28 +1,28 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_BOOLEAN_OR_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_BOOLEAN_OR_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_BOOLEAN_OR_HPP
+#define PARKA_AST_EXPRESSION_BOOLEAN_OR_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class BooleanOrExpressionSyntax : public ExpressionSyntax
+	class BooleanOrExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 
 	public:
 
-		BooleanOrExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs) :
+		BooleanOrExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs)
 		{}
-		BooleanOrExpressionSyntax(BooleanOrExpressionSyntax&&) = default;
-		BooleanOrExpressionSyntax(const BooleanOrExpressionSyntax&) = delete;
+		BooleanOrExpressionAst(BooleanOrExpressionAst&&) = default;
+		BooleanOrExpressionAst(const BooleanOrExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable& symbolTable);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
 		ExpressionType expressionType() const { return ExpressionType::BooleanOr; }
 		const Snippet& snippet() const { return _snippet; }

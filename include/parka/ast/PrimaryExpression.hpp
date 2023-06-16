@@ -1,11 +1,11 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_PRIMARY_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_PRIMARY_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_PRIMARY_HPP
+#define PARKA_AST_EXPRESSION_PRIMARY_HPP
 
 #include "parka/ast/Expression.hpp"
 
-namespace parka::PrimaryExpressionSyntax
+namespace parka::PrimaryExpressionAst
 {
-	ExpressionSyntax *parse(Token& token);
+	ExpressionAst *parse(Token& token);
 }
 
 #endif

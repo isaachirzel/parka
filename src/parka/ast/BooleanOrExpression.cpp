@@ -2,11 +2,11 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/BooleanAndExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *BooleanOrExpressionSyntax::parse(Token& token)
+	ExpressionAst *BooleanOrExpressionAst::parse(Token& token)
 	{
-		auto *lhs = BooleanAndExpressionSyntax::parse(token);
+		auto *lhs = BooleanAndExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -15,19 +15,19 @@ namespace parka
 		{
 			token.increment();
 
-			auto rhs = BooleanAndExpressionSyntax::parse(token);
+			auto rhs = BooleanAndExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 			
-			lhs = new BooleanOrExpressionSyntax(*lhs, *rhs);
+			lhs = new BooleanOrExpressionAst(*lhs, *rhs);
 		}
 
 
 		return lhs;
 	}
 
-	ExpressionContext *BooleanOrExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *BooleanOrExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

@@ -1,31 +1,31 @@
-#ifndef PARKA_SYNTAX_TYPE_ANNOTATION_SYNTAX_HPP
-#define PARKA_SYNTAX_TYPE_ANNOTATION_SYNTAX_HPP
+#ifndef PARKA_AST_TYPE_ANNOTATION_HPP
+#define PARKA_AST_TYPE_ANNOTATION_HPP
 
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/type/ValueType.hpp"
+#include "parka/ir/ValueType.hpp"
 #include "parka/util/Optional.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class TypeAnnotationSyntax
+	class TypeAnnotationAst
 	{
 		Snippet _snippet;
 		QualifiedIdentifier _identifier;
 
 	public:
 
-		TypeAnnotationSyntax(const Snippet& snippet, QualifiedIdentifier&& identifier) :
+		TypeAnnotationAst(const Snippet& snippet, QualifiedIdentifier&& identifier) :
 		_snippet(snippet),
 		_identifier(std::move(identifier))
 		{}
-		TypeAnnotationSyntax(TypeAnnotationSyntax&&) = default;
-		TypeAnnotationSyntax(const TypeAnnotationSyntax&) = delete;
+		TypeAnnotationAst(TypeAnnotationAst&&) = default;
+		TypeAnnotationAst(const TypeAnnotationAst&) = delete;
 
-		static Optional<TypeAnnotationSyntax> parse(Token& token);
+		static Optional<TypeAnnotationAst> parse(Token& token);
 
-		Optional<ValueType> validate(SymbolTable& symbolTable) const;
+		Optional<ir::ValueType> validate(SymbolTable& symbolTable) const;
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }

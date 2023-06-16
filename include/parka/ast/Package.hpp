@@ -1,62 +1,50 @@
-#ifndef PARKA_SYNTAX_PACKAGE_SYNTAX_HPP
-#define PARKA_SYNTAX_PACKAGE_SYNTAX_HPP
+#ifndef PARKA_AST_PACKAGE_HPP
+#define PARKA_AST_PACKAGE_HPP
 
 #include "parka/file/Directory.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/ir/Entity.hpp"
+#include "parka/ir/Package.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Module.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class PackageContext : public EntityContext
-	{
-		String _symbol;
-		Array<PackageContext*> _packages;
-		Array<FunctionContext*> _functions;
-		Array<StructContext*> _structs;
-
-	public:
-
-		PackageContext(String&& symbol, Array<PackageContext*> packages, Array<FunctionContext*>&& functions, Array<StructContext*>&& structs);
-		PackageContext(PackageContext&&) = default;
-		PackageContext(const PackageContext&) = delete;
-
-		const String& symbol() const { return _symbol; }
-		EntityType entityType() const { return EntityType::Package; }
-		const ValueType *valueType() const;
-		const auto& packages() const { return _packages; }
-		const auto& functions() const { return _functions; }
-		const auto& structs() const { return _structs; }
-	};
-
-	class PackageSyntax : public EntityEntry, public SymbolTable
+	class PackageAst : public SymbolTableEntry, public SymbolTable
 	{
 		String _name;
-		Array<ModuleSyntax> _modules;
-		Array<PackageSyntax*> _packages;
-		Table<String, EntityEntry*> _symbols;
-		PackageSyntax *_parent;
-		PackageContext *_context;
+		Array<ModuleAst> _modules;
+		Array<PackageAst*> _packages;
+		Table<String, SymbolTableEntry*> _symbols;
+		PackageAst *_parent;
+		ir::PackageIr *_context;
 
 	public:
 
-		PackageSyntax(String&& name, Array<ModuleSyntax>&& modules, Array<PackageSyntax*>&& packages);
-		PackageSyntax(PackageSyntax&&) = default;
-		PackageSyntax(const PackageSyntax&) = delete;
+		PackageAst(String&& identifier, Array<ModuleAst>&& modules, Array<PackageAst*>&& packages) :
+		_name(std::move(identifier)),
+		_modules(std::move(modules)),
+		_packages(std::move(packages)),
+		_symbols(),
+		_parent(nullptr),
+		_context(nullptr)
+		{}
+		PackageAst(PackageAst&&) = default;
+		PackageAst(const PackageAst&) = delete;
 
-		static PackageSyntax *parse(const Directory& directory, const String& name);
+		static PackageAst *parse(const Directory& directory, const String& name);
 
-		bool declare(EntitySyntax& entity);
-		bool declareSelf(PackageSyntax *parent);
-		EntityEntry *find(const Identifier& identifier);
-		EntityEntry *findInitial(const Identifier& identifier);
-		EntityEntry *findAbsolute(const Identifier& identifier);
-		EntityContext *resolve(const QualifiedIdentifier& identifier);
+		bool declare(EntityAst& entity);
+		bool declareSelf(PackageAst *parent);
+		SymbolTableEntry *find(const Identifier& identifier);
+		SymbolTableEntry *findInitial(const Identifier& identifier);
+		SymbolTableEntry *findAbsolute(const Identifier& identifier);
+		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 
-		PackageContext *validate();
-		EntityContext *context() { return validate(); }
+		ir::PackageIr *validate();
+		ir::EntityIr *context() { return validate(); }
 		
 		SymbolTableType symbolTableType() const { return SymbolTableType::Package; }
 		EntityType entityType() const { return EntityType::Package; }
@@ -64,7 +52,7 @@ namespace parka
 		const auto& modules() const { return _modules; }
 		const auto& packages() const { return _packages; }
 
-		friend std::ostream& operator<<(std::ostream& out, const PackageSyntax& package);
+		friend std::ostream& operator<<(std::ostream& out, const PackageAst& package);
 	};
 }
 

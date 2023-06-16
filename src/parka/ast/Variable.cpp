@@ -6,12 +6,12 @@
 
 #include "parka/util/Print.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	VariableSyntax *VariableSyntax::parse(Token& token)
+	VariableAst *VariableAst::parse(Token& token)
 	{
-		// TODO: VariableSyntax mutability
-		auto keyword = KeywordSyntax::parseVar(token);
+		// TODO: VariableAst mutability
+		auto keyword = KeywordAst::parseVar(token);
 
 		if (!keyword)
 			return {};	
@@ -23,13 +23,13 @@ namespace parka
 
 		auto end = identifier->snippet();
 
-		Optional<TypeAnnotationSyntax> annotation;
+		Optional<TypeAnnotationAst> annotation;
 
 		if (token.type() == TokenType::Colon)
 		{
 			token.increment();
 
-			annotation = TypeAnnotationSyntax::parse(token);
+			annotation = TypeAnnotationAst::parse(token);
 
 			if (!annotation)
 				return {};
@@ -38,12 +38,12 @@ namespace parka
 		}
 
 		auto snippet = keyword->snippet() +  end;
-		auto *syntax = new VariableSyntax(snippet, *identifier, false, std::move(annotation));
+		auto *syntax = new VariableAst(snippet, *identifier, false, std::move(annotation));
 
 		return syntax;
 	}
 
-	static Optional<ValueType> validateType(Optional<TypeAnnotationSyntax>& annotation, ExpressionContext *value, SymbolTable& symbolTable)
+	static Optional<ir::ValueType> validateType(Optional<TypeAnnotationAst>& annotation, ir::ExpressionIr *value, SymbolTable& symbolTable)
 	{
 		if (!annotation)
 		{
@@ -69,7 +69,7 @@ namespace parka
 		return annotationType;
 	}
 
-	VariableContext *VariableSyntax::validate(SymbolTable &symbolTable, ExpressionContext *value)
+	ir::VariableIr *VariableAst::validate(SymbolTable &symbolTable, ir::ExpressionIr *value)
 	{
 		auto declared = symbolTable.declare(*this);
 		auto type = validateType(_annotation, value, symbolTable);
@@ -77,7 +77,7 @@ namespace parka
 		if (!type || !declared)
 			return nullptr;
 
-		auto *context = new VariableContext(String(name()), *type);
+		auto *context = new ir::VariableIr(String(name()), *type);
 
 		_context = context;
 

@@ -1,12 +1,13 @@
 #include "parka/ast/BoolLiteral.hpp"
+#include "parka/ir/BoolLiteral.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Keyword.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	static Optional<bool> parseBool(Token& token)
 	{
-		auto type = KeywordSyntax::getKeywordType(token);
+		auto type = KeywordAst::getKeywordType(token);
 
 		switch (type)
 		{
@@ -25,22 +26,22 @@ namespace parka
 		return {};
 	}
 
-	ExpressionSyntax *BoolLiteralSyntax::parse(Token& token)
+	ExpressionAst *BoolLiteralAst::parse(Token& token)
 	{
 		auto value = parseBool(token);
 
 		if (!value)
 			return {};
 
-		auto *syntax = new BoolLiteralSyntax(token, *value);
+		auto *syntax = new BoolLiteralAst(token, *value);
 
 		token.increment();
 
 		return syntax;
 	}
 
-	ExpressionContext *BoolLiteralSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *BoolLiteralAst::validate(SymbolTable&)
 	{
-		return new BoolLiteralContext(_value);
+		return new ir::BoolLiteralIr(_value);
 	}
 }

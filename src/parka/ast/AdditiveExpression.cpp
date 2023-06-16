@@ -1,8 +1,9 @@
 #include "parka/ast/AdditiveExpression.hpp"
+#include "parka/ir/AdditiveExpression.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/MultiplicativeExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {	
 	static Optional<AdditiveType> getAdditiveType(Token& token)
 	{
@@ -21,9 +22,9 @@ namespace parka
 		return {};
 	}
 
-	ExpressionSyntax *AdditiveExpressionSyntax::parse(Token& token)
+	ExpressionAst *AdditiveExpressionAst::parse(Token& token)
 	{
-		auto *lhs = MultiplicativeExpressionSyntax::parse(token);
+		auto *lhs = MultiplicativeExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -34,19 +35,19 @@ namespace parka
 		{
 			token.increment();
 
-			auto rhs = MultiplicativeExpressionSyntax::parse(token);
+			auto rhs = MultiplicativeExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 
-			lhs = new AdditiveExpressionSyntax(*lhs, *rhs, *type);
+			lhs = new AdditiveExpressionAst(*lhs, *rhs, *type);
 			type = getAdditiveType(token);
 		}
 
 		return lhs;
 	}
 
-	ExpressionContext *AdditiveExpressionSyntax::validate(SymbolTable& symbolTable)
+	ir::ExpressionIr *AdditiveExpressionAst::validate(SymbolTable& symbolTable)
 	{
 		auto *lhs = _lhs.validate(symbolTable);
 		auto *rhs = _rhs.validate(symbolTable);
@@ -65,7 +66,7 @@ namespace parka
 			return nullptr;
 		}
 
-		auto *context = new AdditiveExpressionContext(*lhs, *rhs, _additiveType, ValueType(lhsType));
+		auto *context = new ir::AdditiveExpressionIr(*lhs, *rhs, _additiveType, ir::ValueType(lhsType));
 
 		return context;
 	}

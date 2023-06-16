@@ -1,4 +1,4 @@
-#include "parka/ast/SyntaxTree.hpp"
+#include "parka/ast/Ast.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Print.hpp"
@@ -21,7 +21,7 @@ int main(int argc, const char *argv[])
 
 	log::note("Project loaded in $ seconds.", readTime);
 
-	auto syntax = SyntaxTree::parse(project);
+	auto syntax = ast::Ast::parse(project);
 	auto parseTime = timer.split();
 
 	log::note("Parsing completed in $s.", parseTime);

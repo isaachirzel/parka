@@ -1,5 +1,5 @@
-#ifndef PARKA_SYNTAX_OPERATOR_OPERATOR_SYNTAX_HPP
-#define PARKA_SYNTAX_OPERATOR_OPERATOR_SYNTAX_HPP
+#ifndef PARKA_AST_OPERATOR_OPERATOR_HPP
+#define PARKA_AST_OPERATOR_OPERATOR_HPP
 
 #include "parka/enum/OperatorType.hpp"
 #include "parka/util/Common.hpp"

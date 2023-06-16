@@ -1,5 +1,5 @@
-#ifndef PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
-#define PARKA_SYNTAX_TYPE_TYPE_ID_SYNTAX_HPP
+#ifndef PARKA_AST_TYPE_TYPE_ID_HPP
+#define PARKA_AST_TYPE_TYPE_ID_HPP
 
 #include "parka/util/Common.hpp"
 

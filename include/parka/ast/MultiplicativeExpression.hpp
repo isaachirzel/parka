@@ -1,34 +1,32 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_MULTIPLICATIVE_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_MULTIPLICATIVE_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_MULTIPLICATIVE_HPP
+#define PARKA_AST_EXPRESSION_MULTIPLICATIVE_HPP
 
 #include "parka/enum/MultiplicativeType.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/util/Optional.hpp"
 
-#include <utility>
-
-namespace parka
+namespace parka::ast
 {
-	class MultiplicativeExpressionSyntax : public ExpressionSyntax
+	class MultiplicativeExpressionAst : public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _lhs;
-		ExpressionSyntax& _rhs;
+		ExpressionAst& _lhs;
+		ExpressionAst& _rhs;
 		MultiplicativeType _type;
 
 	public:
 
-		MultiplicativeExpressionSyntax(ExpressionSyntax& lhs, ExpressionSyntax& rhs, MultiplicativeType type) :
+		MultiplicativeExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, MultiplicativeType type) :
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),
 		_rhs(rhs),
 		_type(type)
 		{}
-		MultiplicativeExpressionSyntax(MultiplicativeExpressionSyntax&&) = default;
-		MultiplicativeExpressionSyntax(const MultiplicativeExpressionSyntax&) = delete;
+		MultiplicativeExpressionAst(MultiplicativeExpressionAst&&) = default;
+		MultiplicativeExpressionAst(const MultiplicativeExpressionAst&) = delete;
 
-		static ExpressionSyntax *parse(Token& token);
-		ExpressionContext *validate(SymbolTable&);
+		static ExpressionAst *parse(Token& token);
+		ir::ExpressionIr *validate(SymbolTable&);
 
 		ExpressionType expressionType() const { return ExpressionType::Multiplicative; }
 		const Snippet& snippet() const { return _snippet; }

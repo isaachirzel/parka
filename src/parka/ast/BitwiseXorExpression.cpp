@@ -2,11 +2,11 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/BitwiseAndExpression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *BitwiseXorExpressionSyntax::parse(Token& token)
+	ExpressionAst *BitwiseXorExpressionAst::parse(Token& token)
 	{
-		auto *lhs = BitwiseAndExpressionSyntax::parse(token);
+		auto *lhs = BitwiseAndExpressionAst::parse(token);
 
 		if (!lhs)
 			return {};
@@ -15,18 +15,18 @@ namespace parka
 		{
 			token.increment();
 
-			auto rhs = BitwiseAndExpressionSyntax::parse(token);
+			auto rhs = BitwiseAndExpressionAst::parse(token);
 
 			if (!rhs)
 				return {};
 
-			lhs = new BitwiseXorExpressionSyntax(*lhs, *rhs);
+			lhs = new BitwiseXorExpressionAst(*lhs, *rhs);
 		}
 
 		return lhs;
 	}
 
-	ExpressionContext *BitwiseXorExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *BitwiseXorExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

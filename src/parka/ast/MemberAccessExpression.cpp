@@ -1,9 +1,9 @@
 #include "parka/ast/MemberAccessExpression.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	ExpressionSyntax *MemberAccessExpressionSyntax::parse(Token& token, ExpressionSyntax& primary)
+	ExpressionAst *MemberAccessExpressionAst::parse(Token& token, ExpressionAst& primary)
 	{
 		if (token.type() != TokenType::Dot)
 		{
@@ -19,14 +19,14 @@ namespace parka
 			return {};
 		}
 		
-		auto *syntax = new MemberAccessExpressionSyntax(primary, Identifier(token));
+		auto *syntax = new MemberAccessExpressionAst(primary, Identifier(token));
 
 		token.increment();
 
 		return syntax;
 	}
 
-	ExpressionContext *MemberAccessExpressionSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *MemberAccessExpressionAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

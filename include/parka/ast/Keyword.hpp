@@ -1,14 +1,14 @@
-#ifndef PARKA_SYNTAX_KEYWORD_SYNTAX_HPP
-#define PARKA_SYNTAX_KEYWORD_SYNTAX_HPP
+#ifndef PARKA_AST_KEYWORD_HPP
+#define PARKA_AST_KEYWORD_HPP
 
 #include "parka/enum/KeywordType.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/util/Table.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	class KeywordSyntax
+	class KeywordAst
 	{
 		Snippet _snippet;
 		KeywordType _type;
@@ -23,20 +23,20 @@ namespace parka
 
 	public:
 
-		KeywordSyntax(const Snippet& snippet, KeywordType type) :
+		KeywordAst(const Snippet& snippet, KeywordType type) :
 		_snippet(snippet),
 		_type(type)
 		{}
-		KeywordSyntax(KeywordSyntax&&) = default;
-		KeywordSyntax(const KeywordSyntax&) = delete;
+		KeywordAst(KeywordAst&&) = default;
+		KeywordAst(const KeywordAst&) = delete;
 
 		static KeywordType getKeywordType(const Token& token);
-		static Optional<KeywordSyntax> parseBool(Token& token);
-		static Optional<KeywordSyntax> parseStruct(Token& token);
-		static Optional<KeywordSyntax> parseVar(Token& token);
-		static Optional<KeywordSyntax> parseFunction(Token& token);
-		static Optional<KeywordSyntax> parseOperator(Token& token);
-		static Optional<KeywordSyntax> parseMut(Token& token);
+		static Optional<KeywordAst> parseBool(Token& token);
+		static Optional<KeywordAst> parseStruct(Token& token);
+		static Optional<KeywordAst> parseVar(Token& token);
+		static Optional<KeywordAst> parseFunction(Token& token);
+		static Optional<KeywordAst> parseOperator(Token& token);
+		static Optional<KeywordAst> parseMut(Token& token);
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }

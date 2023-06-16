@@ -1,31 +1,23 @@
-#ifndef PARKA_SYNTAX_EXPRESSION_SYNTAX_HPP
-#define PARKA_SYNTAX_EXPRESSION_SYNTAX_HPP
+#ifndef PARKA_AST_EXPRESSION_HPP
+#define PARKA_AST_EXPRESSION_HPP
 
 #include "parka/parser/Token.hpp"
-#include "parka/enum/ExpressionType.hpp"
-#include "parka/repository/ExpressionSyntaxId.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/type/ValueType.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/ir/Expression.hpp"
 
-namespace parka
+namespace parka::ast
 {
-	struct ExpressionContext
+	struct ExpressionAst
 	{
-		virtual ~ExpressionContext() {}
-		virtual const ValueType& valueType() const = 0;
-		virtual ExpressionType expressionType() const = 0;
-	};
-
-	struct ExpressionSyntax
-	{
-		// TODO: Add snippets to expression
-		virtual ~ExpressionSyntax() {}
+		virtual ~ExpressionAst() {}
 		virtual ExpressionType expressionType() const = 0;
 		virtual const Snippet& snippet() const = 0;
-		virtual ExpressionContext *validate(SymbolTable& symbolTable) = 0;
+		virtual ir::ExpressionIr *validate(SymbolTable& symbolTable) = 0;
 		
-		static ExpressionSyntax *parse(Token& token);
+		static ExpressionAst *parse(Token& token);
+		static ExpressionAst *parseLiteral(Token& token);
+		static ExpressionAst *parsePostfixExpression(Token& token);
+		static ExpressionAst *parsePrimaryExpression(Token& token);
 	};
 }
 

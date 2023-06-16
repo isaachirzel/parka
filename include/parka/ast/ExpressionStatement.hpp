@@ -1,31 +1,28 @@
-#ifndef PARKA_SYNTAX_STATMENT_EXPRESSION_SYNTAX_HPP
-#define PARKA_SYNTAX_STATMENT_EXPRESSION_SYNTAX_HPP
+#ifndef PARKA_AST_STATMENT_EXPRESSION_HPP
+#define PARKA_AST_STATMENT_EXPRESSION_HPP
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
 #include "parka/parser/Token.hpp"
-#include "parka/util/Optional.hpp"
 
-#include <utility>
-
-namespace parka
+namespace parka::ast
 {
-	class ExpressionStatementSyntax : public StatementSyntax
+	class ExpressionStatementAst : public StatementAst
 	{
 		Snippet _snippet;
-		ExpressionSyntax& _expression;
+		ExpressionAst& _expression;
 
 	public:
 
-		ExpressionStatementSyntax(const Snippet& snippet, ExpressionSyntax& expression) :
+		ExpressionStatementAst(const Snippet& snippet, ExpressionAst& expression) :
 		_snippet(snippet),
 		_expression(expression)
 		{}
-		ExpressionStatementSyntax(ExpressionStatementSyntax&&) = default;
-		ExpressionStatementSyntax(const ExpressionStatementSyntax&) = delete;
+		ExpressionStatementAst(ExpressionStatementAst&&) = default;
+		ExpressionStatementAst(const ExpressionStatementAst&) = delete;
 
-		static StatementSyntax *parse(Token& token);
-		StatementContext *validate(SymbolTable& symbolTable);
+		static StatementAst *parse(Token& token);
+		ir::StatementIr *validate(SymbolTable& symbolTable);
 
 		StatementType statementType() const { return StatementType::Expression; }
 		const Snippet& snippet() const { return _snippet; }

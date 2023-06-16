@@ -1,7 +1,7 @@
 #include "parka/ast/FloatLiteral.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::ast
 {
 	// static Optional<f64> parseFloat(Token& token)
 	// {
@@ -35,22 +35,22 @@ namespace parka
 	// 	return value;
 	// }
 
-	ExpressionSyntax *FloatLiteralSyntax::parse(Token& token)
+	ExpressionAst *FloatLiteralAst::parse(Token& token)
 	{
-		if (token.type() != TokenType::FloatLiteralSyntax)
+		if (token.type() != TokenType::FloatLiteralAst)
 		{
 			log::parseError(token, "float");
 			return nullptr;
 		}
 
-		auto *syntax = new FloatLiteralSyntax(token);
+		auto *syntax = new FloatLiteralAst(token);
 
 		token.increment();
 
 		return syntax;
 	}
 
-	ExpressionContext *FloatLiteralSyntax::validate(SymbolTable&)
+	ir::ExpressionIr *FloatLiteralAst::validate(SymbolTable&)
 	{
 		log::notImplemented(here());
 	}

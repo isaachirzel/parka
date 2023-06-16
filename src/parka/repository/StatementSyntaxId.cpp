@@ -1,5 +1,5 @@
 // #include "parka/log/Log.hpp"
-// #include "parka/repository/StatementSyntaxId.hpp"
+// #include "parka/repository/StatementAstId.hpp"
 // #include "parka/ast/Statement.hpp"
 // #include "parka/ast/DeclarationStatement.hpp"
 // #include "parka/ast/ExpressionStatement.hpp"
@@ -9,17 +9,17 @@
 
 // namespace parka
 // {
-// 	std::ostream& operator<<(std::ostream&, const StatementSyntaxId&)
+// 	std::ostream& operator<<(std::ostream&, const StatementAstId&)
 // 	{
 // 		log::notImplemented(here());
 // 	}
 
-// 	bool StatementSyntaxId::operator==(const StatementSyntaxId& other) const
+// 	bool StatementAstId::operator==(const StatementAstId& other) const
 // 	{
 // 		return _type == other._type && _index == other._index;
 // 	}
 
-// 	// const StatementSyntax& StatementSyntaxId::operator*() const
+// 	// const StatementAst& StatementAstId::operator*() const
 // 	// {
 // 	// 	switch (_type)
 // 	// 	{
@@ -39,7 +39,7 @@
 // 	// 	log::fatal("Unable to get Statement of type: $", (int)_type);
 // 	// }
 
-// 	// const StatementSyntax *StatementSyntaxId::operator->() const
+// 	// const StatementAst *StatementAstId::operator->() const
 // 	// {
 // 	// 	return &(*(*this));
 // 	// }
