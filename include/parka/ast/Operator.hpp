@@ -25,8 +25,6 @@ namespace parka::ast
 		_type(type)
 		{}
 
-		static Optional<Operator> parse(Token& token);
-
 		const auto& leftType() const { return _leftType; }
 		const auto& rightType() const { return _rightType; }
 		const auto& body() const { return _body; }

@@ -22,8 +22,6 @@ namespace parka::ast
 		Identifier(Identifier&&) = default;
 		Identifier(const Identifier&) = delete;
 
-		static Optional<Identifier> parse(Token& token);
-
 		const Snippet& snippet() const { return _snippet; }
 		const auto& text() const { return _text; }
 

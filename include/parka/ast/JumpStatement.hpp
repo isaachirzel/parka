@@ -28,9 +28,6 @@ namespace parka::ast
 		JumpStatementAst(JumpStatementAst&&) = default;
 		JumpStatementAst(const JumpStatementAst&) = delete;
 
-		static StatementAst *parse(Token& token);
-		ir::StatementIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
 		bool hasValue() const { return !!_value; }
 		const auto& value() const { assert(_value != nullptr); return *_value; }

@@ -24,9 +24,6 @@ namespace parka::ast
 		MemberAccessExpressionAst(MemberAccessExpressionAst&&) = default;
 		MemberAccessExpressionAst(const MemberAccessExpressionAst&) = delete;
 
-		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
 
 		const auto& expression() const { return _expression; }

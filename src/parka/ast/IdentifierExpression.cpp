@@ -5,28 +5,20 @@
 
 namespace parka::ast
 {
-	IdentifierExpressionAst *IdentifierExpressionAst::parse(Token& token)
-	{
-		auto identifier = QualifiedIdentifier::parse(token);
-		auto *syntax = new IdentifierExpressionAst(*identifier);
+	// ir::ExpressionIr *IdentifierExpressionAst::validate(SymbolTable& symbolTable)
+	// {
+	// 	auto *entity = symbolTable.resolve(_identifier);
 
-		return syntax;
-	}
+	// 	if (entity == nullptr)
+	// 		return nullptr;
 
-	ir::ExpressionIr *IdentifierExpressionAst::validate(SymbolTable& symbolTable)
-	{
-		auto *entity = symbolTable.resolve(_identifier);
+	// 	const auto *valueType = entity->valueType();
 
-		if (entity == nullptr)
-			return nullptr;
+	// 	if (!valueType)
+	// 		return nullptr;
 
-		const auto *valueType = entity->valueType();
+	// 	auto *context = new ir::IdentifierExpressionIr(*entity, ir::ValueType(*valueType));
 
-		if (!valueType)
-			return nullptr;
-
-		auto *context = new ir::IdentifierExpressionIr(*entity, ir::ValueType(*valueType));
-
-		return context;
-	}
+	// 	return context;
+	// }
 }

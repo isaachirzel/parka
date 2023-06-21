@@ -22,11 +22,7 @@ namespace parka::ast
 		IdentifierExpressionAst(IdentifierExpressionAst&&) = default;
 		IdentifierExpressionAst(const IdentifierExpressionAst&) = delete;
 
-		static IdentifierExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _identifier.snippet(); }
-
 		const auto& identifier() const { return _identifier; }
 	};
 }

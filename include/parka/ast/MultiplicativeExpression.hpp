@@ -26,9 +26,6 @@ namespace parka::ast
 		MultiplicativeExpressionAst(MultiplicativeExpressionAst&&) = default;
 		MultiplicativeExpressionAst(const MultiplicativeExpressionAst&) = delete;
 
-		static ExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable&);
-
 		const Snippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }

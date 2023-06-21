@@ -19,60 +19,6 @@ namespace parka::ast
 	_structs(std::move(structs))
 	{}
 
-	ModuleAst ModuleAst::parse(const File& file)
-	{
-		// TODO: Fast forwarding after encountering parse error to not stop after first failure
-		auto token = Token::initial(file);
-		auto functions = Array<FunctionAst*>();
-		auto structs = Array<StructAst*>();
-
-		while (true)
-		{
-			auto keywordType = KeywordAst::getKeywordType(token);
-
-			switch (keywordType)
-			{
-				case KeywordType::Function:
-				{
-					auto *function = FunctionAst::parse(token);
-
-					if (!function)
-						break;
-
-					functions.push(function);
-
-					continue;
-				}
-
-				case KeywordType::StructAst:
-				{
-					auto *strct = StructAst::parse(token);
-
-					if (!strct)
-						break;
-
-					structs.push(strct);
-
-					continue;
-				}
-
-				default:
-					break;
-			}
-
-			if (token.type() != TokenType::EndOfFile)
-			{
-				log::parseError(token, "type or function definition");
-			}
-
-			break;
-		}
-
-		auto mod = ModuleAst(String(file.path()), std::move(functions), std::move(structs));
-
-		return mod;
-	}
-
 	std::ostream& operator<<(std::ostream& out, const ModuleAst& mod)
 	{
 		auto indent = Indent(out);

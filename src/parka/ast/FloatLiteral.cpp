@@ -34,24 +34,4 @@ namespace parka::ast
 
 	// 	return value;
 	// }
-
-	ExpressionAst *FloatLiteralAst::parse(Token& token)
-	{
-		if (token.type() != TokenType::FloatLiteralAst)
-		{
-			log::parseError(token, "float");
-			return nullptr;
-		}
-
-		auto *syntax = new FloatLiteralAst(token);
-
-		token.increment();
-
-		return syntax;
-	}
-
-	ir::ExpressionIr *FloatLiteralAst::validate(SymbolTable&)
-	{
-		log::notImplemented(here());
-	}
 }

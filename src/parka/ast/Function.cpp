@@ -10,67 +10,6 @@
 
 namespace parka::ast
 {
-	static ExpressionAst *parseFunctionBody(Token& token)
-	{
-		if (token.type() == TokenType::DoubleArrow)
-		{
-			token.increment();
-
-			auto body = ExpressionAst::parse(token);
-
-			if (!body)
-				return {};
-
-			if (token.type() != TokenType::Semicolon)
-			{
-				log::parseError(token, "';'", "Inline function bodies need to be ended with ';'.");
-				return {};
-			}
-
-			token.increment();
-
-			return body;
-		}
-
-		if (token.type() == TokenType::LeftBrace)
-			return BlockExpressionAst::parse(token);
-		
-		log::parseError(token, "function body", "Functions require a body.");
-
-		return {};
-	}
-
-	FunctionAst *FunctionAst::parse(Token& token)
-	{
-		auto prototype = PrototypeAst::parse(token);
-
-		if (!prototype)
-			return {};
-
-		auto body = parseFunctionBody(token);
-
-		if (!body)
-			return {};
-
-		auto *syntax = new FunctionAst(*prototype, *body);
-
-		return syntax;
-	}
-
-	// ir::FunctionIr *FunctionAst::validate()
-	// {
-	// 	// TODO: Mutex
-	// 	auto prototype = _prototype.validate(*this);
-	// 	auto *body = _body.validate(*this);
-
-	// 	if (!prototype || !body)
-	// 		return {};
-
-	// 	auto *context = new ir::FunctionIr(getSymbol(), *prototype, *body);
-
-	// 	return context;
-	// }
-
 	bool FunctionAst::declareSelf(PackageAst&)//parent)
 	{
 		log::notImplemented(here());

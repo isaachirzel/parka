@@ -18,9 +18,6 @@ namespace parka::ast
 		_snippet(snippet)
 		{}
 
-		static ExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
 	};
 }

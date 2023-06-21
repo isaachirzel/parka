@@ -6,65 +6,6 @@
 
 namespace parka::ast
 {
-	StructAst *StructAst::parse(Token &token)
-	{
-		auto keyword = KeywordAst::parseStruct(token);
-
-		if (!keyword)
-			return {};
-
-		auto identifier = Identifier::parse(token);
-
-		if (!identifier)
-			return {};
-
-		if (token.type() != TokenType::LeftBrace)
-		{
-			// TODO: 
-			log::parseError(token, "'{' before member list", "Bodyless structs are not allowed.");
-			return {};
-		}
-
-		auto members = Array<MemberAst*>();
-
-		token.increment();
-
-		if (token.type() != TokenType::RightBrace)
-		{
-			while (true)
-			{
-				auto member = MemberAst::parse(token);
-
-				if (!member)
-					return {};
-
-				members.push(member);
-
-				if (token.type() == TokenType::Comma)
-				{
-					token.increment();
-					continue;
-				}
-
-				break;
-			}
-
-			if (token.type() != TokenType::RightBrace)
-			{
-				log::parseError(token, "'}' after struct body");
-				return {};
-			}
-		}
-
-		auto snippet = keyword->snippet() + Snippet(token);
-
-		token.increment();
-
-		auto *syntax = new StructAst(snippet, *identifier, std::move(members));
-
-		return syntax;
-	}
-
 	bool StructAst::declare(Declarable& declarable)
 	{
 		// TODO: Token snippet
@@ -109,11 +50,6 @@ namespace parka::ast
 	Resolution *StructAst::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
-	}
-
-	ir::StructIr *StructAst::validate()
-	{
-		log::notImplemented(here());
 	}
 
 	String StructAst::getSymbol() const

@@ -25,9 +25,6 @@ namespace parka::ast
 		SubscriptExpressionAst(SubscriptExpressionAst&&) = default;
 		SubscriptExpressionAst(const SubscriptExpressionAst&) = delete;
 
-		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _primary; }
 		const auto& index() const { return _index; }

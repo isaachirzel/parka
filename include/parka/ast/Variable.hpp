@@ -32,7 +32,6 @@ namespace parka::ast
 		VariableAst(VariableAst&&) = default;
 		VariableAst(const VariableAst&) = delete;
 
-		static VariableAst *parse(Token& token);
 		String getSymbol() const { return _identifier.text(); }
 
 		const Snippet& snippet() const { return _snippet; }

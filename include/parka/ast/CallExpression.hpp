@@ -23,9 +23,6 @@ namespace parka::ast
 		CallExpressionAst(CallExpressionAst&&) = default;
 		CallExpressionAst(const CallExpressionAst&) = delete;
 
-		static ExpressionAst *parse(Token& token, ExpressionAst& primary);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
 		const auto& arguments() const { return _arguments; }
 	};

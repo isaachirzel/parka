@@ -24,8 +24,6 @@ namespace parka::ast
 		ModuleAst(ModuleAst&&) = default;
 		ModuleAst(const ModuleAst&) = delete;
 
-		static ModuleAst parse(const File& file);
-
 		const auto& filename() const { return _filepath; }
 		const auto& functions() const { return _functions; }
 		const auto& structs() const { return _structs; }

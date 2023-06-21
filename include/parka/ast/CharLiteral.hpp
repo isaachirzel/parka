@@ -22,9 +22,6 @@ namespace parka::ast
 		CharLiteralAst(CharLiteralAst&&) = default;
 		CharLiteralAst(const CharLiteralAst&) = delete;
 
-		static ExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
 		const auto& value() const { return _value; }
 	};

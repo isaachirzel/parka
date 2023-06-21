@@ -3,6 +3,8 @@
 
 #include "parka/ast/Expression.hpp"
 
+// TODO: Determine size of float
+
 namespace parka::ast
 {
 	class FloatLiteralAst : public ExpressionAst
@@ -18,10 +20,6 @@ namespace parka::ast
 		FloatLiteralAst(FloatLiteralAst&&) = default;
 		FloatLiteralAst(const FloatLiteralAst&) = delete;
 
-		static ExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
-		// TODO: Determine size of float
 		const Snippet& snippet() const { return _snippet; }
 	};
 }

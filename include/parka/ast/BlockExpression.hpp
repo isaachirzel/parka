@@ -33,9 +33,6 @@ namespace parka::ast
 		BlockExpressionAst(BlockExpressionAst&&) = default;
 		BlockExpressionAst(const BlockExpressionAst&) = delete;
 
-		static ExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		bool declare(Declarable& declarable);
 		Resolvable *find(const Identifier& identifier);
 		Resolution *resolve(const QualifiedIdentifier& identifier);

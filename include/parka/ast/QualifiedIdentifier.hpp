@@ -25,10 +25,7 @@ namespace parka::ast
 		QualifiedIdentifier(QualifiedIdentifier&&) = default;
 		QualifiedIdentifier(const QualifiedIdentifier&) = delete;
 
-		static Optional<QualifiedIdentifier> parse(Token& token);
-
 		const auto& snippet() const { return _snippet; }
-
 		const auto *begin() const { return _parts.begin(); }
 		const auto *end() const { return _parts.end(); }
 		const auto& length() const { return _parts.length(); }

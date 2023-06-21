@@ -39,8 +39,6 @@ namespace parka::ast
 		FunctionAst(FunctionAst&&) = default;
 		FunctionAst(const FunctionAst&) = delete;
 
-		static FunctionAst *parse(Token& token);
-
 		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst& parent);
 		Resolvable *find(const Identifier& identifier);

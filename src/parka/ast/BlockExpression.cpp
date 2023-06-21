@@ -6,41 +6,6 @@
 
 namespace parka::ast
 {
-	ExpressionAst *BlockExpressionAst::parse(Token& token)
-	{
-		if (token.type() != TokenType::LeftBrace)
-		{
-			log::parseError(token, "'{' before block");
-
-			return {};
-		}
-
-		auto first = Token(token);
-
-		token.increment();
-
-		// TODO: Add initial capacity
-		auto statements = Array<StatementAst*>();
-
-		while (token.type() != TokenType::RightBrace)
-		{
-			auto *statement = StatementAst::parse(token);
-
-			if (!statement)
-				return {};
-
-			statements.push(statement);
-		}
-
-		auto last = Token(token);
-
-		token.increment();
-
-		auto *syntax = new BlockExpressionAst(first + last, std::move(statements));
-
-		return syntax;
-	}
-
 	// ir::ExpressionIr *BlockExpressionAst::validate(SymbolTable& symbolTable)
 	// {
 	// 	bool success = false;

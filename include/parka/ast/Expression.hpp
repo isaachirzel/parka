@@ -19,11 +19,6 @@ namespace parka::ast
 		virtual ~ExpressionAst() {}
 		
 		virtual const Snippet& snippet() const = 0;
-		
-		static ExpressionAst *parse(Token& token);
-		static ExpressionAst *parseLiteral(Token& token);
-		static ExpressionAst *parsePostfixExpression(Token& token);
-		static ExpressionAst *parsePrimaryExpression(Token& token);
 	};
 }
 

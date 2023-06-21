@@ -31,9 +31,6 @@ namespace parka::ast
 		ParameterAst(ParameterAst&&) = default;
 		ParameterAst(const ParameterAst&) = delete;
 
-		static ParameterAst *parse(Token& token);
-
-		ir::ParameterIr *validate(SymbolTable& symbolTable);
 		String getSymbol() const;
 
 		const String& name() const { return _identifier.text(); }

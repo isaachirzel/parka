@@ -42,12 +42,10 @@ namespace parka::ast
 		StructAst(StructAst&&) = default;
 		StructAst(const StructAst&) = delete;
 
-		static StructAst *parse(Token& token);
 		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst& parent);
 		Resolvable *find(const Identifier& identifier);
 		Resolution *resolve(const QualifiedIdentifier& identifier);
-		ir::StructIr *validate();
 		String getSymbol() const;
 
 		const Snippet& snippet() const { return _snippet; }

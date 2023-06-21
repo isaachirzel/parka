@@ -26,14 +26,10 @@ namespace parka::ast
 		Ast(Ast&&) = default;
 		Ast(const Ast&) = delete;
 
-		static Ast parse(const Project& project);
-
 		bool declare(Declarable& declarable);
 		bool declareSelf();
 		Resolvable *find(const Identifier& identifier);
 		Resolution *resolve(const QualifiedIdentifier& identifier);
-
-		Optional<ir::Ir> validate();
 
 		friend std::ostream& operator<<(std::ostream& out, const Ast& syntax);
 	};

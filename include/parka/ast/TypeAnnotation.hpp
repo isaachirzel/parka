@@ -23,8 +23,6 @@ namespace parka::ast
 		TypeAnnotationAst(TypeAnnotationAst&&) = default;
 		TypeAnnotationAst(const TypeAnnotationAst&) = delete;
 
-		static Optional<TypeAnnotationAst> parse(Token& token);
-
 		Optional<ir::ValueType> validate(SymbolTable& symbolTable) const;
 
 		const Snippet& snippet() const { return _snippet; }

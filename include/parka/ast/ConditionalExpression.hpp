@@ -26,11 +26,7 @@ namespace parka::ast
 		ConditionalExpressionAst(ConditionalExpressionAst&&) = default;
 		ConditionalExpressionAst(const ConditionalExpressionAst&) = delete;
 
-		static ExpressionAst *parse(Token& token);
-		ir::ExpressionIr *validate(SymbolTable& symbolTable);
-
 		const Snippet& snippet() const { return _snippet; }
-
 		const auto& condition() const { return _condition; }
 		const auto& trueCase() const { return _trueCase; }
 		const auto& falseCase() const { return _falseCase; }

@@ -11,118 +11,45 @@
 
 namespace parka::ast
 {
-	Optional<PrototypeAst> PrototypeAst::parse(Token& token)
-	{
-		auto keyword = KeywordAst::parseFunction(token);
+	// static Optional<ir::ValueType> validateReturnType(Optional<TypeAnnotationAst>& syntax, SymbolTable& symbolTable)
+	// {
+	// 	if (!syntax)
+	// 		return ir::ValueType::voidType;
 
-		if (!keyword)
-			return {};
+	// 	return syntax->validate(symbolTable);
+	// }
 
-		auto identifier = Identifier::parse(token);
+	// Optional<ir::PrototypeIr> PrototypeAst::validate(SymbolTable& symbolTable)
+	// {
+	// 	auto success = true;
+	// 	const auto parameterCount = _parameters.length();
+	// 	auto parameters = Array<ir::ParameterIr*>(parameterCount);
 
-		if (!identifier)
-			return {};
+	// 	for (auto *parameterAst : _parameters)
+	// 	{
+	// 		auto *context = parameterAst->validate(symbolTable);
 
-		if (token.type() != TokenType::LeftParenthesis)
-		{
-			log::parseError(token, "'(' after function name");
-			return {};
-		}
+	// 		if (context == nullptr)
+	// 		{
+	// 			success = false;
+	// 			continue;
+	// 		}
 
-		token.increment();
+	// 		parameters.push(context);
+	// 	}
 
-		auto parameters = Array<ParameterAst*>();
+	// 	auto returnType = validateReturnType(_returnType, symbolTable);
 
-		if (token.type() != TokenType::RightParenthesis)
-		{
-			while (true)
-			{
-				auto parameter = ParameterAst::parse(token);
+	// 	if (!returnType)
+	// 		success = false;
 
-				if (!parameter) // TODO: Attempt to fast forward to parameter
-					return {};
+	// 	if (!success)
+	// 		return {};
 
-				parameters.push(parameter);
+	// 	auto context = ir::PrototypeIr(std::move(parameters), *returnType);
 
-				if (token.type() == TokenType::Comma)
-				{
-					token.increment();
-					continue;
-				}
-
-				break;
-			}
-
-			if (token.type() != TokenType::RightParenthesis)
-			{
-				log::parseError(token, "')'", "Invalid tokens in parameter list");
-				return {};
-			}
-		}
-
-		auto end = Snippet(token);
-		
-		token.increment();
-
-		Optional<TypeAnnotationAst> returnType;
-
-		if (token.type() == TokenType::SingleArrow)
-		{
-			token.increment();
-
-			returnType = TypeAnnotationAst::parse(token);
-
-			if (!returnType)
-				return {};
-
-			end = returnType->snippet();
-		}
-
-		auto snippet = keyword->snippet() + end;
-		auto prototype = PrototypeAst(snippet, *identifier, std::move(parameters), std::move(returnType));
-
-		return prototype;
-	}
-
-	static Optional<ir::ValueType> validateReturnType(Optional<TypeAnnotationAst>& syntax, SymbolTable& symbolTable)
-	{
-		if (!syntax)
-			return ir::ValueType::voidType;
-
-		return syntax->validate(symbolTable);
-	}
-
-	Optional<ir::PrototypeIr> PrototypeAst::validate(SymbolTable& symbolTable)
-	{
-		auto success = true;
-		const auto parameterCount = _parameters.length();
-		auto parameters = Array<ir::ParameterIr*>(parameterCount);
-
-		for (auto *parameterAst : _parameters)
-		{
-			auto *context = parameterAst->validate(symbolTable);
-
-			if (context == nullptr)
-			{
-				success = false;
-				continue;
-			}
-
-			parameters.push(context);
-		}
-
-		auto returnType = validateReturnType(_returnType, symbolTable);
-
-		if (!returnType)
-			success = false;
-
-		if (!success)
-			return {};
-
-		auto context = ir::PrototypeIr(std::move(parameters), *returnType);
-
-		return context;
-	}
+	// 	return context;
+	// }
 
 	std::ostream& operator<<(std::ostream& out, const PrototypeAst& syntax)
 	{

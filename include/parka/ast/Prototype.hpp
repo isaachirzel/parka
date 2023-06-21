@@ -28,10 +28,6 @@ namespace parka::ast
 		PrototypeAst(PrototypeAst&&) = default;
 		PrototypeAst(const PrototypeAst&) = delete;
 
-		static Optional<PrototypeAst> parse(Token& token);
-
-		Optional<ir::PrototypeIr> validate(SymbolTable& symbolTable);
-
 		const auto& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }
 		const auto& parameters() const { return _parameters; }

@@ -1,6 +1,7 @@
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/parser/ParkaParser.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/Timer.hpp"
 #include "parka/log/ArenaStreamBuffer.hpp"
@@ -21,7 +22,7 @@ int main(int argc, const char *argv[])
 
 	log::note("Project loaded in $ seconds.", readTime);
 
-	auto syntax = ast::Ast::parse(project);
+	auto syntax = parser::ParkaParser(project).parse();
 	auto parseTime = timer.split();
 
 	log::note("Parsing completed in $s.", parseTime);
@@ -31,7 +32,7 @@ int main(int argc, const char *argv[])
 
 	log::note("Declaration completed in $s.", declareTime);
 
-	// print("$\n", syntax);
+	print("$\n", syntax);
 
 	// auto context = syntax.validate();
 	// auto validateTime = timer.split();

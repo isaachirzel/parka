@@ -8,23 +8,6 @@
 
 namespace parka::ast
 {
-	PackageAst *PackageAst::parse(const Directory& directory, const String& name)
-	{
-		// TODO: Add multithreading
-		auto modules = Array<ModuleAst>(directory.files().length());
-		auto packages = Array<PackageAst*>(directory.subdirectories().length());
-
-		for (const auto& file : directory.files())
-			modules.push(ModuleAst::parse(file));
-
-		for (const auto& subdirectory : directory.subdirectories())
-			packages.push(PackageAst::parse(subdirectory, subdirectory.name()));
-
-		auto *syntax = new PackageAst(String(name), std::move(modules), std::move(packages));
-
-		return syntax;
-	}
-
 	// ir::PackageIr *PackageAst::validate()
 	// {
 	// 	auto success = true;

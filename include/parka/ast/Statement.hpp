@@ -20,11 +20,7 @@ namespace parka::ast
 		virtual ~StatementAst() {}
 
 		virtual const Snippet& snippet() const = 0;
-
-		static StatementAst *parse(Token& token);
 	};
-
-	std::ostream& operator<<(std::ostream& out, const StatementType& type);
 }
 
 #endif

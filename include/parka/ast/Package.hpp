@@ -35,8 +35,6 @@ namespace parka::ast
 		PackageAst(PackageAst&&) = default;
 		PackageAst(const PackageAst&) = delete;
 
-		static PackageAst *parse(const Directory& directory, const String& name);
-
 		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst *parent);
 		Resolvable *find(const Identifier& identifier);

@@ -32,9 +32,7 @@ namespace parka::ast
 		MemberAst(MemberAst&&) = default;
 		MemberAst(const MemberAst&) = delete;
 
-		static MemberAst *parse(Token& token);
 		bool declareSelf(SymbolTable& parent);
-		ir::MemberIr *validate();
 		String getSymbol() const;
 
 		const Identifier& identifier() const { return _identifier; }

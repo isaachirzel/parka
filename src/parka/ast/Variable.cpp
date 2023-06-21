@@ -8,41 +8,6 @@
 
 namespace parka::ast
 {
-	VariableAst *VariableAst::parse(Token& token)
-	{
-		// TODO: VariableAst mutability
-		auto keyword = KeywordAst::parseVar(token);
-
-		if (!keyword)
-			return {};	
-		
-		auto identifier = Identifier::parse(token);
-
-		if (!identifier)
-			return {};
-
-		auto end = identifier->snippet();
-
-		Optional<TypeAnnotationAst> annotation;
-
-		if (token.type() == TokenType::Colon)
-		{
-			token.increment();
-
-			annotation = TypeAnnotationAst::parse(token);
-
-			if (!annotation)
-				return {};
-
-			end = annotation->snippet();
-		}
-
-		auto snippet = keyword->snippet() +  end;
-		auto *syntax = new VariableAst(snippet, *identifier, false, std::move(annotation));
-
-		return syntax;
-	}
-
 	// static Optional<ir::ValueType> validateType(Optional<TypeAnnotationAst>& annotation, ir::ExpressionIr *value, SymbolTable& symbolTable)
 	// {
 	// 	if (!annotation)

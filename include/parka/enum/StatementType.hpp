@@ -11,6 +11,8 @@ namespace parka
 		Expression,
 		Jump
 	};
+
+	std::ostream& operator<<(std::ostream& out, const StatementType& type);
 }
 
 #endif
