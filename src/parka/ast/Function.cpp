@@ -1,9 +1,9 @@
 #include "parka/ast/Function.hpp"
-#include "parka/ir/Entity.hpp"
 #include "parka/ir/Function.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/BlockExpression.hpp"
 #include "parka/ast/Package.hpp"
@@ -57,19 +57,19 @@ namespace parka::ast
 		return syntax;
 	}
 
-	ir::FunctionIr *FunctionAst::validate()
-	{
-		// TODO: Mutex
-		auto prototype = _prototype.validate(*this);
-		auto *body = _body.validate(*this);
+	// ir::FunctionIr *FunctionAst::validate()
+	// {
+	// 	// TODO: Mutex
+	// 	auto prototype = _prototype.validate(*this);
+	// 	auto *body = _body.validate(*this);
 
-		if (!prototype || !body)
-			return {};
+	// 	if (!prototype || !body)
+	// 		return {};
 
-		auto *context = new ir::FunctionIr(getSymbol(), *prototype, *body);
+	// 	auto *context = new ir::FunctionIr(getSymbol(), *prototype, *body);
 
-		return context;
-	}
+	// 	return context;
+	// }
 
 	bool FunctionAst::declareSelf(PackageAst&)//parent)
 	{
@@ -90,10 +90,11 @@ namespace parka::ast
 			{
 				log::error(identifier, "A $ `$` has already been declared in this function.", declarable.declarableType, name);
 
-				auto *previous = dynamic_cast<EntityAst*>(symbol);
+				auto *previous = dynamic_cast<Declarable*>(symbol);
 
 				if (previous != nullptr)
 					log::note(previous->identifier(), "Previous declaration here:");
+					
 				// TODO: maybe just insert it anyways?
 				return false;
 			}
@@ -117,7 +118,7 @@ namespace parka::ast
 		return nullptr;
 	}
 
-	ir::EntityIr *FunctionAst::resolve(const QualifiedIdentifier&)
+	Resolution *FunctionAst::resolve(const QualifiedIdentifier&)
 	{
 		log::notImplemented(here());
 		// if (identifier.isAbsolute() || identifier.length() > 1)

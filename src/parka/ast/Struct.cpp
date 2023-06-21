@@ -106,7 +106,7 @@ namespace parka::ast
 		return nullptr;
 	}
 
-	ir::EntityIr *StructAst::resolve(const QualifiedIdentifier& identifier)
+	Resolution *StructAst::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}

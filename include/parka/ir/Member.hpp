@@ -1,18 +1,18 @@
 #ifndef PARKA_IR_MEMBER_HPP
 #define PARKA_IR_MEMBER_HPP
 
-#include "parka/ir/Entity.hpp"
+#include "parka/symbol/Resolution.hpp"
 
 namespace parka::ir
 {
-	class MemberIr : public EntityIr
+	class MemberIr : public Resolution
 	{
 		ValueType _valueType;
 
 	public:
 
 		MemberIr(ValueType&& valueType) :
-		EntityIr(EntityType::Member),
+		Resolution(ResolvableType::Member),
 		_valueType(std::move(valueType))
 		{}
 		MemberIr(MemberIr&&) = default;

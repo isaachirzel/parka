@@ -8,7 +8,6 @@
 #include "parka/ir/Function.hpp"
 #include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
 #include "parka/symbol/Resolvable.hpp"
@@ -41,13 +40,11 @@ namespace parka::ast
 		FunctionAst(const FunctionAst&) = delete;
 
 		static FunctionAst *parse(Token& token);
-		ir::FunctionIr *validate();
-		// ir::EntityIr *context() { return validate(); }
 
 		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst& parent);
 		Resolvable *find(const Identifier& identifier);
-		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
+		Resolution *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 
 		const Snippet& snippet() const { return _snippet; }

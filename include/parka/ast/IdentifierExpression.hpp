@@ -3,7 +3,6 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
-#include "parka/ast/Entity.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/ir/ValueType.hpp"
 #include "parka/util/Optional.hpp"

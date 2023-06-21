@@ -4,11 +4,9 @@
 #include "parka/enum/EntityType.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/ir/Entity.hpp"
 #include "parka/ir/Package.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/Entity.hpp"
 #include "parka/ast/Module.hpp"
 
 namespace parka::ast
@@ -44,11 +42,8 @@ namespace parka::ast
 		Resolvable *find(const Identifier& identifier);
 		Resolvable *findInitial(const Identifier& identifier);
 		Resolvable *findAbsolute(const Identifier& identifier);
-		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
+		Resolution *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
-
-		ir::PackageIr *validate();
-		// ir::EntityIr *context() { return validate(); }
 		
 		const String& name() const { return _name; }
 		const auto& modules() const { return _modules; }

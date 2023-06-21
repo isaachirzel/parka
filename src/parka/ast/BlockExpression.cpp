@@ -79,7 +79,7 @@ namespace parka::ast
 		return _parent->find(identifier);
 	}
 
-	ir::EntityIr *BlockExpressionAst::resolve(const QualifiedIdentifier& identifier)
+	Resolution *BlockExpressionAst::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _parent->resolve(identifier);
 	}

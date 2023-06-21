@@ -1,7 +1,6 @@
 #ifndef PARKA_AST_MODULE_HPP
 #define PARKA_AST_MODULE_HPP
 
-#include "parka/ast/Entity.hpp"
 #include "parka/ast/Function.hpp"
 #include "parka/ast/Struct.hpp"
 #include "parka/util/Array.hpp"

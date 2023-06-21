@@ -9,7 +9,6 @@
 #include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
-#include "parka/ast/Entity.hpp"
 
 namespace parka::ast
 {
@@ -34,8 +33,6 @@ namespace parka::ast
 		VariableAst(const VariableAst&) = delete;
 
 		static VariableAst *parse(Token& token);
-		ir::VariableIr *validate(SymbolTable& symbolTable, ir::ExpressionIr *value);
-		ir::EntityIr *context() { return _context; }
 		String getSymbol() const { return _identifier.text(); }
 
 		const Snippet& snippet() const { return _snippet; }

@@ -1,7 +1,6 @@
 #ifndef PARKA_AST_PARAMETER_HPP
 #define PARKA_AST_PARAMETER_HPP
 
-#include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/enum/ResolvableType.hpp"
@@ -35,7 +34,6 @@ namespace parka::ast
 		static ParameterAst *parse(Token& token);
 
 		ir::ParameterIr *validate(SymbolTable& symbolTable);
-		ir::EntityIr *context() { assert(_context != nullptr); return _context; }
 		String getSymbol() const;
 
 		const String& name() const { return _identifier.text(); }

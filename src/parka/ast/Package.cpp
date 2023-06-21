@@ -5,7 +5,6 @@
 #include "parka/log/Log.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/Entity.hpp"
 
 namespace parka::ast
 {
@@ -26,59 +25,59 @@ namespace parka::ast
 		return syntax;
 	}
 
-	ir::PackageIr *PackageAst::validate()
-	{
-		auto success = true;
-		auto packages = Array<ir::PackageIr*>();
-		auto functions = Array<ir::FunctionIr*>();
-		auto structs = Array<ir::StructIr*>();
+	// ir::PackageIr *PackageAst::validate()
+	// {
+	// 	auto success = true;
+	// 	auto packages = Array<ir::PackageIr*>();
+	// 	auto functions = Array<ir::FunctionIr*>();
+	// 	auto structs = Array<ir::StructIr*>();
 
-		for (auto& mod : _modules)
-		{
-			for (auto *syntax : mod.functions())
-			{
-				auto *context = syntax->validate();
+	// 	for (auto& mod : _modules)
+	// 	{
+	// 		for (auto *syntax : mod.functions())
+	// 		{
+	// 			auto *context = syntax->validate();
 
-				if (!context)
-				{
-					success = false;
-					continue;
-				}
+	// 			if (!context)
+	// 			{
+	// 				success = false;
+	// 				continue;
+	// 			}
 
-				functions.push(context);
-			}
+	// 			functions.push(context);
+	// 		}
 
-			// for (auto *syntax : mod.structs())
-			// {
-			// 	auto *context = syntax->validate(*this);
+	// 		// for (auto *syntax : mod.structs())
+	// 		// {
+	// 		// 	auto *context = syntax->validate(*this);
 
-			// 	if (!context)
-			// 		continue;
+	// 		// 	if (!context)
+	// 		// 		continue;
 
-			// 	structs.push(context);
-			// }
-		}
+	// 		// 	structs.push(context);
+	// 		// }
+	// 	}
 
-		for (auto *syntax : _packages)
-		{
-			auto *context = syntax->validate();
+	// 	for (auto *syntax : _packages)
+	// 	{
+	// 		auto *context = syntax->validate();
 
-			if (!context)
-			{
-				success = false;
-				continue;
-			}
+	// 		if (!context)
+	// 		{
+	// 			success = false;
+	// 			continue;
+	// 		}
 
-			packages.push(context);
-		}
+	// 		packages.push(context);
+	// 	}
 
-		if (!success)
-			return {};
+	// 	if (!success)
+	// 		return {};
 
-		auto *context = new ir::PackageIr(getSymbol(), std::move(packages), std::move(functions), std::move(structs));
+	// 	auto *context = new ir::PackageIr(getSymbol(), std::move(packages), std::move(functions), std::move(structs));
 
-		return context;
-	}
+	// 	return context;
+	// }
 
 	bool PackageAst::declare(Declarable& declarable)
 	{
@@ -178,7 +177,7 @@ namespace parka::ast
 		return nullptr;
 	}
 
-	ir::EntityIr *PackageAst::resolve(const QualifiedIdentifier& qualifiedIdentifier)
+	Resolution *PackageAst::resolve(const QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];

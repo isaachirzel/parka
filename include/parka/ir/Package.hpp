@@ -1,14 +1,14 @@
 #ifndef PARKA_IR_PACKAGE_HPP
 #define PARKA_IR_PACKAGE_HPP
 
-#include "parka/ir/Entity.hpp"
 #include "parka/ir/Function.hpp"
 #include "parka/ir/Struct.hpp"
+#include "parka/symbol/Resolution.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
-	class PackageIr
+	class PackageIr: public Resolution
 	{
 		String _symbol;
 		Array<PackageIr*> _packages;
@@ -18,6 +18,7 @@ namespace parka::ir
 	public:
 
 		PackageIr(String&& symbol, Array<PackageIr*> packages, Array<FunctionIr*>&& functions, Array<StructIr*>&& structs) :
+		Resolution(ResolvableType::Package),
 		_symbol(std::move(symbol)),
 		_packages(std::move(packages)),
 		_functions(std::move(functions)),

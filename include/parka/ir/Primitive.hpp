@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_PRIMITIVE_HPP
 #define PARKA_AST_PRIMITIVE_HPP
 
-#include "parka/ast/Entity.hpp"
+#include "parka/ir/ValueType.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/util/Array.hpp"

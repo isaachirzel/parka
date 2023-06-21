@@ -40,16 +40,16 @@ namespace parka::ast
 		return syntax;
 	}
 
-	ir::StatementIr *DeclarationStatementAst::validate(SymbolTable& symbolTable)
-	{
-		auto *value = _value.validate(symbolTable);
-		auto *variable = _variable.validate(symbolTable, value);
+	// ir::StatementIr *DeclarationStatementAst::validate(SymbolTable& symbolTable)
+	// {
+	// 	auto *value = _value.validate(symbolTable);
+	// 	auto *variable = _variable.validate(symbolTable, value);
 
-		if (!variable || !value)
-			return nullptr;
+	// 	if (!variable || !value)
+	// 		return nullptr;
 
-		auto *context = new ir::DeclarationStatementIr(*variable, *value);
+	// 	auto *context = new ir::DeclarationStatementIr(*variable, *value);
 
-		return context;
-	}
+	// 	return context;
+	// }
 }

@@ -1,7 +1,6 @@
 #ifndef PARKA_AST_BLOCK_HPP
 #define PARKA_AST_BLOCK_HPP
 
-#include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
 #include "parka/enum/SymbolTableType.hpp"
@@ -39,7 +38,7 @@ namespace parka::ast
 
 		bool declare(Declarable& declarable);
 		Resolvable *find(const Identifier& identifier);
-		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
+		Resolution *resolve(const QualifiedIdentifier& identifier);
 
 		const Snippet &snippet() const { return _snippet; }
 		const auto& statements() const { return _statements; }

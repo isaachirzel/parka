@@ -1,4 +1,3 @@
-#include "parka/ir/Entity.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/ast/AssignmentExpression.hpp"
 #include "parka/ast/Member.hpp"
@@ -6,7 +5,7 @@
 #include "parka/ast/Package.hpp"
 #include "parka/ast/Struct.hpp"
 #include "parka/ast/Ast.hpp"
-#include "parka/ast/Entity.hpp"
+#include "parka/symbol/Resolution.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/file/Directory.hpp"
 #include "parka/util/Path.hpp"
@@ -41,22 +40,22 @@ namespace parka::ast
 		return _globalPackage.find(identifier);
 	}
 
-	ir::EntityIr *Ast::resolve(const QualifiedIdentifier& identifier)
+	Resolution *Ast::resolve(const QualifiedIdentifier& identifier)
 	{
 		return _globalPackage.resolve(identifier);
 	}
 
-	Optional<ir::Ir> Ast::validate()
-	{
-		auto *package = _globalPackage.validate();
+	// Optional<ir::Ir> Ast::validate()
+	// {
+	// 	auto *package = _globalPackage.validate();
 
-		if (!package)
-			return {};
+	// 	if (!package)
+	// 		return {};
 
-		auto context = ir::Ir(*package);
+	// 	auto context = ir::Ir(*package);
 
-		return context;
-	}
+	// 	return context;
+	// }
 
 	std::ostream& operator<<(std::ostream& out, const Ast& syntax)
 	{

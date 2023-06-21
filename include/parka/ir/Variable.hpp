@@ -1,11 +1,11 @@
 #ifndef PARKA_IR_VARIABLE_HPP
 #define PARKA_IR_VARIABLE_HPP
 
-#include "parka/ir/Entity.hpp"
+#include "parka/symbol/Resolution.hpp"
 
 namespace parka::ir
 {
-	class VariableIr: public EntityIr
+	class VariableIr: public Resolution
 	{
 		String _symbol;
 		ValueType _type;
@@ -13,7 +13,7 @@ namespace parka::ir
 	public:
 
 		VariableIr(String&& symbol, ValueType&& type) :
-		EntityIr(EntityType::Variable),
+		Resolution(ResolvableType::Variable),
 		_symbol(std::move(symbol)),
 		_type(std::move(type))
 		{}

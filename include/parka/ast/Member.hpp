@@ -1,7 +1,6 @@
 #ifndef PARKA_AST_MEMBER_HPP
 #define PARKA_AST_MEMBER_HPP
 
-#include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/enum/DeclarableType.hpp"
@@ -36,7 +35,6 @@ namespace parka::ast
 		static MemberAst *parse(Token& token);
 		bool declareSelf(SymbolTable& parent);
 		ir::MemberIr *validate();
-		ir::EntityIr *context() { return validate(); }
 		String getSymbol() const;
 
 		const Identifier& identifier() const { return _identifier; }

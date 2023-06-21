@@ -2,7 +2,6 @@
 #define PARKA_AST_AST_HPP
 
 #include "parka/enum/SymbolTableType.hpp"
-#include "parka/ir/Entity.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Module.hpp"
@@ -32,7 +31,7 @@ namespace parka::ast
 		bool declare(Declarable& declarable);
 		bool declareSelf();
 		Resolvable *find(const Identifier& identifier);
-		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
+		Resolution *resolve(const QualifiedIdentifier& identifier);
 
 		Optional<ir::Ir> validate();
 
