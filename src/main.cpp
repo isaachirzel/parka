@@ -33,10 +33,10 @@ int main(int argc, const char *argv[])
 
 	// print("$\n", syntax);
 
-	auto context = syntax.validate();
-	auto validateTime = timer.split();
+	// auto context = syntax.validate();
+	// auto validateTime = timer.split();
 
-	log::note("Validation completed in $s.", validateTime);
+	// log::note("Validation completed in $s.", validateTime);
 
 	auto errorCount = log::getErrorCount();
 	auto compileTime = timer.stop();

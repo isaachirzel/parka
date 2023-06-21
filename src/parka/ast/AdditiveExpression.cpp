@@ -47,27 +47,27 @@ namespace parka::ast
 		return lhs;
 	}
 
-	ir::ExpressionIr *AdditiveExpressionAst::validate(SymbolTable& symbolTable)
-	{
-		auto *lhs = _lhs.validate(symbolTable);
-		auto *rhs = _rhs.validate(symbolTable);
+	// ir::ExpressionIr *AdditiveExpressionAst::validate(SymbolTable& symbolTable)
+	// {
+	// 	auto *lhs = _lhs.validate(symbolTable);
+	// 	auto *rhs = _rhs.validate(symbolTable);
 
-		// TODO: Operators
+	// 	// TODO: Operators
 
-		if (!lhs || !rhs)
-			return nullptr;
+	// 	if (!lhs || !rhs)
+	// 		return nullptr;
 
-		const auto& lhsType = lhs->valueType();
-		const auto& rhsType = rhs->valueType();
+	// 	const auto& lhsType = lhs->valueType();
+	// 	const auto& rhsType = rhs->valueType();
 
-		if (!rhsType.canConvertTo(lhsType))
-		{
-			log::error(_snippet, "$ cannot be added to $.", rhsType, lhsType);
-			return nullptr;
-		}
+	// 	if (!rhsType.canConvertTo(lhsType))
+	// 	{
+	// 		log::error(_snippet, "$ cannot be added to $.", rhsType, lhsType);
+	// 		return nullptr;
+	// 	}
 
-		auto *context = new ir::AdditiveExpressionIr(*lhs, *rhs, _additiveType, ir::ValueType(lhsType));
+	// 	auto *context = new ir::AdditiveExpressionIr(*lhs, *rhs, _additiveType, ir::ValueType(lhsType));
 
-		return context;
-	}
+	// 	return context;
+	// }
 }

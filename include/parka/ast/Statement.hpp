@@ -20,7 +20,6 @@ namespace parka::ast
 		virtual ~StatementAst() {}
 
 		virtual const Snippet& snippet() const = 0;
-		virtual ir::StatementIr *validate(SymbolTable& symbolTable) = 0;
 
 		static StatementAst *parse(Token& token);
 	};

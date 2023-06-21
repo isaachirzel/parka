@@ -71,26 +71,26 @@ namespace parka::ast
 		return expression;
 	}
 
-	ir::ExpressionIr *AssignmentExpressionAst::validate(SymbolTable& symbolTable)
-	{
-		auto *lhs = _lhs.validate(symbolTable);
-		auto *rhs = _rhs.validate(symbolTable);
+	// ir::ExpressionIr *AssignmentExpressionAst::validate(SymbolTable& symbolTable)
+	// {
+	// 	auto *lhs = _lhs.validate(symbolTable);
+	// 	auto *rhs = _rhs.validate(symbolTable);
 
-		if (!lhs || !rhs)
-			return {};
+	// 	if (!lhs || !rhs)
+	// 		return {};
 
-		// TODO: Operators and actualy get return type
-		const auto& lhsType = lhs->valueType();
-		const auto& rhsType = rhs->valueType();
+	// 	// TODO: Operators and actualy get return type
+	// 	const auto& lhsType = lhs->valueType();
+	// 	const auto& rhsType = rhs->valueType();
 
-		if (!rhsType.canConvertTo(lhsType))
-		{
-			log::error("Unable to add $ to $.", rhsType, lhsType);
-			return nullptr;
-		}
+	// 	if (!rhsType.canConvertTo(lhsType))
+	// 	{
+	// 		log::error("Unable to add $ to $.", rhsType, lhsType);
+	// 		return nullptr;
+	// 	}
 		
-		auto *context = new ir::AssignmentExpressionIr(*lhs, *rhs, _assignmentType);
+	// 	auto *context = new ir::AssignmentExpressionIr(*lhs, *rhs, _assignmentType);
 
-		return context;
-	}
+	// 	return context;
+	// }
 }
