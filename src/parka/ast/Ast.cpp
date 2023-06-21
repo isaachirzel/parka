@@ -26,9 +26,9 @@ namespace parka::ast
 		return result;
 	}
 
-	bool Ast::declare(EntityAst& entity)
+	bool Ast::declare(Declarable& declarable)
 	{
-		return _globalPackage.declare(entity);
+		return _globalPackage.declare(declarable);
 	}
 
 	bool Ast::declareSelf()
@@ -36,7 +36,7 @@ namespace parka::ast
 		return _globalPackage.declareSelf(nullptr);
 	}
 
-	SymbolTableEntry *Ast::find(const Identifier& identifier)
+	Resolvable *Ast::find(const Identifier& identifier)
 	{
 		return _globalPackage.find(identifier);
 	}

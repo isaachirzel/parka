@@ -4,19 +4,19 @@
 #include "parka/enum/EntityType.hpp"
 #include "parka/ir/Entity.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/symbol/SymbolTableEntry.hpp"
+#include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ast
 {
 	// TODO: Make entityType a data member
-	struct EntityAst : public SymbolTableEntry
+	struct EntityAst : public Resolvable
 	{
 		const EntityType entityType;
 
 	public:
 
-		EntityAst(EntityType entityType, SymbolTableEntryType symbolTableEntryType) :
-		SymbolTableEntry(symbolTableEntryType),
+		EntityAst(EntityType entityType, ResolvableType ResolvableType) :
+		Resolvable(ResolvableType),
 		entityType(entityType)
 		{}
 		virtual ~EntityAst() {}

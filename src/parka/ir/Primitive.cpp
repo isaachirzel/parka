@@ -1,5 +1,6 @@
 #include "parka/ir/Primitive.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/Resolvable.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
@@ -44,7 +45,7 @@ namespace parka::ir
 	}
 
 	Primitive::Primitive(const char *name, PrimitiveType type, u32 size) :
-	SymbolTableEntry(SymbolTableEntryType::Primitive),
+	Resolvable(ResolvableType::Primitive),
 	_name(name),
 	_size(size),
 	_type(type)

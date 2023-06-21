@@ -2,7 +2,8 @@
 #define PARKA_AST_PRIMITIVE_HPP
 
 #include "parka/ast/Entity.hpp"
-#include "parka/symbol/SymbolTableEntry.hpp"
+#include "parka/symbol/Resolvable.hpp"
+#include "parka/symbol/Resolvable.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
@@ -18,7 +19,7 @@ namespace parka::ir
 		String
 	};
 
-	class Primitive : public SymbolTableEntry
+	class Primitive : public Resolvable
 	{
 		String _name;
 		u32 _size;

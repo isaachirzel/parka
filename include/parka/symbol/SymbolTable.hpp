@@ -5,6 +5,7 @@
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Entity.hpp"
+#include "parka/symbol/Declarable.hpp"
 
 namespace parka
 {
@@ -20,8 +21,8 @@ namespace parka
 		{}
 		virtual ~SymbolTable() {}
 
-		virtual bool declare(ast::EntityAst& entity) = 0;
-		virtual SymbolTableEntry *find(const ast::Identifier& identifier) = 0;
+		virtual bool declare(Declarable& entity) = 0;
+		virtual Resolvable *find(const ast::Identifier& identifier) = 0;
 		virtual ir::EntityIr *resolve(const ast::QualifiedIdentifier& identifier) = 0;
 	};
 }

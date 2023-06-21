@@ -69,12 +69,12 @@ namespace parka::ast
 		return context;
 	}
 
-	bool BlockExpressionAst::declare(EntityAst& entity)
+	bool BlockExpressionAst::declare(Declarable& declarable)
 	{
-		return _parent->declare(entity);
+		return _parent->declare(declarable);
 	}
 
-	SymbolTableEntry *BlockExpressionAst::find(const Identifier& identifier)
+	Resolvable *BlockExpressionAst::find(const Identifier& identifier)
 	{
 		return _parent->find(identifier);
 	}

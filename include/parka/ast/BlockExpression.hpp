@@ -17,7 +17,7 @@ namespace parka::ast
 		Array<StatementAst*> _statements;
 
 		SymbolTable *_parent;
-		Array<SymbolTableEntry*> *_symbols;
+		Array<Resolvable*> *_symbols;
 		usize _baseIndex;
 
 	public:
@@ -37,8 +37,8 @@ namespace parka::ast
 		static ExpressionAst *parse(Token& token);
 		ir::ExpressionIr *validate(SymbolTable& symbolTable);
 
-		bool declare(EntityAst& entity);
-		SymbolTableEntry *find(const Identifier& identifier);
+		bool declare(Declarable& declarable);
+		Resolvable *find(const Identifier& identifier);
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 
 		const Snippet &snippet() const { return _snippet; }

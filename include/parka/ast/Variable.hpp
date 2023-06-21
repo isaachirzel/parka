@@ -3,15 +3,17 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/enum/DeclarableType.hpp"
 #include "parka/ir/Expression.hpp"
 #include "parka/ir/Variable.hpp"
+#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Entity.hpp"
 
 namespace parka::ast
 {
-	class VariableAst : public EntityAst
+	class VariableAst : public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -22,7 +24,7 @@ namespace parka::ast
 	public:
 
 		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation) :
-		EntityAst(EntityType::Variable, SymbolTableEntryType::Variable),
+		Declarable(DeclarableType::Variable, ResolvableType::Variable),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

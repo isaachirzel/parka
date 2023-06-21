@@ -79,16 +79,16 @@ namespace parka::ast
 		// return parent.declare(*this);
 	}
 
-	bool FunctionAst::declare(EntityAst& entity)
+	bool FunctionAst::declare(Declarable& declarable)
 	{
-		const auto& identifier = entity.identifier();
+		const auto& identifier = declarable.identifier();
 		const auto& name = identifier.text();
 
 		for (auto *symbol : _symbols)
 		{
 			if (name == symbol->name())
 			{
-				log::error(identifier, "A $ `$` has already been declared in this function.", entity.entityType, name);
+				log::error(identifier, "A $ `$` has already been declared in this function.", declarable.declarableType, name);
 
 				auto *previous = dynamic_cast<EntityAst*>(symbol);
 
@@ -99,12 +99,12 @@ namespace parka::ast
 			}
 		}
 
-		_symbols.push(&entity);
+		_symbols.push(&declarable);
 		
 		return true;
 	}
 
-	SymbolTableEntry *FunctionAst::find(const Identifier& identifier)
+	Resolvable *FunctionAst::find(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse

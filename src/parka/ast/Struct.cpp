@@ -65,11 +65,11 @@ namespace parka::ast
 		return syntax;
 	}
 
-	bool StructAst::declare(EntityAst& entity)
+	bool StructAst::declare(Declarable& declarable)
 	{
 		// TODO: Token snippet
-		const auto& name = entity.name();
-		auto isDeclared = _symbols.insert(name, &entity);
+		const auto& name = declarable.name();
+		auto isDeclared = _symbols.insert(name, &declarable);
 
 		if (!isDeclared)
 		{
@@ -96,7 +96,7 @@ namespace parka::ast
 		// return success;
 	}
 
-	SymbolTableEntry *StructAst::find(const Identifier& identifier)
+	Resolvable *StructAst::find(const Identifier& identifier)
 	{
 		auto *result = _symbols.find(identifier.text());
 

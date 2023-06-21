@@ -29,9 +29,9 @@ namespace parka::ast
 
 		static Ast parse(const Project& project);
 
-		bool declare(EntityAst& syntax);
+		bool declare(Declarable& declarable);
 		bool declareSelf();
-		SymbolTableEntry *find(const Identifier& identifier);
+		Resolvable *find(const Identifier& identifier);
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 
 		Optional<ir::Ir> validate();

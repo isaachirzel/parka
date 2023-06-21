@@ -6,25 +6,26 @@
 #include "parka/ast/Identifier.hpp"
 #include "parka/ir/Entity.hpp"
 #include "parka/ir/Package.hpp"
+#include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Module.hpp"
 
 namespace parka::ast
 {
-	class PackageAst : public SymbolTableEntry, public SymbolTable
+	class PackageAst : public Resolvable, public SymbolTable
 	{
 		String _name;
 		Array<ModuleAst> _modules;
 		Array<PackageAst*> _packages;
-		Table<String, SymbolTableEntry*> _symbols;
+		Table<String, Resolvable*> _symbols;
 		PackageAst *_parent;
 		ir::PackageIr *_context;
 
 	public:
 
 		PackageAst(String&& identifier, Array<ModuleAst>&& modules, Array<PackageAst*>&& packages) :
-		SymbolTableEntry(SymbolTableEntryType::Package),
+		Resolvable(ResolvableType::Package),
 		SymbolTable(SymbolTableType::Package),
 		_name(std::move(identifier)),
 		_modules(std::move(modules)),
@@ -38,11 +39,11 @@ namespace parka::ast
 
 		static PackageAst *parse(const Directory& directory, const String& name);
 
-		bool declare(EntityAst& entity);
+		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst *parent);
-		SymbolTableEntry *find(const Identifier& identifier);
-		SymbolTableEntry *findInitial(const Identifier& identifier);
-		SymbolTableEntry *findAbsolute(const Identifier& identifier);
+		Resolvable *find(const Identifier& identifier);
+		Resolvable *findInitial(const Identifier& identifier);
+		Resolvable *findAbsolute(const Identifier& identifier);
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 

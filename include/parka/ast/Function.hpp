@@ -2,31 +2,34 @@
 #define PARKA_AST_FUNCTION_HPP
 
 #include "parka/ast/Identifier.hpp"
+#include "parka/enum/DeclarableType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ir/Function.hpp"
+#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
-#include "parka/symbol/SymbolTableEntry.hpp"
+#include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ast
 {
 	class PackageAst;
 
-	class FunctionAst : public SymbolTableEntry, public SymbolTable
+	class FunctionAst : public Declarable, public SymbolTable
 	{
 		Snippet _snippet;
 		PrototypeAst _prototype;
 		ExpressionAst& _body;
 		// Symbol table data
 		PackageAst *_parent;
-		Array<SymbolTableEntry*> _symbols;
+		Array<Resolvable*> _symbols;
 
 	public:
 
 		FunctionAst(PrototypeAst&& prototype, ExpressionAst& body) :
-		SymbolTableEntry(SymbolTableEntryType::Function),
+		Declarable(DeclarableType::Function, ResolvableType::Function),
 		SymbolTable(SymbolTableType::Function),
 		_snippet(prototype.snippet() + body.snippet()),
 		_prototype(std::move(prototype)),
@@ -41,9 +44,9 @@ namespace parka::ast
 		ir::FunctionIr *validate();
 		// ir::EntityIr *context() { return validate(); }
 
-		bool declare(EntityAst& entity);
+		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst& parent);
-		SymbolTableEntry *find(const Identifier& identifier);
+		Resolvable *find(const Identifier& identifier);
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 		String getSymbol() const;
 

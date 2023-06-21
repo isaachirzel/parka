@@ -4,12 +4,13 @@
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/SymbolTableEntryType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/Parameter.hpp"
+#include "parka/symbol/Declarable.hpp"
 
 namespace parka::ast
 {
-	class ParameterAst : public EntityAst
+	class ParameterAst : public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -21,7 +22,7 @@ namespace parka::ast
 	public:
 
 		ParameterAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isMutable) :
-		EntityAst(EntityType::Parameter, SymbolTableEntryType::Parameter),
+		Declarable(DeclarableType::Parameter, ResolvableType::Parameter),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

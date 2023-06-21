@@ -1,7 +1,7 @@
 #ifndef PARKA_TYPE_VALUE_TYPE_HPP
 #define PARKA_TYPE_VALUE_TYPE_HPP
 
-#include "parka/symbol/SymbolTableEntry.hpp"
+#include "parka/symbol/Resolvable.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Optional.hpp"
 #include "parka/util/String.hpp"
@@ -12,7 +12,7 @@ namespace parka::ir
 	{
 	private:
 
-		SymbolTableEntry& _entity;
+		Resolvable& _entity;
 		// TODO: Add pointer info
 		// TODO: Add LiteralAst for better type inference?
 		
@@ -35,7 +35,7 @@ namespace parka::ir
 		
 	public:
 
-		ValueType(SymbolTableEntry& entity) :
+		ValueType(Resolvable& entity) :
 		_entity(entity)
 		{}
 		ValueType(ValueType&&) = default;

@@ -80,11 +80,11 @@ namespace parka::ast
 		return context;
 	}
 
-	bool PackageAst::declare(EntityAst& entity)
+	bool PackageAst::declare(Declarable& declarable)
 	{
 		// TODO: Invalidate symbol on failure, better error
-		const auto& identifier = entity.name();
-		auto result = _symbols.insert(identifier, &entity);
+		const auto& identifier = declarable.name();
+		auto result = _symbols.insert(identifier, &declarable);
 
 		if (!result)
 		{
@@ -128,7 +128,7 @@ namespace parka::ast
 		return true;
 	}
 
-	SymbolTableEntry *PackageAst::findInitial(const Identifier& identifier)
+	Resolvable *PackageAst::findInitial(const Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = this;
@@ -150,7 +150,7 @@ namespace parka::ast
 		return nullptr;
 	}
 
-	SymbolTableEntry *PackageAst::findAbsolute(const Identifier& identifier)
+	Resolvable *PackageAst::findAbsolute(const Identifier& identifier)
 	{
 		auto *package = this;
 		auto *parent = _parent;
@@ -168,7 +168,7 @@ namespace parka::ast
 		return entry;
 	}
 
-	SymbolTableEntry *PackageAst::find(const Identifier& identifier)
+	Resolvable *PackageAst::find(const Identifier& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -196,7 +196,7 @@ namespace parka::ast
 
 			if (table == nullptr)
 			{
-				log::error("Unable to resolve $ in $ $.", identifier, entry->symbolTableEntryType, entry->name());
+				log::error("Unable to resolve $ in $ $.", identifier, entry->resolvableType, entry->name());
 				return nullptr;
 			}
 

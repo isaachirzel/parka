@@ -2,14 +2,16 @@
 #define PARKA_AST_STRUCT_HPP
 
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/SymbolTableEntryType.hpp"
+#include "parka/enum/ResolvableType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ir/Struct.hpp"
+#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Member.hpp"
 #include "parka/ast/Entity.hpp"
 #include "parka/ir/ValueType.hpp"
-#include "parka/symbol/SymbolTableEntry.hpp"
+#include "parka/symbol/Resolvable.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Table.hpp"
 
@@ -17,19 +19,19 @@ namespace parka::ast
 {
 	class PackageAst;
 
-	class StructAst : public SymbolTableEntry, public SymbolTable
+	class StructAst : public Declarable, public SymbolTable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
 		Array<MemberAst*> _members;
-		Table<String, SymbolTableEntry*> _symbols;
+		Table<String, Resolvable*> _symbols;
 		PackageAst *_parent;
 		ir::StructIr *_context;
 
 	public:
 
-		StructAst(const Snippet& snippet, Identifier&& identifier, Array<MemberAst*>&& members) :
-		SymbolTableEntry(SymbolTableEntryType::Struct),
+		StructAst(const Snippet& snippet, Identifier&& identifier, Array<MemberAst*>&& members) :		
+		Declarable(DeclarableType::Struct, ResolvableType::Struct),
 		SymbolTable(SymbolTableType::Struct),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
@@ -42,12 +44,11 @@ namespace parka::ast
 		StructAst(const StructAst&) = delete;
 
 		static StructAst *parse(Token& token);
-		bool declare(EntityAst& entity);
+		bool declare(Declarable& declarable);
 		bool declareSelf(PackageAst& parent);
-		SymbolTableEntry *find(const Identifier& identifier);
+		Resolvable *find(const Identifier& identifier);
 		ir::EntityIr *resolve(const QualifiedIdentifier& identifier);
 		ir::StructIr *validate();
-		// ir::EntityIr *context() { return validate(); }
 		String getSymbol() const;
 
 		const Snippet& snippet() const { return _snippet; }

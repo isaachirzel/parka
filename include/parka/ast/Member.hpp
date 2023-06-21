@@ -4,12 +4,15 @@
 #include "parka/ast/Entity.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/SymbolTableEntryType.hpp"
+#include "parka/enum/DeclarableType.hpp"
+#include "parka/enum/ResolvableType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/Member.hpp"
+#include "parka/symbol/Declarable.hpp"
 
 namespace parka::ast
 {
-	class MemberAst : public EntityAst
+	class MemberAst : public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -21,7 +24,7 @@ namespace parka::ast
 	public:
 
 		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic) :
-		EntityAst(EntityType::Member, SymbolTableEntryType::Member),
+		Declarable(DeclarableType::Member, ResolvableType::Member),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
