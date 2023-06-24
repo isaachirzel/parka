@@ -23,7 +23,7 @@ namespace parka
 		Array<usize> _lineLengths;
 		FileType _type;
 
-		File(String&& path, String&& text) :
+		File(String&& path, String&& text):
 		_path(std::move(path)),
 		_text(std::move(text)),
 		_lineLengths(getLineLengths(_text)),

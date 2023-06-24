@@ -29,7 +29,7 @@ namespace parka::parser
 		ParkaParser(ParkaParser&&) = default;
 		ParkaParser(const ParkaParser&) = delete;
 
-		ast::Ast parse();
+		ast::Ast parse() const;
 	};
 }
 

@@ -5,6 +5,7 @@
 #include "parka/util/Print.hpp"
 #include "parka/util/Timer.hpp"
 #include "parka/log/ArenaStreamBuffer.hpp"
+#include "parka/validator/Validator.hpp"
 
 using namespace parka;
 
@@ -22,22 +23,22 @@ int main(int argc, const char *argv[])
 
 	log::note("Project loaded in $ seconds.", readTime);
 
-	auto syntax = parser::ParkaParser(project).parse();
+	auto ast = parser::ParkaParser(project).parse();
 	auto parseTime = timer.split();
 
 	log::note("Parsing completed in $s.", parseTime);
 
-	syntax.declareSelf();
+	auto validator = validator::Validator(ast);
 	auto declareTime = timer.split();
 
 	log::note("Declaration completed in $s.", declareTime);
 
-	print("$\n", syntax);
+	// print("$\n", syntax);
 
-	// auto context = syntax.validate();
-	// auto validateTime = timer.split();
+	auto ir = validator.validate();
+	auto validateTime = timer.split();
 
-	// log::note("Validation completed in $s.", validateTime);
+	log::note("Validation completed in $s.", validateTime);
 
 	auto errorCount = log::getErrorCount();
 	auto compileTime = timer.stop();
@@ -55,12 +56,7 @@ int main(int argc, const char *argv[])
 }
 
 /*
-validating function and struct at same time
-struct is not fnished
-function needs to validate struct
-function goes to symbol table and finds struct
-
-then:
+validation lock:
 
 	auto readLock = shared_lock(mutex);
 
@@ -91,38 +87,18 @@ then:
 	return context;
 
 
-funtion checks if struct is being validated
-if it's not being validated, validate it
-if it is, wait for it to be finished then get the value
+Thing:
 
-symbol table separate from entity: -1
+	+ declaration uses temporary state and does not modify tree
 
-	+ declaration produces an encapsulated object
+	+ walking 
 
-	- walking table doesn't work well as they can't be sorted by type (cache miss)
-		and only non duplicate entities will be validated
+	declaration would have the 
 
-	- validation required passing symbol table to every function and updating
-		tree's parents which is not easy to accomplish while keeping code clean
-
-symbol table inside entity: 0
-
-	/ declaration modifies syntax tree
-
-	+ walking the table is easy because all entities will be validated in order
-
-	- validation requires updating parents of tree to point to the table
-		which will make it impossible to have the symbol table know what
-		entity it is associated with without duplicating data
-
-symbol table is entity: 2
-
-	/ declaration modifies syntax tree
-
-	+ walking the table is easy because all entities will be validated in order
-
-	+ validation requires updating parents of the entities but there is no 
-		tossup or potential for data duplication
-
+	Validator
+		PackageSymbolTable[]
 */
+
+
+
 

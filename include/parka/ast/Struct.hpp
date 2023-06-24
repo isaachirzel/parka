@@ -16,44 +16,27 @@
 
 namespace parka::ast
 {
-	class PackageAst;
-
-	class StructAst : public Declarable, public SymbolTable
+	class StructAst : public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
 		Array<MemberAst*> _members;
-		Table<String, Resolvable*> _symbols;
-		PackageAst *_parent;
-		ir::StructIr *_context;
 
 	public:
 
-		StructAst(const Snippet& snippet, Identifier&& identifier, Array<MemberAst*>&& members) :		
-		Declarable(DeclarableType::Struct, ResolvableType::Struct),
-		SymbolTable(SymbolTableType::Struct),
+		StructAst(const Snippet& snippet, Identifier&& identifier, Array<MemberAst*>&& members):
+		Declarable(DeclarableType::Struct),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
-		_members(std::move(members)),
-		_symbols(),
-		_parent(nullptr),
-		_context(nullptr)
+		_members(std::move(members))
 		{}
 		StructAst(StructAst&&) = default;
 		StructAst(const StructAst&) = delete;
-
-		bool declare(Declarable& declarable);
-		bool declareSelf(PackageAst& parent);
-		Resolvable *find(const Identifier& identifier);
-		Resolution *resolve(const QualifiedIdentifier& identifier);
-		String getSymbol() const;
 
 		const Snippet& snippet() const { return _snippet; }
 		const String& name() const { return _identifier.text(); }
 		const Identifier& identifier() const { return _identifier; }
 		const auto& members() const { return _members; }
-
-		friend std::ostream& operator<<(std::ostream& out, const StructAst& syntax);
 	};
 }
 

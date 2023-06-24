@@ -11,7 +11,7 @@ namespace parka::ir
 
 	public:
 
-		MemberIr(ValueType&& valueType) :
+		MemberIr(ValueType&& valueType):
 		Resolution(ResolvableType::Member),
 		_valueType(std::move(valueType))
 		{}

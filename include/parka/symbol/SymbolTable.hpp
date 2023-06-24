@@ -16,12 +16,12 @@ namespace parka
 
 	public:
 
-		SymbolTable(SymbolTableType symbolTableType) :
+		SymbolTable(SymbolTableType symbolTableType):
 		symbolTableType(symbolTableType)
 		{}
 		virtual ~SymbolTable() {}
 
-		virtual bool declare(Declarable& entity) = 0;
+		virtual bool declare(const Declarable& entity) = 0;
 		virtual Resolvable *find(const ast::Identifier& identifier) = 0;
 		virtual Resolution *resolve(const ast::QualifiedIdentifier& identifier) = 0;
 	};

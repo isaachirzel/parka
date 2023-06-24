@@ -4,7 +4,7 @@
 
 // namespace parka
 // {
-// 	FormatStreamBuffer::FormatStreamBuffer(std::streambuf& destination) :
+// 	FormatStreamBuffer::FormatStreamBuffer(std::streambuf& destination):
 // 	_destination(destination),
 // 	_colors(16),
 // 	_indent(0),

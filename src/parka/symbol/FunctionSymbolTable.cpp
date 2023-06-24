@@ -1,24 +1,23 @@
-#include "parka/ast/Function.hpp"
-#include "parka/ir/Function.hpp"
-#include "parka/log/Indent.hpp"
-#include "parka/log/Log.hpp"
+#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/ast/Identifier.hpp"
+#include "parka/ast/QualifiedIdentifier.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/symbol/Declarable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/BlockExpression.hpp"
-#include "parka/ast/Package.hpp"
+#include "parka/symbol/Resolvable.hpp"
 
-namespace parka::ast
+namespace parka::validator
 {
-	bool FunctionAst::declareSelf(PackageAst&)//parent)
-	{
-		log::notImplemented(here());
-		// _parent = &parent;
+	FunctionSymbolTable::FunctionSymbolTable(ast::FunctionAst& ast, SymbolTable *parent):
+	SymbolTable(SymbolTableType::Function),
+	Resolvable(ResolvableType::Function),
+	_ast(ast),
+	_scope(),
+	_symbols(),
+	_parent(parent),
+	_ir(nullptr)
+	{}
 
-		// return parent.declare(*this);
-	}
-
-	bool FunctionAst::declare(Declarable& declarable)
+	bool FunctionSymbolTable::declare(const Declarable& declarable)
 	{
 		const auto& identifier = declarable.identifier();
 		const auto& name = identifier.text();
@@ -39,12 +38,17 @@ namespace parka::ast
 			}
 		}
 
-		_symbols.push(&declarable);
+		// TODO: Do not do this this way
+		auto *resolvable = dynamic_cast<Resolvable*>(&declarable);
+
+		assert(resolvable != nullptr);
+
+		_symbols.push(resolvable);
 		
 		return true;
 	}
 
-	Resolvable *FunctionAst::find(const Identifier& identifier)
+	Resolvable *FunctionSymbolTable::find(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -57,7 +61,7 @@ namespace parka::ast
 		return nullptr;
 	}
 
-	Resolution *FunctionAst::resolve(const QualifiedIdentifier&)
+	Resolution *FunctionSymbolTable::resolve(const ast::QualifiedIdentifier&)
 	{
 		log::notImplemented(here());
 		// if (identifier.isAbsolute() || identifier.length() > 1)
@@ -69,25 +73,13 @@ namespace parka::ast
 		// 	return local->context();
 
 		// auto *global = _parent->resolve(identifier);
-
+ 
 		// return global;
 	}
-
-	String FunctionAst::getSymbol() const
+	
+	std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& validator)
 	{
-		assert(_parent != nullptr);
-
-		auto symbol = _parent->getSymbol();
-
-		symbol += "::";
-		symbol += name();
-
-		return symbol;
-	}
-
-	std::ostream& operator<<(std::ostream& out, const FunctionAst& syntax)
-	{
-		out << syntax._prototype;
+		out << validator._ast.prototype();
 
 		return out;
 	}

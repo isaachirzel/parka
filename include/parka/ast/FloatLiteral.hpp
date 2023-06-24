@@ -13,7 +13,7 @@ namespace parka::ast
 
 	public:
 
-		FloatLiteralAst(const Snippet& snippet) :
+		FloatLiteralAst(const Snippet& snippet):
 		ExpressionAst(ExpressionType::FloatLiteral),
 		_snippet(snippet)
 		{}

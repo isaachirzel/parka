@@ -15,7 +15,7 @@ namespace parka
         Array<File> _files;
         Array<Directory> _subdirectories;
 
-        Directory(String &&path, Array<File>&& files, Array<Directory>&& subdirectories) :
+        Directory(String &&path, Array<File>&& files, Array<Directory>&& subdirectories):
         _name(path::getFilename(path)),
         _path(std::move(path)),
         _files(std::move(files)),

@@ -14,7 +14,7 @@ namespace parka::ir
 
 	public:
 
-		BlockExpressionIr(Array<StatementIr*>&& statements, ValueType&& valueType) :
+		BlockExpressionIr(Array<StatementIr*>&& statements, ValueType&& valueType):
 		ExpressionIr(ExpressionType::Block),
 		_statements(std::move(statements)),
 		_valueType(std::move(valueType))

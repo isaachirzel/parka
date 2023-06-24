@@ -15,7 +15,7 @@ namespace parka::ast
 
 	public:
 
-		MemberAccessExpressionAst(ExpressionAst& expression, Identifier&& identifier) :
+		MemberAccessExpressionAst(ExpressionAst& expression, Identifier&& identifier):
 		ExpressionAst(ExpressionType::MemberAccess),
 		_snippet(expression.snippet() + identifier.snippet()),
 		_expression(expression),

@@ -12,7 +12,7 @@ namespace parka
 		const char* _text;
 		Color _color;
 
-		Prompt(const char *text, const Color& color) :
+		Prompt(const char *text, const Color& color):
 		_text(text),
 		_color(color)
 		{}

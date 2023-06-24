@@ -15,7 +15,7 @@ namespace parka::ir
 
 	public:
 
-		DeclarationStatementIr(VariableIr& variable, ExpressionIr& value) :
+		DeclarationStatementIr(VariableIr& variable, ExpressionIr& value):
 		StatementIr(StatementType::Declaration),
 		_variable(variable),
 		_value(value)

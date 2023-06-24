@@ -13,7 +13,7 @@ namespace parka::ast
 
 	public:
 
-		IfExpressionAst(const Snippet& snippet) :
+		IfExpressionAst(const Snippet& snippet):
 		ExpressionAst(ExpressionType::If),
 		_snippet(snippet)
 		{}

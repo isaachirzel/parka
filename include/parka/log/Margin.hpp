@@ -15,7 +15,7 @@ namespace parka
 
 	public:
 
-		Margin(usize lineNumber = 0) :
+		Margin(usize lineNumber = 0):
 		_lineNumber(lineNumber)
 		{}
 

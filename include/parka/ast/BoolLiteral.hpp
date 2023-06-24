@@ -13,7 +13,7 @@ namespace parka::ast
 
 	public:
 
-		BoolLiteralAst(const Snippet& snippet, bool value) :
+		BoolLiteralAst(const Snippet& snippet, bool value):
 		ExpressionAst(ExpressionType::BoolLiteral),
 		_snippet(snippet),
 		_value(value)

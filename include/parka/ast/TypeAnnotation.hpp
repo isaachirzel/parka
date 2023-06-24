@@ -16,14 +16,12 @@ namespace parka::ast
 
 	public:
 
-		TypeAnnotationAst(const Snippet& snippet, QualifiedIdentifier&& identifier) :
+		TypeAnnotationAst(const Snippet& snippet, QualifiedIdentifier&& identifier):
 		_snippet(snippet),
 		_identifier(std::move(identifier))
 		{}
 		TypeAnnotationAst(TypeAnnotationAst&&) = default;
 		TypeAnnotationAst(const TypeAnnotationAst&) = delete;
-
-		Optional<ir::ValueType> validate(SymbolTable& symbolTable) const;
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }

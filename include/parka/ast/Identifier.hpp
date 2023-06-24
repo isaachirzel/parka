@@ -15,7 +15,7 @@ namespace parka::ast
 
 	public:
 
-		Identifier(const Snippet& snippet) :
+		Identifier(const Snippet& snippet):
 		_snippet(snippet),
 		_text(snippet.text())
 		{}

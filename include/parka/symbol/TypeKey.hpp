@@ -14,7 +14,7 @@ namespace parka
 
 	public:
 
-		TypeKey(const TypeId id) :
+		TypeKey(const TypeId id):
 		_id(id)
 		{}
 		TypeKey(TypeKey&&) = default;

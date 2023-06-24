@@ -44,7 +44,7 @@ namespace parka::ir
 		return primitives;
 	}
 
-	Primitive::Primitive(const char *name, PrimitiveType type, u32 size) :
+	Primitive::Primitive(const char *name, PrimitiveType type, u32 size):
 	Resolvable(ResolvableType::Primitive),
 	_name(name),
 	_size(size),

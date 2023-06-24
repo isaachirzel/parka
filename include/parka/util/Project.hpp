@@ -11,7 +11,7 @@ namespace parka
         String _name;
         Directory _srcDirectory;
 
-        Project(String&& name, Directory&& srcDirectory) :
+        Project(String&& name, Directory&& srcDirectory):
         _name(std::move(name)),
         _srcDirectory(std::move(srcDirectory))
         {}

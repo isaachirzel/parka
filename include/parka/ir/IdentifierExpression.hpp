@@ -12,7 +12,7 @@ namespace parka::ir
 
 	public:
 
-		IdentifierExpressionIr(Resolution& entity, ValueType&& valueType) :
+		IdentifierExpressionIr(Resolution& entity, ValueType&& valueType):
 		ExpressionIr(ExpressionType::Identifier),
 		_entity(entity),
 		_valueType(std::move(valueType))

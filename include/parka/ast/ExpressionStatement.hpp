@@ -14,7 +14,7 @@ namespace parka::ast
 
 	public:
 
-		ExpressionStatementAst(const Snippet& snippet, ExpressionAst& expression) :
+		ExpressionStatementAst(const Snippet& snippet, ExpressionAst& expression):
 		StatementAst(StatementType::Expression),
 		_snippet(snippet),
 		_expression(expression)

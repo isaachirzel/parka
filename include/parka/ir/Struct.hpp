@@ -11,7 +11,7 @@ namespace parka::ir
 
 	public:
 
-		StructIr(String&& symbol) :
+		StructIr(String&& symbol):
 		Resolution(ResolvableType::Struct),
 		_symbol(std::move(symbol))
 		{}

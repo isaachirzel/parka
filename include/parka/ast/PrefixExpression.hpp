@@ -16,7 +16,7 @@ namespace parka::ast
 
 	public:
 
-		PrefixExpressionAst(const Snippet& snippet, PrefixType type, ExpressionAst& expression) :
+		PrefixExpressionAst(const Snippet& snippet, PrefixType type, ExpressionAst& expression):
 		ExpressionAst(ExpressionType::Prefix),
 		_snippet(snippet),
 		_expression(expression),

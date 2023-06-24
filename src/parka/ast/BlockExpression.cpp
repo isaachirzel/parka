@@ -34,7 +34,7 @@ namespace parka::ast
 	// 	return context;
 	// }
 
-	bool BlockExpressionAst::declare(Declarable& declarable)
+	bool BlockExpressionAst::declare(const Declarable& declarable)
 	{
 		return _parent->declare(declarable);
 	}

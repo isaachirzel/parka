@@ -19,7 +19,7 @@ namespace parka::ast
 
 	public:
 
-		PrototypeAst(const Snippet& snippet, Identifier&& identifier, Array<ParameterAst*>&& parameters, Optional<TypeAnnotationAst>&& returnType) :
+		PrototypeAst(const Snippet& snippet, Identifier&& identifier, Array<ParameterAst*>&& parameters, Optional<TypeAnnotationAst>&& returnType):
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_parameters(std::move(parameters)),

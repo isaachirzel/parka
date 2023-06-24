@@ -11,7 +11,7 @@ namespace parka::ir
 
 	public:
 
-		StringLiteralIr(String&& value) :
+		StringLiteralIr(String&& value):
 		ExpressionIr(ExpressionType::StringLiteral),
 		_value(std::move(value))
 		{}

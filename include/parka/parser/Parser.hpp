@@ -8,7 +8,7 @@ namespace parka::parser
 	{
 		virtual ~Parser() {}
 
-		virtual ast::Ast parse() = 0;
+		virtual ast::Ast parse() const = 0;
 	};
 }
 

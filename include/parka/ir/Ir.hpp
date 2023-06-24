@@ -7,17 +7,17 @@ namespace parka::ir
 {
 	class Ir
 	{
-		PackageIr& _globalPackage;
-		
-	public:
+		Array<const FunctionIr*> _functions;
 
-		Ir(PackageIr& globalPackage) :
-		_globalPackage(globalPackage)
+	public:
+		
+		Ir(Array<const FunctionIr*>&& functions):
+		_functions(std::move(functions))
 		{}
 		Ir(Ir&&) = default;
-		Ir(const Ir&) = default;
+		Ir(const Ir&) = delete;
 
-		const auto& globalPackage() const { return _globalPackage; }
+		const auto& functions() const { return _functions; }
 	};
 }
 

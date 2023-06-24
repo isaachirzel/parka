@@ -18,7 +18,7 @@ namespace parka
 
 	public:
 
-		TypeId(TypeType type, usize index) :
+		TypeId(TypeType type, usize index):
 		_type(type),
 		_index(index)
 		{}

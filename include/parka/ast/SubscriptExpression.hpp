@@ -16,7 +16,7 @@ namespace parka::ast
 
 	public:
 
-		SubscriptExpressionAst(const Snippet& snippet, ExpressionAst& primary, ExpressionAst& index) :
+		SubscriptExpressionAst(const Snippet& snippet, ExpressionAst& primary, ExpressionAst& index):
 		ExpressionAst(ExpressionType::Subscript),
 		_snippet(snippet),
 		_primary(primary),

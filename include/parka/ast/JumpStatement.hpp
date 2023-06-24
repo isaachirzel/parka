@@ -19,7 +19,7 @@ namespace parka::ast
 
 	public:
 
-		JumpStatementAst(const Snippet& snippet, JumpType type, ExpressionAst *value) :
+		JumpStatementAst(const Snippet& snippet, JumpType type, ExpressionAst *value):
 		StatementAst(StatementType::Jump),
 		_snippet(snippet),
 		_value(value),

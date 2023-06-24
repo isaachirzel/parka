@@ -13,7 +13,7 @@ namespace parka
 
 	public:
 
-		View(const T *data, usize size) :
+		View(const T *data, usize size):
 		_data(data),
 		_size(size)
 		{

@@ -16,7 +16,7 @@
 
 // 	public:
 
-// 		OperatorKey(OperatorType operatorType, const TypeKey& leftKey, const TypeKey& rightKey) :
+// 		OperatorKey(OperatorType operatorType, const TypeKey& leftKey, const TypeKey& rightKey):
 // 		_operatorType(operatorType),
 // 		_leftKey(leftKey),
 // 		_rightKey(rightKey)

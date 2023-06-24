@@ -3,16 +3,16 @@
 
 #include "parka/ast/Identifier.hpp"
 #include "parka/enum/DeclarableType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka
 {
-	struct Declarable : public Resolvable
+	struct Declarable
 	{
 		const DeclarableType declarableType;
 
-		Declarable(DeclarableType declarableType, ResolvableType resolvableType) :
-		Resolvable(resolvableType),
+		Declarable(DeclarableType declarableType):
 		declarableType(declarableType)
 		{}
 		virtual ~Declarable() {}

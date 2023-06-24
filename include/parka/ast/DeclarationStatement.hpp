@@ -15,7 +15,7 @@ namespace parka::ast
 
 	public:
 
-		DeclarationStatementAst(const Snippet& snippet, VariableAst& variable, ExpressionAst& value) :
+		DeclarationStatementAst(const Snippet& snippet, VariableAst& variable, ExpressionAst& value):
 		StatementAst(StatementType::Declaration),
 		_snippet(snippet),
 		_variable(variable),

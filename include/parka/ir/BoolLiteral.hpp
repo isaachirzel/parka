@@ -11,7 +11,7 @@ namespace parka::ir
 
 	public:
 
-		BoolLiteralIr(bool value) :
+		BoolLiteralIr(bool value):
 		ExpressionIr(ExpressionType::BoolLiteral),
 		_value(value)
 		{}

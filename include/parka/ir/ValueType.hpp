@@ -35,7 +35,7 @@ namespace parka::ir
 		
 	public:
 
-		ValueType(Resolvable& entity) :
+		ValueType(Resolvable& entity):
 		_entity(entity)
 		{}
 		ValueType(ValueType&&) = default;

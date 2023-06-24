@@ -12,7 +12,7 @@ namespace parka::ir
 	
 	public:
 
-		VariableIr(String&& symbol, ValueType&& type) :
+		VariableIr(String&& symbol, ValueType&& type):
 		Resolution(ResolvableType::Variable),
 		_symbol(std::move(symbol)),
 		_type(std::move(type))

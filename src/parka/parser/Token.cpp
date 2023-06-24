@@ -7,7 +7,7 @@
 
 namespace parka
 {
-	Token::Token(const File& file, usize index, usize length, TokenType type) :
+	Token::Token(const File& file, usize index, usize length, TokenType type):
 	_snippet(file, index, length),
 	_type(type)
 	{}

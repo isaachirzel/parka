@@ -14,7 +14,7 @@ namespace parka::ast
 
 	public:
 
-		CallExpressionAst(const Snippet& snippet, ExpressionAst& primary, Array<ExpressionAst*>&& arguments) :
+		CallExpressionAst(const Snippet& snippet, ExpressionAst& primary, Array<ExpressionAst*>&& arguments):
 		ExpressionAst(ExpressionType::Call),
 		_snippet(snippet),
 		_primary(primary),

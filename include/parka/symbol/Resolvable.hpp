@@ -12,7 +12,7 @@ namespace parka
 
 	public:
 
-		Resolvable(ResolvableType resolvableType) :
+		Resolvable(ResolvableType resolvableType):
 		resolvableType(resolvableType)
 		{}
 		virtual ~Resolvable() {}

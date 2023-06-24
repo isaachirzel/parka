@@ -17,7 +17,7 @@ namespace parka::ir
 
 	public:
 
-		PackageIr(String&& symbol, Array<PackageIr*> packages, Array<FunctionIr*>&& functions, Array<StructIr*>&& structs) :
+		PackageIr(String&& symbol, Array<PackageIr*> packages, Array<FunctionIr*>&& functions, Array<StructIr*>&& structs):
 		Resolution(ResolvableType::Package),
 		_symbol(std::move(symbol)),
 		_packages(std::move(packages)),

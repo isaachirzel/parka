@@ -15,7 +15,7 @@ namespace parka::ast
 
 	public:
 
-		QualifiedIdentifier(const Snippet& snippet, Array<Identifier>&& parts, bool isAbsolute) :
+		QualifiedIdentifier(const Snippet& snippet, Array<Identifier>&& parts, bool isAbsolute):
 		_snippet(snippet),
 		_parts(std::move(parts)),
 		_isAbsolute(isAbsolute)

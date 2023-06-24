@@ -7,23 +7,24 @@
 #include "parka/ir/Expression.hpp"
 #include "parka/ir/Variable.hpp"
 #include "parka/symbol/Declarable.hpp"
+#include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 
 namespace parka::ast
 {
-	class VariableAst : public Declarable
+	class VariableAst : public Declarable, public Resolvable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
 		Optional<TypeAnnotationAst> _annotation;
-		ir::VariableIr *_context;
 		bool _isMutable;
 
 	public:
 
-		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation) :
-		Declarable(DeclarableType::Variable, ResolvableType::Variable),
+		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
+		Declarable(DeclarableType::Variable),
+		Resolvable(ResolvableType::Variable),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

@@ -6,7 +6,7 @@ namespace parka
 	const int Indent::xIndex = std::ios_base::xalloc();
 
 
-	Indent::Indent(std::ostream& stream) :
+	Indent::Indent(std::ostream& stream):
 	_amount(stream.iword(Indent::xIndex))
 	{
 		_amount += 1;

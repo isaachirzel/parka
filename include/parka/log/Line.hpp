@@ -19,7 +19,7 @@ namespace parka
 
 	public:
 
-		Line(const Snippet& snippet) :
+		Line(const Snippet& snippet):
 		_snippet(snippet),
 		_preText(getPreText(snippet)),
 		_postText(getPostText(snippet))

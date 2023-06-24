@@ -14,7 +14,7 @@ namespace parka::ast
 
 	public:
 
-		CharLiteralAst(const Snippet& snippet, char value) :
+		CharLiteralAst(const Snippet& snippet, char value):
 		ExpressionAst(ExpressionType::CharLiteral),
 		_snippet(snippet),
 		_value(value)

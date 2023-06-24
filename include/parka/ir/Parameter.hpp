@@ -12,7 +12,7 @@ namespace parka::ir
 
 	public:
 
-		ParameterIr(ValueType&& type) :
+		ParameterIr(ValueType&& type):
 		Resolution(ResolvableType::Parameter),
 		_type(std::move(type))
 		{}

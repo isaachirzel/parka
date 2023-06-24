@@ -18,12 +18,12 @@ namespace parka
 
 	public:
 
-		Array() :
+		Array():
 		_length(0),
 		_capacity(0),
 		_data(nullptr)
 		{}
-		Array(usize capacity) :
+		Array(usize capacity):
 		_length(0),
 		_capacity(capacity),
 		_data((T*)::operator new(sizeof(T) * capacity))
@@ -31,7 +31,7 @@ namespace parka
 			if (!_data)
 				throw std::bad_alloc();
 		}
-		Array(Array&& other) :
+		Array(Array&& other):
 		_length(other._length),
 		_capacity(other._capacity),
 		_data(other._data)

@@ -8,10 +8,11 @@
 #include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/Member.hpp"
 #include "parka/symbol/Declarable.hpp"
+#include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ast
 {
-	class MemberAst : public Declarable
+	class MemberAst : public Declarable, public Resolvable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -22,8 +23,9 @@ namespace parka::ast
 
 	public:
 
-		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic) :
-		Declarable(DeclarableType::Member, ResolvableType::Member),
+		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic):
+		Declarable(DeclarableType::Member),
+		Resolvable(ResolvableType::Member),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

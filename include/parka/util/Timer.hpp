@@ -16,7 +16,7 @@ namespace parka
 
 	public:
 
-		Timer() :
+		Timer():
 		_startTime(Clock::now()),
 		_splitTime(Clock::now())
 		{}

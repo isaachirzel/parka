@@ -13,32 +13,32 @@ namespace parka
 
 	public:
 
-		Optional() :
+		Optional():
 		_hasValue(false)
 		{}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Optional(const T *value) :
+		Optional(const T *value):
 		_hasValue(!!value)
 		{
 			if (value)
 				new (_value) auto (*value);
 		}
 
-		Optional(T&& value) :
+		Optional(T&& value):
 		_hasValue(true)
 		{
 			new ((T*)_value) auto (std::move(value));
 		}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Optional(const T& value) :
+		Optional(const T& value):
 		_hasValue(true)
 		{
 			new ((T*)_value) auto (value);
 		}
 
-		Optional(Optional&& other) :
+		Optional(Optional&& other):
 		_hasValue(other._hasValue)
 		{
 			if (other._hasValue)
@@ -53,7 +53,7 @@ namespace parka
 		}
 
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
-		Optional(const Optional& other) :
+		Optional(const Optional& other):
 		_hasValue(other._value)
 		{
 			if (_hasValue)

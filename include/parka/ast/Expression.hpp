@@ -13,7 +13,7 @@ namespace parka::ast
 
 	public:
 
-		ExpressionAst(ExpressionType expressionType) :
+		ExpressionAst(ExpressionType expressionType):
 		expressionType(expressionType)
 		{}
 		virtual ~ExpressionAst() {}

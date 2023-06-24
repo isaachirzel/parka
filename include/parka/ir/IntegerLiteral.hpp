@@ -12,7 +12,7 @@ namespace parka::ir
 
 	public:
 
-		IntegerLiteralIr(u64 value, ValueType&& valueType) :
+		IntegerLiteralIr(u64 value, ValueType&& valueType):
 		ExpressionIr(ExpressionType::IntegerLiteral),
 		_value(value),
 		_valueType(std::move(valueType))

@@ -16,7 +16,7 @@ namespace parka
 
 	public:
 
-		Pool(usize maxItemCount) :
+		Pool(usize maxItemCount):
 		_arena(sizeof(T) * maxItemCount)
 		{}
 		Pool(Pool&&) = default;

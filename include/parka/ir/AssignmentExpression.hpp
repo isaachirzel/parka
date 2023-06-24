@@ -15,7 +15,7 @@ namespace parka::ir
 
 	public:
 
-		AssignmentExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, AssignmentType assignmentType) :
+		AssignmentExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, AssignmentType assignmentType):
 		ExpressionIr(ExpressionType::Assignment),
 		_lhs(lhs),
 		_rhs(rhs),

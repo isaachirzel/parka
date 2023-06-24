@@ -14,11 +14,4 @@ namespace parka::ast
 
 		return parent.declare(*this);
 	}
-
-	String MemberAst::getSymbol() const
-	{
-		// TODO: Differentiate between static and regular
-
-		return name();
-	}
 }

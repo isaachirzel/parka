@@ -13,7 +13,7 @@ namespace parka
 
 	public:
 
-		OperatorId(OperatorType type, u32 index) :
+		OperatorId(OperatorType type, u32 index):
 		_type(type),
 		_index(index)
 		{}

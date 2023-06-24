@@ -16,7 +16,7 @@ namespace parka
 	const Color Color::Reset = nullptr;
 	const int Color::xIndex = std::ios_base::xalloc();
 	
-	Color::Color(const char *code) :
+	Color::Color(const char *code):
 	_code(code)
 	{}
 

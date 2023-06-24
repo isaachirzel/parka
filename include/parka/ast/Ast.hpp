@@ -11,25 +11,21 @@
 
 namespace parka::ast
 {
-	class Ast : public SymbolTable
+	class Ast
 	{
-		// TODO: Project metadata
 		PackageAst& _globalPackage;
+		// TODO: Project metadata
 		// TODO: External package ids
 		
 	public:
 
-		Ast(PackageAst& globalPackage) :
-		SymbolTable(SymbolTableType::Global),
+		Ast(PackageAst& globalPackage):
 		_globalPackage(globalPackage)
 		{}
 		Ast(Ast&&) = default;
 		Ast(const Ast&) = delete;
 
-		bool declare(Declarable& declarable);
-		bool declareSelf();
-		Resolvable *find(const Identifier& identifier);
-		Resolution *resolve(const QualifiedIdentifier& identifier);
+		const auto& globalPackage() const { return _globalPackage; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Ast& syntax);
 	};

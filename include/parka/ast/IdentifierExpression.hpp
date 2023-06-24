@@ -15,7 +15,7 @@ namespace parka::ast
 
 	public:
 
-		IdentifierExpressionAst(QualifiedIdentifier&& identifier) :
+		IdentifierExpressionAst(QualifiedIdentifier&& identifier):
 		ExpressionAst(ExpressionType::Identifier),
 		_identifier(std::move(identifier))
 		{}

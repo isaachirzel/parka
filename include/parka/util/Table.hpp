@@ -30,7 +30,7 @@ namespace parka
 
 		public:
 
-			Item(const Key& key, Value&& value, usize hash) :
+			Item(const Key& key, Value&& value, usize hash):
 			_key(key),
 			_value(std::move(value)),
 			_hash(hash)
@@ -128,7 +128,7 @@ namespace parka
 
 	public:
 
-		Table(usize minimumCapacity) :
+		Table(usize minimumCapacity):
 		_slots(100'000), // TODO: Make this not just a static number
 		_items(100'000)
 		{
@@ -137,7 +137,7 @@ namespace parka
 			_slots.reserve(capacity);
 			_slots.fill(table::empty);
 		}
-		Table() : Table(table::primeNumbers[0]) {}
+		Table(): Table(table::primeNumbers[0]) {}
 		Table(Table&&) = default;
 		Table(const Table&) = delete;
 

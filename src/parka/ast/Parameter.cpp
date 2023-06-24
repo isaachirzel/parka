@@ -10,24 +10,6 @@
 
 namespace parka::ast
 {
-	// ir::ParameterIr *ParameterAst::validate(SymbolTable& symbolTable)
-	// {
-	// 	auto isDeclared = _parent->declare(*this);
-	// 	auto valueType = _annotation.validate(symbolTable);
-
-	// 	if (!isDeclared || !valueType)
-	// 		return nullptr;
-
-	// 	auto *context = new ir::ParameterIr(*valueType);
-
-	// 	return context;
-	// }
-
-	String ParameterAst::getSymbol() const
-	{
-		return name();
-	}
-
 	std::ostream& operator<<(std::ostream& out, const ParameterAst& syntax)
 	{
 		if (syntax._isMutable)

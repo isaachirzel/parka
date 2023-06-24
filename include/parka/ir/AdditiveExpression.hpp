@@ -16,7 +16,7 @@ namespace parka::ir
 
 	public:
 
-		AdditiveExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, AdditiveType additiveType, ValueType&& valueType) :
+		AdditiveExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, AdditiveType additiveType, ValueType&& valueType):
 		ExpressionIr(ExpressionType::Additive),
 		_lhs(lhs),
 		_rhs(rhs),

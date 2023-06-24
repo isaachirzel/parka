@@ -11,7 +11,7 @@ namespace parka::ir
 
 	public:
 
-		StatementIr(StatementType statementType) :
+		StatementIr(StatementType statementType):
 		statementType(statementType)
 		{}
 		virtual ~StatementIr() {}

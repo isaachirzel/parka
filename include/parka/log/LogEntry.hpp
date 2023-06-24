@@ -21,13 +21,13 @@ namespace parka
 
 	public:
 
-		LogEntry(LogEntryType type, String&& message) :
+		LogEntry(LogEntryType type, String&& message):
 		_message(std::move(message)),
 		_color(getColor(type)),
 		_type(type)
 		{}
 
-		LogEntry(LogEntryType type, String&& message, const Snippet& snippet) :
+		LogEntry(LogEntryType type, String&& message, const Snippet& snippet):
 		_message(std::move(message)),
 		_snippet(snippet),
 		_color(getColor(type)),

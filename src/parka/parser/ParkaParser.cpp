@@ -26,7 +26,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	Ast ParkaParser::parse()
+	Ast ParkaParser::parse() const
 	{
 		// TODO: Parse external projects
 		auto *package = parsePackage(_project.srcDirectory(), "");

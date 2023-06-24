@@ -8,6 +8,7 @@
 #include "parka/ast/DeclarationStatement.hpp"
 #include "parka/ast/ExpressionStatement.hpp"
 #include "parka/ast/FloatLiteral.hpp"
+#include "parka/ast/Function.hpp"
 #include "parka/ast/IdentifierExpression.hpp"
 #include "parka/ast/IntegerLiteral.hpp"
 #include "parka/ast/JumpStatement.hpp"

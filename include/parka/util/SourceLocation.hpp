@@ -15,7 +15,7 @@ namespace parka
 
 	public:
 
-		SourceLocation(const char *file, usize line, const char *function) :
+		SourceLocation(const char *file, usize line, const char *function):
 		_file(file),
 		_line(line),
 		_function(function)

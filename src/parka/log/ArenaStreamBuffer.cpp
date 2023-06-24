@@ -6,7 +6,7 @@
 
 namespace parka
 {
-	ArenaStreamBuffer::ArenaStreamBuffer(usize length) :
+	ArenaStreamBuffer::ArenaStreamBuffer(usize length):
 	std::streambuf(),
 	_buffer(length)
 	{

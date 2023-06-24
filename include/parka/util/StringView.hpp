@@ -14,7 +14,7 @@ namespace parka
 		
 
 
-		StringView(const char *ptr, usize length) :
+		StringView(const char *ptr, usize length):
 		_ptr(ptr),
 		_length(length)
 		{}

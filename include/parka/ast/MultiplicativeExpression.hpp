@@ -16,7 +16,7 @@ namespace parka::ast
 
 	public:
 
-		MultiplicativeExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, MultiplicativeType type) :
+		MultiplicativeExpressionAst(ExpressionAst& lhs, ExpressionAst& rhs, MultiplicativeType type):
 		ExpressionAst(ExpressionType::Multiplicative),
 		_snippet(lhs.snippet() + rhs.snippet()),
 		_lhs(lhs),

@@ -13,7 +13,7 @@ namespace parka::ir
 
 	public:
 
-		PrototypeIr(Array<ParameterIr*>&& parameters, ValueType&& returnType) :
+		PrototypeIr(Array<ParameterIr*>&& parameters, ValueType&& returnType):
 		_parameters(std::move(parameters)),
 		_returnType(std::move(returnType))
 		{}

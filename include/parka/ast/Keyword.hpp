@@ -23,7 +23,7 @@ namespace parka::ast
 
 	public:
 
-		KeywordAst(const Snippet& snippet, KeywordType type) :
+		KeywordAst(const Snippet& snippet, KeywordType type):
 		_snippet(snippet),
 		_type(type)
 		{}

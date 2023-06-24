@@ -13,7 +13,7 @@
 
 namespace parka::ast
 {
-	ModuleAst::ModuleAst(String&& filepath, Array<FunctionAst*>&& functions, Array<StructAst*>&& structs) :
+	ModuleAst::ModuleAst(String&& filepath, Array<FunctionAst*>&& functions, Array<StructAst*>&& structs):
 	_filepath(std::move(filepath)),
 	_functions(std::move(functions)),
 	_structs(std::move(structs))
@@ -26,19 +26,21 @@ namespace parka::ast
 		out << indent << "module `" << mod._filepath << "`\n";
 		out << indent << "{\n";
 
-		{
-			auto subindent = Indent(out);
+		// TODO: Reimplement
 
-			for (const auto *function : mod._functions)
-			{
-				out << subindent << *function << '\n';
-			}
+		// {
+		// 	auto subindent = Indent(out);
 
-			for (const auto *strct : mod._structs)
-			{
-				out << subindent << *strct << '\n';
-			}
-		}
+		// 	for (const auto *function : mod._functions)
+		// 	{
+		// 		out << subindent << *function << '\n';
+		// 	}
+
+		// 	for (const auto *strct : mod._structs)
+		// 	{
+		// 		out << subindent << *strct << '\n';
+		// 	}
+		// }
 
 		out << indent << "}";
 

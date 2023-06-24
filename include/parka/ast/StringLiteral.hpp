@@ -11,7 +11,7 @@ namespace parka::ast
 
 	public:
 
-		StringLiteralAst(const Snippet& snippet) :
+		StringLiteralAst(const Snippet& snippet):
 		ExpressionAst(ExpressionType::StringLiteral),
 		_snippet(snippet)
 		{}

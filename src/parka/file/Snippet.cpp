@@ -6,7 +6,7 @@
 
 namespace parka
 {
-	Snippet::Snippet(const File& file, usize index, usize length) :
+	Snippet::Snippet(const File& file, usize index, usize length):
 	_file(file),
 	_index(index),
 	_length(length)

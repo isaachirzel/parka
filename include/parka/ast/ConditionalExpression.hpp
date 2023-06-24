@@ -16,7 +16,7 @@ namespace parka::ast
 
 	public:
 
-		ConditionalExpressionAst(ExpressionAst& condition, ExpressionAst& trueCase, ExpressionAst& falseCase) :
+		ConditionalExpressionAst(ExpressionAst& condition, ExpressionAst& trueCase, ExpressionAst& falseCase):
 		ExpressionAst(ExpressionType::Conditional),
 		_snippet(condition.snippet() + falseCase.snippet()),
 		_condition(condition),

@@ -11,7 +11,7 @@ namespace parka
 	{
 		const ResolvableType resolvableType;
 
-		Resolution(ResolvableType resolvableType) :
+		Resolution(ResolvableType resolvableType):
 		resolvableType(resolvableType)
 		{}
 		virtual ~Resolution() {}

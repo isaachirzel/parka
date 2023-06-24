@@ -15,7 +15,7 @@ namespace parka
 
 	public:
 
-		Underline(const Line& line) :
+		Underline(const Line& line):
 		_preText(line.preText()),
 		_length(line.snippet().length())
 		{}

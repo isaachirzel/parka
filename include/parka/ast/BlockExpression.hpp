@@ -21,7 +21,7 @@ namespace parka::ast
 
 	public:
 
-		BlockExpressionAst(const Snippet& snippet, Array<StatementAst*>&& statements) :
+		BlockExpressionAst(const Snippet& snippet, Array<StatementAst*>&& statements):
 		ExpressionAst(ExpressionType::Block),
 		SymbolTable(SymbolTableType::Block),
 		_snippet(snippet),
@@ -33,7 +33,7 @@ namespace parka::ast
 		BlockExpressionAst(BlockExpressionAst&&) = default;
 		BlockExpressionAst(const BlockExpressionAst&) = delete;
 
-		bool declare(Declarable& declarable);
+		bool declare(const Declarable& declarable);
 		Resolvable *find(const Identifier& identifier);
 		Resolution *resolve(const QualifiedIdentifier& identifier);
 

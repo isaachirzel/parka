@@ -18,7 +18,7 @@ namespace parka::ast
 
 	public:
 
-		Operator(ir::ValueType&& leftType, ir::ValueType&& rightType, ExpressionAst *body, OperatorType type) :
+		Operator(ir::ValueType&& leftType, ir::ValueType&& rightType, ExpressionAst *body, OperatorType type):
 		_leftType(std::move(leftType)),
 		_rightType(std::move(rightType)),
 		_body(body),

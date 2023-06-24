@@ -13,7 +13,7 @@ namespace parka
 
 	public:
 
-		Link(String&& url, String&& text) :
+		Link(String&& url, String&& text):
 		_url(std::move(url)),
 		_text(std::move(text))
 		{}

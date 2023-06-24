@@ -14,7 +14,7 @@ namespace parka::ast
 
 	public:
 
-		StatementAst(StatementType statementType) :
+		StatementAst(StatementType statementType):
 		statementType(statementType)
 		{}
 		virtual ~StatementAst() {}
