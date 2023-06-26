@@ -1,9 +1,11 @@
 #ifndef PARKA_ENUM_RESOLVABLE_TYPE_HPP
 #define PARKA_ENUM_RESOLVABLE_TYPE_HPP
 
+#include "parka/util/Common.hpp"
+
 namespace parka
 {
-	enum class ResolvableType
+	enum class ResolvableType: u8
 	{
 		Package,
 		Primitive,

@@ -8,7 +8,7 @@
 
 namespace parka::ast
 {
-	class SubscriptExpressionAst : public ExpressionAst
+	class SubscriptExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _primary;

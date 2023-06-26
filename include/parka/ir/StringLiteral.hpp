@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class StringLiteralIr : public ExpressionIr
+	class StringLiteralIr: public ExpressionIr
 	{
 		String _value;
 

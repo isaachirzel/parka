@@ -15,28 +15,25 @@ namespace parka::validator
 	class PackageSymbolTable: public SymbolTable, public Resolvable
 	{
 		const ast::PackageAst& _ast;
-		String _scope;
+		String _symbol;
 		Table<String, Resolvable*> _symbols;
 		Array<FunctionSymbolTable> _functions;
+		// Array<StructSymbolTable> _structs;
 		PackageSymbolTable *_parent;
 		ir::PackageIr *_ir;
-
-	private:
-
-		static String getScope(const ast::PackageAst& ast, PackageSymbolTable *parent);
 
 	public:
 
 		PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent = nullptr);
 
-		bool declare(const Declarable& entity);
+		bool declare(const Declarable& declarable);
 		// bool declareSelf(PackageSymbolTable *parent);
 		Resolvable *find(const ast::Identifier& identifier);
 		Resolvable *findInitial(const ast::Identifier& identifier);
 		Resolvable *findAbsolute(const ast::Identifier& identifier);
 		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
 
-		const auto& scope() const { return _scope; }
+		const String& symbol() const { return _symbol; }
 		const String& name() const { return _ast.name(); }
 		auto& functions() { return _functions; }
 

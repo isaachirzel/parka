@@ -6,7 +6,7 @@
 
 namespace parka::ast
 {
-	class CallExpressionAst : public ExpressionAst
+	class CallExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _primary;

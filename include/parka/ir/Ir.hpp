@@ -7,11 +7,11 @@ namespace parka::ir
 {
 	class Ir
 	{
-		Array<const FunctionIr*> _functions;
+		Array<FunctionIr*> _functions;
 
 	public:
 		
-		Ir(Array<const FunctionIr*>&& functions):
+		Ir(Array<FunctionIr*>&& functions):
 		_functions(std::move(functions))
 		{}
 		Ir(Ir&&) = default;

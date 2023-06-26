@@ -33,19 +33,4 @@ namespace parka::ast
 
 	// 	return context;
 	// }
-
-	bool BlockExpressionAst::declare(const Declarable& declarable)
-	{
-		return _parent->declare(declarable);
-	}
-
-	Resolvable *BlockExpressionAst::find(const Identifier& identifier)
-	{
-		return _parent->find(identifier);
-	}
-
-	Resolution *BlockExpressionAst::resolve(const QualifiedIdentifier& identifier)
-	{
-		return _parent->resolve(identifier);
-	}
 }

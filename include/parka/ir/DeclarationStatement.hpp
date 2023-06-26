@@ -8,7 +8,7 @@
 
 namespace parka::ir
 {
-	class DeclarationStatementIr : public StatementIr
+	class DeclarationStatementIr: public StatementIr
 	{
 		VariableIr& _variable;
 		ExpressionIr& _value;

@@ -16,7 +16,7 @@
 
 namespace parka::ast
 {
-	class StructAst : public Declarable
+	class StructAst: public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;

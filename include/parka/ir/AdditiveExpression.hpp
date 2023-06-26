@@ -7,7 +7,7 @@
 
 namespace parka::ir
 {
-	class AdditiveExpressionIr : public ExpressionIr
+	class AdditiveExpressionIr: public ExpressionIr
 	{
 		ExpressionIr& _lhs;
 		ExpressionIr& _rhs;

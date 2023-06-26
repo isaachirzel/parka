@@ -3,14 +3,12 @@
 
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/Parameter.hpp"
 #include "parka/symbol/Declarable.hpp"
-#include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ast
 {
-	class ParameterAst : public Declarable, public Resolvable
+	class ParameterAst: public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -23,7 +21,6 @@ namespace parka::ast
 
 		ParameterAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
 		Declarable(DeclarableType::Parameter),
-		Resolvable(ResolvableType::Parameter),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

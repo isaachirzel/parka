@@ -10,7 +10,7 @@ namespace parka::validator
 {
 	using namespace parka::ir;
 
-	static bool validatePackage(Array<const FunctionIr*>& functions, PackageSymbolTable& package)
+	static bool validatePackage(Array<FunctionIr*>& functions, PackageSymbolTable& package)
 	{
 		bool success = true;
 
@@ -33,9 +33,16 @@ namespace parka::validator
 		return success;
 	}
 
+	Optional<ir::Ir> validate(const ast::Ast& ast)
+	{
+		auto symbolTable = PackageSymbolTable(ast.globalPackage());
+
+		return validate(symbolTable);
+	}
+
 	Optional<ir::Ir> validate(PackageSymbolTable& package)
 	{
-		auto functions = Array<const FunctionIr*>();
+		auto functions = Array<FunctionIr*>();
 		auto success = validatePackage(functions, package);
 
 		if (!success)
@@ -47,13 +54,13 @@ namespace parka::validator
 	ir::FunctionIr *validate(FunctionSymbolTable& symbolTable)
 	{
 		auto& ast = symbolTable.ast();
-		auto prototype = validate(ast.prototype());
-		auto *body = validate(symbolTable.body(), *this);
+		auto prototype = validate(ast.prototype(), symbolTable);
+		auto *body = validate(ast.body(), symbolTable);
 
 		if (!prototype || !body)
 			return {};
 
-		auto *context = new ir::FunctionIr(getSymbol(), *prototype, *body);
+		auto *context = new ir::FunctionIr(String(symbolTable.symbol()), *prototype, *body);
 
 		return context;
 	}
@@ -66,7 +73,7 @@ namespace parka::validator
 		return validate(*syntax, symbolTable);
 	}
 
-	Optional<ir::PrototypeIr> validate(ast::PrototypeAst& prototype, SymbolTable& symbolTable)
+	Optional<ir::PrototypeIr> validate(const ast::PrototypeAst& prototype, SymbolTable& symbolTable)
 	{
 		auto success = true;
 		const auto parameterCount = prototype.parameters().length();
@@ -74,7 +81,7 @@ namespace parka::validator
 
 		for (auto *parameterAst : prototype.parameters())
 		{
-			auto *context = validate(parameterAst, symbolTable);
+			auto *context = validate(*parameterAst, symbolTable);
 
 			if (context == nullptr)
 			{
@@ -101,10 +108,10 @@ namespace parka::validator
 		log::notImplemented(here());
 	}
 
-	ir::ParameterIr *validate(ast::ParameterAst& ast, SymbolTable& symbolTable)
+	ir::ParameterIr *validate(const ast::ParameterAst& ast, SymbolTable& symbolTable)
 	{
 		auto isDeclared = symbolTable.declare(ast);
-		auto valueType = _annotation.validate(symbolTable);
+		auto valueType = validate(ast.annotation(), symbolTable);
 
 		if (!isDeclared || !valueType)
 			return {};
@@ -112,7 +119,7 @@ namespace parka::validator
 		return new ir::ParameterIr(*valueType);
 	}
 
-	ir::ExpressionIr *validate(ast::ExpressionAst& expression, SymbolTable&)
+	ir::ExpressionIr *validate(const ast::ExpressionAst& expression, SymbolTable&)
 	{
 		switch (expression.expressionType)
 		{

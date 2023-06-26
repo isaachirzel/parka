@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	enum class TypeType : u8
+	enum class TypeType: u8
 	{
 		Primitive,
 		Struct

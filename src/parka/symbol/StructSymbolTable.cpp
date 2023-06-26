@@ -1,6 +1,6 @@
 namespace parka::validator
 {
-	// bool StructAst::declare(const Declarable& declarable)
+	// bool StructAst::declare(Declarable& declarable)
 	// {
 	// 	// TODO: Token snippet
 	// 	const auto& name = declarable.name();

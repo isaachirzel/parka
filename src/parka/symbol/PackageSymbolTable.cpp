@@ -12,7 +12,7 @@ namespace parka::validator
 	SymbolTable(SymbolTableType::Package),
 	Resolvable(ResolvableType::Package),
 	_ast(ast),
-	_scope(getScope(ast, parent)),
+	_symbol(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
 	_symbols(),
 	_functions(),
 	_parent(parent),
@@ -38,23 +38,6 @@ namespace parka::validator
 
 		// for (auto *package : _packages)
 		// 	package->declareSelf(this);
-	}
-
-	String PackageSymbolTable::getScope(const ast::PackageAst& ast, PackageSymbolTable *parent)
-	{
-		if (parent == nullptr)
-			return ast.name();
-
-		auto *package = static_cast<PackageSymbolTable*>(parent);
-		auto scope = String();
-
-		scope.reserve(128);
-
-		scope += package->_scope;
-		scope += "::";
-		scope += ast.name();
-
-		return scope;
 	}
 
 	bool PackageSymbolTable::declare(const Declarable& declarable)

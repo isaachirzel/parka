@@ -11,7 +11,7 @@
 
 namespace parka::ast
 {
-	class JumpStatementAst : public StatementAst
+	class JumpStatementAst: public StatementAst
 	{
 		Snippet _snippet;
 		ExpressionAst *_value;

@@ -9,7 +9,7 @@
 
 namespace parka::ast
 {
-	class IdentifierExpressionAst : public ExpressionAst
+	class IdentifierExpressionAst: public ExpressionAst
 	{
 		QualifiedIdentifier _identifier;
 

@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class IntegerLiteralIr : public ExpressionIr
+	class IntegerLiteralIr: public ExpressionIr
 	{
 		u64 _value;
 		ValueType _valueType;

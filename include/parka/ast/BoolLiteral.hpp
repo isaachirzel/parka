@@ -6,7 +6,7 @@
 
 namespace parka::ast
 {
-	class BoolLiteralAst : public ExpressionAst
+	class BoolLiteralAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		bool _value;

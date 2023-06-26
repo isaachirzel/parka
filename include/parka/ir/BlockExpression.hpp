@@ -7,7 +7,7 @@
 
 namespace parka::ir
 {
-	class BlockExpressionIr : public ExpressionIr
+	class BlockExpressionIr: public ExpressionIr
 	{
 		Array<StatementIr*> _statements;
 		ValueType _valueType;
@@ -24,6 +24,6 @@ namespace parka::ir
 		const ValueType& valueType() const { return _valueType; }
 		const auto& statements() const { return _statements; }
 	};
-};
+}
 
 #endif

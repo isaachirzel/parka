@@ -12,20 +12,16 @@
 
 namespace parka::ast
 {
-	class MemberAst : public Declarable, public Resolvable
+	class MemberAst
 	{
 		Snippet _snippet;
 		Identifier _identifier;
 		TypeAnnotationAst _annotation;
 		bool _isPublic;
-		SymbolTable *_parent;
-		// TODO: Add read/write count
 
 	public:
 
 		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic):
-		Declarable(DeclarableType::Member),
-		Resolvable(ResolvableType::Member),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
@@ -33,9 +29,6 @@ namespace parka::ast
 		{}
 		MemberAst(MemberAst&&) = default;
 		MemberAst(const MemberAst&) = delete;
-
-		bool declareSelf(SymbolTable& parent);
-		String getSymbol() const;
 
 		const Identifier& identifier() const { return _identifier; }
 		const String& name() const { return _identifier.text(); }

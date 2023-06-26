@@ -21,7 +21,7 @@ namespace parka::path
 			return a + b;
 
 		return a + '/' + b;
-	};
+	}
 
 	usize pathCopy(char *buffer, const char *path)
 	{

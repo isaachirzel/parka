@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	enum class StatementType : u8
+	enum class StatementType: u8
 	{
 		Declaration,
 		Expression,

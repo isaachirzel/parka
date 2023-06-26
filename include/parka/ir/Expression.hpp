@@ -19,6 +19,6 @@ namespace parka::ir
 
 		virtual const ValueType& valueType() const = 0;
 	};
-};
+}
 
 #endif

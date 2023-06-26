@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class BoolLiteralIr : public ExpressionIr
+	class BoolLiteralIr: public ExpressionIr
 	{
 		bool _value;
 

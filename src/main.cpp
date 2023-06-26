@@ -28,14 +28,14 @@ int main(int argc, const char *argv[])
 
 	log::note("Parsing completed in $s.", parseTime);
 
-	auto validator = validator::Validator(ast);
-	auto declareTime = timer.split();
+	// auto validator = validator::Validator(ast);
+	// auto declareTime = timer.split();
 
-	log::note("Declaration completed in $s.", declareTime);
+	// log::note("Declaration completed in $s.", declareTime);
 
 	// print("$\n", syntax);
 
-	auto ir = validator.validate();
+	auto ir = validator::validate(ast);
 	auto validateTime = timer.split();
 
 	log::note("Validation completed in $s.", validateTime);

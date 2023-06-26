@@ -21,9 +21,21 @@ namespace parka
 		{}
 		virtual ~SymbolTable() {}
 
-		virtual bool declare(const Declarable& entity) = 0;
+		virtual bool declare(const Declarable& declarable) = 0;
 		virtual Resolvable *find(const ast::Identifier& identifier) = 0;
 		virtual Resolution *resolve(const ast::QualifiedIdentifier& identifier) = 0;
+		virtual const String& symbol() const = 0;
+		virtual String createSymbol(const String& name)
+		{
+			auto symbol = this->symbol();
+
+			if (!symbol.empty())
+				symbol += "::";
+
+			symbol += name;
+
+			return symbol;
+		}
 	};
 }
 

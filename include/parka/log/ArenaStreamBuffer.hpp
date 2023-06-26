@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	class ArenaStreamBuffer : public std::streambuf
+	class ArenaStreamBuffer: public std::streambuf
 	{
 		Arena _buffer;
 

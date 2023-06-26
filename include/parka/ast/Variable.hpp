@@ -13,7 +13,7 @@
 
 namespace parka::ast
 {
-	class VariableAst : public Declarable, public Resolvable
+	class VariableAst: public Declarable
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -24,7 +24,6 @@ namespace parka::ast
 
 		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
 		Declarable(DeclarableType::Variable),
-		Resolvable(ResolvableType::Variable),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

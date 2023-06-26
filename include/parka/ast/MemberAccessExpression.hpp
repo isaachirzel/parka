@@ -7,7 +7,7 @@
 
 namespace parka::ast
 {
-	class MemberAccessExpressionAst : public ExpressionAst
+	class MemberAccessExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _expression;

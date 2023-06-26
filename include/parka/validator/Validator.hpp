@@ -16,12 +16,13 @@
 namespace parka::validator
 {
 	// TODO: Consider making this a class that will store errors/state
+	Optional<ir::Ir> validate(const ast::Ast& ast);
 	Optional<ir::Ir> validate(PackageSymbolTable& package);
 	ir::FunctionIr *validate(FunctionSymbolTable& function);
-	Optional<ir::PrototypeIr> validate(ast::PrototypeAst& prototype, SymbolTable& symbolTable);
+	Optional<ir::PrototypeIr> validate(const ast::PrototypeAst& prototype, SymbolTable& symbolTable);
 	Optional<ir::ValueType> validate(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
-	ir::ParameterIr *validate(ast::ParameterAst& ast, SymbolTable& symbolTable);
-	ir::ExpressionIr *validate(ast::ExpressionAst& expression, SymbolTable& symbolTable);
+	ir::ParameterIr *validate(const ast::ParameterAst& ast, SymbolTable& symbolTable);
+	ir::ExpressionIr *validate(const ast::ExpressionAst& expression, SymbolTable& symbolTable);
 }
 
 #endif

@@ -8,7 +8,7 @@
 
 namespace parka::ast
 {
-	class PrefixExpressionAst : public ExpressionAst
+	class PrefixExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _expression;

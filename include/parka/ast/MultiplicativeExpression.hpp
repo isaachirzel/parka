@@ -7,7 +7,7 @@
 
 namespace parka::ast
 {
-	class MultiplicativeExpressionAst : public ExpressionAst
+	class MultiplicativeExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _lhs;

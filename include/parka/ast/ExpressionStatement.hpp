@@ -7,7 +7,7 @@
 
 namespace parka::ast
 {
-	class ExpressionStatementAst : public StatementAst
+	class ExpressionStatementAst: public StatementAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _expression;

@@ -6,7 +6,7 @@
 
 namespace parka::ast
 {
-	class IntegerLiteralAst : public ExpressionAst
+	class IntegerLiteralAst: public ExpressionAst
 	{
 		Snippet _snippet;
 

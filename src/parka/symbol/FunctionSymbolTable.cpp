@@ -7,12 +7,12 @@
 
 namespace parka::validator
 {
-	FunctionSymbolTable::FunctionSymbolTable(ast::FunctionAst& ast, SymbolTable *parent):
+
+
+	FunctionSymbolTable::FunctionSymbolTable(const ast::FunctionAst& ast, SymbolTable *parent):
 	SymbolTable(SymbolTableType::Function),
 	Resolvable(ResolvableType::Function),
 	_ast(ast),
-	_scope(),
-	_symbols(),
 	_parent(parent),
 	_ir(nullptr)
 	{}
@@ -28,7 +28,7 @@ namespace parka::validator
 			{
 				log::error(identifier, "A $ `$` has already been declared in this function.", declarable.declarableType, name);
 
-				auto *previous = dynamic_cast<Declarable*>(symbol);
+				const auto *previous = dynamic_cast<const Declarable*>(symbol);
 
 				if (previous != nullptr)
 					log::note(previous->identifier(), "Previous declaration here:");
@@ -38,14 +38,34 @@ namespace parka::validator
 			}
 		}
 
-		// TODO: Do not do this this way
-		auto *resolvable = dynamic_cast<Resolvable*>(&declarable);
+		switch (declarable.declarableType)
+		{
+			case DeclarableType::Variable:
+			{
+				auto *ast = static_cast<const ast::VariableAst*>(&declarable);
+				auto& resolvable = _variables.push(VariableEntry(*ast, *this));
 
-		assert(resolvable != nullptr);
+				_symbols.push(&resolvable);
 
-		_symbols.push(resolvable);
-		
-		return true;
+				return true;
+			}
+
+			case DeclarableType::Parameter:
+			{
+				auto *ast = static_cast<const ast::ParameterAst*>(&declarable);
+				auto& resolvable = _parameters.push(ParameterEntry(*ast, *this));
+
+				_symbols.push(&resolvable);
+
+				return true;
+			}
+
+			default:
+				break;
+		}
+
+		// TODO: Implement declarable type printing
+		log::fatal("Unable to declare Declarable with Type: $", (int)declarable.declarableType);
 	}
 
 	Resolvable *FunctionSymbolTable::find(const ast::Identifier& identifier)

@@ -8,7 +8,7 @@
 
 namespace parka::ir
 {
-	enum class PrimitiveType : u8
+	enum class PrimitiveType: u8
 	{
 		Void,
 		UnsignedInteger,
@@ -19,7 +19,7 @@ namespace parka::ir
 		String
 	};
 
-	class Primitive : public Resolvable
+	class Primitive: public Resolvable
 	{
 		String _name;
 		u32 _size;

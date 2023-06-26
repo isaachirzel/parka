@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class MemberIr : public Resolution
+	class MemberIr: public Resolution
 	{
 		ValueType _valueType;
 

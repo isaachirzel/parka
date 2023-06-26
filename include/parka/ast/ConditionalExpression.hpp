@@ -7,7 +7,7 @@
 
 namespace parka::ast
 {
-	class ConditionalExpressionAst : public ExpressionAst
+	class ConditionalExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		ExpressionAst& _condition;

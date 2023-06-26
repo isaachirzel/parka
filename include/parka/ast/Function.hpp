@@ -8,7 +8,7 @@
 
 namespace parka::ast
 {
-	class FunctionAst : public Declarable
+	class FunctionAst: public Declarable
 	{
 		Snippet _snippet;
 		PrototypeAst _prototype;
