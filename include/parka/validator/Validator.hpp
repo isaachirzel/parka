@@ -2,9 +2,15 @@
 #define PARKA_VALIDATOR_VALIDATOR_HPP
 
 #include "parka/ast/Ast.hpp"
+#include "parka/ast/BinaryExpression.hpp"
+#include "parka/ast/BlockExpression.hpp"
+#include "parka/ast/DeclarationStatement.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
+#include "parka/ir/BinaryExpression.hpp"
+#include "parka/ir/BlockExpression.hpp"
+#include "parka/ir/DeclarationStatement.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/ir/Prototype.hpp"
 #include "parka/ir/ValueType.hpp"
@@ -15,14 +21,21 @@
 
 namespace parka::validator
 {
-	// TODO: Consider making this a class that will store errors/state
-	Optional<ir::Ir> validate(const ast::Ast& ast);
-	Optional<ir::Ir> validate(PackageSymbolTable& package);
-	ir::FunctionIr *validate(FunctionSymbolTable& function);
-	Optional<ir::PrototypeIr> validate(const ast::PrototypeAst& prototype, SymbolTable& symbolTable);
-	Optional<ir::ValueType> validate(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
-	ir::ParameterIr *validate(const ast::ParameterAst& ast, SymbolTable& symbolTable);
-	ir::ExpressionIr *validate(const ast::ExpressionAst& expression, SymbolTable& symbolTable);
+	// TODO: Consider making this a class that will store errors/state. Upon validating something that needs a symbol table, a new validator would be constructed
+	Optional<ir::Ir> validateAst(const ast::Ast& ast);
+	Optional<ir::Ir> validatePackage(PackageSymbolTable& package);
+	ir::FunctionIr *validateFunction(FunctionSymbolTable& function);
+	Optional<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, SymbolTable& symbolTable);
+	Optional<ir::ValueType> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
+	ir::ParameterIr *validateParameter(const ast::ParameterAst& ast, SymbolTable& symbolTable);
+	ir::ExpressionIr *validateExpression(const ast::ExpressionAst& expression, SymbolTable& symbolTable);
+	ir::BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, SymbolTable& symbolTable);
+	ir::BinaryExpressionIr *validateBinaryExpression(const ast::BinaryExpressionAst& ast, SymbolTable& symbolTable);
+	ir::StatementIr *validateStatement(const ast::StatementAst& statement, SymbolTable& symbolTable);
+	ir::StatementIr *validateDeclarationStatement(const ast::DeclarationStatementAst& ast, SymbolTable& symbolTable);
+	ir::VariableIr *validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, SymbolTable& symbolTable);
+
+
 }
 
 #endif

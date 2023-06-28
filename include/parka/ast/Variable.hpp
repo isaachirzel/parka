@@ -38,7 +38,7 @@ namespace parka::ast
 		const String& name() const { return _identifier.text(); }
 		const Identifier& identifier() const { return _identifier; }
 		const auto& isExplicitlyTyped() const { return _annotation.hasValue(); }
-		const auto& annotation() const { return *_annotation; }
+		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
 	};
 

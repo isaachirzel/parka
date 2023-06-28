@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
 
 	// print("$\n", syntax);
 
-	auto ir = validator::validate(ast);
+	auto ir = validator::validateAst(ast);
 	auto validateTime = timer.split();
 
 	log::note("Validation completed in $s.", validateTime);

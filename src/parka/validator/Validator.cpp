@@ -16,7 +16,7 @@ namespace parka::validator
 
 		for (auto& function : package.functions())
 		{
-			auto *ir = validate(function);
+			auto *ir = validateFunction(function);
 
 			if (ir == nullptr)
 			{
@@ -33,14 +33,14 @@ namespace parka::validator
 		return success;
 	}
 
-	Optional<ir::Ir> validate(const ast::Ast& ast)
+	Optional<ir::Ir> validateAst(const ast::Ast& ast)
 	{
 		auto symbolTable = PackageSymbolTable(ast.globalPackage());
 
-		return validate(symbolTable);
+		return validatePackage(symbolTable);
 	}
 
-	Optional<ir::Ir> validate(PackageSymbolTable& package)
+	Optional<ir::Ir> validatePackage(PackageSymbolTable& package)
 	{
 		auto functions = Array<FunctionIr*>();
 		auto success = validatePackage(functions, package);
@@ -51,11 +51,11 @@ namespace parka::validator
 		return Ir(std::move(functions));
 	}
 
-	ir::FunctionIr *validate(FunctionSymbolTable& symbolTable)
+	ir::FunctionIr *validateFunction(FunctionSymbolTable& symbolTable)
 	{
 		auto& ast = symbolTable.ast();
-		auto prototype = validate(ast.prototype(), symbolTable);
-		auto *body = validate(ast.body(), symbolTable);
+		auto prototype = validatePrototype(ast.prototype(), symbolTable);
+		auto *body = validateExpression(ast.body(), symbolTable);
 
 		if (!prototype || !body)
 			return {};
@@ -70,10 +70,10 @@ namespace parka::validator
 		if (!syntax)
 			return ir::ValueType::voidType;
 
-		return validate(*syntax, symbolTable);
+		return validateTypeAnnotation(*syntax, symbolTable);
 	}
 
-	Optional<ir::PrototypeIr> validate(const ast::PrototypeAst& prototype, SymbolTable& symbolTable)
+	Optional<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, SymbolTable& symbolTable)
 	{
 		auto success = true;
 		const auto parameterCount = prototype.parameters().length();
@@ -81,7 +81,7 @@ namespace parka::validator
 
 		for (auto *parameterAst : prototype.parameters())
 		{
-			auto *context = validate(*parameterAst, symbolTable);
+			auto *context = validateParameter(*parameterAst, symbolTable);
 
 			if (context == nullptr)
 			{
@@ -103,15 +103,15 @@ namespace parka::validator
 		return ir::PrototypeIr(std::move(parameters), *returnType);
 	}
 
-	Optional<ir::ValueType> validate(const ast::TypeAnnotationAst&, SymbolTable&)
+	Optional<ir::ValueType> validateTypeAnnotation(const ast::TypeAnnotationAst&, SymbolTable&)
 	{
 		log::notImplemented(here());
 	}
 
-	ir::ParameterIr *validate(const ast::ParameterAst& ast, SymbolTable& symbolTable)
+	ir::ParameterIr *validateParameter(const ast::ParameterAst& ast, SymbolTable& symbolTable)
 	{
 		auto isDeclared = symbolTable.declare(ast);
-		auto valueType = validate(ast.annotation(), symbolTable);
+		auto valueType = validateTypeAnnotation(ast.annotation(), symbolTable);
 
 		if (!isDeclared || !valueType)
 			return {};
@@ -119,7 +119,7 @@ namespace parka::validator
 		return new ir::ParameterIr(*valueType);
 	}
 
-	ir::ExpressionIr *validate(const ast::ExpressionAst& expression, SymbolTable&)
+	ir::ExpressionIr *validateExpression(const ast::ExpressionAst& expression, SymbolTable& symbolTable)
 	{
 		switch (expression.expressionType)
 		{
@@ -127,7 +127,7 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::Block:
-				break;
+				return validateBlockExpression((const ast::BlockExpressionAst&)expression, symbolTable);
 
 			case ExpressionType::Call:
 				break;
@@ -170,5 +170,121 @@ namespace parka::validator
 		}
 
 		log::fatal("Unable to validate Expression with Type: $", expression.expressionType);
+	}
+
+	ir::BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, SymbolTable& symbolTable)
+	{
+		auto success = true;
+		auto statements = Array<StatementIr*>(ast.statements().length());
+
+		for (const auto *statement : ast.statements())
+		{
+			auto *ir = validateStatement(*statement, symbolTable);
+
+			if (ir == nullptr)
+			{
+				success = false;
+				continue;
+			}
+
+			statements.push(ir);
+		}
+
+		// TODO: Implement return type
+
+		if (!success)
+			return {};
+
+		return new BlockExpressionIr(std::move(statements), ValueType(ValueType::voidType));
+	}
+
+	ir::BinaryExpressionIr *validateBinaryExpression(const ast::BinaryExpressionAst& ast, SymbolTable& symbolTable)
+	{
+		auto *lhs = validateExpression(ast.lhs(), symbolTable);
+		auto *rhs = validateExpression(ast.rhs(), symbolTable);
+
+		// TODO: Operators
+
+		if (!lhs || !rhs)
+			return nullptr;
+
+		const auto& lhsType = lhs->valueType();
+		const auto& rhsType = rhs->valueType();
+
+		if (!rhsType.canConvertTo(lhsType))
+		{
+			log::error(ast.snippet(), "$ cannot be added to $.", rhsType, lhsType);
+			return nullptr;
+		}
+
+		return new ir::BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), ir::ValueType(lhsType));
+	}
+
+	ir::StatementIr *validateStatement(const ast::StatementAst& ast, SymbolTable& symbolTable)
+	{
+		switch (ast.statementType)
+		{
+			case StatementType::Declaration:
+				return validateDeclarationStatement((const ast::DeclarationStatementAst&)ast, symbolTable);
+
+			// case StatementType::Expression:
+			// 	break;
+
+			// case StatementType::Jump:
+			// 	break;
+
+			default:
+				break;
+		}
+
+		log::fatal("Unable to validate Statement with Type: $", ast.statementType);
+	}
+
+	ir::StatementIr *validateDeclarationStatement(const ast::DeclarationStatementAst& ast, SymbolTable& symbolTable)
+	{
+		auto *value = validateExpression(ast.value(), symbolTable);
+		auto *variable = validateVariable(ast.variable(), value, symbolTable);
+
+		if (!variable || !value)
+			return {};
+
+		return new ir::DeclarationStatementIr(*variable, *value);
+	}
+
+	static Optional<ir::ValueType> validateVariableType(const Optional<ast::TypeAnnotationAst>& annotation, ir::ExpressionIr *value, SymbolTable& symbolTable)
+	{
+		if (!annotation)
+		{
+			if (!value)			
+				return {};
+			
+			return value->valueType();
+		}
+
+		auto annotationType = validateTypeAnnotation(*annotation, symbolTable);
+
+		if (!annotationType || !value)
+			return {};
+
+		auto valueType = value->valueType();
+
+		if (!valueType.canConvertTo(*annotationType))
+		{
+			log::error("Unable to initialize variable of type $ with type $.", annotationType, valueType);
+			return {};
+		}
+
+		return annotationType;
+	}
+
+	ir::VariableIr *validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, SymbolTable& symbolTable)
+	{
+		auto declared = symbolTable.declare(ast);
+		auto type = validateVariableType(ast.annotation(), value, symbolTable);
+
+		if (!type || !declared)
+			return nullptr;
+
+		return new ir::VariableIr(String(ast.name()), *type);
 	}
 }
