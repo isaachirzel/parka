@@ -125,10 +125,10 @@ namespace parka::validator
 		switch (ast.expressionType)
 		{
 			case ExpressionType::Binary:
-				return validateBinaryExpression((const ast::BinaryExpressionAst&)ast, symbolTable);
+				return validateBinaryExpression(static_cast<const ast::BinaryExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::Block:
-				return validateBlockExpression((const ast::BlockExpressionAst&)ast, symbolTable);
+				return validateBlockExpression(static_cast<const ast::BlockExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::Call:
 				break;
@@ -137,7 +137,7 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::Identifier:
-				return validateIdentifierExpression((const ast::IdentifierExpressionAst&)ast, symbolTable);
+				return validateIdentifierExpression(static_cast<const ast::IdentifierExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::If:
 				break;
@@ -161,10 +161,10 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::IntegerLiteral:
-				return validateIntegerLiteral((const ast::IntegerLiteralAst&)ast, symbolTable);
+				return validateIntegerLiteral(static_cast<const ast::IntegerLiteralAst&>(ast));
 
 			case ExpressionType::StringLiteral:
-				break;
+				return validateStringLiteral(static_cast<const ast::StringLiteralAst&>(ast));
 
 			default:
 				break;
@@ -211,13 +211,12 @@ namespace parka::validator
 
 		const auto& lhsType = lhs->valueType();
 		const auto& rhsType = rhs->valueType();
+		auto isConversionValid = rhsType.canConvertTo(lhsType);
 
-		if (!rhsType.canConvertTo(lhsType))
+		if (!isConversionValid)
 		{
-			std::cout << "left: " << lhsType << std::endl;
-			std::cout << "right: " << rhsType << std::endl;
 			log::error(ast.snippet(), "$ cannot be added to $.", rhsType, lhsType);
-			return nullptr;
+			return {};
 		}
 
 		return new ir::BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), ir::Type(lhsType));
@@ -281,7 +280,7 @@ namespace parka::validator
 		return Type::u8Type;
 	}
 
-	ir::IntegerLiteralIr *validateIntegerLiteral(const ast::IntegerLiteralAst& ast, LocalSymbolTable& symbolTable)
+	ir::IntegerLiteralIr *validateIntegerLiteral(const ast::IntegerLiteralAst& ast)
 	{
 		auto value = getIntegerValue(ast.snippet());
 
@@ -291,6 +290,16 @@ namespace parka::validator
 		const auto& type = getIntegerType(*value);
 
 		return new ir::IntegerLiteralIr(*value, ir::Type(type));
+	}
+
+	ir::StringLiteralIr *validateStringLiteral(const ast::StringLiteralAst& ast)
+	{
+		// TODO: Handle escapes
+		const auto& snippet = ast.snippet();
+		auto text = snippet.substr(1, snippet.length() - 2);
+		auto *context = new ir::StringLiteralIr(std::move(text));
+
+		return context;
 	}
 
 	ir::StatementIr *validateStatement(const ast::StatementAst& ast, LocalSymbolTable& symbolTable)

@@ -10,6 +10,7 @@
 #include "parka/ast/Prototype.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/IntegerLiteral.hpp"
+#include "parka/ast/StringLiteral.hpp"
 #include "parka/ir/BinaryExpression.hpp"
 #include "parka/ir/BlockExpression.hpp"
 #include "parka/ir/DeclarationStatement.hpp"
@@ -18,6 +19,7 @@
 #include "parka/ir/Prototype.hpp"
 #include "parka/ir/Type.hpp"
 #include "parka/ir/IntegerLiteral.hpp"
+#include "parka/ir/StringLiteral.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
@@ -36,7 +38,8 @@ namespace parka::validator
 	ir::BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::BinaryExpressionIr *validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IdentifierExpressionIr *validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable);
-	ir::IntegerLiteralIr *validateIntegerLiteral(const ast::IntegerLiteralAst& ast, LocalSymbolTable& symbolTable);
+	ir::IntegerLiteralIr *validateIntegerLiteral(const ast::IntegerLiteralAst& ast);
+	ir::StringLiteralIr *validateStringLiteral(const ast::StringLiteralAst& ast);
 	ir::StatementIr *validateStatement(const ast::StatementAst& statement, LocalSymbolTable& symbolTable);
 	ir::StatementIr *validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::VariableIr *validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, LocalSymbolTable& symbolTable);

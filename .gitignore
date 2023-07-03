@@ -8,5 +8,6 @@
 # Build files
 .cache/
 
+# Sublime
 *.sublime-project
 *.sublime-workspace
