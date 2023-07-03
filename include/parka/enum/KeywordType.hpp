@@ -28,7 +28,7 @@ namespace parka
 		StructAst,
 		Then,
 		True,
-		ValueType,
+		Type,
 		Var,
 		While
 	};

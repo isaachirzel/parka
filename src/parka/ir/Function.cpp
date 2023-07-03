@@ -3,7 +3,7 @@
 
 namespace parka::ir
 {
-	const ValueType *FunctionIr::valueType() const
+	const Type *FunctionIr::valueType() const
 	{
 		log::notImplemented(here());
 	}

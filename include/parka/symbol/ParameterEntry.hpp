@@ -9,20 +9,24 @@ namespace parka
 	class ParameterEntry: public Resolvable
 	{
 		const ast::ParameterAst& _ast;
-		// const ir::VariableIr& _ir;
+		ir::ParameterIr *_ir;
 
 	public:
 
-		ParameterEntry(const ast::ParameterAst& ast, SymbolTable&):
+		ParameterEntry(const ast::ParameterAst& ast, ir::ParameterIr *ir):
 		Resolvable(ResolvableType::Parameter),
-		_ast(ast)
-		// _ir(validator::validate(ast, symbolTable)),
+		_ast(ast),
+		_ir(ir)
 		{}
 		ParameterEntry(ParameterEntry&&) = default;
 		ParameterEntry(const ParameterEntry&) = delete;
 
+		ir::ParameterIr *resolve();
+
 		const auto& ast() const { return _ast; }
-		const String& name() const { return _ast.name(); }
+		const auto *ir() const { return _ir; }
+		const String& name() const { return _ast.identifier().text(); }
+		const ast::Identifier& identifier() const { return _ast.identifier(); }
 	};
 }
 

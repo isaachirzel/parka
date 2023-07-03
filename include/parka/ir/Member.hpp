@@ -7,18 +7,18 @@ namespace parka::ir
 {
 	class MemberIr: public Resolution
 	{
-		ValueType _valueType;
+		Type _type;
 
 	public:
 
-		MemberIr(ValueType&& valueType):
+		MemberIr(Type&& Type):
 		Resolution(ResolvableType::Member),
-		_valueType(std::move(valueType))
+		_type(std::move(Type))
 		{}
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;
 
-		const ValueType *valueType() const { return &_valueType; }
+		const Type *valueType() const { return &_type; }
 	};
 }
 

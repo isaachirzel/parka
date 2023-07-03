@@ -8,11 +8,11 @@ namespace parka::ir
 	class VariableIr: public Resolution
 	{
 		String _symbol;
-		ValueType _type;
+		Type _type;
 	
 	public:
 
-		VariableIr(String&& symbol, ValueType&& type):
+		VariableIr(String&& symbol, Type&& type):
 		Resolution(ResolvableType::Variable),
 		_symbol(std::move(symbol)),
 		_type(std::move(type))
@@ -21,7 +21,7 @@ namespace parka::ir
 		VariableIr(const VariableIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		const ValueType *valueType() const { return &_type; }
+		const Type *valueType() const { return &_type; }
 	};
 }
 

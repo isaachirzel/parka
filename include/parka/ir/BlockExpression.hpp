@@ -10,18 +10,18 @@ namespace parka::ir
 	class BlockExpressionIr: public ExpressionIr
 	{
 		Array<StatementIr*> _statements;
-		ValueType _valueType;
+		Type _type;
 
 	public:
 
-		BlockExpressionIr(Array<StatementIr*>&& statements, ValueType&& valueType):
+		BlockExpressionIr(Array<StatementIr*>&& statements, Type&& Type):
 		ExpressionIr(ExpressionType::Block),
 		_statements(std::move(statements)),
-		_valueType(std::move(valueType))
+		_type(std::move(Type))
 		{}
 		BlockExpressionIr(BlockExpressionIr&&) = default;
 		BlockExpressionIr(const BlockExpressionIr&) = delete;
-		const ValueType& valueType() const { return _valueType; }
+		const Type& valueType() const { return _type; }
 		const auto& statements() const { return _statements; }
 	};
 }

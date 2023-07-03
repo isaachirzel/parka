@@ -3,7 +3,7 @@
 
 namespace parka::ir
 {
-	// const ValueType *PackageIr::valueType() const
+	// const Type *PackageIr::valueType() const
 	// {
 	// 	log::error("Unable to get value of package `$`.", _symbol);
 	// 	return nullptr;

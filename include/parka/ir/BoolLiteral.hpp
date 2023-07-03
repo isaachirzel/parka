@@ -18,7 +18,7 @@ namespace parka::ir
 		BoolLiteralIr(BoolLiteralIr&&) = default;
 		BoolLiteralIr(const BoolLiteralIr&) = delete;
 
-		const ValueType& valueType() const { return ValueType::boolType; }
+		const Type& valueType() const { return Type::boolType; }
 		const auto& value() const { return _value; }
 	};
 }

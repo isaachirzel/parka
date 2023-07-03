@@ -4,19 +4,16 @@
 #include "parka/ir/Primitive.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/symbol/LocalSymbolTable.hpp"
 
-namespace parka::validator
+namespace parka
 {
 	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent):
 	SymbolTable(SymbolTableType::Package),
-	Resolvable(ResolvableType::Package),
-	_ast(ast),
-	_symbol(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
+	_scope(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
 	_symbols(),
 	_functions(),
-	_parent(parent),
-	_ir(nullptr)
+	_parent(parent)
 	{
 		// TODO: Actual error checking
 		const auto isGlobalPackage = _parent == nullptr;
@@ -33,52 +30,16 @@ namespace parka::validator
 			// 	strct->declareSelf(*this);
 
 			for (auto *function : mod.functions())
-				declare(*function);
+			{
+				auto& resolvable = _functions.push(FunctionEntry(*function, *this));
+				const auto& key = function->prototype().identifier().text();
+
+				_symbols.insert(key, &resolvable);
+			}
 		}
 
 		// for (auto *package : _packages)
 		// 	package->declareSelf(this);
-	}
-
-	bool PackageSymbolTable::declare(const Declarable& declarable)
-	{
-		// TODO: Invalidate symbol on failure, better error
-		const auto& identifier = declarable.identifier().text();
-		auto result = false;
-
-		switch (declarable.declarableType)
-		{
-			// case DeclarableType::Struct:
-			// 	break;
-
-			case DeclarableType::Function:
-			{
-				auto *ast = static_cast<const ast::FunctionAst*>(&declarable);
-				auto& resolvable = _functions.push(FunctionSymbolTable(*ast, this));
-				
-				if (_symbols.insert(identifier, &resolvable))
-					return true;
-
-				break;
-			}
-
-			// case DeclarableType::Variable:
-			// 	break;
-
-			// case DeclarableType::Parameter:
-			// 	break;
-
-			// case DeclarableType::Member:
-			// 	break;
-
-			default:
-				break;
-		}
-
-		// TODO: Show previous
-		log::error("Name `$` is already declared in this package.", identifier);
-
-		return result;
 	}
 
 	Resolvable *PackageSymbolTable::findInitial(const ast::Identifier& identifier)
@@ -93,8 +54,8 @@ namespace parka::validator
 			if (entry != nullptr)
 				return entry;
 
-			if (package->name() == name)
-				return package;
+			if (entry->name() == name)
+				return entry;
 
 			package = package->_parent;
 		}
@@ -113,8 +74,6 @@ namespace parka::validator
 			package = parent;
 			parent = package->_parent;
 		}
-
-		assert(package->name().empty() && "Package with no parent must be the global package");
 
 		auto *entry = package->find(identifier);
 
@@ -166,19 +125,24 @@ namespace parka::validator
 		return nullptr;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& validator)
+	ir::PackageIr *PackageSymbolTable::resolve()
+	{
+		log::notImplemented(here());
+	}
+
+	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbolTable)
 	{
 		auto indent = Indent(out);
 
 		out << indent;
 
-		if (validator.name().empty())
+		if (symbolTable._parent == nullptr)
 		{
 			out << "global\n";
 		}
 		else
 		{
-			out << "package `" << validator.name() << "`\n";
+			out << "package\n";
 		}
 
 		out << indent << "{\n";
@@ -192,7 +156,7 @@ namespace parka::validator
 			{
 				auto subsubindent = Indent(out);
 
-				for (const auto& entry : validator._symbols)
+				for (const auto& entry : symbolTable._symbols)
 				{
 					out << subsubindent << *entry.value() << '\n';
 				}
@@ -202,12 +166,12 @@ namespace parka::validator
 			out << subindent << "}\n\n";
 		}
 
-		// for (const auto& mod : validator.modules())
+		// for (const auto& mod : symbolTable.modules())
 		// {
 		// 	out << mod << '\n';
 		// }
 
-		// for (const auto *package : validator._packages)
+		// for (const auto *package : symbolTable._packages)
 		// {
 		// 	out << *package << '\n';
 		// }

@@ -3,6 +3,7 @@
 
 #include "parka/enum/ResolvableType.hpp"
 #include "parka/util/String.hpp"
+#include "parka/symbol/Resolution.hpp"
 
 namespace parka
 {
@@ -18,6 +19,7 @@ namespace parka
 		virtual ~Resolvable() {}
 
 		virtual const String& name() const = 0;
+		virtual Resolution *resolve() = 0;
 
 		friend std::ostream& operator<<(std::ostream& out, const Resolvable& resolvabe);
 	};

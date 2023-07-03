@@ -1289,7 +1289,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Colon)
 		{
-			log::parseError(token, "':''", "ValueType annotations are required for member declarations.");
+			log::parseError(token, "':''", "Type annotations are required for member declarations.");
 			return {};
 		}
 		

@@ -4,11 +4,10 @@
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/ir/Parameter.hpp"
-#include "parka/symbol/Declarable.hpp"
 
 namespace parka::ast
 {
-	class ParameterAst: public Declarable
+	class ParameterAst
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -20,7 +19,6 @@ namespace parka::ast
 	public:
 
 		ParameterAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
-		Declarable(DeclarableType::Parameter),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
@@ -32,10 +30,8 @@ namespace parka::ast
 
 		String getSymbol() const;
 
-		const String& name() const { return _identifier.text(); }
-		const Identifier& identifier() const { return _identifier; }		
-		const Snippet& snippet() const { return _snippet; }
-
+		const auto& identifier() const { return _identifier; }		
+		const auto& snippet() const { return _snippet; }
 		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
 

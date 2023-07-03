@@ -1,7 +1,6 @@
 #ifndef PARKA_SYMBOL_RESOLVABLE_NODE_HPP
 #define PARKA_SYMBOL_RESOLVABLE_NODE_HPP
 
-#include "parka/symbol/Declarable.hpp"
 #include "parka/ast/Function.hpp"
 #include "parka/ast/Member.hpp"
 #include "parka/ast/Parameter.hpp"

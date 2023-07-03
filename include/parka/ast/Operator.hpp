@@ -3,7 +3,7 @@
 
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ast/Expression.hpp"
-#include "parka/ir/ValueType.hpp"
+#include "parka/ir/Type.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/util/Optional.hpp"
 
@@ -11,14 +11,14 @@ namespace parka::ast
 {
 	class Operator
 	{
-		ir::ValueType _leftType;
-		ir::ValueType _rightType;
+		ir::Type _leftType;
+		ir::Type _rightType;
 		ExpressionAst *_body;
 		OperatorType _type;
 
 	public:
 
-		Operator(ir::ValueType&& leftType, ir::ValueType&& rightType, ExpressionAst *body, OperatorType type):
+		Operator(ir::Type&& leftType, ir::Type&& rightType, ExpressionAst *body, OperatorType type):
 		_leftType(std::move(leftType)),
 		_rightType(std::move(rightType)),
 		_body(body),

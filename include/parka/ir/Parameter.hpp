@@ -8,11 +8,11 @@ namespace parka::ir
 	class ParameterIr: public Resolution
 	{
 		String _symbol;
-		ValueType _type;
+		Type _type;
 
 	public:
 
-		ParameterIr(ValueType&& type):
+		ParameterIr(Type&& type):
 		Resolution(ResolvableType::Parameter),
 		_type(std::move(type))
 		{}
@@ -20,7 +20,7 @@ namespace parka::ir
 		ParameterIr(const ParameterIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		const ValueType *valueType() const { return &_type; }
+		const Type *valueType() const { return &_type; }
 	};
 }
 

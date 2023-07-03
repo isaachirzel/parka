@@ -34,7 +34,7 @@ namespace parka::ast
 		keywords.insert("struct", KeywordType::StructAst);
 		keywords.insert("then", KeywordType::Then);
 		keywords.insert("true", KeywordType::True);
-		keywords.insert("type", KeywordType::ValueType);
+		keywords.insert("type", KeywordType::Type);
 		keywords.insert("private", KeywordType::Private);
 		keywords.insert("public", KeywordType::Public);
 		keywords.insert("var", KeywordType::Var);

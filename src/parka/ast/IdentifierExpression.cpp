@@ -1,7 +1,7 @@
 #include "parka/ast/IdentifierExpression.hpp"
 #include "parka/ir/IdentifierExpression.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/ir/ValueType.hpp"
+#include "parka/ir/Type.hpp"
 
 namespace parka::ast
 {
@@ -12,12 +12,12 @@ namespace parka::ast
 	// 	if (entity == nullptr)
 	// 		return nullptr;
 
-	// 	const auto *valueType = entity->valueType();
+	// 	const auto *Type = entity->valueType();
 
-	// 	if (!valueType)
+	// 	if (!Type)
 	// 		return nullptr;
 
-	// 	auto *context = new ir::IdentifierExpressionIr(*entity, ir::ValueType(*valueType));
+	// 	auto *context = new ir::IdentifierExpressionIr(*entity, ir::Type(*Type));
 
 	// 	return context;
 	// }

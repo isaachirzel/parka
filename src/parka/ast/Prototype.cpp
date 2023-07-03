@@ -5,7 +5,7 @@
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/Keyword.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
-#include "parka/ir/ValueType.hpp"
+#include "parka/ir/Type.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Print.hpp"
 

@@ -4,7 +4,7 @@
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/ir/ValueType.hpp"
+#include "parka/ir/Type.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka::ast

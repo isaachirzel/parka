@@ -28,7 +28,7 @@ namespace parka::ir
 		PackageIr(const PackageIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		const ValueType *valueType() const;
+		const Type *valueType() const;
 		const auto& packages() const { return _packages; }
 		const auto& functions() const { return _functions; }
 		const auto& structs() const { return _structs; }

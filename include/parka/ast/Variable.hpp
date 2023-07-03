@@ -3,17 +3,15 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/DeclarableType.hpp"
 #include "parka/ir/Expression.hpp"
 #include "parka/ir/Variable.hpp"
-#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 
 namespace parka::ast
 {
-	class VariableAst: public Declarable
+	class VariableAst
 	{
 		Snippet _snippet;
 		Identifier _identifier;
@@ -23,7 +21,6 @@ namespace parka::ast
 	public:
 
 		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
-		Declarable(DeclarableType::Variable),
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
@@ -34,10 +31,8 @@ namespace parka::ast
 
 		String getSymbol() const { return _identifier.text(); }
 
-		const Snippet& snippet() const { return _snippet; }
-		const String& name() const { return _identifier.text(); }
-		const Identifier& identifier() const { return _identifier; }
-		const auto& isExplicitlyTyped() const { return _annotation.hasValue(); }
+		const auto& snippet() const { return _snippet; }
+		const auto& identifier() const { return _identifier; }
 		const auto& annotation() const { return _annotation; }
 		const auto& isMutable() const { return _isMutable; }
 	};

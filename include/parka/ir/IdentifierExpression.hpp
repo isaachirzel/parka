@@ -2,26 +2,25 @@
 #define PARKA_IR_IDENTIFIER_EXPRESSION_HPP
 
 #include "parka/ir/Expression.hpp"
+#include "parka/symbol/Resolution.hpp"
 
 namespace parka::ir
 {
 	class IdentifierExpressionIr: public ExpressionIr
 	{
-		Resolution& _entity;
-		ValueType _valueType;
+		Value& _value;
 
 	public:
 
-		IdentifierExpressionIr(Resolution& entity, ValueType&& valueType):
+		IdentifierExpressionIr(Value& value):
 		ExpressionIr(ExpressionType::Identifier),
-		_entity(entity),
-		_valueType(std::move(valueType))
+		_value(value)
 		{}
 		IdentifierExpressionIr(IdentifierExpressionIr&&) = default;
 		IdentifierExpressionIr(const IdentifierExpressionIr&) = delete;
 
-		const auto& entity() const { return _entity; }
-		const ValueType& valueType() const { return _valueType; }
+		const auto& value() const { return _value; }
+		const Type& valueType() const { return _value.valueType(); }
 	};
 }
 

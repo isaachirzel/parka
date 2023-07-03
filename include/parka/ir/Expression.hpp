@@ -2,11 +2,12 @@
 #define PARKA_IR_EXPRESSION_HPP
 
 #include "parka/enum/ExpressionType.hpp"
-#include "parka/ir/ValueType.hpp"
+#include "parka/ir/Value.hpp"
+#include "parka/ir/Type.hpp"
 
 namespace parka::ir
 {
-	struct ExpressionIr
+	struct ExpressionIr: public Value
 	{
 		const ExpressionType expressionType;
 
@@ -17,7 +18,7 @@ namespace parka::ir
 		{}
 		virtual ~ExpressionIr() {}
 
-		virtual const ValueType& valueType() const = 0;
+		virtual const Type& valueType() const = 0;
 	};
 }
 

@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class StructIr: public Resolution
+	class StructIr: public TypeBase, public Resolution
 	{
 		String _symbol;
 
@@ -21,7 +21,7 @@ namespace parka::ir
 		static StructIr *validate();
 		
 		const String& symbol() const { return _symbol; }
-		const ValueType *valueType() const;
+		const Type *valueType() const;
 	};
 }
 

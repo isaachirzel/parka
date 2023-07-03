@@ -4,8 +4,7 @@
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
-#include "parka/symbol/Declarable.hpp"
-#include "parka/symbol/Resolution.hpp"
+#include "parka/symbol/Resolvable.hpp"
 
 namespace parka
 {
@@ -14,24 +13,28 @@ namespace parka
 	{
 		const SymbolTableType symbolTableType;
 
-	public:
-
 		SymbolTable(SymbolTableType symbolTableType):
 		symbolTableType(symbolTableType)
 		{}
 		virtual ~SymbolTable() {}
 
-		virtual bool declare(const Declarable& declarable) = 0;
 		virtual Resolvable *find(const ast::Identifier& identifier) = 0;
 		virtual Resolution *resolve(const ast::QualifiedIdentifier& identifier) = 0;
-		virtual const String& symbol() const = 0;
-		virtual String createSymbol(const String& name)
+		virtual const String& scope() const = 0;
+
+		String createSymbol(const String& name)
 		{
-			auto symbol = this->symbol();
+			const auto& scope = this->scope();
 
-			if (!symbol.empty())
-				symbol += "::";
+			if (scope.empty())
+				return name;
 
+			auto length = scope.length() + 2 + name.length();
+			auto symbol = String();
+
+			symbol.reserve(length);
+			symbol += scope;
+			symbol += "::";
 			symbol += name;
 
 			return symbol;

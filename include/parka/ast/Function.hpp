@@ -3,12 +3,11 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
-#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 
 namespace parka::ast
 {
-	class FunctionAst: public Declarable
+	class FunctionAst
 	{
 		Snippet _snippet;
 		PrototypeAst _prototype;
@@ -17,7 +16,6 @@ namespace parka::ast
 	public:
 
 		FunctionAst(PrototypeAst&& prototype, ExpressionAst& body):
-		Declarable(DeclarableType::Function),
 		_snippet(prototype.snippet() + body.snippet()),
 		_prototype(std::move(prototype)),
 		_body(body)
@@ -26,8 +24,6 @@ namespace parka::ast
 		FunctionAst(const FunctionAst&) = delete;
 
 		const Snippet& snippet() const { return _snippet; }
-		const String& name() const { return _prototype.identifier().text(); }
-		const Identifier& identifier() const { return _prototype.identifier(); }
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }
 	};

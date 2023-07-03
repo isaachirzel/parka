@@ -10,22 +10,22 @@ namespace parka::ir
 	{
 		ExpressionIr& _lhs;
 		ExpressionIr& _rhs;
-		ValueType _valueType;
+		Type _type;
 		BinaryExpressionType _binaryExpressionType;
 
 	public:
 
-		BinaryExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, BinaryExpressionType binaryExpressionType, ValueType&& valueType):
+		BinaryExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, BinaryExpressionType binaryExpressionType, Type&& Type):
 		ExpressionIr(ExpressionType::Binary),
 		_lhs(lhs),
 		_rhs(rhs),
-		_valueType(valueType),
+		_type(Type),
 		_binaryExpressionType(binaryExpressionType)
 		{}
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
-		const ValueType& valueType() const { return _valueType; }
+		const Type& valueType() const { return _type; }
 		const auto& binaryExpressionType() const { return _binaryExpressionType; }
 	};
 }

@@ -7,34 +7,30 @@
 #include "parka/ir/Package.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/symbol/FunctionEntry.hpp"
 #include "parka/util/Array.hpp"
 
-namespace parka::validator
+namespace parka
 {
-	class PackageSymbolTable: public SymbolTable, public Resolvable
+	class PackageSymbolTable: public SymbolTable
 	{
-		const ast::PackageAst& _ast;
-		String _symbol;
+		String _scope;
 		Table<String, Resolvable*> _symbols;
-		Array<FunctionSymbolTable> _functions;
+		Array<FunctionEntry> _functions;
 		// Array<StructSymbolTable> _structs;
 		PackageSymbolTable *_parent;
-		ir::PackageIr *_ir;
 
 	public:
 
 		PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent = nullptr);
 
-		bool declare(const Declarable& declarable);
-		// bool declareSelf(PackageSymbolTable *parent);
 		Resolvable *find(const ast::Identifier& identifier);
 		Resolvable *findInitial(const ast::Identifier& identifier);
 		Resolvable *findAbsolute(const ast::Identifier& identifier);
 		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
+		ir::PackageIr *resolve();
 
-		const String& symbol() const { return _symbol; }
-		const String& name() const { return _ast.name(); }
+		const String& scope() const { return _scope; }
 		auto& functions() { return _functions; }
 
 		friend std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& package);

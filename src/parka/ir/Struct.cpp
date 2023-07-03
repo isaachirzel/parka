@@ -3,7 +3,7 @@
 
 namespace parka::ir
 {
-	const ValueType *StructIr::valueType() const
+	const Type *StructIr::valueType() const
 	{
 		log::error("Unable to get value of struct `$`.", _symbol);
 

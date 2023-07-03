@@ -46,12 +46,13 @@ namespace parka::ir
 
 	Primitive::Primitive(const char *name, PrimitiveType type, u32 size):
 	Resolvable(ResolvableType::Primitive),
+	Resolution(ResolvableType::Primitive),
 	_name(name),
 	_size(size),
 	_type(type)
 	{}
 
-	const ValueType *Primitive::valueType() const
+	const Type *Primitive::valueType() const
 	{
 		log::error("Unable to get value of primitive `$`.", _name);
 		

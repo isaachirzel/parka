@@ -7,6 +7,15 @@
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Statement.hpp"
 #include "parka/ast/Variable.hpp"
+#include "parka/ast/BinaryExpression.hpp"
+#include "parka/ast/CallExpression.hpp"
+#include "parka/ast/MemberAccessExpression.hpp"
+#include "parka/ast/SubscriptExpression.hpp"
+#include "parka/ast/IdentifierExpression.hpp"
+#include "parka/ast/BlockExpression.hpp"
+#include "parka/ast/PrefixExpression.hpp"
+#include "parka/ast/BinaryExpression.hpp"
+#include "parka/ast/ConditionalExpression.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/enum/PrefixType.hpp"
@@ -61,9 +70,10 @@ namespace parka::parser
 		ast::StructAst *parseStruct();
 		
 		ast::ExpressionAst *parseExpression();
-		ast::ExpressionAst *parseBinaryExpression();
 		ast::ExpressionAst *parsePrimaryExpression();
 		ast::ExpressionAst *parsePostfixExpression();
+		ast::ExpressionAst *parseEnclosedExpression();
+		ast::ExpressionAst *parseBinaryExpression();
 		ast::ExpressionAst *parseCallExpression(ast::ExpressionAst& primary);
 		ast::ExpressionAst *parseMemberAccessExpression(ast::ExpressionAst& primary);
 		ast::ExpressionAst *parseSubscriptExpression(ast::ExpressionAst& primary);
@@ -72,7 +82,6 @@ namespace parka::parser
 		ast::ExpressionAst *parsePrefixExpression();
 		ast::ExpressionAst *parseMultiplicativeExpression();
 		ast::ExpressionAst *parseAdditiveExpression();
-		ast::ExpressionAst *parseEnclosedExpression();
 		ast::ExpressionAst *parseBitwiseXorExpression();
 		ast::ExpressionAst *parseBitwiseAndExpression();
 		ast::ExpressionAst *parseAssignmentExpression();
@@ -95,7 +104,6 @@ namespace parka::parser
 		ast::StatementAst *parseDeclarationStatement();
 		ast::StatementAst *parseExpressionStatement();
 		ast::StatementAst *parseJumpStatement();
-		
 	};
 }
 

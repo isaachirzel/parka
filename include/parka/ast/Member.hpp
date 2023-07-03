@@ -3,11 +3,8 @@
 
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/DeclarableType.hpp"
-#include "parka/enum/ResolvableType.hpp"
 #include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/Member.hpp"
-#include "parka/symbol/Declarable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ast

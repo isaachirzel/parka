@@ -10,11 +10,11 @@ namespace parka::ast
 	// {
 	// 	bool success = false;
 	// 	auto statements = Array<ir::StatementIr*>(_statements.length());
-	// 	const auto& valueType = ir::ValueType::voidType;
+	// 	const auto& Type = ir::Type::voidType;
 
 	// 	for (auto *syntax : _statements)
 	// 	{
-	// 		// TODO: Get and update valueType
+	// 		// TODO: Get and update Type
 	// 		auto *context = syntax->validate(symbolTable);
 
 	// 		if (!context)
@@ -29,7 +29,7 @@ namespace parka::ast
 	// 	if (!success)
 	// 		return {};
 
-	// 	auto *context = new ir::BlockExpressionIr(std::move(statements), ir::ValueType(valueType));
+	// 	auto *context = new ir::BlockExpressionIr(std::move(statements), ir::Type(Type));
 
 	// 	return context;
 	// }

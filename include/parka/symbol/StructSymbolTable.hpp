@@ -5,7 +5,6 @@ namespace parka::validator
 {
 	class StructSymbolTable//: public Resolvable
 	{
-		// bool declare(Declarable& declarable);
 		// bool declareSelf(PackageAst& parent);
 		// Resolvable *find(const Identifier& identifier);
 		// Resolution *resolve(const QualifiedIdentifier& identifier);

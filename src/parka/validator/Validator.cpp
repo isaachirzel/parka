@@ -2,8 +2,9 @@
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ir/Package.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
+#include "parka/symbol/VariableEntry.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::validator
@@ -16,9 +17,9 @@ namespace parka::validator
 
 		for (auto& function : package.functions())
 		{
-			auto *ir = validateFunction(function);
+			auto *ir = function.resolve();
 
-			if (ir == nullptr)
+			if (!ir)
 			{
 				success = false;
 				continue;
@@ -35,15 +36,16 @@ namespace parka::validator
 
 	Optional<ir::Ir> validateAst(const ast::Ast& ast)
 	{
-		auto symbolTable = PackageSymbolTable(ast.globalPackage());
+		const auto& package = ast.globalPackage();
+		auto symbolTable = PackageSymbolTable(package);
 
 		return validatePackage(symbolTable);
 	}
 
-	Optional<ir::Ir> validatePackage(PackageSymbolTable& package)
+	Optional<ir::Ir> validatePackage(PackageSymbolTable& symbolTable)
 	{
 		auto functions = Array<FunctionIr*>();
-		auto success = validatePackage(functions, package);
+		auto success = validatePackage(functions, symbolTable);
 
 		if (!success)
 			return {};
@@ -51,29 +53,29 @@ namespace parka::validator
 		return Ir(std::move(functions));
 	}
 
-	ir::FunctionIr *validateFunction(FunctionSymbolTable& symbolTable)
+	ir::FunctionIr *validateFunction(const ast::FunctionAst& ast, SymbolTable& parentSymbolTable)
 	{
-		auto& ast = symbolTable.ast();
+		auto symbolTable = LocalSymbolTable(&parentSymbolTable);
 		auto prototype = validatePrototype(ast.prototype(), symbolTable);
 		auto *body = validateExpression(ast.body(), symbolTable);
 
 		if (!prototype || !body)
 			return {};
 
-		auto *context = new ir::FunctionIr(String(symbolTable.symbol()), *prototype, *body);
+		auto *context = new ir::FunctionIr(String(symbolTable.scope()), *prototype, *body);
 
 		return context;
 	}
 
-	static Optional<ir::ValueType> validateReturnType(const Optional<ast::TypeAnnotationAst>& syntax, SymbolTable& symbolTable)
+	static Optional<ir::Type> validateReturnType(const Optional<ast::TypeAnnotationAst>& syntax, LocalSymbolTable& symbolTable)
 	{
 		if (!syntax)
-			return ir::ValueType::voidType;
+			return ir::Type::voidType;
 
 		return validateTypeAnnotation(*syntax, symbolTable);
 	}
 
-	Optional<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, SymbolTable& symbolTable)
+	Optional<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, LocalSymbolTable& symbolTable)
 	{
 		auto success = true;
 		const auto parameterCount = prototype.parameters().length();
@@ -103,31 +105,30 @@ namespace parka::validator
 		return ir::PrototypeIr(std::move(parameters), *returnType);
 	}
 
-	Optional<ir::ValueType> validateTypeAnnotation(const ast::TypeAnnotationAst&, SymbolTable&)
+	Optional<ir::Type> validateTypeAnnotation(const ast::TypeAnnotationAst&, SymbolTable&)
 	{
 		log::notImplemented(here());
 	}
 
-	ir::ParameterIr *validateParameter(const ast::ParameterAst& ast, SymbolTable& symbolTable)
+	ir::ParameterIr *validateParameter(const ast::ParameterAst& ast, LocalSymbolTable& symbolTable)
 	{
-		auto isDeclared = symbolTable.declare(ast);
-		auto valueType = validateTypeAnnotation(ast.annotation(), symbolTable);
+		auto type = validateTypeAnnotation(ast.annotation(), symbolTable);
 
-		if (!isDeclared || !valueType)
+		if (!type)
 			return {};
 
-		return new ir::ParameterIr(*valueType);
+		return new ir::ParameterIr(*type);
 	}
 
-	ir::ExpressionIr *validateExpression(const ast::ExpressionAst& expression, SymbolTable& symbolTable)
+	ir::ExpressionIr *validateExpression(const ast::ExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
-		switch (expression.expressionType)
+		switch (ast.expressionType)
 		{
 			case ExpressionType::Binary:
-				break;
+				return validateBinaryExpression((const ast::BinaryExpressionAst&)ast, symbolTable);
 
 			case ExpressionType::Block:
-				return validateBlockExpression((const ast::BlockExpressionAst&)expression, symbolTable);
+				return validateBlockExpression((const ast::BlockExpressionAst&)ast, symbolTable);
 
 			case ExpressionType::Call:
 				break;
@@ -136,7 +137,7 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::Identifier:
-				break;
+				return validateIdentifierExpression((const ast::IdentifierExpressionAst&)ast, symbolTable);
 
 			case ExpressionType::If:
 				break;
@@ -160,7 +161,7 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::IntegerLiteral:
-				break;
+				return validateIntegerLiteral((const ast::IntegerLiteralAst&)ast, symbolTable);
 
 			case ExpressionType::StringLiteral:
 				break;
@@ -169,10 +170,10 @@ namespace parka::validator
 				break;
 		}
 
-		log::fatal("Unable to validate Expression with Type: $", expression.expressionType);
+		log::fatal("Unable to validate Expression with Type: $", ast.expressionType);
 	}
 
-	ir::BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, SymbolTable& symbolTable)
+	ir::BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto success = true;
 		auto statements = Array<StatementIr*>(ast.statements().length());
@@ -195,10 +196,10 @@ namespace parka::validator
 		if (!success)
 			return {};
 
-		return new BlockExpressionIr(std::move(statements), ValueType(ValueType::voidType));
+		return new BlockExpressionIr(std::move(statements), Type(Type::voidType));
 	}
 
-	ir::BinaryExpressionIr *validateBinaryExpression(const ast::BinaryExpressionAst& ast, SymbolTable& symbolTable)
+	ir::BinaryExpressionIr *validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto *lhs = validateExpression(ast.lhs(), symbolTable);
 		auto *rhs = validateExpression(ast.rhs(), symbolTable);
@@ -217,10 +218,86 @@ namespace parka::validator
 			return nullptr;
 		}
 
-		return new ir::BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), ir::ValueType(lhsType));
+		return new ir::BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), ir::Type(lhsType));
 	}
 
-	ir::StatementIr *validateStatement(const ast::StatementAst& ast, SymbolTable& symbolTable)
+	ir::IdentifierExpressionIr *validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto *resolution = symbolTable.resolve(ast.identifier());
+
+		if (resolution == nullptr)
+			return {};
+
+		// TODO: Implement ir::Value that will be interface with anything with a Type
+		// Member, variable, parameter, all expressions
+
+		// TODO: Don't do it this way
+
+		auto *value = dynamic_cast<Value*>(resolution);
+
+		if (value == nullptr)
+		{
+			// TODO: Print resolvable type
+			log::error("Unable to get value of `$`.", resolution->symbol());
+			return {};
+		}
+
+		return new IdentifierExpressionIr(*value);
+	}
+
+	static Optional<u64> getIntegerValue(const Snippet& snippet)
+	{
+		u64 value = 0;
+		const auto length = snippet.length();
+
+		for (usize i = 0; i < length; ++i)
+		{
+			auto previousValue = value;
+
+			value *= 10;
+			value += snippet[i] - '0';
+
+			auto isOverflown = value < previousValue;
+
+			if (isOverflown)
+			{
+				log::error(snippet, "Integer literal is too large to fit in a 64 bit value.");
+				return {};
+			} 
+		}
+		
+		return value;
+	}
+
+	static const ir::Type& getIntegerType(u64 value)
+	{
+		using ir::Type;
+
+		if (value > 0xFFFFFFFF)
+			return Type::u64Type;
+
+		if (value > 0x0000FFFF)
+			return Type::u32Type;
+
+		if (value > 0x000000FF)
+			return Type::u16Type;
+
+		return Type::u8Type;
+	}
+
+	ir::IntegerLiteralIr *validateIntegerLiteral(const ast::IntegerLiteralAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto value = getIntegerValue(ast.snippet());
+
+		if (!value)
+			return {};
+
+		const auto& type = getIntegerType(*value);
+
+		return new ir::IntegerLiteralIr(*value, ir::Type(type));
+	}
+
+	ir::StatementIr *validateStatement(const ast::StatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		switch (ast.statementType)
 		{
@@ -240,18 +317,20 @@ namespace parka::validator
 		log::fatal("Unable to validate Statement with Type: $", ast.statementType);
 	}
 
-	ir::StatementIr *validateDeclarationStatement(const ast::DeclarationStatementAst& ast, SymbolTable& symbolTable)
+	ir::StatementIr *validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
+		// FIXME: Update all expr an stmt validation to LocalSymbolTable
 		auto *value = validateExpression(ast.value(), symbolTable);
 		auto *variable = validateVariable(ast.variable(), value, symbolTable);
+		auto *entry = symbolTable.declare(VariableEntry(ast.variable(), variable));
 
-		if (!variable || !value)
+		if (!variable || !value || !entry)
 			return {};
 
 		return new ir::DeclarationStatementIr(*variable, *value);
 	}
 
-	static Optional<ir::ValueType> validateVariableType(const Optional<ast::TypeAnnotationAst>& annotation, ir::ExpressionIr *value, SymbolTable& symbolTable)
+	static Optional<ir::Type> validateVariableType(const Optional<ast::TypeAnnotationAst>& annotation, ir::ExpressionIr *value, LocalSymbolTable& symbolTable)
 	{
 		if (!annotation)
 		{
@@ -266,25 +345,24 @@ namespace parka::validator
 		if (!annotationType || !value)
 			return {};
 
-		auto valueType = value->valueType();
+		auto Type = value->valueType();
 
-		if (!valueType.canConvertTo(*annotationType))
+		if (!Type.canConvertTo(*annotationType))
 		{
-			log::error("Unable to initialize variable of type $ with type $.", annotationType, valueType);
+			log::error("Unable to initialize variable of type $ with type $.", annotationType, Type);
 			return {};
 		}
 
 		return annotationType;
 	}
 
-	ir::VariableIr *validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, SymbolTable& symbolTable)
+	ir::VariableIr *validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, LocalSymbolTable& symbolTable)
 	{
-		auto declared = symbolTable.declare(ast);
 		auto type = validateVariableType(ast.annotation(), value, symbolTable);
 
-		if (!type || !declared)
-			return nullptr;
+		if (!type)
+			return {};
 
-		return new ir::VariableIr(String(ast.name()), *type);
+		return new ir::VariableIr(String(ast.identifier().text()), *type);
 	}
 }
