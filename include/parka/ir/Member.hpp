@@ -2,10 +2,11 @@
 #define PARKA_IR_MEMBER_HPP
 
 #include "parka/symbol/Resolution.hpp"
+#include "parka/ir/Value.hpp"
 
 namespace parka::ir
 {
-	class MemberIr: public Resolution
+	class MemberIr: public Resolution, public Value
 	{
 		Type _type;
 
@@ -18,7 +19,7 @@ namespace parka::ir
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;
 
-		const Type *valueType() const { return &_type; }
+		const Type& valueType() const { return _type; }
 	};
 }
 

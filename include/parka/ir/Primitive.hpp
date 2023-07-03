@@ -58,7 +58,6 @@ namespace parka::ir
 		String getSymbol() const { return _name; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
-		const Type *valueType() const;
 		const auto& primitiveType() const { return _type; }
 		const auto& size() const { return _size; }
 	};

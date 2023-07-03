@@ -24,7 +24,6 @@ namespace parka::ir
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;
 
-		const Type *valueType() const;
 		const String& symbol() const { return _symbol; }
 		const auto& prototype() const { return _prototype; }
 		const auto& body() const { return _body; }

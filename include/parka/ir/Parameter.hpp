@@ -2,10 +2,11 @@
 #define PARKA_IR_PARAMETER_HPP
 
 #include "parka/symbol/Resolution.hpp"
+#include "parka/ir/Value.hpp"
 
 namespace parka::ir
 {
-	class ParameterIr: public Resolution
+	class ParameterIr: public Resolution, public Value
 	{
 		String _symbol;
 		Type _type;
@@ -20,7 +21,7 @@ namespace parka::ir
 		ParameterIr(const ParameterIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		const Type *valueType() const { return &_type; }
+		const Type& valueType() const { return _type; }
 	};
 }
 

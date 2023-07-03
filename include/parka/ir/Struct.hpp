@@ -21,7 +21,6 @@ namespace parka::ir
 		static StructIr *validate();
 		
 		const String& symbol() const { return _symbol; }
-		const Type *valueType() const;
 	};
 }
 

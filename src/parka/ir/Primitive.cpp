@@ -51,11 +51,4 @@ namespace parka::ir
 	_size(size),
 	_type(type)
 	{}
-
-	const Type *Primitive::valueType() const
-	{
-		log::error("Unable to get value of primitive `$`.", _name);
-		
-		return nullptr;
-	}
 }
