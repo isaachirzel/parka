@@ -26,8 +26,8 @@ namespace parka::ast
 		QualifiedIdentifier(const QualifiedIdentifier&) = delete;
 
 		const auto& snippet() const { return _snippet; }
-		const auto *begin() const { return _parts.begin(); }
-		const auto *end() const { return _parts.end(); }
+		const Identifier *begin() const { return _parts.begin(); }
+		const Identifier *end() const { return _parts.end(); }
 		const auto& length() const { return _parts.length(); }
 		const auto& isAbsolute() const { return _isAbsolute; }
 

@@ -9,21 +9,17 @@ namespace parka::ast
 	class CharLiteralAst: public ExpressionAst
 	{
 		Snippet _snippet;
-		char _value;
-		// TODO: UTF-8
 
 	public:
 
-		CharLiteralAst(const Snippet& snippet, char value):
+		CharLiteralAst(const Snippet& snippet):
 		ExpressionAst(ExpressionType::CharLiteral),
-		_snippet(snippet),
-		_value(value)
+		_snippet(snippet)
 		{}
 		CharLiteralAst(CharLiteralAst&&) = default;
 		CharLiteralAst(const CharLiteralAst&) = delete;
 
 		const Snippet& snippet() const { return _snippet; }
-		const auto& value() const { return _value; }
 	};
 }
 

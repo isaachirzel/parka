@@ -43,12 +43,8 @@ namespace parka::ast
 		return keywords;
 	}
 
-	KeywordType KeywordAst::getKeywordType(const Token& token)
+	KeywordType KeywordAst::getKeywordType(const String& text)
 	{
-		if (token.type() != TokenType::Identifier)
-			return {};
-
-		auto text = token.text();
 		const auto *keywordType = keywords.find(text);
 
 		if (!keywordType)
@@ -59,7 +55,7 @@ namespace parka::ast
 
 	Optional<KeywordAst> KeywordAst::parseBool(Token& token)
 	{
-		auto type = getKeywordType(token);
+		auto type = getKeywordType(token.text());
 
 		if (type != KeywordType::True && type != KeywordType::False)
 		{
@@ -76,7 +72,7 @@ namespace parka::ast
 
 	Optional<KeywordAst> KeywordAst::parseStruct(Token& token)
 	{
-		auto type = getKeywordType(token);
+		auto type = getKeywordType(token.text());
 
 		if (type != KeywordType::StructAst)
 		{
@@ -93,7 +89,7 @@ namespace parka::ast
 
 	Optional<KeywordAst> KeywordAst::parseVar(Token& token)
 	{
-		auto type = getKeywordType(token);
+		auto type = getKeywordType(token.text());
 
 		if (type != KeywordType::Var)
 		{
@@ -110,7 +106,7 @@ namespace parka::ast
 
 	Optional<KeywordAst> KeywordAst::parseFunction(Token &token)
 	{
-		auto type = getKeywordType(token);
+		auto type = getKeywordType(token.text());
 
 		if (type != KeywordType::Function)
 		{
@@ -127,7 +123,7 @@ namespace parka::ast
 
 	Optional<KeywordAst> KeywordAst::parseOperator(Token &token)
 	{
-		auto type = getKeywordType(token);
+		auto type = getKeywordType(token.text());
 
 		if (type != KeywordType::Operator)
 		{
@@ -144,7 +140,7 @@ namespace parka::ast
 
 	Optional<KeywordAst> KeywordAst::parseMut(Token &token)
 	{
-		auto type = getKeywordType(token);
+		auto type = getKeywordType(token.text());
 
 		if (type != KeywordType::Mut)
 			return {};

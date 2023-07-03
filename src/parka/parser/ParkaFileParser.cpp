@@ -79,7 +79,7 @@ namespace parka::parser
 		return qualifiedIdentifier;
 	}
 
-	Optional<char> ParkaFileParser::parseChar()
+	ExpressionAst *ParkaFileParser::parseCharLiteral()
 	{
 		if (token.type() != TokenType::CharacterLiteral)
 		{
@@ -87,34 +87,16 @@ namespace parka::parser
 			return {};
 		}
 
-		if (token.snippet().length() != 3)
-		{
-			log::error(token, "character literals may only contain 1 character", nullptr);
-			return {};
-		}
-
-		auto character = token[0];
-
-		return character;
-	}
-
-	ExpressionAst *ParkaFileParser::parseCharLiteral()
-	{
-		auto value = parseChar();
-
-		if (!value)
-			return {};
-
-		auto *syntax = new CharLiteralAst(token, *value);
+		auto *ast = new CharLiteralAst(token);
 
 		token.increment();
 
-		return syntax;
+		return ast;
 	}
 
 	ExpressionAst *ParkaFileParser::parseStringLiteral()
 	{
-		if (token.type() != TokenType::StringLiteralAst)
+		if (token.type() != TokenType::StringLiteral)
 		{
 			log::parseError(token, "string");
 			return {};
@@ -129,7 +111,7 @@ namespace parka::parser
 
 	Optional<bool> ParkaFileParser::parseBool()
 	{
-		auto type = KeywordAst::getKeywordType(token);
+		auto type = KeywordAst::getKeywordType(token.text());
 
 		switch (type)
 		{
@@ -148,23 +130,9 @@ namespace parka::parser
 		return {};
 	}
 
-	ExpressionAst *ParkaFileParser::parseBoolLiteral()
-	{
-		auto value = parseBool();
-
-		if (!value)
-			return {};
-
-		auto *syntax = new BoolLiteralAst(token, *value);
-
-		token.increment();
-
-		return syntax;
-	}
-
 	ExpressionAst *ParkaFileParser::parseFloatLiteral()
 	{
-		if (token.type() != TokenType::FloatLiteralAst)
+		if (token.type() != TokenType::FloatLiteral)
 		{
 			log::parseError(token, "float");
 			return nullptr;
@@ -179,7 +147,7 @@ namespace parka::parser
 
 	ExpressionAst *ParkaFileParser::parseIntegerLiteral()
 	{
-		if (token.type() != TokenType::IntegerLiteralAst)
+		if (token.type() != TokenType::IntegerLiteral)
 		{
 			log::parseError(token, "integer");
 			return {};
@@ -192,40 +160,14 @@ namespace parka::parser
 		return syntax;
 	}
 
-	ExpressionAst *ParkaFileParser::parseLiteral()
-	{
-		switch (token.type())
-		{
-			case TokenType::CharacterLiteral:
-				return parseCharLiteral();
-
-			case TokenType::StringLiteralAst:
-				return parseStringLiteral();
-
-			case TokenType::IntegerLiteralAst:
-				return parseIntegerLiteral();
-
-			case TokenType::FloatLiteralAst:
-				return parseFloatLiteral();
-
-			case TokenType::Identifier:
-				return parseBoolLiteral();
-
-			default:
-				break;
-		}
-		
-		log::parseError(token, "literal");
-		
-		return {};
-	}
-
 	ExpressionAst *ParkaFileParser::parseIdentifierExpression()
 	{
 		auto identifier = parseQualifiedIdentifier();
-		auto *syntax = new IdentifierExpressionAst(*identifier);
 
-		return syntax;
+		if (!identifier)
+			return {};
+
+		return new IdentifierExpressionAst(*identifier);
 	}
 
 	ExpressionAst *ParkaFileParser::parseBlockExpression()
@@ -294,14 +236,55 @@ namespace parka::parser
 		switch (token.type())
 		{
 			case TokenType::Identifier:
+			{
+				auto text = token.text();
+				auto keywordType = KeywordAst::getKeywordType(text);
+
+				if (keywordType == KeywordType::True)
+				{
+					auto *literal = new BoolLiteralAst(token, true);
+					
+					token.increment();
+
+					return literal;
+				}
+
+				if (keywordType == KeywordType::False)
+				{
+					auto *literal = new BoolLiteralAst(token, false);
+
+					token.increment();
+
+					return literal;
+				}
+			
+				return parseIdentifierExpression();
+			}
+
+			case TokenType::Scope:
 				return parseIdentifierExpression();
 
 			case TokenType::LeftParenthesis:
 				return parseEnclosedExpression();
 
+			case TokenType::CharacterLiteral:
+				return parseCharLiteral();
+
+			case TokenType::StringLiteral:
+				return parseStringLiteral();
+
+			case TokenType::IntegerLiteral:
+				return parseIntegerLiteral();
+
+			case TokenType::FloatLiteral:
+				return parseFloatLiteral();
+
 			default:
-				return parseLiteral();
+				break;
 		}
+
+		log::parseError(token, "primary expression");
+		return {};
 	}
 
 	ExpressionAst *ParkaFileParser::parseCallExpression(ExpressionAst& primary)
@@ -815,7 +798,7 @@ namespace parka::parser
 	ExpressionAst *ParkaFileParser::parseConditionalExpression()
 	{
 		auto condition = parseBooleanOrExpression();
-		auto keyword = KeywordAst::getKeywordType(token);
+		auto keyword = KeywordAst::getKeywordType(token.text());
 
 		if (keyword != KeywordType::Then)
 			return condition;
@@ -827,7 +810,7 @@ namespace parka::parser
 		if (!trueCase)
 			return {};
 
-		keyword = KeywordAst::getKeywordType(token);
+		keyword = KeywordAst::getKeywordType(token.text());
 
 		if (keyword != KeywordType::Else)
 		{
@@ -917,7 +900,7 @@ namespace parka::parser
 
 	Optional<JumpType> ParkaFileParser::getJumpType()
 	{
-		auto keywordType = KeywordAst::getKeywordType(token);
+		auto keywordType = KeywordAst::getKeywordType(token.text());
 
 		switch (keywordType)
 		{
@@ -1045,7 +1028,7 @@ namespace parka::parser
 
 	StatementAst *ParkaFileParser::parseStatement()
 	{
-		auto keywordType = KeywordAst::getKeywordType(token);
+		auto keywordType = KeywordAst::getKeywordType(token.text());
 
 		switch (keywordType)
 		{
@@ -1263,7 +1246,7 @@ namespace parka::parser
 
 	bool ParkaFileParser::parsePublicity()
 	{
-		auto keywordType = KeywordAst::getKeywordType(token);
+		auto keywordType = KeywordAst::getKeywordType(token.text());
 
 		if (keywordType == KeywordType::Public)
 		{
@@ -1373,7 +1356,7 @@ namespace parka::parser
 
 		while (true)
 		{
-			auto keywordType = KeywordAst::getKeywordType(token);
+			auto keywordType = KeywordAst::getKeywordType(token.text());
 
 			switch (keywordType)
 			{

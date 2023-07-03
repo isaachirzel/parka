@@ -84,7 +84,7 @@ namespace parka
 				return TokenType::CharacterLiteral;
 
 			case '\"':
-				return TokenType::StringLiteralAst;
+				return TokenType::StringLiteral;
 
 			default:
 				log::fatal("Invalid quote type: $", terminal);
@@ -168,8 +168,8 @@ namespace parka
 		}
 
 		auto type = isFloat
-			? TokenType::FloatLiteralAst
-			: TokenType::IntegerLiteralAst;
+			? TokenType::FloatLiteral
+			: TokenType::IntegerLiteral;
 		auto token = Token(file, startPos, length, type);
 
 		return token;
@@ -488,13 +488,13 @@ namespace parka
 			case TokenType::Scope:
 				return "operator";
 
-			case TokenType::IntegerLiteralAst:
+			case TokenType::IntegerLiteral:
 				return "integer literal";
-			case TokenType::FloatLiteralAst:
+			case TokenType::FloatLiteral:
 				return "float literal";
 			case TokenType::CharacterLiteral:
 				return "character literal";
-			case TokenType::StringLiteralAst:
+			case TokenType::StringLiteral:
 				return "string literal";
 
 			default:
@@ -730,11 +730,11 @@ namespace parka
 				out << "::";
 				break;
 				
-			case TokenType::IntegerLiteralAst:
+			case TokenType::IntegerLiteral:
 				out << "{integer}";
 				break;
 				
-			case TokenType::FloatLiteralAst:
+			case TokenType::FloatLiteral:
 				out << "{float}";
 				break;
 				
@@ -742,7 +742,7 @@ namespace parka
 				out << "{char}";
 				break;
 				
-			case TokenType::StringLiteralAst:
+			case TokenType::StringLiteral:
 				out << "{string}";
 				break;
 				

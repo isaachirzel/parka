@@ -59,10 +59,10 @@ namespace parka
 		Plus,
 		Minus,
 		Scope,
-		IntegerLiteralAst,
-		FloatLiteralAst,
+		IntegerLiteral,
+		FloatLiteral,
 		CharacterLiteral,
-		StringLiteralAst
+		StringLiteral
 	};
 }
 

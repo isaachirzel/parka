@@ -152,10 +152,10 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::BoolLiteral:
-				break;
+				return validateBoolLiteral(static_cast<const ast::BoolLiteralAst&>(ast));
 
 			case ExpressionType::CharLiteral:
-				break;
+				return validateCharLiteral(static_cast<const ast::CharLiteralAst&>(ast));
 
 			case ExpressionType::FloatLiteral:
 				return validateFloatLiteral(static_cast<const ast::FloatLiteralAst&>(ast));
@@ -343,6 +343,28 @@ namespace parka::validator
 		auto *context = new ir::StringLiteralIr(std::move(text));
 
 		return context;
+	}
+
+	ir::CharLiteralIr *validateCharLiteral(const ast::CharLiteralAst& ast)
+	{
+		// TODO: Allow for integer literals from long char literals;
+
+		const auto& snippet = ast.snippet();
+
+		if (snippet.length() != 3)
+		{
+			log::error(snippet, "Char literals must contain exactly 1 characters.");
+			return {};
+		}
+
+		auto value = ast.snippet()[1];
+
+		return new CharLiteralIr(value);
+	}
+
+	ir::BoolLiteralIr *validateBoolLiteral(const ast::BoolLiteralAst& ast)
+	{
+		return new ir::BoolLiteralIr(ast.value());
 	}
 
 	ir::StatementIr *validateStatement(const ast::StatementAst& ast, LocalSymbolTable& symbolTable)

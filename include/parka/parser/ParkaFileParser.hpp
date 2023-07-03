@@ -93,7 +93,6 @@ namespace parka::parser
 		ast::ExpressionAst *parseBooleanOrExpression();
 		ast::ExpressionAst *parseConditionalExpression();
 
-		ast::ExpressionAst *parseLiteral();
 		ast::ExpressionAst *parseBoolLiteral();
 		ast::ExpressionAst *parseCharLiteral();
 		ast::ExpressionAst *parseFloatLiteral();

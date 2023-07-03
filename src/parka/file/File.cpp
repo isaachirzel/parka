@@ -176,8 +176,8 @@ namespace parka
 
 	String File::substr(const usize index, const usize length) const
 	{
-		assert(index < _text.length());
-		assert(index + length < _text.length());
+		assert(index <= _text.length());
+		assert(index + length <= _text.length());
 
 		return _text.substr(index, length);
 	}

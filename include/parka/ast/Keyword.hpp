@@ -30,7 +30,7 @@ namespace parka::ast
 		KeywordAst(KeywordAst&&) = default;
 		KeywordAst(const KeywordAst&) = delete;
 
-		static KeywordType getKeywordType(const Token& token);
+		static KeywordType getKeywordType(const String& text);
 		static Optional<KeywordAst> parseBool(Token& token);
 		static Optional<KeywordAst> parseStruct(Token& token);
 		static Optional<KeywordAst> parseVar(Token& token);
