@@ -158,7 +158,7 @@ namespace parka::validator
 				break;
 
 			case ExpressionType::FloatLiteral:
-				break;
+				return validateFloatLiteral(static_cast<const ast::FloatLiteralAst&>(ast));
 
 			case ExpressionType::IntegerLiteral:
 				return validateIntegerLiteral(static_cast<const ast::IntegerLiteralAst&>(ast));
@@ -182,7 +182,7 @@ namespace parka::validator
 		{
 			auto *ir = validateStatement(*statement, symbolTable);
 
-			if (ir == nullptr)
+			if (!ir)
 			{
 				success = false;
 				continue;
@@ -211,7 +211,7 @@ namespace parka::validator
 
 		const auto& lhsType = lhs->valueType();
 		const auto& rhsType = rhs->valueType();
-		auto isConversionValid = rhsType.canConvertTo(lhsType);
+		const auto isConversionValid = rhsType.canConvertTo(lhsType);
 
 		if (!isConversionValid)
 		{
@@ -290,6 +290,49 @@ namespace parka::validator
 		const auto& type = getIntegerType(*value);
 
 		return new ir::IntegerLiteralIr(*value, ir::Type(type));
+	}
+
+	static f64 parseDecimal(const Snippet& snippet)
+	{
+		// TODO: See if it's too big to store?
+		// TODO: Parse parts as large integers and create Decimal class to store result
+
+		f64 parts[2] = { 0.0, 0.0 }; 
+		usize partLens[2] = { 0, 0 };
+		u32 partIndex = 0;
+
+		for (const auto& c : snippet)
+		{
+			if (c == '.')
+			{
+				if (partIndex == 1)
+					break;
+
+				partIndex += 1;
+				continue;
+			}
+
+			parts[partIndex] *= 10;
+			parts[partIndex] += c - '0';
+			partLens[partIndex] += 1;
+		}
+
+		auto offset = 1.0;
+
+		for (usize i = 0; i < partLens[1]; ++i)
+			offset *= 10.0;
+
+		auto value = parts[0] + parts[1] / offset;
+
+		return value;
+	}
+
+	ir::FloatLiteralIr *validateFloatLiteral(const ast::FloatLiteralAst& ast)
+	{
+		// TODO: handle type suffixes to determine type
+		auto value = parseDecimal(ast.snippet());
+
+		return new FloatLiteralIr(value, Type(Type::f64Type));
 	}
 
 	ir::StringLiteralIr *validateStringLiteral(const ast::StringLiteralAst& ast)

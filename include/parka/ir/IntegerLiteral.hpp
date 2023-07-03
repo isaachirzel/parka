@@ -12,18 +12,17 @@ namespace parka::ir
 
 	public:
 
-		IntegerLiteralIr(u64 value, Type&& Type):
+		IntegerLiteralIr(u64 value, Type&& type):
 		ExpressionIr(ExpressionType::IntegerLiteral),
 		_value(value),
-		_type(std::move(Type))
+		_type(std::move(type))
 		{}
 		IntegerLiteralIr(IntegerLiteralIr&&) = default;
 		IntegerLiteralIr(const IntegerLiteralIr&) = delete;
 		
 		// TODO: Actually check size of literal
-		const Type& valueType() const { return Type::i32Type; }
-
-		friend class IntegerLiteralAst;
+		const auto&  value() const { return _value; }
+		const Type& valueType() const { return _type; }
 	};
 }
 
