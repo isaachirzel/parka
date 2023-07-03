@@ -14,7 +14,7 @@ else()
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		add_compile_options(-fdiagnostics-color=always)
 	endif()
-	add_compile_options(-pedantic -Wall -Wextra -Wno-error=unused-parameter -Wno-error=class-memaccess -Werror)
+	add_compile_options(-pedantic -Wall -Wextra -Wno-error=unused-parameter -Wno-error=unused-variable -Wno-error=class-memaccess -Werror)
 	add_compile_options(-Werror=return-type)
 endif()
 

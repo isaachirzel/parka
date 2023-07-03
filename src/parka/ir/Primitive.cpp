@@ -50,5 +50,7 @@ namespace parka::ir
 	_name(name),
 	_size(size),
 	_type(type)
-	{}
+	{
+		assert(name != nullptr);
+	}
 }

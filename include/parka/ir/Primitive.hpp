@@ -55,7 +55,6 @@ namespace parka::ir
 		Primitive(const Primitive&) = delete;
 
 		Resolution *resolve() { return this; }
-		String getSymbol() const { return _name; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
 		const auto& primitiveType() const { return _type; }

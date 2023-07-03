@@ -11,7 +11,8 @@ namespace parka::ir
 	class Type
 	{
 	private:
-		TypeBase& _typeBase;
+	
+		const TypeBase& _typeBase;
 		// TODO: Add pointer info
 		// TODO: Add Literal as typename for better type inference?
 		
@@ -34,8 +35,8 @@ namespace parka::ir
 		
 	public:
 
-		Type(TypeBase& tn):
-		_typeBase(tn)
+		Type(const TypeBase& base):
+		_typeBase(base)
 		{}
 		Type(Type&&) = default;
 		Type(const Type&) = default;

@@ -8,7 +8,6 @@ namespace parka::ir
 	struct Value
 	{
 		virtual ~Value() {}
-
 		virtual const Type& valueType() const = 0;
 	};
 }

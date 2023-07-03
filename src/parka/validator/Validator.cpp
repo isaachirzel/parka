@@ -214,6 +214,8 @@ namespace parka::validator
 
 		if (!rhsType.canConvertTo(lhsType))
 		{
+			std::cout << "left: " << lhsType << std::endl;
+			std::cout << "right: " << rhsType << std::endl;
 			log::error(ast.snippet(), "$ cannot be added to $.", rhsType, lhsType);
 			return nullptr;
 		}
@@ -225,20 +227,15 @@ namespace parka::validator
 	{
 		auto *resolution = symbolTable.resolve(ast.identifier());
 
-		if (resolution == nullptr)
+		if (!resolution)
 			return {};
-
-		// TODO: Implement ir::Value that will be interface with anything with a Type
-		// Member, variable, parameter, all expressions
-
-		// TODO: Don't do it this way
 
 		auto *value = dynamic_cast<Value*>(resolution);
 
-		if (value == nullptr)
+		if (!value)
 		{
-			// TODO: Print resolvable type
-			log::error("Unable to get value of `$`.", resolution->symbol());
+			log::error("Unable to get value of $ `$`.", resolution->resolvableType, resolution->symbol());
+			// TODO: Highlight
 			return {};
 		}
 
@@ -337,7 +334,9 @@ namespace parka::validator
 			if (!value)			
 				return {};
 			
-			return value->valueType();
+			auto valueType = value->valueType();
+
+			return valueType;
 		}
 
 		auto annotationType = validateTypeAnnotation(*annotation, symbolTable);
@@ -345,11 +344,11 @@ namespace parka::validator
 		if (!annotationType || !value)
 			return {};
 
-		auto Type = value->valueType();
+		auto type = value->valueType();
 
-		if (!Type.canConvertTo(*annotationType))
+		if (!type.canConvertTo(*annotationType))
 		{
-			log::error("Unable to initialize variable of type $ with type $.", annotationType, Type);
+			log::error("Unable to initialize variable of type $ with type $.", annotationType, type);
 			return {};
 		}
 
