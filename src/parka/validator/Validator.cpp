@@ -234,8 +234,7 @@ namespace parka::validator
 
 		if (!value)
 		{
-			log::error("Unable to get value of $ `$`.", resolution->resolvableType, resolution->symbol());
-			// TODO: Highlight
+			log::error(ast.snippet(), "Unable to get value of $ `$`.", resolution->resolvableType, resolution->symbol());
 			return {};
 		}
 
