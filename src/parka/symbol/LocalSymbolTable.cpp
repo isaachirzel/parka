@@ -8,39 +8,45 @@
 
 namespace parka
 {
-	bool LocalSymbolTable::hasPrevious(const ast::Identifier& identifier)
+	bool LocalSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
 	{
 		auto *previous = find(identifier);
 
-		if (!previous)
+		if (previous)
+		{
+			// TODO: maybe just insert it anyways?
+			log::error(identifier, "A $ `$` has already been declared in this function.", previous->resolvableType, identifier.text());
 			return false;
+		}
 
-		log::error(identifier, "A $ `$` has already been declared in this function.", previous->resolvableType, identifier.text());
-
-		// TODO: show previous declaration			
-		// TODO: maybe just insert it anyways?
+		_symbols.push(resolvable);
+		// TODO: show previous declaration
 		
 		return true;
 	}
 
 	ParameterEntry *LocalSymbolTable::declare(ParameterEntry&& entry)
 	{
-		if (hasPrevious(entry.identifier()))
+		auto& ref = _parameters.push(std::move(entry));
+		auto *ptr = &ref;
+		auto success = declare(entry.identifier(), ptr);
+		
+		if (!success)
 			return nullptr;
 
-		auto& ref = _parameters.push(std::move(entry));
-
-		return &ref;
+		return ptr;
 	}
 
 	VariableEntry *LocalSymbolTable::declare(VariableEntry&& entry)
 	{
-		if (hasPrevious(entry.identifier()))
+		auto& ref = _variables.push(std::move(entry));
+		auto *ptr = &ref;
+		auto success = declare(entry.identifier(), ptr);
+
+		if (!success)
 			return nullptr;
 
-		auto& ref = _variables.push(std::move(entry));
-
-		return &ref;
+		return ptr;
 	}
 
 	Resolvable *LocalSymbolTable::find(const ast::Identifier& identifier)

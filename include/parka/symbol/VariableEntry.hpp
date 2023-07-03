@@ -21,7 +21,7 @@ namespace parka
 		VariableEntry(VariableEntry&&) = default;
 		VariableEntry(const VariableEntry&) = delete;
 
-		ir::VariableIr *resolve();
+		ir::VariableIr *resolve() { return _ir; }
 
 		const auto& ast() const { return _ast; }
 		const auto *ir() const { return _ir; }

@@ -20,7 +20,7 @@ namespace parka
 
 	private:
 
-		bool hasPrevious(const ast::Identifier& identifier);
+		bool declare(const ast::Identifier& identifier, Resolvable *resolvable);
 
 	public:
 
