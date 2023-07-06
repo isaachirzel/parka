@@ -1,6 +1,7 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/evaluation/IntegerValue.hpp"
 #include "parka/evaluation/VoidValue.hpp"
+#include "parka/ir/Value.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;
@@ -21,7 +22,7 @@ namespace parka::evaluation
 		evaluateFunction(*entryPoint, {});
 	}
 
-	void evaluateFunction(const FunctionIr& ir, const Array<ir::ExpressionIr*>& arguments)
+	void evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments)
 	{
 		auto state = StateTable();
 
@@ -29,7 +30,7 @@ namespace parka::evaluation
 		evaluateExpression(ir.body(), state);
 	}
 
-	void evaluatePrototype(const PrototypeIr& ir, const Array<ir::ExpressionIr*>& arguments, StateTable& state)
+	void evaluatePrototype(const PrototypeIr& ir, const Array<ExpressionIr*>& arguments, StateTable& state)
 	{
 		assert(ir.parameters().length() == arguments.length());
 
@@ -50,15 +51,9 @@ namespace parka::evaluation
 		return evaluateDeclarationStatement(declaration, state);
 	}
 
-	void evaluateDeclarationStatement(const ir::DeclarationStatementIr& ir, StateTable& state)
+	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, StateTable& state)
 	{
 		auto& value = evaluateExpression(ir.value(), state);
-
-		///
-		auto& integer = (IntegerValue&)value;
-		log::note("Declaration value: $", integer.value());
-		///
-
 		const auto key = (usize)static_cast<const ir::Value*>(&ir.variable());
 
 		state.insert(key, &value);
@@ -105,7 +100,7 @@ namespace parka::evaluation
 				break;
 
 			case ExpressionType::IntegerLiteral:
-				return evaluateIntegerLiteral(static_cast<const ir::IntegerLiteralIr&>(ir));
+				return evaluateIntegerLiteral(static_cast<const IntegerLiteralIr&>(ir));
 
 			case ExpressionType::StringLiteral:
 				break;
@@ -117,7 +112,7 @@ namespace parka::evaluation
 		log::fatal("Unable to evaluate Expression with Type: $", ir.expressionType);
 	}
 
-	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, StateTable& state)
+	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, StateTable& state)
 	{
 		auto& lhs = evaluateExpression(ir.lhs(), state);
 		auto& rhs = evaluateExpression(ir.rhs(), state);
@@ -129,12 +124,15 @@ namespace parka::evaluation
 	Value& evaluateBlock(const BlockExpressionIr& ir, StateTable& state)
 	{
 		for (const auto *statement : ir.statements())
+		{
+			// TODO: handle returns
 			evaluateStatement(*statement, state);
+		}
 
 		return *new VoidValue();
 	}
 
-	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, StateTable& state)
+	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, StateTable& state)
 	{
 		const auto key = (usize)&ir.value();
 		auto *value = state.get(key);
@@ -142,7 +140,7 @@ namespace parka::evaluation
 		return *value;
 	}
 
-	Value& evaluateIntegerLiteral(const ir::IntegerLiteralIr& ir)
+	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir)
 	{
 		return *new IntegerValue(ir.valueType(), ir.value());
 	}

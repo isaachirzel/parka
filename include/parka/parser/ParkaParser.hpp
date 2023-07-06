@@ -4,7 +4,6 @@
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/ast/Operator.hpp"
 #include "parka/ast/Prototype.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Statement.hpp"

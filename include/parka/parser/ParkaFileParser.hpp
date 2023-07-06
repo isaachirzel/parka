@@ -3,7 +3,6 @@
 
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/Module.hpp"
-#include "parka/ast/Operator.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/ast/Statement.hpp"
 #include "parka/ast/Variable.hpp"
@@ -59,7 +58,7 @@ namespace parka::parser
 
 		Optional<ast::Identifier> parseIdentifier();
 		Optional<ast::QualifiedIdentifier> parseQualifiedIdentifier();
-		Optional<ast::Operator> parseOperator();
+		// Optional<ast::Operator> parseOperator();
 		Optional<ast::PrototypeAst> parsePrototype();
 		Optional<ast::TypeAnnotationAst> parseTypeAnnotation();
 		ast::VariableAst *parseVariable();
