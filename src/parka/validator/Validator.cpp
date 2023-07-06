@@ -62,8 +62,6 @@ namespace parka::validator
 				continue;
 			}
 
-			log::note("Symbol: $", ir->symbol());
-
 			if (ir->symbol() == "main")
 				entryPoint = ir;
 

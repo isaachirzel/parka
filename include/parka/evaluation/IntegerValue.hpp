@@ -19,6 +19,8 @@ namespace parka::evaluation
 		_type(type),
 		_value(value)
 		{}
+		IntegerValue(IntegerValue&&) = default;
+		IntegerValue(const IntegerValue&) = delete;
 
 		Value& add(const Value& other) const;
 

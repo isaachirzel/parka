@@ -191,6 +191,28 @@ namespace parka
 			return &item._value;
 		}
 
+		Value& get(const Key& key)
+		{
+			auto slot = getSlot(key);
+
+			assert(slot != table::empty);
+
+			auto& item = _items[slot];
+
+			return item._value;
+		}
+
+		const Value& get(const Key& key) const
+		{
+			auto slot = getSlot(key);
+
+			assert(slot != table::empty);
+
+			auto& item = _items[slot];
+
+			return item._value;
+		}
+
 		const auto *begin() const { return _items.begin(); }
 		const auto *end() const { return _items.end(); }
 		auto *begin() { return _items.begin(); }
