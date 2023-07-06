@@ -116,18 +116,13 @@ namespace parka
 		}
 
 		if (entry != nullptr)
-			log::notImplemented(here());
+			return entry->resolve();
 			// return entry->context();
 
 		// TODO: Use index to shorten the symbol so it is more specific what could not be found
 		log::error("Unable to find $ in this scope.", qualifiedIdentifier);
 
 		return nullptr;
-	}
-
-	ir::PackageIr *PackageSymbolTable::resolve()
-	{
-		log::notImplemented(here());
 	}
 
 	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbolTable)

@@ -28,7 +28,6 @@ namespace parka
 		Resolvable *findInitial(const ast::Identifier& identifier);
 		Resolvable *findAbsolute(const ast::Identifier& identifier);
 		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
-		ir::PackageIr *resolve();
 
 		const String& scope() const { return _scope; }
 		auto& functions() { return _functions; }

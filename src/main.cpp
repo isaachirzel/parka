@@ -1,5 +1,6 @@
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/Keyword.hpp"
+#include "parka/evaluation/Evaluator.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/parser/ParkaParser.hpp"
 #include "parka/util/Print.hpp"
@@ -28,13 +29,6 @@ int main(int argc, const char *argv[])
 
 	log::note("Parsing completed in $s.", parseTime);
 
-	// auto validator = validator::Validator(ast);
-	// auto declareTime = timer.split();
-
-	// log::note("Declaration completed in $s.", declareTime);
-
-	// print("$\n", syntax);
-
 	auto ir = validator::validateAst(ast);
 	auto validateTime = timer.split();
 
@@ -48,11 +42,15 @@ int main(int argc, const char *argv[])
 	if (errorCount > 0)
 	{
 		log::fatal("Failed to compile `$`: encountered $ error(s).", project.name(), errorCount);
+		return 1;
 	}
-	else
-	{
-		log::success("Compiled `$` in $ seconds at $k lines/s.", project.name(), compileTime, compileSpeed);
-	}
+	
+	log::success("Compiled `$` in $ seconds at $k lines/s.", project.name(), compileTime, compileSpeed);
+
+	evaluation::evaluate(*ir);
+
+	auto evaluateTime = timer.split();
+	log::note("Evaluation completed in $s.", evaluateTime);
 }
 
 /*
