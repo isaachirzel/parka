@@ -20,8 +20,12 @@ namespace parka
 
 		if (isGlobalPackage)
 		{
-			for (auto *primitive : ir::Primitive::primitives)
-				_symbols.insert(primitive->name(), primitive);
+			for (usize i = 0; i < ir::Primitive::entryCount; ++i)
+			{
+				auto& primitive = ir::Primitive::entries[i];
+
+				_symbols.insert(primitive.name(), &primitive);
+			}
 		}
 
 		for (auto& mod : ast.modules())

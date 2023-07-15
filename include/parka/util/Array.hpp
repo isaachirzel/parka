@@ -3,6 +3,7 @@
 
 #include "parka/util/Common.hpp"
 
+#include <initializer_list>
 #include <stdexcept>
 #include <cstdlib>
 #include <type_traits>
@@ -23,6 +24,23 @@ namespace parka
 		_capacity(0),
 		_data(nullptr)
 		{}
+
+		template <typename U = T, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
+		Array(std::initializer_list<T> values):
+		_length(values.size()),
+		_capacity(values.size()),
+		_data((T*)::operator new(sizeof(T) * _capacity))
+		{
+			usize i = 0;
+
+			for (const T& value : values)
+			{
+				new (&_data[i]) auto(value);
+
+				i += 1;
+			}
+		}
+
 		Array(usize capacity):
 		_length(0),
 		_capacity(capacity),
