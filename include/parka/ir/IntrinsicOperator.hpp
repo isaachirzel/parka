@@ -10,8 +10,9 @@ namespace parka::ir
 {
 	class IntrinsicOperatorIr: public OperatorIr
 	{
-		Array<Type> _types;
-		Type _returnType;
+		const Type& _lhs;
+		const Type *_rhs;
+		const Type& _returnType;
 		OperatorType _operatorType;
 
 	public:
@@ -21,7 +22,8 @@ namespace parka::ir
 
 	private:
 
-		IntrinsicOperatorIr(OperatorType operatorType, Array<Type>&& types, const Type& returnType);
+		IntrinsicOperatorIr(OperatorType operatorType, const Type& type, const Type& returnType);
+		IntrinsicOperatorIr(OperatorType operatorType, const Type& lhs, const Type& rhs, const Type& returnType);
 
 	public:
 
