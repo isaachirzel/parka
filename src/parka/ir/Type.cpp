@@ -23,6 +23,16 @@ namespace parka::ir
 		return &_typeBase == &to._typeBase;
 	}
 
+	bool operator==(const Type& left, const Type& right)
+	{
+		return &left._typeBase == &right._typeBase;
+	}
+
+	bool operator!=(const Type& left, const Type& right)
+	{
+		return &left._typeBase != &right._typeBase;
+	}
+	
 	std::ostream& operator<<(std::ostream& out, const Type& type)
 	{
 		out << "`" << type._typeBase << '`';

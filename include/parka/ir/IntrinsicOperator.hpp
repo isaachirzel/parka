@@ -29,6 +29,10 @@ namespace parka::ir
 
 		IntrinsicOperatorIr(IntrinsicOperatorIr&&) = default;
 		IntrinsicOperatorIr(const IntrinsicOperatorIr&) = delete;
+
+		const OperatorType& operatorType() const { return _operatorType; }
+		const Type& leftType() const { return _lhs; }
+		const Type *rightType() const { return _rhs; }
 	};
 }
 

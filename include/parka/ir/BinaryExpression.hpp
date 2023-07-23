@@ -25,7 +25,7 @@ namespace parka::ir
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 		const auto& binaryExpressionType() const { return _binaryExpressionType; }
 	};
 }

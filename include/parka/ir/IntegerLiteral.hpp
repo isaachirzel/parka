@@ -22,7 +22,7 @@ namespace parka::ir
 		
 		// TODO: Actually check size of literal
 		const auto&  value() const { return _value; }
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 	};
 }
 

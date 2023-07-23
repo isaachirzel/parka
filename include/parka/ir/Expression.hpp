@@ -18,7 +18,7 @@ namespace parka::ir
 		{}
 		virtual ~ExpressionIr() {}
 
-		virtual const Type& valueType() const = 0;
+		virtual const Type& type() const = 0;
 	};
 }
 

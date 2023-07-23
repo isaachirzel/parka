@@ -21,7 +21,7 @@ namespace parka::ir
 		ParameterIr(const ParameterIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 	};
 }
 

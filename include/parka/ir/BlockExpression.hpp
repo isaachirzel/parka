@@ -21,7 +21,7 @@ namespace parka::ir
 		{}
 		BlockExpressionIr(BlockExpressionIr&&) = default;
 		BlockExpressionIr(const BlockExpressionIr&) = delete;
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 		const auto& statements() const { return _statements; }
 	};
 }

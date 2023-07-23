@@ -19,7 +19,7 @@ namespace parka::ir
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;
 
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 	};
 }
 

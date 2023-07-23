@@ -22,7 +22,7 @@ namespace parka::ir
 		VariableIr(const VariableIr&) = delete;
 
 		const String& symbol() const { return _symbol; }
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 	};
 }
 

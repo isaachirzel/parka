@@ -246,8 +246,8 @@ namespace parka::validator
 		if (!lhs || !rhs)
 			return nullptr;
 
-		const auto& lhsType = lhs->valueType();
-		const auto& rhsType = rhs->valueType();
+		const auto& lhsType = lhs->type();
+		const auto& rhsType = rhs->type();
 		const auto isConversionValid = rhsType.canConvertTo(lhsType);
 
 		if (!isConversionValid)
@@ -442,7 +442,7 @@ namespace parka::validator
 			if (!value)			
 				return {};
 			
-			auto valueType = value->valueType();
+			auto valueType = value->type();
 
 			return valueType;
 		}
@@ -452,7 +452,7 @@ namespace parka::validator
 		if (!annotationType || !value)
 			return {};
 
-		auto type = value->valueType();
+		auto type = value->type();
 
 		if (!type.canConvertTo(*annotationType))
 		{

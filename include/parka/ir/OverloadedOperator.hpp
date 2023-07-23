@@ -28,7 +28,7 @@ namespace parka::ir
 
 		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }
-		const auto& operatorType() const { return _operatorType; }
+		const OperatorType& operatorType() const { return _operatorType; }
 		const auto *body() const { return _body; }
 		bool isIntrinsic() const { return !_body; }
 	};

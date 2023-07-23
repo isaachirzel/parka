@@ -1,6 +1,8 @@
 #ifndef PARKA_IR_OPERATOR_HPP
 #define PARKA_IR_OPERATOR_HPP
 
+#include "parka/enum/OperatorType.hpp"
+#include "parka/ir/Type.hpp"
 namespace parka::ir
 {
 	struct OperatorIr
@@ -11,6 +13,9 @@ namespace parka::ir
 		isIntrinsic(isIntrinsic)
 		{}
 		virtual ~OperatorIr() {}
+		virtual const OperatorType& operatorType() const = 0;
+		virtual const Type& leftType() const = 0;
+		virtual const Type *rightType() const = 0;
 	};
 }
 

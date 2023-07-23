@@ -24,7 +24,7 @@ namespace parka::ir
 		FloatLiteralIr(const FloatLiteralIr&) = delete;
 
 		const auto& value() const { return _value; }
-		const Type& valueType() const { return _type; }
+		const Type& type() const { return _type; }
 	};
 }
 

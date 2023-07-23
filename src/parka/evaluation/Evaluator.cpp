@@ -142,6 +142,6 @@ namespace parka::evaluation
 
 	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir)
 	{
-		return *new IntegerValue(ir.valueType(), ir.value());
+		return *new IntegerValue(ir.type(), ir.value());
 	}
 }

@@ -44,6 +44,8 @@ namespace parka::ir
 		bool canConvertTo(const Type& other) const;
 		const auto& typeBase() const { return _typeBase; }
 
+		friend bool operator==(const Type& left, const Type& right);
+		friend bool operator!=(const Type& left, const Type& right);
 		friend std::ostream& operator<<(std::ostream& out, const Type& type);
 	};
 }
