@@ -77,6 +77,14 @@ namespace parka
  
 		return global;
 	}
+
+	ir::OperatorIr *LocalSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
+	{
+		if (!_parent)
+			return nullptr;
+
+		return _parent->resolve(type, left, right);
+	}
 	
 	std::ostream& operator<<(std::ostream& out, const LocalSymbolTable& symbolTable)
 	{

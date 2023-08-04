@@ -16,6 +16,7 @@ namespace parka
 	{
 		String _scope;
 		Table<String, Resolvable*> _symbols;
+		Array<ir::OperatorIr*> _operators;
 		Array<FunctionEntry> _functions;
 		// Array<StructSymbolTable> _structs;
 		PackageSymbolTable *_parent;
@@ -28,6 +29,7 @@ namespace parka
 		Resolvable *findInitial(const ast::Identifier& identifier);
 		Resolvable *findAbsolute(const ast::Identifier& identifier);
 		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
+		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
 
 		const String& scope() const { return _scope; }
 		auto& functions() { return _functions; }

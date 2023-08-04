@@ -35,6 +35,7 @@ namespace parka
 		VariableEntry *declare(VariableEntry&& entry);
 		Resolvable *find(const ast::Identifier& identifier);
 		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
+		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
 
 		const String& scope() const { return _scope; }
 

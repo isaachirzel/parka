@@ -1,5 +1,6 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/ast/Function.hpp"
+#include "parka/ir/Operator.hpp"
 #include "parka/ir/Package.hpp"
 #include "parka/ir/Primitive.hpp"
 #include "parka/log/Indent.hpp"
@@ -42,6 +43,7 @@ namespace parka
 			}
 		}
 
+		// TODO: Add other packages
 		// for (auto *package : _packages)
 		// 	package->declareSelf(this);
 	}
@@ -126,6 +128,28 @@ namespace parka
 		// TODO: Use index to shorten the symbol so it is more specific what could not be found
 		log::error("Unable to find $ in this scope.", qualifiedIdentifier);
 
+		return nullptr;
+	}
+
+	ir::OperatorIr *PackageSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
+	{
+		for (auto *op : _operators)
+		{
+			if (op->operatorType() != type)
+				continue;
+
+			if (op->leftType() != left)
+				continue;
+
+			assert(!right == !op->rightType());
+
+			if (right != nullptr && *op->rightType() != *right)
+				continue;
+
+			return op;
+		}
+
+		log::error("No operator exists for these types.");
 		return nullptr;
 	}
 

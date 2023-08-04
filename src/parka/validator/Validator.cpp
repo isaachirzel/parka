@@ -248,6 +248,7 @@ namespace parka::validator
 
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
+		const auto *op = symbolTable.resolve(ast.binaryExpressionType(), 
 		const auto isConversionValid = rhsType.canConvertTo(lhsType);
 
 		if (!isConversionValid)
