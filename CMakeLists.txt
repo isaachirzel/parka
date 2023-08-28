@@ -4,8 +4,6 @@ project("parka")
 set(MAIN_PROGRAM "parka")
 set(INCLUDE_DIRS "include")
 
-message("Source dir: ${SRC}")
-set(SRC ".")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (MSVC)
@@ -53,6 +51,5 @@ foreach(TARGET ${TARGETS})
 		"<filesystem>"
 		"<exception>"
 		"<new>"
-		"<filesystem>"
 	)
 endforeach()
