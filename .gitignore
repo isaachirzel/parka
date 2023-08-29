@@ -7,6 +7,9 @@
 
 # Build files
 .cache/
+.vs/
+build/
+out/
 
 # Sublime
 *.sublime-project
