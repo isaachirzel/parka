@@ -25,8 +25,8 @@ namespace parka
 	public:
 
 		LocalSymbolTable(SymbolTable *parent = nullptr):
-		SymbolTable(SymbolTableType::Function),
-		_parent(parent)
+			SymbolTable(SymbolTableType::Function),
+			_parent(parent)
 		{}
 		LocalSymbolTable(LocalSymbolTable&&) = default;
 		LocalSymbolTable(const LocalSymbolTable&) = delete;

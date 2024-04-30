@@ -248,16 +248,20 @@ namespace parka::validator
 
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
-		const auto *op = symbolTable.resolve(ast.binaryExpressionType(), 
-		const auto isConversionValid = rhsType.canConvertTo(lhsType);
+		
+		log::error("validateBinaryExpression is not implemented");
 
-		if (!isConversionValid)
-		{
-			log::error(ast.snippet(), "$ cannot be added to $.", rhsType, lhsType);
-			return {};
-		}
+		return {};
+		// const auto *op = symbolTable.resolve(ast.binaryExpressionType(), lhsType, rhsType);
+		// const auto isConversionValid = rhsType.canConvertTo(lhsType);
 
-		return new BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), Type(lhsType));
+		// if (!isConversionValid)
+		// {
+		// 	log::error(ast.snippet(), "$ cannot be added to $.", rhsType, lhsType);
+		// 	return {};
+		// }
+
+		// return new BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), Type(lhsType));
 	}
 
 	IdentifierExpressionIr *validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)

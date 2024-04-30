@@ -17,11 +17,11 @@ namespace parka
 	public:
 
 		FunctionEntry(const ast::FunctionAst& ast, SymbolTable& symbolTable):
-		Resolvable(ResolvableType::Function),
-		_ast(ast),
-		_symbolTable(symbolTable),
-		_ir(nullptr),
-		_isValidated(true)
+			Resolvable(ResolvableType::Function),
+			_ast(ast),
+			_symbolTable(symbolTable),
+			_ir(nullptr),
+			_isValidated(true)
 		{}
 
 		ir::FunctionIr *resolve();
