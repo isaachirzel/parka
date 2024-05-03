@@ -12,8 +12,8 @@ namespace parka::ir
 	public:
 
 		StructIr(String&& symbol):
-		Resolution(ResolvableType::Struct),
-		_symbol(std::move(symbol))
+			Resolution(ResolvableType::Struct),
+			_symbol(std::move(symbol))
 		{}
 		StructIr(StructIr&&) = default;
 		StructIr(const StructIr&) = delete;

@@ -1,7 +1,4 @@
 #include "parka/evaluation/Evaluator.hpp"
-#include "parka/evaluation/IntegerValue.hpp"
-#include "parka/evaluation/VoidValue.hpp"
-#include "parka/ir/Value.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;
@@ -10,56 +7,71 @@ namespace parka::evaluation
 {
 	void evaluate(const Ir& ir)
 	{
+		auto state = State();
 		auto *entryPoint = ir.entryPoint();
 
 		if (!entryPoint)
 		{
 			// TODO: Get program name?
-			log::error("Unable to evaluate this program as there is no entry point. Please implement a function named `main` in the global scope.");
-			return;
+			log::fatal("Unable to evaluate this program as there is no entry point. Please implement a function named `main` in the global scope.");
 		}
 
-		evaluateFunction(*entryPoint, {});
+		auto& result = evaluateFunction(*entryPoint, {}, state);
+
+		log::note("Result of $: $", entryPoint->symbol(), result);
 	}
 
-	void evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments)
+	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, State& state)
 	{
-		auto state = StateTable();
+		auto& returnValue = state.push(ir.prototype().returnType());
+		auto frame = state.createFrame();
 
 		evaluatePrototype(ir.prototype(), arguments, state);
-		evaluateExpression(ir.body(), state);
+
+		// TODO: Handle conversion from value to return value
+		auto& result = evaluateExpression(ir.body(), state);
+
+		returnValue.set(result);
+
+		return returnValue;
 	}
 
-	void evaluatePrototype(const PrototypeIr& ir, const Array<ExpressionIr*>& arguments, StateTable& state)
+	void evaluatePrototype(const PrototypeIr& ir, const Array<ExpressionIr*>& arguments, State& state)
 	{
 		assert(ir.parameters().length() == arguments.length());
 
 		for (usize i = 0; i < arguments.length(); ++i)
 		{
-			const auto& parameter = *ir.parameters()[i];
-			const auto& argument = *arguments[i];
+			auto& parameter = *ir.parameters()[i];
+			auto& argument = *arguments[i];
 			auto& value = evaluateExpression(argument, state);
 
-			state.insert((usize)&parameter, &value);
+			value.nodePtr((void*)&parameter);
 		}
 	}
 
-	void evaluateStatement(const StatementIr& ir, StateTable& state)
+	void evaluateStatement(const StatementIr& ir, State& state)
 	{
 		auto& declaration = dynamic_cast<const DeclarationStatementIr&>(ir);
 
 		return evaluateDeclarationStatement(declaration, state);
 	}
 
-	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, StateTable& state)
+	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, State& state)
 	{
 		auto& value = evaluateExpression(ir.value(), state);
-		const auto key = (usize)static_cast<const ir::Value*>(&ir.variable());
 
-		state.insert(key, &value);
+		value.nodePtr((void*)&ir.variable());
+
+		log::note("Declaring: var $ = $", ir.variable().symbol(), value);
 	}
 
-	Value& evaluateExpression(const ExpressionIr& ir, StateTable& state)
+	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, State& state)
+	{
+		throw std::exception();
+	}
+
+	Value& evaluateExpression(const ExpressionIr& ir, State& state)
 	{
 		switch (ir.expressionType)
 		{
@@ -100,7 +112,7 @@ namespace parka::evaluation
 				break;
 
 			case ExpressionType::IntegerLiteral:
-				return evaluateIntegerLiteral(static_cast<const IntegerLiteralIr&>(ir));
+				return evaluateIntegerLiteral(static_cast<const IntegerLiteralIr&>(ir), state);
 
 			case ExpressionType::StringLiteral:
 				break;
@@ -112,16 +124,16 @@ namespace parka::evaluation
 		log::fatal("Unable to evaluate Expression with Type: $", ir.expressionType);
 	}
 
-	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, StateTable& state)
+	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, State& state)
 	{
 		auto& lhs = evaluateExpression(ir.lhs(), state);
 		auto& rhs = evaluateExpression(ir.rhs(), state);
-		auto& result = lhs.add(rhs);
+		auto& result = evaluateOperator(ir.op(), lhs, rhs, state);
 
 		return result;
 	}
 
-	Value& evaluateBlock(const BlockExpressionIr& ir, StateTable& state)
+	Value& evaluateBlock(const BlockExpressionIr& ir, State& state)
 	{
 		for (const auto *statement : ir.statements())
 		{
@@ -129,19 +141,23 @@ namespace parka::evaluation
 			evaluateStatement(*statement, state);
 		}
 
-		return *new VoidValue();
+		auto& result = state.push(Type::voidType);
+
+		return result;
 	}
 
-	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, StateTable& state)
+	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, State& state)
 	{
-		const auto key = (usize)&ir.value();
-		auto *value = state.get(key);
+		const auto key = (void*)&ir.value();
+		auto& value = state.get(key);
 
-		return *value;
+		return value;
 	}
 
-	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir)
+	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir, State& state)
 	{
-		return *new IntegerValue(ir.type(), ir.value());
+		auto& result = state.push(ir.type(), ir.value());
+
+		return result;		
 	}
 }

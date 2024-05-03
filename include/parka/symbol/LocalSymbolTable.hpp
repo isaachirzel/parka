@@ -2,7 +2,6 @@
 #define PARKA_VALIDATOR_FUNCTION_VALIDATOR_HPP
 
 #include "parka/ast/Identifier.hpp"
-#include "parka/ir/Prototype.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"

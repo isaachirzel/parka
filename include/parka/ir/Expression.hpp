@@ -14,7 +14,7 @@ namespace parka::ir
 	public:
 
 		ExpressionIr(ExpressionType expressionType):
-		expressionType(expressionType)
+			expressionType(expressionType)
 		{}
 		virtual ~ExpressionIr() {}
 

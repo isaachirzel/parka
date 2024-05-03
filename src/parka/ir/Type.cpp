@@ -18,11 +18,6 @@ namespace parka::ir
 	const Type Type::charType(Primitive::charPrimitive);
 	const Type Type::stringType(Primitive::stringPrimitive);
 
-	bool Type::canConvertTo(const Type& to) const
-	{
-		return &_typeBase == &to._typeBase;
-	}
-
 	bool operator==(const Type& left, const Type& right)
 	{
 		return &left._typeBase == &right._typeBase;

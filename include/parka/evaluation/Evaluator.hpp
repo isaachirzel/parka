@@ -1,6 +1,7 @@
 #ifndef PARKA_EVALUATION_EVALUATOR_HPP
 #define PARKA_EVALUATION_EVALUATOR_HPP
 
+#include "parka/evaluation/State.hpp"
 #include "parka/evaluation/Value.hpp"
 #include "parka/ir/BinaryExpression.hpp"
 #include "parka/ir/BlockExpression.hpp"
@@ -8,22 +9,19 @@
 #include "parka/ir/IdentifierExpression.hpp"
 #include "parka/ir/IntegerLiteral.hpp"
 #include "parka/ir/Ir.hpp"
-#include "parka/util/Table.hpp"
 
 namespace parka::evaluation
 {
-	using StateTable = Table<usize, Value*>;
-
 	void evaluate(const ir::Ir& ir);
-	void evaluateFunction(const ir::FunctionIr& ir, const Array<ir::ExpressionIr*>& arguments);
-	void evaluatePrototype(const ir::PrototypeIr& ir, const Array<ir::ExpressionIr*>& arguments, StateTable& state);
-	void evaluateStatement(const ir::StatementIr& ir, StateTable& state);
-	void evaluateDeclarationStatement(const ir::DeclarationStatementIr& ir, StateTable& state);
-	Value& evaluateExpression(const ir::ExpressionIr& ir, StateTable& state);
-	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, StateTable& state);
-	Value& evaluateBlock(const ir::BlockExpressionIr& ir, StateTable& state);
-	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, StateTable& state);
-	Value& evaluateIntegerLiteral(const ir::IntegerLiteralIr& ir);
+	Value& evaluateFunction(const ir::FunctionIr& ir, const Array<ir::ExpressionIr*>& arguments, State& state);
+	void evaluatePrototype(const ir::PrototypeIr& ir, const Array<ir::ExpressionIr*>& arguments, State& state);
+	void evaluateStatement(const ir::StatementIr& ir, State& state);
+	void evaluateDeclarationStatement(const ir::DeclarationStatementIr& ir, State& state);
+	Value& evaluateExpression(const ir::ExpressionIr& ir, State& state);
+	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, State& state);
+	Value& evaluateBlock(const ir::BlockExpressionIr& ir, State& state);
+	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, State& state);
+	Value& evaluateIntegerLiteral(const ir::IntegerLiteralIr& ir, State& state);
 }
 
 #endif

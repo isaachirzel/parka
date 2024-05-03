@@ -64,7 +64,8 @@ namespace parka
 
 	Resolution *LocalSymbolTable::resolve(const ast::QualifiedIdentifier& identifier)
 	{
-		// log::notImplemented(here());
+		assert(_parent != nullptr);
+
 		if (identifier.isAbsolute() || identifier.length() > 1)
 			return _parent->resolve(identifier);
 
@@ -80,8 +81,7 @@ namespace parka
 
 	ir::OperatorIr *LocalSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
 	{
-		if (!_parent)
-			return nullptr;
+		assert(_parent != nullptr);
 
 		return _parent->resolve(type, left, right);
 	}

@@ -7,15 +7,17 @@ namespace parka::ir
 {
 	struct OperatorIr
 	{
-		const bool isIntrinsic;
+		bool _isIntrinsic;
 
 		OperatorIr(bool isIntrinsic):
-		isIntrinsic(isIntrinsic)
+			_isIntrinsic(isIntrinsic)
 		{}
+
 		virtual ~OperatorIr() {}
 		virtual const OperatorType& operatorType() const = 0;
+		virtual const Type& returnType() const = 0;
 		virtual const Type& leftType() const = 0;
-		virtual const Type *rightType() const = 0;
+		virtual const Type* rightType() const = 0;
 	};
 }
 

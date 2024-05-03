@@ -2,7 +2,6 @@
 #define PARKA_SYMBOL_RESOLUTION_HPP
 
 #include "parka/enum/ResolvableType.hpp"
-#include "parka/ir/Type.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
@@ -12,7 +11,7 @@ namespace parka
 		const ResolvableType resolvableType;
 
 		Resolution(ResolvableType resolvableType):
-		resolvableType(resolvableType)
+			resolvableType(resolvableType)
 		{}
 		virtual ~Resolution() {}
 

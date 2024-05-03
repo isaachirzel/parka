@@ -4,7 +4,6 @@
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ir/Operator.hpp"
 #include "parka/ir/Type.hpp"
-#include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
@@ -17,7 +16,7 @@ namespace parka::ir
 
 	public:
 
-		static const IntrinsicOperatorIr entries[];
+		static IntrinsicOperatorIr entries[];
 		static const usize entryCount;
 
 	private:
@@ -31,6 +30,7 @@ namespace parka::ir
 		IntrinsicOperatorIr(const IntrinsicOperatorIr&) = delete;
 
 		const OperatorType& operatorType() const { return _operatorType; }
+		const Type& returnType() const { return _returnType; }
 		const Type& leftType() const { return _lhs; }
 		const Type *rightType() const { return _rhs; }
 	};

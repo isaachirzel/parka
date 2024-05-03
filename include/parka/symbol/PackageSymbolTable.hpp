@@ -1,10 +1,7 @@
 #ifndef PARKA_VALIDATOR_PACKAGE_VALIDATOR_HPP
 #define PARKA_VALIDATOR_PACKAGE_VALIDATOR_HPP
 
-#include "parka/ast/Function.hpp"
 #include "parka/ast/Package.hpp"
-#include "parka/ir/Function.hpp"
-#include "parka/ir/Package.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/FunctionEntry.hpp"

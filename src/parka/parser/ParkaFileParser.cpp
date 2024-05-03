@@ -1013,7 +1013,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			log::parseError(token, "';'", "DeclarationStatementAst statements need to be ended with a ';'.");
+			log::parseError(token, "';'", "Declaration statements need to be ended with a ';'.");
 			return nullptr;
 		}
 

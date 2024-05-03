@@ -1,5 +1,7 @@
 #include "parka/validator/Validator.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
+#include "parka/enum/OperatorType.hpp"
+#include "parka/ir/BinaryExpression.hpp"
 #include "parka/ir/Package.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
@@ -241,27 +243,20 @@ namespace parka::validator
 		auto *lhs = validateExpression(ast.lhs(), symbolTable);
 		auto *rhs = validateExpression(ast.rhs(), symbolTable);
 
-		// TODO: Operators
-
 		if (!lhs || !rhs)
-			return nullptr;
+			return {};
 
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
-		
-		log::error("validateBinaryExpression is not implemented");
+		auto operatorType = toOperatorType(ast.binaryExpressionType());
+		auto *op = symbolTable.resolve(operatorType, lhsType, &rhsType);
 
-		return {};
-		// const auto *op = symbolTable.resolve(ast.binaryExpressionType(), lhsType, rhsType);
-		// const auto isConversionValid = rhsType.canConvertTo(lhsType);
+		if (!op)
+			return {};
 
-		// if (!isConversionValid)
-		// {
-		// 	log::error(ast.snippet(), "$ cannot be added to $.", rhsType, lhsType);
-		// 	return {};
-		// }
+		auto result = new BinaryExpressionIr(*lhs, *rhs, *op);
 
-		// return new BinaryExpressionIr(*lhs, *rhs, ast.binaryExpressionType(), Type(lhsType));
+		return result;
 	}
 
 	IdentifierExpressionIr *validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
@@ -457,9 +452,9 @@ namespace parka::validator
 		if (!annotationType || !value)
 			return {};
 
-		auto type = value->type();
+		const auto& type = value->type();
 
-		if (!type.canConvertTo(*annotationType))
+		if (type != *annotationType)
 		{
 			log::error("Unable to initialize variable of type $ with type $.", annotationType, type);
 			return {};

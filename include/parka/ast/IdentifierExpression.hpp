@@ -3,9 +3,6 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
-#include "parka/parser/Token.hpp"
-#include "parka/ir/Type.hpp"
-#include "parka/util/Optional.hpp"
 
 namespace parka::ast
 {

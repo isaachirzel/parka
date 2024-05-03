@@ -13,8 +13,8 @@ namespace parka::ir
 	public:
 
 		IdentifierExpressionIr(Value& value):
-		ExpressionIr(ExpressionType::Identifier),
-		_value(value)
+			ExpressionIr(ExpressionType::Identifier),
+			_value(value)
 		{}
 		IdentifierExpressionIr(IdentifierExpressionIr&&) = default;
 		IdentifierExpressionIr(const IdentifierExpressionIr&) = delete;

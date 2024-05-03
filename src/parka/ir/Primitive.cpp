@@ -39,11 +39,11 @@ namespace parka::ir
 	Primitive& Primitive::stringPrimitive = entries[13];
 
 	Primitive::Primitive(const char *name, PrimitiveType type, u32 size):
-	Resolvable(ResolvableType::Primitive),
-	Resolution(ResolvableType::Primitive),
-	_name(name),
-	_size(size),
-	_type(type)
+		Resolvable(ResolvableType::Primitive),
+		Resolution(ResolvableType::Primitive),
+		_name(name),
+		_size(size),
+		_type(type)
 	{
 		assert(name != nullptr);
 	}

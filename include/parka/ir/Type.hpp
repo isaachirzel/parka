@@ -2,9 +2,6 @@
 #define PARKA_TYPE_VALUE_TYPE_HPP
 
 #include "parka/ir/TypeBase.hpp"
-#include "parka/util/Common.hpp"
-#include "parka/util/Optional.hpp"
-#include "parka/util/String.hpp"
 
 namespace parka::ir
 {
@@ -41,7 +38,6 @@ namespace parka::ir
 		Type(Type&&) = default;
 		Type(const Type&) = default;
 
-		bool canConvertTo(const Type& other) const;
 		const auto& typeBase() const { return _typeBase; }
 
 		friend bool operator==(const Type& left, const Type& right);

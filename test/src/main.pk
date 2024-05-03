@@ -1,6 +1,14 @@
 function main()
 {
-	var a = 1;
-	var b = a + ' ';
+	/* This produces a weird error
+	var a = 1 + 65536
+	var b = 3;
+	*/
+
+	/*
+	var a = 1 + 4294967296;
+	var b = 4;
 	var c = a + b;
+	*/
+	var a = 75;
 }

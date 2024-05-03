@@ -16,10 +16,10 @@ namespace parka::ir
 	public:
 
 		FunctionIr(String&& symbol, PrototypeIr&& prototype, ExpressionIr& body):
-		Resolution(ResolvableType::Function),
-		_symbol(std::move(symbol)),
-		_prototype(std::move(prototype)),
-		_body(body)
+			Resolution(ResolvableType::Function),
+			_symbol(std::move(symbol)),
+			_prototype(std::move(prototype)),
+			_body(body)
 		{}
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;

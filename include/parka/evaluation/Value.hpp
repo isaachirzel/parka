@@ -5,12 +5,31 @@
 
 namespace parka::evaluation
 {
-	struct Value
+	class Value
 	{
-		virtual ~Value() {}
-		virtual Value& add(const Value& other) const = 0;
-		virtual const ir::Type& type() const = 0;
+		ir::Type _type;
+		u64 _value;
+		void *_nodePtr;
+
+	public:
+
+		Value(const ir::Type& type, u64 value = 0);
+		Value(Value&&) = default;
+		Value(const Value&) = delete;
+
+		void nodePtr(void *nodePtr);
+		void* nodePtr();
+
+		void value(u64 value) { _value = value; }
+		const auto& value() const { return _value; }
+
+		void set(const Value& other);
+
+		const ir::Type& type() const { return _type; }
+
+		friend std::ostream& operator<<(std::ostream& out, const Value& value);
 	};
+	
 }
 
 #endif

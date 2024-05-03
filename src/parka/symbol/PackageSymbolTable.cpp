@@ -1,20 +1,19 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/ast/Function.hpp"
+#include "parka/ir/IntrinsicOperator.hpp"
 #include "parka/ir/Operator.hpp"
-#include "parka/ir/Package.hpp"
 #include "parka/ir/Primitive.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/LocalSymbolTable.hpp"
 
 namespace parka
 {
 	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent):
-	SymbolTable(SymbolTableType::Package),
-	_scope(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
-	_symbols(),
-	_functions(),
-	_parent(parent)
+		SymbolTable(SymbolTableType::Package),
+		_scope(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
+		_symbols(),
+		_functions(),
+		_parent(parent)
 	{
 		// TODO: Actual error checking
 		const auto isGlobalPackage = _parent == nullptr;
@@ -26,6 +25,13 @@ namespace parka
 				auto& primitive = ir::Primitive::entries[i];
 
 				_symbols.insert(primitive.name(), &primitive);
+			}
+
+			for (usize i = 0; i < ir::IntrinsicOperatorIr::entryCount; ++i)
+			{
+				auto& op = ir::IntrinsicOperatorIr::entries[i];
+
+				_operators.push(&op);
 			}
 		}
 
@@ -149,7 +155,15 @@ namespace parka
 			return op;
 		}
 
-		log::error("No operator exists for these types.");
+		if (right != nullptr)
+		{
+			log::error("No $ operator has been defined for $ and $.", type, left, *right);
+		}
+		else
+		{
+			log::error("No $ operator has been defined for $.", type, left);
+		}
+
 		return nullptr;
 	}
 

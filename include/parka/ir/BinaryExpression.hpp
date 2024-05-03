@@ -3,6 +3,7 @@
 
 #include "parka/ir/Expression.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
+#include "parka/ir/Operator.hpp"
 
 namespace parka::ir
 {
@@ -10,23 +11,21 @@ namespace parka::ir
 	{
 		ExpressionIr& _lhs;
 		ExpressionIr& _rhs;
-		Type _type;
-		BinaryExpressionType _binaryExpressionType;
+		OperatorIr& _op;
 
 	public:
 
-		BinaryExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, BinaryExpressionType binaryExpressionType, Type&& Type):
-		ExpressionIr(ExpressionType::Binary),
-		_lhs(lhs),
-		_rhs(rhs),
-		_type(Type),
-		_binaryExpressionType(binaryExpressionType)
+		BinaryExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, OperatorIr& op):
+			ExpressionIr(ExpressionType::Binary),
+			_lhs(lhs),
+			_rhs(rhs),
+			_op(op)
 		{}
 
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
-		const Type& type() const { return _type; }
-		const auto& binaryExpressionType() const { return _binaryExpressionType; }
+		const auto& op() const { return _op; }
+		const Type& type() const { return _op.returnType(); }
 	};
 }
 
