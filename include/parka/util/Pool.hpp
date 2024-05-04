@@ -37,7 +37,7 @@ namespace parka
 		{
 			auto *item = (T*)_arena.allocate(sizeof(T));
 
-			new (item) auto(std::move(value));
+			new (item) T(std::move(value));
 
 			return *item;
 		}

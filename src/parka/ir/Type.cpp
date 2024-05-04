@@ -19,31 +19,34 @@ namespace parka::ir
 	const Type Type::stringType(Primitive::stringPrimitive);
 
 	Type::Type(const TypeBase& base):
-		_typeBase(base)
+		_typeBase(&base)
 	{}
 
 	Type::Type(Type&& other):
 		_typeBase(other._typeBase)
-	{}
+	{
+		other._typeBase = nullptr;
+	}
 
 	Type::Type(const Type& other):
 		_typeBase(other._typeBase)
 	{}
 
+	Type::~Type()
+	{
+		_typeBase = nullptr;
+	}
+
 	Type& Type::operator=(Type&& other)
 	{
-		this->~Type();
-
-		new (this) auto(std::move(other));
+		_typeBase = other._typeBase;
 
 		return *this;
 	}
 
 	Type& Type::operator=(const Type& other)
 	{
-		this->~Type();
-
-		new (this) auto(other);
+		_typeBase = other._typeBase;
 
 		return *this;
 	}
@@ -60,7 +63,7 @@ namespace parka::ir
 	
 	std::ostream& operator<<(std::ostream& out, const Type& type)
 	{
-		out << "`" << type._typeBase << '`';
+		out << "`" << *type._typeBase << '`';
 
 		return out;
 	}

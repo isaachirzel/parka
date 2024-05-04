@@ -20,6 +20,8 @@ namespace parka
 		Token(const File& file, usize index, usize length, TokenType type);
 		Token(Token&&) = default;
 		Token(const Token&) = default;
+		Token& operator=(Token&& other);
+		Token& operator=(const Token& other);
 
 		static Token initial(const File& file);
 
@@ -34,6 +36,7 @@ namespace parka
 		Snippet operator+(const Token& other) const { return _snippet + other._snippet; }
 		const auto& operator[](usize index) const { return _snippet[index]; }
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
+		
 	};
 
 	std::ostream& operator<<(std::ostream& out, TokenType type);

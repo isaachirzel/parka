@@ -21,43 +21,44 @@ namespace parka
 		Result(const T *value):
 			_hasValue(!!value)
 		{
-			if (value)
-				new (_value) auto (*value);
+			if (!value)
+				return;
+
+			new (_value) T(*value);
 		}
 
 		Result(T&& value):
 			_hasValue(true)
 		{
-			new ((T*)_value) auto (std::move(value));
+			new (_value) T(std::move((T&)value));
 		}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
 		Result(const T& value):
 			_hasValue(true)
 		{
-			new ((T*)_value) auto (value);
+			new (_value) T(value);
 		}
 
 		Result(Result&& other):
 			_hasValue(other._hasValue)
 		{
-			if (other._hasValue)
-			{
-				auto *newItem = (T*)_value;
-				auto *oldItem = (T*)other._value;
+			if (!other._hasValue)
+				return;
+			
+			new (_value) T(std::move((T&)other._value));
 
-				new (newItem) auto (std::move(*oldItem));
-
-				other._hasValue = false;
-			}
+			other._hasValue = false;
 		}
 
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
 		Result(const Result& other):
-			_hasValue(other._value)
+			_hasValue(other._hasValue)
 		{
-			if (_hasValue)
-				_value = other._value;
+			if (!other._hasValue)
+				return;
+
+			new (_value) T((const T&)other._value);
 		}
 
 		~Result()
@@ -66,14 +67,20 @@ namespace parka
 			{
 				if (_hasValue)
 					((T&)_value).~T();
-
-				_hasValue = false;
 			}
+
+			_hasValue = false;
 		}
 
 		Result& operator=(Result&& other)
 		{
-			new (this) auto(std::move(other));
+			if (_hasValue)
+				((T&)_value).~T();
+
+			if (other._hasValue)
+				new (_value) T(std::move((T&)other._value));
+
+			_hasValue = other._hasValue;
 
 			return *this;
 		}
@@ -81,15 +88,22 @@ namespace parka
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
 		Result& operator=(const Result& other)
 		{
-			new (this) auto (other);
+			if (_hasValue)
+				((T&)_value).~T();
+
+			if (other._hasValue)
+				new (_value) T((const T&)other._value);
+
+			_hasValue = other._hasValue;
+
 			return *this;
 		}
 
 		operator bool() const { return _hasValue; }
 		T *operator->() { assert(_hasValue); return (T*)_value; }
-		const T *operator->() const { assert(_hasValue); return (T*)_value; }
+		const T *operator->() const { assert(_hasValue); return (const T*)_value; }
 		T&& operator*() { assert(_hasValue); return std::move((T&)_value); }
-		const T& operator*() const { assert(_hasValue); return (T&)_value; }
+		const T& operator*() const { assert(_hasValue); return (const T&)_value; }
 	};
 }
 

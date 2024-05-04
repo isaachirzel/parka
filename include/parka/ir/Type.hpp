@@ -9,7 +9,7 @@ namespace parka::ir
 	{
 	private:
 	
-		const TypeBase& _typeBase;
+		const TypeBase *_typeBase;
 		// TODO: Add pointer info
 		// TODO: Add Literal as typename for better type inference?
 		
@@ -35,6 +35,7 @@ namespace parka::ir
 		Type(const TypeBase& base);
 		Type(Type&&);
 		Type(const Type&);
+		~Type();
 
 		const auto& typeBase() const { return _typeBase; }
 

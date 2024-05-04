@@ -35,7 +35,7 @@ namespace parka
 
 			for (const T& value : values)
 			{
-				new (&_data[i]) auto(value);
+				new (&_data[i]) T(value);
 
 				i += 1;
 			}
@@ -87,7 +87,7 @@ namespace parka
 				T& oldItem = oldData[i];
 				T& newItem = newData[i];
 
-				new (&newItem) auto (std::move(oldItem));
+				new (&newItem) T(std::move(oldItem));
 			}
 
 			::operator delete(oldData);
@@ -117,7 +117,7 @@ namespace parka
 			
 			T& ref = _data[_length];
 
-			new (&ref) auto(std::move(value));
+			new (&ref) T(std::move(value));
 
 			_length += 1;
 
@@ -130,7 +130,7 @@ namespace parka
 
 			for (usize i = 0; i < other.length(); ++i)
 			{
-				new (&_data[_length + i]) auto (std::move(other[i]));
+				new (&_data[_length + i]) T(std::move(other[i]));
 			}
 			
 			_length += other._length;

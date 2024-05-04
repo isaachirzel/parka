@@ -1,7 +1,5 @@
 #include "parka/parser/Token.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/util/Print.hpp"
-#include "parka/util/Table.hpp"
 
 #include <cstring>
 
@@ -11,6 +9,22 @@ namespace parka
 	_snippet(file, index, length),
 	_type(type)
 	{}
+
+	Token& Token::operator=(Token&& other)
+	{
+		_snippet = std::move(other._snippet);
+		_type = other._type;
+
+		return *this;
+	}
+
+	Token& Token::operator=(const Token& other)
+	{
+		_snippet = other._snippet;
+		_type = other._type;
+
+		return *this;
+	}
 
 	static usize getEndOfLinePos(const File& file, usize pos)
 	{
@@ -407,7 +421,7 @@ namespace parka
 	{
 		usize nextTokenPos = getNextPos(_snippet.file(), _snippet.index() + _snippet.length());
 
-		new (this) auto(getNextToken(_snippet.file(), nextTokenPos));
+		*this = getNextToken(_snippet.file(), nextTokenPos);
 	}
 
 	Token Token::initial(const File& file)
