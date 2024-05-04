@@ -54,6 +54,9 @@ namespace parka::evaluation
 
 	void evaluateStatement(const StatementIr& ir, State& state)
 	{
+		if (state.isReturning())
+			return;
+
 		switch (ir.statementType)
 		{
 			case StatementType::Declaration:
@@ -71,7 +74,7 @@ namespace parka::evaluation
 
 	void evaluateReturnStatement(const ir::ReturnStatementIr& ir, State& state)
 	{
-		
+		log::notImplemented(here());
 	}
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, State& state)
