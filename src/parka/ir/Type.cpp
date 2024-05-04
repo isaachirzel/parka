@@ -53,12 +53,12 @@ namespace parka::ir
 
 	bool operator==(const Type& left, const Type& right)
 	{
-		return &left._typeBase == &right._typeBase;
+		return left._typeBase == right._typeBase;
 	}
 
 	bool operator!=(const Type& left, const Type& right)
 	{
-		return &left._typeBase != &right._typeBase;
+		return !(left == right);
 	}
 	
 	std::ostream& operator<<(std::ostream& out, const Type& type)
