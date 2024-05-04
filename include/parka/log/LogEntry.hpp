@@ -4,7 +4,7 @@
 #include "parka/enum/LogEntryType.hpp"
 #include "parka/file/Snippet.hpp"
 #include "parka/log/Color.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 #include "parka/util/String.hpp"
 #include <ostream>
 
@@ -13,7 +13,7 @@ namespace parka
 	class LogEntry
 	{
 		String _message;
-		Optional<Snippet> _snippet;
+		Result<Snippet> _snippet;
 		Color _color;
 		LogEntryType _type;
 

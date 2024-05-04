@@ -3,7 +3,7 @@
 
 #include "parka/enum/MultiplicativeType.hpp"
 #include "parka/ast/Expression.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 
 namespace parka::ast
 {

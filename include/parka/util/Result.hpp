@@ -6,39 +6,39 @@
 namespace parka
 {
 	template <typename T>
-	class Optional
+	class Result
 	{
 		alignas(T) char _value[sizeof(T)];
 		bool _hasValue;
 
 	public:
 
-		Optional():
+		Result():
 		_hasValue(false)
 		{}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Optional(const T *value):
+		Result(const T *value):
 		_hasValue(!!value)
 		{
 			if (value)
 				new (_value) auto (*value);
 		}
 
-		Optional(T&& value):
+		Result(T&& value):
 		_hasValue(true)
 		{
 			new ((T*)_value) auto (std::move(value));
 		}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Optional(const T& value):
+		Result(const T& value):
 		_hasValue(true)
 		{
 			new ((T*)_value) auto (value);
 		}
 
-		Optional(Optional&& other):
+		Result(Result&& other):
 		_hasValue(other._hasValue)
 		{
 			if (other._hasValue)
@@ -53,14 +53,14 @@ namespace parka
 		}
 
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
-		Optional(const Optional& other):
+		Result(const Result& other):
 		_hasValue(other._value)
 		{
 			if (_hasValue)
 				_value = other._value;
 		}
 
-		~Optional()
+		~Result()
 		{
 			if constexpr (!std::is_fundamental_v<T>)
 			{
@@ -71,7 +71,7 @@ namespace parka
 			}
 		}
 
-		Optional& operator=(Optional&& other)
+		Result& operator=(Result&& other)
 		{
 			new (this) auto(std::move(other));
 
@@ -80,7 +80,7 @@ namespace parka
 
 		// template <typename U = T, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
-		Optional& operator=(const Optional& other)
+		Result& operator=(const Result& other)
 		{
 			new (this) auto (other);
 			return *this;

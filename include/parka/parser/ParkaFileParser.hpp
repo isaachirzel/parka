@@ -32,16 +32,16 @@ namespace parka::parser
 	private:
 
 		bool parseAbsolute();
-		Optional<PrefixType> parsePrefixType();
-		Optional<char> parseChar();
-		Optional<bool> parseBool();
-		Optional<BinaryExpressionType> getMultiplicativeType();
-		Optional<BinaryExpressionType> getAdditiveType();
-		Optional<BinaryExpressionType> getEqualityType();
-		Optional<BinaryExpressionType> parseRelationalType();
-		Optional<BinaryExpressionType> parseBitShiftType();
-		Optional<BinaryExpressionType> getAssignmentType();
-		Optional<JumpType> getJumpType();
+		Result<PrefixType> parsePrefixType();
+		Result<char> parseChar();
+		Result<bool> parseBool();
+		Result<BinaryExpressionType> getMultiplicativeType();
+		Result<BinaryExpressionType> getAdditiveType();
+		Result<BinaryExpressionType> getEqualityType();
+		Result<BinaryExpressionType> parseRelationalType();
+		Result<BinaryExpressionType> parseBitShiftType();
+		Result<BinaryExpressionType> getAssignmentType();
+		Result<JumpType> getJumpType();
 		bool parsePublicity();
 
 	public:
@@ -56,11 +56,11 @@ namespace parka::parser
 
 		ast::ModuleAst parse();
 
-		Optional<ast::Identifier> parseIdentifier();
-		Optional<ast::QualifiedIdentifier> parseQualifiedIdentifier();
-		// Optional<ast::Operator> parseOperator();
-		Optional<ast::PrototypeAst> parsePrototype();
-		Optional<ast::TypeAnnotationAst> parseTypeAnnotation();
+		Result<ast::Identifier> parseIdentifier();
+		Result<ast::QualifiedIdentifier> parseQualifiedIdentifier();
+		// Result<ast::Operator> parseOperator();
+		Result<ast::PrototypeAst> parsePrototype();
+		Result<ast::TypeAnnotationAst> parseTypeAnnotation();
 		ast::VariableAst *parseVariable();
 		ast::ParameterAst *parseParameter();
 		ast::ExpressionAst *parseFunctionBody();

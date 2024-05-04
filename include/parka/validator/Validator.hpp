@@ -30,15 +30,15 @@
 #include "parka/ir/StringLiteral.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 
 namespace parka::validator
 {
 	// TODO: Consider making this a class that will store errors/state. Upon validating something that needs a symbol table, a new validator would be constructed
-	Optional<ir::Ir> validateAst(const ast::Ast& ast);
+	Result<ir::Ir> validateAst(const ast::Ast& ast);
 	ir::FunctionIr *validateFunction(const ast::FunctionAst& ast, SymbolTable& parentSymbolTable);
-	Optional<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, LocalSymbolTable& symbolTable);
-	Optional<ir::Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
+	Result<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, LocalSymbolTable& symbolTable);
+	Result<ir::Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
 	ir::ParameterIr *validateParameter(const ast::ParameterAst& ast, LocalSymbolTable& symbolTable);
 	ir::ExpressionIr *validateExpression(const ast::ExpressionAst& expression, LocalSymbolTable& symbolTable);
 	ir::BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, LocalSymbolTable& symbolTable);

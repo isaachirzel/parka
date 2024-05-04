@@ -7,7 +7,7 @@
 #include "parka/ast/Module.hpp"
 #include "parka/ast/Package.hpp"
 #include "parka/util/Project.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 
 namespace parka::ast
 {

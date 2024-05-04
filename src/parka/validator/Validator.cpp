@@ -49,7 +49,7 @@ namespace parka::validator
 	// 	return success;
 	// }
 
-	Optional<Ir> validateAst(const ast::Ast& ast)
+	Result<Ir> validateAst(const ast::Ast& ast)
 	{
 		auto success = true;
 		const auto& package = ast.globalPackage();
@@ -96,7 +96,7 @@ namespace parka::validator
 		return new FunctionIr(std::move(symbol), *prototype, *body);
 	}
 
-	static Optional<Type> validateReturnType(const Optional<ast::TypeAnnotationAst>& syntax, LocalSymbolTable& symbolTable)
+	static Result<Type> validateReturnType(const Result<ast::TypeAnnotationAst>& syntax, LocalSymbolTable& symbolTable)
 	{
 		if (!syntax)
 			return Type::voidType;
@@ -104,7 +104,7 @@ namespace parka::validator
 		return validateTypeAnnotation(*syntax, symbolTable);
 	}
 
-	Optional<PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, LocalSymbolTable& symbolTable)
+	Result<PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, LocalSymbolTable& symbolTable)
 	{
 		auto success = true;
 		const auto parameterCount = prototype.parameters().length();
@@ -136,7 +136,7 @@ namespace parka::validator
 		return PrototypeIr(std::move(parameters), *returnType);
 	}
 
-	Optional<Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable)
+	Result<Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable)
 	{
 		auto *resolution = symbolTable.resolve(ast.identifier());
 
@@ -282,7 +282,7 @@ namespace parka::validator
 		return new IdentifierExpressionIr(*value);
 	}
 
-	static Optional<u64> getIntegerValue(const Snippet& snippet)
+	static Result<u64> getIntegerValue(const Snippet& snippet)
 	{
 		u64 value = 0;
 		const auto length = snippet.length();
@@ -480,7 +480,7 @@ namespace parka::validator
 		return new ReturnStatementIr(value);
 	}
 
-	static Optional<Type> validateVariableType(const Optional<ast::TypeAnnotationAst>& annotation, ExpressionIr *value, LocalSymbolTable& symbolTable)
+	static Result<Type> validateVariableType(const Result<ast::TypeAnnotationAst>& annotation, ExpressionIr *value, LocalSymbolTable& symbolTable)
 	{
 		if (!annotation)
 		{

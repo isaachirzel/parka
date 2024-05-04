@@ -15,11 +15,11 @@ namespace parka::ast
 		Snippet _snippet;
 		Identifier _identifier;
 		Array<ParameterAst*> _parameters;
-		Optional<TypeAnnotationAst> _returnType;
+		Result<TypeAnnotationAst> _returnType;
 
 	public:
 
-		PrototypeAst(const Snippet& snippet, Identifier&& identifier, Array<ParameterAst*>&& parameters, Optional<TypeAnnotationAst>&& returnType):
+		PrototypeAst(const Snippet& snippet, Identifier&& identifier, Array<ParameterAst*>&& parameters, Result<TypeAnnotationAst>&& returnType):
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_parameters(std::move(parameters)),

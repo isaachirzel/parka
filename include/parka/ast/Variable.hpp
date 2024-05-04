@@ -15,12 +15,12 @@ namespace parka::ast
 	{
 		Snippet _snippet;
 		Identifier _identifier;
-		Optional<TypeAnnotationAst> _annotation;
+		Result<TypeAnnotationAst> _annotation;
 		bool _isMutable;
 
 	public:
 
-		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
+		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Result<TypeAnnotationAst> annotation):
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

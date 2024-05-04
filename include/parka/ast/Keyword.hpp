@@ -2,7 +2,7 @@
 #define PARKA_AST_KEYWORD_HPP
 
 #include "parka/enum/KeywordType.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 #include "parka/parser/Token.hpp"
 #include "parka/util/Table.hpp"
 
@@ -31,12 +31,12 @@ namespace parka::ast
 		KeywordAst(const KeywordAst&) = delete;
 
 		static KeywordType getKeywordType(const String& text);
-		static Optional<KeywordAst> parseBool(Token& token);
-		static Optional<KeywordAst> parseStruct(Token& token);
-		static Optional<KeywordAst> parseVar(Token& token);
-		static Optional<KeywordAst> parseFunction(Token& token);
-		static Optional<KeywordAst> parseOperator(Token& token);
-		static Optional<KeywordAst> parseMut(Token& token);
+		static Result<KeywordAst> parseBool(Token& token);
+		static Result<KeywordAst> parseStruct(Token& token);
+		static Result<KeywordAst> parseVar(Token& token);
+		static Result<KeywordAst> parseFunction(Token& token);
+		static Result<KeywordAst> parseOperator(Token& token);
+		static Result<KeywordAst> parseMut(Token& token);
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }

@@ -1,7 +1,7 @@
 #include "parka/ast/Keyword.hpp"
 #include "parka/enum/KeywordType.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 #include "parka/util/Print.hpp"
 #include "parka/util/String.hpp"
 #include "parka/util/Table.hpp"
@@ -53,7 +53,7 @@ namespace parka::ast
 		return *keywordType;
 	}
 
-	Optional<KeywordAst> KeywordAst::parseBool(Token& token)
+	Result<KeywordAst> KeywordAst::parseBool(Token& token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -70,7 +70,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Optional<KeywordAst> KeywordAst::parseStruct(Token& token)
+	Result<KeywordAst> KeywordAst::parseStruct(Token& token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -87,7 +87,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Optional<KeywordAst> KeywordAst::parseVar(Token& token)
+	Result<KeywordAst> KeywordAst::parseVar(Token& token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -104,7 +104,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Optional<KeywordAst> KeywordAst::parseFunction(Token &token)
+	Result<KeywordAst> KeywordAst::parseFunction(Token &token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -121,7 +121,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Optional<KeywordAst> KeywordAst::parseOperator(Token &token)
+	Result<KeywordAst> KeywordAst::parseOperator(Token &token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -138,7 +138,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Optional<KeywordAst> KeywordAst::parseMut(Token &token)
+	Result<KeywordAst> KeywordAst::parseMut(Token &token)
 	{
 		auto type = getKeywordType(token.text());
 

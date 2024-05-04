@@ -2,7 +2,7 @@
 #define PARKA_AST_IDENTIFIER_HPP
 
 #include "parka/parser/Token.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 
 #include <ostream>
 

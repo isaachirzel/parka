@@ -16,7 +16,7 @@ namespace parka
 		Array<Resolvable*> _symbols;
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
-		Optional<ir::Type> _returnType;
+		Result<ir::Type> _returnType;
 		SymbolTable *_parent;
 
 	private:

@@ -6,14 +6,14 @@
 #include "parka/ir/Type.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/util/Result.hpp"
 
 namespace parka::evaluation
 {
 	class State
 	{
 		Array<Value> _stack;
-		Optional<Value> _returnValue;
+		Result<Value> _returnValue;
 
 	public:
 		

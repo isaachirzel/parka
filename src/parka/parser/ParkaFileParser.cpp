@@ -24,7 +24,7 @@ using namespace parka::ast;
 
 namespace parka::parser
 {
-	Optional<Identifier> ParkaFileParser::parseIdentifier()
+	Result<Identifier> ParkaFileParser::parseIdentifier()
 	{
 		if (token.type() != TokenType::Identifier)
 		{
@@ -48,7 +48,7 @@ namespace parka::parser
 		return true;
 	}
 
-	Optional<QualifiedIdentifier> ParkaFileParser::parseQualifiedIdentifier()
+	Result<QualifiedIdentifier> ParkaFileParser::parseQualifiedIdentifier()
 	{
 		auto start = Snippet(token);
 		auto isAbsolute = parseAbsolute();
@@ -109,7 +109,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	Optional<bool> ParkaFileParser::parseBool()
+	Result<bool> ParkaFileParser::parseBool()
 	{
 		auto type = KeywordAst::getKeywordType(token.text());
 
@@ -421,7 +421,7 @@ namespace parka::parser
 		return postfix;
 	}
 
-	Optional<PrefixType> ParkaFileParser::parsePrefixType()
+	Result<PrefixType> ParkaFileParser::parsePrefixType()
 	{
 		switch (token.type())
 		{
@@ -471,7 +471,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	Optional<BinaryExpressionType> ParkaFileParser::getMultiplicativeType()
+	Result<BinaryExpressionType> ParkaFileParser::getMultiplicativeType()
 	{
 		switch (token.type())
 		{
@@ -516,7 +516,7 @@ namespace parka::parser
 		return lhs;
 	}
 
-	Optional<BinaryExpressionType> ParkaFileParser::getAdditiveType()
+	Result<BinaryExpressionType> ParkaFileParser::getAdditiveType()
 	{
 		switch (token.type())
 		{
@@ -558,7 +558,7 @@ namespace parka::parser
 		return lhs;
 	}
 
-	Optional<BinaryExpressionType> ParkaFileParser::parseBitShiftType()
+	Result<BinaryExpressionType> ParkaFileParser::parseBitShiftType()
 	{
 		switch (token.type())
 		{
@@ -598,7 +598,7 @@ namespace parka::parser
 		return lhs;
 	}
 
-	Optional<BinaryExpressionType> ParkaFileParser::parseRelationalType()
+	Result<BinaryExpressionType> ParkaFileParser::parseRelationalType()
 	{
 		switch (token.type())
 		{
@@ -644,7 +644,7 @@ namespace parka::parser
 		return lhs;
 	}
 
-	Optional<BinaryExpressionType> ParkaFileParser::getEqualityType()
+	Result<BinaryExpressionType> ParkaFileParser::getEqualityType()
 	{
 		switch (token.type())
 		{
@@ -830,7 +830,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	Optional<BinaryExpressionType> ParkaFileParser::getAssignmentType()
+	Result<BinaryExpressionType> ParkaFileParser::getAssignmentType()
 	{
 		switch (token.type())
 		{
@@ -898,7 +898,7 @@ namespace parka::parser
 		return expression;
 	}
 
-	Optional<JumpType> ParkaFileParser::getJumpType()
+	Result<JumpType> ParkaFileParser::getJumpType()
 	{
 		auto keywordType = KeywordAst::getKeywordType(token.text());
 
@@ -1107,7 +1107,7 @@ namespace parka::parser
 		return {};
 	}
 
-	Optional<TypeAnnotationAst> ParkaFileParser::parseTypeAnnotation()
+	Result<TypeAnnotationAst> ParkaFileParser::parseTypeAnnotation()
 	{
 		auto identifier = parseQualifiedIdentifier();
 
@@ -1134,7 +1134,7 @@ namespace parka::parser
 
 		auto end = identifier->snippet();
 
-		Optional<TypeAnnotationAst> annotation;
+		Result<TypeAnnotationAst> annotation;
 
 		if (token.type() == TokenType::Colon)
 		{
@@ -1154,7 +1154,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	Optional<PrototypeAst> ParkaFileParser::parsePrototype()
+	Result<PrototypeAst> ParkaFileParser::parsePrototype()
 	{
 		auto keyword = KeywordAst::parseFunction(token);
 
@@ -1207,7 +1207,7 @@ namespace parka::parser
 		
 		token.increment();
 
-		Optional<TypeAnnotationAst> returnType;
+		Result<TypeAnnotationAst> returnType;
 
 		if (token.type() == TokenType::SingleArrow)
 		{
