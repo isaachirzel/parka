@@ -1,4 +1,6 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/ir/DeclarationStatement.hpp"
+#include "parka/ir/ReturnStatement.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;
@@ -52,9 +54,24 @@ namespace parka::evaluation
 
 	void evaluateStatement(const StatementIr& ir, State& state)
 	{
-		auto& declaration = dynamic_cast<const DeclarationStatementIr&>(ir);
+		switch (ir.statementType)
+		{
+			case StatementType::Declaration:
+				return evaluateDeclarationStatement(static_cast<const DeclarationStatementIr&>(ir), state);
 
-		return evaluateDeclarationStatement(declaration, state);
+			case StatementType::Return:
+				return evaluateReturnStatement(static_cast<const ReturnStatementIr&>(ir), state);
+
+			default:
+				break;
+		}
+
+		log::fatal("Unable to evaluate statement of type: $", (int)ir.statementType);
+	}
+
+	void evaluateReturnStatement(const ir::ReturnStatementIr& ir, State& state)
+	{
+		
 	}
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, State& state)

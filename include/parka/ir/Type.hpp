@@ -32,13 +32,14 @@ namespace parka::ir
 		
 	public:
 
-		Type(const TypeBase& base):
-		_typeBase(base)
-		{}
-		Type(Type&&) = default;
-		Type(const Type&) = default;
+		Type(const TypeBase& base);
+		Type(Type&&);
+		Type(const Type&);
 
 		const auto& typeBase() const { return _typeBase; }
+
+		Type& operator=(Type&&);
+		Type& operator=(const Type&);
 
 		friend bool operator==(const Type& left, const Type& right);
 		friend bool operator!=(const Type& left, const Type& right);

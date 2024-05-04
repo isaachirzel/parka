@@ -1,7 +1,7 @@
 # TODO
 - Validate return statements
 - Evaluate return statements
-- Operator conversions
+- Conversion operators
 - Convert to throwing exceptions?
 - Arena for handling new operations and cleanup
 - Convert log fatals to exceptions and add catch that will print out a single log fatal

@@ -3,11 +3,8 @@
 
 #include "parka/enum/JumpType.hpp"
 #include "parka/enum/StatementType.hpp"
-#include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Statement.hpp"
-#include "parka/parser/Token.hpp"
-#include "parka/util/Optional.hpp"
 
 namespace parka::ast
 {
@@ -31,7 +28,7 @@ namespace parka::ast
 		const Snippet& snippet() const { return _snippet; }
 		bool hasValue() const { return !!_value; }
 		const auto& value() const { assert(_value != nullptr); return *_value; }
-		const auto& type() const { return _type; }
+		const auto& jumpType() const { return _type; }
 	};
 }
 

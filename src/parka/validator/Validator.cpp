@@ -1,8 +1,11 @@
 #include "parka/validator/Validator.hpp"
+#include "parka/ast/DeclarationStatement.hpp"
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ir/BinaryExpression.hpp"
+#include "parka/ir/Expression.hpp"
 #include "parka/ir/Package.hpp"
+#include "parka/ir/ReturnStatement.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
@@ -127,6 +130,8 @@ namespace parka::validator
 
 		if (!success)
 			return {};
+
+		symbolTable.setReturnType(*returnType);
 
 		return PrototypeIr(std::move(parameters), *returnType);
 	}
@@ -402,18 +407,20 @@ namespace parka::validator
 		return new BoolLiteralIr(ast.value());
 	}
 
+
+
 	StatementIr *validateStatement(const ast::StatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		switch (ast.statementType)
 		{
 			case StatementType::Declaration:
-				return validateDeclarationStatement((const ast::DeclarationStatementAst&)ast, symbolTable);
+				return validateDeclarationStatement(static_cast<const ast::DeclarationStatementAst&>(ast), symbolTable);
 
 			// case StatementType::Expression:
 			// 	break;
 
-			// case StatementType::Jump:
-			// 	break;
+			case StatementType::Jump:
+				return validateJumpStatement(static_cast<const ast::JumpStatementAst&>(ast), symbolTable);
 
 			default:
 				break;
@@ -433,6 +440,44 @@ namespace parka::validator
 			return {};
 
 		return new DeclarationStatementIr(*variable, *value);
+	}
+
+	ir::StatementIr *validateJumpStatement(const ast::JumpStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		switch (ast.jumpType())
+		{
+			case JumpType::Return:
+				return validateReturnStatement(ast, symbolTable);
+
+			default:
+				break;
+		}
+
+		log::fatal("Unable to validate jump statement with type: $", (int)ast.jumpType());
+	}
+
+	ir::StatementIr *validateReturnStatement(const ast::JumpStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto returnedType = Type::voidType;
+		auto* value = (ExpressionIr*)nullptr;
+
+		if (ast.hasValue())
+		{
+			auto* value = validateExpression(ast.value(), symbolTable);
+
+			if (!value)
+				return {};
+
+			returnedType = value->type();
+		}
+
+		if (symbolTable.returnType() != returnedType)
+		{
+			log::error("Unable to convert $ to return type $.", returnedType, symbolTable.returnType());
+			return {};
+		}
+
+		return new ReturnStatementIr(value);
 	}
 
 	static Optional<Type> validateVariableType(const Optional<ast::TypeAnnotationAst>& annotation, ExpressionIr *value, LocalSymbolTable& symbolTable)

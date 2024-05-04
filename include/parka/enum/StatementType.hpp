@@ -9,6 +9,7 @@ namespace parka
 	{
 		Declaration,
 		Expression,
+		Return,
 		Jump
 	};
 

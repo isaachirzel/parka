@@ -3,11 +3,15 @@
 #include "parka/ast/QualifiedIdentifier.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/Resolvable.hpp"
-#include "parka/validator/Validator.hpp"
 #include "parka/log/Indent.hpp"
 
 namespace parka
 {
+	LocalSymbolTable::LocalSymbolTable(SymbolTable *parent):
+		SymbolTable(SymbolTableType::Function),
+		_parent(parent)
+	{}
+
 	bool LocalSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
 	{
 		auto *previous = find(identifier);

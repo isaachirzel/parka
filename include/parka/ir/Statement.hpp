@@ -12,7 +12,7 @@ namespace parka::ir
 	public:
 
 		StatementIr(StatementType statementType):
-		statementType(statementType)
+			statementType(statementType)
 		{}
 		virtual ~StatementIr() {}
 	};

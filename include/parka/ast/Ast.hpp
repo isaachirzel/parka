@@ -20,7 +20,7 @@ namespace parka::ast
 	public:
 
 		Ast(PackageAst& globalPackage):
-		_globalPackage(globalPackage)
+			_globalPackage(globalPackage)
 		{}
 		Ast(Ast&&) = default;
 		Ast(const Ast&) = delete;

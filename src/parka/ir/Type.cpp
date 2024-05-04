@@ -18,6 +18,36 @@ namespace parka::ir
 	const Type Type::charType(Primitive::charPrimitive);
 	const Type Type::stringType(Primitive::stringPrimitive);
 
+	Type::Type(const TypeBase& base):
+		_typeBase(base)
+	{}
+
+	Type::Type(Type&& other):
+		_typeBase(other._typeBase)
+	{}
+
+	Type::Type(const Type& other):
+		_typeBase(other._typeBase)
+	{}
+
+	Type& Type::operator=(Type&& other)
+	{
+		this->~Type();
+
+		new (this) auto(std::move(other));
+
+		return *this;
+	}
+
+	Type& Type::operator=(const Type& other)
+	{
+		this->~Type();
+
+		new (this) auto(other);
+
+		return *this;
+	}
+
 	bool operator==(const Type& left, const Type& right)
 	{
 		return &left._typeBase == &right._typeBase;

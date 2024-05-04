@@ -1,4 +1,4 @@
-function main()
+function main() -> u8
 {
 	/* This produces a weird error
 	var a = 1 + 65536
@@ -11,4 +11,6 @@ function main()
 	var c = a + b;
 	*/
 	var a = 75;
+
+	return a;
 }

@@ -9,6 +9,7 @@
 #include "parka/ir/IdentifierExpression.hpp"
 #include "parka/ir/IntegerLiteral.hpp"
 #include "parka/ir/Ir.hpp"
+#include "parka/ir/ReturnStatement.hpp"
 
 namespace parka::evaluation
 {
@@ -17,6 +18,7 @@ namespace parka::evaluation
 	void evaluatePrototype(const ir::PrototypeIr& ir, const Array<ir::ExpressionIr*>& arguments, State& state);
 	void evaluateStatement(const ir::StatementIr& ir, State& state);
 	void evaluateDeclarationStatement(const ir::DeclarationStatementIr& ir, State& state);
+	void evaluateReturnStatement(const ir::ReturnStatementIr& ir, State& state);
 	Value& evaluateExpression(const ir::ExpressionIr& ir, State& state);
 	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, State& state);
 	Value& evaluateBlock(const ir::BlockExpressionIr& ir, State& state);

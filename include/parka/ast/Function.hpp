@@ -3,7 +3,6 @@
 
 #include "parka/ast/Expression.hpp"
 #include "parka/ast/Prototype.hpp"
-#include "parka/symbol/SymbolTable.hpp"
 
 namespace parka::ast
 {
@@ -16,9 +15,9 @@ namespace parka::ast
 	public:
 
 		FunctionAst(PrototypeAst&& prototype, ExpressionAst& body):
-		_snippet(prototype.snippet() + body.snippet()),
-		_prototype(std::move(prototype)),
-		_body(body)
+			_snippet(prototype.snippet() + body.snippet()),
+			_prototype(std::move(prototype)),
+			_body(body)
 		{}
 		FunctionAst(FunctionAst&&) = default;
 		FunctionAst(const FunctionAst&) = delete;
