@@ -6,14 +6,14 @@
 #include "parka/ir/Type.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
-#include "parka/util/Result.hpp"
+#include "parka/util/Optional.hpp"
 
 namespace parka::evaluation
 {
 	class State
 	{
 		Array<Value> _stack;
-		Result<Value> _returnValue;
+		Optional<Value> _returnValue;
 
 	public:
 		
@@ -29,7 +29,7 @@ namespace parka::evaluation
 		usize length() const;
 		bool isReturning() const { return !!_returnValue; }
 		void returnValue(Value&& value) { _returnValue = std::move(value); }
-		auto& returnValue() { return (Value&)*_returnValue; }
+		auto& returnValue() { return *_returnValue; }
 	};
 }
 

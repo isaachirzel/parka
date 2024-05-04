@@ -88,7 +88,7 @@ namespace parka
 		operator bool() const { return _hasValue; }
 		T *operator->() { assert(_hasValue); return (T*)_value; }
 		const T *operator->() const { assert(_hasValue); return (T*)_value; }
-		T& operator*() { assert(_hasValue); return _value; }
+		T& operator*() { assert(_hasValue); return (T&)_value; }
 		const T& operator*() const { assert(_hasValue); return (T&)_value; }
 	};
 }
