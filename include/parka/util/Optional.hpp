@@ -1,44 +1,44 @@
-#ifndef PARKA_UTIL_RESULT_HPP
-#define PARKA_UTIL_RESULT_HPP
+#ifndef PARKA_UTIL_OPTIONAL_HPP
+#define PARKA_UTIL_OPTIONAL_HPP
 
 #include <type_traits>
 
 namespace parka
 {
 	template <typename T>
-	class Result
+	class Optional
 	{
 		alignas(T) char _value[sizeof(T)];
 		bool _hasValue;
 
 	public:
 
-		Result():
+		Optional():
 			_hasValue(false)
 		{}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Result(const T *value):
+		Optional(const T *value):
 			_hasValue(!!value)
 		{
 			if (value)
 				new (_value) auto (*value);
 		}
 
-		Result(T&& value):
+		Optional(T&& value):
 			_hasValue(true)
 		{
 			new ((T*)_value) auto (std::move(value));
 		}
 
 		template <typename U = T, typename = std::enable_if<std::is_copy_constructible_v<U>, U>>
-		Result(const T& value):
+		Optional(const T& value):
 			_hasValue(true)
 		{
 			new ((T*)_value) auto (value);
 		}
 
-		Result(Result&& other):
+		Optional(Optional&& other):
 			_hasValue(other._hasValue)
 		{
 			if (other._hasValue)
@@ -53,14 +53,14 @@ namespace parka
 		}
 
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
-		Result(const Result& other):
+		Optional(const Optional& other):
 			_hasValue(other._value)
 		{
 			if (_hasValue)
 				_value = other._value;
 		}
 
-		~Result()
+		~Optional()
 		{
 			if constexpr (!std::is_fundamental_v<T>)
 			{
@@ -71,7 +71,7 @@ namespace parka
 			}
 		}
 
-		Result& operator=(Result&& other)
+		Optional& operator=(Optional&& other)
 		{
 			new (this) auto(std::move(other));
 
@@ -79,7 +79,7 @@ namespace parka
 		}
 
 		template <typename U = T, std::enable_if_t<std::is_copy_constructible_v<U>, bool> = true>
-		Result& operator=(const Result& other)
+		Optional& operator=(const Optional& other)
 		{
 			new (this) auto (other);
 			return *this;
@@ -88,7 +88,7 @@ namespace parka
 		operator bool() const { return _hasValue; }
 		T *operator->() { assert(_hasValue); return (T*)_value; }
 		const T *operator->() const { assert(_hasValue); return (T*)_value; }
-		T&& operator*() { assert(_hasValue); return std::move((T&)_value); }
+		T& operator*() { assert(_hasValue); return _value; }
 		const T& operator*() const { assert(_hasValue); return (T&)_value; }
 	};
 }
