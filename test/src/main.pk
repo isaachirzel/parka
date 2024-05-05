@@ -4,6 +4,8 @@ function main() -> u8
 	*/
 	var a = 1 + 65536
 	var b = 3;
+	var c = 2
+
 
 	/*
 	var a = 1 + 4294967296;

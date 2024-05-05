@@ -185,13 +185,31 @@ namespace parka::parser
 		token.increment();
 
 		auto statements = Array<StatementAst*>(16);
+		auto encounteredError = false;
+		auto seekingNext = false;
 
 		while (token.type() != TokenType::RightBrace)
 		{
+			if (seekingNext)
+			{
+				if (token.type() != TokenType::Semicolon)
+				{
+					token.increment();
+					continue;
+				}
+
+				token.increment();
+				seekingNext = false;
+			}
+
 			auto *statement = parseStatement();
 
 			if (!statement)
-				return {};
+			{
+				encounteredError = true;
+				seekingNext = true;
+				continue;
+			}
 
 			// FIXME: Fast forward to next statement
 
@@ -201,6 +219,9 @@ namespace parka::parser
 		auto last = Token(token);
 
 		token.increment();
+
+		if (encounteredError)
+			return {};
 
 		auto *syntax = new BlockExpressionAst(first + last, std::move(statements));
 
