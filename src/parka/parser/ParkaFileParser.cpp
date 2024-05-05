@@ -211,8 +211,6 @@ namespace parka::parser
 				continue;
 			}
 
-			// FIXME: Fast forward to next statement
-
 			statements.push(statement);
 		}
 
@@ -1036,7 +1034,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			log::parseError(token, "';'", "Declaration statements need to be ended with a ';'.");
+			log::error(variable->snippet() + value->snippet(), "Statements need to be ended with a ';'.");
 			return nullptr;
 		}
 

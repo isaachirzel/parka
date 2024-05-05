@@ -1,5 +1,4 @@
 # TODO
-- Expected ';' parse errors should be on the previous token
 - Validate return statements
 - Evaluate return statements
 - Conversion operators
