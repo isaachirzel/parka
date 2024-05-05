@@ -18,6 +18,7 @@
 #include "parka/ast/SubscriptExpression.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/enum/PrefixType.hpp"
+#include "parka/enum/TokenType.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ast;
@@ -183,8 +184,7 @@ namespace parka::parser
 
 		token.increment();
 
-		// TODO: Add initial capacity
-		auto statements = Array<StatementAst*>();
+		auto statements = Array<StatementAst*>(16);
 
 		while (token.type() != TokenType::RightBrace)
 		{
@@ -192,6 +192,8 @@ namespace parka::parser
 
 			if (!statement)
 				return {};
+
+			// FIXME: Fast forward to next statement
 
 			statements.push(statement);
 		}
@@ -1348,20 +1350,26 @@ namespace parka::parser
 		return syntax;
 	}
 
+
 	ModuleAst ParkaFileParser::parse()
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
+		auto seekingNext = false;
 		auto functions = Array<FunctionAst*>();
 		auto structs = Array<StructAst*>();
 
-		while (true)
+		while (token.type() != TokenType::EndOfFile)
 		{
-			auto keywordType = KeywordAst::getKeywordType(token.text());
+			auto keywordType = token.type() == TokenType::Identifier
+				? KeywordAst::getKeywordType(token.text())
+				: KeywordType::None;
 
 			switch (keywordType)
 			{
 				case KeywordType::Function:
 				{
+					seekingNext = false;
+
 					auto *function = parseFunction();
 
 					if (!function)
@@ -1374,6 +1382,8 @@ namespace parka::parser
 
 				case KeywordType::StructAst:
 				{
+					seekingNext = false;
+
 					auto *strct = parseStruct();
 
 					if (!strct)
@@ -1385,19 +1395,19 @@ namespace parka::parser
 				}
 
 				default:
+					if (seekingNext)
+					{
+						token.increment();
+						continue;
+					}
+
+					log::parseError(token, "type or function definition");					
 					break;
 			}
 
-			if (token.type() != TokenType::EndOfFile)
-			{
-				log::parseError(token, "type or function definition");
-			}
-
-			break;
+			seekingNext = true;
 		}
 
-		auto mod = ModuleAst(String(_file.path()), std::move(functions), std::move(structs));
-
-		return mod;
+		return ModuleAst(String(_file.path()), std::move(functions), std::move(structs));
 	}
 }
