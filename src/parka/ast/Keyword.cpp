@@ -53,7 +53,7 @@ namespace parka::ast
 		return *keywordType;
 	}
 
-	Result<KeywordAst> KeywordAst::parseBool(Token& token)
+	Result<KeywordAst> KeywordAst::parseBoolKeyword(Token& token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -70,7 +70,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Result<KeywordAst> KeywordAst::parseStruct(Token& token)
+	Result<KeywordAst> KeywordAst::parseStructKeyword(Token& token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -87,7 +87,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Result<KeywordAst> KeywordAst::parseVar(Token& token)
+	Result<KeywordAst> KeywordAst::parseVarKeyword(Token& token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -104,7 +104,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Result<KeywordAst> KeywordAst::parseFunction(Token &token)
+	Result<KeywordAst> KeywordAst::parseFunctionKeyword(Token &token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -121,7 +121,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Result<KeywordAst> KeywordAst::parseOperator(Token &token)
+	Result<KeywordAst> KeywordAst::parseOperatorKeyword(Token &token)
 	{
 		auto type = getKeywordType(token.text());
 
@@ -138,7 +138,7 @@ namespace parka::ast
 		return keyword;
 	}
 
-	Result<KeywordAst> KeywordAst::parseMut(Token &token)
+	Result<KeywordAst> KeywordAst::parseMutKeyword(Token &token)
 	{
 		auto type = getKeywordType(token.text());
 

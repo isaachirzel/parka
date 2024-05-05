@@ -31,12 +31,12 @@ namespace parka::ast
 		KeywordAst(const KeywordAst&) = delete;
 
 		static KeywordType getKeywordType(const String& text);
-		static Result<KeywordAst> parseBool(Token& token);
-		static Result<KeywordAst> parseStruct(Token& token);
-		static Result<KeywordAst> parseVar(Token& token);
-		static Result<KeywordAst> parseFunction(Token& token);
-		static Result<KeywordAst> parseOperator(Token& token);
-		static Result<KeywordAst> parseMut(Token& token);
+		static Result<KeywordAst> parseBoolKeyword(Token& token);
+		static Result<KeywordAst> parseStructKeyword(Token& token);
+		static Result<KeywordAst> parseVarKeyword(Token& token);
+		static Result<KeywordAst> parseFunctionKeyword(Token& token);
+		static Result<KeywordAst> parseOperatorKeyword(Token& token);
+		static Result<KeywordAst> parseMutKeyword(Token& token);
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }

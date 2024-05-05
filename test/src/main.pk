@@ -1,16 +1,18 @@
 function main() -> u8
 {
 	/* This produces a weird error
+	*/
 	var a = 1 + 65536
 	var b = 3;
-	*/
 
 	/*
 	var a = 1 + 4294967296;
 	var b = 4;
 	var c = a + b;
 	*/
-	var a = 122;
+	/*var a = 122;
 
 	return a;
+	*/
+	return 0;
 }

@@ -1051,7 +1051,7 @@ namespace parka::parser
 	ParameterAst *ParkaFileParser::parseParameter()
 	{
 		auto first = Snippet(token);
-		auto mutKeyword = KeywordAst::parseMut(token);
+		auto mutKeyword = KeywordAst::parseMutKeyword(token);
 		auto isMutable = !!mutKeyword;
 		auto identifier = parseIdentifier();
 
@@ -1122,7 +1122,7 @@ namespace parka::parser
 	VariableAst *ParkaFileParser::parseVariable()
 	{
 		// TODO: VariableAst mutability
-		auto keyword = KeywordAst::parseVar(token);
+		auto keyword = KeywordAst::parseVarKeyword(token);
 
 		if (!keyword)
 			return {};	
@@ -1156,7 +1156,7 @@ namespace parka::parser
 
 	Result<PrototypeAst> ParkaFileParser::parsePrototype()
 	{
-		auto keyword = KeywordAst::parseFunction(token);
+		auto keyword = KeywordAst::parseFunctionKeyword(token);
 
 		if (!keyword)
 			return {};
@@ -1291,7 +1291,7 @@ namespace parka::parser
 
 	StructAst *ParkaFileParser::parseStruct()
 	{
-		auto keyword = KeywordAst::parseStruct(token);
+		auto keyword = KeywordAst::parseStructKeyword(token);
 
 		if (!keyword)
 			return {};
