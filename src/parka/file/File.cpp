@@ -70,7 +70,7 @@ namespace parka
 		{
 			if (c == '\n')
 			{
-				lengths.push(length);
+				lengths.push(length + 1);
 				length = 0;
 				continue;
 			}
@@ -143,15 +143,15 @@ namespace parka
 	{
 		assert(pos < _text.length());
 
-		usize line = 0;
+		usize line = 1;
 
 		for (auto length : _lineLengths)
 		{
-			if (pos >= length)
-			{
-				line += 1;
-				pos -= length;
-			}
+			if (pos < length)
+				break;
+
+			line += 1;
+			pos -= length;
 		}
 
 		return line;
