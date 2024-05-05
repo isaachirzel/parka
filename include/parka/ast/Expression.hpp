@@ -1,9 +1,8 @@
 #ifndef PARKA_AST_EXPRESSION_HPP
 #define PARKA_AST_EXPRESSION_HPP
 
-#include "parka/parser/Token.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/ir/Expression.hpp"
+#include "parka/enum/ExpressionType.hpp"
+#include "parka/file/Snippet.hpp"
 
 namespace parka::ast
 {

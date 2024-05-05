@@ -266,16 +266,16 @@ namespace parka::validator
 
 	IdentifierExpressionIr *validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
-		auto *resolution = symbolTable.resolve(ast.identifier());
+		auto *result = symbolTable.resolve(ast.identifier());
 
-		if (!resolution)
+		if (!result)
 			return {};
 
-		auto *value = dynamic_cast<Value*>(resolution);
+		auto *value = dynamic_cast<LValue*>(result);
 
 		if (!value)
 		{
-			log::error(ast.snippet(), "Unable to get value of $ `$`.", resolution->resolvableType, resolution->symbol());
+			log::error(ast.snippet(), "Unable to get value of $ `$`.", result->resolvableType, result->symbol());
 			return {};
 		}
 
@@ -463,7 +463,7 @@ namespace parka::validator
 
 		if (ast.hasValue())
 		{
-			auto* value = validateExpression(ast.value(), symbolTable);
+			value = validateExpression(ast.value(), symbolTable);
 
 			if (!value)
 				return {};

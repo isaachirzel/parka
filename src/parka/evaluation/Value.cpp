@@ -1,4 +1,5 @@
 #include "parka/evaluation/Value.hpp"
+#include "parka/ir/Type.hpp"
 #include "parka/log/Log.hpp"
 #include <cassert>
 
@@ -10,29 +11,28 @@ namespace parka::evaluation
 		_nodePtr(nullptr)
 	{}
 
-	void Value::nodePtr(void *nodePtr)
+	void Value::setNode(const ir::LValue& node)
 	{
-		_nodePtr = nodePtr;
-	}
-
-	void* Value::nodePtr()
-	{
-		return _nodePtr;
+		_nodePtr = &node;
 	}
 
 	void Value::set(const Value& other)
 	{
 		// TODO: handle actual conversion
-
 		if (_type != other._type)
-			log::fatal("Unable to convert $ to $.", other.type(), _type);
-
+			log::fatal("Unable to convert $ to $.", other._type, _type);
+		
 		_value = other._value;
 	}	
 
 	std::ostream& operator<<(std::ostream& out, const Value& value)
 	{
-		out << value._type << ": " << value._value;
+		if (value._nodePtr)
+		{
+			out << value._nodePtr->symbol() << " = ";
+		}
+
+		out << "(" << value._type << ") " << value._value;
 
 		return out;
 	}

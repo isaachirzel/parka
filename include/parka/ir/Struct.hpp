@@ -1,18 +1,18 @@
 #ifndef PARKA_IR_STRUCT_HPP
 #define PARKA_IR_STRUCT_HPP
 
-#include "parka/symbol/Resolution.hpp"
+#include "parka/ir/LValue.hpp"
 
 namespace parka::ir
 {
-	class StructIr: public TypeBase, public Resolution
+	class StructIr: public TypeBase, public LValue
 	{
 		String _symbol;
 
 	public:
 
 		StructIr(String&& symbol):
-			Resolution(ResolvableType::Struct),
+			LValue(ResolvableType::Struct),
 			_symbol(std::move(symbol))
 		{}
 		StructIr(StructIr&&) = default;

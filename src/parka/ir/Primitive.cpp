@@ -1,7 +1,6 @@
 #include "parka/ir/Primitive.hpp"
-#include "parka/log/Log.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/symbol/Resolvable.hpp"
-#include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
@@ -40,7 +39,7 @@ namespace parka::ir
 
 	Primitive::Primitive(const char *name, PrimitiveType type, u32 size):
 		Resolvable(ResolvableType::Primitive),
-		Resolution(ResolvableType::Primitive),
+		LValue(ResolvableType::Primitive),
 		_name(name),
 		_size(size),
 		_type(type)

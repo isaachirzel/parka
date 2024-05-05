@@ -6,14 +6,13 @@
 #include "parka/ir/Type.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
-#include "parka/util/Optional.hpp"
 
 namespace parka::evaluation
 {
 	class State
 	{
 		Array<Value> _stack;
-		Optional<Value> _returnValue;
+		Value* _returnValue;
 
 	public:
 		
@@ -22,13 +21,14 @@ namespace parka::evaluation
 		Value& push(const ir::Type& type, u64 value = 0);
 		void pop();
 		void truncate(usize length);
-		Value& get(void *nodePtr);
+		Value& find(const ir::LValue& node);
 		Value& get(usize index);
 		Frame createFrame();
 
 		usize length() const;
-		bool isReturning() const { return !!_returnValue; }
-		void returnValue(Value&& value) { _returnValue = std::move(value); }
+		bool hasReturnValue() const { return !!_returnValue; }
+		void returnValue(Value& value) { _returnValue = &value; }
+		void clearReturnValue() { _returnValue = nullptr; }
 		auto& returnValue() { return *_returnValue; }
 	};
 }

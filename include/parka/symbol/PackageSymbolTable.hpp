@@ -1,7 +1,8 @@
-#ifndef PARKA_VALIDATOR_PACKAGE_VALIDATOR_HPP
-#define PARKA_VALIDATOR_PACKAGE_VALIDATOR_HPP
+#ifndef PARKA_SYMBOL_PACKAGE_SYMBOL_TABLE_HPP
+#define PARKA_SYMBOL_PACKAGE_SYMBOL_TABLE_HPP
 
 #include "parka/ast/Package.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
@@ -25,7 +26,7 @@ namespace parka
 		Resolvable *find(const ast::Identifier& identifier);
 		Resolvable *findInitial(const ast::Identifier& identifier);
 		Resolvable *findAbsolute(const ast::Identifier& identifier);
-		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
+		ir::LValue *resolve(const ast::QualifiedIdentifier& identifier);
 		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
 
 		const String& scope() const { return _scope; }

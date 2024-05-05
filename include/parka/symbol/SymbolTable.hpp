@@ -4,6 +4,7 @@
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/ir/Operator.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
@@ -15,12 +16,12 @@ namespace parka
 		const SymbolTableType symbolTableType;
 
 		SymbolTable(SymbolTableType symbolTableType):
-		symbolTableType(symbolTableType)
+			symbolTableType(symbolTableType)
 		{}
 		virtual ~SymbolTable() {}
 
 		virtual Resolvable *find(const ast::Identifier& identifier) = 0;
-		virtual Resolution *resolve(const ast::QualifiedIdentifier& identifier) = 0;
+		virtual ir::LValue *resolve(const ast::QualifiedIdentifier& identifier) = 0;
 		virtual ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right) = 0;
 		virtual const String& scope() const = 0;
 

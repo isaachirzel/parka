@@ -1,6 +1,8 @@
 #ifndef PARKA_SYMBOL_MEMBER_ENTRY_HPP
 #define PARKA_SYMBOL_MEMBER_ENTRY_HPP
 
+#include "parka/symbol/Resolvable.hpp"
+
 namespace parka
 {
 	class MemberEntry: public Resolvable

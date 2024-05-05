@@ -3,12 +3,11 @@
 
 #include "parka/ir/Function.hpp"
 #include "parka/ir/Struct.hpp"
-#include "parka/symbol/Resolution.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
-	class PackageIr: public Resolution
+	class PackageIr: public LValue
 	{
 		String _symbol;
 		Array<PackageIr*> _packages;
@@ -18,11 +17,11 @@ namespace parka::ir
 	public:
 
 		PackageIr(String&& symbol, Array<PackageIr*> packages, Array<FunctionIr*>&& functions, Array<StructIr*>&& structs):
-		Resolution(ResolvableType::Package),
-		_symbol(std::move(symbol)),
-		_packages(std::move(packages)),
-		_functions(std::move(functions)),
-		_structs(std::move(structs))
+			LValue(ResolvableType::Package),
+			_symbol(std::move(symbol)),
+			_packages(std::move(packages)),
+			_functions(std::move(functions)),
+			_structs(std::move(structs))
 		{}
 		PackageIr(PackageIr&&) = default;
 		PackageIr(const PackageIr&) = delete;

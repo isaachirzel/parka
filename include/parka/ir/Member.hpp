@@ -1,20 +1,21 @@
 #ifndef PARKA_IR_MEMBER_HPP
 #define PARKA_IR_MEMBER_HPP
 
-#include "parka/symbol/Resolution.hpp"
+#include "parka/ir/Assignable.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/ir/Value.hpp"
 
 namespace parka::ir
 {
-	class MemberIr: public Resolution, public Value
+	class MemberIr: public LValue
 	{
 		Type _type;
 
 	public:
 
 		MemberIr(Type&& Type):
-		Resolution(ResolvableType::Member),
-		_type(std::move(Type))
+			LValue(ResolvableType::Member),
+			_type(std::move(Type))
 		{}
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;

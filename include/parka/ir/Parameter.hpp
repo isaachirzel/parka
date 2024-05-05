@@ -1,12 +1,13 @@
 #ifndef PARKA_IR_PARAMETER_HPP
 #define PARKA_IR_PARAMETER_HPP
 
-#include "parka/symbol/Resolution.hpp"
-#include "parka/ir/Value.hpp"
+#include "parka/enum/ResolvableType.hpp"
+#include "parka/ir/LValue.hpp"
+#include "parka/ir/Type.hpp"
 
 namespace parka::ir
 {
-	class ParameterIr: public Resolution, public Value
+	class ParameterIr: public LValue
 	{
 		String _symbol;
 		Type _type;
@@ -14,8 +15,8 @@ namespace parka::ir
 	public:
 
 		ParameterIr(Type&& type):
-		Resolution(ResolvableType::Parameter),
-		_type(std::move(type))
+			LValue(ResolvableType::Parameter),
+			_type(std::move(type))
 		{}
 		ParameterIr(ParameterIr&&) = default;
 		ParameterIr(const ParameterIr&) = delete;

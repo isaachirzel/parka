@@ -1,10 +1,10 @@
 #ifndef PARKA_AST_PRIMITIVE_HPP
 #define PARKA_AST_PRIMITIVE_HPP
 
+#include "parka/ir/LValue.hpp"
 #include "parka/ir/Type.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/Resolvable.hpp"
-#include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
@@ -19,7 +19,7 @@ namespace parka::ir
 		String
 	};
 
-	class Primitive: public TypeBase, public Resolvable, public Resolution
+	class Primitive: public TypeBase, public Resolvable, public LValue
 	{
 		String _name;
 		u32 _size;
@@ -53,7 +53,8 @@ namespace parka::ir
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
 
-		Resolution *resolve() { return this; }
+		LValue *resolve() { return this; }
+		const Type& type() const { return Type::typeNameType; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
 		const auto& primitiveType() const { return _type; }

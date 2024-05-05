@@ -1,12 +1,6 @@
 #ifndef PARKA_AST_PACKAGE_HPP
 #define PARKA_AST_PACKAGE_HPP
 
-#include "parka/enum/EntityType.hpp"
-#include "parka/file/Directory.hpp"
-#include "parka/ast/Identifier.hpp"
-#include "parka/ir/Package.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/Module.hpp"
 
 namespace parka::ast

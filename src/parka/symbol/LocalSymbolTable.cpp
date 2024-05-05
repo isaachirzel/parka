@@ -1,6 +1,7 @@
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/ast/Identifier.hpp"
 #include "parka/ast/QualifiedIdentifier.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/log/Indent.hpp"
@@ -66,7 +67,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Resolution *LocalSymbolTable::resolve(const ast::QualifiedIdentifier& identifier)
+	ir::LValue *LocalSymbolTable::resolve(const ast::QualifiedIdentifier& identifier)
 	{
 		assert(_parent != nullptr);
 

@@ -1,6 +1,7 @@
 #ifndef PARKA_EVALUATION_VALUE_HPP
 #define PARKA_EVALUATION_VALUE_HPP
 
+#include "parka/ir/LValue.hpp"
 #include "parka/ir/Type.hpp"
 
 namespace parka::evaluation
@@ -9,7 +10,7 @@ namespace parka::evaluation
 	{
 		ir::Type _type;
 		u64 _value;
-		void *_nodePtr;
+		const ir::LValue* _nodePtr;
 
 	public:
 
@@ -17,8 +18,8 @@ namespace parka::evaluation
 		Value(Value&&) = default;
 		Value(const Value&) = delete;
 
-		void nodePtr(void *nodePtr);
-		void* nodePtr();
+		void setNode(const ir::LValue& nodePtr);
+		const ir::LValue* nodePtr() { return _nodePtr; }
 
 		void value(u64 value) { _value = value; }
 		const auto& value() const { return _value; }

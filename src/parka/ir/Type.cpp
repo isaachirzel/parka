@@ -1,8 +1,13 @@
 #include "parka/ir/Type.hpp"
+#include "parka/ir/DummyTypeBase.hpp"
 #include "parka/ir/Primitive.hpp"
 
 namespace parka::ir
 {
+	const Type Type::packageType(DummyTypeBase::packageTypeBase);
+	const Type Type::functionType(DummyTypeBase::functionTypeBase);
+	const Type Type::typeNameType(DummyTypeBase::typeNameTypeBase);
+
 	const Type Type::voidType(Primitive::voidPrimitive);
 	const Type Type::u8Type(Primitive::u8Primitive);
 	const Type Type::u16Type(Primitive::u16Primitive);
@@ -63,7 +68,7 @@ namespace parka::ir
 	
 	std::ostream& operator<<(std::ostream& out, const Type& type)
 	{
-		out << "`" << *type._typeBase << '`';
+		out << *type._typeBase;
 
 		return out;
 	}

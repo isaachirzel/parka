@@ -1,12 +1,12 @@
 #ifndef PARKA_IR_VARIABLE_HPP
 #define PARKA_IR_VARIABLE_HPP
 
-#include "parka/symbol/Resolution.hpp"
-#include "parka/ir/Value.hpp"
+#include "parka/ir/LValue.hpp"
+#include "parka/ir/Type.hpp"
 
 namespace parka::ir
 {
-	class VariableIr: public Resolution, public Value
+	class VariableIr: public LValue
 	{
 		String _symbol;
 		Type _type;
@@ -14,9 +14,9 @@ namespace parka::ir
 	public:
 
 		VariableIr(String&& symbol, Type&& type):
-		Resolution(ResolvableType::Variable),
-		_symbol(std::move(symbol)),
-		_type(std::move(type))
+			LValue(ResolvableType::Variable),
+			_symbol(std::move(symbol)),
+			_type(std::move(type))
 		{}
 		VariableIr(VariableIr&&) = default;
 		VariableIr(const VariableIr&) = delete;

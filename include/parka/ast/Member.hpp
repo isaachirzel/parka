@@ -3,9 +3,6 @@
 
 #include "parka/ast/TypeAnnotation.hpp"
 #include "parka/ast/Identifier.hpp"
-#include "parka/enum/ResolvableType.hpp"
-#include "parka/ir/Member.hpp"
-#include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ast
 {
@@ -19,10 +16,10 @@ namespace parka::ast
 	public:
 
 		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic):
-		_snippet(snippet),
-		_identifier(std::move(identifier)),
-		_annotation(std::move(annotation)),
-		_isPublic(isPublic)
+			_snippet(snippet),
+			_identifier(std::move(identifier)),
+			_annotation(std::move(annotation)),
+			_isPublic(isPublic)
 		{}
 		MemberAst(MemberAst&&) = default;
 		MemberAst(const MemberAst&) = delete;

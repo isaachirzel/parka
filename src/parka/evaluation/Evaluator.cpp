@@ -1,6 +1,7 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/ir/DeclarationStatement.hpp"
 #include "parka/ir/ReturnStatement.hpp"
+#include "parka/ir/Type.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;
@@ -20,7 +21,7 @@ namespace parka::evaluation
 
 		auto& result = evaluateFunction(*entryPoint, {}, state);
 
-		log::note("Result of $: $", entryPoint->symbol(), result);
+		log::note("Result of $(): $", entryPoint->symbol(), result);
 	}
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, State& state)
@@ -29,11 +30,10 @@ namespace parka::evaluation
 		auto frame = state.createFrame();
 
 		evaluatePrototype(ir.prototype(), arguments, state);
+		evaluateExpression(ir.body(), state);
 
-		// TODO: Handle conversion from value to return value
-		auto& result = evaluateExpression(ir.body(), state);
-
-		returnValue.set(result);
+		if (state.hasReturnValue())
+			returnValue.set(state.returnValue());
 
 		return returnValue;
 	}
@@ -48,15 +48,12 @@ namespace parka::evaluation
 			auto& argument = *arguments[i];
 			auto& value = evaluateExpression(argument, state);
 
-			value.nodePtr((void*)&parameter);
+			value.setNode(parameter);
 		}
 	}
 
 	void evaluateStatement(const StatementIr& ir, State& state)
 	{
-		if (state.isReturning())
-			return;
-
 		switch (ir.statementType)
 		{
 			case StatementType::Declaration:
@@ -74,21 +71,25 @@ namespace parka::evaluation
 
 	void evaluateReturnStatement(const ir::ReturnStatementIr& ir, State& state)
 	{
-		log::notImplemented(here());
+		auto& value = ir.hasValue()
+			? evaluateExpression(ir.value(), state)
+			: state.push(ir::Type::voidType);
+
+		state.returnValue(value);
 	}
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, State& state)
 	{
 		auto& value = evaluateExpression(ir.value(), state);
 
-		value.nodePtr((void*)&ir.variable());
+		value.setNode(ir.variable());
 
-		log::note("Declaring: var $ = $", ir.variable().symbol(), value);
+		log::note("Declaring variable: $", value);
 	}
 
 	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, State& state)
 	{
-		throw std::exception();
+		log::notImplemented(here());
 	}
 
 	Value& evaluateExpression(const ExpressionIr& ir, State& state)
@@ -159,17 +160,19 @@ namespace parka::evaluation
 		{
 			// TODO: handle returns
 			evaluateStatement(*statement, state);
+
+			if (state.hasReturnValue())
+				break;
 		}
 
-		auto& result = state.push(Type::voidType);
-
-		return result;
+		auto& value = state.push(ir::Type::voidType);
+		
+		return value;
 	}
 
 	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, State& state)
 	{
-		const auto key = (void*)&ir.value();
-		auto& value = state.get(key);
+		auto& value = state.find(ir.value());
 
 		return value;
 	}

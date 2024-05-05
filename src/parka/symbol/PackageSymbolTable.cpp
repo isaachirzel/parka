@@ -1,6 +1,7 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/ast/Function.hpp"
 #include "parka/ir/IntrinsicOperator.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/ir/Operator.hpp"
 #include "parka/ir/Primitive.hpp"
 #include "parka/log/Indent.hpp"
@@ -102,7 +103,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Resolution *PackageSymbolTable::resolve(const ast::QualifiedIdentifier& qualifiedIdentifier)
+	ir::LValue *PackageSymbolTable::resolve(const ast::QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];
@@ -120,7 +121,7 @@ namespace parka
 
 			if (table == nullptr)
 			{
-				log::error("Unable to resolve $ in $ $.", identifier, entry->resolvableType, entry->name());
+				log::error("Unable to resolve $ in package $.", identifier, entry->name());
 				return nullptr;
 			}
 

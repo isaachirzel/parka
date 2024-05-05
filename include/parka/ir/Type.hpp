@@ -1,5 +1,5 @@
-#ifndef PARKA_TYPE_VALUE_TYPE_HPP
-#define PARKA_TYPE_VALUE_TYPE_HPP
+#ifndef PARKA_IR_TYPE_HPP
+#define PARKA_IR_TYPE_HPP
 
 #include "parka/ir/TypeBase.hpp"
 
@@ -15,6 +15,9 @@ namespace parka::ir
 		
 	public:
 
+		static const Type packageType;
+		static const Type functionType;
+		static const Type typeNameType;
 		static const Type voidType;
 		static const Type u8Type;
 		static const Type u16Type;

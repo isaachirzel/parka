@@ -1,10 +1,12 @@
 #include "parka/evaluation/State.hpp"
+#include "parka/ir/LValue.hpp"
 #include "parka/log/Log.hpp"
 
 namespace parka::evaluation
 {
 	State::State():
-		_stack()
+		_stack(),
+		_returnValue(nullptr)
 	{}
 
 	Value& State::push(const ir::Type& type, u64 value)
@@ -17,17 +19,17 @@ namespace parka::evaluation
 		_stack.pop();
 	}
 
-	Value& State::get(void *nodePtr)
+	Value& State::find(const ir::LValue& node)
 	{
 		for (usize i = _stack.length(); i-- > 0;)
 		{
 			auto& value = _stack[i];
 			
-			if (value.nodePtr() == nodePtr)
+			if (value.nodePtr() == &node)
 				return value;
 		}
 
-		log::fatal("Unable to get value for node: $", nodePtr);
+		log::fatal("Unable to get value for node: $", node.symbol());
 	}
 
 	Value& State::get(usize index)

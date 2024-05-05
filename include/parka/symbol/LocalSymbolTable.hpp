@@ -32,7 +32,7 @@ namespace parka
 		ParameterEntry *declare(ParameterEntry&& entry);
 		VariableEntry *declare(VariableEntry&& entry);
 		Resolvable *find(const ast::Identifier& identifier);
-		Resolution *resolve(const ast::QualifiedIdentifier& identifier);
+		ir::LValue *resolve(const ast::QualifiedIdentifier& identifier);
 		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
 
 		void setReturnType(const ir::Type& type) { _returnType = type; }
