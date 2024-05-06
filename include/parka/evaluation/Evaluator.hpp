@@ -8,6 +8,7 @@
 #include "parka/ir/DeclarationStatement.hpp"
 #include "parka/ir/IdentifierExpression.hpp"
 #include "parka/ir/IntegerLiteral.hpp"
+#include "parka/ir/IntrinsicOperator.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/ir/ReturnStatement.hpp"
 
@@ -24,6 +25,8 @@ namespace parka::evaluation
 	Value& evaluateBlock(const ir::BlockExpressionIr& ir, State& state);
 	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, State& state);
 	Value& evaluateIntegerLiteral(const ir::IntegerLiteralIr& ir, State& state);
+	Value& evaluateOperator(const ir::OperatorIr& op, Value& left, Value& right, State& state);
+	Value& evaluateIntrinsicOperator(const ir::IntrinsicOperatorIr& op, Value& left, Value& right, State& state);
 }
 
 #endif

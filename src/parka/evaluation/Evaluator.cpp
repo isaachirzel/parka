@@ -1,5 +1,7 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/evaluation/IntrinsicOperators.hpp"
 #include "parka/ir/DeclarationStatement.hpp"
+#include "parka/ir/IntrinsicOperator.hpp"
 #include "parka/ir/ReturnStatement.hpp"
 #include "parka/ir/Type.hpp"
 #include "parka/log/Log.hpp"
@@ -89,7 +91,18 @@ namespace parka::evaluation
 
 	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, State& state)
 	{
+		if (op.isIntrinsic)
+			return evaluateIntrinsicOperator(dynamic_cast<const ir::IntrinsicOperatorIr&>(op), left, right, state);
+
 		log::notImplemented(here());
+	}
+
+	Value& evaluateIntrinsicOperator(const IntrinsicOperatorIr& op, Value& left, Value& right, State& state)
+	{
+		auto index = &op - IntrinsicOperatorIr::entries;
+		auto& value = intrinsicOperators[index](left, right, state);
+
+		return value;
 	}
 
 	Value& evaluateExpression(const ExpressionIr& ir, State& state)

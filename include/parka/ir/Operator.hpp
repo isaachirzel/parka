@@ -3,14 +3,15 @@
 
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ir/Type.hpp"
+
 namespace parka::ir
 {
 	struct OperatorIr
 	{
-		bool _isIntrinsic;
+		const bool isIntrinsic;
 
 		OperatorIr(bool isIntrinsic):
-			_isIntrinsic(isIntrinsic)
+			isIntrinsic(isIntrinsic)
 		{}
 
 		virtual ~OperatorIr() {}

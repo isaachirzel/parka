@@ -2,8 +2,10 @@
 #define PARKA_IR_INTRINSIC_OPERATOR_HPP
 
 #include "parka/enum/OperatorType.hpp"
+#include "parka/evaluation/Value.hpp"
 #include "parka/ir/Operator.hpp"
 #include "parka/ir/Type.hpp"
+#include <functional>
 
 namespace parka::ir
 {
@@ -13,7 +15,7 @@ namespace parka::ir
 		const Type *_rhs;
 		const Type& _returnType;
 		OperatorType _operatorType;
-
+		
 	public:
 
 		static IntrinsicOperatorIr entries[];
