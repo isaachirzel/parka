@@ -28,6 +28,7 @@ namespace parka
 		Resolvable *findAbsolute(const ast::Identifier& identifier);
 		ir::LValue *resolve(const ast::QualifiedIdentifier& identifier);
 		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
+		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		const String& scope() const { return _scope; }
 		auto& functions() { return _functions; }

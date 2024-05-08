@@ -11,9 +11,11 @@ namespace parka::ir
 		
 	public:
 
-		static DummyTypeBase packageTypeBase;
-		static DummyTypeBase typeNameTypeBase;
-		static DummyTypeBase functionTypeBase;
+		static const DummyTypeBase packageTypeBase;
+		static const DummyTypeBase typeNameTypeBase;
+		static const DummyTypeBase functionTypeBase;
+		static const DummyTypeBase integerLiteralTypeBase;
+		static const DummyTypeBase floatLiteralTypeBase;
 
 		DummyTypeBase(const char *name);
 

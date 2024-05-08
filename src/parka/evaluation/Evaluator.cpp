@@ -99,7 +99,10 @@ namespace parka::evaluation
 
 	Value& evaluateIntrinsicOperator(const IntrinsicOperatorIr& op, Value& left, Value& right, State& state)
 	{
-		auto index = &op - IntrinsicOperatorIr::entries;
+		auto index = (usize)(&op - IntrinsicOperatorIr::entries);
+		
+		assert(index < intrinsicOperatorCount);
+
 		auto& value = intrinsicOperators[index](left, right, state);
 
 		return value;

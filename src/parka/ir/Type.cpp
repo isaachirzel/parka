@@ -7,6 +7,8 @@ namespace parka::ir
 	const Type Type::packageType(DummyTypeBase::packageTypeBase);
 	const Type Type::functionType(DummyTypeBase::functionTypeBase);
 	const Type Type::typeNameType(DummyTypeBase::typeNameTypeBase);
+	const Type Type::integerLiteralType(DummyTypeBase::integerLiteralTypeBase);
+	const Type Type::floatLiteralType(DummyTypeBase::floatLiteralTypeBase);
 
 	const Type Type::voidType(Primitive::voidPrimitive);
 	const Type Type::u8Type(Primitive::u8Primitive);

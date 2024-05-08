@@ -90,6 +90,13 @@ namespace parka
 
 		return _parent->resolve(type, left, right);
 	}
+
+	ir::ConversionIr *LocalSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
+	{
+		assert(_parent != nullptr);
+
+		return _parent->resolveConversion(from, to);
+	}
 	
 	std::ostream& operator<<(std::ostream& out, const LocalSymbolTable& symbolTable)
 	{

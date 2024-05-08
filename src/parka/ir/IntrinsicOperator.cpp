@@ -37,8 +37,53 @@ namespace parka::ir
 		return op<Left, Right>(OperatorType::Divide);
 	}
 
+	IntrinsicOperatorIr add(const Type& left, const Type& right, const Type& ret)
+	{
+		return IntrinsicOperatorIr(OperatorType::Add, left, right, ret);
+	}
+
+	IntrinsicOperatorIr subtract(const Type& left, const Type& right, const Type& ret)
+	{
+		return IntrinsicOperatorIr(OperatorType::Subtract, left, right, ret);
+	}
+
+	IntrinsicOperatorIr multiply(const Type& left, const Type& right, const Type& ret)
+	{
+		return IntrinsicOperatorIr(OperatorType::Multiply, left, right, ret);
+	}
+
+	IntrinsicOperatorIr divide(const Type& left, const Type& right, const Type& ret)
+	{
+		return IntrinsicOperatorIr(OperatorType::Divide, left, right, ret);
+	}
+
+	IntrinsicOperatorIr addIntToInt()
+	{
+		return IntrinsicOperatorIr(OperatorType::Add, Type::integerLiteralType, Type::integerLiteralType, Type::integerLiteralType);
+	}
+
+	IntrinsicOperatorIr subtractIntFromInt()
+	{
+		return IntrinsicOperatorIr(OperatorType::Subtract, Type::integerLiteralType, Type::integerLiteralType, Type::integerLiteralType);
+	}
+
+	IntrinsicOperatorIr multiplyIntAndInt()
+	{
+		return IntrinsicOperatorIr(OperatorType::Multiply, Type::integerLiteralType, Type::integerLiteralType, Type::integerLiteralType);
+	}
+
+	IntrinsicOperatorIr divideIntByInt()
+	{
+		return IntrinsicOperatorIr(OperatorType::Divide, Type::integerLiteralType, Type::integerLiteralType, Type::integerLiteralType);
+	}
+
 	IntrinsicOperatorIr IntrinsicOperatorIr::entries[] =
 	{
+		addIntToInt(),
+		subtractIntFromInt(),
+		multiplyIntAndInt(),
+		divideIntByInt(),
+
 		add<u8, u8>(),
 		subtract<u8, u8>(),
 		multiply<u8, u8>(),

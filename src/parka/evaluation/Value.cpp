@@ -39,10 +39,7 @@ namespace parka::evaluation
 	// }
 
 	Value& Value::operator=(const Value& other)
-	{
-		if (_type != other._type)
-			log::fatal("Unable to convert $ to $.", other._type, _type);
-		
+	{		
 		std::memcpy(_value, other._value, sizeof(_value));
 
 		_type = other._type;
@@ -71,7 +68,7 @@ namespace parka::evaluation
 			out << value._nodePtr->symbol() << " = ";
 		}
 
-		out << "(" << value._type << ") " << *(const u64*)value._value;
+		out << "(" << value._type << ") " << *(const i64*)value._value;
 
 		return out;
 	}

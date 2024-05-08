@@ -4,7 +4,6 @@
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ir/BinaryExpression.hpp"
 #include "parka/ir/Expression.hpp"
-#include "parka/ir/Package.hpp"
 #include "parka/ir/ReturnStatement.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
@@ -306,20 +305,6 @@ namespace parka::validator
 		return value;
 	}
 
-	static const Type& getIntegerType(u64 value)
-	{
-		if (value > 0xFFFFFFFF)
-			return Type::u64Type;
-
-		if (value > 0x0000FFFF)
-			return Type::u32Type;
-
-		if (value > 0x000000FF)
-			return Type::u16Type;
-
-		return Type::u8Type;
-	}
-
 	IntegerLiteralIr *validateIntegerLiteral(const ast::IntegerLiteralAst& ast)
 	{
 		auto value = getIntegerValue(ast.snippet());
@@ -327,9 +312,7 @@ namespace parka::validator
 		if (!value)
 			return {};
 
-		const auto& type = getIntegerType(*value);
-
-		return new IntegerLiteralIr(*value, Type(type));
+		return new IntegerLiteralIr(*value);
 	}
 
 	static f64 parseDecimal(const Snippet& snippet)
@@ -369,10 +352,10 @@ namespace parka::validator
 
 	FloatLiteralIr *validateFloatLiteral(const ast::FloatLiteralAst& ast)
 	{
-		// TODO: handle type suffixes to determine type
+		// TODO: handle type suffixes to determine f64 vs f32
 		auto value = parseDecimal(ast.snippet());
 
-		return new FloatLiteralIr(value, Type(Type::f64Type));
+		return new FloatLiteralIr(value);
 	}
 
 	StringLiteralIr *validateStringLiteral(const ast::StringLiteralAst& ast)
@@ -406,8 +389,6 @@ namespace parka::validator
 	{
 		return new BoolLiteralIr(ast.value());
 	}
-
-
 
 	StatementIr *validateStatement(const ast::StatementAst& ast, LocalSymbolTable& symbolTable)
 	{
@@ -471,9 +452,11 @@ namespace parka::validator
 			returnedType = value->type();
 		}
 
-		if (symbolTable.returnType() != returnedType)
+		auto* conversion = symbolTable.resolveConversion(returnedType, symbolTable.returnType());
+
+		if (!conversion)
 		{
-			log::error("Unable to convert $ to return type $.", returnedType, symbolTable.returnType());
+			log::error("Unable to return $ in function return type $.", returnedType, symbolTable.returnType());
 			return {};
 		}
 
@@ -484,7 +467,7 @@ namespace parka::validator
 	{
 		if (!annotation)
 		{
-			if (!value)			
+			if (!value)
 				return {};
 			
 			auto valueType = value->type();
@@ -492,16 +475,19 @@ namespace parka::validator
 			return valueType;
 		}
 
-		auto annotationType = validateTypeAnnotation(*annotation, symbolTable);
+		auto annotationTypeResult = validateTypeAnnotation(*annotation, symbolTable);
 
-		if (!annotationType || !value)
+		if (!annotationTypeResult || !value)
 			return {};
 
 		const auto& type = value->type();
+		auto annotationType = *annotationTypeResult;
 
-		if (type != *annotationType)
+		const auto* conversion = symbolTable.resolveConversion(type, annotationType);
+
+		if (!conversion)
 		{
-			log::error("Unable to initialize variable of type $ with type $.", annotationType, type);
+			log::error("Unable to initialize variable of type $ with a value of type $.", annotationType, type);
 			return {};
 		}
 

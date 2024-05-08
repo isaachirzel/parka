@@ -7,22 +7,18 @@ namespace parka::ir
 {
 	class IntegerLiteralIr: public ExpressionIr
 	{
-		u64 _value;
-		Type _type;
+		i64 _value;
+		usize _size;
 
 	public:
 
-		IntegerLiteralIr(u64 value, Type&& type):
-		ExpressionIr(ExpressionType::IntegerLiteral),
-		_value(value),
-		_type(std::move(type))
-		{}
+		IntegerLiteralIr(u64 value);
 		IntegerLiteralIr(IntegerLiteralIr&&) = default;
 		IntegerLiteralIr(const IntegerLiteralIr&) = delete;
 		
-		// TODO: Actually check size of literal
-		const auto&  value() const { return _value; }
-		const Type& type() const { return _type; }
+		const auto& value() const { return _value; }
+		const auto& size() const { return _size; }
+		const Type& type() const { return Type::integerLiteralType; }
 	};
 }
 

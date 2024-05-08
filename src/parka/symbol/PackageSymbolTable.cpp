@@ -1,5 +1,6 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/ast/Function.hpp"
+#include "parka/ir/Conversion.hpp"
 #include "parka/ir/IntrinsicOperator.hpp"
 #include "parka/ir/LValue.hpp"
 #include "parka/ir/Operator.hpp"
@@ -163,6 +164,19 @@ namespace parka
 		else
 		{
 			log::error("No $ operator has been defined for $.", type, left);
+		}
+
+		return nullptr;
+	}
+
+	ir::ConversionIr *PackageSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
+	{
+		for (usize i = 0; i < ir::ConversionIr::entryCount; ++i)
+		{
+			auto& conversion = ir::ConversionIr::entries[i];
+
+			if (conversion.from() == from && conversion.to() == to)
+				return &conversion;
 		}
 
 		return nullptr;

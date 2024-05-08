@@ -19,6 +19,8 @@ namespace parka::ir
 		static const Type functionType;
 		static const Type typeNameType;
 		static const Type voidType;
+		static const Type integerLiteralType;
+		static const Type floatLiteralType;
 		static const Type u8Type;
 		static const Type u16Type;
 		static const Type u32Type;
