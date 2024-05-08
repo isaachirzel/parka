@@ -40,6 +40,49 @@ namespace parka::ir
 		Type(const Type&);
 		~Type();
 
+		template <typename T>
+		static constexpr const ir::Type& of()
+		{
+			if constexpr (std::is_same_v<T, void>)
+				return voidType;
+
+			if constexpr (std::is_same_v<T, u8>)
+				return u8Type;
+
+			if constexpr (std::is_same_v<T, u16>)
+				return u16Type;
+
+			if constexpr (std::is_same_v<T, u32>)
+				return u32Type;
+
+			if constexpr (std::is_same_v<T, u64>)
+				return u64Type;
+
+			if constexpr (std::is_same_v<T, i8>)
+				return i8Type;
+
+			if constexpr (std::is_same_v<T, i16>)
+				return i16Type;
+
+			if constexpr (std::is_same_v<T, i32>)
+				return i32Type;
+
+			if constexpr (std::is_same_v<T, i64>)
+				return i64Type;
+
+			if constexpr (std::is_same_v<T, f32>)
+				return f32Type;
+
+			if constexpr (std::is_same_v<T, f64>)
+				return f64Type;
+
+			if constexpr (std::is_same_v<T, bool>)
+				return boolType;
+
+			if constexpr (std::is_same_v<T, char>)
+				return charType;
+		}
+
 		const auto& typeBase() const { return _typeBase; }
 
 		Type& operator=(Type&&);

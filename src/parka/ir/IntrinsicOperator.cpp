@@ -3,66 +3,71 @@
 
 namespace parka::ir
 {
+	template <typename Left, typename Right>
+	IntrinsicOperatorIr op(OperatorType type)
+	{
+		const auto& l = ir::Type::of<Left>();
+		const auto& r = ir::Type::of<Right>();
+		const auto& ret = sizeof(Left) >= sizeof(Right) ? l : r;
+
+		return IntrinsicOperatorIr(type, l, r, ret);
+	}
+
+	template <typename Left, typename Right>
+	IntrinsicOperatorIr add()
+	{
+		return op<Left, Right>(OperatorType::Add);
+	}
+
+	template <typename Left, typename Right>
+	IntrinsicOperatorIr subtract()
+	{
+		return op<Left, Right>(OperatorType::Subtract);
+	}
+
+	template <typename Left, typename Right>
+	IntrinsicOperatorIr multiply()
+	{
+		return op<Left, Right>(OperatorType::Multiply);
+	}
+
+	template <typename Left, typename Right>
+	IntrinsicOperatorIr divide()
+	{
+		return op<Left, Right>(OperatorType::Divide);
+	}
+
 	IntrinsicOperatorIr IntrinsicOperatorIr::entries[] =
 	{
-		// u8
-		{ OperatorType::Add, Type::u8Type, Type::u8Type, Type::u8Type },
-		{ OperatorType::Subtract, Type::u8Type, Type::u8Type, Type::u8Type },
-		{ OperatorType::Multiply, Type::u8Type, Type::u8Type, Type::u8Type },
-		{ OperatorType::Divide, Type::u8Type, Type::u8Type, Type::u8Type },
-		// { OperatorType::Add, Type::u8Type, Type::u16Type, Type::u16Type },
-		// { OperatorType::Add, Type::u8Type, Type::u32Type, Type::u32Type },
-		// { OperatorType::Add, Type::u8Type, Type::u64Type, Type::u64Type },
+		add<u8, u8>(),
+		subtract<u8, u8>(),
+		multiply<u8, u8>(),
+		divide<u8, u8>(),
 
-		// u16
-		// { OperatorType::Add, Type::u16Type, Type::u8Type, Type::u16Type },
-		{ OperatorType::Add, Type::u16Type, Type::u16Type, Type::u16Type },
-		// { OperatorType::Add, Type::u16Type, Type::u32Type, Type::u32Type },
-		// { OperatorType::Add, Type::u16Type, Type::u64Type, Type::u64Type },
+		add<u16, u16>(),
+		subtract<u16, u16>(),
+		multiply<u16, u16>(),
+		divide<u16, u16>(),
 
-		// u32
-		// { OperatorType::Add, Type::u32Type, Type::u8Type, Type::u32Type },
-		// { OperatorType::Add, Type::u32Type, Type::u16Type, Type::u32Type },
-		{ OperatorType::Add, Type::u32Type, Type::u32Type, Type::u32Type },
-		// { OperatorType::Add, Type::u32Type, Type::u64Type, Type::u64Type },
+		add<u32, u32>(),
+		subtract<u32, u32>(),
+		multiply<u32, u32>(),
+		divide<u32, u32>(),
 
-		// u64
-		// { OperatorType::Add, Type::u64Type, Type::u8Type, Type::u64Type },
-		// { OperatorType::Add, Type::u64Type, Type::u16Type, Type::u64Type },
-		// { OperatorType::Add, Type::u64Type, Type::u32Type, Type::u64Type },
-		{ OperatorType::Add, Type::u64Type, Type::u64Type, Type::u64Type },
+		add<u64, u64>(),
+		subtract<u64, u64>(),
+		multiply<u64, u64>(),
+		divide<u64, u64>(),
 
-		// i8
-		{ OperatorType::Add, Type::i8Type, Type::i8Type, Type::i8Type },
-		// { OperatorType::Add, Type::i8Type, Type::i16Type, Type::i16Type },
-		// { OperatorType::Add, Type::i8Type, Type::i32Type, Type::i32Type },
-		// { OperatorType::Add, Type::i8Type, Type::i64Type, Type::i64Type },
+		add<f32, f32>(),
+		subtract<f32, f32>(),
+		multiply<f32, f32>(),
+		divide<f32, f32>(),
 
-		// i16
-		// { OperatorType::Add, Type::i16Type, Type::i8Type, Type::i16Type },
-		{ OperatorType::Add, Type::i16Type, Type::i16Type, Type::i16Type },
-		// { OperatorType::Add, Type::i16Type, Type::i32Type, Type::i32Type },
-		// { OperatorType::Add, Type::i16Type, Type::i64Type, Type::i64Type },
-
-		// i32
-		// { OperatorType::Add, Type::i32Type, Type::i8Type, Type::i32Type },
-		// { OperatorType::Add, Type::i32Type, Type::i16Type, Type::i32Type },
-		{ OperatorType::Add, Type::i32Type, Type::i32Type, Type::i32Type },
-		// { OperatorType::Add, Type::i32Type, Type::i64Type, Type::i64Type },
-
-		// i64
-		// { OperatorType::Add, Type::i64Type, Type::i8Type, Type::i64Type },
-		// { OperatorType::Add, Type::i64Type, Type::i16Type, Type::i64Type },
-		// { OperatorType::Add, Type::i64Type, Type::i32Type, Type::i64Type },
-		{ OperatorType::Add, Type::i64Type, Type::i64Type, Type::i64Type },
-
-		// f32
-		{ OperatorType::Add, Type::f32Type, Type::f32Type, Type::f32Type },
-		// { OperatorType::Add, Type::f32Type, Type::f64Type, Type::f64Type },
-
-		// f64
-		// { OperatorType::Add, Type::f64Type, Type::f32Type, Type::f64Type },
-		{ OperatorType::Add, Type::f64Type, Type::f64Type, Type::f64Type },
+		add<f64, f64>(),
+		subtract<f64, f64>(),
+		multiply<f64, f64>(),
+		divide<f64, f64>(),
 	};
 	const usize IntrinsicOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
 
