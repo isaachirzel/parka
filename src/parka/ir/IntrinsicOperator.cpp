@@ -7,6 +7,9 @@ namespace parka::ir
 	{
 		// u8
 		{ OperatorType::Add, Type::u8Type, Type::u8Type, Type::u8Type },
+		{ OperatorType::Subtract, Type::u8Type, Type::u8Type, Type::u8Type },
+		{ OperatorType::Multiply, Type::u8Type, Type::u8Type, Type::u8Type },
+		{ OperatorType::Divide, Type::u8Type, Type::u8Type, Type::u8Type },
 		// { OperatorType::Add, Type::u8Type, Type::u16Type, Type::u16Type },
 		// { OperatorType::Add, Type::u8Type, Type::u32Type, Type::u32Type },
 		// { OperatorType::Add, Type::u8Type, Type::u64Type, Type::u64Type },

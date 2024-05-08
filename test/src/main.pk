@@ -2,18 +2,7 @@ function main() -> u8
 {
 	var a = 5;
 	var b = 7;
-	var c = a + b;
+	var c = a * b;
 
 	return c;
-
-	/*
-	var a = 1 + 4294967296;
-	var b = 4;
-	var c = a + b;
-	*/
-	/*
-	var a = 122;
-	return a;
-	return 0;
-	*/
 }

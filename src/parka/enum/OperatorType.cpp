@@ -11,6 +11,15 @@ namespace parka
 			case BinaryExpressionType::Add:
 				return OperatorType::Add;
 
+			case BinaryExpressionType::Subtract:
+				return OperatorType::Subtract;
+
+			case BinaryExpressionType::Multiply:
+				return OperatorType::Multiply;
+
+			case BinaryExpressionType::Divide:
+				return OperatorType::Divide;
+
 			default:
 				break;
 		}
@@ -24,6 +33,18 @@ namespace parka
 		{
 			case OperatorType::Add:
 				out << "`+`";
+				break;
+
+			case OperatorType::Subtract:
+				out << "`-`";
+				break;
+
+			case OperatorType::Multiply:
+				out << "`*`";
+				break;
+
+			case OperatorType::Divide:
+				out << "`/`";
 				break;
 				
 			default:

@@ -6,7 +6,10 @@ namespace parka
 {
 	enum class OperatorType
 	{
-		Add
+		Add,
+		Subtract,
+		Multiply,
+		Divide
 	};
 
 	OperatorType toOperatorType(BinaryExpressionType type);
