@@ -1,40 +1,39 @@
 #include "parka/ir/IntrinsicOperator.hpp"
 #include "parka/enum/OperatorType.hpp"
+#include "parka/util/Float.hpp"
 
 namespace parka::ir
 {
-	template <typename Left, typename Right>
-	IntrinsicOperatorIr op(OperatorType type)
+	template <typename T>
+	IntrinsicOperatorIr op(OperatorType operatorType)
 	{
-		const auto& l = ir::Type::of<Left>();
-		const auto& r = ir::Type::of<Right>();
-		const auto& ret = sizeof(Left) >= sizeof(Right) ? l : r;
+		const auto& type = ir::Type::of<T>();
 
-		return IntrinsicOperatorIr(type, l, r, ret);
+		return IntrinsicOperatorIr(operatorType, type, type, type);
 	}
 
-	template <typename Left, typename Right>
+	template <typename T>
 	IntrinsicOperatorIr add()
 	{
-		return op<Left, Right>(OperatorType::Add);
+		return op<T>(OperatorType::Add);
 	}
 
-	template <typename Left, typename Right>
+	template <typename T>
 	IntrinsicOperatorIr subtract()
 	{
-		return op<Left, Right>(OperatorType::Subtract);
+		return op<T>(OperatorType::Subtract);
 	}
 
-	template <typename Left, typename Right>
+	template <typename T>
 	IntrinsicOperatorIr multiply()
 	{
-		return op<Left, Right>(OperatorType::Multiply);
+		return op<T>(OperatorType::Multiply);
 	}
 
-	template <typename Left, typename Right>
+	template <typename T>
 	IntrinsicOperatorIr divide()
 	{
-		return op<Left, Right>(OperatorType::Divide);
+		return op<T>(OperatorType::Divide);
 	}
 
 	IntrinsicOperatorIr add(const Type& left, const Type& right, const Type& ret)
@@ -79,40 +78,65 @@ namespace parka::ir
 
 	IntrinsicOperatorIr IntrinsicOperatorIr::entries[] =
 	{
-		addIntToInt(),
-		subtractIntFromInt(),
-		multiplyIntAndInt(),
-		divideIntByInt(),
+		add<Integer>(),
+		subtract<Integer>(),
+		multiply<Integer>(),
+		divide<Integer>(),
 
-		add<u8, u8>(),
-		subtract<u8, u8>(),
-		multiply<u8, u8>(),
-		divide<u8, u8>(),
+		add<Float>(),
+		subtract<Float>(),
+		multiply<Float>(),
+		divide<Float>(),
 
-		add<u16, u16>(),
-		subtract<u16, u16>(),
-		multiply<u16, u16>(),
-		divide<u16, u16>(),
+		add<u8>(),
+		subtract<u8>(),
+		multiply<u8>(),
+		divide<u8>(),
 
-		add<u32, u32>(),
-		subtract<u32, u32>(),
-		multiply<u32, u32>(),
-		divide<u32, u32>(),
+		add<u16>(),
+		subtract<u16>(),
+		multiply<u16>(),
+		divide<u16>(),
 
-		add<u64, u64>(),
-		subtract<u64, u64>(),
-		multiply<u64, u64>(),
-		divide<u64, u64>(),
+		add<u32>(),
+		subtract<u32>(),
+		multiply<u32>(),
+		divide<u32>(),
 
-		add<f32, f32>(),
-		subtract<f32, f32>(),
-		multiply<f32, f32>(),
-		divide<f32, f32>(),
+		add<u64>(),
+		subtract<u64>(),
+		multiply<u64>(),
+		divide<u64>(),
 
-		add<f64, f64>(),
-		subtract<f64, f64>(),
-		multiply<f64, f64>(),
-		divide<f64, f64>(),
+		add<i8>(),
+		subtract<i8>(),
+		multiply<i8>(),
+		divide<i8>(),
+
+		add<i16>(),
+		subtract<i16>(),
+		multiply<i16>(),
+		divide<i16>(),
+
+		add<i32>(),
+		subtract<i32>(),
+		multiply<i32>(),
+		divide<i32>(),
+
+		add<i64>(),
+		subtract<i64>(),
+		multiply<i64>(),
+		divide<i64>(),
+
+		add<f32>(),
+		subtract<f32>(),
+		multiply<f32>(),
+		divide<f32>(),
+
+		add<f64>(),
+		subtract<f64>(),
+		multiply<f64>(),
+		divide<f64>()
 	};
 	const usize IntrinsicOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
 

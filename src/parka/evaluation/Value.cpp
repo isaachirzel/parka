@@ -65,7 +65,7 @@ namespace parka::evaluation
 	{
 		if (value._nodePtr)
 		{
-			out << value._nodePtr->symbol() << " = ";
+			out << value._nodePtr->symbol() << ": " << value._nodePtr->type() << " = ";
 		}
 
 		out << "(" << value._type << ") " << *(const i64*)value._value;

@@ -2,6 +2,8 @@
 #define PARKA_IR_TYPE_HPP
 
 #include "parka/ir/TypeBase.hpp"
+#include "parka/util/Float.hpp"
+#include "parka/util/Integer.hpp"
 
 namespace parka::ir
 {
@@ -45,6 +47,12 @@ namespace parka::ir
 		template <typename T>
 		static constexpr const ir::Type& of()
 		{
+			if constexpr (std::is_same_v<T, Integer>)
+				return integerLiteralType;
+
+			if constexpr (std::is_same_v<T, Float>)
+				return floatLiteralType;
+
 			if constexpr (std::is_same_v<T, void>)
 				return voidType;
 
