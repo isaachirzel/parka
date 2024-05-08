@@ -22,6 +22,17 @@ namespace parka
 		friend Integer operator-(const Integer& left, const Integer& right);
 		friend Integer operator*(const Integer& left, const Integer& right);
 		friend Integer operator/(const Integer& left, const Integer& right);
+		
+		operator i8();
+		operator i16();
+		operator i32();
+		operator i64();
+		operator u8();
+		operator u16();
+		operator u32();
+		operator u64();
+
+		friend std::ostream& operator<<(std::ostream& out, const Integer integer);
 	};
 }
 

@@ -22,6 +22,11 @@ namespace parka
 		friend Float operator-(const Float& left, const Float& right);
 		friend Float operator*(const Float& left, const Float& right);
 		friend Float operator/(const Float& left, const Float& right);
+
+		operator f32();
+		operator f64();
+
+		friend std::ostream& operator<<(std::ostream& out, const Float& number);
 	};
 }
 

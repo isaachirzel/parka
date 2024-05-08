@@ -25,4 +25,21 @@ namespace parka
 	{
 		return left._value / right._value;
 	}
+
+	Float::operator f32()
+	{
+		return (f32)_value;
+	}
+
+	Float::operator f64()
+	{
+		return (f64)_value;
+	}
+	
+	std::ostream& operator<<(std::ostream& out, const Float& number)
+	{
+		out << number._value;
+
+		return out;
+	}
 }

@@ -16,7 +16,7 @@ namespace parka::ir
 	{
 		const auto& to = Type::of<To>();
 
-		return ConversionIr(Type::integerLiteralType, to);
+		return ConversionIr(Type::integerType, to);
 	}
 
 	template <typename To>
@@ -24,7 +24,7 @@ namespace parka::ir
 	{
 		const auto& to = Type::of<To>();
 
-		return ConversionIr(Type::integerLiteralType, to);
+		return ConversionIr(Type::integerType, to);
 	}
 
 	ConversionIr ConversionIr::entries[] =
@@ -37,9 +37,7 @@ namespace parka::ir
 		integerConv<i16>(),
 		integerConv<i32>(),
 		integerConv<i64>(),
-		integerConv<f32>(),
 		floatConv<f32>(),
-		integerConv<f64>(),
 		floatConv<f64>(),
 	};
 	const usize ConversionIr::entryCount = sizeof(entries) / sizeof(*entries);

@@ -21,8 +21,8 @@ namespace parka::ir
 		static const Type functionType;
 		static const Type typeNameType;
 		static const Type voidType;
-		static const Type integerLiteralType;
-		static const Type floatLiteralType;
+		static const Type integerType;
+		static const Type floatType;
 		static const Type u8Type;
 		static const Type u16Type;
 		static const Type u32Type;
@@ -48,10 +48,10 @@ namespace parka::ir
 		static constexpr const ir::Type& of()
 		{
 			if constexpr (std::is_same_v<T, Integer>)
-				return integerLiteralType;
+				return integerType;
 
 			if constexpr (std::is_same_v<T, Float>)
-				return floatLiteralType;
+				return floatType;
 
 			if constexpr (std::is_same_v<T, void>)
 				return voidType;
