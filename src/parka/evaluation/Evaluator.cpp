@@ -35,7 +35,7 @@ namespace parka::evaluation
 		evaluateExpression(ir.body(), state);
 
 		if (state.hasReturnValue())
-			returnValue.set(state.returnValue());
+			returnValue = state.returnValue();
 
 		return returnValue;
 	}
@@ -192,7 +192,9 @@ namespace parka::evaluation
 
 	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir, State& state)
 	{
-		auto& result = state.push(ir.type(), ir.value());
+		auto& result = state.push(ir.type());
+
+		result.set((const byte*)&ir.value(), sizeof(ir.value()));
 
 		return result;		
 	}

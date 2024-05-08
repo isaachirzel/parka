@@ -3,28 +3,32 @@
 
 #include "parka/ir/LValue.hpp"
 #include "parka/ir/Type.hpp"
+#include "parka/util/Common.hpp"
 
 namespace parka::evaluation
 {
 	class Value
 	{
 		ir::Type _type;
-		u64 _value;
+		alignas(u64) byte _value[sizeof(u64)];
 		const ir::LValue* _nodePtr;
 
 	public:
 
-		Value(const ir::Type& type, u64 value = 0);
-		Value(Value&&) = default;
+		Value(const ir::Type& type);
+		Value(Value&&);
 		Value(const Value&) = delete;
+
+		// Value& operator=(Value&& other);
+		Value& operator=(const Value& other);
 
 		void setNode(const ir::LValue& nodePtr);
 		const ir::LValue* nodePtr() { return _nodePtr; }
 
-		void value(u64 value) { _value = value; }
-		const auto& value() const { return _value; }
 
-		void set(const Value& other);
+		void set(const byte* data, usize size);
+		// void set(const Value& other);
+		const byte* value() const { return _value; }
 
 		const ir::Type& type() const { return _type; }
 

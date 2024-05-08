@@ -9,9 +9,9 @@ namespace parka::evaluation
 		_returnValue(nullptr)
 	{}
 
-	Value& State::push(const ir::Type& type, u64 value)
+	Value& State::push(const ir::Type& type)
 	{
-		return _stack.push(Value(type, value));
+		return _stack.push(Value(type));
 	}
 
 	void State::pop()

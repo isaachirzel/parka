@@ -18,7 +18,7 @@ namespace parka::evaluation
 		
 		State();
 
-		Value& push(const ir::Type& type, u64 value = 0);
+		Value& push(const ir::Type& type);
 		void pop();
 		void truncate(usize length);
 		Value& find(const ir::LValue& node);
