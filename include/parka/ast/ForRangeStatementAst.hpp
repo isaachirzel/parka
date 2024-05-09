@@ -6,9 +6,10 @@
 #include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/RangeAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
+
 namespace parka::ast
 {
-	class ForRangeExpressionAst: public ExpressionAst
+	class ForRangeStatementAst: public StatementAst
 	{
 		Snippet _snippet;
 		KeywordAst _forKeyword;
@@ -17,7 +18,7 @@ namespace parka::ast
 
 	public:
 
-		ForRangeExpressionAst(KeywordAst&& forKeyword, Identifier&& variableName, RangeAst&& range):
+		ForRangeStatementAst(KeywordAst&& forKeyword, Identifier&& variableName, RangeAst&& range):
 			ExpressionAst(ExpressionType::ForRange),
 			_snippet(forKeyword.snippet() + range.snippet()),
 			_forKeyword(std::move(forKeyword)),

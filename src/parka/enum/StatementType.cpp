@@ -14,8 +14,24 @@ namespace parka
 				out << "expression";
 				break;
 
-			case StatementType::Jump:
-				out << "jump";
+			case StatementType::Return:
+				out << "return";
+				break;
+
+			case StatementType::Break:
+				out << "break";
+				break;
+
+			case StatementType::Continue:
+				out << "continue";
+				break;
+
+			case StatementType::Yield:
+				out << "yield";
+				break;
+
+			case StatementType::For:
+				out << "for";
 				break;
 
 			default:

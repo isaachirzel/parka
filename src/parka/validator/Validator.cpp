@@ -3,6 +3,7 @@
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/OperatorType.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
+#include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
@@ -400,8 +401,8 @@ namespace parka::validator
 			// case StatementType::Expression:
 			// 	break;
 
-			case StatementType::Jump:
-				return validateJumpStatement(static_cast<const ast::JumpStatementAst&>(ast), symbolTable);
+			case StatementType::Return:
+				return validateReturnStatement(static_cast<const ast::ReturnStatementAst&>(ast), symbolTable);
 
 			default:
 				break;
@@ -423,21 +424,7 @@ namespace parka::validator
 		return new DeclarationStatementIr(*variable, *value);
 	}
 
-	ir::StatementIr *validateJumpStatement(const ast::JumpStatementAst& ast, LocalSymbolTable& symbolTable)
-	{
-		switch (ast.jumpType())
-		{
-			case JumpType::Return:
-				return validateReturnStatement(ast, symbolTable);
-
-			default:
-				break;
-		}
-
-		log::fatal("Unable to validate jump statement with type: $", (int)ast.jumpType());
-	}
-
-	ir::StatementIr *validateReturnStatement(const ast::JumpStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::StatementIr *validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto returnedType = Type::voidType;
 		auto* value = (ExpressionIr*)nullptr;

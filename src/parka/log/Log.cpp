@@ -60,14 +60,6 @@ namespace parka::log
 		std::cout << entry;
 	}
 
-	void parseError(const Token& token, const char *expected, const char *message)
-	{
-		assert(expected != nullptr);
-		assert(message != nullptr);
-
-		log::error(token, "Expected $, found $. $", expected, token.type(), message);
-	}
-
 	void outputEntries()
 	{
 		for (const auto& entry : entries)

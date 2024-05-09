@@ -7,6 +7,7 @@
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
 #include "parka/util/Array.hpp"
+#include "parka/util/Table.hpp"
 
 namespace parka
 {

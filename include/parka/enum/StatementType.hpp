@@ -10,7 +10,10 @@ namespace parka
 		Declaration,
 		Expression,
 		Return,
-		Jump
+		Break,
+		Continue,
+		Yield,
+		For
 	};
 
 	std::ostream& operator<<(std::ostream& out, const StatementType& type);

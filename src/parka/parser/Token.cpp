@@ -745,19 +745,19 @@ namespace parka
 				break;
 				
 			case TokenType::IntegerLiteral:
-				out << "{integer}";
+				out << "integer";
 				break;
 				
 			case TokenType::FloatLiteral:
-				out << "{float}";
+				out << "float";
 				break;
 				
 			case TokenType::CharacterLiteral:
-				out << "{char}";
+				out << "char";
 				break;
 				
 			case TokenType::StringLiteral:
-				out << "{string}";
+				out << "string";
 				break;
 				
 

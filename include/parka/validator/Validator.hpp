@@ -10,8 +10,8 @@
 #include "parka/ast/ExpressionAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
-#include "parka/ast/JumpStatementAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
+#include "parka/ast/ReturnStatementAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/StringLiteralAst.hpp"
@@ -19,7 +19,6 @@
 #include "parka/ir/BlockExpressionIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/CharLiteralIr.hpp"
-#include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/FloatLiteralIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/Ir.hpp"
@@ -51,8 +50,7 @@ namespace parka::validator
 	ir::BoolLiteralIr *validateBoolLiteral(const ast::BoolLiteralAst& ast);
 	ir::StatementIr *validateStatement(const ast::StatementAst& statement, LocalSymbolTable& symbolTable);
 	ir::StatementIr *validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr *validateJumpStatement(const ast::JumpStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr *validateReturnStatement(const ast::JumpStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::StatementIr *validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::VariableIr *validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, LocalSymbolTable& symbolTable);
 }
 

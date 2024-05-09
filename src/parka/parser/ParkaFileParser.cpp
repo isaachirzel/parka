@@ -2,21 +2,24 @@
 #include "parka/ast/BinaryExpressionAst.hpp"
 #include "parka/ast/BlockExpressionAst.hpp"
 #include "parka/ast/BoolLiteralAst.hpp"
+#include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
 #include "parka/ast/ConditionalExpressionAst.hpp"
+#include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
-#include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
-#include "parka/ast/JumpStatementAst.hpp"
+#include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/MemberAccessExpressionAst.hpp"
 #include "parka/ast/PrefixExpressionAst.hpp"
+#include "parka/ast/ReturnStatementAst.hpp"
 #include "parka/ast/StringLiteralAst.hpp"
 #include "parka/ast/SubscriptExpressionAst.hpp"
-#include "parka/enum/JumpType.hpp"
+#include "parka/ast/YieldStatementAst.hpp"
+#include "parka/enum/KeywordType.hpp"
 #include "parka/enum/PrefixType.hpp"
 #include "parka/enum/TokenType.hpp"
 #include "parka/log/Log.hpp"
@@ -25,11 +28,226 @@ using namespace parka::ast;
 
 namespace parka::parser
 {
+	static void logParseError(const Token& token, const char *expected, const char *message = "")
+	{
+		assert(expected != nullptr);
+		assert(message != nullptr);
+
+		log::error(token, "Expected $, found $. $", expected, token.type(), message);
+	}
+
+	static void logSemicolonError(const Snippet& snippet)
+	{
+		log::error(snippet, "Statements must be ended with a ';'.");
+	}
+
+	ParkaFileParser::ParkaFileParser(const File& file):
+		_file(file),
+		_initialToken(Token::initial(file)),
+		token(_initialToken)
+	{}
+
+	bool ParkaFileParser::parseSemicolon()
+	{
+		if (token.type() != TokenType::Semicolon)
+		{
+			logSemicolonError(token);
+			return false;
+		}
+
+		token.increment();
+
+		return true;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseBoolKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::True && type != KeywordType::False)
+		{
+			logParseError(token, "`true` or `false`");
+			return {};
+		}
+
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+		
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseStructKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::StructAst)
+		{
+			logParseError(token, "`struct` keyword");
+			return {};
+		}
+
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseVarKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Var)
+		{
+			logParseError(token, "keyword `var");
+			return {};
+		}
+
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseFunctionKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Function)
+		{
+			logParseError(token, "`function`");
+			return {};
+		}
+
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+		
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseOperatorKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Operator)
+		{
+			logParseError(token, "`operator`");
+			return {};
+		}
+
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseMutKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Mut)
+			return {};
+
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseReturnKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Return)
+		{
+			logParseError(token, "keyword `return`");
+			return {};
+		}
+		
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseContinueKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Continue)
+		{
+			logParseError(token, "keyword `continue`");
+		}
+		
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseBreakKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Break)
+		{
+			logParseError(token, "keyword `break`");
+			return {};
+		}
+		
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseYieldKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Yield)
+		{
+			logParseError(token, "keyword `yield`");
+			return {};
+		}
+		
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseForKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::For)
+		{
+			logParseError(token, "keyword `for`");
+			return {};
+		}
+		
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
 	Result<Identifier> ParkaFileParser::parseIdentifier()
 	{
 		if (token.type() != TokenType::Identifier)
 		{
-			log::parseError(token, "identifier");
+			logParseError(token, "identifier");
 			return {};
 		}
 
@@ -84,7 +302,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::CharacterLiteral)
 		{
-			log::parseError(token, "character");
+			logParseError(token, "character");
 			return {};
 		}
 
@@ -99,7 +317,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::StringLiteral)
 		{
-			log::parseError(token, "string");
+			logParseError(token, "string");
 			return {};
 		}
 
@@ -112,7 +330,7 @@ namespace parka::parser
 
 	Result<bool> ParkaFileParser::parseBool()
 	{
-		auto type = KeywordAst::getKeywordType(token.text());
+		auto type = toKeywordType(token.text());
 
 		switch (type)
 		{
@@ -126,7 +344,7 @@ namespace parka::parser
 				break;
 		}
 
-		log::parseError(token, "`true` or `false`");
+		logParseError(token, "`true` or `false`");
 		
 		return {};
 	}
@@ -135,7 +353,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::FloatLiteral)
 		{
-			log::parseError(token, "float");
+			logParseError(token, "float");
 			return nullptr;
 		}
 
@@ -150,7 +368,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::IntegerLiteral)
 		{
-			log::parseError(token, "integer");
+			logParseError(token, "integer");
 			return {};
 		}
 
@@ -175,7 +393,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
-			log::parseError(token, "'{' before block");
+			logParseError(token, "'{' before block");
 
 			return {};
 		}
@@ -245,7 +463,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			log::parseError(token, "expected ')' after primary sub-expression");
+			logParseError(token, "expected ')' after primary sub-expression");
 			return {};
 		}
 
@@ -259,7 +477,7 @@ namespace parka::parser
 			case TokenType::Identifier:
 			{
 				auto text = token.text();
-				auto keywordType = KeywordAst::getKeywordType(text);
+				auto keywordType = toKeywordType(text);
 
 				if (keywordType == KeywordType::True)
 				{
@@ -304,7 +522,7 @@ namespace parka::parser
 				break;
 		}
 
-		log::parseError(token, "primary expression");
+		logParseError(token, "primary expression");
 		return {};
 	}
 
@@ -313,7 +531,7 @@ namespace parka::parser
 		auto first = Token(token);
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			log::parseError(token, "'(' before argument list");
+			logParseError(token, "'(' before argument list");
 			return {};
 		}
 
@@ -341,7 +559,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				log::parseError(token, "')' after argument list");
+				logParseError(token, "')' after argument list");
 
 				return {};
 			}
@@ -360,7 +578,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{
-			log::parseError(token, "'['");
+			logParseError(token, "'['");
 			return {};
 		}
 
@@ -374,7 +592,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::RightBracket)
 		{
-			log::parseError(token, "']' after subscript");
+			logParseError(token, "']' after subscript");
 			return {};
 		}
 
@@ -390,7 +608,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::Dot)
 		{
-			log::parseError(token, "'.'");
+			logParseError(token, "'.'");
 			return {};
 		}
 
@@ -398,7 +616,7 @@ namespace parka::parser
 		
 		if (token.type() != TokenType::Identifier)
 		{
-			log::parseError(token, "member, method, or property name");
+			logParseError(token, "member, method, or property name");
 			return {};
 		}
 		
@@ -819,7 +1037,7 @@ namespace parka::parser
 	ExpressionAst *ParkaFileParser::parseConditionalExpression()
 	{
 		auto condition = parseBooleanOrExpression();
-		auto keyword = KeywordAst::getKeywordType(token.text());
+		auto keyword = toKeywordType(token.text());
 
 		if (keyword != KeywordType::Then)
 			return condition;
@@ -831,7 +1049,7 @@ namespace parka::parser
 		if (!trueCase)
 			return {};
 
-		keyword = KeywordAst::getKeywordType(token.text());
+		keyword = toKeywordType(token.text());
 
 		if (keyword != KeywordType::Else)
 		{
@@ -919,75 +1137,73 @@ namespace parka::parser
 		return expression;
 	}
 
-	Result<JumpType> ParkaFileParser::getJumpType()
+	ast::StatementAst* ParkaFileParser::parseReturnStatement()
 	{
-		auto keywordType = KeywordAst::getKeywordType(token.text());
+		auto keyword = parseReturnKeyword();
 
-		switch (keywordType)
-		{
-			case KeywordType::Return:
-				return JumpType::Return;
-
-			case KeywordType::Break:
-				return JumpType::Break;
-
-			case KeywordType::Continue:
-				return JumpType::Continue;
-
-			case KeywordType::Yield:
-				return JumpType::Yield;
-
-			default:
-				log::parseError(token, "`return`, `break`, `continue` or `yield`");
-				return {};
-		}
-	}
-
-	StatementAst *ParkaFileParser::parseJumpStatement()
-	{
-		auto type = getJumpType();
-
-		if (!type)
+		if (!keyword)
 			return {};
 
-		token.increment();
-
-		ExpressionAst *value = nullptr;
-
-		if (token.type() != TokenType::Semicolon)
+		if (token.type() == TokenType::Semicolon)
 		{
-			switch (*type)
-			{
-				case JumpType::Continue:
-					// TODO: Implement continuing on labels
-					log::error(token, "Continue statements cannot have a value.");
-					return {};
-				
-				case JumpType::Break:
-					log::error(token, "Break statements cannot have a value.");
-					return {};
+			token.increment();
 
-				default:
-					break;
-			}
-			
-			value = parseExpression();
-
-			if (!value)
-				return {};
-			
-			if (token.type() != TokenType::Semicolon)
-			{
-				log::parseError(token, "';' after jump statement");
-				return {};
-			}
+			return new ReturnStatementAst(*keyword);
 		}
 
-		token.increment();
+		auto* value = parseExpression();
 
-		auto *syntax = new JumpStatementAst(token, *type, value);
+		if (!value)
+			return {};
 
-		return syntax;
+		if (!parseSemicolon())
+			return {};
+
+		return new ReturnStatementAst(*keyword, *value);
+	}
+
+	ast::StatementAst* ParkaFileParser::parseBreakStatement()
+	{
+		auto keyword = parseBreakKeyword();
+
+		if (!keyword)
+			return {};
+
+		if (!parseSemicolon())
+			return {};
+
+		return new BreakStatementAst(*keyword);
+	}
+
+	ast::StatementAst* ParkaFileParser::parseContinueStatement()
+	{
+		auto keyword = parseContinueKeyword();
+
+		if (!keyword)
+			return {};
+		
+		if (!parseSemicolon())
+			return {};
+
+		return new ContinueStatementAst(*keyword);
+	}
+
+	ast::StatementAst* ParkaFileParser::parseYieldStatement()
+	{
+		auto keyword = parseYieldKeyword();
+
+		if (!keyword)
+			return {};
+
+		auto value = parseExpression();
+
+		if (!value)
+			return {};
+
+		if (!parseSemicolon())
+			return {};
+
+		return new YieldStatementAst(*keyword, *value);
 	}
 
 	StatementAst *ParkaFileParser::parseExpressionStatement()
@@ -997,15 +1213,10 @@ namespace parka::parser
 		if (!expression)
 			return {};
 
-		if (token.type() != TokenType::Semicolon)
-		{
-			log::parseError(token, "';' after expression statement");
-			return {};
-		}
-
 		auto snippet = expression->snippet() + Snippet(token);
 
-		token.increment();
+		if (!parseSemicolon())
+			return {};
 
 		auto *syntax = new ExpressionStatementAst(snippet, *expression);
 
@@ -1021,7 +1232,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Assign)
 		{
-			log::parseError(token, "expected '=' after declaration");
+			logParseError(token, "expected '=' after declaration");
 			return nullptr;
 		}
 
@@ -1034,7 +1245,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Semicolon)
 		{
-			log::error(variable->snippet() + value->snippet(), "Statements need to be ended with a ';'.");
+			logSemicolonError(variable->snippet() + value->snippet());
 			return nullptr;
 		}
 
@@ -1047,9 +1258,14 @@ namespace parka::parser
 		return syntax;
 	}
 
+	StatementAst* ParkaFileParser::parseForStatement()
+	{
+		log::notImplemented(here());
+	}
+
 	StatementAst *ParkaFileParser::parseStatement()
 	{
-		auto keywordType = KeywordAst::getKeywordType(token.text());
+		auto keywordType = toKeywordType(token.text());
 
 		switch (keywordType)
 		{
@@ -1057,10 +1273,19 @@ namespace parka::parser
 				return parseDeclarationStatement();
 
 			case KeywordType::Return:
+				return parseReturnStatement();
+
 			case KeywordType::Break:
+				return parseBreakStatement();
+
 			case KeywordType::Continue:
+				return parseContinueStatement();
+
 			case KeywordType::Yield:
-				return parseJumpStatement();
+				return parseYieldStatement();
+
+			case KeywordType::For:
+				return parseForStatement();
 
 			default:
 				break;
@@ -1072,7 +1297,7 @@ namespace parka::parser
 	ParameterAst *ParkaFileParser::parseParameter()
 	{
 		auto first = Snippet(token);
-		auto mutKeyword = KeywordAst::parseMutKeyword(token);
+		auto mutKeyword = parseMutKeyword();
 		auto isMutable = !!mutKeyword;
 		auto identifier = parseIdentifier();
 
@@ -1081,7 +1306,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Colon)
 		{
-			log::parseError(token, "':'", "Parameters require a type annotation.");
+			logParseError(token, "':'", "Parameters require a type annotation.");
 			return {};
 		}
 
@@ -1111,7 +1336,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::Semicolon)
 			{
-				log::parseError(token, "';'", "Inline function bodies need to be ended with ';'.");
+				log::error(token, "Inline function bodies need to be ended with ';'.");
 				return {};
 			}
 
@@ -1123,7 +1348,7 @@ namespace parka::parser
 		if (token.type() == TokenType::LeftBrace)
 			return parseBlockExpression();
 		
-		log::parseError(token, "function body", "Functions require a body.");
+		logParseError(token, "function body", "Functions require a body.");
 
 		return {};
 	}
@@ -1143,7 +1368,7 @@ namespace parka::parser
 	VariableAst *ParkaFileParser::parseVariable()
 	{
 		// TODO: VariableAst mutability
-		auto keyword = KeywordAst::parseVarKeyword(token);
+		auto keyword = parseVarKeyword();
 
 		if (!keyword)
 			return {};	
@@ -1177,7 +1402,7 @@ namespace parka::parser
 
 	Result<PrototypeAst> ParkaFileParser::parsePrototype()
 	{
-		auto keyword = KeywordAst::parseFunctionKeyword(token);
+		auto keyword = parseFunctionKeyword();
 
 		if (!keyword)
 			return {};
@@ -1189,7 +1414,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			log::parseError(token, "'(' after function name");
+			logParseError(token, "'(' after function name");
 			return {};
 		}
 
@@ -1219,7 +1444,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				log::parseError(token, "')'", "Invalid tokens in parameter list");
+				logParseError(token, "')'", "Invalid tokens in parameter list");
 				return {};
 			}
 		}
@@ -1267,7 +1492,7 @@ namespace parka::parser
 
 	bool ParkaFileParser::parsePublicity()
 	{
-		auto keywordType = KeywordAst::getKeywordType(token.text());
+		auto keywordType = toKeywordType(token.text());
 
 		if (keywordType == KeywordType::Public)
 		{
@@ -1293,7 +1518,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Colon)
 		{
-			log::parseError(token, "':''", "Type annotations are required for member declarations.");
+			logParseError(token, "':''", "Type annotations are required for member declarations.");
 			return {};
 		}
 		
@@ -1312,7 +1537,7 @@ namespace parka::parser
 
 	StructAst *ParkaFileParser::parseStruct()
 	{
-		auto keyword = KeywordAst::parseStructKeyword(token);
+		auto keyword = parseStructKeyword();
 
 		if (!keyword)
 			return {};
@@ -1325,7 +1550,7 @@ namespace parka::parser
 		if (token.type() != TokenType::LeftBrace)
 		{
 			// TODO: 
-			log::parseError(token, "'{' before member list", "Bodyless structs are not allowed.");
+			logParseError(token, "'{' before member list", "Bodyless structs are not allowed.");
 			return {};
 		}
 
@@ -1355,7 +1580,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightBrace)
 			{
-				log::parseError(token, "'}' after struct body");
+				logParseError(token, "'}' after struct body");
 				return {};
 			}
 		}
@@ -1369,7 +1594,6 @@ namespace parka::parser
 		return syntax;
 	}
 
-
 	ModuleAst ParkaFileParser::parse()
 	{
 		// TODO: Fast forwarding after encountering parse error to not stop after first failure
@@ -1380,7 +1604,7 @@ namespace parka::parser
 		while (token.type() != TokenType::EndOfFile)
 		{
 			auto keywordType = token.type() == TokenType::Identifier
-				? KeywordAst::getKeywordType(token.text())
+				? toKeywordType(token.text())
 				: KeywordType::None;
 
 			switch (keywordType)
@@ -1420,7 +1644,7 @@ namespace parka::parser
 						continue;
 					}
 
-					log::parseError(token, "type or function definition");					
+					logParseError(token, "type or function definition");					
 					break;
 			}
 

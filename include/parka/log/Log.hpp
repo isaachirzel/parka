@@ -7,13 +7,11 @@
 #include "parka/util/Print.hpp"
 #include "parka/util/SourceLocation.hpp"
 
-
 /*
 	Colors
 	Indent
 	Line number for margins
 */
-
 
 namespace parka::log
 {
@@ -42,8 +40,6 @@ namespace parka::log
 	{
 		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), snippet));
 	}
-
-	void parseError(const Token& token, const char *expected, const char *message = "");
 
 	template <typename ...Arg>
 	void success(const char *format, Arg const&...args)

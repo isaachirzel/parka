@@ -1,6 +1,8 @@
 #ifndef PARKA_ENUM_KEYWORD_TYPE_HPP
 #define PARKA_ENUM_KEYWORD_TYPE_HPP
 
+#include "parka/util/String.hpp"
+
 namespace parka
 {
 	enum class KeywordType
@@ -32,6 +34,8 @@ namespace parka
 		Var,
 		While
 	};
+
+	KeywordType toKeywordType(const String& text);
 }
 
 #endif
