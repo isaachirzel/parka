@@ -3,7 +3,9 @@ function main() -> u8
 	var a: u64 = 15;
 	var b = 7 + 0;
 	var c = a + b;
-	var d = 10 + 25;
+	var d: i8 = 10 + 25;
+
+	for (
 
 	return 0;
 }

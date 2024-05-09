@@ -2,7 +2,6 @@
 #define PARKA_IR_BINARY_EXPRESSION_HPP
 
 #include "parka/ir/Expression.hpp"
-#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/Operator.hpp"
 
 namespace parka::ir

@@ -1,10 +1,8 @@
-#ifndef PARKA_AST_EXPRESSION_PREFIX_HPP
-#define PARKA_AST_EXPRESSION_PREFIX_HPP
+#ifndef PARKA_AST_PREFIX_EXPRESSION_HPP
+#define PARKA_AST_PREFIX_EXPRESSION_HPP
 
 #include "parka/enum/PrefixType.hpp"
 #include "parka/ast/Expression.hpp"
-#include "parka/ir/Expression.hpp"
-#include "parka/parser/Token.hpp"
 
 namespace parka::ast
 {

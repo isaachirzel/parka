@@ -1,9 +1,7 @@
 #ifndef PARKA_AST_IDENTIFIER_HPP
 #define PARKA_AST_IDENTIFIER_HPP
 
-#include "parka/parser/Token.hpp"
-#include "parka/util/Result.hpp"
-
+#include "parka/file/Snippet.hpp"
 #include <ostream>
 
 namespace parka::ast
