@@ -1,11 +1,11 @@
 #ifndef PARKA_SYMBOL_RESOLVABLE_NODE_HPP
 #define PARKA_SYMBOL_RESOLVABLE_NODE_HPP
 
-#include "parka/ast/Function.hpp"
-#include "parka/ast/Member.hpp"
-#include "parka/ast/Parameter.hpp"
+#include "parka/ast/FunctionAst.hpp"
+#include "parka/ast/MemberAst.hpp"
+#include "parka/ast/ParameterAst.hpp"
 #include "parka/ast/Struct.hpp"
-#include "parka/ast/Variable.hpp"
+#include "parka/ast/VariableAst.hpp"
 
 namespace parka
 {

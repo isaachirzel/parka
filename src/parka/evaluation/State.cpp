@@ -1,5 +1,5 @@
 #include "parka/evaluation/State.hpp"
-#include "parka/ir/LValue.hpp"
+#include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
 
 namespace parka::evaluation
@@ -19,7 +19,7 @@ namespace parka::evaluation
 		_stack.pop();
 	}
 
-	Value& State::find(const ir::LValue& node)
+	Value& State::find(const ir::LValueIr& node)
 	{
 		for (usize i = _stack.length(); i-- > 0;)
 		{

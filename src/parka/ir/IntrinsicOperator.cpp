@@ -1,4 +1,4 @@
-#include "parka/ir/IntrinsicOperator.hpp"
+#include "parka/ir/IntrinsicOperatorIr.hpp"
 #include "parka/enum/OperatorType.hpp"
 #include "parka/util/Float.hpp"
 

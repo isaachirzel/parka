@@ -1,7 +1,7 @@
 #ifndef PARKA_IR_IR_HPP
 #define PARKA_IR_IR_HPP
 
-#include "parka/ir/Function.hpp"
+#include "parka/ir/FunctionIr.hpp"
 
 namespace parka::ir
 {

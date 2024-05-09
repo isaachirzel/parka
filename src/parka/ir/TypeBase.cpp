@@ -1,4 +1,4 @@
-#include "parka/ir/TypeBase.hpp"
+#include "parka/ir/TypeBaseIr.hpp"
 
 namespace parka::ir
 {

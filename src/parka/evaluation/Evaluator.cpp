@@ -1,9 +1,9 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/evaluation/IntrinsicOperators.hpp"
-#include "parka/ir/DeclarationStatement.hpp"
-#include "parka/ir/IntrinsicOperator.hpp"
-#include "parka/ir/ReturnStatement.hpp"
-#include "parka/ir/Type.hpp"
+#include "parka/ir/DeclarationStatementIr.hpp"
+#include "parka/ir/IntrinsicOperatorIr.hpp"
+#include "parka/ir/ReturnStatementIr.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;

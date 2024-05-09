@@ -1,4 +1,4 @@
-#include "parka/ir/DummyTypeBase.hpp"
+#include "parka/ir/DummyTypeBaseIr.hpp"
 
 namespace parka::ir
 {

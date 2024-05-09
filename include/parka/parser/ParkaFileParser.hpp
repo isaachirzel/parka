@@ -4,9 +4,9 @@
 #include "parka/enum/JumpType.hpp"
 #include "parka/enum/PrefixType.hpp"
 #include "parka/util/Result.hpp"
-#include "parka/ast/Module.hpp"
-#include "parka/ast/Statement.hpp"
-#include "parka/ast/Variable.hpp"
+#include "parka/ast/ModuleAst.hpp"
+#include "parka/ast/StatementAst.hpp"
+#include "parka/ast/VariableAst.hpp"
 #include "parka/file/File.hpp"
 #include "parka/parser/Token.hpp"
 

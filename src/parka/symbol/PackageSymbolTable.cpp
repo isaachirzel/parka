@@ -1,10 +1,10 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
-#include "parka/ast/Function.hpp"
-#include "parka/ir/Conversion.hpp"
-#include "parka/ir/IntrinsicOperator.hpp"
-#include "parka/ir/LValue.hpp"
-#include "parka/ir/Operator.hpp"
-#include "parka/ir/Primitive.hpp"
+#include "parka/ast/FunctionAst.hpp"
+#include "parka/ir/ConversionIr.hpp"
+#include "parka/ir/IntrinsicOperatorIr.hpp"
+#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/OperatorIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 
@@ -104,7 +104,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValue *PackageSymbolTable::resolve(const ast::QualifiedIdentifier& qualifiedIdentifier)
+	ir::LValueIr *PackageSymbolTable::resolve(const ast::QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];

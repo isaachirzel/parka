@@ -1,6 +1,6 @@
-#include "parka/ir/Type.hpp"
-#include "parka/ir/DummyTypeBase.hpp"
-#include "parka/ir/Primitive.hpp"
+#include "parka/ir/TypeIr.hpp"
+#include "parka/ir/DummyTypeBaseIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 
 namespace parka::ir
 {

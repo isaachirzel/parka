@@ -1,8 +1,8 @@
 #ifndef PARKA_VALIDATOR_FUNCTION_VALIDATOR_HPP
 #define PARKA_VALIDATOR_FUNCTION_VALIDATOR_HPP
 
-#include "parka/ast/Identifier.hpp"
-#include "parka/ir/Type.hpp"
+#include "parka/ast/IdentifierAst.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
@@ -32,7 +32,7 @@ namespace parka
 		ParameterEntry *declare(ParameterEntry&& entry);
 		VariableEntry *declare(VariableEntry&& entry);
 		Resolvable *find(const ast::Identifier& identifier);
-		ir::LValue *resolve(const ast::QualifiedIdentifier& identifier);
+		ir::LValueIr *resolve(const ast::QualifiedIdentifier& identifier);
 		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
 		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
 

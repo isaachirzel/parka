@@ -3,14 +3,14 @@
 
 #include "parka/evaluation/State.hpp"
 #include "parka/evaluation/Value.hpp"
-#include "parka/ir/BinaryExpression.hpp"
-#include "parka/ir/BlockExpression.hpp"
-#include "parka/ir/DeclarationStatement.hpp"
-#include "parka/ir/IdentifierExpression.hpp"
-#include "parka/ir/IntegerLiteral.hpp"
-#include "parka/ir/IntrinsicOperator.hpp"
+#include "parka/ir/BinaryExpressionIr.hpp"
+#include "parka/ir/BlockExpressionIr.hpp"
+#include "parka/ir/DeclarationStatementIr.hpp"
+#include "parka/ir/IdentifierExpressionIr.hpp"
+#include "parka/ir/IntegerLiteralIr.hpp"
+#include "parka/ir/IntrinsicOperatorIr.hpp"
 #include "parka/ir/Ir.hpp"
-#include "parka/ir/ReturnStatement.hpp"
+#include "parka/ir/ReturnStatementIr.hpp"
 
 namespace parka::evaluation
 {

@@ -1,7 +1,7 @@
 #ifndef PARKA_AST_RANGE_HPP
 #define PARKA_AST_RANGE_HPP
 
-#include "parka/ast/Expression.hpp"
+#include "parka/ast/ExpressionAst.hpp"
 #include "parka/file/Snippet.hpp"
 
 namespace parka::ast

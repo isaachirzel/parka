@@ -1,5 +1,5 @@
-#include "parka/ir/Primitive.hpp"
-#include "parka/ir/LValue.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/LValueIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka::ir
@@ -39,7 +39,7 @@ namespace parka::ir
 
 	Primitive::Primitive(const char *name, PrimitiveType type, u32 size):
 		Resolvable(ResolvableType::Primitive),
-		LValue(ResolvableType::Primitive),
+		LValueIr(ResolvableType::Primitive),
 		_name(name),
 		_size(size),
 		_type(type)

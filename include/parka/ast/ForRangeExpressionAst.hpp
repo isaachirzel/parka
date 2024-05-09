@@ -1,14 +1,14 @@
 #ifndef PARKA_AST_FOR_EXPRESSION_HPP
 #define PARKA_AST_FOR_EXPRESSION_HPP
 
-#include "parka/ast/Expression.hpp"
-#include "parka/ast/Identifier.hpp"
-#include "parka/ast/Keyword.hpp"
+#include "parka/ast/ExpressionAst.hpp"
+#include "parka/ast/IdentifierAst.hpp"
+#include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/RangeAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
 namespace parka::ast
 {
-	class ForRangeExpression: public ExpressionAst
+	class ForRangeExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
 		KeywordAst _forKeyword;
@@ -17,7 +17,7 @@ namespace parka::ast
 
 	public:
 
-		ForRangeExpression(KeywordAst&& forKeyword, Identifier&& variableName, RangeAst&& range):
+		ForRangeExpressionAst(KeywordAst&& forKeyword, Identifier&& variableName, RangeAst&& range):
 			ExpressionAst(ExpressionType::ForRange),
 			_snippet(forKeyword.snippet() + range.snippet()),
 			_forKeyword(std::move(forKeyword)),

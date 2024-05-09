@@ -1,7 +1,7 @@
 #ifndef PARKA_SYMBOL_VARIABLE_ENTRY_HPP
 #define PARKA_SYMBOL_VARIABLE_ENTRY_HPP
 
-#include "parka/ast/Variable.hpp"
+#include "parka/ast/VariableAst.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka

@@ -1,5 +1,5 @@
 #include "parka/evaluation/Value.hpp"
-#include "parka/ir/Type.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/log/Log.hpp"
 #include <cassert>
 #include <cstring>
@@ -49,7 +49,7 @@ namespace parka::evaluation
 		return *this;
 	}
 
-	void Value::setNode(const ir::LValue& node)
+	void Value::setNode(const ir::LValueIr& node)
 	{
 		_nodePtr = &node;
 	}

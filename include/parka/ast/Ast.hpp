@@ -4,8 +4,8 @@
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/Module.hpp"
-#include "parka/ast/Package.hpp"
+#include "parka/ast/ModuleAst.hpp"
+#include "parka/ast/PackageAst.hpp"
 #include "parka/util/Project.hpp"
 #include "parka/util/Result.hpp"
 

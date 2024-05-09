@@ -1,9 +1,9 @@
 // #include "parka/log/Log.hpp"
 // #include "parka/repository/StatementAstId.hpp"
-// #include "parka/ast/Statement.hpp"
-// #include "parka/ast/DeclarationStatement.hpp"
-// #include "parka/ast/ExpressionStatement.hpp"
-// #include "parka/ast/JumpStatement.hpp"
+// #include "parka/ast/StatementAst.hpp"
+// #include "parka/ast/DeclarationStatementAst.hpp"
+// #include "parka/ast/ExpressionStatementAst.hpp"
+// #include "parka/ast/JumpStatementAst.hpp"
 // #include "parka/util/Pool.hpp"
 // #include "parka/util/Print.hpp"
 

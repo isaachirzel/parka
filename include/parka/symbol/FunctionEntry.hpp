@@ -1,8 +1,8 @@
 #ifndef PARKA_SYMBOL_FUNCTION_ENTRY_HPP
 #define PARKA_SYMBOL_FUNCTION_ENTRY_HPP
 
-#include "parka/ast/Function.hpp"
-#include "parka/ir/Function.hpp"
+#include "parka/ast/FunctionAst.hpp"
+#include "parka/ir/FunctionIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka

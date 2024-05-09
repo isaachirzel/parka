@@ -1,8 +1,8 @@
 #ifndef PARKA_EVALUATION_VALUE_HPP
 #define PARKA_EVALUATION_VALUE_HPP
 
-#include "parka/ir/LValue.hpp"
-#include "parka/ir/Type.hpp"
+#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/util/Common.hpp"
 
 namespace parka::evaluation
@@ -11,7 +11,7 @@ namespace parka::evaluation
 	{
 		ir::Type _type;
 		alignas(u64) byte _value[sizeof(u64)];
-		const ir::LValue* _nodePtr;
+		const ir::LValueIr* _nodePtr;
 
 	public:
 
@@ -22,8 +22,8 @@ namespace parka::evaluation
 		// Value& operator=(Value&& other);
 		Value& operator=(const Value& other);
 
-		void setNode(const ir::LValue& nodePtr);
-		const ir::LValue* nodePtr() { return _nodePtr; }
+		void setNode(const ir::LValueIr& nodePtr);
+		const ir::LValueIr* nodePtr() { return _nodePtr; }
 
 
 		void set(const byte* data, usize size);

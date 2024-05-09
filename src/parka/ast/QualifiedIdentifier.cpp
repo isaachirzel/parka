@@ -1,5 +1,5 @@
-#include "parka/ast/QualifiedIdentifier.hpp"
-#include "parka/ast/Identifier.hpp"
+#include "parka/ast/QualifiedIdentifierAst.hpp"
+#include "parka/ast/IdentifierAst.hpp"
 
 namespace parka::ast
 {

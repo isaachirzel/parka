@@ -1,10 +1,10 @@
-#include "parka/ast/Parameter.hpp"
-#include "parka/ir/Parameter.hpp"
+#include "parka/ast/ParameterAst.hpp"
+#include "parka/ir/ParameterIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/ast/Identifier.hpp"
+#include "parka/ast/IdentifierAst.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/Keyword.hpp"
-#include "parka/ast/TypeAnnotation.hpp"
+#include "parka/ast/KeywordAst.hpp"
+#include "parka/ast/TypeAnnotationAst.hpp"
 
 #include "parka/util/Print.hpp"
 

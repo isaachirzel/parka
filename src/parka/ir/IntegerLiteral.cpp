@@ -1,4 +1,4 @@
-#include "parka/ir/IntegerLiteral.hpp"
+#include "parka/ir/IntegerLiteralIr.hpp"
 
 namespace parka::ir
 {

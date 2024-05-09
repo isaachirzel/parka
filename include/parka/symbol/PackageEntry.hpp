@@ -1,8 +1,8 @@
 #ifndef PARKA_SYMBOL_PACKAGE_ENTRY_HPP
 #define PARKA_SYMBOL_PACKAGE_ENTRY_HPP
 
-#include "parka/ast/Package.hpp"
-#include "parka/ir/Package.hpp"
+#include "parka/ast/PackageAst.hpp"
+#include "parka/ir/PackageIr.hpp"
 
 namespace parka
 {

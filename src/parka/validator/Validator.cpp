@@ -1,10 +1,10 @@
 #include "parka/validator/Validator.hpp"
-#include "parka/ast/DeclarationStatement.hpp"
-#include "parka/ast/TypeAnnotation.hpp"
+#include "parka/ast/DeclarationStatementAst.hpp"
+#include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/OperatorType.hpp"
-#include "parka/ir/BinaryExpression.hpp"
-#include "parka/ir/Expression.hpp"
-#include "parka/ir/ReturnStatement.hpp"
+#include "parka/ir/BinaryExpressionIr.hpp"
+#include "parka/ir/ExpressionIr.hpp"
+#include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
@@ -270,7 +270,7 @@ namespace parka::validator
 		if (!result)
 			return {};
 
-		auto *value = dynamic_cast<LValue*>(result);
+		auto *value = dynamic_cast<LValueIr*>(result);
 
 		if (!value)
 		{

@@ -3,7 +3,7 @@
 
 #include "parka/evaluation/Frame.hpp"
 #include "parka/evaluation/Value.hpp"
-#include "parka/ir/Type.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/Common.hpp"
 
@@ -21,7 +21,7 @@ namespace parka::evaluation
 		Value& push(const ir::Type& type);
 		void pop();
 		void truncate(usize length);
-		Value& find(const ir::LValue& node);
+		Value& find(const ir::LValueIr& node);
 		Value& get(usize index);
 		Frame createFrame();
 
