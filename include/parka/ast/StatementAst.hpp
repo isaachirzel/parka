@@ -1,10 +1,8 @@
-#ifndef PARKA_AST_STATEMENT_HPP
-#define PARKA_AST_STATEMENT_HPP
+#ifndef PARKA_AST_STATEMENT_AST_HPP
+#define PARKA_AST_STATEMENT_AST_HPP
 
-#include "parka/ir/StatementIr.hpp"
-#include "parka/parser/Token.hpp"
 #include "parka/enum/StatementType.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/file/Snippet.hpp"
 
 namespace parka::ast
 {

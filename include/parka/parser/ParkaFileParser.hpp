@@ -2,6 +2,7 @@
 #define PARKA_PARSER_PARKA_MODULE_PARSER_HPP
 
 #include "parka/ast/KeywordAst.hpp"
+#include "parka/ast/RangeAst.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/enum/PrefixType.hpp"
 #include "parka/util/Result.hpp"
@@ -55,12 +56,15 @@ namespace parka::parser
 		Result<ast::KeywordAst> parseBreakKeyword();
 		Result<ast::KeywordAst> parseYieldKeyword();
 		Result<ast::KeywordAst> parseForKeyword();
+		Result<ast::KeywordAst> parseInKeyword();
 
 		Result<ast::Identifier> parseIdentifier();
 		Result<ast::QualifiedIdentifier> parseQualifiedIdentifier();
 		// Result<ast::Operator> parseOperator();
 		Result<ast::PrototypeAst> parsePrototype();
 		Result<ast::TypeAnnotationAst> parseTypeAnnotation();
+		Result<ast::RangeAst> parseRange();
+
 		ast::VariableAst *parseVariable();
 		ast::ParameterAst *parseParameter();
 		ast::ExpressionAst *parseFunctionBody();

@@ -10,11 +10,14 @@
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
+#include "parka/ast/ForStatementAst.hpp"
+#include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/MemberAccessExpressionAst.hpp"
 #include "parka/ast/PrefixExpressionAst.hpp"
+#include "parka/ast/RangeAst.hpp"
 #include "parka/ast/ReturnStatementAst.hpp"
 #include "parka/ast/StringLiteralAst.hpp"
 #include "parka/ast/SubscriptExpressionAst.hpp"
@@ -233,6 +236,23 @@ namespace parka::parser
 		if (type != KeywordType::For)
 		{
 			logParseError(token, "keyword `for`");
+			return {};
+		}
+		
+		auto keyword = KeywordAst(token, type);
+
+		token.increment();
+
+		return keyword;
+	}
+
+	Result<KeywordAst> ParkaFileParser::parseInKeyword()
+	{
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::In)
+		{
+			logParseError(token, "keyword `in`");
 			return {};
 		}
 		
@@ -1260,7 +1280,32 @@ namespace parka::parser
 
 	StatementAst* ParkaFileParser::parseForStatement()
 	{
-		log::notImplemented(here());
+		auto forKeyword = parseForKeyword();
+
+		if (!forKeyword)
+			return {};
+
+		auto variableName = parseIdentifier();
+
+		if (!variableName)
+			return {};
+
+		auto inKeyword = parseInKeyword();
+
+		if (!inKeyword)
+			return {};
+
+		auto range = parseRange();
+
+		if (!range)
+			return {};
+
+		auto body = parseBlockExpression();
+
+		if (!body)
+			return {};
+		
+		return new ForStatementAst(*forKeyword, *variableName, *range, *body);
 	}
 
 	StatementAst *ParkaFileParser::parseStatement()
@@ -1363,6 +1408,26 @@ namespace parka::parser
 		auto annotation = TypeAnnotationAst(identifier->snippet(), *identifier);
 
 		return annotation;
+	}
+
+	Result<ast::RangeAst> ParkaFileParser::parseRange()
+	{
+		auto start = parseExpression();
+
+		if (!start)
+			return {};
+
+		if (token.type() != TokenType::Range)
+			return RangeAst(*start); 
+
+		token.increment();
+
+		auto end = parseExpression();
+
+		if (!end)
+			return {};
+
+		return RangeAst(*start, *end);
 	}
 
 	VariableAst *ParkaFileParser::parseVariable()
@@ -1596,7 +1661,6 @@ namespace parka::parser
 
 	ModuleAst ParkaFileParser::parse()
 	{
-		// TODO: Fast forwarding after encountering parse error to not stop after first failure
 		auto seekingNext = false;
 		auto functions = Array<FunctionAst*>();
 		auto structs = Array<StructAst*>();

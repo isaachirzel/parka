@@ -399,10 +399,22 @@ namespace parka::validator
 				return validateDeclarationStatement(static_cast<const ast::DeclarationStatementAst&>(ast), symbolTable);
 
 			// case StatementType::Expression:
-			// 	break;
+				// return validateExpressStatement();
 
 			case StatementType::Return:
 				return validateReturnStatement(static_cast<const ast::ReturnStatementAst&>(ast), symbolTable);
+
+			// case StatementType::Break:
+			// 	return validateBreakStatement();
+
+			// case StatementType::Continue:
+			// 	return validateContinueStatement();
+
+			// case StatementType::Yield:
+			// 	return validateYieldStatement();
+
+			// case StatementType::For:
+			// 	return validateForStatement();
 
 			default:
 				break;
@@ -450,6 +462,26 @@ namespace parka::validator
 		return new ReturnStatementIr(value);
 	}
 
+	ir::StatementIr *validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
+
+	ir::StatementIr *validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
+
+	ir::StatementIr *validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
+
+	ir::StatementIr *validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		log::notImplemented(here());
+	}
+	
 	static Result<Type> validateVariableType(const Result<ast::TypeAnnotationAst>& annotation, ExpressionIr *value, LocalSymbolTable& symbolTable)
 	{
 		if (!annotation)

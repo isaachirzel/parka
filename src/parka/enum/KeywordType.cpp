@@ -17,6 +17,7 @@ namespace parka
 		keywords.insert("export", KeywordType::Export);
 		keywords.insert("false", KeywordType::False);
 		keywords.insert("for", KeywordType::For);
+		keywords.insert("in", KeywordType::In);
 		keywords.insert("function", KeywordType::Function);
 		keywords.insert("operator", KeywordType::Operator);
 		keywords.insert("if", KeywordType::If);

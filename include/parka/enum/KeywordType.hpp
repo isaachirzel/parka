@@ -17,6 +17,7 @@ namespace parka
 		Export,
 		False,
 		For,
+		In,
 		Function,
 		Operator,
 		If,

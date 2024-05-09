@@ -20,8 +20,7 @@ namespace parka
 		CharLiteral,
 		FloatLiteral,
 		IntegerLiteral,
-		StringLiteral,
-		ForRange
+		StringLiteral
 	};
 
 	std::ostream& operator<<(std::ostream& out, const ExpressionType& type);

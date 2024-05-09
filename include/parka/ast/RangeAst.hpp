@@ -9,28 +9,28 @@ namespace parka::ast
 	class RangeAst
 	{
 		Snippet _snippet;
-		ExpressionAst* _bottom;
-		ExpressionAst& _top;
+		ExpressionAst& _start;
+		ExpressionAst* _end;
 
 	public:
 
-		RangeAst(ExpressionAst& bottom, ExpressionAst& top):
-			_snippet(bottom.snippet() + top.snippet()),
-			_bottom(&bottom),
-			_top(top)
+		RangeAst(ExpressionAst& start, ExpressionAst& end):
+			_snippet(end.snippet() + start.snippet()),
+			_start(start),
+			_end(&end)
 		{}
-		RangeAst(ExpressionAst& top):
-			_snippet(top.snippet()),
-			_bottom(nullptr),
-			_top(top)
+		RangeAst(ExpressionAst& start):
+			_snippet(start.snippet()),
+			_start(start),
+			_end(nullptr)
 		{}
 		RangeAst(RangeAst&&) = default;
 		RangeAst(const RangeAst&) = delete;
 
 		const auto& snippet() const { return _snippet; }
-		bool hasBottom() const { return !!_bottom; }
-		const auto& bottom() const { assert(_bottom); return *_bottom; }
-		const auto& top() const { return _top; }
+		const auto& start() const { return _start; }
+		bool hasEnd() const { return !!_end; }
+		const auto& end() const { assert(_end); return *_end; }
 	};
 }
 
