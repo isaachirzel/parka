@@ -440,7 +440,7 @@ namespace parka::validator
 		return new DeclarationStatementIr(*variable, *value);
 	}
 
-	ir::StatementIr *validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::ExpressionStatementIr *validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto* expression = validateExpression(ast.expression(), symbolTable);
 
@@ -450,7 +450,7 @@ namespace parka::validator
 		return new ExpressionStatementIr(*expression);
 	}
 
-	ir::StatementIr *validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::ReturnStatementIr *validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto returnedType = Type::voidType;
 		auto* value = (ExpressionIr*)nullptr;
@@ -476,25 +476,25 @@ namespace parka::validator
 		return new ReturnStatementIr(value);
 	}
 
-	ir::StatementIr *validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::BreakStatementIr *validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		// Must be in a loop
 		log::notImplemented(here());
 	}
 
-	ir::StatementIr *validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::ContinueStatementIr *validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		// Must be in a loop
 		log::notImplemented(here());
 	}
 
-	ir::StatementIr *validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::YieldStatementIr *validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		// Must be in an block/if statement
 		log::notImplemented(here());
 	}
 
-	ir::StatementIr *validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable)
+	ir::ForStatementIr *validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto* declaration = validateDeclarationStatement(ast.declaration(), symbolTable);
 
@@ -502,7 +502,7 @@ namespace parka::validator
 			return {};
 
 		auto* condition = validateExpression(ast.condition(), symbolTable);
-		auto* action = validateExpression(ast.action(), symbolTable);
+		auto* action = validateExpressionStatement(ast.action(), symbolTable);
 		auto* body = validateExpression(ast.body(), symbolTable);
 
 		if (!condition  || !action || !body)

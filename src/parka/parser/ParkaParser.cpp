@@ -1,5 +1,7 @@
 #include "parka/parser/ParkaParser.hpp"
+#include "parka/ast/BinaryExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
+#include "parka/ast/ConditionalExpressionAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/ExpressionAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
@@ -471,7 +473,7 @@ namespace parka::parser
 		return expression;
 	}
 
-	ExpressionAst *parsePrimaryExpression(Token& token)
+	ExpressionAst* parsePrimaryExpression(Token& token)
 	{
 		switch (token.type())
 		{
@@ -1207,7 +1209,7 @@ namespace parka::parser
 		return new YieldStatementAst(*keyword, *value);
 	}
 
-	ExpressionStatementAst *parseExpressionStatement(Token& token)
+	ExpressionStatementAst *parseExpressionStatement(Token& token, bool requireSemicolon)
 	{
 		auto expression = parseExpression(token);
 
@@ -1216,7 +1218,7 @@ namespace parka::parser
 
 		auto snippet = expression->snippet() + Snippet(token);
 
-		if (!parseStatementSemicolon(token))
+		if (requireSemicolon && !parseStatementSemicolon(token))
 			return {};
 
 		auto *syntax = new ExpressionStatementAst(snippet, *expression);
@@ -1224,7 +1226,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	DeclarationStatementAst *parseDeclarationStatement(Token& token)
+	DeclarationStatementAst *parseDeclarationStatement(Token& token, bool requireSemicolon)
 	{
 		auto *variable = parseVariable(token);
 
@@ -1246,7 +1248,7 @@ namespace parka::parser
 
 		auto snippet = variable->snippet() + Snippet(token);
 		
-		if (!parseStatementSemicolon(token))
+		if (requireSemicolon && !parseStatementSemicolon(token))
 			return {};
 
 		auto *syntax = new DeclarationStatementAst(snippet, *variable, *value);
@@ -1274,7 +1276,7 @@ namespace parka::parser
 		if (!parseSemicolon(token))
 			return {};
 
-		auto* action = parseExpression(token);
+		auto* action = parseExpressionStatement(token, false);
 
 		if (!action)
 			return {};

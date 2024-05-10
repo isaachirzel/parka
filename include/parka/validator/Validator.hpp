@@ -23,16 +23,22 @@
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockExpressionIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
+#include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CharLiteralIr.hpp"
+#include "parka/ir/ContinueStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
+#include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/FloatLiteralIr.hpp"
+#include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/ir/PrototypeIr.hpp"
+#include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/StatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/IntegerLiteralIr.hpp"
 #include "parka/ir/StringLiteralIr.hpp"
+#include "parka/ir/YieldStatementIr.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/util/Result.hpp"
@@ -56,12 +62,12 @@ namespace parka::validator
 	ir::BoolLiteralIr* validateBoolLiteral(const ast::BoolLiteralAst& ast);
 	ir::StatementIr* validateStatement(const ast::StatementAst& statement, LocalSymbolTable& symbolTable);
 	ir::DeclarationStatementIr*validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr* validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::StatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::ExpressionStatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::BreakStatementIr* validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::VariableIr* validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, LocalSymbolTable& symbolTable);
 }
 

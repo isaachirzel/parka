@@ -2,13 +2,11 @@
 #define PARKA_PARSER_PARKA_PARSER_HPP
 
 #include "parka/ast/Ast.hpp"
-#include "parka/ast/BinaryExpressionAst.hpp"
 #include "parka/ast/BlockExpressionAst.hpp"
 #include "parka/ast/BoolLiteralAst.hpp"
 #include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
-#include "parka/ast/ConditionalExpressionAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionAst.hpp"
@@ -19,7 +17,6 @@
 #include "parka/ast/IdentifierExpressionAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/MemberAccessExpressionAst.hpp"
-#include "parka/ast/PrefixExpressionAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ast/RangeAst.hpp"
@@ -89,8 +86,8 @@ namespace parka::parser
 	ast::StringLiteralAst* parseStringLiteral(Token& token);
 	ast::IntegerLiteralAst* parseIntegerLiteral(Token& token);
 	ast::StatementAst* parseStatement(Token& token);
-	ast::DeclarationStatementAst* parseDeclarationStatement(Token& token);
-	ast::ExpressionStatementAst* parseExpressionStatement(Token& token);
+	ast::DeclarationStatementAst* parseDeclarationStatement(Token& token, bool requireSemicolon = true);
+	ast::ExpressionStatementAst* parseExpressionStatement(Token& token, bool requireSemicolon = true);
 	ast::ReturnStatementAst* parseReturnStatement(Token& token);
 	ast::BreakStatementAst* parseBreakStatement(Token& token);
 	ast::ContinueStatementAst* parseContinueStatement(Token& token);

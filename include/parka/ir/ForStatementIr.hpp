@@ -3,8 +3,8 @@
 
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
+#include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/StatementIr.hpp"
-#include "parka/ir/VariableIr.hpp"
 
 namespace parka::ir
 {
@@ -12,12 +12,12 @@ namespace parka::ir
 	{
 		DeclarationStatementIr& _declaration;
 		ExpressionIr& _condition;
-		ExpressionIr& _action;
+		ExpressionStatementIr& _action;
 		ExpressionIr& _body;
 
 	public:
 
-		ForStatementIr(DeclarationStatementIr& declaration, ExpressionIr& condition, ExpressionIr& action, ExpressionIr& body):
+		ForStatementIr(DeclarationStatementIr& declaration, ExpressionIr& condition, ExpressionStatementIr& action, ExpressionIr& body):
 			StatementIr(StatementType::For),
 			_declaration(declaration),
 			_condition(condition),
