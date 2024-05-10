@@ -1,6 +1,7 @@
 #ifndef PARKA_PARSER_PARKA_MODULE_PARSER_HPP
 #define PARKA_PARSER_PARKA_MODULE_PARSER_HPP
 
+#include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/RangeAst.hpp"
 #include "parka/enum/JumpType.hpp"
@@ -43,7 +44,8 @@ namespace parka::parser
 
 		ast::ModuleAst parse();
 
-		bool parseSemicolon();
+		bool parseSemicolon(const char *message = "");
+		bool parseStatementSemicolon();
 
 		Result<ast::KeywordAst> parseBoolKeyword();
 		Result<ast::KeywordAst> parseStructKeyword();
@@ -103,7 +105,7 @@ namespace parka::parser
 		ast::ExpressionAst* parseIntegerLiteral();
 
 		ast::StatementAst* parseStatement();
-		ast::StatementAst* parseDeclarationStatement();
+		ast::DeclarationStatementAst* parseDeclarationStatement();
 		ast::StatementAst* parseExpressionStatement();
 		ast::StatementAst* parseReturnStatement();
 		ast::StatementAst* parseBreakStatement();

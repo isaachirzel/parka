@@ -1,36 +1,36 @@
 #ifndef PARKA_AST_FOR_EXPRESSION_HPP
 #define PARKA_AST_FOR_EXPRESSION_HPP
 
-#include "parka/ast/IdentifierAst.hpp"
-#include "parka/ast/KeywordAst.hpp"
-#include "parka/ast/RangeAst.hpp"
-#include "parka/ast/StatementAst.hpp"
+#include "parka/ast/DeclarationStatementAst.hpp"
+#include "parka/ast/ExpressionAst.hpp"
 
 namespace parka::ast
 {
 	class ForStatementAst: public StatementAst
 	{
 		Snippet _snippet;
-		KeywordAst _forKeyword;
-		Identifier _variableName;
-		RangeAst _range;
+		DeclarationStatementAst& _declaration;
+		ExpressionAst& _condition;
+		ExpressionAst& _action;
 		ExpressionAst& _body;
 
 	public:
 
-		ForStatementAst(KeywordAst&& forKeyword, Identifier&& variableName, RangeAst&& range, ExpressionAst& body):
+		ForStatementAst(const Snippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, ExpressionAst& action, ExpressionAst& body):
 			StatementAst(StatementType::For),
-			_snippet(forKeyword.snippet() + range.snippet()),
-			_forKeyword(std::move(forKeyword)),
-			_variableName(std::move(variableName)),
-			_range(std::move(range)),
+			_snippet(snippet),
+			_declaration(declaration),
+			_condition(condition),
+			_action(action),
 			_body(body)
 		{}
+		ForStatementAst(ForStatementAst&&) = default;
+		ForStatementAst(const ForStatementAst&) = delete;
 
 		const Snippet& snippet() const { return _snippet; }
-		const auto& forKeyword() const { return _forKeyword; }
-		const auto& variableName() const { return _variableName; }
-		const auto& range() const { return _range; }
+		const auto& declaration() const { return _declaration; }
+		const auto& condition() const { return _condition; }
+		const auto& action() const { return _action; }
 		const auto& body() const { return _body; }
 	};
 }

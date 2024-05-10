@@ -11,7 +11,6 @@
 
 namespace parka
 {
-	// TODO: Implement getting symbols for entity
 	struct SymbolTable
 	{
 		const SymbolTableType symbolTableType;

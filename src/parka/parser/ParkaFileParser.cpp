@@ -39,28 +39,28 @@ namespace parka::parser
 		log::error(token, "Expected $, found $. $", expected, token.type(), message);
 	}
 
-	static void logSemicolonError(const Snippet& snippet)
-	{
-		log::error(snippet, "Statements must be ended with a ';'.");
-	}
-
 	ParkaFileParser::ParkaFileParser(const File& file):
 		_file(file),
 		_initialToken(Token::initial(file)),
 		token(_initialToken)
 	{}
 
-	bool ParkaFileParser::parseSemicolon()
+	bool ParkaFileParser::parseSemicolon(const char *message)
 	{
 		if (token.type() != TokenType::Semicolon)
 		{
-			logSemicolonError(token);
+			logParseError(token, "';'");
 			return false;
 		}
 
 		token.increment();
 
 		return true;
+	}
+
+	bool ParkaFileParser::parseStatementSemicolon()
+	{
+		return parseSemicolon("Statements must be ended with a ';'.");
 	}
 
 	Result<KeywordAst> ParkaFileParser::parseBoolKeyword()
@@ -1176,7 +1176,7 @@ namespace parka::parser
 		if (!value)
 			return {};
 
-		if (!parseSemicolon())
+		if (!parseStatementSemicolon())
 			return {};
 
 		return new ReturnStatementAst(*keyword, *value);
@@ -1189,7 +1189,7 @@ namespace parka::parser
 		if (!keyword)
 			return {};
 
-		if (!parseSemicolon())
+		if (!parseStatementSemicolon())
 			return {};
 
 		return new BreakStatementAst(*keyword);
@@ -1202,7 +1202,7 @@ namespace parka::parser
 		if (!keyword)
 			return {};
 		
-		if (!parseSemicolon())
+		if (!parseStatementSemicolon())
 			return {};
 
 		return new ContinueStatementAst(*keyword);
@@ -1220,7 +1220,7 @@ namespace parka::parser
 		if (!value)
 			return {};
 
-		if (!parseSemicolon())
+		if (!parseStatementSemicolon())
 			return {};
 
 		return new YieldStatementAst(*keyword, *value);
@@ -1235,7 +1235,7 @@ namespace parka::parser
 
 		auto snippet = expression->snippet() + Snippet(token);
 
-		if (!parseSemicolon())
+		if (!parseStatementSemicolon())
 			return {};
 
 		auto *syntax = new ExpressionStatementAst(snippet, *expression);
@@ -1243,7 +1243,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	StatementAst *ParkaFileParser::parseDeclarationStatement()
+	DeclarationStatementAst *ParkaFileParser::parseDeclarationStatement()
 	{
 		auto *variable = parseVariable();
 
@@ -1263,15 +1263,10 @@ namespace parka::parser
 		if (!value)
 			return nullptr;
 
-		if (token.type() != TokenType::Semicolon)
-		{
-			logSemicolonError(variable->snippet() + value->snippet());
-			return nullptr;
-		}
-
 		auto snippet = variable->snippet() + Snippet(token);
-
-		token.increment();
+		
+		if (!parseStatementSemicolon())
+			return {};
 
 		auto *syntax = new DeclarationStatementAst(snippet, *variable, *value);
 
@@ -1285,27 +1280,32 @@ namespace parka::parser
 		if (!forKeyword)
 			return {};
 
-		auto variableName = parseIdentifier();
+		auto* declaration = parseDeclarationStatement();
 
-		if (!variableName)
+		if (!declaration)
 			return {};
 
-		auto inKeyword = parseInKeyword();
+		auto* condition = parseExpression();
 
-		if (!inKeyword)
+		if (!condition)
 			return {};
 
-		auto range = parseRange();
-
-		if (!range)
+		if (!parseSemicolon())
 			return {};
 
-		auto body = parseBlockExpression();
+		auto* action = parseExpression();
+
+		if (!action)
+			return {};
+
+		auto* body = parseBlockExpression();
 
 		if (!body)
 			return {};
+
+		auto snippet = forKeyword->snippet() + body->snippet();
 		
-		return new ForStatementAst(*forKeyword, *variableName, *range, *body);
+		return new ForStatementAst(snippet, *declaration, *condition, *action, *body);
 	}
 
 	StatementAst *ParkaFileParser::parseStatement()

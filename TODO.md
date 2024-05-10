@@ -1,6 +1,8 @@
 # TODO
 - Validate return statements
 - Evaluate return statements
+- default not impemented exception if body is a semicolon
+- make isReturning in evauator a return type which can be breka/return/exception or so
 - Conversion operators
 - Convert to throwing exceptions?
 - Arena for handling new operations and cleanup
