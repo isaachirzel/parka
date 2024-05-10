@@ -20,7 +20,7 @@ int main(int argc, const char *argv[])
 
 	log::note("Project loaded in $ seconds.", readTime);
 
-	auto ast = parser::ParkaParser(project).parse();
+	auto ast = parser::parse(project);
 	auto parseTime = timer.split();
 
 	log::note("Parsing completed in $s.", parseTime);

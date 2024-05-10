@@ -1,13 +1,7 @@
 #ifndef PARKA_AST_AST_HPP
 #define PARKA_AST_AST_HPP
 
-#include "parka/enum/SymbolTableType.hpp"
-#include "parka/ir/Ir.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/ModuleAst.hpp"
 #include "parka/ast/PackageAst.hpp"
-#include "parka/util/Project.hpp"
-#include "parka/util/Result.hpp"
 
 namespace parka::ast
 {
@@ -26,8 +20,6 @@ namespace parka::ast
 		Ast(const Ast&) = delete;
 
 		const auto& globalPackage() const { return _globalPackage; }
-
-		friend std::ostream& operator<<(std::ostream& out, const Ast& syntax);
 	};
 }
 
