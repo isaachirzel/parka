@@ -10,10 +10,6 @@ namespace parka
 				out << "BinaryExpression";
 				break;
 
-			case ExpressionType::Block:
-				out << "Block";
-				break;
-
 			case ExpressionType::Call:
 				out << "CallExpression";
 				break;

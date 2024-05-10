@@ -3,7 +3,7 @@
 
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/BinaryExpressionAst.hpp"
-#include "parka/ast/BlockExpressionAst.hpp"
+#include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/BoolLiteralAst.hpp"
 #include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
@@ -21,7 +21,7 @@
 #include "parka/ast/StringLiteralAst.hpp"
 #include "parka/ast/YieldStatementAst.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
-#include "parka/ir/BlockExpressionIr.hpp"
+#include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CharLiteralIr.hpp"
@@ -52,7 +52,6 @@ namespace parka::validator
 	Result<ir::Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
 	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, LocalSymbolTable& symbolTable);
 	ir::ExpressionIr* validateExpression(const ast::ExpressionAst& expression, LocalSymbolTable& symbolTable);
-	ir::BlockExpressionIr* validateBlockExpression(const ast::BlockExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IdentifierExpressionIr* validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IntegerLiteralIr* validateIntegerLiteral(const ast::IntegerLiteralAst& ast);
@@ -68,6 +67,7 @@ namespace parka::validator
 	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::VariableIr* validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, LocalSymbolTable& symbolTable);
 }
 

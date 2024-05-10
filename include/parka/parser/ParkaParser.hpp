@@ -2,7 +2,7 @@
 #define PARKA_PARSER_PARKA_PARSER_HPP
 
 #include "parka/ast/Ast.hpp"
-#include "parka/ast/BlockExpressionAst.hpp"
+#include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/BoolLiteralAst.hpp"
 #include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
@@ -66,7 +66,7 @@ namespace parka::parser
 	ast::MemberAccessExpressionAst* parseMemberAccessExpression(Token& token, ast::ExpressionAst& primary);
 	ast::SubscriptExpressionAst* parseSubscriptExpression(Token& token, ast::ExpressionAst& primary);
 	ast::IdentifierExpressionAst* parseIdentifierExpression(Token& token);
-	ast::BlockExpressionAst* parseBlockExpression(Token& token);
+	ast::BlockStatementAst* parseBlockStatement(Token& token);
 	ast::ExpressionAst* parsePrefixExpression(Token& token);
 	ast::ExpressionAst* parseMultiplicativeExpression(Token& token);
 	ast::ExpressionAst* parseAdditiveExpression(Token& token);

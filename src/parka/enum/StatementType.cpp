@@ -34,6 +34,10 @@ namespace parka
 				out << "for";
 				break;
 
+			case StatementType::Block:
+				out << "block";
+				break;
+
 			default:
 				out << '(' << (int)type << ") Invalid";
 		}

@@ -32,7 +32,7 @@ namespace parka::evaluation
 		auto frame = state.createFrame();
 
 		evaluatePrototype(ir.prototype(), arguments, state);
-		evaluateExpression(ir.body(), state);
+		evaluateBlockStatement(ir.body(), state);
 
 		if (state.hasReturnValue())
 			returnValue = state.returnValue();
@@ -58,11 +58,15 @@ namespace parka::evaluation
 	{
 		switch (ir.statementType)
 		{
+
 			case StatementType::Declaration:
 				return evaluateDeclarationStatement(static_cast<const DeclarationStatementIr&>(ir), state);
 
 			case StatementType::Return:
 				return evaluateReturnStatement(static_cast<const ReturnStatementIr&>(ir), state);
+
+			case StatementType::Block:
+				return evaluateBlockStatement(static_cast<const BlockStatementIr&>(ir), state);
 
 			default:
 				break;
@@ -114,9 +118,6 @@ namespace parka::evaluation
 		{
 			case ExpressionType::Binary:
 				return evaluateBinaryExpression(static_cast<const BinaryExpressionIr&>(ir), state);
-
-			case ExpressionType::Block:
-				return evaluateBlock(static_cast<const BlockExpressionIr&>(ir), state);
 
 			case ExpressionType::Call:
 				break;
@@ -170,20 +171,15 @@ namespace parka::evaluation
 		return result;
 	}
 
-	Value& evaluateBlock(const BlockExpressionIr& ir, State& state)
+	void evaluateBlockStatement(const BlockStatementIr& ir, State& state)
 	{
 		for (const auto *statement : ir.statements())
 		{
-			// TODO: handle returns
 			evaluateStatement(*statement, state);
 
 			if (state.hasReturnValue())
 				break;
 		}
-
-		auto& value = state.push(ir::Type::voidType);
-		
-		return value;
 	}
 
 	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, State& state)

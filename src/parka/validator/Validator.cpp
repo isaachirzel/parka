@@ -89,7 +89,7 @@ namespace parka::validator
 	{
 		auto symbolTable = LocalSymbolTable(&parentSymbolTable);
 		auto prototype = validatePrototype(ast.prototype(), symbolTable);
-		auto *body = validateExpression(ast.body(), symbolTable);
+		auto *body = validateBlockStatement(ast.body(), symbolTable);
 
 		if (!prototype || !body)
 			return {};
@@ -175,9 +175,6 @@ namespace parka::validator
 			case ExpressionType::Binary:
 				return validateBinaryExpression(static_cast<const ast::BinaryExpressionAst&>(ast), symbolTable);
 
-			case ExpressionType::Block:
-				return validateBlockExpression(static_cast<const ast::BlockExpressionAst&>(ast), symbolTable);
-
 			case ExpressionType::Call:
 				break;
 
@@ -221,7 +218,7 @@ namespace parka::validator
 		log::fatal("Unable to validate Expression with Type: $", ast.expressionType);
 	}
 
-	BlockExpressionIr *validateBlockExpression(const ast::BlockExpressionAst& ast, LocalSymbolTable& symbolTable)
+	BlockStatementIr *validateBlockStatement(const ast::BlockStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto success = true;
 		auto statements = Array<StatementIr*>(ast.statements().length());
@@ -244,7 +241,7 @@ namespace parka::validator
 		if (!success)
 			return {};
 
-		return new BlockExpressionIr(std::move(statements), Type(Type::voidType));
+		return new BlockStatementIr(std::move(statements));
 	}
 
 	BinaryExpressionIr *validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable)
@@ -420,6 +417,9 @@ namespace parka::validator
 			case StatementType::For:
 				return validateForStatement(static_cast<const ast::ForStatementAst&>(ast), symbolTable);
 
+			case StatementType::Block:
+				return validateBlockStatement(static_cast<const ast::BlockStatementAst&>(ast), symbolTable);
+
 			default:
 				break;
 		}
@@ -503,7 +503,7 @@ namespace parka::validator
 
 		auto* condition = validateExpression(ast.condition(), symbolTable);
 		auto* action = validateExpressionStatement(ast.action(), symbolTable);
-		auto* body = validateExpression(ast.body(), symbolTable);
+		auto* body = validateBlockStatement(ast.body(), symbolTable);
 
 		if (!condition  || !action || !body)
 			return {};

@@ -1,6 +1,7 @@
 #ifndef PARKA_IR_FUNCTION_HPP
 #define PARKA_IR_FUNCTION_HPP
 
+#include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/PrototypeIr.hpp"
@@ -11,11 +12,11 @@ namespace parka::ir
 	{
 		String _symbol;
 		PrototypeIr _prototype;
-		ExpressionIr& _body;
+		BlockStatementIr& _body;
 
 	public:
 
-		FunctionIr(String&& symbol, PrototypeIr&& prototype, ExpressionIr& body):
+		FunctionIr(String&& symbol, PrototypeIr&& prototype, BlockStatementIr& body):
 			LValueIr(ResolvableType::Function),
 			_symbol(std::move(symbol)),
 			_prototype(std::move(prototype)),

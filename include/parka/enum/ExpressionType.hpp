@@ -8,7 +8,6 @@ namespace parka
 	enum class ExpressionType
 	{
 		Binary,
-		Block,
 		Call,
 		Conditional,
 		Identifier,

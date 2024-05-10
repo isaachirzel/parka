@@ -1,6 +1,7 @@
 #ifndef PARKA_AST_FUNCTION_HPP
 #define PARKA_AST_FUNCTION_HPP
 
+#include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/ExpressionAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
 
@@ -10,11 +11,11 @@ namespace parka::ast
 	{
 		Snippet _snippet;
 		PrototypeAst _prototype;
-		ExpressionAst& _body;
+		BlockStatementAst& _body;
 
 	public:
 
-		FunctionAst(PrototypeAst&& prototype, ExpressionAst& body):
+		FunctionAst(PrototypeAst&& prototype, BlockStatementAst& body):
 			_snippet(prototype.snippet() + body.snippet()),
 			_prototype(std::move(prototype)),
 			_body(body)

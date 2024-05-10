@@ -392,7 +392,7 @@ namespace parka::parser
 		return new IdentifierExpressionAst(*identifier);
 	}
 
-	BlockExpressionAst *parseBlockExpression(Token& token)
+	BlockStatementAst *parseBlockStatement(Token& token)
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
@@ -442,16 +442,13 @@ namespace parka::parser
 		if (encounteredError)
 			return {};
 
-		auto *syntax = new BlockExpressionAst(first + last, std::move(statements));
+		auto *syntax = new BlockStatementAst(first + last, std::move(statements));
 
 		return syntax;
 	}
 
 	ExpressionAst *parseExpression(Token& token)
 	{
-		if (token.type() == TokenType::LeftBrace)
-			return parseBlockExpression(token);
-
 		return parseAssignmentExpression(token);
 	}
 
@@ -1281,7 +1278,7 @@ namespace parka::parser
 		if (!action)
 			return {};
 
-		auto* body = parseBlockExpression(token);
+		auto* body = parseBlockStatement(token);
 
 		if (!body)
 			return {};
@@ -1293,10 +1290,14 @@ namespace parka::parser
 
 	StatementAst *parseStatement(Token& token)
 	{
+		if (token.type() == TokenType::LeftBrace)
+			return parseBlockStatement(token);
+
 		auto keywordType = toKeywordType(token.text());
 
 		switch (keywordType)
 		{
+
 			case KeywordType::Var:
 				return parseDeclarationStatement(token);
 
@@ -1351,35 +1352,37 @@ namespace parka::parser
 		return syntax;
 	}
 
-	ExpressionAst *parseFunctionBody(Token& token)
-	{
-		if (token.type() == TokenType::DoubleArrow)
-		{
-			token.increment();
+	// ExpressionAst *parseFunctionBody(Token& token)
+	// {
+	// 	if (token.type() == TokenType::DoubleArrow)
+	// 	{
+	// 		token.increment();
 
-			auto body = parseExpression(token);
+	// 		auto body = parseExpression(token);
 
-			if (!body)
-				return {};
+	// 		if (!body)
+	// 			return {};
 
-			if (token.type() != TokenType::Semicolon)
-			{
-				log::error(token, "Inline function bodies need to be ended with ';'.");
-				return {};
-			}
+	// 		if (token.type() != TokenType::Semicolon)
+	// 		{
+	// 			log::error(token, "Inline function bodies need to be ended with ';'.");
+	// 			return {};
+	// 		}
 
-			token.increment();
+	// 		token.increment();
 
-			return body;
-		}
+	// 		return body;
+	// 	}
 
-		if (token.type() == TokenType::LeftBrace)
-			return parseBlockExpression(token);
+
+
+	// 	if (token.type() == TokenType::LeftBrace)
+	// 		return parseBlockStatement(token);
 		
-		logParseError(token, "function body", "Functions require a body.");
+	// 	logParseError(token, "function body", "Functions require a body.");
 
-		return {};
-	}
+	// 	return {};
+	// }
 
 	Result<TypeAnnotationAst> parseTypeAnnotation(Token& token)
 	{
@@ -1528,7 +1531,7 @@ namespace parka::parser
 		if (!prototype)
 			return {};
 
-		auto body = parseFunctionBody(token);
+		auto body = parseBlockStatement(token);
 
 		if (!body)
 			return {};

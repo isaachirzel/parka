@@ -1,6 +1,7 @@
 #ifndef PARKA_AST_FOR_EXPRESSION_HPP
 #define PARKA_AST_FOR_EXPRESSION_HPP
 
+#include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 
@@ -12,11 +13,11 @@ namespace parka::ast
 		DeclarationStatementAst& _declaration;
 		ExpressionAst& _condition;
 		ExpressionStatementAst& _action;
-		ExpressionAst& _body;
+		BlockStatementAst& _body;
 
 	public:
 
-		ForStatementAst(const Snippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, ExpressionStatementAst& action, ExpressionAst& body):
+		ForStatementAst(const Snippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, ExpressionStatementAst& action, BlockStatementAst& body):
 			StatementAst(StatementType::For),
 			_snippet(snippet),
 			_declaration(declaration),

@@ -13,7 +13,8 @@ namespace parka
 		Break,
 		Continue,
 		Yield,
-		For
+		For,
+		Block
 	};
 
 	std::ostream& operator<<(std::ostream& out, const StatementType& type);
