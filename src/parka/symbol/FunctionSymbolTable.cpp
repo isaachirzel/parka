@@ -1,4 +1,4 @@
-#include "parka/symbol/LocalSymbolTable.hpp"
+#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ir/LValueIr.hpp"
@@ -8,12 +8,12 @@
 
 namespace parka
 {
-	LocalSymbolTable::LocalSymbolTable(SymbolTable *parent):
+	FunctionSymbolTable::FunctionSymbolTable(SymbolTable *parent):
 		SymbolTable(SymbolTableType::Function),
 		_parent(parent)
 	{}
 
-	bool LocalSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
+	bool FunctionSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
 	{
 		auto *previous = find(identifier);
 
@@ -30,7 +30,7 @@ namespace parka
 		return true;
 	}
 
-	ParameterEntry *LocalSymbolTable::declare(ParameterEntry&& entry)
+	ParameterEntry *FunctionSymbolTable::declare(ParameterEntry&& entry)
 	{
 		auto& ref = _parameters.push(std::move(entry));
 		auto *ptr = &ref;
@@ -42,7 +42,7 @@ namespace parka
 		return ptr;
 	}
 
-	VariableEntry *LocalSymbolTable::declare(VariableEntry&& entry)
+	VariableEntry *FunctionSymbolTable::declare(VariableEntry&& entry)
 	{
 		auto& ref = _variables.push(std::move(entry));
 		auto *ptr = &ref;
@@ -54,7 +54,7 @@ namespace parka
 		return ptr;
 	}
 
-	Resolvable *LocalSymbolTable::find(const ast::Identifier& identifier)
+	Resolvable *FunctionSymbolTable::find(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -67,7 +67,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValueIr *LocalSymbolTable::resolve(const ast::QualifiedIdentifier& identifier)
+	ir::LValueIr *FunctionSymbolTable::resolve(const ast::QualifiedIdentifier& identifier)
 	{
 		assert(_parent != nullptr);
 
@@ -84,21 +84,21 @@ namespace parka
 		return global;
 	}
 
-	ir::OperatorIr *LocalSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
+	ir::OperatorIr *FunctionSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
 	{
 		assert(_parent != nullptr);
 
 		return _parent->resolve(type, left, right);
 	}
 
-	ir::ConversionIr *LocalSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
+	ir::ConversionIr *FunctionSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
 	{
 		assert(_parent != nullptr);
 
 		return _parent->resolveConversion(from, to);
 	}
 	
-	std::ostream& operator<<(std::ostream& out, const LocalSymbolTable& symbolTable)
+	std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& symbolTable)
 	{
 		// out << validator._ast.prototype();
 		out << symbolTable._scope << '\n';

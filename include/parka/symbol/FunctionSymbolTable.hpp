@@ -10,7 +10,7 @@
 
 namespace parka
 {
-	class LocalSymbolTable: public SymbolTable
+	class FunctionSymbolTable: public SymbolTable
 	{
 		String _scope;
 		Array<Resolvable*> _symbols;
@@ -25,9 +25,9 @@ namespace parka
 
 	public:
 
-		LocalSymbolTable(SymbolTable *parent = nullptr);
-		LocalSymbolTable(LocalSymbolTable&&) = default;
-		LocalSymbolTable(const LocalSymbolTable&) = delete;
+		FunctionSymbolTable(SymbolTable *parent = nullptr);
+		FunctionSymbolTable(FunctionSymbolTable&&) = default;
+		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
 
 		ParameterEntry *declare(ParameterEntry&& entry);
 		VariableEntry *declare(VariableEntry&& entry);
@@ -40,7 +40,7 @@ namespace parka
 		const auto& returnType() const { return *_returnType; }
 		const String& scope() const { return _scope; }
 
-		friend std::ostream& operator<<(std::ostream& out, const LocalSymbolTable& syntax);
+		friend std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& syntax);
 	};
 }
 
