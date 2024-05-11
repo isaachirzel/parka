@@ -7,18 +7,21 @@ namespace parka::ast
 {
 	class Ast
 	{
+		String _name;
 		PackageAst& _globalPackage;
 		// TODO: Project metadata
 		// TODO: External package ids
 		
 	public:
 
-		Ast(PackageAst& globalPackage):
+		Ast(const String& name, PackageAst& globalPackage):
+			_name(std::move(name)),
 			_globalPackage(globalPackage)
 		{}
 		Ast(Ast&&) = default;
 		Ast(const Ast&) = delete;
 
+		const auto& name() const { return _name; }
 		const auto& globalPackage() const { return _globalPackage; }
 	};
 }

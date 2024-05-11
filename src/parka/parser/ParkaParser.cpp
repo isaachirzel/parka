@@ -1741,7 +1741,7 @@ namespace parka::parser
 
 		assert(package != nullptr);
 
-		auto result = Ast(*package);
+		auto result = Ast(project.name(), *package);
 
 		return result;
 	}

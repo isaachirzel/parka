@@ -18,14 +18,11 @@ namespace parka::evaluation
 		auto *entryPoint = ir.entryPoint();
 
 		if (!entryPoint)
-		{
-			// TODO: Get program name?
-			log::fatal("Unable to evaluate this program as there is no entry point. Please implement a function named `main` in the global scope.");
-		}
+			log::fatal("Unable to evaluate `$` as there is no entry point. Please implement a function named `main` in the global scope.", ir.name());
 
 		auto& result = evaluateFunction(*entryPoint, {}, state);
 
-		log::note("Result of $(): $", entryPoint->symbol(), result);
+		log::debug("Result of $(): $", entryPoint->symbol(), result);
 	}
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, State& state)

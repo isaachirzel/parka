@@ -11,7 +11,6 @@ using namespace parka;
 
 int main(int argc, const char *argv[])
 {
-	log::debug("WOW");
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
 
@@ -19,17 +18,17 @@ int main(int argc, const char *argv[])
 	auto project = Project::read(argv[1]);
 	auto readTime = timer.split();
 
-	log::note("Project loaded in $ seconds.", readTime);
+	log::debug("Project loaded in $ seconds.", readTime);
 
 	auto ast = parser::parse(project);
 	auto parseTime = timer.split();
 
-	log::note("Parsing completed in $s.", parseTime);
+	log::debug("Parsing completed in $s.", parseTime);
 
 	auto ir = validator::validateAst(ast);
 	auto validateTime = timer.split();
 
-	log::note("Validation completed in $s.", validateTime);
+	log::debug("Validation completed in $s.", validateTime);
 
 	auto errorCount = log::getErrorCount();
 	auto compileTime = timer.stop();
@@ -47,7 +46,7 @@ int main(int argc, const char *argv[])
 	evaluation::evaluate(*ir);
 
 	auto evaluateTime = timer.split();
-	log::note("Evaluation completed in $s.", evaluateTime);
+	log::debug("Evaluation completed in $s.", evaluateTime);
 }
 
 /*

@@ -87,7 +87,7 @@ namespace parka::validator
 
 		// TODO: Structs and packages
 
-		return Ir(std::move(functions), entryPoint);
+		return Ir(ast.name(), std::move(functions), entryPoint);
 	}
 
 	FunctionIr *validateFunction(const FunctionAst& ast, SymbolTable& parentSymbolTable)

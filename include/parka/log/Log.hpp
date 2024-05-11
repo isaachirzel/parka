@@ -20,13 +20,17 @@ namespace parka::log
 	template <typename ...Arg>
 	void debug(const char *fmt, Arg const&... args)
 	{
+		#ifndef NDEBUG
 		return addEntry(LogEntry(LogEntryType::Debug, parka::format(fmt, args...)));
+		#endif
 	}
 
 	template <typename ...Arg>
 	void debug(const Snippet& token, const char *fmt, Arg const&... args)
 	{
+		#ifndef NDEBUG
 		return addEntry(LogEntry(LogEntryType::Debug, format(fmt, args...), token));
+		#endif
 	}
 
 	template <typename ...Arg>
