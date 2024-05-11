@@ -13,12 +13,13 @@ namespace parka
 		Color _color;
 
 		Prompt(const char *text, const Color& color):
-		_text(text),
-		_color(color)
+			_text(text),
+			_color(color)
 		{}
 
 	public:
 
+		static const Prompt Debug;
 		static const Prompt Note;
 		static const Prompt Success;
 		static const Prompt Warning;

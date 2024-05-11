@@ -18,6 +18,18 @@ namespace parka::log
 	extern void addEntry(LogEntry&& entry);
 
 	template <typename ...Arg>
+	void debug(const char *fmt, Arg const&... args)
+	{
+		return addEntry(LogEntry(LogEntryType::Debug, parka::format(fmt, args...)));
+	}
+
+	template <typename ...Arg>
+	void debug(const Snippet& token, const char *fmt, Arg const&... args)
+	{
+		return addEntry(LogEntry(LogEntryType::Debug, format(fmt, args...), token));
+	}
+
+	template <typename ...Arg>
 	void note(const char *fmt, Arg const&... args)
 	{
 		return addEntry(LogEntry(LogEntryType::Note, parka::format(fmt, args...)));
@@ -60,6 +72,7 @@ namespace parka::log
 	[[ noreturn ]]
 	void notImplemented(SourceLocation&& location);
 
+	usize getDebugCount();
 	usize getNoteCount();
 	usize getSuccessCount();
 	usize getWarningCount();

@@ -1,14 +1,12 @@
 #include "parka/log/Log.hpp"
-#include "parka/log/ArenaStreamBuffer.hpp"
 #include "parka/log/LogEntry.hpp"
-#include "parka/util/Arena.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Pool.hpp"
 #include "parka/util/Table.hpp"
-#include <ostream>
 
 namespace parka::log
 {
+	usize debugCount = 0;
 	usize noteCount = 0;
 	usize successCount = 0;
 	usize warningCount = 0;
@@ -24,12 +22,16 @@ namespace parka::log
 	{
 		switch (entry.type())
 		{
-			case LogEntryType::Success:
-				log::successCount  += 1;
+			case LogEntryType::Debug:
+				log::debugCount += 1;
 				break;
 
 			case LogEntryType::Note:
 				log::noteCount += 1;
+				break;
+
+			case LogEntryType::Success:
+				log::successCount  += 1;
 				break;
 
 			case LogEntryType::Warning:
@@ -93,6 +95,7 @@ namespace parka::log
 	// 	return buffer;
 	// }
 
+	usize getDebugCount() { return debugCount; }
 	usize getNoteCount() { return noteCount; }
 	usize getSuccessCount() { return successCount; }
 	usize getWarningCount() { return warningCount; }

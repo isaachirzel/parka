@@ -11,6 +11,7 @@ using namespace parka;
 
 int main(int argc, const char *argv[])
 {
+	log::debug("WOW");
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
 

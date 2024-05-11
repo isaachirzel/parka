@@ -5,6 +5,7 @@
 
 namespace parka
 {
+	const Prompt Prompt::Debug("debug", Color::Blue);
 	const Prompt Prompt::Note("note", Color::Cyan);
 	const Prompt Prompt::Success("success", Color::Green);
 	const Prompt Prompt::Warning("warning", Color::Purple);
@@ -15,6 +16,9 @@ namespace parka
 	{
 		switch (type)
 		{
+			case LogEntryType::Debug:
+				return Prompt::Debug;
+
 			case LogEntryType::Note:
 				return Prompt::Note;
 					

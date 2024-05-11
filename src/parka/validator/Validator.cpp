@@ -472,10 +472,6 @@ namespace parka::validator
 
 			returnedType = value->type();
 		}
-		else
-		{
-			
-		}
 
 		auto* conversion = symbolTable.resolveConversion(returnedType, symbolTable.returnType());
 

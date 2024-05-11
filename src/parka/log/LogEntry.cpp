@@ -1,45 +1,15 @@
 #include "parka/log/LogEntry.hpp"
-#include "parka/enum/LogEntryType.hpp"
 #include "parka/log/Color.hpp"
 #include "parka/log/Line.hpp"
-#include "parka/log/Log.hpp"
 #include "parka/log/Margin.hpp"
 #include "parka/log/Prompt.hpp"
 #include "parka/log/Underline.hpp"
 
 namespace parka
 {
-	Color LogEntry::getColor(LogEntryType type)
-	{
-		switch (type)
-		{
-			case LogEntryType::Note:
-				return Color::Cyan;
-
-			case LogEntryType::Success:
-				return Color::Green;
-
-			case LogEntryType::Warning:
-				return Color::Purple;
-
-			case LogEntryType::Error:
-				return Color::Red;
-
-			case LogEntryType::Fatal:
-				return Color::Red;
-
-			default:
-				break;
-		}
-
-		log::fatal("Unable to get Color for LogEntryType %d", (int)type);
-	}
-
 	std::ostream& operator<<(std::ostream& out, const LogEntry& entry)
 	{
 		auto prompt = Prompt::from(entry._type);
-
-		out << entry._color;
 
 		if (entry._snippet)
 		{
