@@ -1,6 +1,7 @@
-#include "parka/evaluation/IntrinsicOperators.hpp"
+#include "parka/evaluation/IntrinsicOperator.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
+#include <cstring>
 
 namespace parka::evaluation
 {
@@ -12,8 +13,10 @@ namespace parka::evaluation
 		const Return ret = operation(l, r);
 		const auto& valueType = ir::Type::of<Return>();
 		Value& result = state.push(valueType);
+		byte buffer[sizeof(u64)] = { 0 };
 
-		result.set((const byte*)&ret, sizeof(ret));
+		std::memcpy(buffer, &ret, sizeof(ret));
+		result.setValue(buffer);
 
 		return result;
 	}

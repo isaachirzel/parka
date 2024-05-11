@@ -1,6 +1,7 @@
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/ConversionIr.hpp"
+#include "parka/ir/IntrinsicConversionIr.hpp"
 #include "parka/ir/IntrinsicOperatorIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/OperatorIr.hpp"
@@ -171,9 +172,9 @@ namespace parka
 
 	ir::ConversionIr *PackageSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
 	{
-		for (usize i = 0; i < ir::ConversionIr::entryCount; ++i)
+		for (usize i = 0; i < ir::IntrinsicConversionIr::entryCount; ++i)
 		{
-			auto& conversion = ir::ConversionIr::entries[i];
+			auto& conversion = ir::IntrinsicConversionIr::entries[i];
 
 			if (conversion.from() == from && conversion.to() == to)
 				return &conversion;

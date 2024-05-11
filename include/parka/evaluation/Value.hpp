@@ -13,6 +13,10 @@ namespace parka::evaluation
 		alignas(u64) byte _value[sizeof(u64)];
 		const ir::LValueIr* _nodePtr;
 
+	private:
+
+		void setValue(const byte* data, usize size);
+
 	public:
 
 		Value(const ir::Type& type);
@@ -22,8 +26,12 @@ namespace parka::evaluation
 		void setNode(const ir::LValueIr& nodePtr);
 		const ir::LValueIr* nodePtr() { return _nodePtr; }
 
-		void set(const Value& value);
-		void set(const byte* data, usize size);
+		void setValue(const Value& other);
+		template <typename T>
+		void setValue(const T& value)
+		{
+			return setValue((const byte*)&value, sizeof(T));
+		}
 		
 		const byte* value() const { return _value; }
 

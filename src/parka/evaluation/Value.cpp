@@ -29,16 +29,19 @@ namespace parka::evaluation
 		_nodePtr = &node;
 	}
 
-	void Value::set(const Value& value)
-	{
-
-	}
-
-	void Value::set(const byte* data, usize size)
+	void Value::setValue(const byte* data, usize size)
 	{
 		assert(size <= sizeof(_value));
 
+		std::memset(_value, 0, sizeof(_value));
 		std::memcpy(_value, data, size);
+	}
+
+	void Value::setValue(const Value& other)
+	{
+		assert(_type == other._type);
+
+		setValue(other._value);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Value& value)

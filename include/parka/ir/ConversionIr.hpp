@@ -5,22 +5,18 @@
 
 namespace parka::ir
 {
-	class ConversionIr
+	struct ConversionIr
 	{
-		const Type& _from;
-		const Type& _to;
+		const bool _isIntrinsic;
 
-	public:
+		ConversionIr(bool isItrinsic):
+			_isIntrinsic(isItrinsic)
+		{}
+		virtual ~ConversionIr() {}
 
-		static ConversionIr entries[];
-		static const usize entryCount;
-
-	public:
-
-		ConversionIr(const Type& from, const Type& to);
-
-		const auto& to() const { return _to; }
-		const auto& from() const { return _from; }
+		const auto& isIntrinsic() const { return _isIntrinsic; }
+		virtual const Type& to() const = 0;
+		virtual const Type& from() const = 0;
 	};
 }
 

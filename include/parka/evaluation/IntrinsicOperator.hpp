@@ -6,7 +6,7 @@
 
 namespace parka::evaluation
 {
-	using IntrinsicOperator = std::function<Value&(Value&, Value&, State& state)>;
+	using IntrinsicOperator = std::function<Value& (Value& left, Value& right, State& state)>;
 
 	extern IntrinsicOperator intrinsicOperators[];
 	extern const usize intrinsicOperatorCount;

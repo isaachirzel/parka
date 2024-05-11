@@ -1,5 +1,5 @@
 #include "parka/evaluation/Evaluator.hpp"
-#include "parka/evaluation/IntrinsicOperators.hpp"
+#include "parka/evaluation/IntrinsicOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
@@ -36,8 +36,7 @@ namespace parka::evaluation
 		evaluatePrototype(ir.prototype(), arguments, state);
 		evaluateBlockStatement(ir.body(), state);
 
-		if (state.hasReturnValue())
-			returnValue.set(state.returnValue());
+		returnValue.setValue(state.returnValue().value());
 
 		return returnValue;
 	}
@@ -125,8 +124,11 @@ namespace parka::evaluation
 
 	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, State& state)
 	{
-		auto& value = state.find(ir.identifier().value());
+		auto& lhs = state.find(ir.identifier().value());
+		auto& rhs = evaluateExpression(ir.value(), state);
+
 		
+
 		log::notImplemented(here());
 
 		// value.set(
@@ -221,7 +223,7 @@ namespace parka::evaluation
 	{
 		auto& result = state.push(ir.type());
 
-		result.set((const byte*)&ir.value(), sizeof(ir.value()));
+		result.setValue(ir.value());
 
 		return result;		
 	}
