@@ -1,6 +1,8 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/evaluation/IntrinsicOperators.hpp"
+#include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
+#include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/IntrinsicOperatorIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
@@ -35,7 +37,7 @@ namespace parka::evaluation
 		evaluateBlockStatement(ir.body(), state);
 
 		if (state.hasReturnValue())
-			returnValue = state.returnValue();
+			returnValue.set(state.returnValue());
 
 		return returnValue;
 	}
@@ -58,30 +60,38 @@ namespace parka::evaluation
 	{
 		switch (ir.statementType)
 		{
-
 			case StatementType::Declaration:
 				return evaluateDeclarationStatement(static_cast<const DeclarationStatementIr&>(ir), state);
+
+			// case StatementType::Expression:
+			// 	return eva
 
 			case StatementType::Return:
 				return evaluateReturnStatement(static_cast<const ReturnStatementIr&>(ir), state);
 
+			// case StatementType::Break:
+			// 	return 
+
+			// case StatementType::Continue:
+			// 	return 
+
+			// case StatementType::Yield:
+			// 	return 
+
+			// case StatementType::For:
+			// 	return 
+
 			case StatementType::Block:
 				return evaluateBlockStatement(static_cast<const BlockStatementIr&>(ir), state);
+
+			case StatementType::Assignment:
+				return evaluateAssignmentStatement(static_cast<const AssignmentStatementIr&>(ir), state);
 
 			default:
 				break;
 		}
 
 		log::fatal("Unable to evaluate statement of type: $", (int)ir.statementType);
-	}
-
-	void evaluateReturnStatement(const ir::ReturnStatementIr& ir, State& state)
-	{
-		auto& value = ir.hasValue()
-			? evaluateExpression(ir.value(), state)
-			: state.push(ir::Type::voidType);
-
-		state.returnValue(value);
 	}
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, State& state)
@@ -93,10 +103,39 @@ namespace parka::evaluation
 		log::note("Declaring variable: $", value);
 	}
 
+	void evaluateReturnStatement(const ReturnStatementIr& ir, State& state)
+	{
+		auto& value = ir.hasValue()
+			? evaluateExpression(ir.value(), state)
+			: state.push(Type::voidType);
+
+		state.returnValue(value);
+	}
+
+	void evaluateBlockStatement(const BlockStatementIr& ir, State& state)
+	{
+		for (const auto *statement : ir.statements())
+		{
+			evaluateStatement(*statement, state);
+
+			if (state.hasReturnValue())
+				break;
+		}
+	}
+
+	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, State& state)
+	{
+		auto& value = state.find(ir.identifier().value());
+		
+		log::notImplemented(here());
+
+		// value.set(
+	}
+
 	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, State& state)
 	{
 		if (op.isIntrinsic)
-			return evaluateIntrinsicOperator(dynamic_cast<const ir::IntrinsicOperatorIr&>(op), left, right, state);
+			return evaluateIntrinsicOperator(dynamic_cast<const IntrinsicOperatorIr&>(op), left, right, state);
 
 		log::notImplemented(here());
 	}
@@ -169,17 +208,6 @@ namespace parka::evaluation
 		auto& result = evaluateOperator(ir.op(), lhs, rhs, state);
 
 		return result;
-	}
-
-	void evaluateBlockStatement(const BlockStatementIr& ir, State& state)
-	{
-		for (const auto *statement : ir.statements())
-		{
-			evaluateStatement(*statement, state);
-
-			if (state.hasReturnValue())
-				break;
-		}
 	}
 
 	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, State& state)

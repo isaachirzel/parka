@@ -3,6 +3,7 @@
 
 #include "parka/evaluation/State.hpp"
 #include "parka/evaluation/Value.hpp"
+#include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
@@ -21,6 +22,7 @@ namespace parka::evaluation
 	void evaluateDeclarationStatement(const ir::DeclarationStatementIr& ir, State& state);
 	void evaluateReturnStatement(const ir::ReturnStatementIr& ir, State& state);
 	void evaluateBlockStatement(const ir::BlockStatementIr& ir, State& state);
+	void evaluateAssignmentStatement(const ir::AssignmentStatementIr& ir, State& state);
 	Value& evaluateExpression(const ir::ExpressionIr& ir, State& state);
 	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, State& state);
 	Value& evaluateBlock(const ir::BlockStatementIr& ir, State& state);

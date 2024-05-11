@@ -19,15 +19,12 @@ namespace parka::evaluation
 		Value(Value&&);
 		Value(const Value&) = delete;
 
-		// Value& operator=(Value&& other);
-		Value& operator=(const Value& other);
-
 		void setNode(const ir::LValueIr& nodePtr);
 		const ir::LValueIr* nodePtr() { return _nodePtr; }
 
-
+		void set(const Value& value);
 		void set(const byte* data, usize size);
-		// void set(const Value& other);
+		
 		const byte* value() const { return _value; }
 
 		const ir::Type& type() const { return _type; }

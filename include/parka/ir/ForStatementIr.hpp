@@ -4,7 +4,6 @@
 #include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
-#include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/StatementIr.hpp"
 
 namespace parka::ir
@@ -13,12 +12,12 @@ namespace parka::ir
 	{
 		DeclarationStatementIr& _declaration;
 		ExpressionIr& _condition;
-		ExpressionStatementIr& _action;
+		StatementIr& _action;
 		BlockStatementIr& _body;
 
 	public:
 
-		ForStatementIr(DeclarationStatementIr& declaration, ExpressionIr& condition, ExpressionStatementIr& action, BlockStatementIr& body):
+		ForStatementIr(DeclarationStatementIr& declaration, ExpressionIr& condition, StatementIr& action, BlockStatementIr& body):
 			StatementIr(StatementType::For),
 			_declaration(declaration),
 			_condition(condition),

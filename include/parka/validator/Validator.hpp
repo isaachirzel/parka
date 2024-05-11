@@ -1,6 +1,7 @@
 #ifndef PARKA_VALIDATOR_VALIDATOR_HPP
 #define PARKA_VALIDATOR_VALIDATOR_HPP
 
+#include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/BinaryExpressionAst.hpp"
 #include "parka/ast/BlockStatementAst.hpp"
@@ -20,6 +21,7 @@
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/StringLiteralAst.hpp"
 #include "parka/ast/YieldStatementAst.hpp"
+#include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
@@ -60,14 +62,15 @@ namespace parka::validator
 	ir::CharLiteralIr* validateCharLiteral(const ast::CharLiteralAst& ast);
 	ir::BoolLiteralIr* validateBoolLiteral(const ast::BoolLiteralAst& ast);
 	ir::StatementIr* validateStatement(const ast::StatementAst& statement, LocalSymbolTable& symbolTable);
-	ir::DeclarationStatementIr*validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::DeclarationStatementIr* validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::ExpressionStatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::AssignmentStatementIr* validateAssignmentStatement(const ast::AssignmentStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::BreakStatementIr* validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, LocalSymbolTable& symbolTable);
+	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::VariableIr* validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, LocalSymbolTable& symbolTable);
 }
 

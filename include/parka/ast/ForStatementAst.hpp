@@ -3,7 +3,6 @@
 
 #include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
-#include "parka/ast/ExpressionStatementAst.hpp"
 
 namespace parka::ast
 {
@@ -12,12 +11,12 @@ namespace parka::ast
 		Snippet _snippet;
 		DeclarationStatementAst& _declaration;
 		ExpressionAst& _condition;
-		ExpressionStatementAst& _action;
+		StatementAst& _action;
 		BlockStatementAst& _body;
 
 	public:
 
-		ForStatementAst(const Snippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, ExpressionStatementAst& action, BlockStatementAst& body):
+		ForStatementAst(const Snippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, StatementAst& action, BlockStatementAst& body):
 			StatementAst(StatementType::For),
 			_snippet(snippet),
 			_declaration(declaration),

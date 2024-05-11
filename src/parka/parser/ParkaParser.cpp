@@ -1,4 +1,5 @@
 #include "parka/parser/ParkaParser.hpp"
+#include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/BinaryExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
 #include "parka/ast/ConditionalExpressionAst.hpp"
@@ -13,6 +14,7 @@
 #include "parka/ast/StringLiteralAst.hpp"
 #include "parka/ast/SubscriptExpressionAst.hpp"
 #include "parka/ast/YieldStatementAst.hpp"
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/log/Log.hpp"
 
@@ -449,7 +451,7 @@ namespace parka::parser
 
 	ExpressionAst *parseExpression(Token& token)
 	{
-		return parseAssignmentExpression(token);
+		return parseConditionalExpression(token);
 	}
 
 	ExpressionAst *parseEnclosedExpression(Token& token)
@@ -1069,74 +1071,6 @@ namespace parka::parser
 		return syntax;
 	}
 
-	Result<BinaryExpressionType> parseAssignmentType(Token& token)
-	{
-		switch (token.type())
-		{
-			case TokenType::Assign:
-				return BinaryExpressionType::Assign;
-
-			case TokenType::MultiplyAssign:
-				return BinaryExpressionType::MultiplyAssign;
-
-			case TokenType::DivideAssign:
-				return BinaryExpressionType::DivideAssign;
-
-			case TokenType::ModulusAssign:
-				return BinaryExpressionType::ModulusAssign;
-
-			case TokenType::AddAssign:
-				return BinaryExpressionType::AddAssign;
-
-			case TokenType::SubtractAssign:
-				return BinaryExpressionType::SubtractAssign;
-
-			case TokenType::LeftBitShiftAssign:
-				return BinaryExpressionType::LeftShiftAssign;
-
-			case TokenType::RightBitShiftAssign:
-				return BinaryExpressionType::RightShiftAssign;
-
-			case TokenType::BitwiseAndAssign:
-				return BinaryExpressionType::BitwiseAndAssign;
-
-			case TokenType::BitwiseOrAssign:
-				return BinaryExpressionType::BitwiseOrAssign;
-
-			case TokenType::BitwiseXorAssign:
-				return BinaryExpressionType::BitwiseXorAssign;
-			
-			default:
-				break;
-		}
-
-		return {};
-	}
-
-	ExpressionAst *parseAssignmentExpression(Token& token)
-	{
-		auto *lhs = parseConditionalExpression(token);
-
-		if (!lhs)
-			return {};
-
-		auto type = parseAssignmentType(token);
-
-		if (!type)
-			return lhs;
-
-		token.increment();
-
-		auto rhs = parseConditionalExpression(token);
-
-		if (!rhs)
-			return {};
-
-		auto *expression = new BinaryExpressionAst(*lhs, *rhs, *type);
-
-		return expression;
-	}
-
 	ast::ReturnStatementAst* parseReturnStatement(Token& token)
 	{
 		auto keyword = parseReturnKeyword(token);
@@ -1273,7 +1207,7 @@ namespace parka::parser
 		if (!parseSemicolon(token))
 			return {};
 
-		auto* action = parseExpressionStatement(token, false);
+		auto* action = parseAssignmentStatement(token, false);
 
 		if (!action)
 			return {};
@@ -1286,6 +1220,79 @@ namespace parka::parser
 		auto snippet = forKeyword->snippet() + body->snippet();
 		
 		return new ForStatementAst(snippet, *declaration, *condition, *action, *body);
+	}
+
+	static Result<AssignmentType> parseAssignmentType(Token& token)
+	{
+		switch (token.type())
+		{
+			case TokenType::Assign:
+				return AssignmentType::Assign;
+
+			case TokenType::MultiplyAssign:
+				return AssignmentType::MultiplyAssign;
+
+			case TokenType::DivideAssign:
+				return AssignmentType::DivideAssign;
+
+			case TokenType::ModulusAssign:
+				return AssignmentType::ModulusAssign;
+
+			case TokenType::AddAssign:
+				return AssignmentType::AddAssign;
+
+			case TokenType::SubtractAssign:
+				return AssignmentType::SubtractAssign;
+
+			case TokenType::LeftBitShiftAssign:
+				return AssignmentType::LeftShiftAssign;
+
+			case TokenType::RightBitShiftAssign:
+				return AssignmentType::RightShiftAssign;
+
+			case TokenType::BitwiseAndAssign:
+				return AssignmentType::BitwiseAndAssign;
+
+			case TokenType::BitwiseOrAssign:
+				return AssignmentType::BitwiseOrAssign;
+
+			case TokenType::BitwiseXorAssign:
+				return AssignmentType::BitwiseXorAssign;
+			
+			default:
+				break;
+		}
+
+		logParseError(token, "assignment");
+
+		return {};
+	}
+
+	StatementAst* parseAssignmentStatement(Token& token, bool requireSemicolon)
+	{
+		auto* identifier = parseExpression(token);
+
+		if (!identifier)
+			return {};
+
+		auto type = parseAssignmentType(token);
+
+		if (!type)
+			return new ExpressionStatementAst(identifier->snippet(), *identifier);
+
+		token.increment();
+
+		auto* value = parseExpression(token);
+
+		if (!value)
+			return {};
+
+		auto snippet = identifier->snippet() + token;
+
+		if (requireSemicolon && !parseStatementSemicolon(token))
+			return {};
+
+		return new AssignmentStatementAst(snippet, *identifier, *value, *type);
 	}
 
 	StatementAst *parseStatement(Token& token)
@@ -1320,7 +1327,7 @@ namespace parka::parser
 				break;
 		}
 
-		return parseExpressionStatement(token);
+		return parseAssignmentStatement(token);
 	}
 
 	ParameterAst *parseParameter(Token& token)

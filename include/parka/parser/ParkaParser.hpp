@@ -1,6 +1,7 @@
 #ifndef PARKA_PARSER_PARKA_PARSER_HPP
 #define PARKA_PARSER_PARKA_PARSER_HPP
 
+#include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/BoolLiteralAst.hpp"
@@ -72,7 +73,6 @@ namespace parka::parser
 	ast::ExpressionAst* parseAdditiveExpression(Token& token);
 	ast::ExpressionAst* parseBitwiseXorExpression(Token& token);
 	ast::ExpressionAst* parseBitwiseAndExpression(Token& token);
-	ast::ExpressionAst* parseAssignmentExpression(Token& token);
 	ast::ExpressionAst* parseBooleanAndExpression(Token& token);
 	ast::ExpressionAst* parseBitwiseOrExpression(Token& token);
 	ast::ExpressionAst* parseEqualityExpression(Token& token);
@@ -93,6 +93,7 @@ namespace parka::parser
 	ast::ContinueStatementAst* parseContinueStatement(Token& token);
 	ast::YieldStatementAst* parseYieldStatement(Token& token);
 	ast::ForStatementAst* parseForStatement(Token& token);
+	ast::StatementAst* parseAssignmentStatement(Token& token, bool requireSemicolon = true);
 	ast::ModuleAst parseModule(const File& file);
 	ast::PackageAst *parsePackage(const Directory& directory, const String& name);
 	ast::Ast parse(const Project& project);

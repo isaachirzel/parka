@@ -13,7 +13,7 @@ namespace parka::evaluation
 	{
 		Array<Value> _stack;
 		Value* _returnValue;
-
+		
 	public:
 		
 		State();

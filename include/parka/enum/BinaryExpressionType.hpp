@@ -20,19 +20,6 @@ namespace parka
 		BitwiseXor,
 		BitwiseAnd,
 
-		// Assignment
-		Assign,
-		MultiplyAssign,
-		DivideAssign,
-		ModulusAssign,
-		AddAssign,
-		SubtractAssign,
-		LeftShiftAssign,
-		RightShiftAssign,
-		BitwiseAndAssign,
-		BitwiseOrAssign,
-		BitwiseXorAssign,
-
 		// Equality
 		Equals,
 		NotEquals,
