@@ -122,14 +122,10 @@ namespace parka::evaluation
 
 	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, LocalState& state)
 	{
-		// auto& lhs = state.find(ir.identifier().value());
-		// auto& rhs = evaluateExpression(ir.value(), state);
+		auto& lhs = state.findValue(ir.identifier().value());
+		auto& rhs = evaluateExpression(ir.value(), state);
 
-		
-
-		log::notImplemented(here());
-
-		// value.set(
+		evaluateConversion(ir.conversion(), lhs, rhs);
 	}
 
 	Value& evaluateExpression(const ExpressionIr& ir, LocalState& state)

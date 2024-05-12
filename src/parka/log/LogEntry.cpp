@@ -11,6 +11,8 @@ namespace parka
 	{
 		auto prompt = Prompt::from(entry._type);
 
+		out << prompt.color(); // This sets the highlight color?
+
 		if (entry._snippet)
 		{
 			const auto& snippet = *entry._snippet;
