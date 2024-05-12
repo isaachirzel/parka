@@ -2,10 +2,6 @@
 #define PARKA_AST_TYPE_ANNOTATION_HPP
 
 #include "parka/ast/QualifiedIdentifierAst.hpp"
-#include "parka/parser/Token.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/ir/TypeIr.hpp"
-#include "parka/util/Result.hpp"
 
 namespace parka::ast
 {

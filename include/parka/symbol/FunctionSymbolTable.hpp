@@ -7,7 +7,6 @@
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
 #include "parka/symbol/ParameterEntry.hpp"
-#include "parka/util/Optional.hpp"
 
 namespace parka
 {
@@ -17,7 +16,7 @@ namespace parka
 		Array<Resolvable*> _symbols;
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
-		Optional<ir::Type> _returnType;
+		ir::Type _returnType;
 		SymbolTable *_parent;
 
 	private:

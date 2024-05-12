@@ -10,6 +10,11 @@ namespace parka
 {
 	FunctionSymbolTable::FunctionSymbolTable(SymbolTable *parent):
 		SymbolTable(SymbolTableType::Function),
+		_scope(),
+		_symbols(),
+		_variables(),
+		_parameters(),
+		_returnType(ir::Type::voidType),
 		_parent(parent)
 	{}
 

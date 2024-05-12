@@ -3,6 +3,7 @@
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
+#include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/enum/OperatorType.hpp"
@@ -13,6 +14,7 @@
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
+#include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
@@ -58,6 +60,30 @@ namespace parka::validator
 	// 	return success;
 	// }
 
+	static bool validateEntryPoint(const ir::FunctionIr& ir, const ast::FunctionAst& ast)
+	{
+		bool success = true;
+
+		if (ir.prototype().parameters().length() > 0)
+		{
+			const auto& parameters = ast.prototype().parameters();
+			auto& first = *parameters.front();
+			auto& last = *parameters.back();
+			auto snippet = first.snippet() + last.snippet();
+
+			log::error(snippet, "Entry point `main` may not have any parameters.");
+			success = false;
+		}
+
+		if (ir.prototype().returnType() != Type::i32Type && ir.prototype().returnType() != Type::voidType)
+		{
+			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", Type::i32Type, Type::voidType);
+			success = false;
+		}
+
+		return success;
+	}
+
 	Result<Ir> validateAst(const Ast& ast)
 	{
 		auto success = true;
@@ -76,9 +102,17 @@ namespace parka::validator
 				continue;
 			}
 
-			if (ir->symbol() == "main")
+			if (!entryPoint && ir->symbol() == "main")
+			{
+				if (!validateEntryPoint(*ir, entry.ast()))
+				{
+					success = false;
+					continue;
+				}
+				
 				entryPoint = ir;
-
+			}
+			
 			functions.push(ir);
 		}
 
@@ -462,10 +496,10 @@ namespace parka::validator
 	{
 		if (!ast.hasValue())
 		{
-			if (!symbolTable.returnType())
+			if (symbolTable.returnType() == Type::voidType)
 				return new ReturnStatementIr();
 
-			log::error("Expected $ return value but none was given.", *symbolTable.returnType());
+			log::error(ast.snippet(), "Expected $ return value but none was given.", symbolTable.returnType());
 			return {};
 		}
 
@@ -474,12 +508,12 @@ namespace parka::validator
 		if (!value)
 			return {};
 
-		auto* conversion = symbolTable.resolveConversion(value->type(), *symbolTable.returnType());
+		auto* conversion = symbolTable.resolveConversion(value->type(), symbolTable.returnType());
 
 		if (!conversion)
 		{
 			// TODO: Highlight function return type
-			log::error("Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
+			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
 			return {};
 		}
 		

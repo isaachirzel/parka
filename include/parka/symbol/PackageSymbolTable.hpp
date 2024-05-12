@@ -2,6 +2,7 @@
 #define PARKA_SYMBOL_PACKAGE_SYMBOL_TABLE_HPP
 
 #include "parka/ast/PackageAst.hpp"
+#include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"

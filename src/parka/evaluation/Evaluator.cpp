@@ -4,7 +4,6 @@
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
-#include "parka/ir/TypeIr.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;
@@ -94,7 +93,7 @@ namespace parka::evaluation
 
 		value.setNode(ir.variable());
 
-		log::note("Declaring variable: $", value);
+		log::debug("Declaring variable: $", value);
 	}
 
 	void evaluateReturnStatement(const ReturnStatementIr& ir, LocalState& state)

@@ -4,6 +4,7 @@
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ir/ParameterIr.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 
 namespace parka::ast
 {

@@ -1,4 +1,8 @@
-function main() -> u8
+function action()
+{
+}
+
+function main(a: i32) -> string
 {
 	/*
 	var a: u64 = 15;
@@ -13,5 +17,5 @@ function main() -> u8
 
 	a = 3 + 3;
 
-	return a;
+	
 }
