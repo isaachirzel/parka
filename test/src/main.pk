@@ -2,7 +2,7 @@ function action()
 {
 }
 
-function main(a: i32) -> string
+function main()
 {
 	/*
 	var a: u64 = 15;
