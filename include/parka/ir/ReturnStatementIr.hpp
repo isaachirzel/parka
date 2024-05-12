@@ -14,18 +14,22 @@ namespace parka::ir
 
 	public:
 
-		ReturnStatementIr(ExpressionIr* value, ConversionIr* conversion):
+		ReturnStatementIr():
 			StatementIr(StatementType::Return),
-			_value(value),
-			_conversion(conversion)
+			_value(nullptr),
+			_conversion(nullptr)
+		{}
+		ReturnStatementIr(ExpressionIr& value, ConversionIr& conversion):
+			StatementIr(StatementType::Return),
+			_value(&value),
+			_conversion(&conversion)
 		{}
 		ReturnStatementIr(ReturnStatementIr&&) = default;
 		ReturnStatementIr(const ReturnStatementIr&) = delete;
 
 		bool hasValue() const { return !!_value; }
 		const ExpressionIr& value() const { assert(_value); return *_value; }
-		bool hasConversion() const { return !!_conversion; }
-		const ConversionIr& conversion() const { return *_conversion; }
+		const ConversionIr& conversion() const { assert(_conversion); return *_conversion; }
 	};
 }
 

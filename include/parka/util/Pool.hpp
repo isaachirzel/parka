@@ -11,7 +11,6 @@ namespace parka
 	template <typename T>
 	class Pool
 	{
-
 		Arena _arena;
 
 	public:

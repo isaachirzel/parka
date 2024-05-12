@@ -92,7 +92,3 @@ Thing:
 	Validator
 		PackageSymbolTable[]
 */
-
-
-
-

@@ -129,26 +129,28 @@ namespace parka
 	public:
 
 		Table(usize minimumCapacity):
-		_slots(100'000), // TODO: Make this not just a static number
-		_items(100'000)
+			_slots(100'000), // TODO: Make this not just a static number
+			_items(100'000)
 		{
 			auto capacity = table::getCapacity(minimumCapacity);
 
 			_slots.reserve(capacity);
 			_slots.fill(table::empty);
 		}
-		Table(): Table(table::primeNumbers[0]) {}
+		Table():
+			Table(table::primeNumbers[0])
+		{}
 		Table(Table&&) = default;
 		Table(const Table&) = delete;
 
-		bool insert(const Key& key, const Value& value)
+		Value* insert(const Key& key, const Value& value)
 		{
 			static_assert(std::is_copy_constructible_v<Value>, "Value must be copy constructible to pass const&");
 
 			return insert(key, Value(value));
 		}
 
-		bool insert(const Key& key, Value&& value)
+		Value* insert(const Key& key, Value&& value)
 		{
 			if (_items.count() * 2 >= _slots.count())
 				reserve(_slots.count() * 2);
@@ -158,13 +160,13 @@ namespace parka
 			auto& slot = _slots[slotIndex];
 			
 			if (slot != table::empty)
-				return false;
+				return nullptr;
 
 			slot = _items.count();
 			
 			_items.add(Item(key, std::move(value), hash));
 
-			return true;
+			return &_items[slot].value();
 		}
 
 		Value *find(const Key& key)

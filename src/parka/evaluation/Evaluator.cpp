@@ -1,9 +1,8 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/IntrinsicOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
-#include "parka/ir/IdentifierExpressionIr.hpp"
-#include "parka/ir/IntrinsicOperatorIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/log/Log.hpp"
@@ -14,7 +13,7 @@ namespace parka::evaluation
 {
 	void evaluate(const Ir& ir)
 	{
-		auto state = State();
+		auto state = LocalState();
 		auto *entryPoint = ir.entryPoint();
 
 		if (!entryPoint)
@@ -25,20 +24,19 @@ namespace parka::evaluation
 		log::debug("Result of $(): $", entryPoint->symbol(), result);
 	}
 
-	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, State& state)
+	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)
 	{
-		auto& returnValue = state.push(ir.prototype().returnType());
-		auto frame = state.createFrame();
+		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
 
 		evaluatePrototype(ir.prototype(), arguments, state);
 		evaluateBlockStatement(ir.body(), state);
 
-		returnValue.setValue(state.returnValue().value());
+		state.clearFunctionValues();
 
 		return returnValue;
 	}
 
-	void evaluatePrototype(const PrototypeIr& ir, const Array<ExpressionIr*>& arguments, State& state)
+	void evaluatePrototype(const PrototypeIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)
 	{
 		assert(ir.parameters().length() == arguments.length());
 
@@ -52,7 +50,7 @@ namespace parka::evaluation
 		}
 	}
 
-	void evaluateStatement(const StatementIr& ir, State& state)
+	void evaluateStatement(const StatementIr& ir, LocalState& state)
 	{
 		switch (ir.statementType)
 		{
@@ -90,7 +88,7 @@ namespace parka::evaluation
 		log::fatal("Unable to evaluate statement of type: $", (int)ir.statementType);
 	}
 
-	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, State& state)
+	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, LocalState& state)
 	{
 		auto& value = evaluateExpression(ir.value(), state);
 
@@ -99,30 +97,33 @@ namespace parka::evaluation
 		log::note("Declaring variable: $", value);
 	}
 
-	void evaluateReturnStatement(const ReturnStatementIr& ir, State& state)
+	void evaluateReturnStatement(const ReturnStatementIr& ir, LocalState& state)
 	{
-		auto& value = ir.hasValue()
-			? evaluateExpression(ir.value(), state)
-			: state.push(Type::voidType);
+		if (ir.hasValue())
+		{
+			auto& value = evaluateExpression(ir.value(), state);
 
-		state.returnValue(value);
+			evaluateConversion(ir.conversion(), state.returnValue(), value);
+		}
+
+		state.setReturning(ReturningType::Return);
 	}
 
-	void evaluateBlockStatement(const BlockStatementIr& ir, State& state)
+	void evaluateBlockStatement(const BlockStatementIr& ir, LocalState& state)
 	{
 		for (const auto *statement : ir.statements())
 		{
 			evaluateStatement(*statement, state);
 
-			if (state.hasReturnValue())
+			if (state.isReturning())
 				break;
 		}
 	}
 
-	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, State& state)
+	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, LocalState& state)
 	{
-		auto& lhs = state.find(ir.identifier().value());
-		auto& rhs = evaluateExpression(ir.value(), state);
+		// auto& lhs = state.find(ir.identifier().value());
+		// auto& rhs = evaluateExpression(ir.value(), state);
 
 		
 
@@ -131,26 +132,7 @@ namespace parka::evaluation
 		// value.set(
 	}
 
-	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, State& state)
-	{
-		if (op.isIntrinsic)
-			return evaluateIntrinsicOperator(dynamic_cast<const IntrinsicOperatorIr&>(op), left, right, state);
-
-		log::notImplemented(here());
-	}
-
-	Value& evaluateIntrinsicOperator(const IntrinsicOperatorIr& op, Value& left, Value& right, State& state)
-	{
-		auto index = (usize)(&op - IntrinsicOperatorIr::entries);
-		
-		assert(index < intrinsicOperatorCount);
-
-		auto& value = intrinsicOperators[index](left, right, state);
-
-		return value;
-	}
-
-	Value& evaluateExpression(const ExpressionIr& ir, State& state)
+	Value& evaluateExpression(const ExpressionIr& ir, LocalState& state)
 	{
 		switch (ir.expressionType)
 		{
@@ -200,7 +182,7 @@ namespace parka::evaluation
 		log::fatal("Unable to evaluate Expression with Type: $", ir.expressionType);
 	}
 
-	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, State& state)
+	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, LocalState& state)
 	{
 		auto& lhs = evaluateExpression(ir.lhs(), state);
 		auto& rhs = evaluateExpression(ir.rhs(), state);
@@ -209,19 +191,59 @@ namespace parka::evaluation
 		return result;
 	}
 
-	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, State& state)
+	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, LocalState& state)
 	{
-		auto& value = state.find(ir.value());
+		auto& value = state.findValue(ir.value());
 
 		return value;
 	}
 
-	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir, State& state)
+	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir, LocalState& state)
 	{
-		auto& result = state.push(ir.type());
+		auto& result = state.pushValue(ir.type());
 
 		result.setValue(ir.value());
 
-		return result;		
+		return result;
+	}
+
+	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, LocalState& state)
+	{
+		if (op.isIntrinsic)
+			return evaluateIntrinsicOperator(dynamic_cast<const IntrinsicOperatorIr&>(op), left, right, state);
+
+		log::notImplemented(here());
+	}
+
+	Value& evaluateIntrinsicOperator(const IntrinsicOperatorIr& opIr, Value& left, Value& right, LocalState& state)
+	{
+		auto index = (usize)(&opIr - IntrinsicOperatorIr::entries);
+		
+		assert(index < intrinsicOperatorCount);
+
+		auto& op = intrinsicOperators[index];
+		auto& value = op(left, right, state);
+
+		return value;
+	}
+
+	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from)
+	{
+		if (conversion.isIntrinsic())
+			return evaluateIntrinsicConversion(static_cast<const ir::IntrinsicConversionIr&>(conversion), to, from);
+
+		log::notImplemented(here());
+	}
+
+	Value& evaluateIntrinsicConversion(const ir::IntrinsicConversionIr& conversionIr, Value& to, Value& from)
+	{
+		auto index = (usize)(&conversionIr - IntrinsicConversionIr::entries);
+
+		assert(index < intrinsicOperatorCount);
+
+		auto& conversion = intrinsicConversions[index];
+		auto& value = conversion(to, from);
+
+		return value;
 	}
 }

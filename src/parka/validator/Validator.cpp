@@ -460,28 +460,30 @@ namespace parka::validator
 
 	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, FunctionSymbolTable& symbolTable)
 	{
-		auto returnedType = Type::voidType;
-		auto* value = (ExpressionIr*)nullptr;
-
-		if (ast.hasValue())
+		if (!ast.hasValue())
 		{
-			value = validateExpression(ast.value(), symbolTable);
+			if (!symbolTable.returnType())
+				return new ReturnStatementIr();
 
-			if (!value)
-				return {};
-
-			returnedType = value->type();
-		}
-
-		auto* conversion = symbolTable.resolveConversion(returnedType, symbolTable.returnType());
-
-		if (!conversion)
-		{
-			log::error("Unable to return $ in function return type $.", returnedType, symbolTable.returnType());
+			log::error("Expected $ return value but none was given.", *symbolTable.returnType());
 			return {};
 		}
 
-		return new ReturnStatementIr(value, conversion);
+		auto* value = validateExpression(ast.value(), symbolTable);
+
+		if (!value)
+			return {};
+
+		auto* conversion = symbolTable.resolveConversion(value->type(), *symbolTable.returnType());
+
+		if (!conversion)
+		{
+			// TODO: Highlight function return type
+			log::error("Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
+			return {};
+		}
+		
+		return new ReturnStatementIr(*value, *conversion);
 	}
 
 	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, FunctionSymbolTable& symbolTable)

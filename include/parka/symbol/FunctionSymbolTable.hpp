@@ -7,6 +7,7 @@
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
 #include "parka/symbol/ParameterEntry.hpp"
+#include "parka/util/Optional.hpp"
 
 namespace parka
 {
@@ -16,7 +17,7 @@ namespace parka
 		Array<Resolvable*> _symbols;
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
-		Result<ir::Type> _returnType;
+		Optional<ir::Type> _returnType;
 		SymbolTable *_parent;
 
 	private:
@@ -37,7 +38,7 @@ namespace parka
 		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		void setReturnType(const ir::Type& type) { _returnType = type; }
-		const auto& returnType() const { return *_returnType; }
+		const auto& returnType() const { return _returnType; }
 		const String& scope() const { return _scope; }
 
 		friend std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& syntax);

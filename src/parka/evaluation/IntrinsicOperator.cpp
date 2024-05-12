@@ -6,17 +6,15 @@
 namespace parka::evaluation
 {
 	template <typename Left, typename Right, typename Return, Return(*operation)(const Left&, const Right&)>
-	Value& op(Value& left, Value& right, State& state)
+	Value& op(Value& left, Value& right, LocalState& state)
 	{
 		const Left l = *(const Left*)left.value();
 		const Right r = *(const Right*)right.value();
 		const Return ret = operation(l, r);
 		const auto& valueType = ir::Type::of<Return>();
-		Value& result = state.push(valueType);
-		byte buffer[sizeof(u64)] = { 0 };
+		auto& result = state.pushValue(valueType);
 
-		std::memcpy(buffer, &ret, sizeof(ret));
-		result.setValue(buffer);
+		result.setValue(ret);
 
 		return result;
 	}
