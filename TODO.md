@@ -1,8 +1,11 @@
 # To Do
+
 ## Short Term
+- Expression Statements
 - Basic for loop
 - Break statement
 - Continue statement
+- Function calls
 - intrinsic print function
 - type casting
 

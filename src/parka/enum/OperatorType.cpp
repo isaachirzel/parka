@@ -20,6 +20,18 @@ namespace parka
 			case BinaryExpressionType::Divide:
 				return OperatorType::Divide;
 
+			case BinaryExpressionType::LessThan:
+				return OperatorType::LessThan;
+
+			case BinaryExpressionType::GreaterThan:
+				return OperatorType::GreaterThan;
+
+			case BinaryExpressionType::LessThanOrEqualTo:
+				return OperatorType::LessThanOrEqualTo;
+
+			case BinaryExpressionType::GreaterThanOrEqualTo:
+				return OperatorType::GreaterThanOrEqualTo;
+
 			default:
 				break;
 		}
@@ -32,19 +44,35 @@ namespace parka
 		switch (type)
 		{
 			case OperatorType::Add:
-				out << "`+`";
+				out << "+";
 				break;
 
 			case OperatorType::Subtract:
-				out << "`-`";
+				out << "-";
 				break;
 
 			case OperatorType::Multiply:
-				out << "`*`";
+				out << "*";
 				break;
 
 			case OperatorType::Divide:
-				out << "`/`";
+				out << "/";
+				break;
+
+			case OperatorType::LessThan:
+				out << "<";
+				break;
+
+			case OperatorType::GreaterThan:
+				out << ">";
+				break;
+
+			case OperatorType::LessThanOrEqualTo:
+				out << "<=";
+				break;
+
+			case OperatorType::GreaterThanOrEqualTo:
+				out << ">=";
 				break;
 				
 			default:

@@ -9,7 +9,7 @@ namespace parka::ast
 
 	std::ostream& operator<<(std::ostream& out, const Identifier& identifier)
 	{
-		out << '`' << identifier.text() << '`';
+		out << identifier.text();
 
 		return out;
 	}

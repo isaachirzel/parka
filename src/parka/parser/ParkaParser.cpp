@@ -269,6 +269,7 @@ namespace parka::parser
 			return false;
 
 		token.increment();
+
 		return true;
 	}
 

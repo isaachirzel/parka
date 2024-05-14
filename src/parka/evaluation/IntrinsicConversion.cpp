@@ -34,6 +34,7 @@ namespace parka::evaluation
 		conv<Float, Float>(),
 		conv<f32, Float>(),
 		conv<f64, Float>(),
+		conv<bool, bool>(),
 	};
 	const usize intrinsicConversionCount = sizeof(intrinsicConversions) / sizeof(*intrinsicConversions);
 }

@@ -6,11 +6,11 @@ namespace parka
 		switch (type)
 		{
 			case AssignmentType::Assign:
-				out << "`=`";
+				out << "=";
 				break;
 
 			default:
-				out << "(AssignmentType)" << (int)type;
+				out << "(Invalid) " << (int)type;
 		}
 
 		return out;

@@ -2,6 +2,7 @@
 #define PARKA_SYMBOL_PACKAGE_SYMBOL_TABLE_HPP
 
 #include "parka/ast/PackageAst.hpp"
+#include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
@@ -17,8 +18,8 @@ namespace parka
 		String _scope;
 		Table<String, Resolvable*> _symbols;
 		Array<ir::OperatorIr*> _operators;
+		Array<ir::ConversionIr*> _conversions;
 		Array<FunctionEntry> _functions;
-		// Array<StructSymbolTable> _structs;
 		PackageSymbolTable *_parent;
 
 	public:

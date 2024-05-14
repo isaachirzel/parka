@@ -5,8 +5,6 @@ namespace parka::ast
 {
 	std::ostream& operator<<(std::ostream& out, const QualifiedIdentifier& identifier)
 	{
-		out << '`';
-
 		if (identifier.isAbsolute())
 			out << "::";
 
@@ -24,8 +22,6 @@ namespace parka::ast
 
 			out << part.text();
 		}
-
-		out << '`';
 
 		return out;
 	}

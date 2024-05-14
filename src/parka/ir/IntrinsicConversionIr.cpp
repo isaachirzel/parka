@@ -34,6 +34,8 @@ namespace parka::ir
 		conv<Float, Float>(),
 		conv<f32, Float>(),
 		conv<f64, Float>(),
+		conv<bool, bool>(),
+		conv<char, char>(),
 	};
 	const usize IntrinsicConversionIr::entryCount = sizeof(entries) / sizeof(*entries);
 }

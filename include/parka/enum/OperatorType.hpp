@@ -9,7 +9,11 @@ namespace parka
 		Add,
 		Subtract,
 		Multiply,
-		Divide
+		Divide,
+		LessThan,
+		GreaterThan,
+		LessThanOrEqualTo,
+		GreaterThanOrEqualTo
 	};
 
 	OperatorType toOperatorType(BinaryExpressionType type);

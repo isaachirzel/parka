@@ -266,7 +266,7 @@ namespace parka
 
 			case ':':
 				return file[startPos + 1] == ':'
-					? Token(file, startPos, 1, TokenType::Semicolon)
+					? Token(file, startPos, 2, TokenType::Scope)
 					: Token { file, startPos, 1, TokenType::Colon };
 
 			case '.':

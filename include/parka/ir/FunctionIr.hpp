@@ -2,7 +2,6 @@
 #define PARKA_IR_FUNCTION_HPP
 
 #include "parka/ir/BlockStatementIr.hpp"
-#include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/PrototypeIr.hpp"
 

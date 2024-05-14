@@ -26,6 +26,26 @@ namespace parka
 		return left._value / right._value;
 	}
 
+	bool operator<(const Integer& left, const Integer& right)
+	{
+		return left._value < right._value;
+	}
+
+	bool operator>(const Integer& left, const Integer& right)
+	{
+		return left._value > right._value;
+	}
+
+	bool operator<=(const Integer& left, const Integer& right)
+	{
+		return left._value <= right._value;
+	}
+
+	bool operator>=(const Integer& left, const Integer& right)
+	{
+		return left._value >= right._value;
+	}
+
 	Integer::operator i8()
 	{
 		return (i8)_value;

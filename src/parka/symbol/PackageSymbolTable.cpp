@@ -15,6 +15,8 @@ namespace parka
 		SymbolTable(SymbolTableType::Package),
 		_scope(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
 		_symbols(),
+		_operators(),
+		_conversions(),
 		_functions(),
 		_parent(parent)
 	{
@@ -35,6 +37,13 @@ namespace parka
 				auto& op = ir::IntrinsicOperatorIr::entries[i];
 
 				_operators.push(&op);
+			}
+
+			for (usize i = 0; i < ir::IntrinsicConversionIr::entryCount; ++i)
+			{
+				auto& conv = ir::IntrinsicConversionIr::entries[i];
+
+				_conversions.push(&conv);
 			}
 		}
 
@@ -123,7 +132,7 @@ namespace parka
 
 			if (table == nullptr)
 			{
-				log::error("Unable to resolve $ in package $.", identifier, entry->name());
+				log::error("Unable to resolve `$` in package `$`.", identifier, entry->name());
 				return nullptr;
 			}
 
@@ -132,10 +141,9 @@ namespace parka
 
 		if (entry != nullptr)
 			return entry->resolve();
-			// return entry->context();
 
 		// TODO: Use index to shorten the symbol so it is more specific what could not be found
-		log::error("Unable to find $ in this scope.", qualifiedIdentifier);
+		log::error("Unable to find `$` in this scope.", qualifiedIdentifier);
 
 		return nullptr;
 	}
@@ -160,11 +168,11 @@ namespace parka
 
 		if (right != nullptr)
 		{
-			log::error("No $ operator has been defined for $ and $.", type, left, *right);
+			log::error("No operator `$ $ $` has been defined.", left, type, *right);
 		}
 		else
 		{
-			log::error("No $ operator has been defined for $.", type, left);
+			log::error("No `$` operator has been defined for `$`.", type, left);
 		}
 
 		return nullptr;
@@ -172,12 +180,10 @@ namespace parka
 
 	ir::ConversionIr *PackageSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
 	{
-		for (usize i = 0; i < ir::IntrinsicConversionIr::entryCount; ++i)
+		for (auto* conversion : _conversions)
 		{
-			auto& conversion = ir::IntrinsicConversionIr::entries[i];
-
-			if (conversion.from() == from && conversion.to() == to)
-				return &conversion;
+			if (conversion->from() == from && conversion->to() == to)
+				return conversion;
 		}
 
 		return nullptr;

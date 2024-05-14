@@ -22,6 +22,10 @@ namespace parka
 		friend Float operator-(const Float& left, const Float& right);
 		friend Float operator*(const Float& left, const Float& right);
 		friend Float operator/(const Float& left, const Float& right);
+		friend bool operator<(const Float& left, const Float& right);
+		friend bool operator>(const Float& left, const Float& right);
+		friend bool operator<=(const Float& left, const Float& right);
+		friend bool operator>=(const Float& left, const Float& right);
 
 		operator f32();
 		operator f64();
