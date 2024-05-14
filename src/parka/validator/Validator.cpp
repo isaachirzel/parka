@@ -7,7 +7,6 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
-#include "parka/enum/OperatorType.hpp"
 #include "parka/enum/StatementType.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
