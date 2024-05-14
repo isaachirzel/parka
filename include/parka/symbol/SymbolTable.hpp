@@ -20,9 +20,9 @@ namespace parka
 		{}
 		virtual ~SymbolTable() {}
 
-		virtual Resolvable *find(const ast::Identifier& identifier) = 0;
-		virtual ir::LValueIr *resolve(const ast::QualifiedIdentifier& identifier) = 0;
-		virtual ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right) = 0;
+		virtual Resolvable *findSymbol(const ast::Identifier& identifier) = 0;
+		virtual ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
+		virtual ir::OperatorIr *resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right) = 0;
 		virtual ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to) = 0;
 		virtual const String& scope() const = 0;
 

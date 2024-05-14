@@ -3,7 +3,6 @@
 
 #include "parka/ast/PackageAst.hpp"
 #include "parka/ir/ConversionIr.hpp"
-#include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
@@ -26,11 +25,11 @@ namespace parka
 
 		PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent = nullptr);
 
-		Resolvable *find(const ast::Identifier& identifier);
-		Resolvable *findInitial(const ast::Identifier& identifier);
-		Resolvable *findAbsolute(const ast::Identifier& identifier);
-		ir::LValueIr *resolve(const ast::QualifiedIdentifier& identifier);
-		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
+		Resolvable *findSymbol(const ast::Identifier& identifier);
+		Resolvable *findInitialSymbol(const ast::Identifier& identifier);
+		Resolvable *findAbsoluteSymbol(const ast::Identifier& identifier);
+		ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier);
+		ir::OperatorIr *resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right);
 		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		const String& scope() const { return _scope; }

@@ -66,14 +66,14 @@ namespace parka
 		// 	package->declareSelf(this);
 	}
 
-	Resolvable *PackageSymbolTable::findInitial(const ast::Identifier& identifier)
+	Resolvable *PackageSymbolTable::findInitialSymbol(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = this;
 
 		do
 		{
-			auto *entry = package->find(identifier);
+			auto *entry = package->findSymbol(identifier);
 
 			if (entry != nullptr)
 				return entry;
@@ -88,7 +88,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Resolvable *PackageSymbolTable::findAbsolute(const ast::Identifier& identifier)
+	Resolvable *PackageSymbolTable::findAbsoluteSymbol(const ast::Identifier& identifier)
 	{
 		auto *package = this;
 		auto *parent = _parent;
@@ -99,12 +99,12 @@ namespace parka
 			parent = package->_parent;
 		}
 
-		auto *entry = package->find(identifier);
+		auto *entry = package->findSymbol(identifier);
 
 		return entry;
 	}
 
-	Resolvable *PackageSymbolTable::find(const ast::Identifier& identifier)
+	Resolvable *PackageSymbolTable::findSymbol(const ast::Identifier& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -114,13 +114,13 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValueIr *PackageSymbolTable::resolve(const ast::QualifiedIdentifier& qualifiedIdentifier)
+	ir::LValueIr *PackageSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];
 		auto *entry = qualifiedIdentifier.isAbsolute()
-			? findInitial(first)
-			: findAbsolute(first);
+			? findInitialSymbol(first)
+			: findAbsoluteSymbol(first);
 
 		for (usize i = 1; i < qualifiedIdentifier.length(); ++i)
 		{
@@ -136,7 +136,7 @@ namespace parka
 				return nullptr;
 			}
 
-			entry = table->find(identifier);
+			entry = table->findSymbol(identifier);
 		}
 
 		if (entry != nullptr)
@@ -148,7 +148,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::OperatorIr *PackageSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
+	ir::OperatorIr *PackageSymbolTable::resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right)
 	{
 		for (auto *op : _operators)
 		{

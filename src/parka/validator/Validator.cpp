@@ -173,7 +173,7 @@ namespace parka::validator
 
 	Result<Type> validateTypeAnnotation(const TypeAnnotationAst& ast, SymbolTable& symbolTable)
 	{
-		auto *resolution = symbolTable.resolve(ast.identifier());
+		auto *resolution = symbolTable.resolveSymbol(ast.identifier());
 
 		if (!resolution)
 			return {};
@@ -260,7 +260,7 @@ namespace parka::validator
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
 		auto operatorType = toOperatorType(ast.binaryExpressionType());
-		auto *op = symbolTable.resolve(operatorType, lhsType, &rhsType);
+		auto *op = symbolTable.resolveBinaryOperator(operatorType, lhsType, &rhsType);
 
 		if (!op)
 			return {};
@@ -303,7 +303,7 @@ namespace parka::validator
 
 	IdentifierExpressionIr *validateIdentifierExpression(const IdentifierExpressionAst& ast, FunctionSymbolTable& symbolTable)
 	{
-		auto *result = symbolTable.resolve(ast.identifier());
+		auto *result = symbolTable.resolveSymbol(ast.identifier());
 
 		if (!result)
 			return {};

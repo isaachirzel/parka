@@ -31,9 +31,9 @@ namespace parka
 
 		ParameterEntry *declare(ParameterEntry&& entry);
 		VariableEntry *declare(VariableEntry&& entry);
-		Resolvable *find(const ast::Identifier& identifier);
-		ir::LValueIr *resolve(const ast::QualifiedIdentifier& identifier);
-		ir::OperatorIr *resolve(OperatorType type, const ir::Type& left, const ir::Type *right);
+		Resolvable *findSymbol(const ast::Identifier& identifier);
+		ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier);
+		ir::OperatorIr *resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right);
 		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		void setReturnType(const ir::Type& type) { _returnType = type; }

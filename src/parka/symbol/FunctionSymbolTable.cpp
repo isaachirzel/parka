@@ -20,7 +20,7 @@ namespace parka
 
 	bool FunctionSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
 	{
-		auto *previous = find(identifier);
+		auto *previous = findSymbol(identifier);
 
 		if (previous)
 		{
@@ -59,7 +59,7 @@ namespace parka
 		return ptr;
 	}
 
-	Resolvable *FunctionSymbolTable::find(const ast::Identifier& identifier)
+	Resolvable *FunctionSymbolTable::findSymbol(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -73,28 +73,28 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValueIr *FunctionSymbolTable::resolve(const ast::QualifiedIdentifier& identifier)
+	ir::LValueIr *FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
 	{
 		assert(_parent != nullptr);
 
 		if (identifier.isAbsolute() || identifier.length() > 1)
-			return _parent->resolve(identifier);
+			return _parent->resolveSymbol(identifier);
 
-		auto *local = find(identifier[0]);
+		auto *local = findSymbol(identifier[0]);
 
 		if (local)
 			return local->resolve();
 
-		auto *global = _parent->resolve(identifier);
+		auto *global = _parent->resolveSymbol(identifier);
  
 		return global;
 	}
 
-	ir::OperatorIr *FunctionSymbolTable::resolve(OperatorType type, const ir::Type& left, const ir::Type *right)
+	ir::OperatorIr *FunctionSymbolTable::resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right)
 	{
 		assert(_parent != nullptr);
 
-		return _parent->resolve(type, left, right);
+		return _parent->resolveBinaryOperator(type, left, right);
 	}
 
 	ir::ConversionIr *FunctionSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
