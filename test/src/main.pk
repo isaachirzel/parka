@@ -1,5 +1,6 @@
-function action()
+function action() -> i32
 {
+	return 12 + 4;
 }
 
 function main() -> i32
@@ -15,7 +16,5 @@ function main() -> i32
 		next = t1 + t2;
 	}
 
-	action();
-
-	return next;
+	return action();
 }

@@ -66,7 +66,7 @@ namespace parka
 		// 	package->declareSelf(this);
 	}
 
-	Resolvable *PackageSymbolTable::findInitialSymbol(const ast::Identifier& identifier)
+	Resolvable* PackageSymbolTable::findInitialSymbol(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = this;
@@ -88,7 +88,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Resolvable *PackageSymbolTable::findAbsoluteSymbol(const ast::Identifier& identifier)
+	Resolvable* PackageSymbolTable::findAbsoluteSymbol(const ast::Identifier& identifier)
 	{
 		auto *package = this;
 		auto *parent = _parent;
@@ -104,7 +104,7 @@ namespace parka
 		return entry;
 	}
 
-	Resolvable *PackageSymbolTable::findSymbol(const ast::Identifier& identifier)
+	Resolvable* PackageSymbolTable::findSymbol(const ast::Identifier& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -114,7 +114,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValueIr *PackageSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& qualifiedIdentifier)
+	ir::LValueIr* PackageSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& qualifiedIdentifier)
 	{
 		// TODO: Optimize absolute package
 		const auto& first = qualifiedIdentifier[0];
@@ -148,7 +148,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::BinaryOperatorIr *PackageSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
+	ir::BinaryOperatorIr* PackageSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
 	{
 		for (auto *op : _operators)
 		{
@@ -169,15 +169,18 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::ConversionIr *PackageSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
+	Result<ir::ConversionIr*> PackageSymbolTable::resolveConversion(const ir::Type& to, const ir::Type& from)
 	{
+		if (from == to)
+			return nullptr;
+
 		for (auto* conversion : _conversions)
 		{
-			if (conversion->from() == from && conversion->to() == to)
+			if (conversion->to() == to && conversion->from() == from)
 				return conversion;
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbolTable)

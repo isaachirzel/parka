@@ -29,12 +29,12 @@ namespace parka
 		FunctionSymbolTable(FunctionSymbolTable&&) = default;
 		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
 
-		ParameterEntry *declare(ParameterEntry&& entry);
-		VariableEntry *declare(VariableEntry&& entry);
-		Resolvable *findSymbol(const ast::Identifier& identifier);
-		ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier);
-		ir::BinaryOperatorIr *resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
-		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
+		ParameterEntry* declare(ParameterEntry&& entry);
+		VariableEntry* declare(VariableEntry&& entry);
+		Resolvable* findSymbol(const ast::Identifier& identifier);
+		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
+		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
+		Result<ir::ConversionIr*> resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		void setReturnType(const ir::Type& type) { _returnType = type; }
 		const auto& returnType() const { return _returnType; }

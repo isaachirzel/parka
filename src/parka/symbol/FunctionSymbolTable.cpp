@@ -36,7 +36,7 @@ namespace parka
 		return true;
 	}
 
-	ParameterEntry *FunctionSymbolTable::declare(ParameterEntry&& entry)
+	ParameterEntry* FunctionSymbolTable::declare(ParameterEntry&& entry)
 	{
 		auto& ref = _parameters.push(std::move(entry));
 		auto *ptr = &ref;
@@ -48,7 +48,7 @@ namespace parka
 		return ptr;
 	}
 
-	VariableEntry *FunctionSymbolTable::declare(VariableEntry&& entry)
+	VariableEntry* FunctionSymbolTable::declare(VariableEntry&& entry)
 	{
 		auto& ref = _variables.push(std::move(entry));
 		auto *ptr = &ref;
@@ -60,7 +60,7 @@ namespace parka
 		return ptr;
 	}
 
-	Resolvable *FunctionSymbolTable::findSymbol(const ast::Identifier& identifier)
+	Resolvable* FunctionSymbolTable::findSymbol(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
 		// TODO: Iterate in reverse
@@ -74,7 +74,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValueIr *FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
+	ir::LValueIr* FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
 	{
 		assert(_parent != nullptr);
 
@@ -91,18 +91,18 @@ namespace parka
 		return global;
 	}
 
-	ir::BinaryOperatorIr *FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
+	ir::BinaryOperatorIr* FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
 	{
 		assert(_parent != nullptr);
 
 		return _parent->resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
-	ir::ConversionIr *FunctionSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
+	Result<ir::ConversionIr*> FunctionSymbolTable::resolveConversion(const ir::Type& to, const ir::Type& from)
 	{
 		assert(_parent != nullptr);
 
-		return _parent->resolveConversion(from, to);
+		return _parent->resolveConversion(to, from);
 	}
 	
 	std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& symbolTable)

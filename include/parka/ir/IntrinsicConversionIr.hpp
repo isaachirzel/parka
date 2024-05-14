@@ -20,7 +20,6 @@ namespace parka::ir
 		IntrinsicConversionIr(const Type& to, const Type& from);
 		IntrinsicConversionIr(IntrinsicConversionIr&&) = default;
 		IntrinsicConversionIr(const IntrinsicConversionIr&) = delete;
-
 		const Type& to() const { return _to; }
 		const Type& from() const { return _from; }
 	};

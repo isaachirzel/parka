@@ -7,6 +7,7 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/enum/StatementType.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
@@ -16,6 +17,7 @@
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/FunctionIr.hpp"
+#include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
@@ -87,7 +89,6 @@ namespace parka::validator
 
 	Result<Ir> validateAst(const Ast& ast)
 	{
-		auto success = true;
 		const auto& package = ast.globalPackage();
 		auto symbolTable = PackageSymbolTable(package);
 		auto functions = Array<FunctionIr*>();
@@ -270,33 +271,63 @@ namespace parka::validator
 
 	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, FunctionSymbolTable& symbolTable)
 	{
-		auto success = true;
 		auto* subject = validateExpression(ast.subject(), symbolTable);
 
 		if (!subject)
-			success = false;
+			return {};
 
-		auto arguments = Array<ExpressionIr*>(ast.arguments().length());
+		// TODO: Implement call expression operators
 
-		for (const auto* argAst : ast.arguments())
+		if (subject->expressionType != ExpressionType::Identifier)
 		{
-			auto* arg = validateExpression(*argAst, symbolTable);
+			log::error(ast.subject().snippet(), "Unable to call expression as function.");
+			return {};
+		}
 
-			if (!arg)
+		auto& reference = static_cast<IdentifierExpressionIr&>(*subject);
+		auto& lvalue = reference.value();
+
+		if (lvalue.resolvableType != ResolvableType::Function)
+		{
+			log::error(ast.subject().snippet(), "Unable to call $ as function.", lvalue.resolvableType);
+			return {};
+		}
+
+		auto& function = static_cast<const FunctionIr&>(lvalue);
+		auto& prototype = function.prototype();
+
+		if (prototype.parameters().length() != ast.arguments().length())
+		{
+			log::error(ast.snippet(), "This function takes $ argument(s) but $ were given.", prototype.parameters().length(), ast.arguments().length());
+			return {};
+		}
+
+		auto arguments = Array<ArgumentIr>(ast.arguments().length());
+
+		for (usize i = 0; i < ast.arguments().length(); ++i)
+		{
+			auto& valueAst = *ast.arguments()[i];
+			auto& parameter = *prototype.parameters()[i];
+			auto* value = validateExpression(valueAst, symbolTable);
+
+			if (!value)
+				continue;
+
+			auto conversion = symbolTable.resolveConversion(parameter.type(), value->type());
+
+			if (!conversion)
 			{
-				success = false;
+				log::error(valueAst.snippet(), "Parameter $ calls for $ but $ was passed in.", parameter.symbol(), parameter.type(), value->type());
 				continue;
 			}
 
-			arguments.push(arg);
+			arguments.push(ArgumentIr(*value, *conversion));
 		}
-
-		if (!success)
+		
+		if (arguments.length() != ast.arguments().length())
 			return {};
 
-		// TODO: Validate the actual signature and how the args match to it
-
-		log::notImplemented(here());
+		return new CallExpressionIr(function, std::move(arguments));
 	}
 
 	IdentifierExpressionIr *validateIdentifierExpression(const IdentifierExpressionAst& ast, FunctionSymbolTable& symbolTable)
@@ -502,7 +533,7 @@ namespace parka::validator
 		}
 
 		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		auto* conversion = symbolTable.resolveConversion(value->type(), identifier.type());
+		auto conversion = symbolTable.resolveConversion(identifier.type(), value->type());
 
 		if (!conversion)
 		{
@@ -529,7 +560,7 @@ namespace parka::validator
 		if (!value)
 			return {};
 
-		auto* conversion = symbolTable.resolveConversion(value->type(), symbolTable.returnType());
+		auto conversion = symbolTable.resolveConversion(symbolTable.returnType(), value->type());
 
 		if (!conversion)
 		{
@@ -573,7 +604,7 @@ namespace parka::validator
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* conversion = symbolTable.resolveConversion(condition->type(), Type::boolType);
+		auto conversion = symbolTable.resolveConversion(Type::boolType, condition->type());
 
 		if (!conversion)
 		{
@@ -627,14 +658,12 @@ namespace parka::validator
 		if (!annotationTypeResult || !value)
 			return {};
 
-		const auto& type = value->type();
 		auto annotationType = *annotationTypeResult;
-
-		const auto* conversion = symbolTable.resolveConversion(type, annotationType);
+		auto conversion = symbolTable.resolveConversion(annotationType, value->type());
 
 		if (!conversion)
 		{
-			log::error("Unable to initialize variable of type $ with a value of type $.", annotationType, type);
+			log::error("Unable to initialize variable of type $ with a value of type $.", annotationType, value->type());
 			return {};
 		}
 

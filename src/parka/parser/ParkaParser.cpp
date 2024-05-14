@@ -531,7 +531,6 @@ namespace parka::parser
 
 	CallExpressionAst *parseCallExpression(Token& token, ExpressionAst& primary)
 	{
-		auto first = Token(token);
 		if (token.type() != TokenType::LeftParenthesis)
 		{
 			logParseError(token, "'(' before argument list");
@@ -568,7 +567,7 @@ namespace parka::parser
 			}
 		}
 
-		auto snippet = first + token;
+		auto snippet = primary.snippet() + token;
 
 		token.increment();
 

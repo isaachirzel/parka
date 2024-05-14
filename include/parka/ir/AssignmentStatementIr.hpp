@@ -13,12 +13,12 @@ namespace parka::ir
 	{
 		IdentifierExpressionIr& _identifier;
 		ExpressionIr& _value;
-		ConversionIr& _conversion;
+		ConversionIr* _conversion;
 		AssignmentType _assignmentType;
 
 	public:
 
-		AssignmentStatementIr(IdentifierExpressionIr& identifier, ExpressionIr& value, ConversionIr& conversion, AssignmentType assignmentType):
+		AssignmentStatementIr(IdentifierExpressionIr& identifier, ExpressionIr& value, ConversionIr* conversion, AssignmentType assignmentType):
 			StatementIr(StatementType::Assignment),
 			_identifier(identifier),
 			_value(value),
@@ -30,7 +30,8 @@ namespace parka::ir
 
 		const auto& identifier() const { return _identifier; }
 		const auto& value() const { return _value; }
-		const auto& conversion() const { return _conversion; }
+		bool hasConversion() const { return !!_conversion; }
+		const auto* conversion() const { return _conversion; }
 		const auto& assignmentType() const { return _assignmentType; }
 	};
 }

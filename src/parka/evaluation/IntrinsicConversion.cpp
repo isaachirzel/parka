@@ -22,7 +22,6 @@ namespace parka::evaluation
 
 	IntrinsicConversion intrinsicConversions[] =
 	{
-		conv<Integer, Integer>(),
 		conv<u8, Integer>(),
 		conv<u16, Integer>(),
 		conv<u32, Integer>(),
@@ -35,6 +34,7 @@ namespace parka::evaluation
 		conv<f32, Float>(),
 		conv<f64, Float>(),
 		conv<bool, bool>(),
+		conv<char, char>(),
 	};
 	const usize intrinsicConversionCount = sizeof(intrinsicConversions) / sizeof(*intrinsicConversions);
 }

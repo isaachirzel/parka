@@ -21,10 +21,10 @@ namespace parka
 		{}
 		virtual ~SymbolTable() {}
 
-		virtual Resolvable *findSymbol(const ast::Identifier& identifier) = 0;
-		virtual ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
-		virtual ir::BinaryOperatorIr *resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right) = 0;
-		virtual ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to) = 0;
+		virtual Resolvable* findSymbol(const ast::Identifier& identifier) = 0;
+		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
+		virtual ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right) = 0;
+		virtual Result<ir::ConversionIr*> resolveConversion(const ir::Type& to, const ir::Type& from) = 0;
 		virtual const String& scope() const = 0;
 
 		String createSymbol(const String& name)

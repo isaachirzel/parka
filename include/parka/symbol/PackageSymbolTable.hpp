@@ -26,12 +26,12 @@ namespace parka
 
 		PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent = nullptr);
 
-		Resolvable *findSymbol(const ast::Identifier& identifier);
-		Resolvable *findInitialSymbol(const ast::Identifier& identifier);
-		Resolvable *findAbsoluteSymbol(const ast::Identifier& identifier);
-		ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier);
-		ir::BinaryOperatorIr *resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right);
-		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
+		Resolvable* findSymbol(const ast::Identifier& identifier);
+		Resolvable* findInitialSymbol(const ast::Identifier& identifier);
+		Resolvable* findAbsoluteSymbol(const ast::Identifier& identifier);
+		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
+		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right);
+		Result<ir::ConversionIr*> resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		const String& scope() const { return _scope; }
 		auto& functions() { return _functions; }

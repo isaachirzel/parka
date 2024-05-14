@@ -22,7 +22,6 @@ namespace parka::ir
 
 	IntrinsicConversionIr IntrinsicConversionIr::entries[] =
 	{
-		conv<Integer, Integer>(),
 		conv<u8, Integer>(),
 		conv<u16, Integer>(),
 		conv<u32, Integer>(),
