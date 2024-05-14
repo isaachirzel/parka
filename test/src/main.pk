@@ -1,15 +1,21 @@
+function action()
+{
+}
+
 function main() -> i32
 {
 	var t1 = 0;
 	var t2 = 1;
 	var next = t1 + t2;
 
-	for var i = 3; i < 17; i = i + 1
+	for var i = 3; i < 10; i = i + 1
 	{
 		t1 = t2;
 		t2 = next;
 		next = t1 + t2;
 	}
+
+	action();
 
 	return next;
 }

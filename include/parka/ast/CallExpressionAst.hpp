@@ -9,21 +9,22 @@ namespace parka::ast
 	class CallExpressionAst: public ExpressionAst
 	{
 		Snippet _snippet;
-		ExpressionAst& _primary;
+		ExpressionAst& _subject;
 		Array<ExpressionAst*> _arguments;
 
 	public:
 
-		CallExpressionAst(const Snippet& snippet, ExpressionAst& primary, Array<ExpressionAst*>&& arguments):
+		CallExpressionAst(const Snippet& snippet, ExpressionAst& subject, Array<ExpressionAst*>&& arguments):
 		ExpressionAst(ExpressionType::Call),
-		_snippet(snippet),
-		_primary(primary),
-		_arguments(std::move(arguments))
+			_snippet(snippet),
+			_subject(subject),
+			_arguments(std::move(arguments))
 		{}
 		CallExpressionAst(CallExpressionAst&&) = default;
 		CallExpressionAst(const CallExpressionAst&) = delete;
 
 		const Snippet& snippet() const { return _snippet; }
+		const auto& subject() const { return _subject; }
 		const auto& arguments() const { return _arguments; }
 	};
 }

@@ -1,5 +1,6 @@
 #include "parka/validator/Validator.hpp"
 #include "parka/ast/AssignmentStatementAst.hpp"
+#include "parka/ast/CallExpressionAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
@@ -10,6 +11,7 @@
 #include "parka/enum/StatementType.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
+#include "parka/ir/CallExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
@@ -97,27 +99,17 @@ namespace parka::validator
 			auto *ir = entry.resolve();
 
 			if (!ir)
-			{
-				success = false;
 				continue;
-			}
 
 			if (!entryPoint && ir->symbol() == "main")
 			{
-				if (!validateEntryPoint(*ir, entry.ast()))
-				{
-					success = false;
-					continue;
-				}
-				
 				entryPoint = ir;
+
+				validateEntryPoint(*ir, entry.ast());
 			}
 			
 			functions.push(ir);
 		}
-
-		if (!success)
-			return {};
 
 		// TODO: Structs and packages
 
@@ -215,7 +207,7 @@ namespace parka::validator
 				return validateBinaryExpression(static_cast<const BinaryExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::Call:
-				break;
+				return validateCallExpression(static_cast<const CallExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::Conditional:
 				break;
@@ -257,32 +249,6 @@ namespace parka::validator
 		log::fatal("Unable to validate Expression with Type: $", ast.expressionType);
 	}
 
-	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		auto success = true;
-		auto statements = Array<StatementIr*>(ast.statements().length());
-
-		for (const auto *statement : ast.statements())
-		{
-			auto *ir = validateStatement(*statement, symbolTable);
-
-			if (!ir)
-			{
-				success = false;
-				continue;
-			}
-
-			statements.push(ir);
-		}
-
-		// TODO: Implement return type
-
-		if (!success)
-			return {};
-
-		return new BlockStatementIr(std::move(statements));
-	}
-
 	BinaryExpressionIr *validateBinaryExpression(const BinaryExpressionAst& ast, FunctionSymbolTable& symbolTable)
 	{
 		auto *lhs = validateExpression(ast.lhs(), symbolTable);
@@ -302,6 +268,37 @@ namespace parka::validator
 		auto result = new BinaryExpressionIr(*lhs, *rhs, *op);
 
 		return result;
+	}
+
+	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, FunctionSymbolTable& symbolTable)
+	{
+		auto success = true;
+		auto* subject = validateExpression(ast.subject(), symbolTable);
+
+		if (!subject)
+			success = false;
+
+		auto arguments = Array<ExpressionIr*>(ast.arguments().length());
+
+		for (const auto* argAst : ast.arguments())
+		{
+			auto* arg = validateExpression(*argAst, symbolTable);
+
+			if (!arg)
+			{
+				success = false;
+				continue;
+			}
+
+			arguments.push(arg);
+		}
+
+		if (!success)
+			return {};
+
+		// TODO: Validate the actual signature and how the args match to it
+
+		log::notImplemented(here());
 	}
 
 	IdentifierExpressionIr *validateIdentifierExpression(const IdentifierExpressionAst& ast, FunctionSymbolTable& symbolTable)
@@ -492,6 +489,32 @@ namespace parka::validator
 		return new ExpressionStatementIr(*expression);
 	}
 
+	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, FunctionSymbolTable& symbolTable)
+	{
+		auto* lhs = validateExpression(ast.identifier(), symbolTable);
+		auto* value = validateExpression(ast.value(), symbolTable);
+
+		if (!lhs || !value)
+			return {};
+		
+		if (lhs->expressionType != ExpressionType::Identifier)
+		{
+			log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
+			return {};
+		}
+
+		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
+		auto* conversion = symbolTable.resolveConversion(value->type(), identifier.type());
+
+		if (!conversion)
+		{
+			log::error("Unable to assign $ to $.", value->type(), identifier.type());
+			return {};
+		}
+
+		return new AssignmentStatementIr(identifier, *value, *conversion, ast.assignmentType());
+	}
+
 	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, FunctionSymbolTable& symbolTable)
 	{
 		if (!ast.hasValue())
@@ -563,30 +586,30 @@ namespace parka::validator
 		return new ForStatementIr(*declaration, *condition, *conversion, *action, *body);
 	}
 
-	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, FunctionSymbolTable& symbolTable)
+	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, FunctionSymbolTable& symbolTable)
 	{
-		auto* lhs = validateExpression(ast.identifier(), symbolTable);
-		auto* value = validateExpression(ast.value(), symbolTable);
+		auto success = true;
+		auto statements = Array<StatementIr*>(ast.statements().length());
 
-		if (!lhs || !value)
-			return {};
-		
-		if (lhs->expressionType != ExpressionType::Identifier)
+		for (const auto *statement : ast.statements())
 		{
-			log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
-			return {};
+			auto *ir = validateStatement(*statement, symbolTable);
+
+			if (!ir)
+			{
+				success = false;
+				continue;
+			}
+
+			statements.push(ir);
 		}
 
-		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		auto* conversion = symbolTable.resolveConversion(value->type(), identifier.type());
+		// TODO: Implement return type
 
-		if (!conversion)
-		{
-			log::error("Unable to assign $ to $.", value->type(), identifier.type());
+		if (!success)
 			return {};
-		}
 
-		return new AssignmentStatementIr(identifier, *value, *conversion, ast.assignmentType());
+		return new BlockStatementIr(std::move(statements));
 	}
 	
 	static Result<Type> validateVariableType(const Result<TypeAnnotationAst>& annotation, ExpressionIr *value, FunctionSymbolTable& symbolTable)
