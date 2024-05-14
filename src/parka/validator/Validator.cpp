@@ -11,6 +11,7 @@
 #include "parka/enum/StatementType.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
+#include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
@@ -120,15 +121,22 @@ namespace parka::validator
 	{
 		auto symbolTable = FunctionSymbolTable(&parentSymbolTable);
 		auto prototype = validatePrototype(ast.prototype(), symbolTable);
-		auto *body = validateBlockStatement(ast.body(), symbolTable);
 
-		if (!prototype || !body)
+		if (!prototype)
 			return {};
 
 		const auto& name = ast.prototype().identifier().text();
 		auto symbol = symbolTable.createSymbol(name);
 
-		return new FunctionIr(std::move(symbol), *prototype, *body);
+		if (!ast.hasBody())
+			return new FunctionIr(std::move(symbol), *prototype, nullptr);
+
+		auto* body = validateBlockStatement(ast.body(), symbolTable);
+
+		if (!body)
+			return {};
+
+		return new FunctionIr(std::move(symbol), *prototype, body);
 	}
 
 	static Result<Type> validateReturnType(const Result<TypeAnnotationAst>& syntax, FunctionSymbolTable& symbolTable)

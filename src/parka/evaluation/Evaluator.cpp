@@ -31,7 +31,16 @@ namespace parka::evaluation
 		usize index = state.getScopeIndex();
 
 		evaluatePrototype(ir.prototype(), arguments, state);
-		evaluateBlockStatement(ir.body(), state);
+
+		if (!ir.hasBody())
+		{
+			log::error("Function $ is not implemented.", ir.symbol());
+
+		}
+		else
+		{
+			evaluateBlockStatement(ir.body(), state);
+		}
 
 		state.clearScopeValues(index);
 		state.setReturnValueIndex(previousReturnValueIndex);

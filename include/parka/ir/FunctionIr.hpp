@@ -11,11 +11,11 @@ namespace parka::ir
 	{
 		String _symbol;
 		PrototypeIr _prototype;
-		BlockStatementIr& _body;
+		BlockStatementIr* _body;
 
 	public:
 
-		FunctionIr(String&& symbol, PrototypeIr&& prototype, BlockStatementIr& body):
+		FunctionIr(String&& symbol, PrototypeIr&& prototype, BlockStatementIr* body):
 			LValueIr(ResolvableType::Function),
 			_symbol(std::move(symbol)),
 			_prototype(std::move(prototype)),
@@ -27,7 +27,8 @@ namespace parka::ir
 		const String& symbol() const { return _symbol; }
 		const Type& type() const { return Type::functionType; }
 		const auto& prototype() const { return _prototype; }
-		const auto& body() const { return _body; }
+		bool hasBody() const { return !!_body; }
+		const auto& body() const { assert(_body); return *_body; }
 	};
 }
 

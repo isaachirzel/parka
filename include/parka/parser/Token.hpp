@@ -31,6 +31,7 @@ namespace parka
 		String category() const;
 		const auto& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }
+		bool isSemicolon() const { return _type == TokenType::Semicolon; }
 
 		operator const Snippet&() const { return _snippet; }
 		Snippet operator+(const Token& other) const { return _snippet + other._snippet; }

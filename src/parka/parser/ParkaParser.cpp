@@ -1078,7 +1078,7 @@ namespace parka::parser
 		if (!keyword)
 			return {};
 
-		if (token.type() == TokenType::Semicolon)
+		if (token.isSemicolon())
 		{
 			token.increment();
 
@@ -1289,7 +1289,7 @@ namespace parka::parser
 		if (!identifier)
 			return {};
 
-		if (token.type() == TokenType::Semicolon)
+		if (token.isSemicolon())
 		{
 			token.increment();
 			return new ExpressionStatementAst(identifier->snippet(), *identifier);
@@ -1556,14 +1556,23 @@ namespace parka::parser
 		if (!prototype)
 			return {};
 
+		if (token.isSemicolon())
+		{
+			auto snippet = prototype->snippet() + token;
+
+			token.increment();
+
+			return new FunctionAst(snippet, *prototype);
+		}
+
 		auto body = parseBlockStatement(token);
 
 		if (!body)
 			return {};
 
-		auto *syntax = new FunctionAst(*prototype, *body);
+		auto snippet = prototype->snippet() + body->snippet();
 
-		return syntax;
+		return new FunctionAst(snippet, *prototype, *body);
 	}
 
 	bool parsePublicity(Token& token)
