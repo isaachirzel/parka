@@ -2,16 +2,16 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/IntrinsicConversionIr.hpp"
-#include "parka/ir/IntrinsicOperatorIr.hpp"
+#include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/OperatorIr.hpp"
+#include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
 
 namespace parka
 {
-	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent):
+	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable* parent):
 		SymbolTable(SymbolTableType::Package),
 		_scope(parent != nullptr ? parent->createSymbol(ast.name()) : ast.name()),
 		_symbols(),
@@ -32,9 +32,9 @@ namespace parka
 				_symbols.insert(primitive->name(), primitive);
 			}
 
-			for (usize i = 0; i < ir::IntrinsicOperatorIr::entryCount; ++i)
+			for (usize i = 0; i < ir::IntrinsicBinaryOperatorIr::entryCount; ++i)
 			{
-				auto& op = ir::IntrinsicOperatorIr::entries[i];
+				auto& op = ir::IntrinsicBinaryOperatorIr::entries[i];
 
 				_operators.push(&op);
 			}
@@ -148,32 +148,23 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::OperatorIr *PackageSymbolTable::resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right)
+	ir::BinaryOperatorIr *PackageSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
 	{
 		for (auto *op : _operators)
 		{
-			if (op->operatorType() != type)
+			if (op->binaryExpressionType() != binaryExpressionType)
 				continue;
 
 			if (op->leftType() != left)
 				continue;
 
-			assert(!right == !op->rightType());
-
-			if (right != nullptr && *op->rightType() != *right)
+			if (op->rightType() != right)
 				continue;
 
 			return op;
 		}
 
-		if (right != nullptr)
-		{
-			log::error("No operator `$ $ $` has been defined.", left, type, *right);
-		}
-		else
-		{
-			log::error("No `$` operator has been defined for `$`.", type, left);
-		}
+		log::error("No operator `$ $ $` has been defined.", left, binaryExpressionType, right);
 
 		return nullptr;
 	}

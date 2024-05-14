@@ -4,7 +4,6 @@
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ir/ParameterIr.hpp"
-#include "parka/symbol/SymbolTable.hpp"
 
 namespace parka::ast
 {
@@ -13,7 +12,6 @@ namespace parka::ast
 		Snippet _snippet;
 		Identifier _identifier;
 		TypeAnnotationAst _annotation;
-		SymbolTable *_parent;
 		ir::ParameterIr *_context;
 		bool _isMutable;
 
@@ -23,7 +21,6 @@ namespace parka::ast
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),
-		_parent(nullptr),
 		_isMutable(isMutable)
 		{}
 		ParameterAst(ParameterAst&&) = default;

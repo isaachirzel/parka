@@ -2,6 +2,7 @@
 #define PARKA_ENUM_OPERATOR_TYPE_HPP
 
 #include "parka/enum/BinaryExpressionType.hpp"
+
 namespace parka
 {
 	enum class OperatorType

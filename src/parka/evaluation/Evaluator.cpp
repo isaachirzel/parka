@@ -256,17 +256,17 @@ namespace parka::evaluation
 		return result;
 	}
 
-	Value& evaluateOperator(const OperatorIr& op, Value& left, Value& right, LocalState& state)
+	Value& evaluateOperator(const BinaryOperatorIr& op, Value& left, Value& right, LocalState& state)
 	{
 		if (op.isIntrinsic)
-			return evaluateIntrinsicOperator(dynamic_cast<const IntrinsicOperatorIr&>(op), left, right, state);
+			return evaluateIntrinsicOperator(dynamic_cast<const IntrinsicBinaryOperatorIr&>(op), left, right, state);
 
 		log::notImplemented(here());
 	}
 
-	Value& evaluateIntrinsicOperator(const IntrinsicOperatorIr& opIr, Value& left, Value& right, LocalState& state)
+	Value& evaluateIntrinsicOperator(const IntrinsicBinaryOperatorIr& opIr, Value& left, Value& right, LocalState& state)
 	{
-		auto index = (usize)(&opIr - IntrinsicOperatorIr::entries);
+		auto index = (usize)(&opIr - IntrinsicBinaryOperatorIr::entries);
 		
 		assert(index < intrinsicOperatorCount);
 

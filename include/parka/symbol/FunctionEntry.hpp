@@ -4,6 +4,7 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 
 namespace parka
 {

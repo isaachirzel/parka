@@ -3,7 +3,7 @@
 
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/ir/ExpressionIr.hpp"
-#include "parka/ir/OperatorIr.hpp"
+#include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
@@ -12,13 +12,13 @@ namespace parka::ir
 	{
 		ExpressionIr& _subject;
 		Array<ExpressionIr*> _arguments;
-		OperatorIr& _op;
+		BinaryOperatorIr& _op;
 
 		// TODO: Make operator binary operator, i need more flexibility in the operator system
 
 	public:
 
-		CallExpressionIr(ExpressionIr& subject, Array<ExpressionIr*> arguments, OperatorIr& op):
+		CallExpressionIr(ExpressionIr& subject, Array<ExpressionIr*> arguments, BinaryOperatorIr& op):
 			ExpressionIr(ExpressionType::Call),
 			_subject(subject),
 			_arguments(std::move(arguments)),

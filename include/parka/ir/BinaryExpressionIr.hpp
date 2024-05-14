@@ -2,7 +2,7 @@
 #define PARKA_IR_BINARY_EXPRESSION_HPP
 
 #include "parka/ir/ExpressionIr.hpp"
-#include "parka/ir/OperatorIr.hpp"
+#include "parka/ir/BinaryOperatorIr.hpp"
 
 namespace parka::ir
 {
@@ -10,11 +10,11 @@ namespace parka::ir
 	{
 		ExpressionIr& _lhs;
 		ExpressionIr& _rhs;
-		OperatorIr& _op;
+		BinaryOperatorIr& _op;
 
 	public:
 
-		BinaryExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, OperatorIr& op):
+		BinaryExpressionIr(ExpressionIr& lhs, ExpressionIr& rhs, BinaryOperatorIr& op):
 			ExpressionIr(ExpressionType::Binary),
 			_lhs(lhs),
 			_rhs(rhs),

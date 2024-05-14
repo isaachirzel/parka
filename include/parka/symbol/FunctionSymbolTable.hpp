@@ -33,7 +33,7 @@ namespace parka
 		VariableEntry *declare(VariableEntry&& entry);
 		Resolvable *findSymbol(const ast::Identifier& identifier);
 		ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier);
-		ir::OperatorIr *resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right);
+		ir::BinaryOperatorIr *resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
 		ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		void setReturnType(const ir::Type& type) { _returnType = type; }

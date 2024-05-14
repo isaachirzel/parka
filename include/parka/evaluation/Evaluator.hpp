@@ -15,7 +15,7 @@
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/IntegerLiteralIr.hpp"
 #include "parka/ir/IntrinsicConversionIr.hpp"
-#include "parka/ir/IntrinsicOperatorIr.hpp"
+#include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/YieldStatementIr.hpp"
@@ -39,8 +39,8 @@ namespace parka::evaluation
 	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, LocalState& state);
 	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, LocalState& state);
 	Value& evaluateIntegerLiteral(const ir::IntegerLiteralIr& ir, LocalState& state);
-	Value& evaluateOperator(const ir::OperatorIr& op, Value& left, Value& right, LocalState& state);
-	Value& evaluateIntrinsicOperator(const ir::IntrinsicOperatorIr& op, Value& left, Value& right, LocalState& state);
+	Value& evaluateOperator(const ir::BinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
+	Value& evaluateIntrinsicOperator(const ir::IntrinsicBinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
 	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from);
 	Value& evaluateIntrinsicConversion(const ir::IntrinsicConversionIr& conversion, Value& to, Value& from);
 }

@@ -2,9 +2,6 @@
 #define PARKA_AST_FUNCTION_PROTOTYPE_HPP
 
 #include "parka/ast/IdentifierAst.hpp"
-#include "parka/ir/PrototypeIr.hpp"
-#include "parka/symbol/SymbolTable.hpp"
-#include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/ParameterAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 

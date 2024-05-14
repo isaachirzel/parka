@@ -1,12 +1,13 @@
 #ifndef PARKA_SYMBOL_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOL_SYMBOL_TABLE_HPP
 
+#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/OperatorIr.hpp"
+#include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka
@@ -22,7 +23,7 @@ namespace parka
 
 		virtual Resolvable *findSymbol(const ast::Identifier& identifier) = 0;
 		virtual ir::LValueIr *resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
-		virtual ir::OperatorIr *resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right) = 0;
+		virtual ir::BinaryOperatorIr *resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right) = 0;
 		virtual ir::ConversionIr *resolveConversion(const ir::Type& from, const ir::Type& to) = 0;
 		virtual const String& scope() const = 0;
 

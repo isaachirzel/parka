@@ -3,6 +3,7 @@
 
 #include "parka/ast/PackageAst.hpp"
 #include "parka/ir/PackageIr.hpp"
+#include "parka/symbol/Resolvable.hpp"
 
 namespace parka
 {
@@ -16,10 +17,10 @@ namespace parka
 	public:
 
 		PackageEntry(const ast::PackageAst& ast):
-		Resolvable(ResolvableType::Package),
-		_ast(ast),
-		_ir(nullptr),
-		_isValidated(false)
+			Resolvable(ResolvableType::Package),
+			_ast(ast),
+			_ir(nullptr),
+			_isValidated(false)
 		{}
 
 		ir::PackageIr *resolve();

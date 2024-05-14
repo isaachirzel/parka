@@ -1,12 +1,7 @@
-#ifndef PARKA_AST_VARIABLE_HPP
-#define PARKA_AST_VARIABLE_HPP
+#ifndef PARKA_AST_VARIABLE_AST_HPP
+#define PARKA_AST_VARIABLE_AST_HPP
 
-#include "parka/ast/ExpressionAst.hpp"
 #include "parka/ast/IdentifierAst.hpp"
-#include "parka/ir/ExpressionIr.hpp"
-#include "parka/ir/VariableIr.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 
 namespace parka::ast

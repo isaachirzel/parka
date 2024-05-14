@@ -1,21 +1,25 @@
 #ifndef PARKA_ENUM_BINARY_EXPRESSION_TYPE_HPP
 #define PARKA_ENUM_BINARY_EXPRESSION_TYPE_HPP
 
+#include <ostream>
 namespace parka
 {
 	enum class BinaryExpressionType
 	{
+		// Additive
+		Add,
+		Subtract,
+
 		// Multiplicative
 		Multiply,
 		Divide,
 		Modulus,
 
-		// Additive
-		Add,
-		Subtract,
-
+		// Logical
 		BooleanOr,
 		BooleanAnd,
+
+		// Bitwise
 		BitwiseOr,
 		BitwiseXor,
 		BitwiseAnd,
@@ -25,15 +29,17 @@ namespace parka
 		NotEquals,
 
 		// Relational
-		GreaterThan,
 		LessThan,
-		GreaterThanOrEqualTo,
+		GreaterThan,
 		LessThanOrEqualTo,
+		GreaterThanOrEqualTo,
 		
 		// Shift
 		LeftShift,
 		RightShift
 	};
+
+	std::ostream& operator<<(std::ostream& out, const BinaryExpressionType& binaryExpressionType);
 }
 
 #endif

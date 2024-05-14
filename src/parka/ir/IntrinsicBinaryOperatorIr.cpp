@@ -1,68 +1,68 @@
-#include "parka/ir/IntrinsicOperatorIr.hpp"
-#include "parka/enum/OperatorType.hpp"
+#include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
+#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/util/Float.hpp"
 
 namespace parka::ir
 {
 	template <typename Left, typename Right, typename Return>
-	IntrinsicOperatorIr op(OperatorType operatorType)
+	IntrinsicBinaryOperatorIr op(BinaryExpressionType binaryExpressionType)
 	{
 		const auto& left = ir::Type::of<Left>();
 		const auto& right = ir::Type::of<Right>();
 		const auto& ret = ir::Type::of<Return>();
 
-		return IntrinsicOperatorIr(operatorType, left, right, ret);
+		return IntrinsicBinaryOperatorIr(binaryExpressionType, left, right, ret);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperatorIr add()
+	IntrinsicBinaryOperatorIr add()
 	{
-		return op<Left, Right, Return>(OperatorType::Add);
+		return op<Left, Right, Return>(BinaryExpressionType::Add);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperatorIr subtract()
+	IntrinsicBinaryOperatorIr subtract()
 	{
-		return op<Left, Right, Return>(OperatorType::Subtract);
+		return op<Left, Right, Return>(BinaryExpressionType::Subtract);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperatorIr multiply()
+	IntrinsicBinaryOperatorIr multiply()
 	{
-		return op<Left, Right, Return>(OperatorType::Multiply);
+		return op<Left, Right, Return>(BinaryExpressionType::Multiply);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperatorIr divide()
+	IntrinsicBinaryOperatorIr divide()
 	{
-		return op<Left, Right, Return>(OperatorType::Divide);
+		return op<Left, Right, Return>(BinaryExpressionType::Divide);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperatorIr lessThan()
+	IntrinsicBinaryOperatorIr lessThan()
 	{
-		return op<Left, Right, bool>(OperatorType::LessThan);
+		return op<Left, Right, bool>(BinaryExpressionType::LessThan);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperatorIr greaterThan()
+	IntrinsicBinaryOperatorIr greaterThan()
 	{
-		return op<Left, Right, bool>(OperatorType::GreaterThan);
+		return op<Left, Right, bool>(BinaryExpressionType::GreaterThan);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperatorIr lessThanOrEqualTo()
+	IntrinsicBinaryOperatorIr lessThanOrEqualTo()
 	{
-		return op<Left, Right, bool>(OperatorType::LessThanOrEqualTo);
+		return op<Left, Right, bool>(BinaryExpressionType::LessThanOrEqualTo);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperatorIr greaterThanOrEqualTo()
+	IntrinsicBinaryOperatorIr greaterThanOrEqualTo()
 	{
-		return op<Left, Right, bool>(OperatorType::GreaterThanOrEqualTo);
+		return op<Left, Right, bool>(BinaryExpressionType::GreaterThanOrEqualTo);
 	}
 
-	IntrinsicOperatorIr IntrinsicOperatorIr::entries[] =
+	IntrinsicBinaryOperatorIr IntrinsicBinaryOperatorIr::entries[] =
 	{
 		add<Integer>(),
 		subtract<Integer>(),
@@ -262,21 +262,13 @@ namespace parka::ir
 		lessThanOrEqualTo<f64, Float>(),
 		greaterThanOrEqualTo<f64, Float>(),
 	};
-	const usize IntrinsicOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
+	const usize IntrinsicBinaryOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
 
-	IntrinsicOperatorIr::IntrinsicOperatorIr(OperatorType operatorType, const Type& type, const Type& returnType):
-		OperatorIr(true),
-		_lhs(type),
-		_rhs(nullptr),
+	IntrinsicBinaryOperatorIr::IntrinsicBinaryOperatorIr(BinaryExpressionType binaryExpressionType, const Type& leftType, const Type& rightType, const Type& returnType):
+		BinaryOperatorIr(true),
+		_leftType(leftType),
+		_rightType(rightType),
 		_returnType(returnType),
-		_operatorType(operatorType)
-	{}
-
-	IntrinsicOperatorIr::IntrinsicOperatorIr(OperatorType operatorType, const Type& lhs, const Type& rhs, const Type& returnType):
-		OperatorIr(true),
-		_lhs(lhs),
-		_rhs(&rhs),
-		_returnType(returnType),
-		_operatorType(operatorType)
+		_binaryExpressionType(binaryExpressionType)
 	{}
 }

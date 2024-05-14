@@ -259,8 +259,7 @@ namespace parka::validator
 
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
-		auto operatorType = toOperatorType(ast.binaryExpressionType());
-		auto *op = symbolTable.resolveBinaryOperator(operatorType, lhsType, &rhsType);
+		auto *op = symbolTable.resolveBinaryOperator(ast.binaryExpressionType(), lhsType, rhsType);
 
 		if (!op)
 			return {};

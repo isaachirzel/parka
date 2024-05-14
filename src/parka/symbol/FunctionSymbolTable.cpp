@@ -1,6 +1,7 @@
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
+#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/Resolvable.hpp"
@@ -90,11 +91,11 @@ namespace parka
 		return global;
 	}
 
-	ir::OperatorIr *FunctionSymbolTable::resolveBinaryOperator(OperatorType type, const ir::Type& left, const ir::Type *right)
+	ir::BinaryOperatorIr *FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
 	{
 		assert(_parent != nullptr);
 
-		return _parent->resolveBinaryOperator(type, left, right);
+		return _parent->resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
 	ir::ConversionIr *FunctionSymbolTable::resolveConversion(const ir::Type& from, const ir::Type& to)
