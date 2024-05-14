@@ -9,9 +9,7 @@ namespace parka::ir
 {
 	class Type
 	{
-	private:
-	
-		const TypeBase *_typeBase;
+		const TypeBase* _typeBase;
 		// TODO: Add pointer info
 		// TODO: Add Literal as typename for better type inference?
 		

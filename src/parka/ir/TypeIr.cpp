@@ -1,3 +1,4 @@
+
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/DummyTypeBaseIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
@@ -70,6 +71,8 @@ namespace parka::ir
 	
 	std::ostream& operator<<(std::ostream& out, const Type& type)
 	{
+		assert(type._typeBase != nullptr);
+		
 		out << *type._typeBase;
 
 		return out;

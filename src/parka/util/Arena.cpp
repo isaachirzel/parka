@@ -52,8 +52,8 @@ namespace parka
 		munmap(data, length);
 	}
 
-	Arena::Arena(usize length):
-	_maxCapacity(getPageAlignedLength(length)),
+	Arena::Arena(usize maxCapacity):
+	_maxCapacity(getPageAlignedLength(maxCapacity)),
 	_capacity(0),
 	_length(0),
 	_data(allocateArena(_maxCapacity))

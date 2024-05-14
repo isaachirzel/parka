@@ -1,37 +1,15 @@
-function condition() -> char
-{
-	return 'a';
-}
-
-function action()
-{
-/*
-causes exception:
-	return action;
-*/
-	return;
-}
-
 function main() -> i32
 {
-	var a = 1;
-	var b = a < 2;
-/*
-	for var i = 0; i < 10; i += 1 {
-		a = i;
+	var t1 = 0;
+	var t2 = 1;
+	var next = t1 + t2;
+
+	for var i = 3; i < 17; i = i + 1
+	{
+		t1 = t2;
+		t2 = next;
+		next = t1 + t2;
 	}
 
-	a = 5 * 7;
-*/
-
-/*
-causes exception:
-	return ::main;
-	return main;
-
-does not cause exception:
-	return action;
-*/
-
-	return a;
+	return next;
 }

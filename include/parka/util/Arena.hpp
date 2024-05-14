@@ -14,7 +14,7 @@ namespace parka
 
 	public:
 
-		Arena(usize length);
+		Arena(usize maxCapacity);
 		Arena(Arena&&) = default;
 		Arena(const Arena&) = delete;
 		~Arena();

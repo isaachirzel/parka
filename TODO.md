@@ -2,6 +2,7 @@
 
 ## Short Term
 - Expression Statements
+- Fix recursive call causing crash
 - Basic for loop
 - Break statement
 - Continue statement

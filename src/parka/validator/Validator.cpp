@@ -552,7 +552,15 @@ namespace parka::validator
 		if (!condition  || !action || !body)
 			return {};
 
-		return new ForStatementIr(*declaration, *condition, *action, *body);
+		auto* conversion = symbolTable.resolveConversion(condition->type(), Type::boolType);
+
+		if (!conversion)
+		{
+			log::error("Expression could not be converted from `$` to `$`.", condition->type(), Type::boolType);
+			return {};
+		}
+
+		return new ForStatementIr(*declaration, *condition, *conversion, *action, *body);
 	}
 
 	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, FunctionSymbolTable& symbolTable)

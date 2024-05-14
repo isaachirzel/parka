@@ -10,7 +10,7 @@ namespace parka::evaluation
 	class Value
 	{
 		ir::Type _type;
-		alignas(u64) byte _value[sizeof(u64)];
+		byte _value[8];
 		const ir::LValueIr* _nodePtr;
 
 	private:
@@ -31,6 +31,12 @@ namespace parka::evaluation
 		void setValue(const T& value)
 		{
 			return setValue((const byte*)&value, sizeof(T));
+		}
+
+		template <typename T>
+		T getValue()
+		{
+			return *(T*)_value;
 		}
 		
 		const byte* value() const { return _value; }

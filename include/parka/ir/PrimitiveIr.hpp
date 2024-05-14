@@ -27,22 +27,22 @@ namespace parka::ir
 
 	public:
 
-		static Primitive entries[];
+		static Primitive voidPrimitive;
+		static Primitive u8Primitive;
+		static Primitive u16Primitive;
+		static Primitive u32Primitive;
+		static Primitive u64Primitive;
+		static Primitive i8Primitive;
+		static Primitive i16Primitive;
+		static Primitive i32Primitive;
+		static Primitive i64Primitive;
+		static Primitive f32Primitive;
+		static Primitive f64Primitive;
+		static Primitive boolPrimitive;
+		static Primitive charPrimitive;
+		static Primitive stringPrimitive;
+		static Primitive* entries[];
 		static const usize entryCount;
-		static Primitive& voidPrimitive;
-		static Primitive& u8Primitive;
-		static Primitive& u16Primitive;
-		static Primitive& u32Primitive;
-		static Primitive& u64Primitive;
-		static Primitive& i8Primitive;
-		static Primitive& i16Primitive;
-		static Primitive& i32Primitive;
-		static Primitive& i64Primitive;
-		static Primitive& f32Primitive;
-		static Primitive& f64Primitive;
-		static Primitive& boolPrimitive;
-		static Primitive& charPrimitive;
-		static Primitive& stringPrimitive;
 
 	private:
 

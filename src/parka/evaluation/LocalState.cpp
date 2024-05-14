@@ -6,8 +6,7 @@
 namespace parka::evaluation
 {
 	LocalState::LocalState():
-		_values(),
-		_returnValueIndex(0),
+		_values(1'048'576),
 		_returningType(ReturningType::None)
 	{}
 
@@ -18,6 +17,7 @@ namespace parka::evaluation
 
 	Value& LocalState::pushReturnValue(const ir::Type& type)
 	{
+
 		auto length = _values.length();
 		auto& value = _values.push(type);
 
@@ -26,9 +26,24 @@ namespace parka::evaluation
 		return value;
 	}
 
-	void LocalState::clearFunctionValues()
+	usize LocalState::getReturnValueIndex()
 	{
-		_values.truncate(_returnValueIndex + 1);
+		return _returnValueIndex;
+	}
+
+	void LocalState::setReturnValueIndex(usize index)
+	{
+		_returnValueIndex = index;
+	}
+
+	usize LocalState::getScopeIndex()
+	{
+		return _values.length();
+	}
+
+	void LocalState::clearScopeValues(usize index)
+	{
+		_values.truncate(index);
 	}
 
 	void LocalState::setReturning(ReturningType returningType)

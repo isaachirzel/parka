@@ -55,7 +55,7 @@ namespace parka
 
 		usize& getEmptySlot(const usize hash)
 		{
-			usize slotCount = _slots.count();
+			usize slotCount = _slots.length();
 			usize slotIndex = hash % slotCount;
 			usize step = 1;
 
@@ -73,8 +73,8 @@ namespace parka
 
 		usize getSlotIndex(const Key& key, const usize hash) const
 		{
-			usize slotCount = _slots.count();
-			usize slotIndex = hash % _slots.count();
+			usize slotCount = _slots.length();
+			usize slotIndex = hash % _slots.length();
 			usize step = 1;
 
 			while (true)
@@ -98,7 +98,7 @@ namespace parka
 
 		void reserve(usize minimumCapacity)
 		{
-			if (_items.count() >= minimumCapacity)
+			if (_items.length() >= minimumCapacity)
 				return;
 
 			auto newCapacity = table::getCapacity(minimumCapacity);
@@ -152,8 +152,8 @@ namespace parka
 
 		Value* insert(const Key& key, Value&& value)
 		{
-			if (_items.count() * 2 >= _slots.count())
-				reserve(_slots.count() * 2);
+			if (_items.length() * 2 >= _slots.length())
+				reserve(_slots.length() * 2);
 
 			auto hash = _hash(key);
 			auto slotIndex = getSlotIndex(key, hash);
@@ -162,7 +162,7 @@ namespace parka
 			if (slot != table::empty)
 				return nullptr;
 
-			slot = _items.count();
+			slot = _items.length();
 			
 			_items.add(Item(key, std::move(value), hash));
 
@@ -219,8 +219,8 @@ namespace parka
 		const auto *end() const { return _items.end(); }
 		auto *begin() { return _items.begin(); }
 		auto *end() { return _items.end(); }
-		usize capacity() const { return _slots.count(); }
-		usize count() const { return _items.count(); }
+		usize capacity() const { return _slots.length(); }
+		usize count() const { return _items.length(); }
 	};
 }
 

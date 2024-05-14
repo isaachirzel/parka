@@ -4,7 +4,6 @@
 #include "parka/util/Common.hpp"
 
 #include <initializer_list>
-#include <stdexcept>
 #include <cstdlib>
 #include <type_traits>
 
@@ -20,16 +19,16 @@ namespace parka
 	public:
 
 		Array():
-		_length(0),
-		_capacity(0),
-		_data(nullptr)
+			_length(0),
+			_capacity(0),
+			_data(nullptr)
 		{}
 
 		template <typename U = T, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
-		Array(std::initializer_list<T> values):
-		_length(values.size()),
-		_capacity(values.size()),
-		_data((T*)::operator new(sizeof(T) * _capacity))
+			Array(std::initializer_list<T> values):
+			_length(values.size()),
+			_capacity(values.size()),
+			_data((T*)::operator new(sizeof(T) * _capacity))
 		{
 			usize i = 0;
 
@@ -158,19 +157,6 @@ namespace parka
 				_data[i].~T();
 
 			_length = 0;
-		}
-
-		void truncate(const usize newLength)
-		{
-			assert(newLength <= _length);
-
-			if (_length == newLength)
-				return;
-
-			for (usize i = newLength; i < _length; ++i)
-				_data[i].~T();
-
-			_length = newLength;
 		}
 
 		constexpr T& operator[](usize index)

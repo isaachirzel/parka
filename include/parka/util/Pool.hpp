@@ -16,20 +16,20 @@ namespace parka
 	public:
 
 		Pool(usize maxItemCount):
-		_arena(sizeof(T) * maxItemCount)
+			_arena(sizeof(T) * maxItemCount)
 		{}
 		Pool(Pool&&) = default;
 		Pool(const Pool&) = delete;
 		~Pool()
 		{
-			if constexpr (!std::is_trivially_destructible_v<T>)
-			{
-				usize length = count();
-				auto *data = (T*)_arena.data();
+			if constexpr (std::is_trivially_destructible_v<T>)
+				return;
+			
+			const auto len = length();
+			auto* data = (T*)_arena.data();
 
-				for (usize i = 0; i < length; ++i)
-					data[i].~T();
-			}
+			for (usize i = 0; i < len; ++i)
+				data[i].~T();
 		}
 
 		T& add(T&& value)
@@ -59,14 +59,14 @@ namespace parka
 
 		usize indexFor(const T *ptr) const { return _arena.getOffset((byte*)ptr) / sizeof(T); }
 
-		T& operator[](usize index) { assert(index < count()); return ((T*)_arena.data())[index]; }
-		const T& operator[](usize index) const { assert(index < count()); return ((T*)_arena.data())[index]; }
+		T& operator[](usize index) { assert(index < length()); return ((T*)_arena.data())[index]; }
+		const T& operator[](usize index) const { assert(index < length()); return ((T*)_arena.data())[index]; }
 		T* begin() { return (T*)_arena.begin(); }
 		T* end() { return (T*)_arena.end(); }
 		const T* begin() const { return (const T*)_arena.begin(); }
 		const T* end() const { return (const T*)_arena.end(); }
 
-		usize count() const { return _arena.length() / sizeof(T); }
+		usize length() const { return _arena.length() / sizeof(T); }
 	};
 }
 

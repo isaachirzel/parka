@@ -1225,48 +1225,62 @@ namespace parka::parser
 
 	static Result<AssignmentType> parseAssignmentType(Token& token)
 	{
+		AssignmentType type;
+
 		switch (token.type())
 		{
 			case TokenType::Assign:
-				return AssignmentType::Assign;
+				type = AssignmentType::Assign;
+				break;
 
 			case TokenType::MultiplyAssign:
-				return AssignmentType::MultiplyAssign;
+				type = AssignmentType::MultiplyAssign;
+				break;
 
 			case TokenType::DivideAssign:
-				return AssignmentType::DivideAssign;
+				type = AssignmentType::DivideAssign;
+				break;
 
 			case TokenType::ModulusAssign:
-				return AssignmentType::ModulusAssign;
+				type = AssignmentType::ModulusAssign;
+				break;
 
 			case TokenType::AddAssign:
-				return AssignmentType::AddAssign;
+				type = AssignmentType::AddAssign;
+				break;
 
 			case TokenType::SubtractAssign:
-				return AssignmentType::SubtractAssign;
+				type = AssignmentType::SubtractAssign;
+				break;
 
 			case TokenType::LeftBitShiftAssign:
-				return AssignmentType::LeftShiftAssign;
+				type = AssignmentType::LeftShiftAssign;
+				break;
 
 			case TokenType::RightBitShiftAssign:
-				return AssignmentType::RightShiftAssign;
+				type = AssignmentType::RightShiftAssign;
+				break;
 
 			case TokenType::BitwiseAndAssign:
-				return AssignmentType::BitwiseAndAssign;
+				type = AssignmentType::BitwiseAndAssign;
+				break;
 
 			case TokenType::BitwiseOrAssign:
-				return AssignmentType::BitwiseOrAssign;
+				type = AssignmentType::BitwiseOrAssign;
+				break;
 
 			case TokenType::BitwiseXorAssign:
-				return AssignmentType::BitwiseXorAssign;
+				type = AssignmentType::BitwiseXorAssign;
+				break;
 			
 			default:
-				break;
+				logParseError(token, "assignment");
+				return {};
 		}
 
-		logParseError(token, "assignment");
+		token.increment();
 
-		return {};
+		return type;
 	}
 
 	StatementAst* parseAssignmentStatement(Token& token, bool requireSemicolon)
@@ -1276,12 +1290,16 @@ namespace parka::parser
 		if (!identifier)
 			return {};
 
+		if (token.type() == TokenType::Semicolon)
+		{
+			token.increment();
+			return new ExpressionStatementAst(identifier->snippet(), *identifier);
+		}
+
 		auto type = parseAssignmentType(token);
 
 		if (!type)
-			return new ExpressionStatementAst(identifier->snippet(), *identifier);
-
-		token.increment();
+			return {};
 
 		auto* value = parseExpression(token);
 

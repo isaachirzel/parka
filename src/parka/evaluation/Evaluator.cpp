@@ -3,6 +3,7 @@
 #include "parka/evaluation/IntrinsicOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
+#include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
 
@@ -25,12 +26,17 @@ namespace parka::evaluation
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)
 	{
+		usize previousReturnValueIndex = state.getReturnValueIndex();
 		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
+		usize index = state.getScopeIndex();
 
 		evaluatePrototype(ir.prototype(), arguments, state);
 		evaluateBlockStatement(ir.body(), state);
 
-		state.clearFunctionValues();
+		auto& returnValue2 = state.returnValue();
+
+		state.clearScopeValues(index);
+		state.setReturnValueIndex(previousReturnValueIndex);
 
 		return returnValue;
 	}
@@ -56,23 +62,23 @@ namespace parka::evaluation
 			case StatementType::Declaration:
 				return evaluateDeclarationStatement(static_cast<const DeclarationStatementIr&>(ir), state);
 
-			// case StatementType::Expression:
-			// 	return eva
+			case StatementType::Expression:
+				return evaluateExpressionStatement(static_cast<const ExpressionStatementIr&>(ir), state);
 
 			case StatementType::Return:
 				return evaluateReturnStatement(static_cast<const ReturnStatementIr&>(ir), state);
 
-			// case StatementType::Break:
-			// 	return 
+			case StatementType::Break:
+				return evaluateBreakStatement(static_cast<const BreakStatementIr&>(ir), state);
 
-			// case StatementType::Continue:
-			// 	return 
+			case StatementType::Continue:
+				return evaluateContinueStatement(static_cast<const ContinueStatementIr&>(ir), state);
 
-			// case StatementType::Yield:
-			// 	return 
+			case StatementType::Yield:
+				return evaluateYieldStatement(static_cast<const YieldStatementIr&>(ir), state);
 
-			// case StatementType::For:
-			// 	return 
+			case StatementType::For:
+				return evaluateForStatement(static_cast<const ForStatementIr&>(ir), state);
 
 			case StatementType::Block:
 				return evaluateBlockStatement(static_cast<const BlockStatementIr&>(ir), state);
@@ -96,6 +102,11 @@ namespace parka::evaluation
 		log::debug("Declaring variable: $", value);
 	}
 
+	void evaluateExpressionStatement(const ir::ExpressionStatementIr& ir, LocalState& state)
+	{
+		evaluateExpression(ir.expression(), state);
+	}
+
 	void evaluateReturnStatement(const ReturnStatementIr& ir, LocalState& state)
 	{
 		if (ir.hasValue())
@@ -108,8 +119,49 @@ namespace parka::evaluation
 		state.setReturning(ReturningType::Return);
 	}
 
+	void evaluateBreakStatement(const ir::BreakStatementIr& ir, LocalState& state)
+	{
+		log::notImplemented(here());
+	}
+
+	void evaluateContinueStatement(const ir::ContinueStatementIr& ir, LocalState& state)
+	{
+		log::notImplemented(here());
+	}
+
+	void evaluateYieldStatement(const ir::YieldStatementIr& ir, LocalState& state)
+	{
+		log::notImplemented(here());
+	}
+
+	void evaluateForStatement(const ir::ForStatementIr& ir, LocalState& state)
+	{
+		usize index = state.getScopeIndex();
+
+		evaluateDeclarationStatement(ir.declaration(), state);
+
+		auto& conditionValue = state.pushValue(Type::boolType);
+
+		while (true)
+		{
+			auto& value = evaluateExpression(ir.condition(), state);
+
+			evaluateConversion(ir.conversion(), conditionValue, value);
+
+			if (!conditionValue.getValue<bool>())
+				break;
+
+			evaluateBlockStatement(ir.body(), state);
+			evaluateStatement(ir.action(), state);
+		}
+
+		state.clearScopeValues(index);
+	}
+
 	void evaluateBlockStatement(const BlockStatementIr& ir, LocalState& state)
 	{
+		usize index = state.getScopeIndex();
+
 		for (const auto *statement : ir.statements())
 		{
 			evaluateStatement(*statement, state);
@@ -117,6 +169,8 @@ namespace parka::evaluation
 			if (state.isReturning())
 				break;
 		}
+
+		state.clearScopeValues(index);
 	}
 
 	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, LocalState& state)

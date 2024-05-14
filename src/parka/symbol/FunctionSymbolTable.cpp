@@ -65,6 +65,7 @@ namespace parka
 		// TODO: Iterate in reverse
 		for (auto *entity : _symbols)
 		{
+			auto* a = (void*)entity;
 			if (entity->name() == name)
 				return entity;
 		}

@@ -27,9 +27,9 @@ namespace parka
 		{
 			for (usize i = 0; i < ir::Primitive::entryCount; ++i)
 			{
-				auto& primitive = ir::Primitive::entries[i];
+				auto* primitive = ir::Primitive::entries[i];
 
-				_symbols.insert(primitive.name(), &primitive);
+				_symbols.insert(primitive->name(), primitive);
 			}
 
 			for (usize i = 0; i < ir::IntrinsicOperatorIr::entryCount; ++i)

@@ -5,14 +5,14 @@
 #include "parka/evaluation/Value.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/util/Array.hpp"
+#include "parka/util/BigArray.hpp"
 #include "parka/util/Common.hpp"
 
 namespace parka::evaluation
 {
 	class LocalState
 	{
-		Array<Value> _values;
+		BigArray<Value> _values;
 		usize _returnValueIndex;
 		ReturningType _returningType;
 		
@@ -25,7 +25,12 @@ namespace parka::evaluation
 		Value& pushValue(const ir::Type& type);
 		Value& pushReturnValue(const ir::Type& type);
 
-		void clearFunctionValues();
+		usize getReturnValueIndex();
+		void setReturnValueIndex(usize index);
+
+		usize getScopeIndex();
+		void clearScopeValues(usize index);
+
 		void setReturning(ReturningType returningType);
 
 		Value& findValue(const ir::LValueIr& node);

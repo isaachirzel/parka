@@ -17,11 +17,11 @@ namespace parka::evaluation
 		_type(other._type),
 		_nodePtr(other._nodePtr)
 	{
-		std::memcpy(_value, other._value, sizeof(_value));
+		memcpy(_value, other._value, sizeof(other._value));
 
 		other._type = ir::Type::voidType;
 		other._nodePtr = nullptr;
-		std::memset(other._value, 0, sizeof(other._value));
+		memset(other._value, 0, sizeof(other._value));
 	}
 
 	void Value::setNode(const ir::LValueIr& node)
