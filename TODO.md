@@ -1,6 +1,6 @@
 # To Do
 - Better handling of declaration functions being allowed without them being valid so that the symbols can be resolved without the prototype or the body being validated
-- Prototype validation separate from body validation so that they can be validated first. Something similar will need to be done for struct members
+- Prototype validation separate from body validation so that they can be validated first. Something similar will need to be done for struct members 
 
 
 

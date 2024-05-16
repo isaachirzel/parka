@@ -1,7 +1,6 @@
 #ifndef PARKA_PARSER_PARKA_PARSER_HPP
 #define PARKA_PARSER_PARKA_PARSER_HPP
 
-#include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/Ast.hpp"
 #include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/BoolLiteralAst.hpp"
@@ -16,6 +15,7 @@
 #include "parka/ast/ForStatementAst.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
+#include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/MemberAccessExpressionAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
@@ -33,26 +33,17 @@
 
 namespace parka::parser
 {
+	ast::Ast parse(const Project& project);
 	bool parseSemicolon(Token& token, const char *message = "");
 	bool parseStatementSemicolon(Token& token);
-	Result<ast::KeywordAst> parseBoolKeyword(Token& token);
-	Result<ast::KeywordAst> parseStructKeyword(Token& token);
-	Result<ast::KeywordAst> parseVarKeyword(Token& token);
-	Result<ast::KeywordAst> parseFunctionKeyword(Token& token);
-	Result<ast::KeywordAst> parseOperatorKeyword(Token& token);
-	Result<ast::KeywordAst> parseMutKeyword(Token& token);
-	Result<ast::KeywordAst> parseReturnKeyword(Token& token);
-	Result<ast::KeywordAst> parseContinueKeyword(Token& token);
-	Result<ast::KeywordAst> parseBreakKeyword(Token& token);
-	Result<ast::KeywordAst> parseYieldKeyword(Token& token);
-	Result<ast::KeywordAst> parseForKeyword(Token& token);
-	Result<ast::KeywordAst> parseInKeyword(Token& token);
+	Result<ast::KeywordAst> parseKeyword(Token& token);
 	Result<ast::Identifier> parseIdentifier(Token& token);
 	Result<ast::QualifiedIdentifier> parseQualifiedIdentifier(Token& token);
 	Result<ast::PrototypeAst> parsePrototype(Token& token);
 	Result<ast::TypeAnnotationAst> parseTypeAnnotation(Token& token);
 	Result<ast::RangeAst> parseRange(Token& token);
 	ast::VariableAst *parseVariable(Token& token);
+	bool parseMutability(Token& token);
 	ast::ParameterAst *parseParameter(Token& token);
 	ast::ExpressionAst *parseFunctionBody(Token& token);
 	ast::FunctionAst *parseFunction(Token& token);
@@ -94,9 +85,9 @@ namespace parka::parser
 	ast::YieldStatementAst* parseYieldStatement(Token& token);
 	ast::ForStatementAst* parseForStatement(Token& token);
 	ast::StatementAst* parseAssignmentStatement(Token& token, bool requireSemicolon = true);
+	ast::IfStatementAst* parseIfStatement(Token& token);
 	ast::ModuleAst parseModule(const File& file);
 	ast::PackageAst *parsePackage(const Directory& directory, const String& name);
-	ast::Ast parse(const Project& project);
 }
 
 #endif

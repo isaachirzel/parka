@@ -28,7 +28,7 @@ namespace parka
 		Private,
 		Public,
 		Return,
-		StructAst,
+		Struct,
 		Then,
 		True,
 		Type,
@@ -37,6 +37,8 @@ namespace parka
 	};
 
 	KeywordType toKeywordType(const String& text);
+
+	std::ostream& operator<<(std::ostream& out, const KeywordType& type);
 }
 
 #endif

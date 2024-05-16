@@ -15,7 +15,8 @@ namespace parka
 		Yield,
 		For,
 		Block,
-		Assignment
+		Assignment,
+		If
 	};
 
 	std::ostream& operator<<(std::ostream& out, const StatementType& type);

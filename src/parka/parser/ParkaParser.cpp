@@ -7,6 +7,7 @@
 #include "parka/ast/ExpressionAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
+#include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/MemberAccessExpressionAst.hpp"
 #include "parka/ast/PrefixExpressionAst.hpp"
@@ -16,7 +17,9 @@
 #include "parka/ast/YieldStatementAst.hpp"
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
+#include "parka/enum/KeywordType.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/util/Result.hpp"
 
 using namespace parka::ast;
 
@@ -28,6 +31,18 @@ namespace parka::parser
 		assert(message != nullptr);
 
 		log::error(token, "Expected $, found $. $", expected, token.type(), message);
+	}
+
+	Ast parse(const Project& project)
+	{
+		// TODO: Parse external projects
+		auto *package = parsePackage(project.srcDirectory(), "");
+
+		assert(package != nullptr);
+
+		auto result = Ast(project.name(), *package);
+
+		return result;
 	}
 
 	bool parseSemicolon(Token& token, const char *message)
@@ -48,199 +63,16 @@ namespace parka::parser
 		return parseSemicolon(token, "Statements must be ended with a ';'.");
 	}
 
-	Result<KeywordAst> parseBoolKeyword(Token& token)
+	Result<KeywordAst> parseKeyword(Token& token, KeywordType expected)
 	{
 		auto type = toKeywordType(token.text());
 
-		if (type != KeywordType::True && type != KeywordType::False)
+		if (type != expected)
 		{
-			logParseError(token, "`true` or `false`");
+			log::error(token, "Expected keyword `$`, found $.", expected, token);
 			return {};
 		}
 
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-		
-		return keyword;
-	}
-
-	Result<KeywordAst> parseStructKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::StructAst)
-		{
-			logParseError(token, "`struct` keyword");
-			return {};
-		}
-
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseVarKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Var)
-		{
-			logParseError(token, "keyword `var");
-			return {};
-		}
-
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseFunctionKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Function)
-		{
-			logParseError(token, "`function`");
-			return {};
-		}
-
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-		
-		return keyword;
-	}
-
-	Result<KeywordAst> parseOperatorKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Operator)
-		{
-			logParseError(token, "`operator`");
-			return {};
-		}
-
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseMutKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Mut)
-			return {};
-
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseReturnKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Return)
-		{
-			logParseError(token, "keyword `return`");
-			return {};
-		}
-		
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseContinueKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Continue)
-		{
-			logParseError(token, "keyword `continue`");
-		}
-		
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseBreakKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Break)
-		{
-			logParseError(token, "keyword `break`");
-			return {};
-		}
-		
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseYieldKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::Yield)
-		{
-			logParseError(token, "keyword `yield`");
-			return {};
-		}
-		
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseForKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::For)
-		{
-			logParseError(token, "keyword `for`");
-			return {};
-		}
-		
-		auto keyword = KeywordAst(token, type);
-
-		token.increment();
-
-		return keyword;
-	}
-
-	Result<KeywordAst> parseInKeyword(Token& token)
-	{
-		auto type = toKeywordType(token.text());
-
-		if (type != KeywordType::In)
-		{
-			logParseError(token, "keyword `in`");
-			return {};
-		}
-		
 		auto keyword = KeywordAst(token, type);
 
 		token.increment();
@@ -1073,7 +905,7 @@ namespace parka::parser
 
 	ast::ReturnStatementAst* parseReturnStatement(Token& token)
 	{
-		auto keyword = parseReturnKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Return);
 
 		if (!keyword)
 			return {};
@@ -1098,7 +930,7 @@ namespace parka::parser
 
 	ast::BreakStatementAst* parseBreakStatement(Token& token)
 	{
-		auto keyword = parseBreakKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Break);
 
 		if (!keyword)
 			return {};
@@ -1111,7 +943,7 @@ namespace parka::parser
 
 	ast::ContinueStatementAst* parseContinueStatement(Token& token)
 	{
-		auto keyword = parseContinueKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Continue);
 
 		if (!keyword)
 			return {};
@@ -1124,7 +956,7 @@ namespace parka::parser
 
 	ast::YieldStatementAst* parseYieldStatement(Token& token)
 	{
-		auto keyword = parseYieldKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Continue);
 
 		if (!keyword)
 			return {};
@@ -1189,7 +1021,7 @@ namespace parka::parser
 
 	ForStatementAst* parseForStatement(Token& token)
 	{
-		auto forKeyword = parseForKeyword(token);
+		auto forKeyword = parseKeyword(token, KeywordType::For);
 
 		if (!forKeyword)
 			return {};
@@ -1313,6 +1145,38 @@ namespace parka::parser
 		return new AssignmentStatementAst(snippet, *identifier, *value, *type);
 	}
 
+	IfStatementAst* parseIfStatement(Token& token)
+	{
+		auto ifKeyword = parseKeyword(token, KeywordType::If);
+
+		if (!ifKeyword)
+			return {};
+
+		auto* condition = parseExpression(token);
+
+		if (!condition)
+			return {};
+
+		auto* thenCase = parseStatement(token);
+
+		if (!thenCase)
+			return {};
+
+		auto elseKeyword = parseKeyword(token, KeywordType::Else);
+
+		if (!elseKeyword)
+			return new IfStatementAst(ifKeyword->snippet() + thenCase->snippet(), *condition, *thenCase, nullptr);
+
+		auto* elseCase = parseStatement(token);
+
+		if (!elseCase)
+			return {};
+
+		auto snippet = ifKeyword->snippet() + elseCase->snippet();
+
+		return new IfStatementAst(snippet, *condition, *thenCase, elseCase);
+	}
+
 	StatementAst *parseStatement(Token& token)
 	{
 		if (token.type() == TokenType::LeftBrace)
@@ -1341,6 +1205,9 @@ namespace parka::parser
 			case KeywordType::For:
 				return parseForStatement(token);
 
+			case KeywordType::If:
+				return parseIfStatement(token);
+
 			default:
 				break;
 		}
@@ -1348,11 +1215,23 @@ namespace parka::parser
 		return parseAssignmentStatement(token);
 	}
 
+	bool parseMutability(Token& token)
+	{
+		if (token.type() != TokenType::Identifier)
+			return false;
+
+		auto keywordType = toKeywordType(token.text());
+
+		if (keywordType != KeywordType::Mut)
+			return false;
+
+		return true;
+	}
+
 	ParameterAst *parseParameter(Token& token)
 	{
 		auto first = Snippet(token);
-		auto mutKeyword = parseMutKeyword(token);
-		auto isMutable = !!mutKeyword;
+		auto isMutable = parseMutability(token);
 		auto identifier = parseIdentifier(token);
 
 		if (!identifier)
@@ -1444,7 +1323,7 @@ namespace parka::parser
 	VariableAst *parseVariable(Token& token)
 	{
 		// TODO: VariableAst mutability
-		auto keyword = parseVarKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Var);
 
 		if (!keyword)
 			return {};	
@@ -1478,7 +1357,7 @@ namespace parka::parser
 
 	Result<PrototypeAst> parsePrototype(Token& token)
 	{
-		auto keyword = parseFunctionKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Function);
 
 		if (!keyword)
 			return {};
@@ -1622,7 +1501,7 @@ namespace parka::parser
 
 	StructAst *parseStruct(Token& token)
 	{
-		auto keyword = parseStructKeyword(token);
+		auto keyword = parseKeyword(token, KeywordType::Struct);
 
 		if (!keyword)
 			return {};
@@ -1709,7 +1588,7 @@ namespace parka::parser
 					continue;
 				}
 
-				case KeywordType::StructAst:
+				case KeywordType::Struct:
 				{
 					seekingNext = false;
 
@@ -1759,17 +1638,5 @@ namespace parka::parser
 		auto *syntax = new PackageAst(String(name), std::move(modules), std::move(packages));
 
 		return syntax;
-	}
-
-	Ast parse(const Project& project)
-	{
-		// TODO: Parse external projects
-		auto *package = parsePackage(project.srcDirectory(), "");
-
-		assert(package != nullptr);
-
-		auto result = Ast(project.name(), *package);
-
-		return result;
 	}
 }

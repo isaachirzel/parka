@@ -5,6 +5,12 @@ function action() -> i32
 
 function fibonacci(a: i32) -> i32
 {
+	if a == 0
+		return 0;
+
+	if a == 1
+		return 1;
+
 	var t1 = 0;
 	var t2 = 1;
 	var next = t1 + t2;
@@ -19,11 +25,11 @@ function fibonacci(a: i32) -> i32
 	return next;
 }
 
-function notImplemented() -> i32;
+function notImplemented();
 
 function main() -> i32
 {
 	var a = fibonacci(15);
 
-	return notImplemented();
+	notImplemented();
 }

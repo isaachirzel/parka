@@ -25,7 +25,7 @@ namespace parka
 		keywords.insert("match", KeywordType::Match);
 		keywords.insert("mut", KeywordType::Mut);
 		keywords.insert("return", KeywordType::Return);
-		keywords.insert("struct", KeywordType::StructAst);
+		keywords.insert("struct", KeywordType::Struct);
 		keywords.insert("then", KeywordType::Then);
 		keywords.insert("true", KeywordType::True);
 		keywords.insert("type", KeywordType::Type);
@@ -47,5 +47,122 @@ namespace parka
 			return KeywordType::None;
 
 		return *keywordType;
+	}
+
+	std::ostream& operator<<(std::ostream& out, const KeywordType& type)
+	{
+		switch (type)
+		{
+			case KeywordType::None:
+				out << "(none)";
+				break;
+
+			case KeywordType::Break:
+				out << "break";
+				break;
+
+			case KeywordType::Case:
+				out << "case";
+				break;
+
+			case KeywordType::Continue:
+				out << "continue";
+				break;
+
+			case KeywordType::Yield:
+				out << "yield";
+				break;
+
+			case KeywordType::Else:
+				out << "else";
+				break;
+
+			case KeywordType::Enum:
+				out << "enum";
+				break;
+
+			case KeywordType::Export:
+				out << "export";
+				break;
+
+			case KeywordType::False:
+				out << "false";
+				break;
+
+			case KeywordType::For:
+				out << "for";
+				break;
+
+			case KeywordType::In:
+				out << "in";
+				break;
+
+			case KeywordType::Function:
+				out << "function";
+				break;
+
+			case KeywordType::Operator:
+				out << "operator";
+				break;
+
+			case KeywordType::If:
+				out << "if";
+				break;
+
+			case KeywordType::Import:
+				out << "import";
+				break;
+
+			case KeywordType::Loop:
+				out << "loop";
+				break;
+
+			case KeywordType::Match:
+				out << "match";
+				break;
+
+			case KeywordType::Mut:
+				out << "mut";
+				break;
+
+			case KeywordType::Private:
+				out << "private";
+				break;
+
+			case KeywordType::Public:
+				out << "public";
+				break;
+
+			case KeywordType::Return:
+				out << "return";
+				break;
+
+			case KeywordType::Struct:
+				out << "struct";
+				break;
+
+			case KeywordType::Then:
+				out << "then";
+				break;
+
+			case KeywordType::True:
+				out << "true";
+				break;
+
+			case KeywordType::Type:
+				out << "type";
+				break;
+
+			case KeywordType::Var:
+				out << "var";
+				break;
+
+			case KeywordType::While:
+				out << "while";
+				break;
+
+		}
+
+		return out;
 	}
 }
