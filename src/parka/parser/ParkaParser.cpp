@@ -82,7 +82,7 @@ namespace parka::parser
 
 	Result<Identifier> parseIdentifier(Token& token)
 	{
-		if (token.type() != TokenType::Identifier)
+		if (!token.isIdentifier())
 		{
 			logParseError(token, "identifier");
 			return {};
@@ -448,7 +448,7 @@ namespace parka::parser
 
 		token.increment();
 		
-		if (token.type() != TokenType::Identifier)
+		if (!token.isIdentifier())
 		{
 			logParseError(token, "member, method, or property name");
 			return {};
@@ -1162,19 +1162,37 @@ namespace parka::parser
 		if (!thenCase)
 			return {};
 
-		auto elseKeyword = parseKeyword(token, KeywordType::Else);
+		auto elseCase = parseElseCase(token);
 
-		if (!elseKeyword)
-			return new IfStatementAst(ifKeyword->snippet() + thenCase->snippet(), *condition, *thenCase, nullptr);
+		if (!elseCase)
+			return {};
+
+		auto endSnippet = *elseCase
+			? (*elseCase)->snippet()
+			: thenCase->snippet();
+		auto snippet = ifKeyword->snippet() + endSnippet;
+
+		return new IfStatementAst(snippet, *condition, *thenCase, *elseCase);
+	}
+
+	Result<ast::StatementAst*> parseElseCase(Token& token)
+	{
+		if (!token.isIdentifier())
+			return nullptr;
+
+		auto type = toKeywordType(token.text());
+
+		if (type != KeywordType::Else)
+			return nullptr;
+		
+		token.increment();
 
 		auto* elseCase = parseStatement(token);
 
 		if (!elseCase)
 			return {};
 
-		auto snippet = ifKeyword->snippet() + elseCase->snippet();
-
-		return new IfStatementAst(snippet, *condition, *thenCase, elseCase);
+		return elseCase;
 	}
 
 	StatementAst *parseStatement(Token& token)
@@ -1217,7 +1235,7 @@ namespace parka::parser
 
 	bool parseMutability(Token& token)
 	{
-		if (token.type() != TokenType::Identifier)
+		if (!token.isIdentifier())
 			return false;
 
 		auto keywordType = toKeywordType(token.text());
@@ -1568,7 +1586,7 @@ namespace parka::parser
 
 		while (token.type() != TokenType::EndOfFile)
 		{
-			auto keywordType = token.type() == TokenType::Identifier
+			auto keywordType = token.isIdentifier()
 				? toKeywordType(token.text())
 				: KeywordType::None;
 

@@ -16,6 +16,7 @@
 #include "parka/ast/FloatLiteralAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
+#include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
 #include "parka/ast/ReturnStatementAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
@@ -35,6 +36,7 @@
 #include "parka/ir/FloatLiteralIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
+#include "parka/ir/IfStatementIr.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/ir/PrototypeIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
@@ -68,12 +70,13 @@ namespace parka::validator
 	ir::DeclarationStatementIr* validateDeclarationStatement(const ast::DeclarationStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::ExpressionStatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::AssignmentStatementIr* validateAssignmentStatement(const ast::AssignmentStatementAst& ast, FunctionSymbolTable& symbolTable);
+	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::BreakStatementIr* validateBreakStatement(const ast::BreakStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, FunctionSymbolTable& symbolTable);
-	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, FunctionSymbolTable& symbolTable);
+	ir::IfStatementIr* validateIfStatement(const ast::IfStatementAst& ast, FunctionSymbolTable& symbolTable);
 	ir::VariableIr* validateVariable(const ast::VariableAst& ast, ir::ExpressionIr *value, FunctionSymbolTable& symbolTable);
 }
 

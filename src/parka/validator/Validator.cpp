@@ -5,6 +5,7 @@
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
 #include "parka/ast/FunctionAst.hpp"
+#include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/enum/ResolvableType.hpp"
@@ -498,6 +499,9 @@ namespace parka::validator
 			case StatementType::Assignment:
 				return validateAssignmentStatement(static_cast<const AssignmentStatementAst&>(ast), symbolTable);
 
+			case StatementType::If:
+				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), symbolTable);
+
 			default:
 				break;
 		}
@@ -648,14 +652,26 @@ namespace parka::validator
 			statements.push(ir);
 		}
 
-		// TODO: Implement return type
-
 		if (!success)
 			return {};
 
 		return new BlockStatementIr(std::move(statements));
 	}
 	
+	IfStatementIr* validateIfStatement(const IfStatementAst& ast, FunctionSymbolTable& symbolTable)
+	{
+		auto* condition = validateExpression(ast.condition(), symbolTable);
+		auto* thenCase = validateStatement(ast.thenCase(), symbolTable);
+		auto* elseCase = ast.hasElseCase()
+			? validateStatement(ast.elseCase(), symbolTable)
+			: nullptr;
+
+		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
+			return {};
+
+		return new IfStatementIr(*condition, *thenCase, elseCase);
+	}
+
 	static Result<Type> validateVariableType(const Result<TypeAnnotationAst>& annotation, ExpressionIr *value, FunctionSymbolTable& symbolTable)
 	{
 		if (!annotation)

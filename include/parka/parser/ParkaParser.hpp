@@ -86,6 +86,7 @@ namespace parka::parser
 	ast::ForStatementAst* parseForStatement(Token& token);
 	ast::StatementAst* parseAssignmentStatement(Token& token, bool requireSemicolon = true);
 	ast::IfStatementAst* parseIfStatement(Token& token);
+	Result<ast::StatementAst*> parseElseCase(Token& token);
 	ast::ModuleAst parseModule(const File& file);
 	ast::PackageAst *parsePackage(const Directory& directory, const String& name);
 }

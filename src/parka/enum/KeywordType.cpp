@@ -11,7 +11,6 @@ namespace parka
 		keywords.insert("case", KeywordType::Case);
 		keywords.insert("continue", KeywordType::Continue);
 		keywords.insert("yield", KeywordType::Yield);
-		keywords.insert("else", KeywordType::Else);
 		keywords.insert("enum", KeywordType::Enum);
 		keywords.insert("import", KeywordType::Import);
 		keywords.insert("export", KeywordType::Export);
@@ -21,6 +20,7 @@ namespace parka
 		keywords.insert("function", KeywordType::Function);
 		keywords.insert("operator", KeywordType::Operator);
 		keywords.insert("if", KeywordType::If);
+		keywords.insert("else", KeywordType::Else);
 		keywords.insert("loop", KeywordType::Loop);
 		keywords.insert("match", KeywordType::Match);
 		keywords.insert("mut", KeywordType::Mut);
