@@ -3,20 +3,27 @@ function action() -> i32
 	return 12 * 4;
 }
 
-function notImplemented();
-
-function main() -> i32
+function fibonacci(a: i32) -> i32
 {
 	var t1 = 0;
 	var t2 = 1;
 	var next = t1 + t2;
 
-	for var i = 3; i < 10; i = i + 1
+	for var i: i32 = 3; i < a; i = i + 1
 	{
 		t1 = t2;
 		t2 = next;
 		next = t1 + t2;
 	}
 
-	notImplemented();
+	return next;
+}
+
+function notImplemented() -> i32;
+
+function main() -> i32
+{
+	var a = fibonacci(15);
+
+	return notImplemented();
 }

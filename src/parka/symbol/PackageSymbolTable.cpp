@@ -142,9 +142,6 @@ namespace parka
 		if (entry != nullptr)
 			return entry->resolve();
 
-		// TODO: Use index to shorten the symbol so it is more specific what could not be found
-		log::error("Unable to find `$` in this scope.", qualifiedIdentifier);
-
 		return nullptr;
 	}
 

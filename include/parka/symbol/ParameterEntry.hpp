@@ -13,11 +13,7 @@ namespace parka
 
 	public:
 
-		ParameterEntry(const ast::ParameterAst& ast, ir::ParameterIr *ir):
-		Resolvable(ResolvableType::Parameter),
-		_ast(ast),
-		_ir(ir)
-		{}
+		ParameterEntry(const ast::ParameterAst& ast, ir::ParameterIr *ir);
 		ParameterEntry(ParameterEntry&&) = default;
 		ParameterEntry(const ParameterEntry&) = delete;
 

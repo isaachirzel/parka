@@ -17,13 +17,9 @@ namespace parka
 
 	public:
 
-		FunctionEntry(const ast::FunctionAst& ast, SymbolTable& symbolTable):
-			Resolvable(ResolvableType::Function),
-			_ast(ast),
-			_symbolTable(symbolTable),
-			_ir(nullptr),
-			_isValidated(true)
-		{}
+		FunctionEntry(const ast::FunctionAst& ast, SymbolTable& symbolTable);
+		FunctionEntry(FunctionEntry&&) = default;
+		FunctionEntry(const FunctionEntry&) = delete;
 
 		ir::FunctionIr *resolve();
 

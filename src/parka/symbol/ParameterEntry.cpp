@@ -1,10 +1,15 @@
 #include "parka/symbol/ParameterEntry.hpp"
-#include "parka/log/Log.hpp"
 
 namespace parka
 {
+	ParameterEntry::ParameterEntry(const ast::ParameterAst& ast, ir::ParameterIr *ir):
+		Resolvable(ResolvableType::Parameter),
+		_ast(ast),
+		_ir(ir)
+	{}
+
 	ir::ParameterIr* ParameterEntry::resolve()
 	{
-		log::notImplemented(here());
+		return _ir;
 	}
 }

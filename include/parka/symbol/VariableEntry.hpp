@@ -14,15 +14,11 @@ namespace parka
 
 	public:
 
-		VariableEntry(const ast::VariableAst& ast, ir::VariableIr *ir):
-		Resolvable(ResolvableType::Variable),
-		_ast(ast),
-		_ir(ir)
-		{}
+		VariableEntry(const ast::VariableAst& ast, ir::VariableIr *ir);
 		VariableEntry(VariableEntry&&) = default;
 		VariableEntry(const VariableEntry&) = delete;
 
-		ir::VariableIr *resolve() { return _ir; }
+		ir::VariableIr *resolve();
 
 		const auto& ast() const { return _ast; }
 		const auto *ir() const { return _ir; }

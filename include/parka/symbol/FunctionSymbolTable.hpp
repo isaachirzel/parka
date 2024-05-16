@@ -34,7 +34,7 @@ namespace parka
 		Resolvable* findSymbol(const ast::Identifier& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
 		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
-		Result<ir::ConversionIr*> resolveConversion(const ir::Type& from, const ir::Type& to);
+		Result<ir::ConversionIr*> resolveConversion(const ir::Type& to, const ir::Type& from);
 
 		void setReturnType(const ir::Type& type) { _returnType = type; }
 		const auto& returnType() const { return _returnType; }

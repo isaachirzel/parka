@@ -149,29 +149,23 @@ namespace parka::validator
 
 	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionSymbolTable& symbolTable)
 	{
-		auto success = true;
 		const auto parameterCount = prototype.parameters().length();
 		auto parameters = Array<ParameterIr*>(parameterCount);
 
-		for (auto *parameterAst : prototype.parameters())
+		for (auto* parameterAst : prototype.parameters())
 		{
-			auto *context = validateParameter(*parameterAst, symbolTable);
+			auto* parameter = validateParameter(*parameterAst, symbolTable);
+			auto* entry = symbolTable.declare(ParameterEntry(*parameterAst, parameter));
 
-			if (context == nullptr)
-			{
-				success = false;
+			if (!parameter || !entry)
 				continue;
-			}
 
-			parameters.push(context);
+			parameters.push(parameter);
 		}
 
 		auto returnType = validateReturnType(prototype.returnType(), symbolTable);
 
-		if (!returnType)
-			success = false;
-
-		if (!success)
+		if (!returnType || parameters.length() != prototype.parameters().length())
 			return {};
 
 		symbolTable.setReturnType(*returnType);
@@ -184,13 +178,18 @@ namespace parka::validator
 		auto *resolution = symbolTable.resolveSymbol(ast.identifier());
 
 		if (!resolution)
+		{
+			log::error(ast.identifier().snippet(), "The type `$` could not be found in this scope.", ast.identifier());
 			return {};
+		}
 
 		auto* typeBase = dynamic_cast<TypeBase*>(resolution);
 		
 		if (!typeBase)
 		{
-			log::error(ast.snippet(), "$ is not a type name.", ast.identifier());
+			// TODO: Figure out what the referred thing was for better clarity
+			// TODO: Maybe show "other thing defined here"
+			log::error(ast.snippet(), "Expected a type, but `$` was found.", ast.identifier());
 			return {};
 		}
 
@@ -343,7 +342,10 @@ namespace parka::validator
 		auto *result = symbolTable.resolveSymbol(ast.identifier());
 
 		if (!result)
+		{
+			log::error(ast.snippet(), "A definition for the name `$` could not be found in this scope.", ast.identifier());
 			return {};
+		}
 
 		auto *value = dynamic_cast<LValueIr*>(result);
 
@@ -510,10 +512,15 @@ namespace parka::validator
 		auto* variable = validateVariable(ast.variable(), value, symbolTable);
 		auto* entry = symbolTable.declare(VariableEntry(ast.variable(), variable));
 
-		if (!variable || !value || !entry)
+		if (!variable || !value)
 			return {};
 
-		return new DeclarationStatementIr(*variable, *value);
+		auto conversion = symbolTable.resolveConversion(variable->type(), value->type());
+
+		if (!conversion || !entry)
+			return {};
+
+		return new DeclarationStatementIr(*variable, *value, *conversion);
 	}
 
 	ExpressionStatementIr* validateExpressionStatement(const ExpressionStatementAst& ast, FunctionSymbolTable& symbolTable)

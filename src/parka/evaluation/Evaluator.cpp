@@ -1,4 +1,5 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/enum/ReturningType.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/IntrinsicOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
@@ -26,6 +27,7 @@ namespace parka::evaluation
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
 	{
+
 		usize previousReturnValueIndex = state.getReturnValueIndex();
 		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
 		usize index = state.getScopeIndex();
@@ -34,14 +36,14 @@ namespace parka::evaluation
 
 		if (!ir.hasBody())
 		{
-			log::error("Function $ is not implemented.", ir.symbol());
-
+			log::fatal("$() is not implemented.", ir.symbol());
 		}
-		else
-		{
-			evaluateBlockStatement(ir.body(), state);
-		}
+		
+		evaluateBlockStatement(ir.body(), state);
 
+		// TODO: This shouldn't do this for exceptions
+
+		state.setReturning(ReturningType::None);
 		state.clearScopeValues(index);
 		state.setReturnValueIndex(previousReturnValueIndex);
 
@@ -105,11 +107,14 @@ namespace parka::evaluation
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, LocalState& state)
 	{
-		auto& value = evaluateExpression(ir.value(), state);
+		auto& expressionValue = evaluateExpression(ir.value(), state);
+		auto& variableValue = state.pushValue(ir.variable().type());
+		
+		evaluateConversion(ir.conversion(), variableValue, expressionValue);
 
-		value.setNode(ir.variable());
+		variableValue.setNode(ir.variable());
 
-		log::debug("Declaring variable: $", value);
+		log::debug("Declaring variable: $", variableValue);
 	}
 
 	void evaluateExpressionStatement(const ir::ExpressionStatementIr& ir, LocalState& state)

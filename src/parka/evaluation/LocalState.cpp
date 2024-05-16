@@ -7,6 +7,7 @@ namespace parka::evaluation
 {
 	LocalState::LocalState():
 		_values(1'048'576),
+		_returnValueIndex(0),
 		_returningType(ReturningType::None)
 	{}
 
