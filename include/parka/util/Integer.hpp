@@ -22,6 +22,7 @@ namespace parka
 		friend Integer operator-(const Integer& left, const Integer& right);
 		friend Integer operator*(const Integer& left, const Integer& right);
 		friend Integer operator/(const Integer& left, const Integer& right);
+		friend Integer operator%(const Integer& left, const Integer& right);
 		friend bool operator<(const Integer& left, const Integer& right);
 		friend bool operator>(const Integer& left, const Integer& right);
 		friend bool operator<=(const Integer& left, const Integer& right);

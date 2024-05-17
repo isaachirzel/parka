@@ -44,6 +44,12 @@ namespace parka::evaluation
 	}
 
 	template <typename Left, typename Right, typename Return>
+	inline Return _modulus(const Left& l, const Right& r)
+	{
+		return l % r;
+	}
+
+	template <typename Left, typename Right, typename Return>
 	inline Return _lessThan(const Left& l, const Right& r)
 	{
 		return l < r;
@@ -91,6 +97,12 @@ namespace parka::evaluation
 		return op<Left, Right, Return, _divide>;
 	}
 
+	template <typename Left, typename Right = Left, typename Return = Left>
+	IntrinsicOperator modulus()
+	{
+		return op<Left, Right, Return, _modulus>;
+	}
+
 	template <typename Left, typename Right = Left>
 	IntrinsicOperator lessThan()
 	{
@@ -121,15 +133,7 @@ namespace parka::evaluation
 		subtract<Integer>(),
 		multiply<Integer>(),
 		divide<Integer>(),
-		lessThan<Integer>(),
-		greaterThan<Integer>(),
-		lessThanOrEqualTo<Integer>(),
-		greaterThanOrEqualTo<Integer>(),
-
-		add<Float>(),
-		subtract<Float>(),
-		multiply<Float>(),
-		divide<Float>(),
+		modulus<Integer>(),
 		lessThan<Integer>(),
 		greaterThan<Integer>(),
 		lessThanOrEqualTo<Integer>(),
@@ -139,6 +143,7 @@ namespace parka::evaluation
 		subtract<u8>(),
 		multiply<u8>(),
 		divide<u8>(),
+		modulus<u8>(),
 		lessThan<u8>(),
 		greaterThan<u8>(),
 		lessThanOrEqualTo<u8>(),
@@ -148,6 +153,7 @@ namespace parka::evaluation
 		subtract<u8, Integer>(),
 		multiply<u8, Integer>(),
 		divide<u8, Integer>(),
+		modulus<u8, Integer>(),
 		lessThan<u8, Integer>(),
 		greaterThan<u8, Integer>(),
 		lessThanOrEqualTo<u8, Integer>(),
@@ -157,6 +163,7 @@ namespace parka::evaluation
 		subtract<u16>(),
 		multiply<u16>(),
 		divide<u16>(),
+		modulus<u16>(),
 		lessThan<u16>(),
 		greaterThan<u16>(),
 		lessThanOrEqualTo<u16>(),
@@ -166,6 +173,7 @@ namespace parka::evaluation
 		subtract<u16, Integer>(),
 		multiply<u16, Integer>(),
 		divide<u16, Integer>(),
+		modulus<u16, Integer>(),
 		lessThan<u16, Integer>(),
 		greaterThan<u16, Integer>(),
 		lessThanOrEqualTo<u16, Integer>(),
@@ -175,6 +183,7 @@ namespace parka::evaluation
 		subtract<u32>(),
 		multiply<u32>(),
 		divide<u32>(),
+		modulus<u32>(),
 		lessThan<u32>(),
 		greaterThan<u32>(),
 		lessThanOrEqualTo<u32>(),
@@ -184,6 +193,7 @@ namespace parka::evaluation
 		subtract<u32, Integer>(),
 		multiply<u32, Integer>(),
 		divide<u32, Integer>(),
+		modulus<u32, Integer>(),
 		lessThan<u32, Integer>(),
 		greaterThan<u32, Integer>(),
 		lessThanOrEqualTo<u32, Integer>(),
@@ -193,6 +203,7 @@ namespace parka::evaluation
 		subtract<u64>(),
 		multiply<u64>(),
 		divide<u64>(),
+		modulus<u64>(),
 		lessThan<u64>(),
 		greaterThan<u64>(),
 		lessThanOrEqualTo<u64>(),
@@ -202,6 +213,7 @@ namespace parka::evaluation
 		subtract<u64, Integer>(),
 		multiply<u64, Integer>(),
 		divide<u64, Integer>(),
+		modulus<u64, Integer>(),
 		lessThan<u64, Integer>(),
 		greaterThan<u64, Integer>(),
 		lessThanOrEqualTo<u64, Integer>(),
@@ -211,6 +223,7 @@ namespace parka::evaluation
 		subtract<i8>(),
 		multiply<i8>(),
 		divide<i8>(),
+		modulus<i8>(),
 		lessThan<i8>(),
 		greaterThan<i8>(),
 		lessThanOrEqualTo<i8>(),
@@ -220,6 +233,7 @@ namespace parka::evaluation
 		subtract<i8, Integer>(),
 		multiply<i8, Integer>(),
 		divide<i8, Integer>(),
+		modulus<i8, Integer>(),
 		lessThan<i8, Integer>(),
 		greaterThan<i8, Integer>(),
 		lessThanOrEqualTo<i8, Integer>(),
@@ -229,6 +243,7 @@ namespace parka::evaluation
 		subtract<i16>(),
 		multiply<i16>(),
 		divide<i16>(),
+		modulus<i16>(),
 		lessThan<i16>(),
 		greaterThan<i16>(),
 		lessThanOrEqualTo<i16>(),
@@ -238,6 +253,7 @@ namespace parka::evaluation
 		subtract<i16, Integer>(),
 		multiply<i16, Integer>(),
 		divide<i16, Integer>(),
+		modulus<i16, Integer>(),
 		lessThan<i16, Integer>(),
 		greaterThan<i16, Integer>(),
 		lessThanOrEqualTo<i16, Integer>(),
@@ -247,6 +263,7 @@ namespace parka::evaluation
 		subtract<i32>(),
 		multiply<i32>(),
 		divide<i32>(),
+		modulus<i32>(),
 		lessThan<i32>(),
 		greaterThan<i32>(),
 		lessThanOrEqualTo<i32>(),
@@ -256,6 +273,7 @@ namespace parka::evaluation
 		subtract<i32, Integer>(),
 		multiply<i32, Integer>(),
 		divide<i32, Integer>(),
+		modulus<i32, Integer>(),
 		lessThan<i32, Integer>(),
 		greaterThan<i32, Integer>(),
 		lessThanOrEqualTo<i32, Integer>(),
@@ -265,6 +283,7 @@ namespace parka::evaluation
 		subtract<i64>(),
 		multiply<i64>(),
 		divide<i64>(),
+		modulus<i64>(),
 		lessThan<i64>(),
 		greaterThan<i64>(),
 		lessThanOrEqualTo<i64>(),
@@ -274,10 +293,20 @@ namespace parka::evaluation
 		subtract<i64, Integer>(),
 		multiply<i64, Integer>(),
 		divide<i64, Integer>(),
+		modulus<i64, Integer>(),
 		lessThan<i64, Integer>(),
 		greaterThan<i64, Integer>(),
 		lessThanOrEqualTo<i64, Integer>(),
 		greaterThanOrEqualTo<i64, Integer>(),
+
+		add<Float>(),
+		subtract<Float>(),
+		multiply<Float>(),
+		divide<Float>(),
+		lessThan<Integer>(),
+		greaterThan<Integer>(),
+		lessThanOrEqualTo<Integer>(),
+		greaterThanOrEqualTo<Integer>(),
 
 		add<f32>(),
 		subtract<f32>(),
