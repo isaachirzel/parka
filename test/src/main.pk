@@ -43,8 +43,8 @@ function notImplemented();
 
 function main() -> i32
 {
-	var a = fibonacci(15);
-	var b = factorial(7);
+	//var a = fibonacci(15);
+	//var b = factorial(7);
 
-	return b;
+	return 7 % 5;
 }

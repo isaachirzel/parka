@@ -401,6 +401,11 @@ namespace parka
 					? Token(file, startPos, 2, TokenType::DivideAssign)
 					: Token(file, startPos, 1, TokenType::Slash);
 
+			case '%':
+				return file[startPos + 1] == '='
+					? Token(file, startPos, 2, TokenType::ModulusAssign)
+					: Token(file, startPos, 1, TokenType::Modulus);
+
 			case '\'':
 			case '\"':
 				return getQuoteToken(file, startPos);
