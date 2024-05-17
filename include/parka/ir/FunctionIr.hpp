@@ -24,6 +24,13 @@ namespace parka::ir
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;
 
+		void setBody(BlockStatementIr& body)
+		{
+			assert(!_body);
+
+			_body = &body;
+		}
+
 		const String& symbol() const { return _symbol; }
 		const Type& type() const { return Type::functionType; }
 		const auto& prototype() const { return _prototype; }

@@ -14,8 +14,8 @@ namespace parka::ir
 	public:
 
 		PrototypeIr(Array<ParameterIr*>&& parameters, Type&& returnType):
-		_parameters(std::move(parameters)),
-		_returnType(std::move(returnType))
+			_parameters(std::move(parameters)),
+			_returnType(std::move(returnType))
 		{}
 		PrototypeIr(PrototypeIr&&) = default;
 		PrototypeIr(const PrototypeIr&) = delete;

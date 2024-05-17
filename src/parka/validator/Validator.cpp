@@ -104,6 +104,14 @@ namespace parka::validator
 			if (!ir)
 				continue;
 
+			if (entry.ast().hasBody())
+			{
+				auto* body = validateBlockStatement(entry.ast().body(), *entry.symbolTable());
+
+				if (body)
+					ir->setBody(*body);
+			}
+
 			if (!entryPoint && ir->symbol() == "main")
 			{
 				entryPoint = ir;
@@ -119,9 +127,8 @@ namespace parka::validator
 		return Ir(ast.name(), std::move(functions), entryPoint);
 	}
 
-	FunctionIr *validateFunction(const FunctionAst& ast, SymbolTable& parentSymbolTable)
+	FunctionIr *validateFunction(const FunctionAst& ast, FunctionSymbolTable& symbolTable)
 	{
-		auto symbolTable = FunctionSymbolTable(parentSymbolTable);
 		auto prototype = validatePrototype(ast.prototype(), symbolTable);
 
 		if (!prototype)
@@ -130,15 +137,7 @@ namespace parka::validator
 		const auto& name = ast.prototype().identifier().text();
 		auto symbol = symbolTable.createSymbol(name);
 
-		if (!ast.hasBody())
-			return new FunctionIr(std::move(symbol), *prototype, nullptr);
-
-		auto* body = validateBlockStatement(ast.body(), symbolTable);
-
-		if (!body)
-			return {};
-
-		return new FunctionIr(std::move(symbol), *prototype, body);
+		return new FunctionIr(std::move(symbol), *prototype, nullptr);
 	}
 
 	static Result<Type> validateReturnType(const Result<TypeAnnotationAst>& syntax, FunctionSymbolTable& symbolTable)

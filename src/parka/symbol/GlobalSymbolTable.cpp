@@ -45,16 +45,22 @@ namespace parka
 		}
 	}
 
+	FunctionEntry& GlobalSymbolTable::addFunction(FunctionEntry&& entry)
+	{
+		return _functions.push(std::move(entry));
+	}
+
 	FunctionEntry* GlobalSymbolTable::declare(ast::FunctionAst& ast)
 	{
-		// Error checking
-
-		auto& resolvable = _functions.push(FunctionEntry(ast, *this));
+		// TODO: Error checking
+		auto& entry = addFunction(FunctionEntry(ast, *this));
 		const auto& key = ast.prototype().identifier().text();
+		auto* symbol = _symbols.insert(key, &entry);
 
-		_symbols.insert(key, &resolvable);
+		if (!symbol)
+			return nullptr;
 
-		return &resolvable;
+		return &entry;
 	}
 
 	Resolvable* GlobalSymbolTable::findSymbol(const ast::Identifier& identifier)

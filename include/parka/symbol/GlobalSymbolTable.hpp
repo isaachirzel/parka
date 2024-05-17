@@ -23,6 +23,8 @@ namespace parka
 		GlobalSymbolTable(GlobalSymbolTable&&) = default;
 		GlobalSymbolTable(const GlobalSymbolTable&) = delete;
 
+		FunctionEntry& addFunction(FunctionEntry&& entry);
+		
 		FunctionEntry* declare(ast::FunctionAst& entry);
 
 		Resolvable* findSymbol(const ast::Identifier& identifier);

@@ -53,7 +53,7 @@ namespace parka::validator
 {
 	// TODO: Consider making this a class that will store errors/state. Upon validating something that needs a symbol table, a new validator would be constructed
 	Result<ir::Ir> validateAst(const ast::Ast& ast);
-	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, SymbolTable& parentSymbolTable);
+	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, FunctionSymbolTable& symbolTable);
 	Result<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, FunctionSymbolTable& symbolTable);
 	Result<ir::Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
 	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, FunctionSymbolTable& symbolTable);

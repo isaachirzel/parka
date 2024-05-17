@@ -283,6 +283,8 @@ namespace parka::evaluation
 
 	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, LocalState& state)
 	{
+		// TODO: This makes no sense for function calls
+
 		auto& value = state.findValue(ir.value());
 
 		return value;

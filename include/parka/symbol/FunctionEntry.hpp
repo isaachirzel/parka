@@ -22,7 +22,7 @@ namespace parka
 		FunctionEntry(FunctionEntry&&) = default;
 		FunctionEntry(const FunctionEntry&) = delete;
 
-		ir::FunctionIr *resolve();
+		ir::FunctionIr* resolve();
 
 		FunctionSymbolTable* symbolTable() { return &_symbolTable; }
 		const auto& ast() const { return _ast; }

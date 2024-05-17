@@ -3,6 +3,17 @@ function action() -> i32
 	return 12 * 4;
 }
 
+function factorial(count: i32) -> i32
+{
+	var one: i32 = 1;
+	var result: i32 = 0;
+
+	if count <= one
+		return 1;
+
+	return count * factorial(count - 1);
+}
+
 function fibonacci(a: i32) -> i32
 {
 	var zero: i32 = 0;
@@ -33,6 +44,7 @@ function notImplemented();
 function main() -> i32
 {
 	var a = fibonacci(15);
+	var b = factorial(7);
 
-	return a;
+	return b;
 }

@@ -14,9 +14,9 @@ namespace parka::ast
 	public:
 
 		PackageAst(String&& identifier, Array<ModuleAst>&& modules, Array<PackageAst*>&& packages):
-		_name(std::move(identifier)),
-		_modules(std::move(modules)),
-		_packages(std::move(packages))
+			_name(std::move(identifier)),
+			_modules(std::move(modules)),
+			_packages(std::move(packages))
 		{}
 		PackageAst(PackageAst&&) = default;
 		PackageAst(const PackageAst&) = delete;
