@@ -9,7 +9,7 @@ namespace parka::ir
 {
 	class TypeIr
 	{
-		const TypeBase* _typeBase;
+		const TypeBaseIr* _typeBase;
 		// TODO: Add pointer info
 		// TODO: Add Literal as typename for better type inference?
 		
@@ -37,7 +37,7 @@ namespace parka::ir
 		
 	public:
 
-		TypeIr(const TypeBase& base);
+		TypeIr(const TypeBaseIr& base);
 		TypeIr(TypeIr&&);
 		TypeIr(const TypeIr&);
 		~TypeIr();

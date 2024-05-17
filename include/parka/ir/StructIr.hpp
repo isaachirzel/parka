@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class StructIr: public TypeBase, public LValueIr
+	class StructIr: public TypeBaseIr, public LValueIr
 	{
 		String _symbol;
 

@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	class DummyTypeBase: public TypeBase
+	class DummyTypeBase: public TypeBaseIr
 	{
 		String _symbol;
 		

@@ -184,7 +184,7 @@ namespace parka::validator
 			return {};
 		}
 
-		auto* typeBase = dynamic_cast<TypeBase*>(resolution);
+		auto* typeBase = dynamic_cast<TypeBaseIr*>(resolution);
 		
 		if (!typeBase)
 		{

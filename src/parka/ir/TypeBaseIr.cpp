@@ -2,7 +2,7 @@
 
 namespace parka::ir
 {
-	std::ostream& operator<<(std::ostream& out, const TypeBase& typeBase)
+	std::ostream& operator<<(std::ostream& out, const TypeBaseIr& typeBase)
 	{
 		out << typeBase.symbol();
 

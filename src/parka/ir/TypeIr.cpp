@@ -26,7 +26,7 @@ namespace parka::ir
 	const TypeIr TypeIr::charType(PrimitiveIr::charPrimitive);
 	const TypeIr TypeIr::stringType(PrimitiveIr::stringPrimitive);
 
-	TypeIr::TypeIr(const TypeBase& base):
+	TypeIr::TypeIr(const TypeBaseIr& base):
 		_typeBase(&base)
 	{}
 

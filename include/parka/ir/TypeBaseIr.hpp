@@ -5,13 +5,13 @@
 
 namespace parka::ir
 {
-	struct TypeBase
+	struct TypeBaseIr
 	{
-		virtual ~TypeBase() {}
+		virtual ~TypeBaseIr() {}
 		
 		virtual const String& symbol() const = 0;
 
-		friend std::ostream& operator<<(std::ostream& out, const TypeBase& typeBase);
+		friend std::ostream& operator<<(std::ostream& out, const TypeBaseIr& typeBase);
 	};
 }
 

@@ -9,7 +9,7 @@
 
 namespace parka::ir
 {
-	class PrimitiveIr: public TypeBase, public Resolvable, public LValueIr
+	class PrimitiveIr: public TypeBaseIr, public Resolvable, public LValueIr
 	{
 		String _name;
 		u32 _size;
