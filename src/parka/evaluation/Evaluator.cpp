@@ -5,6 +5,7 @@
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
+#include "parka/ir/IfStatementIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
 
@@ -97,6 +98,9 @@ namespace parka::evaluation
 
 			case StatementType::Assignment:
 				return evaluateAssignmentStatement(static_cast<const AssignmentStatementIr&>(ir), state);
+
+			case StatementType::If:
+				return evaluateIfStatement(static_cast<const IfStatementIr&>(ir), state);
 
 			default:
 				break;
@@ -194,6 +198,23 @@ namespace parka::evaluation
 		auto& rhs = evaluateExpression(ir.value(), state);
 
 		evaluateConversion(ir.conversion(), lhs, rhs);
+	}
+	
+	void evaluateIfStatement(const IfStatementIr& ir, LocalState& state)
+	{
+		auto& conditionValue = state.pushValue(Type::boolType);
+		auto& value = evaluateExpression(ir.condition(), state);
+		
+		evaluateConversion(ir.conversion(), conditionValue, value);
+		
+		if (conditionValue.getValue<bool>())
+		{
+			evaluateStatement(ir.thenCase(), state);
+		}
+		else if (ir.hasElseCase())
+		{
+			evaluateStatement(ir.elseCase(), state);
+		}
 	}
 
 	Value& evaluateExpression(const ExpressionIr& ir, LocalState& state)

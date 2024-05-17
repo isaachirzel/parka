@@ -669,7 +669,15 @@ namespace parka::validator
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		return new IfStatementIr(*condition, *thenCase, elseCase);
+		auto conversion = symbolTable.resolveConversion(Type::boolType, condition->type());
+
+		if (!conversion)
+		{
+			log::error(ast.condition().snippet(), "Unable to use expression of type $ as if condition.", condition->type());
+			return {};
+		}
+
+		return new IfStatementIr(*condition, *conversion, *thenCase, elseCase);
 	}
 
 	static Result<Type> validateVariableType(const Result<TypeAnnotationAst>& annotation, ExpressionIr *value, FunctionSymbolTable& symbolTable)

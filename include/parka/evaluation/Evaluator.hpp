@@ -15,6 +15,7 @@
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
+#include "parka/ir/IfStatementIr.hpp"
 #include "parka/ir/IntegerLiteralIr.hpp"
 #include "parka/ir/IntrinsicConversionIr.hpp"
 #include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
@@ -37,6 +38,7 @@ namespace parka::evaluation
 	void evaluateForStatement(const ir::ForStatementIr& ir, LocalState& state);
 	void evaluateBlockStatement(const ir::BlockStatementIr& ir, LocalState& state);
 	void evaluateAssignmentStatement(const ir::AssignmentStatementIr& ir, LocalState& state);
+	void evaluateIfStatement(const ir::IfStatementIr& ir, LocalState& state);
 
 	Value& evaluateExpression(const ir::ExpressionIr& ir, LocalState& state);
 	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, LocalState& state);
