@@ -1,6 +1,7 @@
 #ifndef PARKA_AST_PRIMITIVE_HPP
 #define PARKA_AST_PRIMITIVE_HPP
 
+#include "parka/enum/PrimitiveType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
@@ -8,17 +9,6 @@
 
 namespace parka::ir
 {
-	enum class PrimitiveType: u8
-	{
-		Void,
-		UnsignedInteger,
-		SignedInteger,
-		FloatingPoint,
-		Boolean,
-		Character,
-		String
-	};
-
 	class PrimitiveIr: public TypeBase, public Resolvable, public LValueIr
 	{
 		String _name;
