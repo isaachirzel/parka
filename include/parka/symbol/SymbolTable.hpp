@@ -12,6 +12,8 @@
 
 namespace parka
 {
+	class GlobalSymbolTable;
+
 	struct SymbolTable
 	{
 		const SymbolTableType symbolTableType;
@@ -23,9 +25,11 @@ namespace parka
 
 		virtual Resolvable* findSymbol(const ast::Identifier& identifier) = 0;
 		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
-		virtual ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right) = 0;
+		virtual ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right) = 0;
 		virtual Result<ir::ConversionIr*> resolveConversion(const ir::Type& to, const ir::Type& from) = 0;
 		virtual const String& scope() const = 0;
+		virtual SymbolTable* parent() = 0;
+		virtual GlobalSymbolTable& global() = 0;
 
 		String createSymbol(const String& name)
 		{

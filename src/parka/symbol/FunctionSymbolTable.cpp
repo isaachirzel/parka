@@ -4,19 +4,22 @@
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/log/Indent.hpp"
 
 namespace parka
 {
-	FunctionSymbolTable::FunctionSymbolTable(SymbolTable *parent):
+	FunctionSymbolTable::FunctionSymbolTable(SymbolTable& parent):
 		SymbolTable(SymbolTableType::Function),
+		_global(parent.global()),
+		_parent(parent),
 		_scope(),
 		_symbols(),
 		_variables(),
 		_parameters(),
 		_returnType(ir::Type::voidType),
-		_parent(parent)
+		_parentStatements()
 	{}
 
 	bool FunctionSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
@@ -76,33 +79,30 @@ namespace parka
 
 	ir::LValueIr* FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
 	{
-		assert(_parent != nullptr);
+		if (identifier.isAbsolute())
+			return _global.resolveSymbol(identifier);
 
-		if (identifier.isAbsolute() || identifier.length() > 1)
-			return _parent->resolveSymbol(identifier);
+		if (identifier.length() > 1)
+			return _parent.resolveSymbol(identifier);
 
 		auto *local = findSymbol(identifier[0]);
 
 		if (local)
 			return local->resolve();
 
-		auto *global = _parent->resolveSymbol(identifier);
+		auto *global = _parent.resolveSymbol(identifier);
  
 		return global;
 	}
 
 	ir::BinaryOperatorIr* FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
 	{
-		assert(_parent != nullptr);
-
-		return _parent->resolveBinaryOperator(binaryExpressionType, left, right);
+		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
 	Result<ir::ConversionIr*> FunctionSymbolTable::resolveConversion(const ir::Type& to, const ir::Type& from)
 	{
-		assert(_parent != nullptr);
-
-		return _parent->resolveConversion(to, from);
+		return _global.resolveConversion(to, from);
 	}
 	
 	std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& symbolTable)

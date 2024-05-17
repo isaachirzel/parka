@@ -23,6 +23,7 @@
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
 #include "parka/util/Array.hpp"
@@ -91,8 +92,8 @@ namespace parka::validator
 
 	Result<Ir> validateAst(const Ast& ast)
 	{
-		const auto& package = ast.globalPackage();
-		auto symbolTable = PackageSymbolTable(package);
+		auto& package = ast.globalPackage();
+		auto symbolTable = GlobalSymbolTable(package);
 		auto functions = Array<FunctionIr*>();
 		auto *entryPoint = (FunctionIr*)nullptr;
 
@@ -120,7 +121,7 @@ namespace parka::validator
 
 	FunctionIr *validateFunction(const FunctionAst& ast, SymbolTable& parentSymbolTable)
 	{
-		auto symbolTable = FunctionSymbolTable(&parentSymbolTable);
+		auto symbolTable = FunctionSymbolTable(parentSymbolTable);
 		auto prototype = validatePrototype(ast.prototype(), symbolTable);
 
 		if (!prototype)

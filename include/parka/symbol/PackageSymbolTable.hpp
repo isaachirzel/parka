@@ -5,10 +5,9 @@
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
+#include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/symbol/FunctionEntry.hpp"
-#include "parka/util/Array.hpp"
 #include "parka/util/Table.hpp"
 
 namespace parka
@@ -17,24 +16,24 @@ namespace parka
 	{
 		String _scope;
 		Table<String, Resolvable*> _symbols;
-		Array<ir::BinaryOperatorIr*> _operators;
-		Array<ir::ConversionIr*> _conversions;
-		Array<FunctionEntry> _functions;
-		PackageSymbolTable *_parent;
+		GlobalSymbolTable& _global;
+		SymbolTable& _parent;
 
 	public:
 
-		PackageSymbolTable(const ast::PackageAst& ast, PackageSymbolTable *parent = nullptr);
+		PackageSymbolTable(const ast::PackageAst& ast, GlobalSymbolTable& global, PackageSymbolTable& parent);
+		PackageSymbolTable(PackageSymbolTable&&) = default;
+		PackageSymbolTable(const PackageSymbolTable&) = delete;
 
 		Resolvable* findSymbol(const ast::Identifier& identifier);
 		Resolvable* findInitialSymbol(const ast::Identifier& identifier);
-		Resolvable* findAbsoluteSymbol(const ast::Identifier& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
-		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType type, const ir::Type& left, const ir::Type& right);
+		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
 		Result<ir::ConversionIr*> resolveConversion(const ir::Type& from, const ir::Type& to);
 
 		const String& scope() const { return _scope; }
-		auto& functions() { return _functions; }
+		SymbolTable* parent() { return &_parent; }
+		GlobalSymbolTable& global() { return _global; }
 
 		friend std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& package);
 	};
