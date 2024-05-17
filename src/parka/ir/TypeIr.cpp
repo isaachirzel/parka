@@ -11,20 +11,20 @@ namespace parka::ir
 	const TypeIr TypeIr::integerType(DummyTypeBase::integerTypeBase);
 	const TypeIr TypeIr::floatType(DummyTypeBase::floatTypeBase);
 
-	const TypeIr TypeIr::voidType(Primitive::voidPrimitive);
-	const TypeIr TypeIr::u8Type(Primitive::u8Primitive);
-	const TypeIr TypeIr::u16Type(Primitive::u16Primitive);
-	const TypeIr TypeIr::u32Type(Primitive::u32Primitive);
-	const TypeIr TypeIr::u64Type(Primitive::u64Primitive);
-	const TypeIr TypeIr::i8Type(Primitive::i8Primitive);
-	const TypeIr TypeIr::i16Type(Primitive::i16Primitive);
-	const TypeIr TypeIr::i32Type(Primitive::i32Primitive);
-	const TypeIr TypeIr::i64Type(Primitive::i64Primitive);
-	const TypeIr TypeIr::f32Type(Primitive::f32Primitive);
-	const TypeIr TypeIr::f64Type(Primitive::f64Primitive);
-	const TypeIr TypeIr::boolType(Primitive::boolPrimitive);
-	const TypeIr TypeIr::charType(Primitive::charPrimitive);
-	const TypeIr TypeIr::stringType(Primitive::stringPrimitive);
+	const TypeIr TypeIr::voidType(PrimitiveIr::voidPrimitive);
+	const TypeIr TypeIr::u8Type(PrimitiveIr::u8Primitive);
+	const TypeIr TypeIr::u16Type(PrimitiveIr::u16Primitive);
+	const TypeIr TypeIr::u32Type(PrimitiveIr::u32Primitive);
+	const TypeIr TypeIr::u64Type(PrimitiveIr::u64Primitive);
+	const TypeIr TypeIr::i8Type(PrimitiveIr::i8Primitive);
+	const TypeIr TypeIr::i16Type(PrimitiveIr::i16Primitive);
+	const TypeIr TypeIr::i32Type(PrimitiveIr::i32Primitive);
+	const TypeIr TypeIr::i64Type(PrimitiveIr::i64Primitive);
+	const TypeIr TypeIr::f32Type(PrimitiveIr::f32Primitive);
+	const TypeIr TypeIr::f64Type(PrimitiveIr::f64Primitive);
+	const TypeIr TypeIr::boolType(PrimitiveIr::boolPrimitive);
+	const TypeIr TypeIr::charType(PrimitiveIr::charPrimitive);
+	const TypeIr TypeIr::stringType(PrimitiveIr::stringPrimitive);
 
 	TypeIr::TypeIr(const TypeBase& base):
 		_typeBase(&base)

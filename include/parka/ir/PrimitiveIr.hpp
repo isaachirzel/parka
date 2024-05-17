@@ -19,7 +19,7 @@ namespace parka::ir
 		String
 	};
 
-	class Primitive: public TypeBase, public Resolvable, public LValueIr
+	class PrimitiveIr: public TypeBase, public Resolvable, public LValueIr
 	{
 		String _name;
 		u32 _size;
@@ -27,34 +27,34 @@ namespace parka::ir
 
 	public:
 
-		static Primitive voidPrimitive;
-		static Primitive u8Primitive;
-		static Primitive u16Primitive;
-		static Primitive u32Primitive;
-		static Primitive u64Primitive;
-		static Primitive i8Primitive;
-		static Primitive i16Primitive;
-		static Primitive i32Primitive;
-		static Primitive i64Primitive;
-		static Primitive f32Primitive;
-		static Primitive f64Primitive;
-		static Primitive boolPrimitive;
-		static Primitive charPrimitive;
-		static Primitive stringPrimitive;
-		static Primitive* entries[];
+		static PrimitiveIr voidPrimitive;
+		static PrimitiveIr u8Primitive;
+		static PrimitiveIr u16Primitive;
+		static PrimitiveIr u32Primitive;
+		static PrimitiveIr u64Primitive;
+		static PrimitiveIr i8Primitive;
+		static PrimitiveIr i16Primitive;
+		static PrimitiveIr i32Primitive;
+		static PrimitiveIr i64Primitive;
+		static PrimitiveIr f32Primitive;
+		static PrimitiveIr f64Primitive;
+		static PrimitiveIr boolPrimitive;
+		static PrimitiveIr charPrimitive;
+		static PrimitiveIr stringPrimitive;
+		static PrimitiveIr* entries[];
 		static const usize entryCount;
 
 	private:
 
-		Primitive(const char *name, PrimitiveType type, u32 size);
+		PrimitiveIr(const char *name, PrimitiveType type, u32 size);
 
 	public:
 
-		Primitive(Primitive&&) = default;
-		Primitive(const Primitive&) = delete;
+		PrimitiveIr(PrimitiveIr&&) = default;
+		PrimitiveIr(const PrimitiveIr&) = delete;
 
 		SymbolTable* symbolTable() { return nullptr; }
-		Primitive *resolve() { return this; }
+		PrimitiveIr *resolve() { return this; }
 		const TypeIr& type() const { return TypeIr::typeNameType; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }

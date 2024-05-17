@@ -4,21 +4,21 @@
 
 namespace parka::ir
 {
-	Primitive Primitive::voidPrimitive = { "void", PrimitiveType::Void, 0 };
-	Primitive Primitive::u8Primitive = { "u8", PrimitiveType::UnsignedInteger, 1 };
-	Primitive Primitive::u16Primitive = { "u16", PrimitiveType::UnsignedInteger, 2 };
-	Primitive Primitive::u32Primitive = { "u32", PrimitiveType::UnsignedInteger, 4 };
-	Primitive Primitive::u64Primitive = { "u64", PrimitiveType::UnsignedInteger, 8 };
-	Primitive Primitive::i8Primitive = { "i8", PrimitiveType::SignedInteger, 1 };
-	Primitive Primitive::i16Primitive = { "i16", PrimitiveType::SignedInteger, 2 };
-	Primitive Primitive::i32Primitive = { "i32", PrimitiveType::SignedInteger, 4 };
-	Primitive Primitive::i64Primitive = { "i64", PrimitiveType::SignedInteger, 8 };
-	Primitive Primitive::f32Primitive = { "f32", PrimitiveType::FloatingPoint, 4 };
-	Primitive Primitive::f64Primitive = { "f64", PrimitiveType::FloatingPoint, 8 };
-	Primitive Primitive::boolPrimitive = { "bool", PrimitiveType::Boolean, 1 };
-	Primitive Primitive::charPrimitive = { "char", PrimitiveType::Character, 1 };
-	Primitive Primitive::stringPrimitive = { "string", PrimitiveType::String, 0 };
-	Primitive* Primitive::entries[] =
+	PrimitiveIr PrimitiveIr::voidPrimitive = { "void", PrimitiveType::Void, 0 };
+	PrimitiveIr PrimitiveIr::u8Primitive = { "u8", PrimitiveType::UnsignedInteger, 1 };
+	PrimitiveIr PrimitiveIr::u16Primitive = { "u16", PrimitiveType::UnsignedInteger, 2 };
+	PrimitiveIr PrimitiveIr::u32Primitive = { "u32", PrimitiveType::UnsignedInteger, 4 };
+	PrimitiveIr PrimitiveIr::u64Primitive = { "u64", PrimitiveType::UnsignedInteger, 8 };
+	PrimitiveIr PrimitiveIr::i8Primitive = { "i8", PrimitiveType::SignedInteger, 1 };
+	PrimitiveIr PrimitiveIr::i16Primitive = { "i16", PrimitiveType::SignedInteger, 2 };
+	PrimitiveIr PrimitiveIr::i32Primitive = { "i32", PrimitiveType::SignedInteger, 4 };
+	PrimitiveIr PrimitiveIr::i64Primitive = { "i64", PrimitiveType::SignedInteger, 8 };
+	PrimitiveIr PrimitiveIr::f32Primitive = { "f32", PrimitiveType::FloatingPoint, 4 };
+	PrimitiveIr PrimitiveIr::f64Primitive = { "f64", PrimitiveType::FloatingPoint, 8 };
+	PrimitiveIr PrimitiveIr::boolPrimitive = { "bool", PrimitiveType::Boolean, 1 };
+	PrimitiveIr PrimitiveIr::charPrimitive = { "char", PrimitiveType::Character, 1 };
+	PrimitiveIr PrimitiveIr::stringPrimitive = { "string", PrimitiveType::String, 0 };
+	PrimitiveIr* PrimitiveIr::entries[] =
 	{
 		&voidPrimitive,
 		&u8Primitive,
@@ -35,9 +35,9 @@ namespace parka::ir
 		&charPrimitive,
 		&stringPrimitive
 	};
-	const usize Primitive::entryCount = sizeof(entries) / sizeof(entries[0]);
+	const usize PrimitiveIr::entryCount = sizeof(entries) / sizeof(entries[0]);
 
-	Primitive::Primitive(const char *name, PrimitiveType type, u32 size):
+	PrimitiveIr::PrimitiveIr(const char *name, PrimitiveType type, u32 size):
 		Resolvable(ResolvableType::Primitive),
 		LValueIr(ResolvableType::Primitive),
 		_name(name),

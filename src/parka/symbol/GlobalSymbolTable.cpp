@@ -15,9 +15,9 @@ namespace parka
 		_conversions(),
 		_functions()
 	{
-		for (usize i = 0; i < ir::Primitive::entryCount; ++i)
+		for (usize i = 0; i < ir::PrimitiveIr::entryCount; ++i)
 		{
-			auto* primitive = ir::Primitive::entries[i];
+			auto* primitive = ir::PrimitiveIr::entries[i];
 
 			_symbols.insert(primitive->name(), primitive);
 		}
