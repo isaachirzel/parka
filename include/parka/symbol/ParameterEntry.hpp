@@ -19,6 +19,7 @@ namespace parka
 
 		ir::ParameterIr *resolve();
 
+		SymbolTable* symbolTable() { return nullptr; }
 		const auto& ast() const { return _ast; }
 		const auto *ir() const { return _ir; }
 		const String& name() const { return _ast.identifier().text(); }

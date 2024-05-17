@@ -349,15 +349,7 @@ namespace parka::validator
 			return {};
 		}
 
-		auto *value = dynamic_cast<LValueIr*>(result);
-
-		if (!value)
-		{
-			log::error(ast.snippet(), "Unable to get value of $ `$`.", result->resolvableType, result->symbol());
-			return {};
-		}
-
-		return new IdentifierExpressionIr(*value);
+		return new IdentifierExpressionIr(*result);
 	}
 
 	static Result<u64> getIntegerValue(const Snippet& snippet)

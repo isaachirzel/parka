@@ -2,6 +2,7 @@
 #define PARKA_SYMBOL_RESOLVABLE_HPP
 
 #include "parka/enum/ResolvableType.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 #include "parka/util/String.hpp"
 #include "parka/ir/LValueIr.hpp"
 
@@ -18,6 +19,7 @@ namespace parka
 		{}
 		virtual ~Resolvable() {}
 
+		virtual SymbolTable* symbolTable() = 0;
 		virtual const String& name() const = 0;
 		virtual ir::LValueIr *resolve() = 0;
 

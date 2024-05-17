@@ -300,7 +300,7 @@ namespace parka::evaluation
 	Value& evaluateBinaryOperator(const BinaryOperatorIr& op, Value& left, Value& right, LocalState& state)
 	{
 		if (op.isIntrinsic)
-			return evaluateIntrinsicBinaryOperator(dynamic_cast<const IntrinsicBinaryOperatorIr&>(op), left, right, state);
+			return evaluateIntrinsicBinaryOperator(static_cast<const IntrinsicBinaryOperatorIr&>(op), left, right, state);
 
 		log::notImplemented(here());
 	}

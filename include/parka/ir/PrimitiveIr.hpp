@@ -4,7 +4,7 @@
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/Resolvable.hpp"
+#include "parka/symbol/SymbolTable.hpp"
 
 namespace parka::ir
 {
@@ -53,7 +53,8 @@ namespace parka::ir
 		Primitive(Primitive&&) = default;
 		Primitive(const Primitive&) = delete;
 
-		LValueIr *resolve() { return this; }
+		SymbolTable* symbolTable() { return nullptr; }
+		Primitive *resolve() { return this; }
 		const Type& type() const { return Type::typeNameType; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }

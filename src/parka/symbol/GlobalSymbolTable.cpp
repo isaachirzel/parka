@@ -79,7 +79,7 @@ namespace parka
 			// TODO: Figure out how to not use dynamic cast in this
 
 			auto& part = identifier[i];
-			auto* table = dynamic_cast<SymbolTable*>(entry);
+			auto* table = entry->symbolTable();
 
 			if (table == nullptr)
 			{

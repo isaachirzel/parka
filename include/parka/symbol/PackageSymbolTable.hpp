@@ -21,7 +21,7 @@ namespace parka
 
 	public:
 
-		PackageSymbolTable(const ast::PackageAst& ast, GlobalSymbolTable& global, PackageSymbolTable& parent);
+		PackageSymbolTable(const ast::PackageAst& ast, SymbolTable& parent);
 		PackageSymbolTable(PackageSymbolTable&&) = default;
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
 

@@ -8,11 +8,11 @@
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
-#include "parka/symbol/Resolvable.hpp"
 
 namespace parka
 {
 	class GlobalSymbolTable;
+	struct Resolvable;
 
 	struct SymbolTable
 	{

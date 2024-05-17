@@ -7,15 +7,15 @@
 
 namespace parka
 {
-	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, GlobalSymbolTable& global, PackageSymbolTable& parent):
+	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, SymbolTable& parent):
 		SymbolTable(SymbolTableType::Package),
 		_scope(parent.createSymbol(ast.name())),
 		_symbols(),
-		_global(global),
+		_global(parent.global()),
 		_parent(parent)
 	{
-		// TODO: Actual error checking
 		log::notImplemented(here());
+		// TODO: Actual error checking
 		// for (auto& mod : ast.modules())
 		// {
 		// 	for (auto *function : mod.functions())
@@ -77,7 +77,7 @@ namespace parka
 			// TODO: Figure out how to not use dynamic cast in this
 
 			const auto& identifier = qualifiedIdentifier[i];
-			auto *table = dynamic_cast<SymbolTable*>(entry);
+			auto *table = entry->symbolTable();
 
 			if (table == nullptr)
 			{

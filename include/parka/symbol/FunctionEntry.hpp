@@ -3,6 +3,7 @@
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/FunctionIr.hpp"
+#include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 
@@ -11,7 +12,7 @@ namespace parka
 	class FunctionEntry: public Resolvable
 	{
 		const ast::FunctionAst& _ast;
-		SymbolTable& _symbolTable;
+		FunctionSymbolTable _symbolTable;
 		ir::FunctionIr *_ir;
 		bool _isValidated;
 
@@ -23,6 +24,7 @@ namespace parka
 
 		ir::FunctionIr *resolve();
 
+		FunctionSymbolTable* symbolTable() { return &_symbolTable; }
 		const auto& ast() const { return _ast; }
 		const ast::Identifier& identifier() const { return _ast.prototype().identifier(); }
 		const String& name() const { return _ast.prototype().identifier().text(); }

@@ -4,7 +4,6 @@
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ir/StatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
@@ -12,6 +11,9 @@
 
 namespace parka
 {
+	struct Resolvable;
+	class GlobalSymbolTable;
+
 	class FunctionSymbolTable: public SymbolTable
 	{
 		GlobalSymbolTable& _global;

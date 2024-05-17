@@ -3,6 +3,7 @@
 
 #include "parka/ast/PackageAst.hpp"
 #include "parka/ir/PackageIr.hpp"
+#include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka
@@ -10,15 +11,16 @@ namespace parka
 	class PackageEntry: public Resolvable
 	{
 		const ast::PackageAst& _ast;
+		PackageSymbolTable _symbolTable;
 		ir::PackageIr * _ir;
 		bool _isValidated;
-		// TODO: resolve mutex
 
 	public:
 
-		PackageEntry(const ast::PackageAst& ast):
+		PackageEntry(const ast::PackageAst& ast, SymbolTable& parent):
 			Resolvable(ResolvableType::Package),
 			_ast(ast),
+			_symbolTable(ast, parent),
 			_ir(nullptr),
 			_isValidated(false)
 		{}

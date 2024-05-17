@@ -1,6 +1,7 @@
 #ifndef PARKA_SYMBOL_MEMBER_ENTRY_HPP
 #define PARKA_SYMBOL_MEMBER_ENTRY_HPP
 
+#include "parka/ast/MemberAst.hpp"
 #include "parka/symbol/Resolvable.hpp"
 
 namespace parka
@@ -18,6 +19,7 @@ namespace parka
 		MemberEntry(MemberEntry&&) = default;
 		MemberEntry(const MemberEntry&) = delete;
 
+		SymbolTable* symbolTable() { return nullptr; }
 		const auto& ast() const { return _ast; }
 	};
 }

@@ -20,6 +20,7 @@ namespace parka
 
 		ir::VariableIr *resolve();
 
+		SymbolTable* symbolTable() { return nullptr; }
 		const auto& ast() const { return _ast; }
 		const auto *ir() const { return _ir; }
 		const ast::Identifier& identifier() const { return _ast.identifier(); }
