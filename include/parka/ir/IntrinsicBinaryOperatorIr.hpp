@@ -8,9 +8,9 @@ namespace parka::ir
 {
 	class IntrinsicBinaryOperatorIr: public BinaryOperatorIr
 	{
-		const Type& _leftType;
-		const Type& _rightType;
-		const Type& _returnType;
+		const TypeIr& _leftType;
+		const TypeIr& _rightType;
+		const TypeIr& _returnType;
 		BinaryExpressionType _binaryExpressionType;
 		
 	public:
@@ -20,14 +20,14 @@ namespace parka::ir
 
 	public:
 
-		IntrinsicBinaryOperatorIr(BinaryExpressionType binaryExpressionType, const Type& lhs, const Type& rhs, const Type& returnType);
+		IntrinsicBinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& lhs, const TypeIr& rhs, const TypeIr& returnType);
 		IntrinsicBinaryOperatorIr(IntrinsicBinaryOperatorIr&&) = default;
 		IntrinsicBinaryOperatorIr(const IntrinsicBinaryOperatorIr&) = delete;
 
 		const BinaryExpressionType& binaryExpressionType() const { return _binaryExpressionType; }
-		const Type& returnType() const { return _returnType; }
-		const Type& leftType() const { return _leftType; }
-		const Type& rightType() const { return _rightType; }
+		const TypeIr& returnType() const { return _returnType; }
+		const TypeIr& leftType() const { return _leftType; }
+		const TypeIr& rightType() const { return _rightType; }
 	};
 }
 

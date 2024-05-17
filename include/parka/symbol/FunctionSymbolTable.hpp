@@ -22,7 +22,7 @@ namespace parka
 		Array<Resolvable*> _symbols;
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
-		ir::Type _returnType;
+		ir::TypeIr _returnType;
 		Array<ir::StatementIr*> _parentStatements;
 
 	private:
@@ -39,11 +39,11 @@ namespace parka
 		VariableEntry* declare(VariableEntry&& entry);
 		Resolvable* findSymbol(const ast::Identifier& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
-		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
-		Result<ir::ConversionIr*> resolveConversion(const ir::Type& to, const ir::Type& from);
+		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right);
+		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		
 
-		void setReturnType(const ir::Type& type) { _returnType = type; }
+		void setReturnType(const ir::TypeIr& type) { _returnType = type; }
 		const auto& returnType() const { return _returnType; }
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }

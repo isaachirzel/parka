@@ -7,9 +7,9 @@ namespace parka::ir
 	template <typename Left, typename Right, typename Return>
 	IntrinsicBinaryOperatorIr op(BinaryExpressionType binaryExpressionType)
 	{
-		const auto& left = ir::Type::of<Left>();
-		const auto& right = ir::Type::of<Right>();
-		const auto& ret = ir::Type::of<Return>();
+		const auto& left = ir::TypeIr::of<Left>();
+		const auto& right = ir::TypeIr::of<Right>();
+		const auto& ret = ir::TypeIr::of<Return>();
 
 		return IntrinsicBinaryOperatorIr(binaryExpressionType, left, right, ret);
 	}
@@ -264,7 +264,7 @@ namespace parka::ir
 	};
 	const usize IntrinsicBinaryOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
 
-	IntrinsicBinaryOperatorIr::IntrinsicBinaryOperatorIr(BinaryExpressionType binaryExpressionType, const Type& leftType, const Type& rightType, const Type& returnType):
+	IntrinsicBinaryOperatorIr::IntrinsicBinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& leftType, const TypeIr& rightType, const TypeIr& returnType):
 		BinaryOperatorIr(true),
 		_leftType(leftType),
 		_rightType(rightType),

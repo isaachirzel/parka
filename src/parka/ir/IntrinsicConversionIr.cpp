@@ -5,7 +5,7 @@
 
 namespace parka::ir
 {
-	IntrinsicConversionIr::IntrinsicConversionIr(const Type& to, const Type& from):
+	IntrinsicConversionIr::IntrinsicConversionIr(const TypeIr& to, const TypeIr& from):
 		ConversionIr(true),
 		_to(to),
 		_from(from)
@@ -14,8 +14,8 @@ namespace parka::ir
 	template <typename To, typename From>
 	IntrinsicConversionIr conv()
 	{
-		const auto& to = Type::of<To>();
-		const auto& from = Type::of<From>();
+		const auto& to = TypeIr::of<To>();
+		const auto& from = TypeIr::of<From>();
 
 		return IntrinsicConversionIr(to, from);
 	}

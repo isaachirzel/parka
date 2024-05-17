@@ -7,8 +7,8 @@ namespace parka::ir
 {
 	class IntrinsicConversionIr: public ConversionIr
 	{
-		const Type& _to;
-		const Type& _from;
+		const TypeIr& _to;
+		const TypeIr& _from;
 
 	public:
 
@@ -17,11 +17,11 @@ namespace parka::ir
 
 	public:
 
-		IntrinsicConversionIr(const Type& to, const Type& from);
+		IntrinsicConversionIr(const TypeIr& to, const TypeIr& from);
 		IntrinsicConversionIr(IntrinsicConversionIr&&) = default;
 		IntrinsicConversionIr(const IntrinsicConversionIr&) = delete;
-		const Type& to() const { return _to; }
-		const Type& from() const { return _from; }
+		const TypeIr& to() const { return _to; }
+		const TypeIr& from() const { return _from; }
 	};
 }
 

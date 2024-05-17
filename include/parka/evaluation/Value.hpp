@@ -9,7 +9,7 @@ namespace parka::evaluation
 {
 	class Value
 	{
-		ir::Type _type;
+		ir::TypeIr _type;
 		byte _value[8];
 		const ir::LValueIr* _nodePtr;
 
@@ -19,7 +19,7 @@ namespace parka::evaluation
 
 	public:
 
-		Value(const ir::Type& type);
+		Value(const ir::TypeIr& type);
 		Value(Value&&);
 		Value(const Value&) = delete;
 
@@ -41,7 +41,7 @@ namespace parka::evaluation
 		
 		const byte* value() const { return _value; }
 
-		const ir::Type& type() const { return _type; }
+		const ir::TypeIr& type() const { return _type; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Value& value);
 	};

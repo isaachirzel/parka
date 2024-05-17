@@ -22,8 +22,8 @@ namespace parka::evaluation
 		LocalState(LocalState&&) = delete;
 		LocalState(const LocalState&) = delete;
 
-		Value& pushValue(const ir::Type& type);
-		Value& pushReturnValue(const ir::Type& type);
+		Value& pushValue(const ir::TypeIr& type);
+		Value& pushReturnValue(const ir::TypeIr& type);
 
 		usize getReturnValueIndex();
 		void setReturnValueIndex(usize index);

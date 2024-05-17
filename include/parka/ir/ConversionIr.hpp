@@ -15,8 +15,8 @@ namespace parka::ir
 		virtual ~ConversionIr() {}
 
 		const auto& isIntrinsic() const { return _isIntrinsic; }
-		virtual const Type& to() const = 0;
-		virtual const Type& from() const = 0;
+		virtual const TypeIr& to() const = 0;
+		virtual const TypeIr& from() const = 0;
 	};
 }
 

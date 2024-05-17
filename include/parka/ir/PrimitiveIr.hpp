@@ -55,7 +55,7 @@ namespace parka::ir
 
 		SymbolTable* symbolTable() { return nullptr; }
 		Primitive *resolve() { return this; }
-		const Type& type() const { return Type::typeNameType; }
+		const TypeIr& type() const { return TypeIr::typeNameType; }
 		const String& symbol() const { return _name; }
 		const String& name() const { return _name; }
 		const auto& primitiveType() const { return _type; }

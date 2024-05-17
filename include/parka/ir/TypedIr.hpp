@@ -8,7 +8,7 @@ namespace parka::ir
 	struct TypedIr
 	{
 		virtual ~TypedIr() {}
-		virtual const Type& type() const =  0;
+		virtual const TypeIr& type() const =  0;
 	};
 }
 

@@ -1,9 +1,8 @@
 # To Do
 
 ## Short Term
-- GlobalFunctionTable and BlockFunctionTable? I want to be able to test block function table against just a straight function symboltable
+- BlockFunctionTable
 - Better handling of declaration functions being allowed without them being valid so that the symbols can be resolved without the prototype or the body being validated
-- Prototype validation separate from body validation so that they can be validated first. Something similar will need to be done for struct members 
 - Operators between convertible types. (This may require grouping conversions by type) or having a Table<Type, Array<Conversion>> in symbolTable
 - The rest of the binary expressions
 - The rest of the assignments

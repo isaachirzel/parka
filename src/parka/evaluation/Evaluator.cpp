@@ -159,7 +159,7 @@ namespace parka::evaluation
 
 		evaluateDeclarationStatement(ir.declaration(), state);
 
-		auto& conditionValue = state.pushValue(Type::boolType);
+		auto& conditionValue = state.pushValue(TypeIr::boolType);
 
 		while (true)
 		{
@@ -202,7 +202,7 @@ namespace parka::evaluation
 	
 	void evaluateIfStatement(const IfStatementIr& ir, LocalState& state)
 	{
-		auto& conditionValue = state.pushValue(Type::boolType);
+		auto& conditionValue = state.pushValue(TypeIr::boolType);
 		auto& value = evaluateExpression(ir.condition(), state);
 		
 		evaluateConversion(ir.conversion(), conditionValue, value);
@@ -264,7 +264,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Unable to evaluate Expression with Type: $", ir.expressionType);
+		log::fatal("Unable to evaluate Expression with TypeIr: $", ir.expressionType);
 	}
 
 	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, LocalState& state)

@@ -11,7 +11,7 @@ namespace parka::evaluation
 		const Left l = *(const Left*)left.value();
 		const Right r = *(const Right*)right.value();
 		const Return ret = operation(l, r);
-		const auto& valueType = ir::Type::of<Return>();
+		const auto& valueType = ir::TypeIr::of<Return>();
 		auto& result = state.pushValue(valueType);
 
 		result.setValue(ret);

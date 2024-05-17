@@ -18,7 +18,7 @@ namespace parka
 		_symbols(),
 		_variables(),
 		_parameters(),
-		_returnType(ir::Type::voidType),
+		_returnType(ir::TypeIr::voidType),
 		_parentStatements()
 	{}
 
@@ -95,12 +95,12 @@ namespace parka
 		return global;
 	}
 
-	ir::BinaryOperatorIr* FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
+	ir::BinaryOperatorIr* FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
 		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
-	Result<ir::ConversionIr*> FunctionSymbolTable::resolveConversion(const ir::Type& to, const ir::Type& from)
+	Result<ir::ConversionIr*> FunctionSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);
 	}

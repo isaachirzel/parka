@@ -15,9 +15,9 @@ namespace parka::ir
 		{}
 
 		virtual ~BinaryOperatorIr() {}
-		virtual const Type& leftType() const = 0;
-		virtual const Type& rightType() const = 0;
-		virtual const Type& returnType() const = 0;
+		virtual const TypeIr& leftType() const = 0;
+		virtual const TypeIr& rightType() const = 0;
+		virtual const TypeIr& returnType() const = 0;
 		virtual const BinaryExpressionType& binaryExpressionType() const = 0;
 	};
 }

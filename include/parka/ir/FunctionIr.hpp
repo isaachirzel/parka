@@ -32,7 +32,7 @@ namespace parka::ir
 		}
 
 		const String& symbol() const { return _symbol; }
-		const Type& type() const { return Type::functionType; }
+		const TypeIr& type() const { return TypeIr::functionType; }
 		const auto& prototype() const { return _prototype; }
 		bool hasBody() const { return !!_body; }
 		const auto& body() const { assert(_body); return *_body; }

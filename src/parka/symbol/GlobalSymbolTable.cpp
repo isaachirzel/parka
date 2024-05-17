@@ -102,7 +102,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::BinaryOperatorIr* GlobalSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
+	ir::BinaryOperatorIr* GlobalSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
 		for (auto *op : _operators)
 		{
@@ -123,7 +123,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Result<ir::ConversionIr*> GlobalSymbolTable::resolveConversion(const ir::Type& to, const ir::Type& from)
+	Result<ir::ConversionIr*> GlobalSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		if (from == to)
 			return nullptr;

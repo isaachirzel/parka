@@ -28,8 +28,8 @@ namespace parka
 		Resolvable* findSymbol(const ast::Identifier& identifier);
 		Resolvable* findInitialSymbol(const ast::Identifier& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
-		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right);
-		Result<ir::ConversionIr*> resolveConversion(const ir::Type& from, const ir::Type& to);
+		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right);
+		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& from, const ir::TypeIr& to);
 
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }

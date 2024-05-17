@@ -17,7 +17,7 @@ namespace parka::evaluation
 		GlobalState(GlobalState&&) = default;
 		GlobalState(const GlobalState&) = delete;
 
-		Value& add(ir::LValueIr *key, const ir::Type& type);
+		Value& add(ir::LValueIr *key, const ir::TypeIr& type);
 	};
 }
 

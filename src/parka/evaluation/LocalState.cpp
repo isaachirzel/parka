@@ -11,12 +11,12 @@ namespace parka::evaluation
 		_returningType(ReturningType::None)
 	{}
 
-	Value& LocalState::pushValue(const ir::Type& type)
+	Value& LocalState::pushValue(const ir::TypeIr& type)
 	{
 		return _values.push(type);
 	}
 
-	Value& LocalState::pushReturnValue(const ir::Type& type)
+	Value& LocalState::pushReturnValue(const ir::TypeIr& type)
 	{
 
 		auto length = _values.length();

@@ -55,7 +55,7 @@ namespace parka::validator
 	Result<ir::Ir> validateAst(const ast::Ast& ast);
 	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, FunctionSymbolTable& symbolTable);
 	Result<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, FunctionSymbolTable& symbolTable);
-	Result<ir::Type> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
+	Result<ir::TypeIr> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
 	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, FunctionSymbolTable& symbolTable);
 	ir::ExpressionIr* validateExpression(const ast::ExpressionAst& expression, FunctionSymbolTable& symbolTable);
 	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, FunctionSymbolTable& symbolTable);

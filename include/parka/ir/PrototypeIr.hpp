@@ -9,11 +9,11 @@ namespace parka::ir
 	class PrototypeIr
 	{
 		Array<ParameterIr*> _parameters;
-		Type _returnType;
+		TypeIr _returnType;
 
 	public:
 
-		PrototypeIr(Array<ParameterIr*>&& parameters, Type&& returnType):
+		PrototypeIr(Array<ParameterIr*>&& parameters, TypeIr&& returnType):
 			_parameters(std::move(parameters)),
 			_returnType(std::move(returnType))
 		{}

@@ -94,12 +94,12 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::BinaryOperatorIr* PackageSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::Type& left, const ir::Type& right)
+	ir::BinaryOperatorIr* PackageSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
 		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
-	Result<ir::ConversionIr*> PackageSymbolTable::resolveConversion(const ir::Type& to, const ir::Type& from)
+	Result<ir::ConversionIr*> PackageSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);
 	}

@@ -7,7 +7,7 @@
 
 namespace parka::ir
 {
-	class Type
+	class TypeIr
 	{
 		const TypeBase* _typeBase;
 		// TODO: Add pointer info
@@ -15,35 +15,35 @@ namespace parka::ir
 		
 	public:
 
-		static const Type packageType;
-		static const Type functionType;
-		static const Type typeNameType;
-		static const Type voidType;
-		static const Type integerType;
-		static const Type floatType;
-		static const Type u8Type;
-		static const Type u16Type;
-		static const Type u32Type;
-		static const Type u64Type;
-		static const Type i8Type;
-		static const Type i16Type;
-		static const Type i32Type;
-		static const Type i64Type;
-		static const Type f32Type;
-		static const Type f64Type;
-		static const Type boolType;
-		static const Type charType;
-		static const Type stringType;
+		static const TypeIr packageType;
+		static const TypeIr functionType;
+		static const TypeIr typeNameType;
+		static const TypeIr voidType;
+		static const TypeIr integerType;
+		static const TypeIr floatType;
+		static const TypeIr u8Type;
+		static const TypeIr u16Type;
+		static const TypeIr u32Type;
+		static const TypeIr u64Type;
+		static const TypeIr i8Type;
+		static const TypeIr i16Type;
+		static const TypeIr i32Type;
+		static const TypeIr i64Type;
+		static const TypeIr f32Type;
+		static const TypeIr f64Type;
+		static const TypeIr boolType;
+		static const TypeIr charType;
+		static const TypeIr stringType;
 		
 	public:
 
-		Type(const TypeBase& base);
-		Type(Type&&);
-		Type(const Type&);
-		~Type();
+		TypeIr(const TypeBase& base);
+		TypeIr(TypeIr&&);
+		TypeIr(const TypeIr&);
+		~TypeIr();
 
 		template <typename T>
-		static constexpr const ir::Type& of()
+		static constexpr const ir::TypeIr& of()
 		{
 			if constexpr (std::is_same_v<T, Integer>)
 				return integerType;
@@ -93,12 +93,12 @@ namespace parka::ir
 
 		const auto& typeBase() const { return _typeBase; }
 
-		Type& operator=(Type&&);
-		Type& operator=(const Type&);
+		TypeIr& operator=(TypeIr&&);
+		TypeIr& operator=(const TypeIr&);
 
-		friend bool operator==(const Type& left, const Type& right);
-		friend bool operator!=(const Type& left, const Type& right);
-		friend std::ostream& operator<<(std::ostream& out, const Type& type);
+		friend bool operator==(const TypeIr& left, const TypeIr& right);
+		friend bool operator!=(const TypeIr& left, const TypeIr& right);
+		friend std::ostream& operator<<(std::ostream& out, const TypeIr& type);
 	};
 }
 

@@ -5,7 +5,7 @@
 
 namespace parka::evaluation
 {
-	Value::Value(const ir::Type& type):
+	Value::Value(const ir::TypeIr& type):
 		_type(type),
 		_value(),
 		_nodePtr(nullptr)
@@ -19,7 +19,7 @@ namespace parka::evaluation
 	{
 		memcpy(_value, other._value, sizeof(other._value));
 
-		other._type = ir::Type::voidType;
+		other._type = ir::TypeIr::voidType;
 		other._nodePtr = nullptr;
 		memset(other._value, 0, sizeof(other._value));
 	}

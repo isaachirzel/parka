@@ -24,7 +24,7 @@ namespace parka::ir
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& op() const { return _op; }
-		const Type& type() const { return _op.returnType(); }
+		const TypeIr& type() const { return _op.returnType(); }
 	};
 }
 

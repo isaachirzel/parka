@@ -18,7 +18,7 @@ namespace parka::ir
 		
 		const auto& value() const { return _value; }
 		const auto& size() const { return _size; }
-		const Type& type() const { return Type::integerType; }
+		const TypeIr& type() const { return TypeIr::integerType; }
 	};
 }
 

@@ -9,18 +9,18 @@ namespace parka::ir
 {
 	class MemberIr: public LValueIr
 	{
-		Type _type;
+		TypeIr _type;
 
 	public:
 
-		MemberIr(Type&& Type):
+		MemberIr(TypeIr&& TypeIr):
 			LValueIr(ResolvableType::Member),
-			_type(std::move(Type))
+			_type(std::move(TypeIr))
 		{}
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;
 
-		const Type& type() const { return _type; }
+		const TypeIr& type() const { return _type; }
 	};
 }
 

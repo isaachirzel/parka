@@ -5,71 +5,71 @@
 
 namespace parka::ir
 {
-	const Type Type::packageType(DummyTypeBase::packageTypeBase);
-	const Type Type::functionType(DummyTypeBase::functionTypeBase);
-	const Type Type::typeNameType(DummyTypeBase::typeNameTypeBase);
-	const Type Type::integerType(DummyTypeBase::integerTypeBase);
-	const Type Type::floatType(DummyTypeBase::floatTypeBase);
+	const TypeIr TypeIr::packageType(DummyTypeBase::packageTypeBase);
+	const TypeIr TypeIr::functionType(DummyTypeBase::functionTypeBase);
+	const TypeIr TypeIr::typeNameType(DummyTypeBase::typeNameTypeBase);
+	const TypeIr TypeIr::integerType(DummyTypeBase::integerTypeBase);
+	const TypeIr TypeIr::floatType(DummyTypeBase::floatTypeBase);
 
-	const Type Type::voidType(Primitive::voidPrimitive);
-	const Type Type::u8Type(Primitive::u8Primitive);
-	const Type Type::u16Type(Primitive::u16Primitive);
-	const Type Type::u32Type(Primitive::u32Primitive);
-	const Type Type::u64Type(Primitive::u64Primitive);
-	const Type Type::i8Type(Primitive::i8Primitive);
-	const Type Type::i16Type(Primitive::i16Primitive);
-	const Type Type::i32Type(Primitive::i32Primitive);
-	const Type Type::i64Type(Primitive::i64Primitive);
-	const Type Type::f32Type(Primitive::f32Primitive);
-	const Type Type::f64Type(Primitive::f64Primitive);
-	const Type Type::boolType(Primitive::boolPrimitive);
-	const Type Type::charType(Primitive::charPrimitive);
-	const Type Type::stringType(Primitive::stringPrimitive);
+	const TypeIr TypeIr::voidType(Primitive::voidPrimitive);
+	const TypeIr TypeIr::u8Type(Primitive::u8Primitive);
+	const TypeIr TypeIr::u16Type(Primitive::u16Primitive);
+	const TypeIr TypeIr::u32Type(Primitive::u32Primitive);
+	const TypeIr TypeIr::u64Type(Primitive::u64Primitive);
+	const TypeIr TypeIr::i8Type(Primitive::i8Primitive);
+	const TypeIr TypeIr::i16Type(Primitive::i16Primitive);
+	const TypeIr TypeIr::i32Type(Primitive::i32Primitive);
+	const TypeIr TypeIr::i64Type(Primitive::i64Primitive);
+	const TypeIr TypeIr::f32Type(Primitive::f32Primitive);
+	const TypeIr TypeIr::f64Type(Primitive::f64Primitive);
+	const TypeIr TypeIr::boolType(Primitive::boolPrimitive);
+	const TypeIr TypeIr::charType(Primitive::charPrimitive);
+	const TypeIr TypeIr::stringType(Primitive::stringPrimitive);
 
-	Type::Type(const TypeBase& base):
+	TypeIr::TypeIr(const TypeBase& base):
 		_typeBase(&base)
 	{}
 
-	Type::Type(Type&& other):
+	TypeIr::TypeIr(TypeIr&& other):
 		_typeBase(other._typeBase)
 	{
 		other._typeBase = nullptr;
 	}
 
-	Type::Type(const Type& other):
+	TypeIr::TypeIr(const TypeIr& other):
 		_typeBase(other._typeBase)
 	{}
 
-	Type::~Type()
+	TypeIr::~TypeIr()
 	{
 		_typeBase = nullptr;
 	}
 
-	Type& Type::operator=(Type&& other)
+	TypeIr& TypeIr::operator=(TypeIr&& other)
 	{
 		_typeBase = other._typeBase;
 
 		return *this;
 	}
 
-	Type& Type::operator=(const Type& other)
+	TypeIr& TypeIr::operator=(const TypeIr& other)
 	{
 		_typeBase = other._typeBase;
 
 		return *this;
 	}
 
-	bool operator==(const Type& left, const Type& right)
+	bool operator==(const TypeIr& left, const TypeIr& right)
 	{
 		return left._typeBase == right._typeBase;
 	}
 
-	bool operator!=(const Type& left, const Type& right)
+	bool operator!=(const TypeIr& left, const TypeIr& right)
 	{
 		return !(left == right);
 	}
 	
-	std::ostream& operator<<(std::ostream& out, const Type& type)
+	std::ostream& operator<<(std::ostream& out, const TypeIr& type)
 	{
 		assert(type._typeBase != nullptr);
 		

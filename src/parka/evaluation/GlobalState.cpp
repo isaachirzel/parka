@@ -4,7 +4,7 @@
 
 namespace parka::evaluation
 {
-	Value& GlobalState::add(ir::LValueIr *key, const ir::Type& type)
+	Value& GlobalState::add(ir::LValueIr *key, const ir::TypeIr& type)
 	{
 		auto* value = _values.insert(key, Value(type));
 

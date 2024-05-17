@@ -81,9 +81,9 @@ namespace parka::validator
 			success = false;
 		}
 
-		if (ir.prototype().returnType() != Type::i32Type && ir.prototype().returnType() != Type::voidType)
+		if (ir.prototype().returnType() != TypeIr::i32Type && ir.prototype().returnType() != TypeIr::voidType)
 		{
-			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", Type::i32Type, Type::voidType);
+			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", TypeIr::i32Type, TypeIr::voidType);
 			success = false;
 		}
 
@@ -140,10 +140,10 @@ namespace parka::validator
 		return new FunctionIr(std::move(symbol), *prototype, nullptr);
 	}
 
-	static Result<Type> validateReturnType(const Result<TypeAnnotationAst>& syntax, FunctionSymbolTable& symbolTable)
+	static Result<TypeIr> validateReturnType(const Result<TypeAnnotationAst>& syntax, FunctionSymbolTable& symbolTable)
 	{
 		if (!syntax)
-			return Type::voidType;
+			return TypeIr::voidType;
 
 		return validateTypeAnnotation(*syntax, symbolTable);
 	}
@@ -174,7 +174,7 @@ namespace parka::validator
 		return PrototypeIr(std::move(parameters), *returnType);
 	}
 
-	Result<Type> validateTypeAnnotation(const TypeAnnotationAst& ast, SymbolTable& symbolTable)
+	Result<TypeIr> validateTypeAnnotation(const TypeAnnotationAst& ast, SymbolTable& symbolTable)
 	{
 		auto *resolution = symbolTable.resolveSymbol(ast.identifier());
 
@@ -194,7 +194,7 @@ namespace parka::validator
 			return {};
 		}
 
-		return Type(*typeBase);
+		return TypeIr(*typeBase);
 	}
 
 	ParameterIr *validateParameter(const ParameterAst& ast, FunctionSymbolTable& symbolTable)
@@ -254,7 +254,7 @@ namespace parka::validator
 				break;
 		}
 
-		log::fatal("Unable to validate Expression with Type: $", ast.expressionType);
+		log::fatal("Unable to validate Expression with TypeIr: $", ast.expressionType);
 	}
 
 	BinaryExpressionIr *validateBinaryExpression(const BinaryExpressionAst& ast, FunctionSymbolTable& symbolTable)
@@ -498,7 +498,7 @@ namespace parka::validator
 				break;
 		}
 
-		log::fatal("Unable to validate Statement with Type: $", ast.statementType);
+		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
 	}
 
 	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, FunctionSymbolTable& symbolTable)
@@ -559,7 +559,7 @@ namespace parka::validator
 	{
 		if (!ast.hasValue())
 		{
-			if (symbolTable.returnType() == Type::voidType)
+			if (symbolTable.returnType() == TypeIr::voidType)
 				return new ReturnStatementIr();
 
 			log::error(ast.snippet(), "Expected $ return value but none was given.", symbolTable.returnType());
@@ -615,11 +615,11 @@ namespace parka::validator
 		if (!condition  || !action || !body)
 			return {};
 
-		auto conversion = symbolTable.resolveConversion(Type::boolType, condition->type());
+		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
 
 		if (!conversion)
 		{
-			log::error("Expression could not be converted from `$` to `$`.", condition->type(), Type::boolType);
+			log::error("Expression could not be converted from `$` to `$`.", condition->type(), TypeIr::boolType);
 			return {};
 		}
 
@@ -661,7 +661,7 @@ namespace parka::validator
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto conversion = symbolTable.resolveConversion(Type::boolType, condition->type());
+		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
 
 		if (!conversion)
 		{
@@ -672,7 +672,7 @@ namespace parka::validator
 		return new IfStatementIr(*condition, *conversion, *thenCase, elseCase);
 	}
 
-	static Result<Type> validateVariableType(const Result<TypeAnnotationAst>& annotation, ExpressionIr *value, FunctionSymbolTable& symbolTable)
+	static Result<TypeIr> validateVariableType(const Result<TypeAnnotationAst>& annotation, ExpressionIr *value, FunctionSymbolTable& symbolTable)
 	{
 		if (!annotation)
 		{
