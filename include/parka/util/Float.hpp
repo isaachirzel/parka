@@ -26,6 +26,8 @@ namespace parka
 		friend bool operator>(const Float& left, const Float& right);
 		friend bool operator<=(const Float& left, const Float& right);
 		friend bool operator>=(const Float& left, const Float& right);
+		friend bool operator==(const Float& left, const Float& right);
+		friend bool operator!=(const Float& left, const Float& right);
 
 		operator f32();
 		operator f64();

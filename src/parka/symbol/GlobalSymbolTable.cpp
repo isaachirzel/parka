@@ -22,18 +22,18 @@ namespace parka
 			_symbols.insert(primitive->name(), primitive);
 		}
 
-		for (usize i = 0; i < ir::IntrinsicBinaryOperatorIr::entryCount; ++i)
-		{
-			auto& op = ir::IntrinsicBinaryOperatorIr::entries[i];
-
-			_operators.push(&op);
-		}
-
 		for (usize i = 0; i < ir::IntrinsicConversionIr::entryCount; ++i)
 		{
 			auto& conv = ir::IntrinsicConversionIr::entries[i];
 
 			_conversions.push(&conv);
+		}
+
+		for (usize i = 0; i < ir::IntrinsicBinaryOperatorIr::entryCount; ++i)
+		{
+			auto& op = ir::IntrinsicBinaryOperatorIr::entries[i];
+
+			_operators.push(&op);
 		}
 
 		for (auto& mod : globalPackage.modules())

@@ -15,28 +15,28 @@ namespace parka
 		Divide,
 		Modulus,
 
-		// Logical
-		BooleanOr,
-		BooleanAnd,
-
 		// Bitwise
 		BitwiseOr,
 		BitwiseXor,
 		BitwiseAnd,
-
-		// Equality
-		Equals,
-		NotEquals,
+		
+		// Shift
+		LeftShift,
+		RightShift,
 
 		// Relational
 		LessThan,
 		GreaterThan,
 		LessThanOrEqualTo,
 		GreaterThanOrEqualTo,
+
+		// Equality
+		Equals,
+		NotEquals,
 		
-		// Shift
-		LeftShift,
-		RightShift
+		// Logical
+		BooleanOr,
+		BooleanAnd,
 	};
 
 	std::ostream& operator<<(std::ostream& out, const BinaryExpressionType& binaryExpressionType);

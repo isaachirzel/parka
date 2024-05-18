@@ -46,6 +46,16 @@ namespace parka
 		return left._value >= right._value;
 	}
 
+	bool operator==(const Float& left, const Float& right)
+	{
+		return left._value == right._value;
+	}
+
+	bool operator!=(const Float& left, const Float& right)
+	{
+		return left._value != right._value;
+	}
+	
 	Float::operator f32()
 	{
 		return (f32)_value;

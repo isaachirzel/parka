@@ -3,8 +3,10 @@
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
 #include "parka/symbol/SymbolTable.hpp"
+#include "parka/util/Array.hpp"
 #include "parka/util/Table.hpp"
 
 namespace parka
@@ -15,6 +17,7 @@ namespace parka
 		Table<String, Resolvable*> _symbols;
 		Array<ir::BinaryOperatorIr*> _operators;
 		Array<ir::ConversionIr*> _conversions;
+		Table<ir::TypeIr, Array<ir::ConversionIr*>> _convs;
 		Array<FunctionEntry> _functions;
 
 	public:

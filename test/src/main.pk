@@ -16,13 +16,10 @@ function factorial(count: i32) -> i32
 
 function fibonacci(a: i32) -> i32
 {
-	var zero: i32 = 0;
-	var one: i32 = 1;
-
-	if a <= zero
+	if a <= 0
 		return 0;
 
-	if a <= one
+	if a == 1
 		return 1;
 
 	var t1 = 0;
@@ -43,8 +40,8 @@ function notImplemented();
 
 function main() -> i32
 {
-	//var a = fibonacci(15);
-	//var b = factorial(7);
+	var a = fibonacci(2);
+	var b = factorial(7);
 
-	return 7 % 5;
+	return b;
 }
