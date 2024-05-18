@@ -1,12 +1,15 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/enum/ReturningType.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
-#include "parka/evaluation/IntrinsicOperator.hpp"
+#include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
+#include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
+#include "parka/ir/FloatLiteralIr.hpp"
 #include "parka/ir/IfStatementIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
+#include "parka/ir/StringLiteralIr.hpp"
 #include "parka/log/Log.hpp"
 
 using namespace parka::ir;
@@ -246,19 +249,19 @@ namespace parka::evaluation
 				break;
 
 			case ExpressionType::BoolLiteral:
-				break;
+				return evaluateBoolLiteral(static_cast<const BoolLiteralIr&>(ir), state);
 
 			case ExpressionType::CharLiteral:
-				break;
+				return evaluateCharLiteral(static_cast<const CharLiteralIr&>(ir), state);
 
 			case ExpressionType::FloatLiteral:
-				break;
+				return evaluateFloatLiteral(static_cast<const FloatLiteralIr&>(ir), state);
 
 			case ExpressionType::IntegerLiteral:
 				return evaluateIntegerLiteral(static_cast<const IntegerLiteralIr&>(ir), state);
 
 			case ExpressionType::StringLiteral:
-				break;
+				return evaluateStringLiteral(static_cast<const StringLiteralIr&>(ir), state);
 				
 			default:
 				break;
@@ -290,11 +293,47 @@ namespace parka::evaluation
 		return value;
 	}
 
+	Value& evaluateBoolLiteral(const ir::BoolLiteralIr& ir, LocalState& state)
+	{
+		auto& result = state.pushValue(ir.type());
+
+		result.setValue(ir.value());
+
+		return result;
+	}
+
+	Value& evaluateCharLiteral(const ir::CharLiteralIr& ir, LocalState& state)
+	{
+		auto& result = state.pushValue(ir.type());
+
+		result.setValue(ir.value());
+
+		return result;
+	}
+
+	Value& evaluateFloatLiteral(const ir::FloatLiteralIr& ir, LocalState& state)
+	{
+		auto& result = state.pushValue(ir.type());
+
+		result.setValue(ir.value());
+
+		return result;
+	}
+
 	Value& evaluateIntegerLiteral(const IntegerLiteralIr& ir, LocalState& state)
 	{
 		auto& result = state.pushValue(ir.type());
 
 		result.setValue(ir.value());
+
+		return result;
+	}
+
+	Value& evaluateStringLiteral(const ir::StringLiteralIr& ir, LocalState& state)
+	{
+		auto& result = state.pushValue(ir.type());
+
+		result.setValue(&ir.value());
 
 		return result;
 	}
@@ -311,9 +350,9 @@ namespace parka::evaluation
 	{
 		auto index = (usize)(&opIr - IntrinsicBinaryOperatorIr::entries);
 		
-		assert(index < intrinsicOperatorCount);
+		assert(index < intrinsicBinaryOperatorCount);
 
-		auto& op = intrinsicOperators[index];
+		auto& op = intrinsicBinaryOperators[index];
 		auto& value = op(left, right, state);
 
 		return value;
@@ -338,7 +377,7 @@ namespace parka::evaluation
 	{
 		auto index = (usize)(&conversionIr - IntrinsicConversionIr::entries);
 
-		assert(index < intrinsicOperatorCount);
+		assert(index < intrinsicBinaryOperatorCount);
 
 		auto& conversion = intrinsicConversions[index];
 		auto& value = conversion(to, from);

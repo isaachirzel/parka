@@ -7,12 +7,15 @@
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
+#include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
+#include "parka/ir/CharLiteralIr.hpp"
 #include "parka/ir/ContinueStatementIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
+#include "parka/ir/FloatLiteralIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/IfStatementIr.hpp"
@@ -21,6 +24,7 @@
 #include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
 #include "parka/ir/Ir.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
+#include "parka/ir/StringLiteralIr.hpp"
 #include "parka/ir/YieldStatementIr.hpp"
 
 namespace parka::evaluation
@@ -44,7 +48,11 @@ namespace parka::evaluation
 	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, LocalState& state);
 	Value& evaluateCallExpression(const ir::CallExpressionIr& ir, LocalState& state);
 	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, LocalState& state);
+	Value& evaluateBoolLiteral(const ir::BoolLiteralIr& ir, LocalState& state);
+	Value& evaluateCharLiteral(const ir::CharLiteralIr& ir, LocalState& state);
+	Value& evaluateFloatLiteral(const ir::FloatLiteralIr& ir, LocalState& state);
 	Value& evaluateIntegerLiteral(const ir::IntegerLiteralIr& ir, LocalState& state);
+	Value& evaluateStringLiteral(const ir::StringLiteralIr& ir, LocalState& state);
 
 	Value& evaluateBinaryOperator(const ir::BinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
 	Value& evaluateIntrinsicBinaryOperator(const ir::IntrinsicBinaryOperatorIr& op, Value& left, Value& right, LocalState& state);

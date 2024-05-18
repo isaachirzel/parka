@@ -1,4 +1,4 @@
-#include "parka/evaluation/IntrinsicOperator.hpp"
+#include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
 #include <cstring>
@@ -126,112 +126,112 @@ namespace parka::evaluation
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator add()
+	IntrinsicBinaryOperator add()
 	{
 		return op<Left, Right, Return, _add<Left, Right, Return>>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator subtract()
+	IntrinsicBinaryOperator subtract()
 	{
 		return op<Left, Right, Return, _subtract>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator multiply()
+	IntrinsicBinaryOperator multiply()
 	{
 		return op<Left, Right, Return, _multiply>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator divide()
+	IntrinsicBinaryOperator divide()
 	{
 		return op<Left, Right, Return, _divide>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator modulus()
+	IntrinsicBinaryOperator modulus()
 	{
 		return op<Left, Right, Return, _modulus>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator bitwiseOr()
+	IntrinsicBinaryOperator bitwiseOr()
 	{
 		return op<Left, Right, Return, _bitwiseOr>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator bitwiseXor()
+	IntrinsicBinaryOperator bitwiseXor()
 	{
 		return op<Left, Right, Return, _bitwiseXor>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator bitwiseAnd()
+	IntrinsicBinaryOperator bitwiseAnd()
 	{
 		return op<Left, Right, Return, _bitwiseAnd>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator leftShift()
+	IntrinsicBinaryOperator leftShift()
 	{
 		return op<Left, Right, Return, _leftShift>;
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicOperator rightShift()
+	IntrinsicBinaryOperator rightShift()
 	{
 		return op<Left, Right, Return, _rightShift>;
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperator lessThan()
+	IntrinsicBinaryOperator lessThan()
 	{
 		return op<Left, Right, bool, _lessThan>;
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperator greaterThan()
+	IntrinsicBinaryOperator greaterThan()
 	{
 		return op<Left, Right, bool, _greaterThan>;
 	}
 	
 	template <typename Left, typename Right = Left>
-	IntrinsicOperator lessThanOrEqualTo()
+	IntrinsicBinaryOperator lessThanOrEqualTo()
 	{
 		return op<Left, Right, bool, _lessThanOrEqualTo>;
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperator greaterThanOrEqualTo()
+	IntrinsicBinaryOperator greaterThanOrEqualTo()
 	{
 		return op<Left, Right, bool, _greaterThanOrEqualTo>;
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperator equals()
+	IntrinsicBinaryOperator equals()
 	{
 		return op<Left, Right, bool, _equals>;
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicOperator notEquals()
+	IntrinsicBinaryOperator notEquals()
 	{
 		return op<Left, Right, bool, _notEquals>;
 	}
 
-	IntrinsicOperator booleanOr()
+	IntrinsicBinaryOperator booleanOr()
 	{
 		return op<bool, bool, bool, _booleanOr>;
 	}
 
-	IntrinsicOperator booleanAnd()
+	IntrinsicBinaryOperator booleanAnd()
 	{
 		return op<bool, bool, bool, _booleanAnd>;
 	}
 
-	IntrinsicOperator intrinsicOperators[] =
+	IntrinsicBinaryOperator intrinsicBinaryOperators[] =
 	{
 		add<Integer>(),
 		subtract<Integer>(),
@@ -579,6 +579,9 @@ namespace parka::evaluation
 
 		booleanAnd(),
 		booleanOr(),
+
+		equals<char, char>(),
+		notEquals<char, char>(),
 	};
-	const usize intrinsicOperatorCount = sizeof(intrinsicOperators) / sizeof(*intrinsicOperators);
+	const usize intrinsicBinaryOperatorCount = sizeof(intrinsicBinaryOperators) / sizeof(intrinsicBinaryOperators[0]);
 }

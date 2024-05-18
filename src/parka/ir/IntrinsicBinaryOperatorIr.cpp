@@ -471,6 +471,9 @@ namespace parka::ir
 
 		booleanAnd(),
 		booleanOr(),
+
+		equals<char, char>(),
+		notEquals<char, char>(),
 	};
 	const usize IntrinsicBinaryOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
 
