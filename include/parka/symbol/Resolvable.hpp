@@ -23,6 +23,8 @@ namespace parka
 		virtual const String& name() const = 0;
 		virtual ir::LValueIr *resolve() = 0;
 
+		// TODO: be able to get snippet for errors
+
 		friend std::ostream& operator<<(std::ostream& out, const Resolvable& resolvabe);
 	};
 }

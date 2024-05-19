@@ -8,14 +8,13 @@
 #include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/util/Table.hpp"
 
 namespace parka
 {
 	class PackageSymbolTable: public SymbolTable
 	{
 		String _scope;
-		Table<String, Resolvable*> _symbols;
+		FlatMap<String, Resolvable*> _symbols;
 		GlobalSymbolTable& _global;
 		SymbolTable& _parent;
 
@@ -25,6 +24,9 @@ namespace parka
 		PackageSymbolTable(PackageSymbolTable&&) = default;
 		PackageSymbolTable(const PackageSymbolTable&) = delete;
 
+		FunctionEntry& declare(const ast::FunctionAst& ast);
+		VariableEntry& declare(const ast::VariableAst& ast);
+		ParameterEntry& declare(const ast::ParameterAst& ast);
 		Resolvable* findSymbol(const ast::Identifier& identifier);
 		Resolvable* findInitialSymbol(const ast::Identifier& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
@@ -34,8 +36,6 @@ namespace parka
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }
 		GlobalSymbolTable& global() { return _global; }
-
-		friend std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& package);
 	};
 }
 

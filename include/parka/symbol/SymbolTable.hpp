@@ -1,6 +1,9 @@
 #ifndef PARKA_SYMBOL_SYMBOL_TABLE_HPP
 #define PARKA_SYMBOL_SYMBOL_TABLE_HPP
 
+#include "parka/ast/FunctionAst.hpp"
+#include "parka/ast/ParameterAst.hpp"
+#include "parka/ast/VariableAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ast/IdentifierAst.hpp"
@@ -13,6 +16,10 @@ namespace parka
 {
 	class GlobalSymbolTable;
 	struct Resolvable;
+	class FunctionEntry;
+	class VariableEntry;
+	class ParameterEntry;
+
 
 	struct SymbolTable
 	{
@@ -23,6 +30,9 @@ namespace parka
 		{}
 		virtual ~SymbolTable() {}
 
+		virtual FunctionEntry& declare (const ast::FunctionAst& ast) = 0;
+		virtual VariableEntry& declare (const ast::VariableAst& ast) = 0;
+		virtual ParameterEntry& declare (const ast::ParameterAst& ast) = 0;
 		virtual Resolvable* findSymbol(const ast::Identifier& identifier) = 0;
 		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
 		virtual ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right) = 0;
@@ -31,7 +41,7 @@ namespace parka
 		virtual SymbolTable* parent() = 0;
 		virtual GlobalSymbolTable& global() = 0;
 
-		String createSymbol(const String& name)
+		String createSymbol(const String& name) const
 		{
 			const auto& scope = this->scope();
 

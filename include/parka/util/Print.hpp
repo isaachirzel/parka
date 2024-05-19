@@ -1,10 +1,7 @@
 #ifndef PARKA_UTIL_PRINT_HPP
 #define PARKA_UTIL_PRINT_HPP
 
-#include "parka/parser/Token.hpp"
-#include "parka/enum/LogEntryType.hpp"
-#include "parka/log/Prompt.hpp"
-#include "parka/util/SourceLocation.hpp"
+#include "parka/util/String.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -15,6 +12,7 @@ namespace parka
 	template <typename First, typename... Arg>
 	void _output(std::ostream& out, const char * const fmt, const First& first, Arg const&... args)
 	{
+		// TODO: Not giving argument for $ seems to cause silent crash?
 		// TODO: Escape $ symbol
 		const char *iter = fmt;
 
@@ -40,9 +38,7 @@ namespace parka
 		out.write(fmt, iter - fmt);
 
 		if constexpr (std::is_floating_point_v<First>)
-		{
 			out << std::fixed;
-		}
 		
 		out << first;
 

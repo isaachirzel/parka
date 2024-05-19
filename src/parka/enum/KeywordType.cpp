@@ -1,12 +1,13 @@
 #include "parka/enum/KeywordType.hpp"
-#include "parka/util/Table.hpp"
+
+#include "parka/util/FlatMap.hpp"
 
 namespace parka
 {
-	static Table<String, KeywordType> initKeywords()
+	static FlatMap<String, KeywordType> initKeywords()
 	{
-		auto keywords = Table<String, KeywordType>(25);
-			
+		auto keywords = FlatMap<String, KeywordType>(25);
+		
 		keywords.insert("break", KeywordType::Break);
 		keywords.insert("case", KeywordType::Case);
 		keywords.insert("continue", KeywordType::Continue);
@@ -37,7 +38,7 @@ namespace parka
 		return keywords;
 	}
 
-	const Table<String, KeywordType> keywords = initKeywords();
+	const FlatMap<String, KeywordType> keywords = initKeywords();
 
 	KeywordType toKeywordType(const String& text)
 	{

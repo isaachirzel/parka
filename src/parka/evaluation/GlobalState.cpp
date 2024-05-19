@@ -6,11 +6,12 @@ namespace parka::evaluation
 {
 	Value& GlobalState::add(ir::LValueIr *key, const ir::TypeIr& type)
 	{
-		auto* value = _values.insert(key, Value(type));
+		log::notImplemented(here());
+		// auto insertion = _values.insert(key, Value(type));
 
-		if (!value)
-			log::fatal("Failed to insert value for $.", (void*)key);
+		// if (!insertion)
+		// 	log::fatal("Failed to insert value for $.", (void*)key);
 
-		return *value;
+		// return *insertion;
 	}
 }

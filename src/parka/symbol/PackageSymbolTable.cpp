@@ -4,6 +4,8 @@
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/FunctionEntry.hpp"
+#include <stdexcept>
 
 namespace parka
 {
@@ -15,18 +17,33 @@ namespace parka
 		_parent(parent)
 	{
 		log::notImplemented(here());
-		// TODO: Actual error checking
-		// for (auto& mod : ast.modules())
-		// {
-		// 	for (auto *function : mod.functions())
-		// 	{
-		// 		_global.declare(*function);
-		// 	}
-		// }
+	}
 
-		// TODO: Add other packages
-		// for (auto *package : _packages)
-		// 	package->declareSelf(this);
+	FunctionEntry& PackageSymbolTable::declare(const ast::FunctionAst& ast)
+	{
+		auto& entry = _global.addFunction(FunctionEntry(ast, *this));
+		const auto& key = ast.prototype().identifier().text();
+		auto insertion = _symbols.insert(key, &entry);
+
+		if (!insertion)
+		{
+			auto* previous = *insertion;
+
+			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in the package $.", previous->resolvableType, previous->name(), _scope);
+		}
+
+		return entry;
+	}
+
+	VariableEntry& PackageSymbolTable::declare(const ast::VariableAst&)
+	{
+		throw std::invalid_argument("Variables cannot be declared in a PackageSymbolTable.");
+	}
+
+	ParameterEntry& PackageSymbolTable::declare(const ast::ParameterAst&)
+	{
+		throw std::invalid_argument("Parameters cannot be declared in a PackageSymbolTable.");
+
 	}
 
 	Resolvable* PackageSymbolTable::findInitialSymbol(const ast::Identifier& identifier)
@@ -102,46 +119,5 @@ namespace parka
 	Result<ir::ConversionIr*> PackageSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);
-	}
-
-	std::ostream& operator<<(std::ostream& out, const PackageSymbolTable& symbolTable)
-	{
-		auto indent = Indent(out);
-
-		out << indent << "package\n";
-		out << indent << "{\n";
-
-		{
-			auto subindent = Indent(out);
-
-			out << subindent << "symbols\n";
-			out << subindent << "{\n";
-
-			{
-				auto subsubindent = Indent(out);
-
-				for (const auto& entry : symbolTable._symbols)
-				{
-					out << subsubindent << *entry.value() << '\n';
-				}
-
-			}
-
-			out << subindent << "}\n\n";
-		}
-
-		// for (const auto& mod : symbolTable.modules())
-		// {
-		// 	out << mod << '\n';
-		// }
-
-		// for (const auto *package : symbolTable._packages)
-		// {
-		// 	out << *package << '\n';
-		// }
-
-		out << indent << "}";
-
-		return out;
 	}
 }

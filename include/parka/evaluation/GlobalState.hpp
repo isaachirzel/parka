@@ -9,7 +9,6 @@ namespace parka::evaluation
 {
 	class GlobalState
 	{
-		Table<ir::LValueIr*, Value> _values;
 
 	public:
 

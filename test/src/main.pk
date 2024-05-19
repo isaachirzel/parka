@@ -40,8 +40,21 @@ function notImplemented();
 
 function main() -> i32
 {
-	var a = fibonacci(2);
-	var b = factorial(7);
+	//var a = fibonacci(2);
 
-	return b;
+	var a = 1;
+
+	{
+		var b = 2;
+
+		a = b;
+	}
+
+	{
+		var b = 3;
+
+		a = b;
+	}
+
+	return a;
 }

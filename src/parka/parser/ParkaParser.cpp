@@ -1353,17 +1353,18 @@ namespace parka::parser
 
 		auto end = identifier->snippet();
 
-		Result<TypeAnnotationAst> annotation;
+		Optional<TypeAnnotationAst> annotation;
 
 		if (token.type() == TokenType::Colon)
 		{
 			token.increment();
 
-			annotation = parseTypeAnnotation(token);
+			auto annotationResult = parseTypeAnnotation(token);
 
-			if (!annotation)
+			if (!annotationResult)
 				return {};
 
+			annotation = *annotationResult;
 			end = annotation->snippet();
 		}
 
@@ -1387,7 +1388,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			logParseError(token, "'(' after function name");
+			logParseError(token, "parameter list");
 			return {};
 		}
 

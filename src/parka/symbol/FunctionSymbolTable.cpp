@@ -1,17 +1,20 @@
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
+#include "parka/ast/VariableAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/GlobalSymbolTable.hpp"
+#include "parka/symbol/ParameterEntry.hpp"
 #include "parka/symbol/Resolvable.hpp"
-#include "parka/log/Indent.hpp"
+#include "parka/symbol/VariableEntry.hpp"
+#include "parka/validator/Validator.hpp"
 
 namespace parka
 {
 	FunctionSymbolTable::FunctionSymbolTable(SymbolTable& parent):
-		SymbolTable(SymbolTableType::Function),
+		LocalSymbolTable(SymbolTableType::Function),
 		_global(parent.global()),
 		_parent(parent),
 		_scope(),
@@ -22,59 +25,64 @@ namespace parka
 		_parentStatements()
 	{}
 
-	bool FunctionSymbolTable::declare(const ast::Identifier& identifier, Resolvable *resolvable)
+	VariableEntry& FunctionSymbolTable::addVariable(VariableEntry&& entry)
 	{
-		auto *previous = findSymbol(identifier);
+		return _variables.push(std::move(entry));
+	}
 
-		if (previous)
+	ParameterEntry& FunctionSymbolTable::addParameter(ParameterEntry&& entry)
+	{
+		return _parameters.push(std::move(entry));
+	}
+
+	FunctionEntry& FunctionSymbolTable::declare(const ast::FunctionAst&)
+	{
+		throw std::invalid_argument("Functions cannot be declared in a FunctionSymbolTable.");
+	}
+
+	ParameterEntry& FunctionSymbolTable::declare(const ast::ParameterAst& ast)
+	{
+		auto* ir = validator::validateParameter(ast, *this);
+		auto& ref = addParameter(ParameterEntry(ast, ir));
+		auto insertion = _symbols.insert(ast.identifier().text(), &ref);
+
+		if (!insertion)
 		{
-			// TODO: maybe just insert it anyways?
-			log::error(identifier, "A $ `$` has already been declared in this function.", previous->resolvableType, identifier.text());
-			return false;
+			auto* previous = *insertion;
+			log::error(ast.identifier(), "This parameter list already has a $ with the name `$`.", previous->resolvableType, previous->name());
+
+			// TODO: Previously declared here error
 		}
 
-		_symbols.push(resolvable);
-		// TODO: show previous declaration
-		
-		return true;
+		return ref;
 	}
 
-	ParameterEntry* FunctionSymbolTable::declare(ParameterEntry&& entry)
+	VariableEntry& FunctionSymbolTable::declare(const ast::VariableAst& ast)
 	{
-		auto& ref = _parameters.push(std::move(entry));
-		auto *ptr = &ref;
-		auto success = declare(entry.identifier(), ptr);
-		
-		if (!success)
-			return nullptr;
+		auto* ir = validator::validateVariable(ast, *this);
+		auto& ref = addVariable(VariableEntry(ast, ir));
+		auto insertion = _symbols.insert(ast.identifier().text(), &ref);
 
-		return ptr;
-	}
+		if (!insertion)
+		{
+			auto* previous = *insertion;
+			log::error(ast.identifier(), "Declaration of variable `$` shadows a $ with the same name.", previous->name(), previous->resolvableType);
 
-	VariableEntry* FunctionSymbolTable::declare(VariableEntry&& entry)
-	{
-		auto& ref = _variables.push(std::move(entry));
-		auto *ptr = &ref;
-		auto success = declare(entry.identifier(), ptr);
+			// TODO: Previously declared here error
+		}
 
-		if (!success)
-			return nullptr;
-
-		return ptr;
+		return ref;
 	}
 
 	Resolvable* FunctionSymbolTable::findSymbol(const ast::Identifier& identifier)
 	{
 		const auto& name = identifier.text();
-		// TODO: Iterate in reverse
-		for (auto *entity : _symbols)
-		{
-			auto* a = (void*)entity;
-			if (entity->name() == name)
-				return entity;
-		}
+		auto** symbol = _symbols.find(name);
 
-		return nullptr;
+		if (!symbol)
+			return {};
+
+		return *symbol;
 	}
 
 	ir::LValueIr* FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
@@ -85,14 +93,12 @@ namespace parka
 		if (identifier.length() > 1)
 			return _parent.resolveSymbol(identifier);
 
-		auto *local = findSymbol(identifier[0]);
+		auto *symbol = findSymbol(identifier[0]);
 
-		if (local)
-			return local->resolve();
+		if (symbol)
+			return symbol->resolve();
 
-		auto *global = _parent.resolveSymbol(identifier);
- 
-		return global;
+		return _parent.resolveSymbol(identifier);
 	}
 
 	ir::BinaryOperatorIr* FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
@@ -103,20 +109,5 @@ namespace parka
 	Result<ir::ConversionIr*> FunctionSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);
-	}
-	
-	std::ostream& operator<<(std::ostream& out, const FunctionSymbolTable& symbolTable)
-	{
-		// out << validator._ast.prototype();
-		out << symbolTable._scope << '\n';
-
-		auto indent = Indent(out);
-
-		for (const auto *symbol : symbolTable._symbols)
-		{
-			out << indent << symbol->name() << '\n';
-		}
-
-		return out;
 	}
 }

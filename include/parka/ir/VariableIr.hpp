@@ -21,6 +21,8 @@ namespace parka::ir
 		VariableIr(VariableIr&&) = default;
 		VariableIr(const VariableIr&) = delete;
 
+		void setType(const TypeIr& type) { _type = type; }
+
 		const String& symbol() const { return _symbol; }
 		const TypeIr& type() const { return _type; }
 	};

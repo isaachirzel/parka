@@ -3,6 +3,7 @@
 
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
+#include "parka/util/Optional.hpp"
 
 namespace parka::ast
 {
@@ -10,16 +11,16 @@ namespace parka::ast
 	{
 		Snippet _snippet;
 		Identifier _identifier;
-		Result<TypeAnnotationAst> _annotation;
+		Optional<TypeAnnotationAst> _annotation;
 		bool _isMutable;
 
 	public:
 
-		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Result<TypeAnnotationAst> annotation):
-		_snippet(snippet),
-		_identifier(std::move(identifier)),
-		_annotation(std::move(annotation)),
-		_isMutable(isMutable)
+		VariableAst(const Snippet& snippet, Identifier&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
+			_snippet(snippet),
+			_identifier(std::move(identifier)),
+			_annotation(std::move(annotation)),
+			_isMutable(isMutable)
 		{}
 		VariableAst(VariableAst&&) = default;
 		VariableAst(const VariableAst&) = delete;

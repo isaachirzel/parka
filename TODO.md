@@ -1,18 +1,18 @@
 # To Do
 
 ## Short Term
-- BlockFunctionTable
+- BlockSymbolTable
+- type casting
 - Better handling of declaration functions being allowed without them being valid so that the symbols can be resolved without the prototype or the body being validated
-- Operators between convertible types. (This may require grouping conversions by type) or having a Table<Type, Array<Conversion>> in symbolTable
 - The rest of the binary expressions
 - The rest of the assignments
 - Break statement
 - Continue statement
 - Function calls
 - intrinsic print function
-- type casting
 - Unary expressions
 - while loops
+- Resolution of invalid symbols
 
 ## Longer Term
 - Structs

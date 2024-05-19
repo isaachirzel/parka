@@ -22,9 +22,9 @@
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/FunctionEntry.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/GlobalSymbolTable.hpp"
-#include "parka/symbol/PackageSymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
 #include "parka/util/Array.hpp"
 
@@ -155,10 +155,10 @@ namespace parka::validator
 
 		for (auto* parameterAst : prototype.parameters())
 		{
-			auto* parameter = validateParameter(*parameterAst, symbolTable);
-			auto* entry = symbolTable.declare(ParameterEntry(*parameterAst, parameter));
+			auto& entry = symbolTable.declare(*parameterAst);
+			auto* parameter = entry.resolve();
 
-			if (!parameter || !entry)
+			if (!parameter)
 				continue;
 
 			parameters.push(parameter);
@@ -172,6 +172,31 @@ namespace parka::validator
 		symbolTable.setReturnType(*returnType);
 
 		return PrototypeIr(std::move(parameters), *returnType);
+	}
+
+	ParameterIr *validateParameter(const ParameterAst& ast, FunctionSymbolTable& symbolTable)
+	{
+		auto type = validateTypeAnnotation(ast.annotation(), symbolTable);
+
+		if (!type)
+			return {};
+
+		return new ParameterIr(*type);
+	}
+
+	VariableIr *validateVariable(const VariableAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto identifier = ast.identifier().text();
+
+		if (!ast.annotation())
+			return new VariableIr(std::move(identifier), TypeIr(TypeIr::voidType));
+
+		auto annotationType = validateTypeAnnotation(*ast.annotation(), symbolTable);
+
+		if (!annotationType)
+			return {};
+
+		return new VariableIr(std::move(identifier), *annotationType);
 	}
 
 	Result<TypeIr> validateTypeAnnotation(const TypeAnnotationAst& ast, SymbolTable& symbolTable)
@@ -197,17 +222,229 @@ namespace parka::validator
 		return TypeIr(*typeBase);
 	}
 
-	ParameterIr *validateParameter(const ParameterAst& ast, FunctionSymbolTable& symbolTable)
+	StatementIr *validateStatement(const StatementAst& ast, LocalSymbolTable& symbolTable)
 	{
-		auto type = validateTypeAnnotation(ast.annotation(), symbolTable);
+		switch (ast.statementType)
+		{
+			case StatementType::Declaration:
+				return validateDeclarationStatement(static_cast<const DeclarationStatementAst&>(ast), symbolTable);
 
-		if (!type)
-			return {};
+			case StatementType::Expression:
+				return validateExpressionStatement(static_cast<const ExpressionStatementAst&>(ast), symbolTable);
 
-		return new ParameterIr(*type);
+			case StatementType::Return:
+				return validateReturnStatement(static_cast<const ReturnStatementAst&>(ast), symbolTable);
+
+			case StatementType::Break:
+				return validateBreakStatement(static_cast<const BreakStatementAst&>(ast), symbolTable);
+
+			case StatementType::Continue:
+				return validateContinueStatement(static_cast<const ContinueStatementAst&>(ast), symbolTable);
+
+			case StatementType::Yield:
+				return validateYieldStatement(static_cast<const YieldStatementAst&>(ast), symbolTable);
+
+			case StatementType::For:
+				return validateForStatement(static_cast<const ForStatementAst&>(ast), symbolTable);
+
+			case StatementType::Block:
+				return validateBlockStatement(static_cast<const BlockStatementAst&>(ast), symbolTable);
+
+			case StatementType::Assignment:
+				return validateAssignmentStatement(static_cast<const AssignmentStatementAst&>(ast), symbolTable);
+
+			case StatementType::If:
+				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), symbolTable);
+
+			default:
+				break;
+		}
+
+		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
 	}
 
-	ExpressionIr *validateExpression(const ExpressionAst& ast, FunctionSymbolTable& symbolTable)
+	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		// FIXME: Update all expr an stmt validation to FunctionSymbolTable
+		auto& entry = symbolTable.declare(ast.variable());
+		auto* variable = entry.resolve();
+		auto* value = validateExpression(ast.value(), symbolTable);
+
+		if (!variable || !value)
+			return {};
+
+		if (!ast.variable().annotation())
+		{
+			variable->setType(value->type());
+
+			return new DeclarationStatementIr(*variable, *value, nullptr);
+		}
+
+		auto conversion = symbolTable.resolveConversion(variable->type(), value->type());
+
+		if (!conversion)
+		{
+			log::error("Unable to use $ initialize variable of type $..", value->type(), variable->type());
+			return {};
+		}
+
+		return new DeclarationStatementIr(*variable, *value, *conversion);
+	}
+
+	ExpressionStatementIr* validateExpressionStatement(const ExpressionStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto* expression = validateExpression(ast.expression(), symbolTable);
+
+		if (!expression)
+			return {};
+
+		return new ExpressionStatementIr(*expression);
+	}
+
+	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto* lhs = validateExpression(ast.identifier(), symbolTable);
+		auto* value = validateExpression(ast.value(), symbolTable);
+
+		if (!lhs || !value)
+			return {};
+		
+		if (lhs->expressionType != ExpressionType::Identifier)
+		{
+			log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
+			return {};
+		}
+
+		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
+		auto conversion = symbolTable.resolveConversion(identifier.type(), value->type());
+
+		if (!conversion)
+		{
+			log::error("Unable to assign $ to $.", value->type(), identifier.type());
+			return {};
+		}
+
+		return new AssignmentStatementIr(identifier, *value, *conversion, ast.assignmentType());
+	}
+
+	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		if (!ast.hasValue())
+		{
+			if (symbolTable.returnType() == TypeIr::voidType)
+				return new ReturnStatementIr();
+
+			log::error(ast.snippet(), "Expected $ return value but none was given.", symbolTable.returnType());
+			return {};
+		}
+
+		auto* value = validateExpression(ast.value(), symbolTable);
+
+		if (!value)
+			return {};
+
+		auto conversion = symbolTable.resolveConversion(symbolTable.returnType(), value->type());
+
+		if (!conversion)
+		{
+			// TODO: Highlight function return type
+			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
+			return {};
+		}
+		
+		return new ReturnStatementIr(*value, *conversion);
+	}
+
+	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		// Must be in a loop
+		log::notImplemented(here());
+	}
+
+	ContinueStatementIr *validateContinueStatement(const ContinueStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		// Must be in a loop
+		log::notImplemented(here());
+	}
+
+	YieldStatementIr *validateYieldStatement(const YieldStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		// Must be in an block/if statement
+		log::notImplemented(here());
+	}
+
+	ForStatementIr *validateForStatement(const ForStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto* declaration = validateDeclarationStatement(ast.declaration(), symbolTable);
+
+		if (!declaration)
+			return {};
+
+		auto* condition = validateExpression(ast.condition(), symbolTable);
+		auto* action = validateStatement(ast.action(), symbolTable);
+		auto* body = validateBlockStatement(ast.body(), symbolTable);
+
+		if (!condition  || !action || !body)
+			return {};
+
+		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
+
+		if (!conversion)
+		{
+			log::error("Expression could not be converted from `$` to `$`.", condition->type(), TypeIr::boolType);
+			return {};
+		}
+
+		return new ForStatementIr(*declaration, *condition, *conversion, *action, *body);
+	}
+
+	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto success = true;
+		auto statements = Array<StatementIr*>(ast.statements().length());
+
+		for (const auto *statement : ast.statements())
+		{
+			auto *ir = validateStatement(*statement, symbolTable);
+
+			if (!ir)
+			{
+				success = false;
+				continue;
+			}
+
+			statements.push(ir);
+		}
+
+		if (!success)
+			return {};
+
+		return new BlockStatementIr(std::move(statements));
+	}
+	
+	IfStatementIr* validateIfStatement(const IfStatementAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto* condition = validateExpression(ast.condition(), symbolTable);
+		auto* thenCase = validateStatement(ast.thenCase(), symbolTable);
+		auto* elseCase = ast.hasElseCase()
+			? validateStatement(ast.elseCase(), symbolTable)
+			: nullptr;
+
+		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
+			return {};
+
+		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
+
+		if (!conversion)
+		{
+			log::error(ast.condition().snippet(), "Unable to use expression of type $ as if condition.", condition->type());
+			return {};
+		}
+
+		return new IfStatementIr(*condition, *conversion, *thenCase, elseCase);
+	}
+
+	ExpressionIr *validateExpression(const ExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		switch (ast.expressionType)
 		{
@@ -257,7 +494,7 @@ namespace parka::validator
 		log::fatal("Unable to validate Expression with TypeIr: $", ast.expressionType);
 	}
 
-	BinaryExpressionIr *validateBinaryExpression(const BinaryExpressionAst& ast, FunctionSymbolTable& symbolTable)
+	BinaryExpressionIr *validateBinaryExpression(const BinaryExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto *lhs = validateExpression(ast.lhs(), symbolTable);
 		auto *rhs = validateExpression(ast.rhs(), symbolTable);
@@ -277,7 +514,7 @@ namespace parka::validator
 		return result;
 	}
 
-	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, FunctionSymbolTable& symbolTable)
+	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto* subject = validateExpression(ast.subject(), symbolTable);
 
@@ -338,7 +575,7 @@ namespace parka::validator
 		return new CallExpressionIr(function, std::move(arguments));
 	}
 
-	IdentifierExpressionIr *validateIdentifierExpression(const IdentifierExpressionAst& ast, FunctionSymbolTable& symbolTable)
+	IdentifierExpressionIr *validateIdentifierExpression(const IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto *result = symbolTable.resolveSymbol(ast.identifier());
 
@@ -458,256 +695,5 @@ namespace parka::validator
 	BoolLiteralIr *validateBoolLiteral(const BoolLiteralAst& ast)
 	{
 		return new BoolLiteralIr(ast.value());
-	}
-
-	StatementIr *validateStatement(const StatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		switch (ast.statementType)
-		{
-			case StatementType::Declaration:
-				return validateDeclarationStatement(static_cast<const DeclarationStatementAst&>(ast), symbolTable);
-
-			case StatementType::Expression:
-				return validateExpressionStatement(static_cast<const ExpressionStatementAst&>(ast), symbolTable);
-
-			case StatementType::Return:
-				return validateReturnStatement(static_cast<const ReturnStatementAst&>(ast), symbolTable);
-
-			case StatementType::Break:
-				return validateBreakStatement(static_cast<const BreakStatementAst&>(ast), symbolTable);
-
-			case StatementType::Continue:
-				return validateContinueStatement(static_cast<const ContinueStatementAst&>(ast), symbolTable);
-
-			case StatementType::Yield:
-				return validateYieldStatement(static_cast<const YieldStatementAst&>(ast), symbolTable);
-
-			case StatementType::For:
-				return validateForStatement(static_cast<const ForStatementAst&>(ast), symbolTable);
-
-			case StatementType::Block:
-				return validateBlockStatement(static_cast<const BlockStatementAst&>(ast), symbolTable);
-
-			case StatementType::Assignment:
-				return validateAssignmentStatement(static_cast<const AssignmentStatementAst&>(ast), symbolTable);
-
-			case StatementType::If:
-				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), symbolTable);
-
-			default:
-				break;
-		}
-
-		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
-	}
-
-	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		// FIXME: Update all expr an stmt validation to FunctionSymbolTable
-		auto* value = validateExpression(ast.value(), symbolTable);
-		auto* variable = validateVariable(ast.variable(), value, symbolTable);
-		auto* entry = symbolTable.declare(VariableEntry(ast.variable(), variable));
-
-		if (!variable || !value)
-			return {};
-
-		auto conversion = symbolTable.resolveConversion(variable->type(), value->type());
-
-		if (!conversion || !entry)
-			return {};
-
-		return new DeclarationStatementIr(*variable, *value, *conversion);
-	}
-
-	ExpressionStatementIr* validateExpressionStatement(const ExpressionStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		auto* expression = validateExpression(ast.expression(), symbolTable);
-
-		if (!expression)
-			return {};
-
-		return new ExpressionStatementIr(*expression);
-	}
-
-	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		auto* lhs = validateExpression(ast.identifier(), symbolTable);
-		auto* value = validateExpression(ast.value(), symbolTable);
-
-		if (!lhs || !value)
-			return {};
-		
-		if (lhs->expressionType != ExpressionType::Identifier)
-		{
-			log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
-			return {};
-		}
-
-		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		auto conversion = symbolTable.resolveConversion(identifier.type(), value->type());
-
-		if (!conversion)
-		{
-			log::error("Unable to assign $ to $.", value->type(), identifier.type());
-			return {};
-		}
-
-		return new AssignmentStatementIr(identifier, *value, *conversion, ast.assignmentType());
-	}
-
-	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		if (!ast.hasValue())
-		{
-			if (symbolTable.returnType() == TypeIr::voidType)
-				return new ReturnStatementIr();
-
-			log::error(ast.snippet(), "Expected $ return value but none was given.", symbolTable.returnType());
-			return {};
-		}
-
-		auto* value = validateExpression(ast.value(), symbolTable);
-
-		if (!value)
-			return {};
-
-		auto conversion = symbolTable.resolveConversion(symbolTable.returnType(), value->type());
-
-		if (!conversion)
-		{
-			// TODO: Highlight function return type
-			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
-			return {};
-		}
-		
-		return new ReturnStatementIr(*value, *conversion);
-	}
-
-	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		// Must be in a loop
-		log::notImplemented(here());
-	}
-
-	ContinueStatementIr *validateContinueStatement(const ContinueStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		// Must be in a loop
-		log::notImplemented(here());
-	}
-
-	YieldStatementIr *validateYieldStatement(const YieldStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		// Must be in an block/if statement
-		log::notImplemented(here());
-	}
-
-	ForStatementIr *validateForStatement(const ForStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		auto* declaration = validateDeclarationStatement(ast.declaration(), symbolTable);
-
-		if (!declaration)
-			return {};
-
-		auto* condition = validateExpression(ast.condition(), symbolTable);
-		auto* action = validateStatement(ast.action(), symbolTable);
-		auto* body = validateBlockStatement(ast.body(), symbolTable);
-
-		if (!condition  || !action || !body)
-			return {};
-
-		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
-
-		if (!conversion)
-		{
-			log::error("Expression could not be converted from `$` to `$`.", condition->type(), TypeIr::boolType);
-			return {};
-		}
-
-		return new ForStatementIr(*declaration, *condition, *conversion, *action, *body);
-	}
-
-	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		auto success = true;
-		auto statements = Array<StatementIr*>(ast.statements().length());
-
-		for (const auto *statement : ast.statements())
-		{
-			auto *ir = validateStatement(*statement, symbolTable);
-
-			if (!ir)
-			{
-				success = false;
-				continue;
-			}
-
-			statements.push(ir);
-		}
-
-		if (!success)
-			return {};
-
-		return new BlockStatementIr(std::move(statements));
-	}
-	
-	IfStatementIr* validateIfStatement(const IfStatementAst& ast, FunctionSymbolTable& symbolTable)
-	{
-		auto* condition = validateExpression(ast.condition(), symbolTable);
-		auto* thenCase = validateStatement(ast.thenCase(), symbolTable);
-		auto* elseCase = ast.hasElseCase()
-			? validateStatement(ast.elseCase(), symbolTable)
-			: nullptr;
-
-		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
-			return {};
-
-		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
-
-		if (!conversion)
-		{
-			log::error(ast.condition().snippet(), "Unable to use expression of type $ as if condition.", condition->type());
-			return {};
-		}
-
-		return new IfStatementIr(*condition, *conversion, *thenCase, elseCase);
-	}
-
-	static Result<TypeIr> validateVariableType(const Result<TypeAnnotationAst>& annotation, ExpressionIr *value, FunctionSymbolTable& symbolTable)
-	{
-		if (!annotation)
-		{
-			if (!value)
-				return {};
-			
-			auto valueType = value->type();
-
-			return valueType;
-		}
-
-		auto annotationTypeResult = validateTypeAnnotation(*annotation, symbolTable);
-
-		if (!annotationTypeResult || !value)
-			return {};
-
-		auto annotationType = *annotationTypeResult;
-		auto conversion = symbolTable.resolveConversion(annotationType, value->type());
-
-		if (!conversion)
-		{
-			log::error("Unable to initialize variable of type $ with a value of type $.", annotationType, value->type());
-			return {};
-		}
-
-		return annotationType;
-	}
-
-	VariableIr *validateVariable(const VariableAst& ast, ExpressionIr *value, FunctionSymbolTable& symbolTable)
-	{
-		auto type = validateVariableType(ast.annotation(), value, symbolTable);
-
-		if (!type)
-			return {};
-
-		return new VariableIr(String(ast.identifier().text()), *type);
 	}
 }

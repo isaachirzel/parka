@@ -4,6 +4,8 @@
 #include "parka/ir/IntrinsicConversionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/FunctionEntry.hpp"
+#include <stdexcept>
 
 namespace parka
 {
@@ -50,24 +52,38 @@ namespace parka
 		return _functions.push(std::move(entry));
 	}
 
-	FunctionEntry* GlobalSymbolTable::declare(ast::FunctionAst& ast)
+	FunctionEntry& GlobalSymbolTable::declare(const ast::FunctionAst& ast)
 	{
-		// TODO: Error checking
 		auto& entry = addFunction(FunctionEntry(ast, *this));
 		const auto& key = ast.prototype().identifier().text();
-		auto* symbol = _symbols.insert(key, &entry);
+		auto insertion = _symbols.insert(key, &entry);
 
-		if (!symbol)
-			return nullptr;
+		if (!insertion)
+		{
+			auto* previous = *insertion;
 
-		return &entry;
+			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in global scope.", previous->resolvableType, previous->name());
+		}
+
+		return entry;
+	}
+
+	VariableEntry& GlobalSymbolTable::declare(const ast::VariableAst&)
+	{
+		throw std::invalid_argument("Variables cannot be declared in a GlobalSymbolTable.");
+	}
+
+	ParameterEntry& GlobalSymbolTable::declare(const ast::ParameterAst&)
+	{
+		throw std::invalid_argument("Parameters cannot be declared in a GlobalSymbolTable.");
 	}
 
 	Resolvable* GlobalSymbolTable::findSymbol(const ast::Identifier& identifier)
 	{
-		auto result = _symbols.find(identifier.text());
+		auto& text = identifier.text();
+		auto** result = _symbols.find(text);
 
-		if (result != nullptr)
+		if (result)
 			return *result;
 
 		return nullptr;
@@ -77,29 +93,30 @@ namespace parka
 	{
 		auto* entry = findSymbol(identifier[0]);
 
+		if (!entry)
+			return {};
+
 		for (usize i = 1; i < identifier.length(); ++i)
 		{
-			if (entry == nullptr)
-				break;
-
-			// TODO: Figure out how to not use dynamic cast in this
+			if (!entry)
+				return {};
 
 			auto& part = identifier[i];
 			auto* table = entry->symbolTable();
 
-			if (table == nullptr)
+			if (!table)
 			{
 				log::error("Unable to resolve `$` in package `$`.", part, entry->name());
-				return nullptr;
+				return {};
 			}
 
 			entry = table->findSymbol(part);
 		}
 
-		if (entry != nullptr)
+		if (entry)
 			return entry->resolve();
-
-		return nullptr;
+		
+		return {};
 	}
 
 	ir::BinaryOperatorIr* GlobalSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)

@@ -1,22 +1,13 @@
-#ifndef WARLER_UTIL_TABLE_HPP
-#define WARLER_UTIL_TABLE_HPP
+#ifndef PARKA_UTIL_TABLE_HPP
+#define PARKA_UTIL_TABLE_HPP
 
 #include "parka/util/Common.hpp"
 #include "parka/util/Pool.hpp"
+#include "parka/util/TableUtil.hpp"
 #include <type_traits>
 
 namespace parka
 {
-	namespace table
-	{
-		constexpr usize empty = -1;
-
-		extern const usize primeNumbers[];
-		extern const usize primeNumberCount;
-
-		usize getCapacity(usize minimumCapacity);
-	}
-
 	template <typename Key, typename Value>
 	class Table
 	{
@@ -31,9 +22,9 @@ namespace parka
 		public:
 
 			Item(const Key& key, Value&& value, usize hash):
-			_key(key),
-			_value(std::move(value)),
-			_hash(hash)
+				_key(key),
+				_value(std::move(value)),
+				_hash(hash)
 			{}
 
 			const auto& key() const { return _key; }
@@ -41,6 +32,30 @@ namespace parka
 			const auto& hash() const { return _hash; }
 
 			auto& value() { return _value; }
+
+			friend class Table;
+		};
+
+		class Insertion
+		{
+			Value& _ref;
+			bool _success;
+
+			Insertion(Value& ref, bool success):
+				_ref(ref),
+				_success(success)
+			{}
+
+		public:
+		
+			Insertion(Insertion&&) = default;
+			Insertion(const Insertion&) = default;
+
+			operator bool() const { return _success; }
+			Value& operator*() { return _ref; }
+			const Value& operator*() const { return _ref; }
+			Value* operator->() { return &_ref; }
+			const Value* operator->() const { return &_ref; }
 
 			friend class Table;
 		};
@@ -73,13 +88,13 @@ namespace parka
 
 		usize getSlotIndex(const Key& key, const usize hash) const
 		{
-			usize slotCount = _slots.length();
-			usize slotIndex = hash % _slots.length();
+			const usize slotCount = _slots.length();
+			usize slotIndex = hash % slotCount;
 			usize step = 1;
 
 			while (true)
 			{
-				auto& slot = _slots[slotIndex];
+				const usize slot = _slots[slotIndex];
 
 				if (slot == table::empty)
 					break;
@@ -121,7 +136,7 @@ namespace parka
 		{
 			auto hash = _hash(key);
 			auto slotIndex = getSlotIndex(key, hash);
-			const auto& slot = _slots[slotIndex];
+			auto slot = _slots[slotIndex];
 
 			return slot;
 		}
@@ -143,30 +158,31 @@ namespace parka
 		Table(Table&&) = default;
 		Table(const Table&) = delete;
 
-		Value* insert(const Key& key, const Value& value)
+		template <typename U = Value, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
+		Insertion insert(const Key& key, const Value& value)
 		{
-			static_assert(std::is_copy_constructible_v<Value>, "Value must be copy constructible to pass const&");
-
 			return insert(key, Value(value));
 		}
 
-		Value* insert(const Key& key, Value&& value)
+		Insertion insert(const Key& key, Value&& value)
 		{
-			if (_items.length() * 2 >= _slots.length())
+			if (_slots.length() < _items.length() * 2)
 				reserve(_slots.length() * 2);
 
 			auto hash = _hash(key);
 			auto slotIndex = getSlotIndex(key, hash);
 			auto& slot = _slots[slotIndex];
-			
-			if (slot != table::empty)
-				return nullptr;
+			auto success = false;
+		
+			if (slot == table::empty)	
+			{
+				success = true;
+				slot = _items.length();
+				
+				_items.add(Item(key, std::move(value), hash));
+			}
 
-			slot = _items.length();
-			
-			_items.add(Item(key, std::move(value), hash));
-
-			return &_items[slot].value();
+			return Insertion(_items[slot].value(), success);
 		}
 
 		Value *find(const Key& key)

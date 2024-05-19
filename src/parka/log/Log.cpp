@@ -2,7 +2,6 @@
 #include "parka/log/LogEntry.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Pool.hpp"
-#include "parka/util/Table.hpp"
 
 namespace parka::log
 {
@@ -13,7 +12,6 @@ namespace parka::log
 	usize errorCount = 0;
 	usize fatalCount = 0;
 	Pool<LogEntry> entries(1'000'000);
-	Table<usize, usize> entryTable;
 
 	// TODO: Organize by files
 	// TODO: Thread safety

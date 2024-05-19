@@ -22,7 +22,6 @@ namespace parka
 
 		SymbolTable* symbolTable() { return nullptr; }
 		const auto& ast() const { return _ast; }
-		const auto *ir() const { return _ir; }
 		const ast::Identifier& identifier() const { return _ast.identifier(); }
 		const String& name() const { return _ast.identifier().text(); }
 	};
