@@ -15,6 +15,7 @@
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
+#include "parka/ast/FunctionBodyAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
 #include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
@@ -35,6 +36,7 @@
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/FloatLiteralIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
+#include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/IfStatementIr.hpp"
 #include "parka/ir/Ir.hpp"
@@ -55,6 +57,7 @@ namespace parka::validator
 	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, FunctionSymbolTable& symbolTable);
 	Result<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, FunctionSymbolTable& symbolTable);
 	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, FunctionSymbolTable& symbolTable);
+	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionSymbolTable& symbolTable);
 	ir::VariableIr* validateVariable(const ast::VariableAst& ast, LocalSymbolTable& symbolTable);
 	Result<ir::TypeIr> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
 	ir::StatementIr* validateStatement(const ast::StatementAst& statement, LocalSymbolTable& symbolTable);

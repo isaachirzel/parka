@@ -5,6 +5,7 @@
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
 #include "parka/ast/FunctionAst.hpp"
+#include "parka/ast/FunctionBodyAst.hpp"
 #include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/ExpressionType.hpp"
@@ -18,6 +19,7 @@
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
+#include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
@@ -81,7 +83,9 @@ namespace parka::validator
 			success = false;
 		}
 
-		if (ir.prototype().returnType() != TypeIr::i32Type && ir.prototype().returnType() != TypeIr::voidType)
+		auto& returnType = ir.prototype().returnType();
+
+		if (returnType != TypeIr::i32Type && returnType != TypeIr::voidType)
 		{
 			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", TypeIr::i32Type, TypeIr::voidType);
 			success = false;
@@ -140,14 +144,6 @@ namespace parka::validator
 		return new FunctionIr(std::move(symbol), *prototype, nullptr);
 	}
 
-	static Result<TypeIr> validateReturnType(const Result<TypeAnnotationAst>& syntax, FunctionSymbolTable& symbolTable)
-	{
-		if (!syntax)
-			return TypeIr::voidType;
-
-		return validateTypeAnnotation(*syntax, symbolTable);
-	}
-
 	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionSymbolTable& symbolTable)
 	{
 		const auto parameterCount = prototype.parameters().length();
@@ -164,14 +160,25 @@ namespace parka::validator
 			parameters.push(parameter);
 		}
 
-		auto returnType = validateReturnType(prototype.returnType(), symbolTable);
+		auto returnType = TypeIr::voidType;
 
-		if (!returnType || parameters.length() != prototype.parameters().length())
+		if (prototype.returnType())
+		{
+			auto returnTypeAnnotation = validateTypeAnnotation(*prototype.returnType(), symbolTable);
+
+			if (!returnTypeAnnotation)
+				return {};
+
+			returnType = *returnTypeAnnotation;
+			symbolTable.setReturnType(returnType);
+		}
+
+		symbolTable.setIsExplicitReturnType(!!prototype.returnType());
+
+		if (parameters.length() != prototype.parameters().length())
 			return {};
 
-		symbolTable.setReturnType(*returnType);
-
-		return PrototypeIr(std::move(parameters), *returnType);
+		return PrototypeIr(std::move(parameters), std::move(returnType));
 	}
 
 	ParameterIr *validateParameter(const ParameterAst& ast, FunctionSymbolTable& symbolTable)
@@ -182,6 +189,34 @@ namespace parka::validator
 			return {};
 
 		return new ParameterIr(*type);
+	}
+
+	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionSymbolTable& symbolTable)
+	{
+		if (ast.isExpression())
+		{
+			auto* expression = validateExpression(ast.expression(), symbolTable);
+
+			if (!expression)
+				return {};
+
+			auto conversion = symbolTable.resolveConversion(symbolTable.returnType(), expression->type());
+
+			if (!conversion)
+			{
+				log::error("Unable to return $ in function expecting $.", expression->type(), symbolTable.returnType());
+				return {};
+			}
+
+			return FunctionBodyIr(*expression, *conversion);
+		}
+
+		auto* blockStatement = validateBlockStatement(ast.blockStatement(), symbolTable);
+
+		if (!blockStatement)
+			return {};
+
+		return FunctionBodyIr(*blockStatement);
 	}
 
 	VariableIr *validateVariable(const VariableAst& ast, LocalSymbolTable& symbolTable)
@@ -355,19 +390,19 @@ namespace parka::validator
 		return new ReturnStatementIr(*value, *conversion);
 	}
 
-	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, LocalSymbolTable& symbolTable)
+	BreakStatementIr *validateBreakStatement(const BreakStatementAst&, LocalSymbolTable&)
 	{
 		// Must be in a loop
 		log::notImplemented(here());
 	}
 
-	ContinueStatementIr *validateContinueStatement(const ContinueStatementAst& ast, LocalSymbolTable& symbolTable)
+	ContinueStatementIr *validateContinueStatement(const ContinueStatementAst&, LocalSymbolTable&)
 	{
 		// Must be in a loop
 		log::notImplemented(here());
 	}
 
-	YieldStatementIr *validateYieldStatement(const YieldStatementAst& ast, LocalSymbolTable& symbolTable)
+	YieldStatementIr *validateYieldStatement(const YieldStatementAst&, LocalSymbolTable&)
 	{
 		// Must be in an block/if statement
 		log::notImplemented(here());
@@ -444,7 +479,7 @@ namespace parka::validator
 		return new IfStatementIr(*condition, *conversion, *thenCase, elseCase);
 	}
 
-	ExpressionIr *validateExpression(const ExpressionAst& ast, LocalSymbolTable& symbolTable)
+	ExpressionIr* validateExpression(const ExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		switch (ast.expressionType)
 		{
@@ -459,9 +494,6 @@ namespace parka::validator
 
 			case ExpressionType::Identifier:
 				return validateIdentifierExpression(static_cast<const IdentifierExpressionAst&>(ast), symbolTable);
-
-			case ExpressionType::If:
-				break;
 
 			case ExpressionType::Subscript:
 				break;
@@ -494,7 +526,7 @@ namespace parka::validator
 		log::fatal("Unable to validate Expression with TypeIr: $", ast.expressionType);
 	}
 
-	BinaryExpressionIr *validateBinaryExpression(const BinaryExpressionAst& ast, LocalSymbolTable& symbolTable)
+	BinaryExpressionIr* validateBinaryExpression(const BinaryExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto *lhs = validateExpression(ast.lhs(), symbolTable);
 		auto *rhs = validateExpression(ast.rhs(), symbolTable);
@@ -575,7 +607,7 @@ namespace parka::validator
 		return new CallExpressionIr(function, std::move(arguments));
 	}
 
-	IdentifierExpressionIr *validateIdentifierExpression(const IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
+	IdentifierExpressionIr* validateIdentifierExpression(const IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto *result = symbolTable.resolveSymbol(ast.identifier());
 
@@ -612,7 +644,7 @@ namespace parka::validator
 		return value;
 	}
 
-	IntegerLiteralIr *validateIntegerLiteral(const IntegerLiteralAst& ast)
+	IntegerLiteralIr* validateIntegerLiteral(const IntegerLiteralAst& ast)
 	{
 		auto value = getIntegerValue(ast.snippet());
 
@@ -657,7 +689,7 @@ namespace parka::validator
 		return value;
 	}
 
-	FloatLiteralIr *validateFloatLiteral(const FloatLiteralAst& ast)
+	FloatLiteralIr* validateFloatLiteral(const FloatLiteralAst& ast)
 	{
 		// TODO: handle type suffixes to determine f64 vs f32
 		auto value = parseDecimal(ast.snippet());
@@ -665,7 +697,7 @@ namespace parka::validator
 		return new FloatLiteralIr(value);
 	}
 
-	StringLiteralIr *validateStringLiteral(const StringLiteralAst& ast)
+	StringLiteralIr* validateStringLiteral(const StringLiteralAst& ast)
 	{
 		// TODO: Handle escapes
 		const auto& snippet = ast.snippet();
@@ -675,7 +707,7 @@ namespace parka::validator
 		return context;
 	}
 
-	CharLiteralIr *validateCharLiteral(const CharLiteralAst& ast)
+	CharLiteralIr* validateCharLiteral(const CharLiteralAst& ast)
 	{
 		// TODO: Allow for integer literals from long char literals;
 
@@ -692,7 +724,7 @@ namespace parka::validator
 		return new CharLiteralIr(value);
 	}
 
-	BoolLiteralIr *validateBoolLiteral(const BoolLiteralAst& ast)
+	BoolLiteralIr* validateBoolLiteral(const BoolLiteralAst& ast)
 	{
 		return new BoolLiteralIr(ast.value());
 	}

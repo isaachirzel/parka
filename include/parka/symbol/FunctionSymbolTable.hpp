@@ -26,6 +26,7 @@ namespace parka
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
 		ir::TypeIr _returnType;
+		bool _isExplicitReturnType;
 		Array<ir::StatementIr*> _parentStatements;
 
 	public:
@@ -47,6 +48,8 @@ namespace parka
 		
 		void setReturnType(const ir::TypeIr& type) { _returnType = type; }
 		const ir::TypeIr& returnType() const { return _returnType; }
+		void setIsExplicitReturnType(bool value) { _isExplicitReturnType = value; }
+		const auto& isExplicitReturnType() const { return _isExplicitReturnType; }
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }
 		GlobalSymbolTable& global() { return _global; }

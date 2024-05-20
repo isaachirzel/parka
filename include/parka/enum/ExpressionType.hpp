@@ -11,7 +11,6 @@ namespace parka
 		Call,
 		Conditional,
 		Identifier,
-		If,
 		Subscript,
 		MemberAccess,
 		Prefix,

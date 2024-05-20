@@ -13,6 +13,7 @@
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
 #include "parka/ast/ForStatementAst.hpp"
+#include "parka/ast/FunctionBodyAst.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/IdentifierExpressionAst.hpp"
 #include "parka/ast/IfStatementAst.hpp"
@@ -39,14 +40,14 @@ namespace parka::parser
 	Result<ast::KeywordAst> parseKeyword(Token& token);
 	Result<ast::Identifier> parseIdentifier(Token& token);
 	Result<ast::QualifiedIdentifier> parseQualifiedIdentifier(Token& token);
-	Result<ast::PrototypeAst> parsePrototype(Token& token);
 	Result<ast::TypeAnnotationAst> parseTypeAnnotation(Token& token);
 	Result<ast::RangeAst> parseRange(Token& token);
 	ast::VariableAst *parseVariable(Token& token);
 	bool parseMutability(Token& token);
-	ast::ParameterAst *parseParameter(Token& token);
-	ast::ExpressionAst *parseFunctionBody(Token& token);
 	ast::FunctionAst *parseFunction(Token& token);
+	Result<ast::PrototypeAst> parsePrototype(Token& token);
+	ast::ParameterAst *parseParameter(Token& token);
+	Result<ast::FunctionBodyAst> parseFunctionBody(Token& token);
 	ast::MemberAst *parseMember(Token& token);
 	ast::StructAst *parseStruct(Token& token);
 	ast::ExpressionAst* parseExpression(Token& token);

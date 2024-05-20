@@ -22,10 +22,6 @@ namespace parka
 				out << "IdentifierExpression";
 				break;
 
-			case ExpressionType::If:
-				out << "IfExpression";
-				break;
-
 			case ExpressionType::Subscript:
 				out << "SubscriptExpression";
 				break;

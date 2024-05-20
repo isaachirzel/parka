@@ -22,6 +22,7 @@ namespace parka
 		_variables(),
 		_parameters(),
 		_returnType(ir::TypeIr::voidType),
+		_isExplicitReturnType(false),
 		_parentStatements()
 	{}
 

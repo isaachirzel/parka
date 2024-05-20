@@ -20,6 +20,8 @@ namespace parka::ir
 		PrototypeIr(PrototypeIr&&) = default;
 		PrototypeIr(const PrototypeIr&) = delete;
 
+		void setReturnType(TypeIr&& type) { _returnType = std::move(type); }
+
 		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }
 	};

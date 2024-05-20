@@ -7,6 +7,7 @@
 #include "parka/ast/ExpressionAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
 #include "parka/ast/FloatLiteralAst.hpp"
+#include "parka/ast/FunctionBodyAst.hpp"
 #include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/IntegerLiteralAst.hpp"
 #include "parka/ast/MemberAccessExpressionAst.hpp"
@@ -47,7 +48,7 @@ namespace parka::parser
 
 	bool parseSemicolon(Token& token, const char *message)
 	{
-		if (token.type() != TokenType::Semicolon)
+		if (!token.isSemicolon())
 		{
 			logParseError(token, "';'", message);
 			return false;
@@ -248,7 +249,7 @@ namespace parka::parser
 		{
 			if (seekingNext)
 			{
-				if (token.type() != TokenType::Semicolon)
+				if (!token.isSemicolon())
 				{
 					token.increment();
 					continue;
@@ -1274,38 +1275,6 @@ namespace parka::parser
 		return syntax;
 	}
 
-	// ExpressionAst *parseFunctionBody(Token& token)
-	// {
-	// 	if (token.type() == TokenType::DoubleArrow)
-	// 	{
-	// 		token.increment();
-
-	// 		auto body = parseExpression(token);
-
-	// 		if (!body)
-	// 			return {};
-
-	// 		if (token.type() != TokenType::Semicolon)
-	// 		{
-	// 			log::error(token, "Inline function bodies need to be ended with ';'.");
-	// 			return {};
-	// 		}
-
-	// 		token.increment();
-
-	// 		return body;
-	// 	}
-
-
-
-	// 	if (token.type() == TokenType::LeftBrace)
-	// 		return parseBlockStatement(token);
-		
-	// 	logParseError(token, "function body", "Functions require a body.");
-
-	// 	return {};
-	// }
-
 	Result<TypeAnnotationAst> parseTypeAnnotation(Token& token)
 	{
 		auto identifier = parseQualifiedIdentifier(token);
@@ -1373,6 +1342,33 @@ namespace parka::parser
 
 		return syntax;
 	}
+
+	FunctionAst *parseFunction(Token& token)
+	{
+		auto prototype = parsePrototype(token);
+
+		if (!prototype)
+			return {};
+
+		if (token.isSemicolon())
+		{
+			auto snippet = prototype->snippet() + token;
+
+			token.increment();
+
+			return new FunctionAst(snippet, *prototype);
+		}
+
+		auto body = parseBlockStatement(token);
+
+		if (!body)
+			return {};
+
+		auto snippet = prototype->snippet() + body->snippet();
+
+		return new FunctionAst(snippet, *prototype, *body);
+	}
+
 
 	Result<PrototypeAst> parsePrototype(Token& token)
 	{
@@ -1447,30 +1443,44 @@ namespace parka::parser
 		return prototype;
 	}
 
-	FunctionAst *parseFunction(Token& token)
+	Result<FunctionBodyAst> parseFunctionBody(Token& token)
 	{
-		auto prototype = parsePrototype(token);
-
-		if (!prototype)
-			return {};
-
-		if (token.isSemicolon())
+		if (token.type() == TokenType::DoubleArrow)
 		{
-			auto snippet = prototype->snippet() + token;
+			auto first = token;
 
 			token.increment();
 
-			return new FunctionAst(snippet, *prototype);
+			auto body = parseExpression(token);
+
+			if (!body)
+				return {};
+
+			
+			auto snippet = first + token;
+
+			if (!parseSemicolon(token, "Expression function bodies need to be ended with ';'."))
+				return {};
+
+			token.increment();
+
+			return FunctionBodyAst(snippet, *body);
 		}
 
-		auto body = parseBlockStatement(token);
+		if (token.type() == TokenType::LeftBrace)
+		{
+			auto body = parseBlockStatement(token);
 
-		if (!body)
-			return {};
+			if (!body)
+				return {};
 
-		auto snippet = prototype->snippet() + body->snippet();
+			return FunctionBodyAst(body->snippet(), *body);
+		}
+	
+		
+		logParseError(token, "function body", "Functions require a body.");
 
-		return new FunctionAst(snippet, *prototype, *body);
+		return {};
 	}
 
 	bool parsePublicity(Token& token)

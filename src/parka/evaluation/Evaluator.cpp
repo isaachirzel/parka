@@ -236,9 +236,6 @@ namespace parka::evaluation
 			case ExpressionType::Identifier:
 				return evaluateIdentifierExpression(static_cast<const IdentifierExpressionIr&>(ir), state);
 
-			case ExpressionType::If:
-				break;
-
 			case ExpressionType::Subscript:
 				break;
 
