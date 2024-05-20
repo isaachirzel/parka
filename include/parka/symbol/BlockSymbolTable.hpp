@@ -19,7 +19,7 @@ namespace parka
 
 	public:
 
-		BlockSymbolTable(BlockSymbolTable& parent);
+		BlockSymbolTable(LocalSymbolTable& parent);
 		BlockSymbolTable(BlockSymbolTable&&) = default;
 		BlockSymbolTable(const BlockSymbolTable&) = delete;
 
@@ -33,7 +33,8 @@ namespace parka
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }
 		const ir::TypeIr& returnType() const { return _function.returnType(); }
-		GlobalSymbolTable& global() { return _global; }
+		FunctionSymbolTable& functionSymbolTable() { return _function; }
+		GlobalSymbolTable& globalSymbolTable() { return _global; }
 	};
 }
 

@@ -5,6 +5,8 @@
 
 namespace parka
 {
+	class FunctionSymbolTable;
+
 	struct LocalSymbolTable: public SymbolTable
 	{
 		LocalSymbolTable(SymbolTableType symbolTableType):
@@ -12,6 +14,7 @@ namespace parka
 		{}
 		virtual ~LocalSymbolTable() {}
 
+		virtual FunctionSymbolTable& functionSymbolTable() = 0;
 		virtual const ir::TypeIr& returnType() const = 0;
 	};
 }

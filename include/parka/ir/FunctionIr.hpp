@@ -1,9 +1,10 @@
-#ifndef PARKA_IR_FUNCTION_HPP
-#define PARKA_IR_FUNCTION_HPP
+#ifndef PARKA_IR_FUNCTION_IR_HPP
+#define PARKA_IR_FUNCTION_IR_HPP
 
-#include "parka/ir/BlockStatementIr.hpp"
+#include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/PrototypeIr.hpp"
+#include "parka/util/Optional.hpp"
 
 namespace parka::ir
 {
@@ -11,24 +12,22 @@ namespace parka::ir
 	{
 		String _symbol;
 		PrototypeIr _prototype;
-		BlockStatementIr* _body;
+		Optional<FunctionBodyIr> _body;
 
 	public:
 
-		FunctionIr(String&& symbol, PrototypeIr&& prototype, BlockStatementIr* body):
+		FunctionIr(String&& symbol, PrototypeIr&& prototype, Optional<FunctionBodyIr>&& body):
 			LValueIr(ResolvableType::Function),
 			_symbol(std::move(symbol)),
 			_prototype(std::move(prototype)),
-			_body(body)
+			_body(std::move(body))
 		{}
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;
 
-		void setBody(BlockStatementIr& body)
+		void setBody(FunctionBodyIr&& body)
 		{
-			assert(!_body);
-
-			_body = &body;
+			_body = std::move(body);
 		}
 
 		const String& symbol() const { return _symbol; }

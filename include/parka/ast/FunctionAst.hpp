@@ -1,8 +1,9 @@
-#ifndef PARKA_AST_FUNCTION_HPP
-#define PARKA_AST_FUNCTION_HPP
+#ifndef PARKA_AST_FUNCTION_AST_HPP
+#define PARKA_AST_FUNCTION_AST_HPP
 
-#include "parka/ast/BlockStatementAst.hpp"
+#include "parka/ast/FunctionBodyAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
+#include "parka/util/Optional.hpp"
 
 namespace parka::ast
 {
@@ -10,19 +11,14 @@ namespace parka::ast
 	{
 		Snippet _snippet;
 		PrototypeAst _prototype;
-		BlockStatementAst* _body;
+		Optional<FunctionBodyAst> _body;
 
 	public:
 	
-		FunctionAst(const Snippet& snippet, PrototypeAst&& prototype):
+		FunctionAst(const Snippet& snippet, PrototypeAst&& prototype, Optional<FunctionBodyAst>&& body):
 			_snippet(snippet),
 			_prototype(std::move(prototype)),
-			_body(nullptr)
-		{}
-		FunctionAst(const Snippet& snippet, PrototypeAst&& prototype, BlockStatementAst& body):
-			_snippet(snippet),
-			_prototype(std::move(prototype)),
-			_body(&body)
+			_body(std::move(body))
 		{}
 		FunctionAst(FunctionAst&&) = default;
 		FunctionAst(const FunctionAst&) = delete;

@@ -35,7 +35,7 @@ namespace parka
 
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }
-		GlobalSymbolTable& global() { return _global; }
+		GlobalSymbolTable& globalSymbolTable() { return _global; }
 	};
 }
 

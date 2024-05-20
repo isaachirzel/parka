@@ -43,7 +43,7 @@ namespace parka::evaluation
 			log::fatal("$() is not implemented.", ir.symbol());
 		}
 		
-		evaluateBlockStatement(ir.body(), state);
+		evaluateFunctionBody(ir.body(), state);
 
 		// TODO: This shouldn't do this for exceptions
 
@@ -69,6 +69,20 @@ namespace parka::evaluation
 
 			parameterValue.setNode(parameter);
 		}
+	}
+
+	void evaluateFunctionBody(const ir::FunctionBodyIr& ir, LocalState& state)
+	{
+		if (ir.isExpression())
+		{
+			auto& expressionValue = evaluateExpression(ir.expression().expression, state);
+
+			evaluateConversion(ir.expression().conversion, state.returnValue(), expressionValue);
+
+			return;
+		}
+
+		evaluateBlockStatement(ir.blockStatement(), state);
 	}
 
 	void evaluateStatement(const StatementIr& ir, LocalState& state)

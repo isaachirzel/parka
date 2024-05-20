@@ -13,7 +13,7 @@ namespace parka
 		SymbolTable(SymbolTableType::Package),
 		_scope(parent.createSymbol(ast.name())),
 		_symbols(),
-		_global(parent.global()),
+		_global(parent.globalSymbolTable()),
 		_parent(parent)
 	{
 		log::notImplemented(here());

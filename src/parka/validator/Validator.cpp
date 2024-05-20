@@ -24,9 +24,11 @@
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/BlockSymbolTable.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
 #include "parka/symbol/GlobalSymbolTable.hpp"
+#include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
 #include "parka/util/Array.hpp"
 
@@ -67,6 +69,26 @@ namespace parka::validator
 
 	// 	return success;
 	// }
+
+	static Result<Array<StatementIr*>> validateStatements(const Array<StatementAst*>& statementAsts, LocalSymbolTable& symbolTable)
+	{
+		auto statementIrs = Array<StatementIr*>(statementAsts.length());
+
+		for (const auto *statement : statementAsts)
+		{
+			auto *ir = validateStatement(*statement, symbolTable);
+
+			if (!ir)
+				continue;
+
+			statementIrs.push(ir);
+		}
+
+		if (statementIrs.length() != statementAsts.length())
+			return {};
+
+		return statementIrs;
+	}
 
 	static bool validateEntryPoint(const ir::FunctionIr& ir, const ast::FunctionAst& ast)
 	{
@@ -110,7 +132,7 @@ namespace parka::validator
 
 			if (entry.ast().hasBody())
 			{
-				auto* body = validateBlockStatement(entry.ast().body(), *entry.symbolTable());
+				auto body = validateFunctionBody(entry.ast().body(), *entry.symbolTable());
 
 				if (body)
 					ir->setBody(*body);
@@ -141,7 +163,7 @@ namespace parka::validator
 		const auto& name = ast.prototype().identifier().text();
 		auto symbol = symbolTable.createSymbol(name);
 
-		return new FunctionIr(std::move(symbol), *prototype, nullptr);
+		return new FunctionIr(std::move(symbol), *prototype, {});
 	}
 
 	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionSymbolTable& symbolTable)
@@ -211,10 +233,12 @@ namespace parka::validator
 			return FunctionBodyIr(*expression, *conversion);
 		}
 
-		auto* blockStatement = validateBlockStatement(ast.blockStatement(), symbolTable);
+		auto statements = validateStatements(ast.blockStatement().statements(), symbolTable);
 
-		if (!blockStatement)
+		if (!statements)
 			return {};
+
+		auto* blockStatement = new BlockStatementIr(*statements);
 
 		return FunctionBodyIr(*blockStatement);
 	}
@@ -433,28 +457,12 @@ namespace parka::validator
 		return new ForStatementIr(*declaration, *condition, *conversion, *action, *body);
 	}
 
-	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalSymbolTable& symbolTable)
+	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalSymbolTable& parentSymbolTable)
 	{
-		auto success = true;
-		auto statements = Array<StatementIr*>(ast.statements().length());
-
-		for (const auto *statement : ast.statements())
-		{
-			auto *ir = validateStatement(*statement, symbolTable);
-
-			if (!ir)
-			{
-				success = false;
-				continue;
-			}
-
-			statements.push(ir);
-		}
-
-		if (!success)
-			return {};
-
-		return new BlockStatementIr(std::move(statements));
+		auto symbolTable = BlockSymbolTable(parentSymbolTable);
+		auto statements = validateStatements(ast.statements(), symbolTable);
+		
+		return new BlockStatementIr(*statements);
 	}
 	
 	IfStatementIr* validateIfStatement(const IfStatementAst& ast, LocalSymbolTable& symbolTable)

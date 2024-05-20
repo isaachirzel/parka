@@ -1356,10 +1356,10 @@ namespace parka::parser
 
 			token.increment();
 
-			return new FunctionAst(snippet, *prototype);
+			return new FunctionAst(snippet, *prototype, {});
 		}
 
-		auto body = parseBlockStatement(token);
+		auto body = parseFunctionBody(token);
 
 		if (!body)
 			return {};
@@ -1414,7 +1414,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				logParseError(token, "')'", "Invalid tokens in parameter list");
+				logParseError(token, "end of parameter list ')'");
 				return {};
 			}
 		}
@@ -1425,7 +1425,7 @@ namespace parka::parser
 
 		Result<TypeAnnotationAst> returnType;
 
-		if (token.type() == TokenType::SingleArrow)
+		if (token.type() == TokenType::Colon)
 		{
 			token.increment();
 

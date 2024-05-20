@@ -11,8 +11,8 @@ namespace parka::ir
 	{
 		struct ExpressionBody
 		{
-			ExpressionIr& _expression;
-			ConversionIr* _conversion;
+			ExpressionIr& expression;
+			ConversionIr* conversion;
 		};
 
 		union
@@ -31,7 +31,7 @@ namespace parka::ir
 		~FunctionBodyIr() = default;
 
 		const auto& expression() const { assert(_isExpression); return _expression; }
-		const auto& blockStatement() const { assert(_isExpression); return *_blockStatement; }
+		const auto& blockStatement() const { assert(!_isExpression); return *_blockStatement; }
 		const auto& isExpression() const { return _isExpression; }
 	};
 }

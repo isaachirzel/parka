@@ -37,7 +37,7 @@ namespace parka
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		const String& scope() const;
 		SymbolTable* parent() { return nullptr; }
-		GlobalSymbolTable& global() { return *this; }
+		GlobalSymbolTable& globalSymbolTable() { return *this; }
 
 		auto& functions() { return _functions; }
 	};

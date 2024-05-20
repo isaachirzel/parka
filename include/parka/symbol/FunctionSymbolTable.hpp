@@ -52,7 +52,8 @@ namespace parka
 		const auto& isExplicitReturnType() const { return _isExplicitReturnType; }
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }
-		GlobalSymbolTable& global() { return _global; }
+		GlobalSymbolTable& globalSymbolTable() { return _global; }
+		FunctionSymbolTable& functionSymbolTable() { return *this; }
 	};
 }
 

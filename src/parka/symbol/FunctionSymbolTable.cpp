@@ -15,7 +15,7 @@ namespace parka
 {
 	FunctionSymbolTable::FunctionSymbolTable(SymbolTable& parent):
 		LocalSymbolTable(SymbolTableType::Function),
-		_global(parent.global()),
+		_global(parent.globalSymbolTable()),
 		_parent(parent),
 		_scope(),
 		_symbols(),

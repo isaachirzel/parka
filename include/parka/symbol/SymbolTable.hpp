@@ -39,7 +39,7 @@ namespace parka
 		virtual Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from) = 0;
 		virtual const String& scope() const = 0;
 		virtual SymbolTable* parent() = 0;
-		virtual GlobalSymbolTable& global() = 0;
+		virtual GlobalSymbolTable& globalSymbolTable() = 0;
 
 		String createSymbol(const String& name) const
 		{

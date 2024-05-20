@@ -7,15 +7,11 @@
 
 namespace parka
 {
-	BlockSymbolTable::BlockSymbolTable(FunctionSymbolTable& function, SymbolTable& parent):
+	BlockSymbolTable::BlockSymbolTable(LocalSymbolTable& parent):
 		LocalSymbolTable(SymbolTableType::Block),
-		_global(function.global()),
-		_function(function),
+		_global(parent.globalSymbolTable()),
+		_function(parent.functionSymbolTable()),
 		_parent(parent)
-	{}
-
-	BlockSymbolTable::BlockSymbolTable(BlockSymbolTable& parent):
-		BlockSymbolTable(parent._function, parent)
 	{}
 
 	FunctionEntry& BlockSymbolTable::declare(const ast::FunctionAst& ast)
