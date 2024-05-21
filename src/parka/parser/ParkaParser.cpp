@@ -106,7 +106,7 @@ namespace parka::parser
 		return true;
 	}
 
-	Result<QualifiedIdentifier> parseQualifiedIdentifier(Token& token)
+	Result<QualifiedIdentifierAst> parseQualifiedIdentifier(Token& token)
 	{
 		auto start = Snippet(token);
 		auto isAbsolute = parseAbsolute(token);
@@ -132,7 +132,7 @@ namespace parka::parser
 
 		// Parts is guaranteed to be at least 1 long
 		auto snippet = start + parts.back().snippet();
-		auto qualifiedIdentifier = QualifiedIdentifier(snippet, std::move(parts), isAbsolute);
+		auto qualifiedIdentifier = QualifiedIdentifierAst(snippet, std::move(parts), isAbsolute);
 
 		return qualifiedIdentifier;
 	}

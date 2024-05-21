@@ -34,7 +34,7 @@ namespace parka
 		virtual VariableEntry& declare (const ast::VariableAst& ast) = 0;
 		virtual ParameterEntry& declare (const ast::ParameterAst& ast) = 0;
 		virtual Resolvable* findSymbol(const ast::IdentifierAst& identifier) = 0;
-		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier) = 0;
+		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier) = 0;
 		virtual ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right) = 0;
 		virtual Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from) = 0;
 		virtual const String& scope() const = 0;

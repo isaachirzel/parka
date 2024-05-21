@@ -4,6 +4,7 @@
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/ParameterAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
+#include "parka/util/Result.hpp"
 
 namespace parka::ast
 {

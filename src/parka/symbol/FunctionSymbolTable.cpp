@@ -85,7 +85,7 @@ namespace parka
 		return *symbol;
 	}
 
-	ir::LValueIr* FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
+	ir::LValueIr* FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		if (identifier.isAbsolute())
 			return _global.resolveSymbol(identifier);

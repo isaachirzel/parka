@@ -28,7 +28,7 @@ namespace parka
 		VariableEntry& declare(const ast::VariableAst& ast);
 		ParameterEntry& declare(const ast::ParameterAst& ast);
 		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
-		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifier& identifier);
+		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right);
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		const String& scope() const { return _scope; }

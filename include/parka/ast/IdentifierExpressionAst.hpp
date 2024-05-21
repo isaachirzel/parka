@@ -8,11 +8,11 @@ namespace parka::ast
 {
 	class IdentifierExpressionAst: public ExpressionAst
 	{
-		QualifiedIdentifier _identifier;
+		QualifiedIdentifierAst _identifier;
 
 	public:
 
-		IdentifierExpressionAst(QualifiedIdentifier&& identifier):
+		IdentifierExpressionAst(QualifiedIdentifierAst&& identifier):
 		ExpressionAst(ExpressionType::Identifier),
 		_identifier(std::move(identifier))
 		{}

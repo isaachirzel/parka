@@ -3,7 +3,7 @@
 
 namespace parka::ast
 {
-	std::ostream& operator<<(std::ostream& out, const QualifiedIdentifier& identifier)
+	std::ostream& operator<<(std::ostream& out, const QualifiedIdentifierAst& identifier)
 	{
 		if (identifier.isAbsolute())
 			out << "::";

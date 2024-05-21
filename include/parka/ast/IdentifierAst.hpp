@@ -1,5 +1,5 @@
-#ifndef PARKA_AST_IDENTIFIER_HPP
-#define PARKA_AST_IDENTIFIER_HPP
+#ifndef PARKA_AST_IDENTIFIER_AST_HPP
+#define PARKA_AST_IDENTIFIER_AST_HPP
 
 #include "parka/file/Snippet.hpp"
 #include <ostream>
@@ -14,8 +14,8 @@ namespace parka::ast
 	public:
 
 		IdentifierAst(const Snippet& snippet):
-		_snippet(snippet),
-		_text(snippet.text())
+			_snippet(snippet),
+			_text(snippet.text())
 		{}
 		IdentifierAst(IdentifierAst&&) = default;
 		IdentifierAst(const IdentifierAst&) = delete;

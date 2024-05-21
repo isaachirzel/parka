@@ -8,11 +8,11 @@ namespace parka::ast
 	class TypeAnnotationAst
 	{
 		Snippet _snippet;
-		QualifiedIdentifier _identifier;
+		QualifiedIdentifierAst _identifier;
 
 	public:
 
-		TypeAnnotationAst(const Snippet& snippet, QualifiedIdentifier&& identifier):
+		TypeAnnotationAst(const Snippet& snippet, QualifiedIdentifierAst&& identifier):
 		_snippet(snippet),
 		_identifier(std::move(identifier))
 		{}

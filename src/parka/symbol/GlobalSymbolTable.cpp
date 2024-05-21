@@ -89,7 +89,7 @@ namespace parka
 		return nullptr;
 	}
 
-	ir::LValueIr* GlobalSymbolTable::resolveSymbol(const ast::QualifiedIdentifier& identifier)
+	ir::LValueIr* GlobalSymbolTable::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		auto* entry = findSymbol(identifier[0]);
 
