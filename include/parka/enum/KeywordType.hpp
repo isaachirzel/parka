@@ -37,6 +37,7 @@ namespace parka
 		As
 	};
 
+	KeywordType toKeywordType(const char* text, usize length);
 	KeywordType toKeywordType(const String& text);
 
 	std::ostream& operator<<(std::ostream& out, const KeywordType& type);

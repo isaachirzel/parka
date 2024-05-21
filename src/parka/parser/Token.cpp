@@ -1,4 +1,5 @@
 #include "parka/parser/Token.hpp"
+#include "parka/enum/KeywordType.hpp"
 #include "parka/log/Log.hpp"
 
 #include <cstring>
@@ -521,13 +522,10 @@ namespace parka
 		}
 	}
 
-	// bool Token::operator ==(const String& text) const
-	// {
-	// 	if (_length != text.length())
-	// 		return false;
-
-	// 	return !strncmp(_position.ptr(), text.c_str(), _length);
-	// }
+	KeywordType Token::getKeywordType() const
+	{
+		return toKeywordType(_snippet.ptr(), _snippet.length());
+	}
 
 	std::ostream& operator<<(std::ostream& out, TokenType type)
 	{

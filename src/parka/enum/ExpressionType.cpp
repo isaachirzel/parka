@@ -34,6 +34,10 @@ namespace parka
 				out << "PrefixExpression";
 				break;
 
+			case ExpressionType::Cast:
+				out << "CastExpression";
+				break;
+
 			case ExpressionType::BoolLiteral:
 				out << "BoolLiteral";
 				break;

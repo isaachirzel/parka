@@ -1,6 +1,7 @@
 #include "parka/parser/ParkaParser.hpp"
 #include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/BinaryExpressionAst.hpp"
+#include "parka/ast/CastExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
 #include "parka/ast/ConditionalExpressionAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
@@ -84,10 +85,7 @@ namespace parka::parser
 	Result<IdentifierAst> parseIdentifier(Token& token)
 	{
 		if (!token.isIdentifier())
-		{
-			logParseError(token, "identifier");
 			return {};
-		}
 
 		auto identifier = IdentifierAst(token);
 
@@ -223,7 +221,10 @@ namespace parka::parser
 		auto identifier = parseQualifiedIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "identifier");
 			return {};
+		}
 
 		return new IdentifierExpressionAst(*identifier);
 	}
@@ -362,6 +363,39 @@ namespace parka::parser
 		return {};
 	}
 
+	ExpressionAst *parsePostfixExpression(Token& token)
+	{
+		auto postfix = parsePrimaryExpression(token);
+
+		while (true)
+		{
+			if (!postfix)
+				return {};
+				
+			switch (token.type())
+			{
+				case TokenType::LeftBracket: // Index
+					postfix = parseSubscriptExpression(token, *postfix);
+					continue;
+
+				case TokenType::LeftParenthesis: // FunctionAst call
+					postfix = parseCallExpression(token, *postfix);
+					continue;
+
+				case TokenType::Dot: // MemberAst
+					postfix = parseMemberAccessExpression(token, *postfix);
+					continue;
+				
+				default:
+					break;
+			}
+
+			break;
+		}
+
+		return postfix;
+	}
+
 	CallExpressionAst *parseCallExpression(Token& token, ExpressionAst& primary)
 	{
 		if (token.type() != TokenType::LeftParenthesis)
@@ -462,39 +496,6 @@ namespace parka::parser
 		return syntax;
 	}
 
-	ExpressionAst *parsePostfixExpression(Token& token)
-	{
-		auto postfix = parsePrimaryExpression(token);
-
-		while (true)
-		{
-			if (!postfix)
-				return {};
-				
-			switch (token.type())
-			{
-				case TokenType::LeftBracket: // Index
-					postfix = parseSubscriptExpression(token, *postfix);
-					continue;
-
-				case TokenType::LeftParenthesis: // FunctionAst call
-					postfix = parseCallExpression(token, *postfix);
-					continue;
-
-				case TokenType::Dot: // MemberAst
-					postfix = parseMemberAccessExpression(token, *postfix);
-					continue;
-				
-				default:
-					break;
-			}
-
-			break;
-		}
-
-		return postfix;
-	}
-
 	Result<PrefixType> parsePrefixType(Token& token)
 	{
 		switch (token.type())
@@ -565,9 +566,33 @@ namespace parka::parser
 		return {};
 	}
 
+	ExpressionAst* parseCastExpression(Token& token)
+	{
+		auto* expression = parsePrefixExpression(token);
+
+		if (!expression)
+			return {};
+
+		auto keywordType = token.getKeywordType();
+
+		if (keywordType != KeywordType::As)
+			return expression;
+		
+		token.increment();
+
+		auto typeAnnotation = parseTypeAnnotation(token);
+
+		if (!typeAnnotation)
+			return {};
+
+		auto snippet = expression->snippet() + typeAnnotation->snippet();
+
+		return new CastExpressionAst(snippet, *expression, *typeAnnotation);
+	}
+
 	ExpressionAst *parseMultiplicativeExpression(Token& token)
 	{
-		auto *lhs = parsePrefixExpression(token);
+		auto *lhs = parseCastExpression(token);
 
 		if (!lhs)
 			return {};
@@ -578,7 +603,7 @@ namespace parka::parser
 		{
 			token.increment();
 			
-			auto rhs = parsePrefixExpression(token);
+			auto rhs = parseCastExpression(token);
 
 			if (!rhs)
 				return {};
@@ -1254,7 +1279,10 @@ namespace parka::parser
 		auto identifier = parseIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "parameter name");
 			return {};
+		}
 
 		if (token.type() != TokenType::Colon)
 		{
@@ -1280,7 +1308,10 @@ namespace parka::parser
 		auto identifier = parseQualifiedIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "type name");
 			return {};
+		}
 
 		auto annotation = TypeAnnotationAst(identifier->snippet(), *identifier);
 
@@ -1318,7 +1349,10 @@ namespace parka::parser
 		auto identifier = parseIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "variable name");
 			return {};
+		}
 
 		auto end = identifier->snippet();
 
@@ -1380,7 +1414,10 @@ namespace parka::parser
 		auto identifier = parseIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "function name");
 			return {};
+		}
 
 		if (token.type() != TokenType::LeftParenthesis)
 		{
@@ -1507,7 +1544,10 @@ namespace parka::parser
 		auto identifier = parseIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "member name");
 			return {};
+		}
 
 		if (token.type() != TokenType::Colon)
 		{
@@ -1538,7 +1578,10 @@ namespace parka::parser
 		auto identifier = parseIdentifier(token);
 
 		if (!identifier)
+		{
+			logParseError(token, "struct name");
 			return {};
+		}
 
 		if (token.type() != TokenType::LeftBrace)
 		{

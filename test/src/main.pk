@@ -40,21 +40,7 @@ function notImplemented();
 
 function main(): i32
 {
-	var a = 0 as i32;
-
-	for var i: i32 = 0; i < double(5); i = i + 1
-	{
-		if i < 8
-			continue;
-
-		a = i;
-		
-		var b = i;
-
-		//if i == 8
-	//		break;
-	}
-
+	var a = factorial(10);
 	return a;
 }
 

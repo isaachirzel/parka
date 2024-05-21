@@ -1,12 +1,15 @@
 #include "parka/enum/KeywordType.hpp"
 
 #include "parka/util/FlatMap.hpp"
+#include <string_view>
 
 namespace parka
 {
-	static FlatMap<String, KeywordType> initKeywords()
+	using StringView = std::string_view;
+
+	static FlatMap<StringView, KeywordType> initKeywords()
 	{
-		auto keywords = FlatMap<String, KeywordType>(25);
+		auto keywords = FlatMap<StringView, KeywordType>(25);
 		
 		keywords.insert("break", KeywordType::Break);
 		keywords.insert("case", KeywordType::Case);
@@ -39,16 +42,22 @@ namespace parka
 		return keywords;
 	}
 
-	const FlatMap<String, KeywordType> keywords = initKeywords();
+	const FlatMap<StringView, KeywordType> keywords = initKeywords();
+
+	KeywordType toKeywordType(const char* text, usize length)
+	{
+		auto stringView = StringView(text, length);
+		const auto *keywordType = keywords.find(stringView);
+		auto result = keywordType
+			? *keywordType
+			: KeywordType::None;
+
+		return result;
+	}
 
 	KeywordType toKeywordType(const String& text)
 	{
-		const auto *keywordType = keywords.find(text);
-
-		if (!keywordType)
-			return KeywordType::None;
-
-		return *keywordType;
+		return toKeywordType(text.c_str(), text.length());
 	}
 
 	std::ostream& operator<<(std::ostream& out, const KeywordType& type)

@@ -17,6 +17,7 @@
 #include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
+#include "parka/ir/CastExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
@@ -364,7 +365,7 @@ namespace parka::validator
 
 		if (!conversion)
 		{
-			log::error("Unable to assign $ to $.", value->type(), identifier.type());
+			log::error(ast.snippet(), "Unable to assign $ to $.", value->type(), identifier.type());
 			return {};
 		}
 
@@ -524,6 +525,9 @@ namespace parka::validator
 			case ExpressionType::Prefix:
 				break;
 
+			case ExpressionType::Cast:
+				return validateCastExpression(static_cast<const CastExpressionAst&>(ast), symbolTable);
+
 			case ExpressionType::BoolLiteral:
 				return validateBoolLiteral(static_cast<const BoolLiteralAst&>(ast));
 
@@ -638,6 +642,22 @@ namespace parka::validator
 		}
 
 		return new IdentifierExpressionIr(*result);
+	}
+
+	CastExpressionIr* validateCastExpression(const CastExpressionAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto* expression = validateExpression(ast.expression(), symbolTable);
+		auto type = validateTypeAnnotation(ast.typeAnnotation(), symbolTable);
+
+		if (!expression || !type)
+			return {};
+
+		auto conversion = symbolTable.resolveConversion(*type, expression->type());
+
+		if (!conversion)
+			return {};
+
+		return new CastExpressionIr(*type, *expression, *conversion);
 	}
 
 	static Result<u64> getIntegerValue(const Snippet& snippet)

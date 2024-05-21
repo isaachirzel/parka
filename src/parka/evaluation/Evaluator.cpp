@@ -4,6 +4,7 @@
 #include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
+#include "parka/ir/CastExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/FloatLiteralIr.hpp"
@@ -265,6 +266,9 @@ namespace parka::evaluation
 			case ExpressionType::Prefix:
 				break;
 
+			case ExpressionType::Cast:
+				return evaluateCastExpression(static_cast<const CastExpressionIr&>(ir), state);
+
 			case ExpressionType::BoolLiteral:
 				return evaluateBoolLiteral(static_cast<const BoolLiteralIr&>(ir), state);
 
@@ -308,6 +312,16 @@ namespace parka::evaluation
 		auto& value = state.findValue(ir.value());
 
 		return value;
+	}
+
+	Value& evaluateCastExpression(const ir::CastExpressionIr& ir, LocalState& state)
+	{
+		auto& expressionValue = evaluateExpression(ir.expression(), state);
+		auto& castedValue = state.pushValue(ir.type());
+
+		evaluateConversion(ir.conversion(), castedValue, expressionValue);
+
+		return castedValue;
 	}
 
 	Value& evaluateBoolLiteral(const ir::BoolLiteralIr& ir, LocalState& state)

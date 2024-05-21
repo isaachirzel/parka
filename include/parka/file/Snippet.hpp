@@ -7,6 +7,7 @@
 #include <ostream>
 
 // TODO: Rename to Snippet and add one to each expression type
+// TODO: Optimize the text call?
 
 namespace parka
 {

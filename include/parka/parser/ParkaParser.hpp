@@ -6,6 +6,7 @@
 #include "parka/ast/BoolLiteralAst.hpp"
 #include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
+#include "parka/ast/CastExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
@@ -55,6 +56,7 @@ namespace parka::parser
 	ast::ExpressionAst* parsePostfixExpression(Token& token);
 	ast::ExpressionAst* parseEnclosedExpression(Token& token);
 	ast::ExpressionAst* parseBinaryExpression(Token& token);
+	ast::ExpressionAst* parseCastExpression(Token& token);
 	ast::CallExpressionAst* parseCallExpression(Token& token, ast::ExpressionAst& primary);
 	ast::MemberAccessExpressionAst* parseMemberAccessExpression(Token& token, ast::ExpressionAst& primary);
 	ast::SubscriptExpressionAst* parseSubscriptExpression(Token& token, ast::ExpressionAst& primary);

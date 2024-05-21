@@ -8,6 +8,7 @@
 #include "parka/ast/BoolLiteralAst.hpp"
 #include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
+#include "parka/ast/CastExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
@@ -30,6 +31,7 @@
 #include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
+#include "parka/ir/CastExpressionIr.hpp"
 #include "parka/ir/CharLiteralIr.hpp"
 #include "parka/ir/ContinueStatementIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
@@ -48,6 +50,7 @@
 #include "parka/ir/StringLiteralIr.hpp"
 #include "parka/ir/YieldStatementIr.hpp"
 #include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/util/Result.hpp"
 
 namespace parka::validator
@@ -74,6 +77,7 @@ namespace parka::validator
 	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::CallExpressionIr* validateCallExpression(const ast::CallExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IdentifierExpressionIr* validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable);
+	ir::CastExpressionIr* validateCastExpression(const ast::CastExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IntegerLiteralIr* validateIntegerLiteral(const ast::IntegerLiteralAst& ast);
 	ir::FloatLiteralIr* validateFloatLiteral(const ast::FloatLiteralAst& ast);
 	ir::StringLiteralIr* validateStringLiteral(const ast::StringLiteralAst& ast);

@@ -2,6 +2,7 @@
 #define PARKA_TOKEN_HPP
 
 // local includes
+#include "parka/enum/KeywordType.hpp"
 #include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
 #include "parka/file/Snippet.hpp"
@@ -33,6 +34,7 @@ namespace parka
 		const auto& type() const { return _type; }
 		bool isSemicolon() const { return _type == TokenType::Semicolon; }
 		bool isIdentifier() const { return _type == TokenType::Identifier; }
+		KeywordType getKeywordType() const;
 
 		operator const Snippet&() const { return _snippet; }
 		Snippet operator+(const Token& other) const { return _snippet + other._snippet; }
