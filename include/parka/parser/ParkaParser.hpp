@@ -38,7 +38,7 @@ namespace parka::parser
 	bool parseSemicolon(Token& token, const char *message = "");
 	bool parseStatementSemicolon(Token& token);
 	Result<ast::KeywordAst> parseKeyword(Token& token);
-	Result<ast::Identifier> parseIdentifier(Token& token);
+	Result<ast::IdentifierAst> parseIdentifier(Token& token);
 	Result<ast::QualifiedIdentifier> parseQualifiedIdentifier(Token& token);
 	Result<ast::TypeAnnotationAst> parseTypeAnnotation(Token& token);
 	Result<ast::RangeAst> parseRange(Token& token);

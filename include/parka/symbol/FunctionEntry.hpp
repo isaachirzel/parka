@@ -26,7 +26,7 @@ namespace parka
 
 		FunctionSymbolTable* symbolTable() { return &_symbolTable; }
 		const auto& ast() const { return _ast; }
-		const ast::Identifier& identifier() const { return _ast.prototype().identifier(); }
+		const ast::IdentifierAst& identifier() const { return _ast.prototype().identifier(); }
 		const String& name() const { return _ast.prototype().identifier().text(); }
 	};
 }

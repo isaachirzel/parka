@@ -6,26 +6,26 @@
 
 namespace parka::ast
 {
-	class Identifier
+	class IdentifierAst
 	{
 		Snippet _snippet;
 		String _text;
 
 	public:
 
-		Identifier(const Snippet& snippet):
+		IdentifierAst(const Snippet& snippet):
 		_snippet(snippet),
 		_text(snippet.text())
 		{}
-		Identifier(Identifier&&) = default;
-		Identifier(const Identifier&) = delete;
+		IdentifierAst(IdentifierAst&&) = default;
+		IdentifierAst(const IdentifierAst&) = delete;
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& text() const { return _text; }
 
 		operator const Snippet&() const { return _snippet; }
-		bool operator==(const Identifier& other) const;
-		friend std::ostream& operator<<(std::ostream& out, const Identifier& identifier);
+		bool operator==(const IdentifierAst& other) const;
+		friend std::ostream& operator<<(std::ostream& out, const IdentifierAst& identifier);
 	};
 }
 

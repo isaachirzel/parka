@@ -74,7 +74,7 @@ namespace parka
 		return ref;
 	}
 
-	Resolvable* FunctionSymbolTable::findSymbol(const ast::Identifier& identifier)
+	Resolvable* FunctionSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto** symbol = _symbols.find(name);

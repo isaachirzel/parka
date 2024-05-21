@@ -10,12 +10,12 @@ namespace parka::ast
 	class QualifiedIdentifier
 	{
 		Snippet _snippet;
-		Array<Identifier> _parts;
+		Array<IdentifierAst> _parts;
 		bool _isAbsolute;
 
 	public:
 
-		QualifiedIdentifier(const Snippet& snippet, Array<Identifier>&& parts, bool isAbsolute):
+		QualifiedIdentifier(const Snippet& snippet, Array<IdentifierAst>&& parts, bool isAbsolute):
 		_snippet(snippet),
 		_parts(std::move(parts)),
 		_isAbsolute(isAbsolute)
@@ -26,8 +26,8 @@ namespace parka::ast
 		QualifiedIdentifier(const QualifiedIdentifier&) = delete;
 
 		const auto& snippet() const { return _snippet; }
-		const Identifier *begin() const { return _parts.begin(); }
-		const Identifier *end() const { return _parts.end(); }
+		const IdentifierAst *begin() const { return _parts.begin(); }
+		const IdentifierAst *end() const { return _parts.end(); }
 		const auto& length() const { return _parts.length(); }
 		const auto& isAbsolute() const { return _isAbsolute; }
 

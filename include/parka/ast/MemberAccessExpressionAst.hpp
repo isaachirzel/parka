@@ -11,11 +11,11 @@ namespace parka::ast
 	{
 		Snippet _snippet;
 		ExpressionAst& _expression;
-		Identifier _identifier;
+		IdentifierAst _identifier;
 
 	public:
 
-		MemberAccessExpressionAst(ExpressionAst& expression, Identifier&& identifier):
+		MemberAccessExpressionAst(ExpressionAst& expression, IdentifierAst&& identifier):
 		ExpressionAst(ExpressionType::MemberAccess),
 		_snippet(expression.snippet() + identifier.snippet()),
 		_expression(expression),

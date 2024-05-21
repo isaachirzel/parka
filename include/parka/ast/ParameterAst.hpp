@@ -10,14 +10,14 @@ namespace parka::ast
 	class ParameterAst
 	{
 		Snippet _snippet;
-		Identifier _identifier;
+		IdentifierAst _identifier;
 		TypeAnnotationAst _annotation;
 		ir::ParameterIr *_context;
 		bool _isMutable;
 
 	public:
 
-		ParameterAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
+		ParameterAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

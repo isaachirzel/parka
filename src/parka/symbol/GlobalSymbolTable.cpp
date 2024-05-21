@@ -78,7 +78,7 @@ namespace parka
 		throw std::invalid_argument("Parameters cannot be declared in a GlobalSymbolTable.");
 	}
 
-	Resolvable* GlobalSymbolTable::findSymbol(const ast::Identifier& identifier)
+	Resolvable* GlobalSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		auto& text = identifier.text();
 		auto** result = _symbols.find(text);

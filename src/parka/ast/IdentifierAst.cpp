@@ -2,12 +2,12 @@
 
 namespace parka::ast
 {
-	bool Identifier::operator==(const Identifier& other) const
+	bool IdentifierAst::operator==(const IdentifierAst& other) const
 	{
 		return _text == other._text;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const Identifier& identifier)
+	std::ostream& operator<<(std::ostream& out, const IdentifierAst& identifier)
 	{
 		out << identifier.text();
 

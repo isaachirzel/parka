@@ -9,13 +9,13 @@ namespace parka::ast
 	class MemberAst
 	{
 		Snippet _snippet;
-		Identifier _identifier;
+		IdentifierAst _identifier;
 		TypeAnnotationAst _annotation;
 		bool _isPublic;
 
 	public:
 
-		MemberAst(const Snippet& snippet, Identifier&& identifier, TypeAnnotationAst&& annotation, bool isPublic):
+		MemberAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isPublic):
 			_snippet(snippet),
 			_identifier(std::move(identifier)),
 			_annotation(std::move(annotation)),
@@ -24,7 +24,7 @@ namespace parka::ast
 		MemberAst(MemberAst&&) = default;
 		MemberAst(const MemberAst&) = delete;
 
-		const Identifier& identifier() const { return _identifier; }
+		const IdentifierAst& identifier() const { return _identifier; }
 		const String& name() const { return _identifier.text(); }
 		const Snippet& snippet() const { return _snippet; }
 		const auto& annotation() const { return _annotation; }

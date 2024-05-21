@@ -46,7 +46,7 @@ namespace parka
 
 	}
 
-	Resolvable* PackageSymbolTable::findInitialSymbol(const ast::Identifier& identifier)
+	Resolvable* PackageSymbolTable::findInitialSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = (SymbolTable*)this;
@@ -68,7 +68,7 @@ namespace parka
 		return nullptr;
 	}
 
-	Resolvable* PackageSymbolTable::findSymbol(const ast::Identifier& identifier)
+	Resolvable* PackageSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 

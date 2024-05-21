@@ -81,7 +81,7 @@ namespace parka::parser
 		return keyword;
 	}
 
-	Result<Identifier> parseIdentifier(Token& token)
+	Result<IdentifierAst> parseIdentifier(Token& token)
 	{
 		if (!token.isIdentifier())
 		{
@@ -89,7 +89,7 @@ namespace parka::parser
 			return {};
 		}
 
-		auto identifier = Identifier(token);
+		auto identifier = IdentifierAst(token);
 
 		token.increment();
 
@@ -110,7 +110,7 @@ namespace parka::parser
 	{
 		auto start = Snippet(token);
 		auto isAbsolute = parseAbsolute(token);
-		auto parts = Array<Identifier>(8);
+		auto parts = Array<IdentifierAst>(8);
 		
 		while (true)
 		{
@@ -455,7 +455,7 @@ namespace parka::parser
 			return {};
 		}
 		
-		auto *syntax = new MemberAccessExpressionAst(primary, Identifier(token));
+		auto *syntax = new MemberAccessExpressionAst(primary, IdentifierAst(token));
 
 		token.increment();
 

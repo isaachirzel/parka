@@ -40,7 +40,7 @@ function notImplemented();
 
 function main(): i32
 {
-	let a = wow
+	var a: i32 = wow;
 	var a: i32 = 0;
 
 	for var i: i32 = 0; i < double(5); i = i + 1

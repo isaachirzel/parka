@@ -44,7 +44,7 @@ namespace parka
 		throw std::invalid_argument("Parameters cannot be declared in a BlockSymbolTable.");
 	}
 
-	Resolvable* BlockSymbolTable::findSymbol(const ast::Identifier& identifier)
+	Resolvable* BlockSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto** symbol = _symbols.find(name);
