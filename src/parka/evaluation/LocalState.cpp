@@ -1,5 +1,4 @@
 #include "parka/evaluation/LocalState.hpp"
-#include "parka/enum/ReturningType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
 
@@ -8,7 +7,7 @@ namespace parka::evaluation
 	LocalState::LocalState():
 		_values(1'048'576),
 		_returnValueIndex(0),
-		_returningType(ReturningType::None)
+		_jumpType(JumpType::None)
 	{}
 
 	Value& LocalState::pushValue(const ir::TypeIr& type)
@@ -47,9 +46,9 @@ namespace parka::evaluation
 		_values.truncate(index);
 	}
 
-	void LocalState::setReturning(ReturningType returningType)
+	void LocalState::setReturning(JumpType returningType)
 	{
-		_returningType = returningType;
+		_jumpType = returningType;
 	}
 
 	Value& LocalState::findValue(const ir::LValueIr& node)
@@ -70,10 +69,5 @@ namespace parka::evaluation
 		assert(_returnValueIndex < _values.length());
 
 		return _values[_returnValueIndex];
-	}
-
-	bool LocalState::isReturning() const
-	{
-		return _returningType != ReturningType::None;
 	}
 }

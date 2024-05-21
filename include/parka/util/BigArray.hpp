@@ -27,7 +27,7 @@ namespace parka
 			auto* data = begin();
 			auto* ptr = _length == arenaLength
 				? (T*)_arena.allocate(sizeof(T))
-				: begin() + _length;
+				: &data[_length];
 
 			new (ptr) T(std::move(value));
 

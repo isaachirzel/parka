@@ -1,16 +1,16 @@
-#include "parka/enum/ReturningType.hpp"
+#include "parka/enum/JumpType.hpp"
 
 namespace parka
 {
-	std::ostream& operator<<(std::ostream& out, const ReturningType& type)
+	std::ostream& operator<<(std::ostream& out, const JumpType& type)
 	{
 		switch (type)
 		{
-			case ReturningType::None:
+			case JumpType::None:
 				out << "none";
 				break;
 
-			case ReturningType::Return:
+			case JumpType::Return:
 				out << "return";
 				break;
 

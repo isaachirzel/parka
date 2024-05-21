@@ -14,6 +14,7 @@ namespace parka
 		{}
 		virtual ~LocalSymbolTable() {}
 
+		virtual bool isInLoop() const = 0;
 		virtual FunctionSymbolTable& functionSymbolTable() = 0;
 		virtual const ir::TypeIr& returnType() const = 0;
 	};

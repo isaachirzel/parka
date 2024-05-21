@@ -14,6 +14,7 @@ namespace parka
 		SymbolTable& _parent;
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
+		bool _isInLoop;
 
 		BlockSymbolTable(FunctionSymbolTable& function, SymbolTable& parent);
 
@@ -33,6 +34,8 @@ namespace parka
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return &_parent; }
 		const ir::TypeIr& returnType() const { return _function.returnType(); }
+		void setInLoop() { _isInLoop = true; }
+		bool isInLoop() const { return _isInLoop; }
 		FunctionSymbolTable& functionSymbolTable() { return _function; }
 		GlobalSymbolTable& globalSymbolTable() { return _global; }
 	};

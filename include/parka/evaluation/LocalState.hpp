@@ -1,7 +1,7 @@
 #ifndef PARKA_EVALUATION_STATE_HPP
 #define PARKA_EVALUATION_STATE_HPP
 
-#include "parka/enum/ReturningType.hpp"
+#include "parka/enum/JumpType.hpp"
 #include "parka/evaluation/Value.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
@@ -14,7 +14,7 @@ namespace parka::evaluation
 	{
 		BigArray<Value> _values;
 		usize _returnValueIndex;
-		ReturningType _returningType;
+		JumpType _jumpType;
 		
 	public:
 		
@@ -31,11 +31,18 @@ namespace parka::evaluation
 		usize getScopeIndex();
 		void clearScopeValues(usize index);
 
-		void setReturning(ReturningType returningType);
+		void setReturning(JumpType returningType);
 
 		Value& findValue(const ir::LValueIr& node);
 		Value& returnValue();
-		bool isReturning() const;
+		void startBreak() { _jumpType = JumpType::Break; }
+		void cancelBreak() { if (_jumpType == JumpType::Break) _jumpType = JumpType::None; }
+		void cancelContinue() { if (_jumpType == JumpType::Continue) _jumpType = JumpType::None; }
+		void startContinue() { _jumpType = JumpType::Continue; }
+		bool isJumping() const { return _jumpType != JumpType::None; }
+		bool isBreaking() const { return _jumpType == JumpType::Break; }
+		bool isContinuing() const { return _jumpType == JumpType::Continue; }
+		bool isReturning() const { return _jumpType == JumpType::Return; }
 	};
 }
 

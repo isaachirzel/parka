@@ -1,6 +1,6 @@
-function action(): i32
+function double(number: i32): i32
 {
-	return 12 * 4;
+	return number * 2;
 }
 
 function factorial(count: i32): i32
@@ -40,21 +40,24 @@ function notImplemented();
 
 function main(): i32
 {
-	//var a = fibonacci(2);
+	let a = wow
+	var a: i32 = 0;
 
-	var a = 1;
-
+	for var i: i32 = 0; i < double(5); i = i + 1
 	{
-		var b = 2;
+		if i < 8
+			continue;
 
-		//a = b;
-	}
+		a = i;
+		
+		var b = i;
 
-	{
-		var b = 3;
-
-		//a = b;
+		//if i == 8
+	//		break;
 	}
 
 	return a;
 }
+
+
+

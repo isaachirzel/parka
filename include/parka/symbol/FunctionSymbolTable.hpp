@@ -27,7 +27,6 @@ namespace parka
 		Array<ParameterEntry> _parameters;
 		ir::TypeIr _returnType;
 		bool _isExplicitReturnType;
-		Array<ir::StatementIr*> _parentStatements;
 
 	public:
 
@@ -54,6 +53,7 @@ namespace parka
 		SymbolTable* parent() { return &_parent; }
 		GlobalSymbolTable& globalSymbolTable() { return _global; }
 		FunctionSymbolTable& functionSymbolTable() { return *this; }
+		bool isInLoop() const { return false; }
 	};
 }
 

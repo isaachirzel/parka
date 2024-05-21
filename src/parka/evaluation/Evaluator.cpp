@@ -1,5 +1,5 @@
 #include "parka/evaluation/Evaluator.hpp"
-#include "parka/enum/ReturningType.hpp"
+#include "parka/enum/JumpType.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
@@ -47,7 +47,7 @@ namespace parka::evaluation
 
 		// TODO: This shouldn't do this for exceptions
 
-		state.setReturning(ReturningType::None);
+		state.setReturning(JumpType::None);
 		state.clearScopeValues(index);
 		state.setReturnValueIndex(previousReturnValueIndex);
 
@@ -56,8 +56,6 @@ namespace parka::evaluation
 
 	void evaluatePrototype(const PrototypeIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
 	{
-		assert(ir.parameters().length() == arguments.length());
-
 		for (usize i = 0; i < arguments.length(); ++i)
 		{
 			auto& parameter = *ir.parameters()[i];
@@ -152,20 +150,20 @@ namespace parka::evaluation
 			evaluateConversion(ir.conversion(), state.returnValue(), value);
 		}
 
-		state.setReturning(ReturningType::Return);
+		state.setReturning(JumpType::Return);
 	}
 
-	void evaluateBreakStatement(const ir::BreakStatementIr& ir, LocalState& state)
+	void evaluateBreakStatement(const ir::BreakStatementIr&, LocalState& state)
 	{
-		log::notImplemented(here());
+		state.setReturning(JumpType::Break);
 	}
 
-	void evaluateContinueStatement(const ir::ContinueStatementIr& ir, LocalState& state)
+	void evaluateContinueStatement(const ir::ContinueStatementIr&, LocalState& state)
 	{
-		log::notImplemented(here());
+		state.startContinue();
 	}
 
-	void evaluateYieldStatement(const ir::YieldStatementIr& ir, LocalState& state)
+	void evaluateYieldStatement(const ir::YieldStatementIr&, LocalState&)
 	{
 		log::notImplemented(here());
 	}
@@ -188,8 +186,16 @@ namespace parka::evaluation
 				break;
 
 			evaluateBlockStatement(ir.body(), state);
+
+			if (state.isBreaking())
+				break;
+
 			evaluateStatement(ir.action(), state);
+
+			state.cancelContinue();
 		}
+
+		state.cancelBreak();
 
 		state.clearScopeValues(index);
 	}
@@ -202,7 +208,7 @@ namespace parka::evaluation
 		{
 			evaluateStatement(*statement, state);
 
-			if (state.isReturning())
+			if (state.isJumping())
 				break;
 		}
 

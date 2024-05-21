@@ -68,7 +68,7 @@ namespace parka::validator
 	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, LocalSymbolTable& parentSymbolTable);
+	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::IfStatementIr* validateIfStatement(const ast::IfStatementAst& ast, LocalSymbolTable& symbolTable);
 	ir::ExpressionIr* validateExpression(const ast::ExpressionAst& expression, LocalSymbolTable& symbolTable);
 	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable);

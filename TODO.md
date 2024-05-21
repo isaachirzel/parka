@@ -1,18 +1,20 @@
 # To Do
 
 ## Short Term
-- BlockSymbolTable
-- type casting
-- Better handling of declaration functions being allowed without them being valid so that the symbols can be resolved without the prototype or the body being validated
-- The rest of the binary expressions
+- rename identifier to identifier ast and qualifiedidentifier to qualifiedidentifierast
+- Do something with range ast
+- Member access expressions '.'
+- Indirection expression '->'
+- Add assign
 - The rest of the assignments
-- Break statement
-- Continue statement
-- Function calls
+- type casting
+- Setting the type of a non-explicity typed variable as soon as it becomes obvious what it is supposed to be
 - intrinsic print function
-- Unary expressions
+- Conditional expressions
 - while loops
-- Resolution of invalid symbols
+- Prefix operators
+- Call operators
+- Subscript operators
 
 ## Longer Term
 - Structs
@@ -47,6 +49,7 @@
 - Range checking for arrays
 
 ## End Goals
+- C Interoperation
 - C Generation
 - LLVM Backend
 - WASM Backend

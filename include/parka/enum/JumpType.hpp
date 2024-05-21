@@ -1,15 +1,21 @@
-#ifndef PARKA_ENUM_JUMP_TYPE_HPP
-#define PARKA_ENUM_JUMP_TYPE_HPP
+#ifndef PARKA_ENUM_RETURNING_TYPE_HPP
+#define PARKA_ENUM_RETURNING_TYPE_HPP
+
+#include "parka/util/Common.hpp"
+#include <ostream>
 
 namespace parka
 {
-	enum class JumpType
+	enum class JumpType: u8
 	{
-		Continue,
-		Break,
+		None,
 		Return,
-		Yield
+		Break,
+		Continue,
+		Exception
 	};
+
+	std::ostream& operator<<(std::ostream& out, const JumpType& type);
 }
 
 #endif
