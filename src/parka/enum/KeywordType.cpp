@@ -34,6 +34,7 @@ namespace parka
 		keywords.insert("public", KeywordType::Public);
 		keywords.insert("var", KeywordType::Var);
 		keywords.insert("while", KeywordType::While);
+		keywords.insert("as", KeywordType::As);
 
 		return keywords;
 	}
@@ -162,6 +163,9 @@ namespace parka
 				out << "while";
 				break;
 
+			case KeywordType::As:
+				out << "as";
+				break;
 		}
 
 		return out;

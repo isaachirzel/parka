@@ -14,6 +14,7 @@ namespace parka
 		Subscript,
 		MemberAccess,
 		Prefix,
+		Cast,
 		BoolLiteral,
 		CharLiteral,
 		FloatLiteral,

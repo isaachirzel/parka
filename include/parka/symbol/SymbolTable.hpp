@@ -20,7 +20,6 @@ namespace parka
 	class VariableEntry;
 	class ParameterEntry;
 
-
 	struct SymbolTable
 	{
 		const SymbolTableType symbolTableType;

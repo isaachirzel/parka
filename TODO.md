@@ -1,8 +1,6 @@
 # To Do
 
 ## Short Term
-- rename identifier to identifier ast and qualifiedidentifier to qualifiedidentifierast
-- Do something with range ast
 - Member access expressions '.'
 - Indirection expression '->'
 - Add assign
@@ -17,6 +15,7 @@
 - Subscript operators
 
 ## Longer Term
+- Do something with range ast
 - Structs
 - Constructors
 - Destructors

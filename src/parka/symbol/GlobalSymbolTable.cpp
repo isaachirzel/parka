@@ -86,7 +86,7 @@ namespace parka
 		if (result)
 			return *result;
 
-		return nullptr;
+		return {};
 	}
 
 	ir::LValueIr* GlobalSymbolTable::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
@@ -106,7 +106,7 @@ namespace parka
 
 			if (!table)
 			{
-				log::error("Unable to resolve `$` in package `$`.", part, entry->name());
+				log::error("No definition for `$` couble be found in package `$`.", part, entry->name());
 				return {};
 			}
 

@@ -33,7 +33,8 @@ namespace parka
 		True,
 		Type,
 		Var,
-		While
+		While,
+		As
 	};
 
 	KeywordType toKeywordType(const String& text);

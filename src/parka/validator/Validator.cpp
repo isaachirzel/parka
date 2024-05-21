@@ -633,7 +633,7 @@ namespace parka::validator
 
 		if (!result)
 		{
-			log::error(ast.snippet(), "A definition for the name `$` could not be found in this scope.", ast.identifier());
+			log::error(ast.snippet(), "No definition for `$` could be found in this scope.", ast.identifier());
 			return {};
 		}
 
