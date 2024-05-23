@@ -98,7 +98,7 @@ namespace parka
 
 			if (table == nullptr)
 			{
-				log::error("Unable to resolve `$` in package `$`.", identifier, entry->name());
+				log::error(identifier.snippet(), "Unable to resolve `$` in package `$`.", identifier, entry->name());
 				return nullptr;
 			}
 

@@ -2,6 +2,7 @@
 
 ## Short Term
 - Add assign '+='
+- ExpressionIr.isLValue()
 - The rest of the assignments
 - intrinsic print function
 - Add "Potential Solution" and "Extra Information" to errors

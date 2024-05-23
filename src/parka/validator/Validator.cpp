@@ -239,7 +239,7 @@ namespace parka::validator
 			
 			if (!castedValue)
 			{
-				log::error("Unable to return $ in function expecting $.", expression->type(), symbolTable.returnType());
+				log::error(ast.expression().snippet(), "Unable to return `$` in function expecting $.", expression->type(), symbolTable.returnType());
 				return {};
 			}
 
@@ -482,7 +482,7 @@ namespace parka::validator
 
 		if (!castedValue)
 		{
-			log::error("Expression could not be converted from `$` to `$`.", condition->type(), TypeIr::boolType);
+			log::error(ast.condition().snippet(), "Expression could not be converted from `$` to `$`.", condition->type(), TypeIr::boolType);
 			return {};
 		}
 
@@ -691,7 +691,7 @@ namespace parka::validator
 
 		if (!castedValue)
 		{
-			log::error("Expression with value `$` cannot be casted to `$`.", expression->type(), *type);
+			log::error(ast.snippet(), "Expression with value `$` cannot be casted to `$`.", expression->type(), *type);
 			return {};
 		}
 

@@ -106,7 +106,7 @@ namespace parka
 
 			if (!table)
 			{
-				log::error("No definition for `$` couble be found in package `$`.", part, entry->name());
+				log::error(identifier.snippet(),"No definition for `$` couble be found in package `$`.", part, entry->name());
 				return {};
 			}
 
