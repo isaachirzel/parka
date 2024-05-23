@@ -1,4 +1,5 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/IntrinsicBinaryOperator.hpp"
@@ -12,6 +13,7 @@
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/StringLiteralIr.hpp"
 #include "parka/log/Log.hpp"
+#include <stdexcept>
 
 using namespace parka::ir;
 
@@ -218,6 +220,9 @@ namespace parka::evaluation
 
 	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, LocalState& state)
 	{
+		if (ir.assignmentType() != AssignmentType::Assign)
+			throw std::runtime_error("Unable to evaluate assignment with type: " + std::to_string((int)ir.assignmentType()));
+
 		auto& lhs = state.findValue(ir.identifier().value());
 		auto& rhs = evaluateExpression(ir.value(), state);
 
