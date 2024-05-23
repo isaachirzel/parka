@@ -233,6 +233,7 @@ namespace parka::evaluation
 
 	IntrinsicBinaryOperator intrinsicBinaryOperators[] =
 	{
+		// integer
 		add<Integer>(),
 		subtract<Integer>(),
 		multiply<Integer>(),
@@ -250,6 +251,8 @@ namespace parka::evaluation
 		equals<Integer>(),
 		notEquals<Integer>(),
 
+		// u8
+
 		add<u8>(),
 		subtract<u8>(),
 		multiply<u8>(),
@@ -266,7 +269,7 @@ namespace parka::evaluation
 		greaterThanOrEqualTo<u8>(),
 		equals<u8>(),
 		notEquals<u8>(),
-		
+
 		add<u8, Integer>(),
 		subtract<u8, Integer>(),
 		multiply<u8, Integer>(),
@@ -283,6 +286,25 @@ namespace parka::evaluation
 		greaterThanOrEqualTo<u8, Integer>(),
 		equals<u8, Integer>(),
 		notEquals<u8, Integer>(),
+
+		add<Integer, u8, u8>(),
+		subtract<Integer, u8, u8>(),
+		multiply<Integer, u8, u8>(),
+		divide<Integer, u8, u8>(),
+		modulus<Integer, u8, u8>(),
+		bitwiseOr<Integer, u8, u8>(),
+		bitwiseXor<Integer, u8, u8>(),
+		bitwiseAnd<Integer, u8, u8>(),
+		leftShift<Integer, u8, u8>(),
+		rightShift<Integer, u8, u8>(),
+		lessThan<Integer, u8>(),
+		greaterThan<Integer, u8>(),
+		lessThanOrEqualTo<Integer, u8>(),
+		greaterThanOrEqualTo<Integer, u8>(),
+		equals<Integer, u8>(),
+		notEquals<Integer, u8>(),
+
+		// u16
 
 		add<u16>(),
 		subtract<u16>(),
@@ -318,6 +340,25 @@ namespace parka::evaluation
 		equals<u16, Integer>(),
 		notEquals<u16, Integer>(),
 
+		add<Integer, u16, u16>(),
+		subtract<Integer, u16, u16>(),
+		multiply<Integer, u16, u16>(),
+		divide<Integer, u16, u16>(),
+		modulus<Integer, u16, u16>(),
+		bitwiseOr<Integer, u16, u16>(),
+		bitwiseXor<Integer, u16, u16>(),
+		bitwiseAnd<Integer, u16, u16>(),
+		leftShift<Integer, u16, u16>(),
+		rightShift<Integer, u16, u16>(),
+		lessThan<Integer, u16>(),
+		greaterThan<Integer, u16>(),
+		lessThanOrEqualTo<Integer, u16>(),
+		greaterThanOrEqualTo<Integer, u16>(),
+		equals<Integer, u16>(),
+		notEquals<Integer, u16>(),
+
+		// u32
+
 		add<u32>(),
 		subtract<u32>(),
 		multiply<u32>(),
@@ -351,6 +392,25 @@ namespace parka::evaluation
 		greaterThanOrEqualTo<u32, Integer>(),
 		equals<u32, Integer>(),
 		notEquals<u32, Integer>(),
+
+		add<Integer, u32, u32>(),
+		subtract<Integer, u32, u32>(),
+		multiply<Integer, u32, u32>(),
+		divide<Integer, u32, u32>(),
+		modulus<Integer, u32, u32>(),
+		bitwiseOr<Integer, u32, u32>(),
+		bitwiseXor<Integer, u32, u32>(),
+		bitwiseAnd<Integer, u32, u32>(),
+		leftShift<Integer, u32, u32>(),
+		rightShift<Integer, u32, u32>(),
+		lessThan<Integer, u32>(),
+		greaterThan<Integer, u32>(),
+		lessThanOrEqualTo<Integer, u32>(),
+		greaterThanOrEqualTo<Integer, u32>(),
+		equals<Integer, u32>(),
+		notEquals<Integer, u32>(),
+
+		// u64
 
 		add<u64>(),
 		subtract<u64>(),
@@ -386,6 +446,25 @@ namespace parka::evaluation
 		equals<u64, Integer>(),
 		notEquals<u64, Integer>(),
 
+		add<Integer, u64, u64>(),
+		subtract<Integer, u64, u64>(),
+		multiply<Integer, u64, u64>(),
+		divide<Integer, u64, u64>(),
+		modulus<Integer, u64, u64>(),
+		bitwiseOr<Integer, u64, u64>(),
+		bitwiseXor<Integer, u64, u64>(),
+		bitwiseAnd<Integer, u64, u64>(),
+		leftShift<Integer, u64, u64>(),
+		rightShift<Integer, u64, u64>(),
+		lessThan<Integer, u64>(),
+		greaterThan<Integer, u64>(),
+		lessThanOrEqualTo<Integer, u64>(),
+		greaterThanOrEqualTo<Integer, u64>(),
+		equals<Integer, u64>(),
+		notEquals<Integer, u64>(),
+
+		// i8
+
 		add<i8>(),
 		subtract<i8>(),
 		multiply<i8>(),
@@ -419,6 +498,25 @@ namespace parka::evaluation
 		greaterThanOrEqualTo<i8, Integer>(),
 		equals<i8, Integer>(),
 		notEquals<i8, Integer>(),
+
+		add<Integer, i8, i8>(),
+		subtract<Integer, i8, i8>(),
+		multiply<Integer, i8, i8>(),
+		divide<Integer, i8, i8>(),
+		modulus<Integer, i8, i8>(),
+		bitwiseOr<Integer, i8, i8>(),
+		bitwiseXor<Integer, i8, i8>(),
+		bitwiseAnd<Integer, i8, i8>(),
+		leftShift<Integer, i8, i8>(),
+		rightShift<Integer, i8, i8>(),
+		lessThan<Integer, i8>(),
+		greaterThan<Integer, i8>(),
+		lessThanOrEqualTo<Integer, i8>(),
+		greaterThanOrEqualTo<Integer, i8>(),
+		equals<Integer, i8>(),
+		notEquals<Integer, i8>(),
+
+		// i16
 
 		add<i16>(),
 		subtract<i16>(),
@@ -454,6 +552,25 @@ namespace parka::evaluation
 		equals<i16, Integer>(),
 		notEquals<i16, Integer>(),
 
+		add<Integer, i16, i16>(),
+		subtract<Integer, i16, i16>(),
+		multiply<Integer, i16, i16>(),
+		divide<Integer, i16, i16>(),
+		modulus<Integer, i16, i16>(),
+		bitwiseOr<Integer, i16, i16>(),
+		bitwiseXor<Integer, i16, i16>(),
+		bitwiseAnd<Integer, i16, i16>(),
+		leftShift<Integer, i16, i16>(),
+		rightShift<Integer, i16, i16>(),
+		lessThan<Integer, i16>(),
+		greaterThan<Integer, i16>(),
+		lessThanOrEqualTo<Integer, i16>(),
+		greaterThanOrEqualTo<Integer, i16>(),
+		equals<Integer, i16>(),
+		notEquals<Integer, i16>(),
+
+		// i32
+
 		add<i32>(),
 		subtract<i32>(),
 		multiply<i32>(),
@@ -487,6 +604,25 @@ namespace parka::evaluation
 		greaterThanOrEqualTo<i32, Integer>(),
 		equals<i32, Integer>(),
 		notEquals<i32, Integer>(),
+
+		add<Integer, i32, i32>(),
+		subtract<Integer, i32, i32>(),
+		multiply<Integer, i32, i32>(),
+		divide<Integer, i32, i32>(),
+		modulus<Integer, i32, i32>(),
+		bitwiseOr<Integer, i32, i32>(),
+		bitwiseXor<Integer, i32, i32>(),
+		bitwiseAnd<Integer, i32, i32>(),
+		leftShift<Integer, i32, i32>(),
+		rightShift<Integer, i32, i32>(),
+		lessThan<Integer, i32>(),
+		greaterThan<Integer, i32>(),
+		lessThanOrEqualTo<Integer, i32>(),
+		greaterThanOrEqualTo<Integer, i32>(),
+		equals<Integer, i32>(),
+		notEquals<Integer, i32>(),
+
+		// i64
 
 		add<i64>(),
 		subtract<i64>(),
@@ -522,6 +658,25 @@ namespace parka::evaluation
 		equals<i64, Integer>(),
 		notEquals<i64, Integer>(),
 
+		add<Integer, i64, i64>(),
+		subtract<Integer, i64, i64>(),
+		multiply<Integer, i64, i64>(),
+		divide<Integer, i64, i64>(),
+		modulus<Integer, i64, i64>(),
+		bitwiseOr<Integer, i64, i64>(),
+		bitwiseXor<Integer, i64, i64>(),
+		bitwiseAnd<Integer, i64, i64>(),
+		leftShift<Integer, i64, i64>(),
+		rightShift<Integer, i64, i64>(),
+		lessThan<Integer, i64>(),
+		greaterThan<Integer, i64>(),
+		lessThanOrEqualTo<Integer, i64>(),
+		greaterThanOrEqualTo<Integer, i64>(),
+		equals<Integer, i64>(),
+		notEquals<Integer, i64>(),
+
+		// float
+
 		add<Float>(),
 		subtract<Float>(),
 		multiply<Float>(),
@@ -532,6 +687,8 @@ namespace parka::evaluation
 		greaterThanOrEqualTo<Float>(),
 		equals<Float>(),
 		notEquals<Float>(),
+
+		// f32
 
 		add<f32>(),
 		subtract<f32>(),
@@ -555,6 +712,19 @@ namespace parka::evaluation
 		equals<f32, Float>(),
 		notEquals<f32, Float>(),
 
+		add<Float, f32, f32>(),
+		subtract<Float, f32, f32>(),
+		multiply<Float, f32, f32>(),
+		divide<Float, f32, f32>(),
+		lessThan<Float, f32>(),
+		greaterThan<Float, f32>(),
+		lessThanOrEqualTo<Float, f32>(),
+		greaterThanOrEqualTo<Float, f32>(),
+		equals<Float, f32>(),
+		notEquals<Float, f32>(),
+
+		// f64
+
 		add<f64>(),
 		subtract<f64>(),
 		multiply<f64>(),
@@ -577,10 +747,25 @@ namespace parka::evaluation
 		equals<f64, Float>(),
 		notEquals<f64, Float>(),
 
+		add<Float, f64, f64>(),
+		subtract<Float, f64, f64>(),
+		multiply<Float, f64, f64>(),
+		divide<Float, f64, f64>(),
+		lessThan<Float, f64>(),
+		greaterThan<Float, f64>(),
+		lessThanOrEqualTo<Float, f64>(),
+		greaterThanOrEqualTo<Float, f64>(),
+		equals<Float, f64>(),
+		notEquals<Float, f64>(),
+
+		// bool
+
 		equals<bool>(),
 		notEquals<bool>(),
 		booleanAnd(),
 		booleanOr(),
+
+		// char
 
 		equals<char>(),
 		notEquals<char>(),

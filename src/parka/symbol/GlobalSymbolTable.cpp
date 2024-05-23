@@ -135,8 +135,6 @@ namespace parka
 			return op;
 		}
 
-		log::error("No operator `$ $ $` has been defined.", left, binaryExpressionType, right);
-
 		return nullptr;
 	}
 

@@ -114,6 +114,20 @@ namespace parka::validator
 		return new CastExpressionIr(expression, **conversion);
 	}
 
+	static Result<TypeIr> validateDefaultType(const TypeIr& type)
+	{
+		// TODO: Optimize?
+		if (type == TypeIr::integerType)
+			return TypeIr::i32Type;
+
+		if (type == TypeIr::floatType)
+			return TypeIr::f64Type;
+
+		// TODO: struct type that can fail
+
+		return type;
+	}
+
 	Result<Ir> validateAst(const Ast& ast)
 	{
 		auto& package = ast.globalPackage();
@@ -321,20 +335,6 @@ namespace parka::validator
 		}
 
 		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
-	}
-
-	static Result<TypeIr> validateDefaultType(const TypeIr& type)
-	{
-		// TODO: Optimize?
-		if (type == TypeIr::integerType)
-			return TypeIr::i32Type;
-
-		if (type == TypeIr::floatType)
-			return TypeIr::f64Type;
-
-		// TODO: struct type that can fail
-
-		return type;
 	}
 
 	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalSymbolTable& symbolTable)
@@ -595,7 +595,10 @@ namespace parka::validator
 		auto *op = symbolTable.resolveBinaryOperator(ast.binaryExpressionType(), lhsType, rhsType);
 
 		if (!op)
+		{
+			log::error(ast.snippet(), "No operator `$ $ $` has been defined.", lhsType, ast.binaryExpressionType(), rhsType);
 			return {};
+		}
 
 		auto result = new BinaryExpressionIr(*lhs, *rhs, *op);
 
