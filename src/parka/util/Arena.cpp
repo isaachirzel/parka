@@ -29,7 +29,9 @@ namespace parka
 	{
 		const usize pageSize = getPageSize();
 		const bool hasPageRemainder = length % pageSize > 0;
-		const usize pageAlignedLength = length / pageSize + hasPageRemainder * pageSize;
+		const usize extraPages = (usize)hasPageRemainder;
+		const usize pageCount = length / pageSize + extraPages;
+		const usize pageAlignedLength = pageCount * pageSize;
 
 		return pageAlignedLength;
 	}
@@ -53,10 +55,10 @@ namespace parka
 	}
 
 	Arena::Arena(usize maxCapacity):
-	_maxCapacity(getPageAlignedLength(maxCapacity)),
-	_capacity(0),
-	_length(0),
-	_data(allocateArena(_maxCapacity))
+		_maxCapacity(getPageAlignedLength(maxCapacity)),
+		_capacity(0),
+		_length(0),
+		_data(allocateArena(_maxCapacity))
 	{}
 
 	Arena::~Arena()

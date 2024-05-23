@@ -6,7 +6,7 @@
 
 namespace parka::evaluation
 {
-	using IntrinsicConversion = std::function<Value& (Value& to, const Value& from)>;
+	typedef Value& (*IntrinsicConversion) (Value& to, const Value& from);
 
 	extern IntrinsicConversion intrinsicConversions[];
 	extern const usize intrinsicConversionCount;

@@ -10,7 +10,6 @@ namespace parka
 	{
 		Arena _arena;
 		usize _length;
-		usize _capacity;
 
 	public:
 
@@ -23,15 +22,19 @@ namespace parka
 
 		T& push(T&& value)
 		{
-			auto arenaLength = _arena.length() / sizeof(T);
-			auto* data = begin();
-			auto* ptr = _length == arenaLength
-				? (T*)_arena.allocate(sizeof(T))
-				: &data[_length];
+			const auto newLength = _length + 1;
+			const auto arenaLength = _arena.length() / sizeof(T);
+			const auto diff = newLength - arenaLength;
+
+			if (diff > 0)
+				_arena.allocate(diff * sizeof(T));
+
+			auto* elements = data();
+			auto* ptr = &elements[_length];
 
 			new (ptr) T(std::move(value));
 
-			_length += 1;
+			_length = newLength;
 
 			return *ptr;
 		}

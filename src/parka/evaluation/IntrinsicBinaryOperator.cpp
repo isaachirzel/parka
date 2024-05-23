@@ -577,11 +577,13 @@ namespace parka::evaluation
 		equals<f64, Float>(),
 		notEquals<f64, Float>(),
 
+		equals<bool>(),
+		notEquals<bool>(),
 		booleanAnd(),
 		booleanOr(),
 
-		equals<char, char>(),
-		notEquals<char, char>(),
+		equals<char>(),
+		notEquals<char>(),
 	};
 	const usize intrinsicBinaryOperatorCount = sizeof(intrinsicBinaryOperators) / sizeof(intrinsicBinaryOperators[0]);
 }

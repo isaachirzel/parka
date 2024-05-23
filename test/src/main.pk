@@ -43,6 +43,3 @@ function main(): i32
 	var a = fibonacci(15);
 	return a;
 }
-
-
-

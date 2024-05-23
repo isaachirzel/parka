@@ -37,6 +37,7 @@ namespace parka::ir
 		
 	public:
 
+		TypeIr();
 		TypeIr(const TypeBaseIr& base);
 		TypeIr(TypeIr&&);
 		TypeIr(const TypeIr&);

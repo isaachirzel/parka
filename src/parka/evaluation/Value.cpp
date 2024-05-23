@@ -7,21 +7,17 @@ namespace parka::evaluation
 {
 	Value::Value(const ir::TypeIr& type):
 		_type(type),
-		_value(),
+		_value(0),
 		_nodePtr(nullptr)
-	{
-		std::memset(_value, 0, sizeof(_value));
-	}
+	{}
 
 	Value::Value(Value&& other):
-		_type(other._type),
+		_type(std::move(other._type)),
+		_value(other._value),
 		_nodePtr(other._nodePtr)
 	{
-		memcpy(_value, other._value, sizeof(other._value));
-
-		other._type = ir::TypeIr::voidType;
+		other._value = 0;
 		other._nodePtr = nullptr;
-		memset(other._value, 0, sizeof(other._value));
 	}
 
 	void Value::setNode(const ir::LValueIr& node)
@@ -33,8 +29,9 @@ namespace parka::evaluation
 	{
 		assert(size <= sizeof(_value));
 
-		std::memset(_value, 0, sizeof(_value));
-		std::memcpy(_value, data, size);
+		_value = 0;
+
+		std::memcpy((byte*)&_value, data, size);
 	}
 
 	void Value::setValue(const Value& other)
@@ -51,9 +48,8 @@ namespace parka::evaluation
 			out << value._nodePtr->symbol() << ": " << value._nodePtr->type() << " = ";
 		}
 
-		out << "(" << value._type << ") " << *(const i64*)value._value;
+		out << "(" << value._type << ") " << (i64)value._value;
 
 		return out;
 	}
-
 }

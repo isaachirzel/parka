@@ -18,13 +18,7 @@ namespace parka::ir
 	
 	IntegerLiteralIr::IntegerLiteralIr(i64 value):
 		ExpressionIr(ExpressionType::IntegerLiteral),
-		_type(TypeIr::integerType),
 		_value(value),
 		_size(getSize(value))
 	{}
-
-	void IntegerLiteralIr::setType(TypeIr&& type)
-	{
-		_type = std::move(type);
-	}
 }

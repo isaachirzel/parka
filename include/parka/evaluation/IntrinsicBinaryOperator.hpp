@@ -6,7 +6,7 @@
 
 namespace parka::evaluation
 {
-	using IntrinsicBinaryOperator = std::function<Value& (Value& left, Value& right, LocalState& state)>;
+	typedef Value& (*IntrinsicBinaryOperator) (Value& left, Value& right, LocalState& state);
 
 	extern IntrinsicBinaryOperator intrinsicBinaryOperators[];
 	extern const usize intrinsicBinaryOperatorCount;

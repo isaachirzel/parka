@@ -10,7 +10,7 @@ namespace parka::evaluation
 	class Value
 	{
 		ir::TypeIr _type;
-		byte _value[8];
+		u64 _value;
 		const ir::LValueIr* _nodePtr;
 
 	private:
@@ -36,10 +36,10 @@ namespace parka::evaluation
 		template <typename T>
 		T getValue()
 		{
-			return *(T*)_value;
+			return *(T*)&_value;
 		}
 		
-		const byte* value() const { return _value; }
+		const byte* value() const { return (byte*)&_value; }
 
 		const ir::TypeIr& type() const { return _type; }
 

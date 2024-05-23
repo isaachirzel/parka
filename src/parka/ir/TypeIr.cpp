@@ -26,6 +26,10 @@ namespace parka::ir
 	const TypeIr TypeIr::charType(PrimitiveIr::charPrimitive);
 	const TypeIr TypeIr::stringType(PrimitiveIr::stringPrimitive);
 
+	TypeIr::TypeIr():
+		_typeBase(&PrimitiveIr::voidPrimitive)
+	{}
+
 	TypeIr::TypeIr(const TypeBaseIr& base):
 		_typeBase(&base)
 	{}
@@ -33,7 +37,7 @@ namespace parka::ir
 	TypeIr::TypeIr(TypeIr&& other):
 		_typeBase(other._typeBase)
 	{
-		other._typeBase = nullptr;
+		other._typeBase = &PrimitiveIr::voidPrimitive;
 	}
 
 	TypeIr::TypeIr(const TypeIr& other):
