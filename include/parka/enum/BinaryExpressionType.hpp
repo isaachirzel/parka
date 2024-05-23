@@ -1,10 +1,12 @@
 #ifndef PARKA_ENUM_BINARY_EXPRESSION_TYPE_HPP
 #define PARKA_ENUM_BINARY_EXPRESSION_TYPE_HPP
 
+#include "parka/util/Common.hpp"
 #include <ostream>
+
 namespace parka
 {
-	enum class BinaryExpressionType
+	enum class BinaryExpressionType: u8
 	{
 		// Additive
 		Add,

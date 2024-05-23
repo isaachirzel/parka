@@ -7,7 +7,7 @@
 
 namespace parka
 {
-	enum class FileType
+	enum class FileType: u8
 	{
 		Regular,
 		Source,

@@ -1,5 +1,6 @@
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include <cstring>
+#include <type_traits>
 
 namespace parka::evaluation
 {
@@ -14,14 +15,29 @@ namespace parka::evaluation
 		return to;
 	}
 
+	template <typename From>
+	Value& _noConv(Value& to, const Value& from)
+	{
+		auto f = *(const From*)from.value();
+
+		to.setValue(f);
+
+		return to;
+	}
+
 	template <typename To, typename From>
 	IntrinsicConversion conv()
 	{
-		return _conv<To, From>;
+
+		if constexpr (!std::is_same_v<To, void>)
+			return _conv<To, From>;
+
+		return _noConv<From>;
 	}
 
 	IntrinsicConversion intrinsicConversions[] =
 	{
+		conv<void, Integer>(),
 		conv<u8, Integer>(),
 		conv<u16, Integer>(),
 		conv<u32, Integer>(),
@@ -30,11 +46,8 @@ namespace parka::evaluation
 		conv<i16, Integer>(),
 		conv<i32, Integer>(),
 		conv<i64, Integer>(),
-		conv<Float, Float>(),
 		conv<f32, Float>(),
 		conv<f64, Float>(),
-		conv<bool, bool>(),
-		conv<char, char>(),
 	};
 	const usize intrinsicConversionCount = sizeof(intrinsicConversions) / sizeof(*intrinsicConversions);
 }

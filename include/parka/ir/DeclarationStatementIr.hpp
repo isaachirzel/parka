@@ -17,10 +17,10 @@ namespace parka::ir
 	public:
 
 		DeclarationStatementIr(VariableIr& variable, ExpressionIr& value, ConversionIr* conversion):
-		StatementIr(StatementType::Declaration),
-		_variable(variable),
-		_value(value),
-		_conversion(conversion)
+			StatementIr(StatementType::Declaration),
+			_variable(variable),
+			_value(value),
+			_conversion(conversion)
 		{}
 		DeclarationStatementIr(DeclarationStatementIr&&) = default;
 		DeclarationStatementIr(const DeclarationStatementIr&) = delete;

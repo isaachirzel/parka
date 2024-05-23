@@ -16,9 +16,15 @@ namespace parka::ir
 		return sizeof(u8);
 	}
 	
-	IntegerLiteralIr::IntegerLiteralIr(u64 value):
+	IntegerLiteralIr::IntegerLiteralIr(i64 value):
 		ExpressionIr(ExpressionType::IntegerLiteral),
+		_type(TypeIr::integerType),
 		_value(value),
 		_size(getSize(value))
 	{}
+
+	void IntegerLiteralIr::setType(TypeIr&& type)
+	{
+		_type = std::move(type);
+	}
 }

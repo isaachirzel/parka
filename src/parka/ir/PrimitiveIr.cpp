@@ -17,7 +17,7 @@ namespace parka::ir
 	PrimitiveIr PrimitiveIr::f64Primitive = { "f64", PrimitiveType::FloatingPoint, 8 };
 	PrimitiveIr PrimitiveIr::boolPrimitive = { "bool", PrimitiveType::Boolean, 1 };
 	PrimitiveIr PrimitiveIr::charPrimitive = { "char", PrimitiveType::Character, 1 };
-	PrimitiveIr PrimitiveIr::stringPrimitive = { "string", PrimitiveType::String, 0 };
+	PrimitiveIr PrimitiveIr::stringPrimitive = { "string", PrimitiveType::String, 8 };
 	PrimitiveIr* PrimitiveIr::entries[] =
 	{
 		&voidPrimitive,

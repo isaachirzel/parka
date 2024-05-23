@@ -1,22 +1,24 @@
 # To Do
 
 ## Short Term
-- Member access expressions '.'
-- Indirection expression '->'
-- Add assign
+- Literal type resolution
+- Add assign '+='
 - The rest of the assignments
-- type casting
-- Setting the type of a non-explicity typed variable as soon as it becomes obvious what it is supposed to be
 - intrinsic print function
+- Add "Potential Solution" and "Extra Information" to errors
+- Setting the type of a non-explicity typed variable as soon as it becomes obvious what it is supposed to be
 - Conditional expressions
-- while loops
 - Prefix operators
 - Call operators
 - Subscript operators
 
 ## Longer Term
+- While loops
+- Regular loops
 - Do something with range ast
 - Structs
+- Member access expressions '.'
+- Indirection expression '->'
 - Constructors
 - Destructors
 - Struct properties
@@ -27,7 +29,7 @@
 
 ## Long Term
 - Templates
-- Compiled macros
+- Macros
 - Tuples
 - default not impemented exception if body is a semicolon
 - User defined conversion

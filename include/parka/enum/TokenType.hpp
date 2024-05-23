@@ -1,9 +1,11 @@
 #ifndef PARKA_ENUM_TOKEN_TYPE_HPP
 #define PARKA_ENUM_TOKEN_TYPE_HPP
 
+#include "parka/util/Common.hpp"
+
 namespace parka
 {
-	enum class TokenType
+	enum class TokenType: u8
 	{
 		EndOfFile,
 		Invalid,

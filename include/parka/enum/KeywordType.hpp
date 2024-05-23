@@ -1,11 +1,12 @@
 #ifndef PARKA_ENUM_KEYWORD_TYPE_HPP
 #define PARKA_ENUM_KEYWORD_TYPE_HPP
 
+#include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
 namespace parka
 {
-	enum class KeywordType
+	enum class KeywordType: u8
 	{
 		None,
 		Break,

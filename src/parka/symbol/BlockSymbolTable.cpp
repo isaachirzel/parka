@@ -17,9 +17,14 @@ namespace parka
 		_isInLoop(false)
 	{}
 
-	FunctionEntry& BlockSymbolTable::declare(const ast::FunctionAst& ast)
+	FunctionEntry& BlockSymbolTable::declare(const ast::FunctionAst&)
 	{
 		throw std::invalid_argument("Functions cannot be declared in a BlockSymbolTable.");
+	}
+
+	ParameterEntry& BlockSymbolTable::declare(const ast::ParameterAst&)
+	{
+		throw std::invalid_argument("Parameters cannot be declared in a BlockSymbolTable.");
 	}
 
 	VariableEntry& BlockSymbolTable::declare(const ast::VariableAst& ast)
@@ -37,11 +42,6 @@ namespace parka
 		}
 
 		return ref;
-	}
-
-	ParameterEntry& BlockSymbolTable::declare(const ast::ParameterAst& ast)
-	{
-		throw std::invalid_argument("Parameters cannot be declared in a BlockSymbolTable.");
 	}
 
 	Resolvable* BlockSymbolTable::findSymbol(const ast::IdentifierAst& identifier)

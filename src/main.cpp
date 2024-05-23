@@ -69,26 +69,39 @@ validation lock:
 		return context;
 	}
 
+*/
 
-	// Here is where 
+/*
+	1. typeof(1 + 2 + 3) == integer
+	2. var a = 1 + 2 + 3; typeof(a) == i32
+	3. var a = integer; a -> i32
+	4. var a: i64 = integer; a -> i64
+	5. var a: i64 = 3; a += 3;
 
-	while (!readLock.try_lock())
-	{
-		// Do something else to not waste time
-		// Defer the coroutine?
-	}
+	solutions:
+		1. operators for integer literal & integer literal and every other type of integer that returns a specifc type
+			solves: 1
 
-	return context;
+		2. Conversion have conversion for integer to void and float to void
+			solves: 2, 3
+
+		3. Assignment operators for integer types and integers
+			solves: 4
+		
 
 
-Thing:
 
-	+ declaration uses temporary state and does not modify tree
+	rust goes back and validates expressions after the type is known. How can I implement this
+	rust doesn't do number 1 because
 
-	+ walking 
 
-	declaration would have the 
+	RESOLVABLE PROTOTYPES TYPES
+	FUNCTION OPERATORS should fix the problem with setting the body on a functions.
+	When resolving the prototype, it doesn't need to be executed at all, it just needs the type 
+	to be resolved
+	This 
+	Maybe having the prototype TypeIr as part of the function entry is a good idea?
+	I'm not sure how setting the function ir in the identifier expression afterwards will work?
 
-	Validator
-		PackageSymbolTable[]
+
 */

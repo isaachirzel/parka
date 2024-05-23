@@ -22,6 +22,7 @@ namespace parka::ir
 
 	IntrinsicConversionIr IntrinsicConversionIr::entries[] =
 	{
+		conv<void, Integer>(),
 		conv<u8, Integer>(),
 		conv<u16, Integer>(),
 		conv<u32, Integer>(),
@@ -30,11 +31,8 @@ namespace parka::ir
 		conv<i16, Integer>(),
 		conv<i32, Integer>(),
 		conv<i64, Integer>(),
-		conv<Float, Float>(),
 		conv<f32, Float>(),
-		conv<f64, Float>(),
-		conv<bool, bool>(),
-		conv<char, char>(),
+		conv<f64, Float>(),		
 	};
 	const usize IntrinsicConversionIr::entryCount = sizeof(entries) / sizeof(*entries);
 }

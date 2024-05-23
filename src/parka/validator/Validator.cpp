@@ -318,14 +318,18 @@ namespace parka::validator
 		if (!variable || !value)
 			return {};
 
+		const auto& valueType = value->type();
+
 		if (!ast.variable().annotation())
 		{
-			variable->setType(value->type());
+			// TODO: Default values for integer and float
+
+			variable->setType(valueType);
 
 			return new DeclarationStatementIr(*variable, *value, nullptr);
 		}
 
-		auto conversion = symbolTable.resolveConversion(variable->type(), value->type());
+		auto conversion = symbolTable.resolveConversion(variable->type(), valueType);
 
 		if (!conversion)
 		{

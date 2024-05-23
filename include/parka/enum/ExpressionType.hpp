@@ -1,11 +1,12 @@
 #ifndef PARKA_ENUM_EXPRESSION_TYPE_HPP
 #define PARKA_ENUM_EXPRESSION_TYPE_HPP
 
+#include "parka/util/Common.hpp"
 #include <ostream>
 
 namespace parka
 {
-	enum class ExpressionType
+	enum class ExpressionType: u8
 	{
 		Binary,
 		Call,

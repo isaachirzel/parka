@@ -1,11 +1,12 @@
 #ifndef PARKA_SYMBOL_TABLE_TYPE_HPP
 #define PARKA_SYMBOL_TABLE_TYPE_HPP
 
+#include "parka/util/Common.hpp"
 #include <ostream>
 
 namespace parka
 {
-	enum class SymbolTableType
+	enum class SymbolTableType: u8
 	{
 		Global,
 		Package,

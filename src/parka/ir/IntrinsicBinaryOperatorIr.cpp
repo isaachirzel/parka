@@ -45,8 +45,6 @@ namespace parka::ir
 		return op<Left, Right, Return>(BinaryExpressionType::Modulus);
 	}
 
-
-
 	template <typename Left, typename Right = Left, typename Return = Left>
 	IntrinsicBinaryOperatorIr bitwiseOr()
 	{
