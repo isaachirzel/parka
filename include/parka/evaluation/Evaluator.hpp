@@ -60,7 +60,7 @@ namespace parka::evaluation
 	Value& evaluateBinaryOperator(const ir::BinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
 	Value& evaluateIntrinsicBinaryOperator(const ir::IntrinsicBinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
 
-	Value& evaluateConversion(const ir::ConversionIr* conversion, Value& to, Value& from);
+	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from);
 	Value& evaluateIntrinsicConversion(const ir::IntrinsicConversionIr& conversion, Value& to, Value& from);
 }
 

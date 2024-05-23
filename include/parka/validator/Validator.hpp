@@ -77,7 +77,7 @@ namespace parka::validator
 	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::CallExpressionIr* validateCallExpression(const ast::CallExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IdentifierExpressionIr* validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable);
-	ir::CastExpressionIr* validateCastExpression(const ast::CastExpressionAst& ast, LocalSymbolTable& symbolTable);
+	ir::ExpressionIr* validateCastExpression(const ast::CastExpressionAst& ast, LocalSymbolTable& symbolTable);
 	ir::IntegerLiteralIr* validateIntegerLiteral(const ast::IntegerLiteralAst& ast);
 	ir::FloatLiteralIr* validateFloatLiteral(const ast::FloatLiteralAst& ast);
 	ir::StringLiteralIr* validateStringLiteral(const ast::StringLiteralAst& ast);

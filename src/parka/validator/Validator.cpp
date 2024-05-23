@@ -100,6 +100,20 @@ namespace parka::validator
 		return success;
 	}
 
+	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, SymbolTable& symbolTable)
+	{
+		const auto& expressionType = expression.type();
+		auto conversion = symbolTable.resolveConversion(toType, expressionType);
+
+		if (!conversion)
+			return {};
+
+		if (!*conversion)
+			return &expression;
+
+		return new CastExpressionIr(expression, **conversion);
+	}
+
 	Result<Ir> validateAst(const Ast& ast)
 	{
 		auto& package = ast.globalPackage();
@@ -206,15 +220,16 @@ namespace parka::validator
 			if (!expression)
 				return {};
 
-			auto conversion = symbolTable.resolveConversion(symbolTable.returnType(), expression->type());
-
-			if (!conversion)
+			const auto& returnType = symbolTable.returnType();
+			auto* castedValue = validateCast(returnType, *expression, symbolTable);
+			
+			if (!castedValue)
 			{
 				log::error("Unable to return $ in function expecting $.", expression->type(), symbolTable.returnType());
 				return {};
 			}
 
-			return FunctionBodyIr(*expression, *conversion);
+			return FunctionBodyIr(*castedValue);
 		}
 
 		auto blockStatement = validateBlockStatement(ast.blockStatement(), symbolTable);
@@ -308,6 +323,20 @@ namespace parka::validator
 		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
 	}
 
+	static Result<TypeIr> validateDefaultType(const TypeIr& type)
+	{
+		// TODO: Optimize?
+		if (type == TypeIr::integerType)
+			return TypeIr::i32Type;
+
+		if (type == TypeIr::floatType)
+			return TypeIr::f64Type;
+
+		// TODO: struct type that can fail
+
+		return type;
+	}
+
 	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalSymbolTable& symbolTable)
 	{
 		// FIXME: Update all expr an stmt validation to FunctionSymbolTable
@@ -322,22 +351,21 @@ namespace parka::validator
 
 		if (!ast.variable().annotation())
 		{
-			// TODO: Default values for integer and float
+			auto variableType = validateDefaultType(valueType);
 
-			variable->setType(valueType);
-
-			return new DeclarationStatementIr(*variable, *value, nullptr);
+			if (!variableType)
+				return {};
+			
+			variable->setType(*variableType);
 		}
 
-		auto conversion = symbolTable.resolveConversion(variable->type(), valueType);
+		auto* castedValue = validateCast(variable->type(), *value, symbolTable);
+		
+		if (!castedValue)
+			log::fatal(ast.snippet(), "Unable to find conversions for defaulted type. This should never happen.");
 
-		if (!conversion)
-		{
-			log::error("Unable to use $ initialize variable of type $..", value->type(), variable->type());
-			return {};
-		}
 
-		return new DeclarationStatementIr(*variable, *value, *conversion);
+		return new DeclarationStatementIr(*variable, *castedValue);
 	}
 
 	ExpressionStatementIr* validateExpressionStatement(const ExpressionStatementAst& ast, LocalSymbolTable& symbolTable)
@@ -365,15 +393,15 @@ namespace parka::validator
 		}
 
 		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		auto conversion = symbolTable.resolveConversion(identifier.type(), value->type());
+		auto* castedValue = validateCast(identifier.type(), *value, symbolTable);
 
-		if (!conversion)
+		if (!castedValue)
 		{
-			log::error(ast.snippet(), "Unable to assign $ to $.", value->type(), identifier.type());
+			log::error(ast.snippet(), "A value of type `$` cannot be assigned to a $ of type `$`.", value->type(), identifier.value().resolvableType, identifier.type());
 			return {};
 		}
 
-		return new AssignmentStatementIr(identifier, *value, *conversion, ast.assignmentType());
+		return new AssignmentStatementIr(identifier, *castedValue, ast.assignmentType());
 	}
 
 	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, LocalSymbolTable& symbolTable)
@@ -392,16 +420,16 @@ namespace parka::validator
 		if (!value)
 			return {};
 
-		auto conversion = symbolTable.resolveConversion(symbolTable.returnType(), value->type());
+		auto* castedValue = validateCast(symbolTable.returnType(), *value, symbolTable);
 
-		if (!conversion)
+		if (!castedValue)
 		{
 			// TODO: Highlight function return type
 			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
 			return {};
 		}
 		
-		return new ReturnStatementIr(*value, *conversion);
+		return new ReturnStatementIr(*castedValue);
 	}
 
 	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, LocalSymbolTable& symbolTable)
@@ -450,15 +478,15 @@ namespace parka::validator
 		if (!condition  || !action || !body)
 			return {};
 
-		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
+		auto* castedValue = validateCast(TypeIr::boolType, *condition, symbolTable);
 
-		if (!conversion)
+		if (!castedValue)
 		{
 			log::error("Expression could not be converted from `$` to `$`.", condition->type(), TypeIr::boolType);
 			return {};
 		}
 
-		return new ForStatementIr(*declaration, *condition, *conversion, *action, *body);
+		return new ForStatementIr(*declaration, *castedValue, *action, *body);
 	}
 
 	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalSymbolTable& symbolTable)
@@ -493,15 +521,15 @@ namespace parka::validator
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto conversion = symbolTable.resolveConversion(TypeIr::boolType, condition->type());
+		auto* castedValue = validateCast(TypeIr::boolType, *condition, symbolTable);
 
-		if (!conversion)
+		if (!castedValue)
 		{
 			log::error(ast.condition().snippet(), "Unable to use expression of type $ as if condition.", condition->type());
 			return {};
 		}
 
-		return new IfStatementIr(*condition, *conversion, *thenCase, elseCase);
+		return new IfStatementIr(*castedValue, *thenCase, elseCase);
 	}
 
 	ExpressionIr* validateExpression(const ExpressionAst& ast, LocalSymbolTable& symbolTable)
@@ -618,15 +646,15 @@ namespace parka::validator
 			if (!value)
 				continue;
 
-			auto conversion = symbolTable.resolveConversion(parameter.type(), value->type());
+			auto* castedValue = validateCast(parameter.type(), *value, symbolTable);
 
-			if (!conversion)
+			if (!castedValue)
 			{
 				log::error(valueAst.snippet(), "Parameter $ calls for $ but $ was passed in.", parameter.symbol(), parameter.type(), value->type());
 				continue;
 			}
 
-			arguments.push(ArgumentIr(*value, *conversion));
+			arguments.push(ArgumentIr(*castedValue));
 		}
 		
 		if (arguments.length() != ast.arguments().length())
@@ -648,7 +676,7 @@ namespace parka::validator
 		return new IdentifierExpressionIr(*result);
 	}
 
-	CastExpressionIr* validateCastExpression(const CastExpressionAst& ast, LocalSymbolTable& symbolTable)
+	ExpressionIr* validateCastExpression(const CastExpressionAst& ast, LocalSymbolTable& symbolTable)
 	{
 		auto* expression = validateExpression(ast.expression(), symbolTable);
 		auto type = validateTypeAnnotation(ast.typeAnnotation(), symbolTable);
@@ -656,12 +684,15 @@ namespace parka::validator
 		if (!expression || !type)
 			return {};
 
-		auto conversion = symbolTable.resolveConversion(*type, expression->type());
+		auto* castedValue = validateCast(*type, *expression, symbolTable);
 
-		if (!conversion)
+		if (!castedValue)
+		{
+			log::error("Expression with value `$` cannot be casted to `$`.", expression->type(), *type);
 			return {};
+		}
 
-		return new CastExpressionIr(*type, *expression, *conversion);
+		return castedValue;
 	}
 
 	static Result<u64> getIntegerValue(const Snippet& snippet)

@@ -12,22 +12,19 @@ namespace parka::ir
 	{
 		VariableIr& _variable;
 		ExpressionIr& _value;
-		ConversionIr* _conversion;
 
 	public:
 
-		DeclarationStatementIr(VariableIr& variable, ExpressionIr& value, ConversionIr* conversion):
+		DeclarationStatementIr(VariableIr& variable, ExpressionIr& value):
 			StatementIr(StatementType::Declaration),
 			_variable(variable),
-			_value(value),
-			_conversion(conversion)
+			_value(value)
 		{}
 		DeclarationStatementIr(DeclarationStatementIr&&) = default;
 		DeclarationStatementIr(const DeclarationStatementIr&) = delete;
 
 		const auto& variable() const { return _variable; }
 		const auto& value() const { return _value; }
-		const auto& conversion() const { return _conversion; }
 	};
 }
 

@@ -68,8 +68,14 @@ namespace parka::log
 	void fatal(const char *format, Arg const&...args)
 	{
 		addEntry(LogEntry(LogEntryType::Fatal, parka::format(format, args...)));
-		// FIXME: Output entries
-		// log::outputEntries();
+		exit(1);
+	}
+
+	template <typename ...Arg>
+	[[ noreturn ]]
+	void fatal(const Snippet& snippet, const char *format, Arg const&...args)
+	{
+		addEntry(LogEntry(LogEntryType::Fatal, parka::format(format, args...), snippet));
 		exit(1);
 	}
 

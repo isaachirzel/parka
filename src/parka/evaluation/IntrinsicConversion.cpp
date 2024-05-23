@@ -15,29 +15,14 @@ namespace parka::evaluation
 		return to;
 	}
 
-	template <typename From>
-	Value& _noConv(Value& to, const Value& from)
-	{
-		auto f = *(const From*)from.value();
-
-		to.setValue(f);
-
-		return to;
-	}
-
 	template <typename To, typename From>
 	IntrinsicConversion conv()
 	{
-
-		if constexpr (!std::is_same_v<To, void>)
-			return _conv<To, From>;
-
-		return _noConv<From>;
+		return _conv<To, From>;
 	}
 
 	IntrinsicConversion intrinsicConversions[] =
 	{
-		conv<void, Integer>(),
 		conv<u8, Integer>(),
 		conv<u16, Integer>(),
 		conv<u32, Integer>(),

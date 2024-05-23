@@ -2,8 +2,8 @@
 
 namespace parka::ir
 {
-	FunctionBodyIr::FunctionBodyIr(ExpressionIr& expression, ConversionIr* conversion):
-		_expression({ expression, conversion }),
+	FunctionBodyIr::FunctionBodyIr(ExpressionIr& expression):
+		_expression(&expression),
 		_isExpression(true)
 	{}
 

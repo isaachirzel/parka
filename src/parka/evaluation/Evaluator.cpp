@@ -63,12 +63,9 @@ namespace parka::evaluation
 		{
 			auto& parameter = *ir.parameters()[i];
 			auto& argument = arguments[i];
-			auto& parameterValue = state.pushValue(parameter.type());
 			auto& argumentValue = evaluateExpression(argument.value(), state);
 
-			evaluateConversion(argument.conversion(), parameterValue, argumentValue);
-
-			parameterValue.setNode(parameter);
+			argumentValue.setNode(parameter);
 		}
 	}
 
@@ -76,9 +73,9 @@ namespace parka::evaluation
 	{
 		if (ir.isExpression())
 		{
-			auto& expressionValue = evaluateExpression(ir.expression().expression, state);
+			auto& expressionValue = evaluateExpression(ir.expression(), state);
 
-			evaluateConversion(ir.expression().conversion, state.returnValue(), expressionValue);
+			state.returnValue().setValue(expressionValue);
 
 			return;
 		}
@@ -129,10 +126,7 @@ namespace parka::evaluation
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, LocalState& state)
 	{
-		auto& expressionValue = evaluateExpression(ir.value(), state);
-		auto& variableValue = state.pushValue(ir.variable().type());
-		
-		evaluateConversion(ir.conversion(), variableValue, expressionValue);
+		auto& variableValue = evaluateExpression(ir.value(), state);
 
 		variableValue.setNode(ir.variable());
 
@@ -150,7 +144,7 @@ namespace parka::evaluation
 		{
 			auto& value = evaluateExpression(ir.value(), state);
 
-			evaluateConversion(ir.conversion(), state.returnValue(), value);
+			state.returnValue().setValue(value);
 		}
 
 		state.setReturning(JumpType::Return);
@@ -177,13 +171,9 @@ namespace parka::evaluation
 
 		evaluateDeclarationStatement(ir.declaration(), state);
 
-		auto& conditionValue = state.pushValue(TypeIr::boolType);
-
 		while (true)
 		{
-			auto& value = evaluateExpression(ir.condition(), state);
-
-			evaluateConversion(ir.conversion(), conditionValue, value);
+			auto& conditionValue = evaluateExpression(ir.condition(), state);
 
 			if (!conditionValue.getValue<bool>())
 				break;
@@ -226,15 +216,12 @@ namespace parka::evaluation
 		auto& lhs = state.findValue(ir.identifier().value());
 		auto& rhs = evaluateExpression(ir.value(), state);
 
-		evaluateConversion(ir.conversion(), lhs, rhs);
+		lhs.setValue(rhs);
 	}
 	
 	void evaluateIfStatement(const IfStatementIr& ir, LocalState& state)
 	{
-		auto& conditionValue = state.pushValue(TypeIr::boolType);
-		auto& value = evaluateExpression(ir.condition(), state);
-		
-		evaluateConversion(ir.conversion(), conditionValue, value);
+		auto& conditionValue = evaluateExpression(ir.condition(), state);
 		
 		if (conditionValue.getValue<bool>())
 		{
@@ -394,17 +381,10 @@ namespace parka::evaluation
 		return value;
 	}
 
-	Value& evaluateConversion(const ir::ConversionIr* conversion, Value& to, Value& from)
+	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from)
 	{
-		if (!conversion)
-		{
-			to.setValue(from);
-
-			return to;
-		}	
-
-		if (conversion->isIntrinsic())
-			return evaluateIntrinsicConversion(static_cast<const ir::IntrinsicConversionIr&>(*conversion), to, from);
+		if (conversion.isIntrinsic())
+			return evaluateIntrinsicConversion(static_cast<const ir::IntrinsicConversionIr&>(conversion), to, from);
 
 		log::notImplemented(here());
 	}
