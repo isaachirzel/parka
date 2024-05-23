@@ -356,7 +356,7 @@ namespace parka::evaluation
 	{
 		auto& result = state.pushValue(ir.type());
 
-		result.setValue(&ir.value());
+		result.setValue(ir.value().c_str());
 
 		return result;
 	}

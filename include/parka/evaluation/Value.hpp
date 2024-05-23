@@ -35,9 +35,9 @@ namespace parka::evaluation
 		}
 
 		template <typename T>
-		T getValue() const
+		const T& getValue() const
 		{
-			return *(T*)&_value;
+			return *(const T*)&_value;
 		}
 
 		const ir::TypeIr& type() const { return _type; }

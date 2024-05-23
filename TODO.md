@@ -1,7 +1,6 @@
 # To Do
 
 ## Short Term
-- Literal type resolution
 - Add assign '+='
 - The rest of the assignments
 - intrinsic print function
