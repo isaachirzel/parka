@@ -1,13 +1,12 @@
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include <cstring>
-#include <type_traits>
 
 namespace parka::evaluation
 {
 	template <typename To, typename From>
 	Value& _conv(Value& to, const Value& from)
 	{
-		auto f = *(const From*)from.value();
+		auto f = from.getValue<From>();
 		auto t = (To)f;
 		
 		to.setValue(t);

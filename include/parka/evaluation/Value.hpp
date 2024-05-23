@@ -27,6 +27,7 @@ namespace parka::evaluation
 		const ir::LValueIr* nodePtr() { return _nodePtr; }
 
 		void setValue(const Value& other);
+
 		template <typename T>
 		void setValue(const T& value)
 		{
@@ -34,12 +35,10 @@ namespace parka::evaluation
 		}
 
 		template <typename T>
-		T getValue()
+		T getValue() const
 		{
 			return *(T*)&_value;
 		}
-		
-		const byte* value() const { return (byte*)&_value; }
 
 		const ir::TypeIr& type() const { return _type; }
 

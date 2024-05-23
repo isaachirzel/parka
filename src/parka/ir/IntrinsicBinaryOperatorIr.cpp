@@ -124,6 +124,7 @@ namespace parka::ir
 	IntrinsicBinaryOperatorIr IntrinsicBinaryOperatorIr::entries[] =
 	{
 		// integer
+		
 		add<Integer>(),
 		subtract<Integer>(),
 		multiply<Integer>(),

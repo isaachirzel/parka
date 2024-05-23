@@ -2,8 +2,6 @@
 
 namespace parka
 {
-	const String Float::_symbol("float");
-
 	Float::Float(f64 value):
 		_value(value)
 	{}

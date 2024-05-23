@@ -8,8 +8,8 @@ namespace parka::evaluation
 	template <typename Left, typename Right, typename Return, Return(*operation)(const Left&, const Right&)>
 	Value& op(Value& left, Value& right, LocalState& state)
 	{
-		const Left l = *(const Left*)left.value();
-		const Right r = *(const Right*)right.value();
+		const auto l = left.getValue<Left>();
+		const auto r = right.getValue<Right>();
 		const Return ret = operation(l, r);
 		const auto& valueType = ir::TypeIr::of<Return>();
 		auto& result = state.pushValue(valueType);
@@ -234,6 +234,7 @@ namespace parka::evaluation
 	IntrinsicBinaryOperator intrinsicBinaryOperators[] =
 	{
 		// integer
+		
 		add<Integer>(),
 		subtract<Integer>(),
 		multiply<Integer>(),

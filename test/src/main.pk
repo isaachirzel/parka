@@ -42,6 +42,6 @@ function main(): i32
 {
 	var a = 1 as i64;
 	var b = 1 + 1 + a;
-	//var a = fibonacci(15);
+	
 	return 0;
 }
