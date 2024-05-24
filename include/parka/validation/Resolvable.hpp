@@ -1,12 +1,12 @@
-#ifndef PARKA_SYMBOL_RESOLVABLE_HPP
-#define PARKA_SYMBOL_RESOLVABLE_HPP
+#ifndef PARKA_VALIDATION_RESOLVABLE_HPP
+#define PARKA_VALIDATION_RESOLVABLE_HPP
 
 #include "parka/enum/ResolvableType.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/SymbolTable.hpp"
 #include "parka/util/String.hpp"
 #include "parka/ir/LValueIr.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	struct Resolvable
 	{

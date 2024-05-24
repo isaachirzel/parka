@@ -2,7 +2,7 @@
 #define PARKA_IR_ASSIGNMENT_OPERATOR_IR_HPP
 
 #include "parka/enum/AssignmentType.hpp"
-#include "parka/symbol/AssignmentOperatorKey.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::ir
@@ -15,7 +15,7 @@ namespace parka::ir
 
 	public:
 
-		static FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*> getIntrinsicAssignmentOperators();
+		static FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*> getIntrinsicAssignmentOperators();
 
 	public:
 

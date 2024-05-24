@@ -1,8 +1,8 @@
-#include "parka/symbol/AssignmentOperatorKey.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/util/Hash.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	AssignmentOperatorKey::AssignmentOperatorKey():
 		_left(ir::TypeIr::voidType),
@@ -22,7 +22,7 @@ namespace parka
 	}
 }
 
-std::size_t std::hash<parka::AssignmentOperatorKey>::operator()(const parka::AssignmentOperatorKey& key) const
+std::size_t std::hash<parka::validation::AssignmentOperatorKey>::operator()(const parka::validation::AssignmentOperatorKey& key) const
 {
 	// TODO: Idk lol figure out how to hash the enum
 	auto typeHasher = std::hash<parka::ir::TypeIr>();

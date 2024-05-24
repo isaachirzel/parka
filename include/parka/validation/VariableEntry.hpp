@@ -1,11 +1,11 @@
-#ifndef PARKA_SYMBOL_VARIABLE_ENTRY_HPP
-#define PARKA_SYMBOL_VARIABLE_ENTRY_HPP
+#ifndef PARKA_VALIDATION_VARIABLE_ENTRY_HPP
+#define PARKA_VALIDATION_VARIABLE_ENTRY_HPP
 
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ir/VariableIr.hpp"
-#include "parka/symbol/Resolvable.hpp"
+#include "parka/validation/Resolvable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class VariableEntry: public Resolvable
 	{

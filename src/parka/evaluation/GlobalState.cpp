@@ -5,7 +5,7 @@
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/BinaryOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
 
 namespace parka::evaluation
 {
@@ -28,7 +28,7 @@ namespace parka::evaluation
 
 	IntrinsicBinaryOperator GlobalState::getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const
 	{
-		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
+		auto key = validation::BinaryOperatorKey(left, right, binaryExpressionType);
 		auto* op = _intrinsicBinaryOperators.find(key);
 
 		if (!op)
@@ -39,7 +39,7 @@ namespace parka::evaluation
 
 	IntrinsicAssignmentOperator GlobalState::getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const
 	{
-		auto key = AssignmentOperatorKey(left, right, assignmentType);
+		auto key = validation::AssignmentOperatorKey(left, right, assignmentType);
 		auto* op = _intrinsicAssignmentOperators.find(key);
 
 		if (!op)
@@ -50,7 +50,7 @@ namespace parka::evaluation
 
 	IntrinsicConversion GlobalState::getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const
 	{
-		auto key = ConversionKey(to, from);
+		auto key = validation::ConversionKey(to, from);
 		auto* conversion = _intrinsicConversions.find(key);
 
 		if (!conversion)

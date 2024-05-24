@@ -1,6 +1,6 @@
-#include "parka/symbol/ConversionKey.hpp"
+#include "parka/validation/ConversionKey.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	ConversionKey::ConversionKey():
 		_to(ir::TypeIr::voidType),
@@ -18,7 +18,7 @@ namespace parka
 	}
 }
 
-std::size_t std::hash<parka::ConversionKey>::operator()(const parka::ConversionKey& key) const
+std::size_t std::hash<parka::validation::ConversionKey>::operator()(const parka::validation::ConversionKey& key) const
 {
 	auto typeHasher = std::hash<parka::ir::TypeIr>();
 

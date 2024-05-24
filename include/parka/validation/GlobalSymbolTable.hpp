@@ -1,19 +1,19 @@
-#ifndef PARKA_SYMBOL_GLOBAL_SYMBOL_TABLE_HPP
-#define PARKA_SYMBOL_GLOBAL_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_GLOBAL_SYMBOL_TABLE_HPP
+#define PARKA_VALIDATION_GLOBAL_SYMBOL_TABLE_HPP
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/symbol/AssignmentOperatorKey.hpp"
-#include "parka/symbol/BinaryOperatorKey.hpp"
-#include "parka/symbol/ConversionKey.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
+#include "parka/validation/ConversionKey.hpp"
+#include "parka/validation/SymbolTable.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/FlatMap.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class GlobalSymbolTable: public SymbolTable
 	{

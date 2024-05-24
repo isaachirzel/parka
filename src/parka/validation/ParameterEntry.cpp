@@ -1,6 +1,6 @@
-#include "parka/symbol/ParameterEntry.hpp"
+#include "parka/validation/ParameterEntry.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	ParameterEntry::ParameterEntry(const ast::ParameterAst& ast, ir::ParameterIr *ir):
 		Resolvable(ResolvableType::Parameter),

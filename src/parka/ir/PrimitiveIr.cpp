@@ -1,6 +1,6 @@
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/symbol/Resolvable.hpp"
+#include "parka/validation/Resolvable.hpp"
 
 namespace parka::ir
 {

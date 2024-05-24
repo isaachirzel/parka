@@ -1,10 +1,10 @@
-#ifndef PARKA_SYMBOL_ASSIGNMENT_OPERATOR_KEY_HPP
-#define PARKA_SYMBOL_ASSIGNMENT_OPERATOR_KEY_HPP
+#ifndef PARKA_VALIDATION_ASSIGNMENT_OPERATOR_KEY_HPP
+#define PARKA_VALIDATION_ASSIGNMENT_OPERATOR_KEY_HPP
 
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/ir/TypeIr.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class AssignmentOperatorKey
 	{
@@ -28,9 +28,9 @@ namespace parka
 }
 
 template<>
-struct std::hash<parka::AssignmentOperatorKey>
+struct std::hash<parka::validation::AssignmentOperatorKey>
 {
-	std::size_t operator()(const parka::AssignmentOperatorKey& key) const;
+	std::size_t operator()(const parka::validation::AssignmentOperatorKey& key) const;
 };
 
 #endif

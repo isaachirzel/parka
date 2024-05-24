@@ -1,13 +1,13 @@
-#include "parka/symbol/PackageSymbolTable.hpp"
+#include "parka/validation/PackageSymbolTable.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/FunctionEntry.hpp"
+#include "parka/validation/FunctionEntry.hpp"
 #include <stdexcept>
 
-namespace parka
+namespace parka::validation
 {
 	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, SymbolTable& parent):
 		SymbolTable(SymbolTableType::Package),

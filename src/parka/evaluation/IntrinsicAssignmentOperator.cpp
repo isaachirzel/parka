@@ -1,7 +1,7 @@
 #include "parka/evaluation/IntrinsicAssignmentOperator.hpp"
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/evaluation/Value.hpp"
-#include "parka/symbol/AssignmentOperatorKey.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
 
 namespace parka::evaluation
 {
@@ -86,17 +86,17 @@ namespace parka::evaluation
 	}
 
 	template <typename Left, typename Right>
-	AssignmentOperatorKey key(AssignmentType assignmentType)
+	validation::AssignmentOperatorKey key(AssignmentType assignmentType)
 	{
 		const auto& left = ir::TypeIr::of<Left>();
 		const auto& right = ir::TypeIr::of<Right>();
-		auto key = AssignmentOperatorKey(left, right, assignmentType);
+		auto key = validation::AssignmentOperatorKey(left, right, assignmentType);
 		
 		return key;
 	}
 
 	template <typename Left, typename Right, AssignmentType assignmentType>
-	void addAssignmentOperator(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addAssignmentOperator(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		auto k = key<Left, Right>(assignmentType);
 		auto v = op<Left, Right, _operation<Left, Right, assignmentType>>;
@@ -105,7 +105,7 @@ namespace parka::evaluation
 	}
 
 	template <typename T, typename Literal, AssignmentType assignmentType>
-	void addAssignmentOperatorWithLiteral(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addAssignmentOperatorWithLiteral(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addAssignmentOperator<T, T, assignmentType>(operators);
 
@@ -114,19 +114,19 @@ namespace parka::evaluation
 	}
 
 	template <typename T, AssignmentType assignmentType>
-	void addIntegerAssignmentOperator(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addIntegerAssignmentOperator(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addAssignmentOperatorWithLiteral<T, Integer, assignmentType>(operators);
 	}
 
 	template <typename T, AssignmentType assignmentType>
-	void addFloatAssignmentOperator(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addFloatAssignmentOperator(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addAssignmentOperatorWithLiteral<T, Float, assignmentType>(operators);
 	}
 
 	template <typename T>
-	void addIntegerAssignmentOperators(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addIntegerAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addIntegerAssignmentOperator<T, AssignmentType::Assign>(operators);
 		addIntegerAssignmentOperator<T, AssignmentType::AddAssign>(operators);
@@ -142,7 +142,7 @@ namespace parka::evaluation
 	}
 
 	template <typename T>
-	void addFloatAssignmentOperators(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addFloatAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addFloatAssignmentOperator<T, AssignmentType::Assign>(operators);
 		addFloatAssignmentOperator<T, AssignmentType::AddAssign>(operators);
@@ -151,19 +151,19 @@ namespace parka::evaluation
 		addFloatAssignmentOperator<T, AssignmentType::DivideAssign>(operators);
 	}
 
-	void addBoolAssignmentOperators(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addBoolAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addAssignmentOperator<bool, bool, AssignmentType::Assign>(operators);
 	}
 
-	void addCharAssignmentOperators(FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
+	void addCharAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>& operators)
 	{
 		addAssignmentOperator<char, char, AssignmentType::Assign>(operators);
 	}
 
-	FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator> getIntrinsicAssignmentOperators()
+	FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator> getIntrinsicAssignmentOperators()
 	{
-		auto operators = FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator>(128);
+		auto operators = FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator>(128);
 
 		addIntegerAssignmentOperators<u8>(operators);
 		addIntegerAssignmentOperators<u16>(operators);

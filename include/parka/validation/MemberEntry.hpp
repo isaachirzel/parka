@@ -1,10 +1,10 @@
-#ifndef PARKA_SYMBOL_MEMBER_ENTRY_HPP
-#define PARKA_SYMBOL_MEMBER_ENTRY_HPP
+#ifndef PARKA_VALIDATION_MEMBER_ENTRY_HPP
+#define PARKA_VALIDATION_MEMBER_ENTRY_HPP
 
 #include "parka/ast/MemberAst.hpp"
-#include "parka/symbol/Resolvable.hpp"
+#include "parka/validation/Resolvable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class MemberEntry: public Resolvable
 	{

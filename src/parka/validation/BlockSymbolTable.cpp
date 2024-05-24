@@ -1,11 +1,11 @@
 #include "parka/log/Log.hpp"
-#include "parka/symbol/BlockSymbolTable.hpp"
-#include "parka/symbol/GlobalSymbolTable.hpp"
-#include "parka/symbol/LocalSymbolTable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/BlockSymbolTable.hpp"
+#include "parka/validation/GlobalSymbolTable.hpp"
+#include "parka/validation/LocalSymbolTable.hpp"
+#include "parka/validation/SymbolTable.hpp"
 #include "parka/validation/Validator.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	BlockSymbolTable::BlockSymbolTable(LocalSymbolTable& parent):
 		LocalSymbolTable(SymbolTableType::Block),

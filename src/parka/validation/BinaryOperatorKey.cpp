@@ -1,8 +1,8 @@
-#include "parka/symbol/BinaryOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/util/Hash.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	BinaryOperatorKey::BinaryOperatorKey():
 		_left(ir::TypeIr::voidType),
@@ -22,7 +22,7 @@ namespace parka
 	}
 }
 
-std::size_t std::hash<parka::BinaryOperatorKey>::operator()(const parka::BinaryOperatorKey& key) const
+std::size_t std::hash<parka::validation::BinaryOperatorKey>::operator()(const parka::validation::BinaryOperatorKey& key) const
 {
 	// TODO: Idk lol figure out how to hash the enum
 	auto typeHasher = std::hash<parka::ir::TypeIr>();

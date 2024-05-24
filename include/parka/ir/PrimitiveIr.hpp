@@ -4,12 +4,12 @@
 #include "parka/enum/PrimitiveType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/SymbolTable.hpp"
 
 namespace parka::ir
 {
-	class PrimitiveIr: public TypeBaseIr, public Resolvable, public LValueIr
+	class PrimitiveIr: public TypeBaseIr, public validation::Resolvable, public LValueIr
 	{
 		String _name;
 		u32 _size;
@@ -43,7 +43,7 @@ namespace parka::ir
 		PrimitiveIr(PrimitiveIr&&) = default;
 		PrimitiveIr(const PrimitiveIr&) = delete;
 
-		SymbolTable* symbolTable() { return nullptr; }
+		validation::SymbolTable* symbolTable() { return nullptr; }
 		PrimitiveIr *resolve() { return this; }
 		const TypeIr& type() const { return TypeIr::typeNameType; }
 		const String& symbol() const { return _name; }

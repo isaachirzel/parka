@@ -1,7 +1,7 @@
 #ifndef PARKA_EVALUATION_INTRINSIC_ASSIGNMENT_OPERATOR_HPP
 #define PARKA_EVALUATION_INTRINSIC_ASSIGNMENT_OPERATOR_HPP
 
-#include "parka/symbol/AssignmentOperatorKey.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
 
 namespace parka::evaluation
 {
@@ -11,7 +11,7 @@ namespace parka::evaluation
 
 	typedef void (*IntrinsicAssignmentOperator) (Value& left, const Value& right);
 
-	FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator> getIntrinsicAssignmentOperators();
+	FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator> getIntrinsicAssignmentOperators();
 }
 
 #endif

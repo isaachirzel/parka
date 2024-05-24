@@ -49,8 +49,8 @@
 #include "parka/ir/IntegerLiteralIr.hpp"
 #include "parka/ir/StringLiteralIr.hpp"
 #include "parka/ir/YieldStatementIr.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
-#include "parka/symbol/LocalSymbolTable.hpp"
+#include "parka/validation/FunctionSymbolTable.hpp"
+#include "parka/validation/LocalSymbolTable.hpp"
 #include "parka/util/Result.hpp"
 
 namespace parka::validation

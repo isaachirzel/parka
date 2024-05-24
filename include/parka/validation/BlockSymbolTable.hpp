@@ -1,11 +1,11 @@
-#ifndef PARKA_SYMBOL_BLOCK_SYMBOL_TABLE_HPP
-#define PARKA_SYMBOL_BLOCK_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_BLOCK_SYMBOL_TABLE_HPP
+#define PARKA_VALIDATION_BLOCK_SYMBOL_TABLE_HPP
 
-#include "parka/symbol/FunctionSymbolTable.hpp"
-#include "parka/symbol/LocalSymbolTable.hpp"
+#include "parka/validation/FunctionSymbolTable.hpp"
+#include "parka/validation/LocalSymbolTable.hpp"
 #include "parka/util/FlatMap.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class BlockSymbolTable: public LocalSymbolTable
 	{

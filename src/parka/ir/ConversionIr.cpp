@@ -5,26 +5,26 @@
 namespace parka::ir
 {
 	template <typename To, typename From>
-	void conv(FlatMap<ConversionKey, ConversionIr*>& conversions)
+	void conv(FlatMap<validation::ConversionKey, ConversionIr*>& conversions)
 	{
 		const auto& to = TypeIr::of<To>();
 		const auto& from = TypeIr::of<From>();
 
-		auto key = ConversionKey(to, from);
+		auto key = validation::ConversionKey(to, from);
 		auto* conversion = new ConversionIr(to, from);
 
 		conversions.insert(key, conversion);
 	}
 
 	template <typename To, typename From>
-	ConversionKey key()
+	validation::ConversionKey key()
 	{
-		return ConversionKey(TypeIr::of<To>(), TypeIr::of<From>());
+		return validation::ConversionKey(TypeIr::of<To>(), TypeIr::of<From>());
 	}
 
-	FlatMap<ConversionKey, ConversionIr*> ConversionIr::getIntrinsicConversions()
+	FlatMap<validation::ConversionKey, ConversionIr*> ConversionIr::getIntrinsicConversions()
 	{
-		auto conversions = FlatMap<ConversionKey, ConversionIr*>(64);
+		auto conversions = FlatMap<validation::ConversionKey, ConversionIr*>(64);
 
 		conv<u8, Integer>(conversions);
 		conv<u16, Integer>(conversions);

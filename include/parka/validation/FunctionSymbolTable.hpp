@@ -1,18 +1,17 @@
-#ifndef PARKA_SYMBOL_FUNCTION_SYMBOL_TABLE_HPP
-#define PARKA_SYMBOL_FUNCTION_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_FUNCTION_SYMBOL_TABLE_HPP
+#define PARKA_VALIDATION_FUNCTION_SYMBOL_TABLE_HPP
 
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/ParameterAst.hpp"
 #include "parka/ast/VariableAst.hpp"
-#include "parka/ir/StatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/symbol/LocalSymbolTable.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/VariableEntry.hpp"
-#include "parka/symbol/ParameterEntry.hpp"
+#include "parka/validation/LocalSymbolTable.hpp"
+#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/VariableEntry.hpp"
+#include "parka/validation/ParameterEntry.hpp"
 #include "parka/util/FlatMap.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	struct Resolvable;
 	class GlobalSymbolTable;

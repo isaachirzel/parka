@@ -15,16 +15,16 @@ namespace parka::evaluation
 	}
 
 	template <typename To, typename From>
-	void conv(FlatMap<ConversionKey, IntrinsicConversion>& conversions)
+	void conv(FlatMap<validation::ConversionKey, IntrinsicConversion>& conversions)
 	{
-		auto key = ConversionKey(ir::TypeIr::of<To>(), ir::TypeIr::of<From>());
+		auto key = validation::ConversionKey(ir::TypeIr::of<To>(), ir::TypeIr::of<From>());
 
 		conversions.insert(key, _conv<To, From>);
 	}
 
-	FlatMap<ConversionKey, IntrinsicConversion> getIntrinsicConversions()
+	FlatMap<validation::ConversionKey, IntrinsicConversion> getIntrinsicConversions()
 	{
-		auto conversions = FlatMap<ConversionKey, IntrinsicConversion>(64);
+		auto conversions = FlatMap<validation::ConversionKey, IntrinsicConversion>(64);
 
 		conv<u8, Integer>(conversions);
 		conv<u16, Integer>(conversions);

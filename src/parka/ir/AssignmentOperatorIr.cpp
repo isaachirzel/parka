@@ -1,6 +1,6 @@
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/enum/AssignmentType.hpp"
-#include "parka/symbol/AssignmentOperatorKey.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
 
 namespace parka::ir
 {
@@ -15,17 +15,17 @@ namespace parka::ir
 	}
 
 	template <typename Left, typename Right>
-	AssignmentOperatorKey key(AssignmentType assignmentType)
+	validation::AssignmentOperatorKey key(AssignmentType assignmentType)
 	{
 		const auto& left = ir::TypeIr::of<Left>();
 		const auto& right = ir::TypeIr::of<Right>();
-		auto key = AssignmentOperatorKey(left, right, assignmentType);
+		auto key = validation::AssignmentOperatorKey(left, right, assignmentType);
 		
 		return key;
 	}
 
 	template <typename Left, typename Right>
-	void addAssignmentOperator(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
+	void addAssignmentOperator(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
 	{
 		auto k = key<Left, Right>(assignmentType);
 		auto v = op<Left, Right>(assignmentType);
@@ -34,7 +34,7 @@ namespace parka::ir
 	}
 
 	template <typename T, typename Literal>
-	void addAssignmentOperatorWithLiteral(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
+	void addAssignmentOperatorWithLiteral(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
 	{
 		addAssignmentOperator<T, T>(operators, assignmentType);
 
@@ -43,19 +43,19 @@ namespace parka::ir
 	}
 
 	template <typename T>
-	void addIntegerAssignmentOperator(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
+	void addIntegerAssignmentOperator(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
 	{
 		addAssignmentOperatorWithLiteral<T, Integer>(operators, assignmentType);
 	}
 
 	template <typename T>
-	void addFloatAssignmentOperator(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
+	void addFloatAssignmentOperator(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators, AssignmentType assignmentType)
 	{
-		addAssignmentOperatorWithLiteral<T, Float>(operators, assignmentType);
+	addAssignmentOperatorWithLiteral<T, Float>(operators, assignmentType);
 	}
 
 	template <typename T>
-	void addIntegerAssignmentOperators(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
+	void addIntegerAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
 	{
 		addIntegerAssignmentOperator<T>(operators, AssignmentType::Assign);
 		addIntegerAssignmentOperator<T>(operators, AssignmentType::AddAssign);
@@ -71,7 +71,7 @@ namespace parka::ir
 	}
 
 	template <typename T>
-	void addFloatAssignmentOperators(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
+	void addFloatAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
 	{
 		addFloatAssignmentOperator<T>(operators, AssignmentType::Assign);
 		addFloatAssignmentOperator<T>(operators, AssignmentType::AddAssign);
@@ -80,19 +80,19 @@ namespace parka::ir
 		addFloatAssignmentOperator<T>(operators, AssignmentType::DivideAssign);
 	}
 
-	void addBoolAssignmentOperators(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
+	void addBoolAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
 	{
 		addAssignmentOperator<bool, bool>(operators, AssignmentType::Assign);
 	}
 
-	void addCharAssignmentOperators(FlatMap<AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
+	void addCharAssignmentOperators(FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*>& operators)
 	{
 		addAssignmentOperator<char, char>(operators, AssignmentType::Assign);
 	}
 
-	FlatMap<AssignmentOperatorKey, ir::AssignmentOperatorIr*> AssignmentOperatorIr::getIntrinsicAssignmentOperators()
+	FlatMap<validation::AssignmentOperatorKey, ir::AssignmentOperatorIr*> AssignmentOperatorIr::getIntrinsicAssignmentOperators()
 	{
-		auto operators = FlatMap<AssignmentOperatorKey, ir::AssignmentOperatorIr*>(256);
+		auto operators = FlatMap<validation::AssignmentOperatorKey, ir::AssignmentOperatorIr*>(256);
 
 		addIntegerAssignmentOperators<u8>(operators);
 		addIntegerAssignmentOperators<u16>(operators);

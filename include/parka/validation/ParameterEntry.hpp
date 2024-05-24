@@ -1,10 +1,10 @@
-#ifndef PARKA_SYMBOL_PARAMETER_ENTRY_HPP
-#define PARKA_SYMBOL_PARAMETER_ENTRY_HPP
+#ifndef PARKA_VALIDATION_PARAMETER_ENTRY_HPP
+#define PARKA_VALIDATION_PARAMETER_ENTRY_HPP
 
 #include "parka/ast/ParameterAst.hpp"
-#include "parka/symbol/Resolvable.hpp"
+#include "parka/validation/Resolvable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class ParameterEntry: public Resolvable
 	{

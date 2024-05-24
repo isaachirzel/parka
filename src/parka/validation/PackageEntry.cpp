@@ -1,7 +1,7 @@
-#include "parka/symbol/PackageEntry.hpp"
+#include "parka/validation/PackageEntry.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	ir::PackageIr *PackageEntry::resolve()
 	{

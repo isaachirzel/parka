@@ -1,10 +1,10 @@
-#ifndef PARKA_SYMBOL_BINARY_OPERATOR_KEY_HPP
-#define PARKA_SYMBOL_BINARY_OPERATOR_KEY_HPP
+#ifndef PARKA_VALIDATION_BINARY_OPERATOR_KEY_HPP
+#define PARKA_VALIDATION_BINARY_OPERATOR_KEY_HPP
 
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/TypeIr.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class BinaryOperatorKey
 	{
@@ -28,9 +28,9 @@ namespace parka
 }
 
 template<>
-struct std::hash<parka::BinaryOperatorKey>
+struct std::hash<parka::validation::BinaryOperatorKey>
 {
-	std::size_t operator()(const parka::BinaryOperatorKey& key) const;
+	std::size_t operator()(const parka::validation::BinaryOperatorKey& key) const;
 };
 
 #endif

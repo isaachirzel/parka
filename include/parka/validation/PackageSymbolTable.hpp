@@ -1,15 +1,15 @@
-#ifndef PARKA_SYMBOL_PACKAGE_SYMBOL_TABLE_HPP
-#define PARKA_SYMBOL_PACKAGE_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_PACKAGE_SYMBOL_TABLE_HPP
+#define PARKA_VALIDATION_PACKAGE_SYMBOL_TABLE_HPP
 
 #include "parka/ast/PackageAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/symbol/GlobalSymbolTable.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/GlobalSymbolTable.hpp"
+#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/SymbolTable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class PackageSymbolTable: public SymbolTable
 	{

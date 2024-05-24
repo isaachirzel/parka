@@ -1,9 +1,9 @@
-#ifndef PARKA_SYMBOL_CONVERSION_KEY_HPP
-#define PARKA_SYMBOL_CONVERSION_KEY_HPP
+#ifndef PARKA_VALIDATION_CONVERSION_KEY_HPP
+#define PARKA_VALIDATION_CONVERSION_KEY_HPP
 
 #include "parka/ir/TypeIr.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class ConversionKey
 	{
@@ -27,9 +27,9 @@ namespace parka
 }
 
 template <>
-struct std::hash<parka::ConversionKey>
+struct std::hash<parka::validation::ConversionKey>
 {
-	std::size_t operator()(const parka::ConversionKey& key) const;
+	std::size_t operator()(const parka::validation::ConversionKey& key) const;
 };
 
 #endif

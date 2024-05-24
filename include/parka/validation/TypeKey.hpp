@@ -1,9 +1,9 @@
-#ifndef PARKA_SYMBOL_TYPE_KEY_HPP
-#define PARKA_SYMBOL_TYPE_KEY_HPP
+#ifndef PARKA_VALIDATION_TYPE_KEY_HPP
+#define PARKA_VALIDATION_TYPE_KEY_HPP
 
 #include "parka/ir/TypeBaseIr.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class TypeKey
 	{
@@ -17,14 +17,14 @@ namespace parka
 
 		bool operator==(const TypeKey& other);
 
-		friend struct std::hash<parka::TypeKey>;
+		friend struct std::hash<parka::validation::TypeKey>;
 	};
 }
 
 template <>
-struct std::hash<parka::TypeKey>
+struct std::hash<parka::validation::TypeKey>
 {
-	size_t operator()(const parka::TypeKey& key) const;
+	size_t operator()(const parka::validation::TypeKey& key) const;
 };
 
 #endif

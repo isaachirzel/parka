@@ -1,9 +1,9 @@
-#ifndef PARKA_SYMBOL_LOCAL_SYMBOL_TABLE_HPP
-#define PARKA_SYMBOL_LOCAL_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_LOCAL_SYMBOL_TABLE_HPP
+#define PARKA_VALIDATION_LOCAL_SYMBOL_TABLE_HPP
 
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/SymbolTable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class FunctionSymbolTable;
 

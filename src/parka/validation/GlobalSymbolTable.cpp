@@ -1,15 +1,15 @@
-#include "parka/symbol/GlobalSymbolTable.hpp"
+#include "parka/validation/GlobalSymbolTable.hpp"
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/AssignmentOperatorKey.hpp"
-#include "parka/symbol/BinaryOperatorKey.hpp"
-#include "parka/symbol/FunctionEntry.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
+#include "parka/validation/FunctionEntry.hpp"
 #include <stdexcept>
 
-namespace parka
+namespace parka::validation
 {
 	GlobalSymbolTable::GlobalSymbolTable(const ast::PackageAst& globalPackage):
 		SymbolTable(SymbolTableType::Global),

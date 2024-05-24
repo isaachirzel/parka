@@ -2,7 +2,7 @@
 #define PARKA_IR_CONVERSION_IR_HPP
 
 #include "parka/ir/TypeIr.hpp"
-#include "parka/symbol/ConversionKey.hpp"
+#include "parka/validation/ConversionKey.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::ir
@@ -14,7 +14,7 @@ namespace parka::ir
 
 	public:
 
-		static FlatMap<ConversionKey, ConversionIr*> getIntrinsicConversions();
+		static FlatMap<validation::ConversionKey, ConversionIr*> getIntrinsicConversions();
 
 	public:
 

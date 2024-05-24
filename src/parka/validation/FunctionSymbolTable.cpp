@@ -1,17 +1,17 @@
-#include "parka/symbol/FunctionSymbolTable.hpp"
+#include "parka/validation/FunctionSymbolTable.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ast/VariableAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/symbol/GlobalSymbolTable.hpp"
-#include "parka/symbol/ParameterEntry.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/VariableEntry.hpp"
+#include "parka/validation/GlobalSymbolTable.hpp"
+#include "parka/validation/ParameterEntry.hpp"
+#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/VariableEntry.hpp"
 #include "parka/validation/Validator.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	FunctionSymbolTable::FunctionSymbolTable(SymbolTable& parent):
 		LocalSymbolTable(SymbolTableType::Function),

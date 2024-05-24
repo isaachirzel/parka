@@ -1,5 +1,5 @@
-#ifndef PARKA_SYMBOL_SYMBOL_TABLE_HPP
-#define PARKA_SYMBOL_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_SYMBOL_TABLE_HPP
+#define PARKA_VALIDATION_SYMBOL_TABLE_HPP
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/ParameterAst.hpp"
@@ -13,7 +13,7 @@
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class GlobalSymbolTable;
 	struct Resolvable;

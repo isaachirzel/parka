@@ -1,6 +1,6 @@
-#include "parka/symbol/VariableEntry.hpp"
+#include "parka/validation/VariableEntry.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	VariableEntry::VariableEntry(const ast::VariableAst& ast, ir::VariableIr *ir):
 		Resolvable(ResolvableType::Variable),

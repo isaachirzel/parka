@@ -1,7 +1,7 @@
-#include "parka/symbol/FunctionEntry.hpp"
+#include "parka/validation/FunctionEntry.hpp"
 #include "parka/validation/Validator.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	FunctionEntry::FunctionEntry(const ast::FunctionAst& ast, SymbolTable& symbolTable):
 		Resolvable(ResolvableType::Function),

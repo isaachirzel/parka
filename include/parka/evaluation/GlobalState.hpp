@@ -8,18 +8,18 @@
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/Value.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/symbol/AssignmentOperatorKey.hpp"
-#include "parka/symbol/BinaryOperatorKey.hpp"
-#include "parka/symbol/ConversionKey.hpp"
+#include "parka/validation/AssignmentOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
+#include "parka/validation/ConversionKey.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::evaluation
 {
 	class GlobalState
 	{
-		FlatMap<BinaryOperatorKey, IntrinsicBinaryOperator> _intrinsicBinaryOperators;
-		FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator> _intrinsicAssignmentOperators;
-		FlatMap<ConversionKey, IntrinsicConversion> _intrinsicConversions;
+		FlatMap<validation::BinaryOperatorKey, IntrinsicBinaryOperator> _intrinsicBinaryOperators;
+		FlatMap<validation::AssignmentOperatorKey, IntrinsicAssignmentOperator> _intrinsicAssignmentOperators;
+		FlatMap<validation::ConversionKey, IntrinsicConversion> _intrinsicConversions;
 
 	public:
 

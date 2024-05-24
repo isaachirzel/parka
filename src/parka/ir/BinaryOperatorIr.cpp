@@ -1,6 +1,6 @@
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
-#include "parka/symbol/BinaryOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/util/Integer.hpp"
 #include <type_traits>
 
@@ -18,17 +18,17 @@ namespace parka::ir
 	}
 
 	template <typename Left, typename Right>
-	BinaryOperatorKey key(BinaryExpressionType binaryExpressionType)
+	validation::BinaryOperatorKey key(BinaryExpressionType binaryExpressionType)
 	{
 		const auto& left = ir::TypeIr::of<Left>();
 		const auto& right = ir::TypeIr::of<Right>();
-		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
+		auto key = validation::BinaryOperatorKey(left, right, binaryExpressionType);
 		
 		return key;
 	}
 
 	template <typename Left, typename Right, typename Return>
-	void addBinaryOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
+	void addBinaryOperator(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
 	{
 		auto k = key<Left, Right>(binaryExpressionType);
 		auto v = op<Left, Right, Return>(binaryExpressionType);
@@ -37,7 +37,7 @@ namespace parka::ir
 	}
 
 	template <typename T, typename Literal, typename Return = T>
-	void addBinaryOperatorWithLiteral(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
+	void addBinaryOperatorWithLiteral(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
 	{
 		addBinaryOperator<T, T, Return>(operators, binaryExpressionType);
 
@@ -49,19 +49,19 @@ namespace parka::ir
 	}
 
 	template <typename T, typename Return = T>
-	void addIntegerBinaryOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
+	void addIntegerBinaryOperator(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
 	{
 		addBinaryOperatorWithLiteral<T, Integer, Return>(operators, binaryExpressionType);
 	}
 
 	template <typename T,  typename Return = T>
-	void addFloatBinaryOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
+	void addFloatBinaryOperator(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
 	{
 		addBinaryOperatorWithLiteral<T, Float, Return>(operators, binaryExpressionType);
 	}
 
 	template <typename T>
-	void addIntegerBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addIntegerBinaryOperators(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
 		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Add);
 		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Subtract);
@@ -83,7 +83,7 @@ namespace parka::ir
 	}
 
 	template <typename T>
-	void addFloatBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addFloatBinaryOperators(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
 		addFloatBinaryOperator<T>(operators, BinaryExpressionType::Add);
 		addFloatBinaryOperator<T>(operators, BinaryExpressionType::Subtract);
@@ -97,7 +97,7 @@ namespace parka::ir
 		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::NotEquals);
 	}
 
-	void addBoolBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addBoolBinaryOperators(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
 		addBinaryOperator<bool, bool, bool>(operators, BinaryExpressionType::Equals);
 		addBinaryOperator<bool, bool, bool>(operators, BinaryExpressionType::NotEquals);
@@ -105,15 +105,15 @@ namespace parka::ir
 		addBinaryOperator<bool, bool, bool>(operators, BinaryExpressionType::BooleanOr);
 	}
 
-	void addCharBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addCharBinaryOperators(FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
 		addBinaryOperator<char, char, bool>(operators, BinaryExpressionType::Equals);
 		addBinaryOperator<char, char, bool>(operators, BinaryExpressionType::NotEquals);
 	}
 
-	FlatMap<BinaryOperatorKey, BinaryOperatorIr*> BinaryOperatorIr::getIntrinsicBinaryOperators()
+	FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*> BinaryOperatorIr::getIntrinsicBinaryOperators()
 	{
-		auto operators = FlatMap<BinaryOperatorKey, BinaryOperatorIr*>(512);
+		auto operators = FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*>(512);
 
 		addIntegerBinaryOperators<Integer>(operators);
 		addIntegerBinaryOperators<u8>(operators);

@@ -1,12 +1,12 @@
-#ifndef PARKA_SYMBOL_PACKAGE_ENTRY_HPP
-#define PARKA_SYMBOL_PACKAGE_ENTRY_HPP
+#ifndef PARKA_VALIDATION_PACKAGE_ENTRY_HPP
+#define PARKA_VALIDATION_PACKAGE_ENTRY_HPP
 
 #include "parka/ast/PackageAst.hpp"
 #include "parka/ir/PackageIr.hpp"
-#include "parka/symbol/PackageSymbolTable.hpp"
-#include "parka/symbol/Resolvable.hpp"
+#include "parka/validation/PackageSymbolTable.hpp"
+#include "parka/validation/Resolvable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class PackageEntry: public Resolvable
 	{

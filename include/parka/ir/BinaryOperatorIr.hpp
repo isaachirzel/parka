@@ -3,7 +3,7 @@
 
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/symbol/BinaryOperatorKey.hpp"
+#include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::ir
@@ -17,7 +17,7 @@ namespace parka::ir
 		
 	public:
 
-		static FlatMap<BinaryOperatorKey, BinaryOperatorIr*> getIntrinsicBinaryOperators();
+		static FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*> getIntrinsicBinaryOperators();
 
 	public:
 

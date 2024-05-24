@@ -1,13 +1,13 @@
-#ifndef PARKA_SYMBOL_FUNCTION_ENTRY_HPP
-#define PARKA_SYMBOL_FUNCTION_ENTRY_HPP
+#ifndef PARKA_VALIDATION_FUNCTION_ENTRY_HPP
+#define PARKA_VALIDATION_FUNCTION_ENTRY_HPP
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/FunctionIr.hpp"
-#include "parka/symbol/FunctionSymbolTable.hpp"
-#include "parka/symbol/Resolvable.hpp"
-#include "parka/symbol/SymbolTable.hpp"
+#include "parka/validation/FunctionSymbolTable.hpp"
+#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/SymbolTable.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	class FunctionEntry: public Resolvable
 	{

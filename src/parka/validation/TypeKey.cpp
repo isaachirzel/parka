@@ -1,7 +1,7 @@
-#include "parka/symbol/TypeKey.hpp"
+#include "parka/validation/TypeKey.hpp"
 #include "parka/util/Hash.hpp"
 
-namespace parka
+namespace parka::validation
 {
 	TypeKey::TypeKey(const ir::TypeBaseIr& typeBase):
 		_typeBase(&typeBase)
@@ -13,7 +13,7 @@ namespace parka
 	}
 }
 
-size_t std::hash<parka::TypeKey>::operator()(const parka::TypeKey& key) const
+size_t std::hash<parka::validation::TypeKey>::operator()(const parka::validation::TypeKey& key) const
 {
 	return parka::hashNumber((size_t)key._typeBase);
 }

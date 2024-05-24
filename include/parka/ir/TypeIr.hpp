@@ -2,7 +2,7 @@
 #define PARKA_IR_TYPE_HPP
 
 #include "parka/ir/TypeBaseIr.hpp"
-#include "parka/symbol/TypeKey.hpp"
+#include "parka/validation/TypeKey.hpp"
 #include "parka/util/FlatMap.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
