@@ -1,9 +1,7 @@
 #ifndef PARKA_UTIL_FLOAT_HPP
 #define PARKA_UTIL_FLOAT_HPP
 
-#include "parka/ir/TypeBaseIr.hpp"
 #include "parka/util/Common.hpp"
-#include "parka/util/String.hpp"
 
 namespace parka
 {
@@ -13,13 +11,16 @@ namespace parka
 
 	public:
 
-		Float(f64 value);
+		explicit Float(f64 value) : _value(value) {}
+		explicit Float(f32 value) : _value(value) {}
+		
 		Float(Float&&) = default;
 		Float(const Float&) = default;
 
 		Float& operator=(Float&&) = default;
 		Float& operator=(const Float&) = default;
 
+		// Binary operators
 		friend Float operator+(const Float& left, const Float& right);
 		friend Float operator-(const Float& left, const Float& right);
 		friend Float operator*(const Float& left, const Float& right);
@@ -31,8 +32,14 @@ namespace parka
 		friend bool operator==(const Float& left, const Float& right);
 		friend bool operator!=(const Float& left, const Float& right);
 
-		operator f32();
-		operator f64();
+		// Assignment operators
+		Float& operator+=(const Float& other);
+		Float& operator-=(const Float& other);
+		Float& operator*=(const Float& other);
+		Float& operator/=(const Float& other);
+
+		explicit operator f32() const { return _value; }
+		explicit operator f64() const { return _value; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Float& number);
 	};

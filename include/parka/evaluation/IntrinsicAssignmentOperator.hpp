@@ -9,7 +9,7 @@ namespace parka::evaluation
 	class Value;
 	class LocalState;
 
-	typedef Value& (*IntrinsicAssignmentOperator) (Value& left, const Value& right, LocalState& state);
+	typedef void (*IntrinsicAssignmentOperator) (Value& left, const Value& right);
 
 	FlatMap<AssignmentOperatorKey, IntrinsicAssignmentOperator> getIntrinsicAssignmentOperators();
 }

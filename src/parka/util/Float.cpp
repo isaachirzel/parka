@@ -2,28 +2,24 @@
 
 namespace parka
 {
-	Float::Float(f64 value):
-		_value(value)
-	{}
-
 	Float operator+(const Float& left, const Float& right)
 	{
-		return left._value + right._value;
+		return Float(left._value + right._value);
 	}
 
 	Float operator-(const Float& left, const Float& right)
 	{
-		return left._value - right._value;
+		return Float(left._value - right._value);
 	}
 
 	Float operator*(const Float& left, const Float& right)
 	{
-		return left._value * right._value;
+		return Float(left._value * right._value);
 	}
 
 	Float operator/(const Float& left, const Float& right)
 	{
-		return left._value / right._value;
+		return Float(left._value / right._value);
 	}
 
 	bool operator<(const Float& left, const Float& right)
@@ -55,15 +51,29 @@ namespace parka
 	{
 		return left._value != right._value;
 	}
-	
-	Float::operator f32()
+
+	Float& Float::operator+=(const Float& other)
 	{
-		return (f32)_value;
+		_value += other._value;
+		return *this;
 	}
 
-	Float::operator f64()
+	Float& Float::operator-=(const Float& other)
 	{
-		return (f64)_value;
+		_value -= other._value;
+		return *this;
+	}
+
+	Float& Float::operator*=(const Float& other)
+	{
+		_value *= other._value;
+		return *this;
+	}
+
+	Float& Float::operator/=(const Float& other)
+	{
+		_value /= other._value;
+		return *this;
 	}
 	
 	std::ostream& operator<<(std::ostream& out, const Float& number)

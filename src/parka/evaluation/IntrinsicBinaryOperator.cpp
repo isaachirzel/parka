@@ -12,8 +12,8 @@ namespace parka::evaluation
 	template <typename Left, typename Right, typename Return, Return (*operation)(const Left&, const Right&)>
 	Value& op(Value& left, Value& right, LocalState& state)
 	{
-		const auto l = left.getValue<Left>();
-		const auto r = right.getValue<Right>();
+		const auto& l = left.getValue<Left>();
+		const auto& r = right.getValue<Right>();
 		const Return ret = operation(l, r);
 		const auto& valueType = ir::TypeIr::of<Return>();
 		auto& result = state.pushValue(valueType);
@@ -27,64 +27,64 @@ namespace parka::evaluation
 	inline Return _operation(const Left& l, const Right& r)
 	{
 		if constexpr (binaryExpressionType == BinaryExpressionType::Add)
-			return l + r;
+			return (Return)(l + (Left)r);
 		
 		if constexpr (binaryExpressionType == BinaryExpressionType::Subtract)
-			return l - r;
+			return Return(l - (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::Multiply)
-			return l * r;
+			return Return(l * (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::Divide)
-			return l / r;
+			return Return(l / (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::Modulus)
-			return l % r;
+			return Return(l % (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::BitwiseOr)
-			return l | r;
+			return Return(l | (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::BitwiseXor)
-			return l ^ r;
+			return Return(l ^ (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::BitwiseAnd)
-			return l & r;
+			return Return(l & (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::Subtract)
-			return l - r;
+			return Return(l - (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::LeftShift)
-			return l << r;
+			return Return(l << (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::RightShift)
-			return l >> r;
+			return Return(l >> (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::LessThan)
-			return l < r;
+			return Return(l < (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::GreaterThan)
-			return l > r;
+			return Return(l > (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::LessThanOrEqualTo)
-			return l <= r;
+			return Return(l <= (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::GreaterThanOrEqualTo)
-			return l >= r;
+			return Return(l >= (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::Subtract)
-			return l - r;
+			return Return(l - (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::Equals)
-			return l == r;
+			return Return(l == (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::NotEquals)
-			return l != r;
+			return Return(l != (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::BooleanOr)
-			return l || r;
+			return Return(l || (Left)r);
 
 		if constexpr (binaryExpressionType == BinaryExpressionType::BooleanAnd)
-			return l && r;
+			return Return(l && (Left)r);
 
 		throw std::runtime_error("Invalid operation type.");
 	}

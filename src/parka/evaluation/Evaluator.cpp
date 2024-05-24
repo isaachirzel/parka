@@ -367,12 +367,11 @@ namespace parka::evaluation
 		return value;
 	}
 
-	Value& evaluateAssignmentOperator(const ir::AssignmentOperatorIr& ir, Value& left, Value& right, LocalState& state)
+	void evaluateAssignmentOperator(const ir::AssignmentOperatorIr& ir, Value& left, const Value& right, LocalState& state)
 	{
 		auto op = state.getAssignmentOperator(ir.left(), ir.right(), ir.assignmentType());
-		auto& value = op(left, right, state);
 
-		return value;
+		op(left, right);
 	}
 
 	Value& evaluateConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)

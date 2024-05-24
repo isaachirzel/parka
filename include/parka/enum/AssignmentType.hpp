@@ -9,16 +9,16 @@ namespace parka
 	enum class AssignmentType: u8
 	{
 		Assign,
+		AddAssign,
+		SubtractAssign,
 		MultiplyAssign,
 		DivideAssign,
 		ModulusAssign,
-		AddAssign,
-		SubtractAssign,
 		LeftShiftAssign,
 		RightShiftAssign,
-		BitwiseAndAssign,
 		BitwiseOrAssign,
-		BitwiseXorAssign
+		BitwiseXorAssign,
+		BitwiseAndAssign
 	};
 
 	std::ostream& operator<<(std::ostream& out, const AssignmentType& type);

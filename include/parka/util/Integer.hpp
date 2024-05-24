@@ -11,13 +11,20 @@ namespace parka
 
 	public:
 
-		Integer(i64 value);
+		explicit Integer(u8 value): _value(value) {}
+		explicit Integer(u16 value): _value(value) {}
+		explicit Integer(u32 value): _value(value) {}
+		explicit Integer(u64 value): _value(value) {}
+		explicit Integer(i8 value): _value(value) {}
+		explicit Integer(i16 value): _value(value) {}
+		explicit Integer(i32 value): _value(value) {}
+		explicit Integer(i64 value): _value(value) {}
 		Integer(Integer&&) = default;
 		Integer(const Integer&) = default;
-
 		Integer& operator=(Integer&&) = default;
 		Integer& operator=(const Integer&) = default;
 
+		// Binary operators
 		friend Integer operator+(const Integer& left, const Integer& right);
 		friend Integer operator-(const Integer& left, const Integer& right);
 		friend Integer operator*(const Integer& left, const Integer& right);
@@ -34,15 +41,27 @@ namespace parka
 		friend bool operator>=(const Integer& left, const Integer& right);
 		friend bool operator==(const Integer& left, const Integer& right);
 		friend bool operator!=(const Integer& left, const Integer& right);
+
+		// Assignment operators
+		Integer& operator+=(const Integer& other);
+		Integer& operator-=(const Integer& other);
+		Integer& operator*=(const Integer& other);
+		Integer& operator/=(const Integer& other);
+		Integer& operator%=(const Integer& other);
+		Integer& operator<<=(const Integer& other);
+		Integer& operator>>=(const Integer& other);
+		Integer& operator|=(const Integer& other);
+		Integer& operator^=(const Integer& other);
+		Integer& operator&=(const Integer& other);
 		
-		operator i8();
-		operator i16();
-		operator i32();
-		operator i64();
-		operator u8();
-		operator u16();
-		operator u32();
-		operator u64();
+		explicit operator i8() const;
+		explicit operator i16() const;
+		explicit operator i32() const;
+		explicit operator i64() const;
+		explicit operator u8() const;
+		explicit operator u16() const;
+		explicit operator u32() const;
+		explicit operator u64() const;
 
 		friend std::ostream& operator<<(std::ostream& out, const Integer integer);
 	};

@@ -40,6 +40,12 @@ namespace parka::evaluation
 			return *(const T*)&_value;
 		}
 
+		template <typename T>
+		T& getValue()
+		{
+			return *(T*)&_value;
+		}
+
 		const ir::TypeIr& type() const { return _type; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Value& value);

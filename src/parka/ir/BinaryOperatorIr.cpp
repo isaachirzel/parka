@@ -49,55 +49,55 @@ namespace parka::ir
 	}
 
 	template <typename T, typename Return = T>
-	void addIntegerOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
+	void addIntegerBinaryOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
 	{
 		addBinaryOperatorWithLiteral<T, Integer, Return>(operators, binaryExpressionType);
 	}
 
 	template <typename T,  typename Return = T>
-	void addFloatOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
+	void addFloatBinaryOperator(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators, BinaryExpressionType binaryExpressionType)
 	{
 		addBinaryOperatorWithLiteral<T, Float, Return>(operators, binaryExpressionType);
 	}
 
 	template <typename T>
-	void addIntegerOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addIntegerBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
-		addIntegerOperator<T>(operators, BinaryExpressionType::Add);
-		addIntegerOperator<T>(operators, BinaryExpressionType::Subtract);
-		addIntegerOperator<T>(operators, BinaryExpressionType::Multiply);
-		addIntegerOperator<T>(operators, BinaryExpressionType::Divide);
-		addIntegerOperator<T>(operators, BinaryExpressionType::Modulus);
-		addIntegerOperator<T>(operators, BinaryExpressionType::BitwiseOr);
-		addIntegerOperator<T>(operators, BinaryExpressionType::BitwiseXor);
-		addIntegerOperator<T>(operators, BinaryExpressionType::BitwiseAnd);
-		addIntegerOperator<T>(operators, BinaryExpressionType::LeftShift);
-		addIntegerOperator<T>(operators, BinaryExpressionType::RightShift);
-		addIntegerOperator<T, bool>(operators, BinaryExpressionType::LessThan);
-		addIntegerOperator<T, bool>(operators, BinaryExpressionType::GreaterThan);
-		addIntegerOperator<T, bool>(operators, BinaryExpressionType::LessThanOrEqualTo);
-		addIntegerOperator<T, bool>(operators, BinaryExpressionType::GreaterThanOrEqualTo);
-		addIntegerOperator<T, bool>(operators, BinaryExpressionType::Equals);
-		addIntegerOperator<T, bool>(operators, BinaryExpressionType::NotEquals);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Add);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Subtract);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Multiply);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Divide);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::Modulus);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::BitwiseOr);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::BitwiseXor);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::BitwiseAnd);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::LeftShift);
+		addIntegerBinaryOperator<T>(operators, BinaryExpressionType::RightShift);
+		addIntegerBinaryOperator<T, bool>(operators, BinaryExpressionType::LessThan);
+		addIntegerBinaryOperator<T, bool>(operators, BinaryExpressionType::GreaterThan);
+		addIntegerBinaryOperator<T, bool>(operators, BinaryExpressionType::LessThanOrEqualTo);
+		addIntegerBinaryOperator<T, bool>(operators, BinaryExpressionType::GreaterThanOrEqualTo);
+		addIntegerBinaryOperator<T, bool>(operators, BinaryExpressionType::Equals);
+		addIntegerBinaryOperator<T, bool>(operators, BinaryExpressionType::NotEquals);
 
 	}
 
 	template <typename T>
-	void addFloatOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addFloatBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
-		addFloatOperator<T>(operators, BinaryExpressionType::Add);
-		addFloatOperator<T>(operators, BinaryExpressionType::Subtract);
-		addFloatOperator<T>(operators, BinaryExpressionType::Multiply);
-		addFloatOperator<T>(operators, BinaryExpressionType::Divide);
-		addFloatOperator<T, bool>(operators, BinaryExpressionType::LessThan);
-		addFloatOperator<T, bool>(operators, BinaryExpressionType::GreaterThan);
-		addFloatOperator<T, bool>(operators, BinaryExpressionType::LessThanOrEqualTo);
-		addFloatOperator<T, bool>(operators, BinaryExpressionType::GreaterThanOrEqualTo);
-		addFloatOperator<T, bool>(operators, BinaryExpressionType::Equals);
-		addFloatOperator<T, bool>(operators, BinaryExpressionType::NotEquals);
+		addFloatBinaryOperator<T>(operators, BinaryExpressionType::Add);
+		addFloatBinaryOperator<T>(operators, BinaryExpressionType::Subtract);
+		addFloatBinaryOperator<T>(operators, BinaryExpressionType::Multiply);
+		addFloatBinaryOperator<T>(operators, BinaryExpressionType::Divide);
+		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::LessThan);
+		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::GreaterThan);
+		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::LessThanOrEqualTo);
+		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::GreaterThanOrEqualTo);
+		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::Equals);
+		addFloatBinaryOperator<T, bool>(operators, BinaryExpressionType::NotEquals);
 	}
 
-	void addBoolOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addBoolBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
 		addBinaryOperator<bool, bool, bool>(operators, BinaryExpressionType::Equals);
 		addBinaryOperator<bool, bool, bool>(operators, BinaryExpressionType::NotEquals);
@@ -105,7 +105,7 @@ namespace parka::ir
 		addBinaryOperator<bool, bool, bool>(operators, BinaryExpressionType::BooleanOr);
 	}
 
-	void addCharOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
+	void addCharBinaryOperators(FlatMap<BinaryOperatorKey, BinaryOperatorIr*>& operators)
 	{
 		addBinaryOperator<char, char, bool>(operators, BinaryExpressionType::Equals);
 		addBinaryOperator<char, char, bool>(operators, BinaryExpressionType::NotEquals);
@@ -115,20 +115,20 @@ namespace parka::ir
 	{
 		auto operators = FlatMap<BinaryOperatorKey, BinaryOperatorIr*>(512);
 
-		addIntegerOperators<Integer>(operators);
-		addIntegerOperators<u8>(operators);
-		addIntegerOperators<u16>(operators);
-		addIntegerOperators<u32>(operators);
-		addIntegerOperators<u64>(operators);
-		addIntegerOperators<i8>(operators);
-		addIntegerOperators<i16>(operators);
-		addIntegerOperators<i32>(operators);
-		addIntegerOperators<i64>(operators);
-		addFloatOperators<Float>(operators);
-		addFloatOperators<f32>(operators);
-		addFloatOperators<f64>(operators);
-		addBoolOperators(operators);
-		addCharOperators(operators);
+		addIntegerBinaryOperators<Integer>(operators);
+		addIntegerBinaryOperators<u8>(operators);
+		addIntegerBinaryOperators<u16>(operators);
+		addIntegerBinaryOperators<u32>(operators);
+		addIntegerBinaryOperators<u64>(operators);
+		addIntegerBinaryOperators<i8>(operators);
+		addIntegerBinaryOperators<i16>(operators);
+		addIntegerBinaryOperators<i32>(operators);
+		addIntegerBinaryOperators<i64>(operators);
+		addFloatBinaryOperators<Float>(operators);
+		addFloatBinaryOperators<f32>(operators);
+		addFloatBinaryOperators<f64>(operators);
+		addBoolBinaryOperators(operators);
+		addCharBinaryOperators(operators);
 
 		return operators;
 	}

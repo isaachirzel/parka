@@ -57,7 +57,7 @@ namespace parka::evaluation
 	Value& evaluateStringLiteral(const ir::StringLiteralIr& ir, LocalState& state);
 
 	Value& evaluateBinaryOperator(const ir::BinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
-	Value& evaluateAssignmentOperator(const ir::AssignmentOperatorIr& op, Value& left, Value& right, LocalState& state);
+	void evaluateAssignmentOperator(const ir::AssignmentOperatorIr& op, Value& left, const Value& right, LocalState& state);
 	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from, LocalState& state);
 }
 
