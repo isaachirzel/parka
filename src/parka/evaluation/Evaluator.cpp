@@ -21,7 +21,8 @@ namespace parka::evaluation
 {
 	void evaluate(const Ir& ir)
 	{
-		auto state = LocalState();
+		auto globalState = GlobalState();
+		auto state = LocalState(globalState);
 		auto *entryPoint = ir.entryPoint();
 
 		if (!entryPoint)
@@ -311,7 +312,7 @@ namespace parka::evaluation
 		auto& expressionValue = evaluateExpression(ir.expression(), state);
 		auto& castedValue = state.pushValue(ir.type());
 
-		evaluateConversion(ir.conversion(), castedValue, expressionValue);
+		evaluateConversion(ir.conversion(), castedValue, expressionValue, state);
 
 		return castedValue;
 	}
@@ -361,17 +362,9 @@ namespace parka::evaluation
 		return result;
 	}
 
-	Value& evaluateBinaryOperator(const BinaryOperatorIr& op, Value& left, Value& right, LocalState& state)
+	Value& evaluateBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		if (op.isIntrinsic)
-			return evaluateIntrinsicBinaryOperator(static_cast<const IntrinsicBinaryOperatorIr&>(op), left, right, state);
-
-		log::notImplemented(here());
-	}
-
-	Value& evaluateIntrinsicBinaryOperator(const IntrinsicBinaryOperatorIr& opIr, Value& left, Value& right, LocalState& state)
-	{
-		auto index = (usize)(&opIr - IntrinsicBinaryOperatorIr::entries);
+		auto index = (usize)(&ir - BinaryOperatorIr::intrinsics.data());
 		
 		assert(index < intrinsicBinaryOperatorCount);
 
@@ -381,21 +374,9 @@ namespace parka::evaluation
 		return value;
 	}
 
-	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from)
+	Value& evaluateConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
 	{
-		if (conversion.isIntrinsic())
-			return evaluateIntrinsicConversion(static_cast<const ir::IntrinsicConversionIr&>(conversion), to, from);
-
-		log::notImplemented(here());
-	}
-
-	Value& evaluateIntrinsicConversion(const ir::IntrinsicConversionIr& conversionIr, Value& to, Value& from)
-	{
-		auto index = (usize)(&conversionIr - IntrinsicConversionIr::entries);
-
-		assert(index < intrinsicBinaryOperatorCount);
-
-		auto& conversion = intrinsicConversions[index];
+		auto conversion = state.getConversion(ir.to(), ir.from());
 		auto& value = conversion(to, from);
 
 		return value;

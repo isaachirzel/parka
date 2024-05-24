@@ -1,3 +1,4 @@
+/*
 function double(number: i32): i32
 {
 	return number * 2;
@@ -37,10 +38,11 @@ function fibonacci(a: i32): i32
 }
 
 function notImplemented();
-
+*/
 function main(): i32
 {
-	var a = fibonacci(15);
+	var test: i32 = 1;
+	//var a = fibonacci(15);
 
-	return a;
+	return test;
 }

@@ -1,7 +1,7 @@
 #include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/ast/FunctionAst.hpp"
-#include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
-#include "parka/ir/IntrinsicConversionIr.hpp"
+#include "parka/ir/BinaryOperatorIr.hpp"
+#include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
@@ -13,8 +13,8 @@ namespace parka
 		SymbolTable(SymbolTableType::Global),
 		_scope(""),
 		_symbols(),
-		_operators(),
-		_conversions(),
+		_binaryOperators(),
+		_conversions(ir::ConversionIr::getIntrinsicConversions()),
 		_functions()
 	{
 		for (usize i = 0; i < ir::PrimitiveIr::entryCount; ++i)
@@ -24,19 +24,8 @@ namespace parka
 			_symbols.insert(primitive->name(), primitive);
 		}
 
-		for (usize i = 0; i < ir::IntrinsicConversionIr::entryCount; ++i)
-		{
-			auto& conv = ir::IntrinsicConversionIr::entries[i];
-
-			_conversions.push(&conv);
-		}
-
-		for (usize i = 0; i < ir::IntrinsicBinaryOperatorIr::entryCount; ++i)
-		{
-			auto& op = ir::IntrinsicBinaryOperatorIr::entries[i];
-
-			_operators.push(&op);
-		}
+		for (auto& op : ir::BinaryOperatorIr::intrinsics)
+			_binaryOperators.push(&op);
 
 		for (auto& mod : globalPackage.modules())
 		{
@@ -121,7 +110,7 @@ namespace parka
 
 	ir::BinaryOperatorIr* GlobalSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
-		for (auto *op : _operators)
+		for (auto *op : _binaryOperators)
 		{
 			if (op->binaryExpressionType() != binaryExpressionType)
 				continue;
@@ -143,17 +132,13 @@ namespace parka
 		if (from == to)
 			return nullptr;
 
-		for (auto* conversion : _conversions)
-		{
-			if (conversion->to() == to && conversion->from() == from)
-				return conversion;
-		}
+		auto key = ConversionKey(to, from);
 
-		return {};
-	}
+		auto** conversion = _conversions.find(key);
 
-	const String& GlobalSymbolTable::scope() const
-	{
-		return _scope;
+		if (!conversion)
+			return nullptr;
+
+		return *conversion;
 	}
 }

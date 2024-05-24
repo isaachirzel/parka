@@ -362,7 +362,7 @@ namespace parka::validator
 		auto* castedValue = validateCast(variable->type(), *value, symbolTable);
 		
 		if (!castedValue)
-			log::fatal(ast.snippet(), "Unable to find conversions for defaulted type. This should never happen.");
+			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This should never happen.", value->type(), variable->type());
 
 
 		return new DeclarationStatementIr(*variable, *castedValue);

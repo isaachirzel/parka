@@ -5,7 +5,6 @@
 #include "parka/util/TableUtil.hpp"
 #include <cstring>
 #include <stdexcept>
-#include <iostream>
 
 namespace parka
 {

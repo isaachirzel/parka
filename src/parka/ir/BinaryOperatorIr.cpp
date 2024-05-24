@@ -1,127 +1,125 @@
-#include "parka/ir/IntrinsicBinaryOperatorIr.hpp"
+#include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
-#include "parka/util/Float.hpp"
-#include "parka/util/Integer.hpp"
 
 namespace parka::ir
 {
 	template <typename Left, typename Right, typename Return>
-	IntrinsicBinaryOperatorIr op(BinaryExpressionType binaryExpressionType)
+	BinaryOperatorIr op(BinaryExpressionType binaryExpressionType)
 	{
 		const auto& left = ir::TypeIr::of<Left>();
 		const auto& right = ir::TypeIr::of<Right>();
 		const auto& ret = ir::TypeIr::of<Return>();
 
-		return IntrinsicBinaryOperatorIr(binaryExpressionType, left, right, ret);
+		return BinaryOperatorIr(binaryExpressionType, left, right, ret);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr add()
+	BinaryOperatorIr add()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::Add);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr subtract()
+	BinaryOperatorIr subtract()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::Subtract);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr multiply()
+	BinaryOperatorIr multiply()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::Multiply);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr divide()
+	BinaryOperatorIr divide()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::Divide);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr modulus()
+	BinaryOperatorIr modulus()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::Modulus);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr bitwiseOr()
+	BinaryOperatorIr bitwiseOr()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::BitwiseOr);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr bitwiseXor()
+	BinaryOperatorIr bitwiseXor()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::BitwiseXor);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr bitwiseAnd()
+	BinaryOperatorIr bitwiseAnd()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::BitwiseAnd);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr leftShift()
+	BinaryOperatorIr leftShift()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::LeftShift);
 	}
 
 	template <typename Left, typename Right = Left, typename Return = Left>
-	IntrinsicBinaryOperatorIr rightShift()
+	BinaryOperatorIr rightShift()
 	{
 		return op<Left, Right, Return>(BinaryExpressionType::RightShift);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicBinaryOperatorIr lessThan()
+	BinaryOperatorIr lessThan()
 	{
 		return op<Left, Right, bool>(BinaryExpressionType::LessThan);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicBinaryOperatorIr greaterThan()
+	BinaryOperatorIr greaterThan()
 	{
 		return op<Left, Right, bool>(BinaryExpressionType::GreaterThan);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicBinaryOperatorIr lessThanOrEqualTo()
+	BinaryOperatorIr lessThanOrEqualTo()
 	{
 		return op<Left, Right, bool>(BinaryExpressionType::LessThanOrEqualTo);
 	}
 
 	template <typename Left, typename Right = Left>
-	IntrinsicBinaryOperatorIr greaterThanOrEqualTo()
+	BinaryOperatorIr greaterThanOrEqualTo()
 	{
 		return op<Left, Right, bool>(BinaryExpressionType::GreaterThanOrEqualTo);
 	}
 
 	template<typename Left, typename Right = Left>
-	IntrinsicBinaryOperatorIr equals()
+	BinaryOperatorIr equals()
 	{
 		return op<Left, Right, bool>(BinaryExpressionType::Equals);
 	}
 
 	template<typename Left, typename Right = Left>
-	IntrinsicBinaryOperatorIr notEquals()
+	BinaryOperatorIr notEquals()
 	{
 		return op<Left, Right, bool>(BinaryExpressionType::NotEquals);
 	}
 
-	IntrinsicBinaryOperatorIr booleanOr()
+	BinaryOperatorIr booleanOr()
 	{
 		return op<bool, bool, bool>(BinaryExpressionType::BooleanOr);
 	}
 
-	IntrinsicBinaryOperatorIr booleanAnd()
+	BinaryOperatorIr booleanAnd()
 	{
 		return op<bool, bool, bool>(BinaryExpressionType::BooleanAnd);
 	}
 
-	IntrinsicBinaryOperatorIr IntrinsicBinaryOperatorIr::entries[] =
+	Array<BinaryOperatorIr> BinaryOperatorIr::intrinsics =
 	{
 		// integer
 		
@@ -661,10 +659,8 @@ namespace parka::ir
 		equals<char>(),
 		notEquals<char>(),
 	};
-	const usize IntrinsicBinaryOperatorIr::entryCount = sizeof(entries) / sizeof(*entries);
 
-	IntrinsicBinaryOperatorIr::IntrinsicBinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& leftType, const TypeIr& rightType, const TypeIr& returnType):
-		BinaryOperatorIr(true),
+	BinaryOperatorIr::BinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& leftType, const TypeIr& rightType, const TypeIr& returnType):
 		_leftType(leftType),
 		_rightType(rightType),
 		_returnType(returnType),

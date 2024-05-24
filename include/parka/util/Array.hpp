@@ -179,6 +179,8 @@ namespace parka
 			return ptr - _data;
 		}
 		
+		T* data() { return _data; }
+		const T* data() const { return _data; }
 		T& back() { assert(_length > 0); return _data[_length - 1]; }
 		const T& back() const { assert(_length > 0); return _data[_length - 1]; }
 		T& front() { assert(_length > 0); return _data[0]; }

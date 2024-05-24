@@ -26,6 +26,8 @@
 - Default parameters
 - Unit testing
 - Documentation
+- references
+- pointers
 
 ## Long Term
 - Templates
@@ -54,3 +56,6 @@
 - C Generation
 - LLVM Backend
 - WASM Backend
+
+## Optimizations
+- Unique, immutable TypeIr that are dynamically allocated so that type copies never need to take place. This allows also for operator keys and conversion keys

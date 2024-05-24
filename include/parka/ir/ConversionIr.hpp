@@ -1,22 +1,29 @@
-#ifndef PARKA_IR_CONVERSION_HPP
-#define PARKA_IR_CONVERSION_HPP
+#ifndef PARKA_IR_CONVERSION_IR_HPP
+#define PARKA_IR_CONVERSION_IR_HPP
 
 #include "parka/ir/TypeIr.hpp"
+#include "parka/symbol/ConversionKey.hpp"
+#include "parka/util/FlatMap.hpp"
 
 namespace parka::ir
 {
-	struct ConversionIr
+	class ConversionIr
 	{
-		const bool _isIntrinsic;
+		TypeIr _to;
+		TypeIr _from;
 
-		ConversionIr(bool isItrinsic):
-			_isIntrinsic(isItrinsic)
-		{}
-		virtual ~ConversionIr() {}
+	public:
 
-		const auto& isIntrinsic() const { return _isIntrinsic; }
-		virtual const TypeIr& to() const = 0;
-		virtual const TypeIr& from() const = 0;
+		static FlatMap<ConversionKey, ConversionIr*> getIntrinsicConversions();
+
+	public:
+
+		ConversionIr(const TypeIr& to, const TypeIr& from);
+		ConversionIr(ConversionIr&&) = default;
+		ConversionIr(const ConversionIr&) = default;
+
+		const TypeIr& to() const { return _to; }
+		const TypeIr& from() const { return _from; }
 	};
 }
 

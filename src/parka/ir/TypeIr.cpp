@@ -2,6 +2,7 @@
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/DummyTypeBaseIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
+#include "parka/util/Print.hpp"
 
 namespace parka::ir
 {
@@ -26,28 +27,9 @@ namespace parka::ir
 	const TypeIr TypeIr::charType(PrimitiveIr::charPrimitive);
 	const TypeIr TypeIr::stringType(PrimitiveIr::stringPrimitive);
 
-	TypeIr::TypeIr():
-		_typeBase(&PrimitiveIr::voidPrimitive)
+	TypeIr::TypeIr(const TypeBaseIr& typeBase):
+		_typeBase(&typeBase)
 	{}
-
-	TypeIr::TypeIr(const TypeBaseIr& base):
-		_typeBase(&base)
-	{}
-
-	TypeIr::TypeIr(TypeIr&& other):
-		_typeBase(other._typeBase)
-	{
-		other._typeBase = &PrimitiveIr::voidPrimitive;
-	}
-
-	TypeIr::TypeIr(const TypeIr& other):
-		_typeBase(other._typeBase)
-	{}
-
-	TypeIr::~TypeIr()
-	{
-		_typeBase = nullptr;
-	}
 
 	TypeIr& TypeIr::operator=(TypeIr&& other)
 	{
@@ -58,6 +40,7 @@ namespace parka::ir
 
 	TypeIr& TypeIr::operator=(const TypeIr& other)
 	{
+
 		_typeBase = other._typeBase;
 
 		return *this;
@@ -75,10 +58,11 @@ namespace parka::ir
 	
 	std::ostream& operator<<(std::ostream& out, const TypeIr& type)
 	{
-		assert(type._typeBase != nullptr);
+		if (type._typeBase)
+			out << *type._typeBase;
+		else
+			out << "(Invalid)";
 		
-		out << *type._typeBase;
-
 		return out;
 	}
 }

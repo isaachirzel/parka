@@ -1,24 +1,33 @@
-#ifndef PARKA_IR_OPERATOR_HPP
-#define PARKA_IR_OPERATOR_HPP
+#ifndef PARKA_IR_BINARY_OPERATOR_IR_HPP
+#define PARKA_IR_BINARY_OPERATOR_IR_HPP
 
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/TypeIr.hpp"
+#include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
-	struct BinaryOperatorIr
+	class BinaryOperatorIr
 	{
-		const bool isIntrinsic;
+		TypeIr _leftType;
+		TypeIr _rightType;
+		TypeIr _returnType;
+		BinaryExpressionType _binaryExpressionType;
+		
+	public:
 
-		BinaryOperatorIr(bool isIntrinsic):
-			isIntrinsic(isIntrinsic)
-		{}
+		static Array<BinaryOperatorIr> intrinsics;
 
-		virtual ~BinaryOperatorIr() {}
-		virtual const TypeIr& leftType() const = 0;
-		virtual const TypeIr& rightType() const = 0;
-		virtual const TypeIr& returnType() const = 0;
-		virtual const BinaryExpressionType& binaryExpressionType() const = 0;
+	public:
+
+		BinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& lhs, const TypeIr& rhs, const TypeIr& returnType);
+		BinaryOperatorIr(BinaryOperatorIr&&) = default;
+		BinaryOperatorIr(const BinaryOperatorIr&) = default;
+
+		const BinaryExpressionType& binaryExpressionType() const { return _binaryExpressionType; }
+		const TypeIr& returnType() const { return _returnType; }
+		const TypeIr& leftType() const { return _leftType; }
+		const TypeIr& rightType() const { return _rightType; }
 	};
 }
 

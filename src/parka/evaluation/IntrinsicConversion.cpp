@@ -15,23 +15,28 @@ namespace parka::evaluation
 	}
 
 	template <typename To, typename From>
-	IntrinsicConversion conv()
+	void conv(FlatMap<ConversionKey, IntrinsicConversion>& conversions)
 	{
-		return _conv<To, From>;
+		auto key = ConversionKey(ir::TypeIr::of<To>(), ir::TypeIr::of<From>());
+
+		conversions.insert(key, _conv<To, From>);
 	}
 
-	IntrinsicConversion intrinsicConversions[] =
+	FlatMap<ConversionKey, IntrinsicConversion> getIntrinsicConversions()
 	{
-		conv<u8, Integer>(),
-		conv<u16, Integer>(),
-		conv<u32, Integer>(),
-		conv<u64, Integer>(),
-		conv<i8, Integer>(),
-		conv<i16, Integer>(),
-		conv<i32, Integer>(),
-		conv<i64, Integer>(),
-		conv<f32, Float>(),
-		conv<f64, Float>(),
-	};
-	const usize intrinsicConversionCount = sizeof(intrinsicConversions) / sizeof(*intrinsicConversions);
+		auto conversions = FlatMap<ConversionKey, IntrinsicConversion>(64);
+
+		conv<u8, Integer>(conversions);
+		conv<u16, Integer>(conversions);
+		conv<u32, Integer>(conversions);
+		conv<u64, Integer>(conversions);
+		conv<i8, Integer>(conversions);
+		conv<i16, Integer>(conversions);
+		conv<i32, Integer>(conversions);
+		conv<i64, Integer>(conversions);
+		conv<f32, Float>(conversions);
+		conv<f64, Float>(conversions);
+
+		return conversions;
+	}
 }

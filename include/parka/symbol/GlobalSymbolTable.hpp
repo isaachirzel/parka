@@ -4,6 +4,7 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
 #include "parka/ir/TypeIr.hpp"
+#include "parka/symbol/ConversionKey.hpp"
 #include "parka/symbol/SymbolTable.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/FlatMap.hpp"
@@ -14,8 +15,8 @@ namespace parka
 	{
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
-		Array<ir::BinaryOperatorIr*> _operators;
-		Array<ir::ConversionIr*> _conversions;
+		Array<ir::BinaryOperatorIr*> _binaryOperators;
+		FlatMap<ConversionKey, ir::ConversionIr*> _conversions;
 		FlatMap<ir::TypeIr, Array<ir::ConversionIr*>> _convs;
 		Array<FunctionEntry> _functions;
 
@@ -34,7 +35,7 @@ namespace parka
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right);
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
-		const String& scope() const;
+		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return nullptr; }
 		GlobalSymbolTable& globalSymbolTable() { return *this; }
 

@@ -2,6 +2,8 @@
 #define PARKA_EVALUATION_STATE_HPP
 
 #include "parka/enum/JumpType.hpp"
+#include "parka/evaluation/GlobalState.hpp"
+#include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/Value.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
@@ -12,13 +14,14 @@ namespace parka::evaluation
 {
 	class LocalState
 	{
+		GlobalState& _globalState;
 		BigArray<Value> _values;
 		usize _returnValueIndex;
 		JumpType _jumpType;
 		
 	public:
 		
-		LocalState();
+		LocalState(GlobalState& globalState);
 		LocalState(LocalState&&) = delete;
 		LocalState(const LocalState&) = delete;
 
@@ -32,6 +35,8 @@ namespace parka::evaluation
 		void clearScopeValues(usize index);
 
 		void setReturning(JumpType returningType);
+
+		IntrinsicConversion getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const;
 
 		Value& findValue(const ir::LValueIr& node);
 		Value& returnValue();

@@ -4,7 +4,8 @@
 
 namespace parka::evaluation
 {
-	LocalState::LocalState():
+	LocalState::LocalState(GlobalState& globalState):
+		_globalState(globalState),
 		_values(1'048'576),
 		_returnValueIndex(0),
 		_jumpType(JumpType::None)
@@ -49,6 +50,11 @@ namespace parka::evaluation
 	void LocalState::setReturning(JumpType returningType)
 	{
 		_jumpType = returningType;
+	}
+
+	IntrinsicConversion LocalState::getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const
+	{
+		return _globalState.getConversion(to, from);
 	}
 
 	Value& LocalState::findValue(const ir::LValueIr& node)

@@ -10,8 +10,6 @@ namespace parka::ir
 	class TypeIr
 	{
 		const TypeBaseIr* _typeBase;
-		// TODO: Add pointer info
-		// TODO: Add Literal as typename for better type inference?
 		
 	public:
 
@@ -37,11 +35,9 @@ namespace parka::ir
 		
 	public:
 
-		TypeIr();
 		TypeIr(const TypeBaseIr& base);
-		TypeIr(TypeIr&&);
-		TypeIr(const TypeIr&);
-		~TypeIr();
+		TypeIr(TypeIr&&) = default;
+		TypeIr(const TypeIr&) = default;
 
 		template <typename T>
 		static constexpr const ir::TypeIr& of()
@@ -90,6 +86,8 @@ namespace parka::ir
 
 			if constexpr (std::is_same_v<T, char>)
 				return charType;
+
+			throw std::runtime_error("Invalid type.");
 		}
 
 		const auto& typeBase() const { return _typeBase; }
