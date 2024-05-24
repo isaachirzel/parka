@@ -1,40 +1,30 @@
-#ifndef PARKA_AST_TYPE_TYPE_KEY_HPP
-#define PARKA_AST_TYPE_TYPE_KEY_HPP
+#ifndef PARKA_SYMBOL_TYPE_KEY_HPP
+#define PARKA_SYMBOL_TYPE_KEY_HPP
 
-#include "parka/repository/TypeId.hpp"
-#include "parka/util/Common.hpp"
-
-#include <functional>
+#include "parka/ir/TypeBaseIr.hpp"
 
 namespace parka
 {
 	class TypeKey
 	{
-		TypeId _id;
+		const ir::TypeBaseIr* _typeBase;
 
 	public:
 
-		TypeKey(const TypeId id):
-		_id(id)
-		{}
+		TypeKey(const ir::TypeBaseIr& typeBase);
 		TypeKey(TypeKey&&) = default;
 		TypeKey(const TypeKey&) = default;
 
-		u64 hash() const;
-		const auto& id() const { return _id; }
+		bool operator==(const TypeKey& other);
 
-		friend bool operator==(const TypeKey& left, const TypeKey& right);
+		friend struct std::hash<parka::TypeKey>;
 	};
 }
 
-namespace std
+template <>
+struct std::hash<parka::TypeKey>
 {
-	template <>
-	struct hash<parka::TypeKey>
-	{
-		parka::usize operator()(const parka::TypeKey& key) const;
-	};
-}
-
+	size_t operator()(const parka::TypeKey& key) const;
+};
 
 #endif

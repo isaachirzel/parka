@@ -4,6 +4,7 @@
 #include "parka/evaluation/LocalState.hpp"
 #include "parka/evaluation/Value.hpp"
 #include "parka/ir/ArgumentIr.hpp"
+#include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
@@ -56,6 +57,7 @@ namespace parka::evaluation
 	Value& evaluateStringLiteral(const ir::StringLiteralIr& ir, LocalState& state);
 
 	Value& evaluateBinaryOperator(const ir::BinaryOperatorIr& op, Value& left, Value& right, LocalState& state);
+	Value& evaluateAssignmentOperator(const ir::AssignmentOperatorIr& op, Value& left, Value& right, LocalState& state);
 	Value& evaluateConversion(const ir::ConversionIr& conversion, Value& to, Value& from, LocalState& state);
 }
 

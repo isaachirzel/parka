@@ -2,15 +2,24 @@
 #define PARKA_IR_TYPE_HPP
 
 #include "parka/ir/TypeBaseIr.hpp"
+#include "parka/symbol/TypeKey.hpp"
+#include "parka/util/FlatMap.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
+
+// { is const, is reference
+
+// {}
+/*
+
+*/
 
 namespace parka::ir
 {
 	class TypeIr
 	{
 		const TypeBaseIr* _typeBase;
-		
+
 	public:
 
 		static const TypeIr packageType;
@@ -32,7 +41,7 @@ namespace parka::ir
 		static const TypeIr boolType;
 		static const TypeIr charType;
 		static const TypeIr stringType;
-		
+	
 	public:
 
 		TypeIr(const TypeBaseIr& base);

@@ -1163,7 +1163,7 @@ namespace parka::parser
 		if (!value)
 			return {};
 
-		auto snippet = identifier->snippet() + token;
+		auto snippet = identifier->snippet() + (requireSemicolon ? token : value->snippet());
 
 		if (requireSemicolon && !parseStatementSemicolon(token))
 			return {};

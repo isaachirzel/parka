@@ -8,6 +8,7 @@
 #include "parka/enum/SymbolTableType.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
+#include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
@@ -35,6 +36,7 @@ namespace parka
 		virtual Resolvable* findSymbol(const ast::IdentifierAst& identifier) = 0;
 		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier) = 0;
 		virtual ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right) = 0;
+		virtual ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) = 0;
 		virtual Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from) = 0;
 		virtual const String& scope() const = 0;
 		virtual SymbolTable* parent() = 0;

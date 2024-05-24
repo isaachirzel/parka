@@ -4,6 +4,7 @@
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/AssignmentOperatorKey.hpp"
 #include "parka/symbol/BinaryOperatorKey.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
 #include <stdexcept>
@@ -112,6 +113,17 @@ namespace parka
 		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
 
 		auto* op = _binaryOperators.find(key);
+
+		if (!op)
+			return {};
+
+		return *op;
+	}
+
+	ir::AssignmentOperatorIr* GlobalSymbolTable::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
+	{
+		auto key = AssignmentOperatorKey(left, right, assignmentType);
+		auto* op = _assignmentOperators.find(key);
 
 		if (!op)
 			return {};

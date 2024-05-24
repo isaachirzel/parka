@@ -116,6 +116,11 @@ namespace parka
 		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
+	ir::AssignmentOperatorIr* PackageSymbolTable::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
+	{
+		return _global.resolveAssignmentOperator(left, right, assignmentType);
+	}
+
 	Result<ir::ConversionIr*> PackageSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);

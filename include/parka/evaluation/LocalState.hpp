@@ -1,6 +1,7 @@
 #ifndef PARKA_EVALUATION_STATE_HPP
 #define PARKA_EVALUATION_STATE_HPP
 
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/evaluation/GlobalState.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
@@ -36,8 +37,9 @@ namespace parka::evaluation
 
 		void setReturning(JumpType returningType);
 
-		IntrinsicConversion getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const;
 		IntrinsicBinaryOperator getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const;
+		IntrinsicAssignmentOperator getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const;
+		IntrinsicConversion getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const;
 
 		Value& findValue(const ir::LValueIr& node);
 		Value& returnValue();

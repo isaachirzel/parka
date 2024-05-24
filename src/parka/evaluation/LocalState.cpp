@@ -52,14 +52,19 @@ namespace parka::evaluation
 		_jumpType = returningType;
 	}
 
-	IntrinsicConversion LocalState::getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const
-	{
-		return _globalState.getConversion(to, from);
-	}
-
 	IntrinsicBinaryOperator LocalState::getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const
 	{
 		return _globalState.getBinaryOperator(left, right, binaryExpressionType);
+	}
+
+	IntrinsicAssignmentOperator LocalState::getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const
+	{
+		return _globalState.getAssignmentOperator(left, right, assignmentType);
+	}
+	
+	IntrinsicConversion LocalState::getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const
+	{
+		return _globalState.getConversion(to, from);
 	}
 
 	Value& LocalState::findValue(const ir::LValueIr& node)

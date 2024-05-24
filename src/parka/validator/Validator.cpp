@@ -393,15 +393,15 @@ namespace parka::validator
 		}
 
 		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		auto* castedValue = validateCast(identifier.type(), *value, symbolTable);
+		auto* op = symbolTable.resolveAssignmentOperator(lhs->type(), value->type(), ast.assignmentType());
 
-		if (!castedValue)
+		if (!op)
 		{
-			log::error(ast.snippet(), "A value of type `$` cannot be assigned to a $ of type `$`.", value->type(), identifier.value().resolvableType, identifier.type());
+			log::error(ast.snippet(), "No assignment operator `$ $ $` has been defined.", lhs->type(), ast.assignmentType(), value->type());
 			return {};
 		}
 
-		return new AssignmentStatementIr(identifier, *castedValue, ast.assignmentType());
+		return new AssignmentStatementIr(identifier, *value, *op);
 	}
 
 	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, LocalSymbolTable& symbolTable)

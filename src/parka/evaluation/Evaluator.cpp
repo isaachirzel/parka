@@ -211,13 +211,10 @@ namespace parka::evaluation
 
 	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, LocalState& state)
 	{
-		if (ir.assignmentType() != AssignmentType::Assign)
-			throw std::runtime_error("Unable to evaluate assignment with type: " + std::to_string((int)ir.assignmentType()));
-
 		auto& lhs = state.findValue(ir.identifier().value());
 		auto& rhs = evaluateExpression(ir.value(), state);
 
-		lhs.setValue(rhs);
+		evaluateAssignmentOperator(ir.op(), lhs, rhs, state);
 	}
 	
 	void evaluateIfStatement(const IfStatementIr& ir, LocalState& state)
@@ -365,6 +362,14 @@ namespace parka::evaluation
 	Value& evaluateBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
 		auto op = state.getBinaryOperator(ir.leftType(), ir.rightType(), ir.binaryExpressionType());
+		auto& value = op(left, right, state);
+
+		return value;
+	}
+
+	Value& evaluateAssignmentOperator(const ir::AssignmentOperatorIr& ir, Value& left, Value& right, LocalState& state)
+	{
+		auto op = state.getAssignmentOperator(ir.left(), ir.right(), ir.assignmentType());
 		auto& value = op(left, right, state);
 
 		return value;

@@ -3,6 +3,7 @@
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/symbol/AssignmentOperatorKey.hpp"
@@ -37,6 +38,7 @@ namespace parka
 		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right);
+		ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& to, const ir::TypeIr& from, AssignmentType assignmentType);
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		const String& scope() const { return _scope; }
 		SymbolTable* parent() { return nullptr; }
