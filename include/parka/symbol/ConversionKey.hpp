@@ -16,11 +16,11 @@ namespace parka
 		ConversionKey(const ir::TypeIr& to, const ir::TypeIr& from);
 		ConversionKey(ConversionKey&&) = default;
 		ConversionKey(const ConversionKey&) = default;
+		ConversionKey& operator=(ConversionKey&&) = default;
+		ConversionKey& operator=(const ConversionKey&) = default;
 
 		bool operator==(const ConversionKey& other) const;
 
-		ConversionKey& operator=(ConversionKey&&) = default;
-		ConversionKey& operator=(const ConversionKey&) = default;
 
 		friend struct std::hash<ConversionKey>;
 	};
@@ -29,12 +29,7 @@ namespace parka
 template <>
 struct std::hash<parka::ConversionKey>
 {
-	std::size_t operator()(const parka::ConversionKey& key) const
-	{
-		auto typeHasher = std::hash<parka::ir::TypeIr>();
-
-		return typeHasher(key._to) ^ typeHasher(key._from);
-	}
+	std::size_t operator()(const parka::ConversionKey& key) const;
 };
 
 #endif

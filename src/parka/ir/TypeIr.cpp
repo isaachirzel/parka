@@ -2,6 +2,7 @@
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/DummyTypeBaseIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
+#include "parka/util/Hash.hpp"
 #include "parka/util/Print.hpp"
 
 namespace parka::ir
@@ -65,4 +66,9 @@ namespace parka::ir
 		
 		return out;
 	}
+}
+
+std::size_t std::hash<parka::ir::TypeIr>::operator()(const parka::ir::TypeIr& type) const
+{
+	return parka::hashNumber((size_t)type._typeBase);
 }

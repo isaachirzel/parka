@@ -16,6 +16,7 @@ namespace parka::ir
 		
 	public:
 
+		
 		static Array<BinaryOperatorIr> intrinsics;
 
 	public:

@@ -107,18 +107,7 @@ namespace parka::ir
 template <>
 struct std::hash<parka::ir::TypeIr>
 {
-	std::size_t operator()(const parka::ir::TypeIr& type) const
-	{
-		size_t h = (size_t)type._typeBase;
-
-		h ^= h >> 33;
-		h *= 0xff51afd7ed558ccdL;
-		h ^= h >> 33;
-		h *= 0xc4ceb9fe1a85ec53L;
-		h ^= h >> 33;
-
-		return h;
-	}
+	std::size_t operator()(const parka::ir::TypeIr& type) const;
 };
 
 #endif

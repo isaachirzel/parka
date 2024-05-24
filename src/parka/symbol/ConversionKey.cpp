@@ -17,3 +17,10 @@ namespace parka
 		return _to == other._to && _from == other._from;
 	}
 }
+
+std::size_t std::hash<parka::ConversionKey>::operator()(const parka::ConversionKey& key) const
+{
+	auto typeHasher = std::hash<parka::ir::TypeIr>();
+
+	return typeHasher(key._to) ^ typeHasher(key._from);
+}
