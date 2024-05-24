@@ -53,7 +53,7 @@
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/util/Result.hpp"
 
-namespace parka::validator
+namespace parka::validation
 {
 	Result<ir::Ir> validateAst(const ast::Ast& ast);
 	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, FunctionSymbolTable& symbolTable);

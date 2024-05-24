@@ -9,7 +9,7 @@
 #include "parka/symbol/ParameterEntry.hpp"
 #include "parka/symbol/Resolvable.hpp"
 #include "parka/symbol/VariableEntry.hpp"
-#include "parka/validator/Validator.hpp"
+#include "parka/validation/Validator.hpp"
 
 namespace parka
 {
@@ -42,7 +42,7 @@ namespace parka
 
 	ParameterEntry& FunctionSymbolTable::declare(const ast::ParameterAst& ast)
 	{
-		auto* ir = validator::validateParameter(ast, *this);
+		auto* ir = validation::validateParameter(ast, *this);
 		auto& ref = addParameter(ParameterEntry(ast, ir));
 		auto insertion = _symbols.insert(ast.identifier().text(), &ref);
 
@@ -59,7 +59,7 @@ namespace parka
 
 	VariableEntry& FunctionSymbolTable::declare(const ast::VariableAst& ast)
 	{
-		auto* ir = validator::validateVariable(ast, *this);
+		auto* ir = validation::validateVariable(ast, *this);
 		auto& ref = addVariable(VariableEntry(ast, ir));
 		auto insertion = _symbols.insert(ast.identifier().text(), &ref);
 

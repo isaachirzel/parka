@@ -1,4 +1,4 @@
-#include "parka/validator/Validator.hpp"
+#include "parka/validation/Validator.hpp"
 #include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
@@ -36,7 +36,7 @@
 #include "parka/symbol/VariableEntry.hpp"
 #include "parka/util/Array.hpp"
 
-namespace parka::validator
+namespace parka::validation
 {
 	using namespace parka::ir;
 	using namespace parka::ast;

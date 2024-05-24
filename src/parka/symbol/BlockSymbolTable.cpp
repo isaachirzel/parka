@@ -3,7 +3,7 @@
 #include "parka/symbol/GlobalSymbolTable.hpp"
 #include "parka/symbol/LocalSymbolTable.hpp"
 #include "parka/symbol/SymbolTable.hpp"
-#include "parka/validator/Validator.hpp"
+#include "parka/validation/Validator.hpp"
 
 namespace parka
 {
@@ -29,7 +29,7 @@ namespace parka
 
 	VariableEntry& BlockSymbolTable::declare(const ast::VariableAst& ast)
 	{
-		auto* ir = validator::validateVariable(ast, *this);
+		auto* ir = validation::validateVariable(ast, *this);
 		auto& ref = _function.addVariable(VariableEntry(ast, ir));
 		auto insertion = _symbols.insert(ast.identifier().text(), &ref);
 

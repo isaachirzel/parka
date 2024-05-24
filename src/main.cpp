@@ -2,7 +2,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/parser/ParkaParser.hpp"
 #include "parka/util/Timer.hpp"
-#include "parka/validator/Validator.hpp"
+#include "parka/validation/Validator.hpp"
 
 using namespace parka;
 
@@ -25,7 +25,7 @@ int main(int argc, const char *argv[])
 
 	log::debug("Parsing completed in $s.", parseTime);
 
-	auto ir = validator::validateAst(ast);
+	auto ir = validation::validateAst(ast);
 	auto validateTime = timer.split();
 
 	log::debug("Validation completed in $s.", validateTime);

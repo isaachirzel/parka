@@ -1,16 +1,13 @@
 # To Do
 
 ## Short Term
-- Add assign '+='
-- ExpressionIr.isLValue()
-- The rest of the assignments
 - intrinsic print function
 - Add "Potential Solution" and "Extra Information" to errors
-- Setting the type of a non-explicity typed variable as soon as it becomes obvious what it is supposed to be
 - Conditional expressions
 - Prefix operators
 - Call operators
 - Subscript operators
+- mut values and stopping modification of const values
 
 ## Longer Term
 - While loops

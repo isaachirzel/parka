@@ -1,5 +1,5 @@
 #include "parka/symbol/FunctionEntry.hpp"
-#include "parka/validator/Validator.hpp"
+#include "parka/validation/Validator.hpp"
 
 namespace parka
 {
@@ -17,7 +17,7 @@ namespace parka
 			return _ir;
 
 		// TODO: Mutex
-		_ir = validator::validateFunction(_ast, _symbolTable);
+		_ir = validation::validateFunction(_ast, _symbolTable);
 		_isValidated = true;
 
 		return _ir;
