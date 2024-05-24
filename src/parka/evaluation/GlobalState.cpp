@@ -1,12 +1,15 @@
 #include "parka/evaluation/GlobalState.hpp"
+#include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/BinaryOperatorKey.hpp"
 
 namespace parka::evaluation
 {
 	GlobalState::GlobalState():
-		_intrinsicConversions(getIntrinsicConversions())
+		_intrinsicConversions(getIntrinsicConversions()),
+		_intrinsicBinaryOperators(getIntrinsicBinaryOperators())
 	{}
 
 	Value& GlobalState::add(ir::LValueIr *, const ir::TypeIr&)
@@ -29,5 +32,16 @@ namespace parka::evaluation
 			log::fatal("Unable to find intrinsic conversion from `$` to `$`.", to, from);
 
 		return *conversion;
+	}
+
+	IntrinsicBinaryOperator GlobalState::getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const
+	{
+		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
+		auto* op = _intrinsicBinaryOperators.find(key);
+
+		if (!op)
+			log::fatal("Unable to find intrinsic operator `$ $ $`.", left, binaryExpressionType, right);
+
+		return *op;
 	}
 }

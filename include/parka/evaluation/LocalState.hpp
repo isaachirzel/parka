@@ -37,6 +37,7 @@ namespace parka::evaluation
 		void setReturning(JumpType returningType);
 
 		IntrinsicConversion getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const;
+		IntrinsicBinaryOperator getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const;
 
 		Value& findValue(const ir::LValueIr& node);
 		Value& returnValue();

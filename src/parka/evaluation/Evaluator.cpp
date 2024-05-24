@@ -364,11 +364,7 @@ namespace parka::evaluation
 
 	Value& evaluateBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		auto index = (usize)(&ir - BinaryOperatorIr::intrinsics.data());
-		
-		assert(index < intrinsicBinaryOperatorCount);
-
-		auto& op = intrinsicBinaryOperators[index];
+		auto op = state.getBinaryOperator(ir.leftType(), ir.rightType(), ir.binaryExpressionType());
 		auto& value = op(left, right, state);
 
 		return value;

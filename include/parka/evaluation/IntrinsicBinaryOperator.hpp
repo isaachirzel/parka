@@ -1,15 +1,17 @@
 #ifndef PARKA_EVALUATION_INTRINSIC_BINARY_OPERATOR_HPP
 #define PARKA_EVALUATION_INTRINSIC_BINARY_OPERATOR_HPP
 
-#include "parka/evaluation/LocalState.hpp"
-#include "parka/evaluation/Value.hpp"
+#include "parka/symbol/BinaryOperatorKey.hpp"
+#include "parka/util/FlatMap.hpp"
 
 namespace parka::evaluation
 {
+	class Value;
+	class LocalState;
+
 	typedef Value& (*IntrinsicBinaryOperator) (Value& left, Value& right, LocalState& state);
 
-	extern IntrinsicBinaryOperator intrinsicBinaryOperators[];
-	extern const usize intrinsicBinaryOperatorCount;
+	FlatMap<BinaryOperatorKey, IntrinsicBinaryOperator> getIntrinsicBinaryOperators();
 }
 
 #endif

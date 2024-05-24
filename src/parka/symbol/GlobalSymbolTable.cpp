@@ -4,6 +4,7 @@
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/symbol/BinaryOperatorKey.hpp"
 #include "parka/symbol/FunctionEntry.hpp"
 #include <stdexcept>
 
@@ -13,7 +14,7 @@ namespace parka
 		SymbolTable(SymbolTableType::Global),
 		_scope(""),
 		_symbols(),
-		_binaryOperators(),
+		_binaryOperators(ir::BinaryOperatorIr::getIntrinsicBinaryOperators()),
 		_conversions(ir::ConversionIr::getIntrinsicConversions()),
 		_functions()
 	{
@@ -23,9 +24,6 @@ namespace parka
 
 			_symbols.insert(primitive->name(), primitive);
 		}
-
-		for (auto& op : ir::BinaryOperatorIr::intrinsics)
-			_binaryOperators.push(&op);
 
 		for (auto& mod : globalPackage.modules())
 		{
@@ -110,21 +108,14 @@ namespace parka
 
 	ir::BinaryOperatorIr* GlobalSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
-		for (auto *op : _binaryOperators)
-		{
-			if (op->binaryExpressionType() != binaryExpressionType)
-				continue;
+		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
 
-			if (op->leftType() != left)
-				continue;
+		auto* op = _binaryOperators.find(key);
 
-			if (op->rightType() != right)
-				continue;
+		if (!op)
+			return {};
 
-			return op;
-		}
-
-		return nullptr;
+		return *op;
 	}
 
 	Result<ir::ConversionIr*> GlobalSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
@@ -137,7 +128,7 @@ namespace parka
 		auto** conversion = _conversions.find(key);
 
 		if (!conversion)
-			return nullptr;
+			return {};
 
 		return *conversion;
 	}

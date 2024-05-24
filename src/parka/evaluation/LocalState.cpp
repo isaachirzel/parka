@@ -57,6 +57,11 @@ namespace parka::evaluation
 		return _globalState.getConversion(to, from);
 	}
 
+	IntrinsicBinaryOperator LocalState::getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const
+	{
+		return _globalState.getBinaryOperator(left, right, binaryExpressionType);
+	}
+
 	Value& LocalState::findValue(const ir::LValueIr& node)
 	{
 		for (usize i = _values.length(); i-- > 0;)

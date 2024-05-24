@@ -8,16 +8,16 @@ namespace parka
 {
 	class BinaryOperatorKey
 	{
-		ir::TypeIr _to;
-		ir::TypeIr _from;
+		ir::TypeIr _left;
+		ir::TypeIr _right;
 		BinaryExpressionType _binaryExpressionType;
 
 	public:
 
 		BinaryOperatorKey();
-		BinaryOperatorKey(const ir::TypeIr& to, const ir::TypeIr& from, BinaryExpressionType binaryExpressionType);
+		BinaryOperatorKey(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType);
 		BinaryOperatorKey(BinaryOperatorKey&&) = default;
-		BinaryOperatorKey(const BinaryOperatorKey&) = delete;
+		BinaryOperatorKey(const BinaryOperatorKey&) = default;
 		BinaryOperatorKey& operator=(BinaryOperatorKey&&) = default;
 		BinaryOperatorKey& operator=(const BinaryOperatorKey&) = default;
 

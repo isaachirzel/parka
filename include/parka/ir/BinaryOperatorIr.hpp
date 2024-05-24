@@ -3,7 +3,8 @@
 
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/util/Array.hpp"
+#include "parka/symbol/BinaryOperatorKey.hpp"
+#include "parka/util/FlatMap.hpp"
 
 namespace parka::ir
 {
@@ -16,8 +17,7 @@ namespace parka::ir
 		
 	public:
 
-		
-		static Array<BinaryOperatorIr> intrinsics;
+		static FlatMap<BinaryOperatorKey, BinaryOperatorIr*> getIntrinsicBinaryOperators();
 
 	public:
 
