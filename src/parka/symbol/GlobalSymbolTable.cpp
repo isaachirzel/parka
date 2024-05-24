@@ -16,6 +16,7 @@ namespace parka
 		_symbols(),
 		_binaryOperators(ir::BinaryOperatorIr::getIntrinsicBinaryOperators()),
 		_conversions(ir::ConversionIr::getIntrinsicConversions()),
+		_assignmentOperators(ir::AssignmentOperatorIr::getIntrinsicAssignmentOperators()),
 		_functions()
 	{
 		for (usize i = 0; i < ir::PrimitiveIr::entryCount; ++i)

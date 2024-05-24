@@ -3,7 +3,9 @@
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
+#include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/TypeIr.hpp"
+#include "parka/symbol/AssignmentOperatorKey.hpp"
 #include "parka/symbol/BinaryOperatorKey.hpp"
 #include "parka/symbol/ConversionKey.hpp"
 #include "parka/symbol/SymbolTable.hpp"
@@ -18,7 +20,7 @@ namespace parka
 		FlatMap<String, Resolvable*> _symbols;
 		FlatMap<BinaryOperatorKey, ir::BinaryOperatorIr*> _binaryOperators;
 		FlatMap<ConversionKey, ir::ConversionIr*> _conversions;
-		FlatMap<ir::TypeIr, Array<ir::ConversionIr*>> _convs;
+		FlatMap<AssignmentOperatorKey, ir::AssignmentOperatorIr*> _assignmentOperators;
 		Array<FunctionEntry> _functions;
 
 	public:
