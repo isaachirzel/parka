@@ -897,21 +897,22 @@ namespace parka::parser
 	ExpressionAst *parseConditionalExpression(Token& token)
 	{
 		auto condition = parseBooleanOrExpression(token);
-		auto keyword = toKeywordType(token.text());
 
-		if (keyword != KeywordType::Then)
+		auto thenKeywordType = token.getKeywordType();
+
+		if (thenKeywordType != KeywordType::Then)
 			return condition;
 
 		token.increment();
 
-		auto trueCase = parseConditionalExpression(token);
+		auto* trueCase = parseConditionalExpression(token);
 
 		if (!trueCase)
 			return {};
 
-		keyword = toKeywordType(token.text());
+		auto elseKeywordType = token.getKeywordType();
 
-		if (keyword != KeywordType::Else)
+		if (elseKeywordType != KeywordType::Else)
 		{
 			log::error(token, "else case for conditional expression");
 			return {};

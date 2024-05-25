@@ -1,15 +1,20 @@
 # To Do
 
 ## Short Term
-- intrinsic print function
-- Add "Potential Solution" and "Extra Information" to errors
 - Conditional expressions
-- Prefix operators
 - Call operators
+- intrinsic print function
+- Add "Potential Solution" and "Extra Information" logs
+- Multi line highlights (test with conditional expression)
+- Prefix operators
 - Subscript operators
 - mut values and stopping modification of const values
+- Rename symboltable to context
+- Better separation of modules
+- Remove KeywordAst
 
 ## Longer Term
+- Unique, immutable TypeIr that are dynamically allocated so that type copies never need to take place. This allows also for operator keys and conversion keys
 - While loops
 - Regular loops
 - Do something with range ast
@@ -53,6 +58,3 @@
 - C Generation
 - LLVM Backend
 - WASM Backend
-
-## Optimizations
-- Unique, immutable TypeIr that are dynamically allocated so that type copies never need to take place. This allows also for operator keys and conversion keys

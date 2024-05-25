@@ -6,6 +6,7 @@
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/CastExpressionIr.hpp"
+#include "parka/ir/ConditionalExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
 #include "parka/ir/FloatLiteralIr.hpp"
@@ -239,10 +240,10 @@ namespace parka::evaluation
 				return evaluateBinaryExpression(static_cast<const BinaryExpressionIr&>(ir), state);
 
 			case ExpressionType::Call:
-				return evaluateCallExpression(static_cast<const ir::CallExpressionIr &>(ir), state);
+				return evaluateCallExpression(static_cast<const ir::CallExpressionIr&>(ir), state);
 
 			case ExpressionType::Conditional:
-				break;
+				return evaluateConditionalExpression(static_cast<const ir::ConditionalExpressionIr&>(ir), state);
 
 			case ExpressionType::Identifier:
 				return evaluateIdentifierExpression(static_cast<const IdentifierExpressionIr&>(ir), state);
@@ -293,6 +294,16 @@ namespace parka::evaluation
 	Value& evaluateCallExpression(const ir::CallExpressionIr& ir, LocalState& state)
 	{
 		return evaluateFunction(ir.subject(), ir.arguments(), state);
+	}
+
+	Value& evaluateConditionalExpression(const ir::ConditionalExpressionIr& ir, LocalState& state)
+	{
+		auto& conditionValue = evaluateExpression(ir.condition(), state);
+		auto& value = conditionValue.getValue<bool>()
+			? evaluateExpression(ir.thenCase(), state)
+			: evaluateExpression(ir.elseCase(), state);
+
+		return value;
 	}
 
 	Value& evaluateIdentifierExpression(const IdentifierExpressionIr& ir, LocalState& state)

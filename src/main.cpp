@@ -6,6 +6,9 @@
 
 using namespace parka;
 
+// wordcount: git ls-files | xargs wc -l
+
+
 // TODO: Unit testing
 // TODO: Convert log fatals to exceptions and add catch that will print out a single log fatal
 

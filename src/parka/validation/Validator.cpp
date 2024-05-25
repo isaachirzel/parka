@@ -1,6 +1,7 @@
 #include "parka/validation/Validator.hpp"
 #include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
+#include "parka/ast/ConditionalExpressionAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
 #include "parka/ast/ExpressionStatementAst.hpp"
@@ -18,6 +19,7 @@
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
 #include "parka/ir/CastExpressionIr.hpp"
+#include "parka/ir/ConditionalExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
@@ -26,6 +28,7 @@
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
+#include "parka/ir/TypeIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/BlockSymbolTable.hpp"
 #include "parka/validation/FunctionEntry.hpp"
@@ -362,8 +365,7 @@ namespace parka::validation
 		auto* castedValue = validateCast(variable->type(), *value, symbolTable);
 		
 		if (!castedValue)
-			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This should never happen.", value->type(), variable->type());
-
+			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
 
 		return new DeclarationStatementIr(*variable, *castedValue);
 	}
@@ -543,7 +545,7 @@ namespace parka::validation
 				return validateCallExpression(static_cast<const CallExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::Conditional:
-				break;
+				return validateConditionalExpression(static_cast<const ConditionalExpressionAst&>(ast), symbolTable);
 
 			case ExpressionType::Identifier:
 				return validateIdentifierExpression(static_cast<const IdentifierExpressionAst&>(ast), symbolTable);
@@ -664,6 +666,38 @@ namespace parka::validation
 			return {};
 
 		return new CallExpressionIr(function, std::move(arguments));
+	}
+
+	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalSymbolTable& symbolTable)
+	{
+		auto* condition = validateExpression(ast.condition(), symbolTable);
+		auto* thenCase = validateExpression(ast.thenCase(), symbolTable);
+		auto* elseCase = validateExpression(ast.elseCase(), symbolTable);
+
+		if (!condition || !thenCase || !elseCase)
+			return {};
+
+		auto* castedCondition = validateCast(TypeIr::boolType, *condition, symbolTable);
+
+		if (!castedCondition)
+		{
+			log::error(ast.condition().snippet(), "Condition is not of type `$`.", TypeIr::boolType);
+			return {};
+		}
+
+		auto* castedElseCase = validateCast(thenCase->type(), *elseCase, symbolTable);
+
+		if (castedElseCase)
+			return new ConditionalExpressionIr(*castedCondition, *thenCase, *castedElseCase);
+
+		auto *castedThenCase = validateCast(elseCase->type(), *thenCase, symbolTable);
+
+		if (castedThenCase)
+			return new ConditionalExpressionIr(*castedCondition, *castedThenCase, *elseCase);
+
+		log::error(ast.snippet(), "Then case and else case are of incompatible types.");
+
+		return {};
 	}
 
 	IdentifierExpressionIr* validateIdentifierExpression(const IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)

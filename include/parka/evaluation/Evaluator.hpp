@@ -13,6 +13,7 @@
 #include "parka/ir/CallExpressionIr.hpp"
 #include "parka/ir/CastExpressionIr.hpp"
 #include "parka/ir/CharLiteralIr.hpp"
+#include "parka/ir/ConditionalExpressionIr.hpp"
 #include "parka/ir/ContinueStatementIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
@@ -48,6 +49,7 @@ namespace parka::evaluation
 	Value& evaluateExpression(const ir::ExpressionIr& ir, LocalState& state);
 	Value& evaluateBinaryExpression(const ir::BinaryExpressionIr& ir, LocalState& state);
 	Value& evaluateCallExpression(const ir::CallExpressionIr& ir, LocalState& state);
+	Value& evaluateConditionalExpression(const ir::ConditionalExpressionIr& ir, LocalState& state);
 	Value& evaluateIdentifierExpression(const ir::IdentifierExpressionIr& ir, LocalState& state);
 	Value& evaluateCastExpression(const ir::CastExpressionIr& ir, LocalState& state);
 	Value& evaluateBoolLiteral(const ir::BoolLiteralIr& ir, LocalState& state);

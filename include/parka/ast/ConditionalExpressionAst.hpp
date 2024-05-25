@@ -11,25 +11,25 @@ namespace parka::ast
 	{
 		Snippet _snippet;
 		ExpressionAst& _condition;
-		ExpressionAst& _trueCase;
-		ExpressionAst& _falseCase;
+		ExpressionAst& _thenCase;
+		ExpressionAst& _elseCase;
 
 	public:
 
-		ConditionalExpressionAst(ExpressionAst& condition, ExpressionAst& trueCase, ExpressionAst& falseCase):
-		ExpressionAst(ExpressionType::Conditional),
-		_snippet(condition.snippet() + falseCase.snippet()),
-		_condition(condition),
-		_trueCase(trueCase),
-		_falseCase(falseCase)
+		ConditionalExpressionAst(ExpressionAst& condition, ExpressionAst& thenCase, ExpressionAst& elseCase):
+			ExpressionAst(ExpressionType::Conditional),
+			_snippet(condition.snippet() + elseCase.snippet()),
+			_condition(condition),
+			_thenCase(thenCase),
+			_elseCase(elseCase)
 		{}
 		ConditionalExpressionAst(ConditionalExpressionAst&&) = default;
 		ConditionalExpressionAst(const ConditionalExpressionAst&) = delete;
 
 		const Snippet& snippet() const { return _snippet; }
 		const auto& condition() const { return _condition; }
-		const auto& trueCase() const { return _trueCase; }
-		const auto& falseCase() const { return _falseCase; }
+		const auto& thenCase() const { return _thenCase; }
+		const auto& elseCase() const { return _elseCase; }
 	};
 }
 
