@@ -66,7 +66,7 @@ validation lock:
 
 	if (writeLock.try_lock())
 	{
-		context = syntax.validate(symbolTable);
+		context = syntax.validate(context);
 		validated = true;
 
 		return context;

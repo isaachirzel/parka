@@ -1,4 +1,4 @@
-#include "parka/validation/PackageSymbolTable.hpp"
+#include "parka/validation/PackageContext.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
@@ -9,17 +9,17 @@
 
 namespace parka::validation
 {
-	PackageSymbolTable::PackageSymbolTable(const ast::PackageAst& ast, SymbolTable& parent):
-		SymbolTable(SymbolTableType::Package),
+	PackageContext::PackageContext(const ast::PackageAst& ast, Context& parent):
+		Context(ContextType::Package),
 		_scope(parent.createSymbol(ast.name())),
 		_symbols(),
-		_global(parent.globalSymbolTable()),
+		_global(parent.globalContext()),
 		_parent(parent)
 	{
 		log::notImplemented(here());
 	}
 
-	FunctionEntry& PackageSymbolTable::declare(const ast::FunctionAst& ast)
+	FunctionEntry& PackageContext::declare(const ast::FunctionAst& ast)
 	{
 		auto& entry = _global.addFunction(FunctionEntry(ast, *this));
 		const auto& key = ast.prototype().identifier().text();
@@ -35,21 +35,21 @@ namespace parka::validation
 		return entry;
 	}
 
-	VariableEntry& PackageSymbolTable::declare(const ast::VariableAst&)
+	VariableEntry& PackageContext::declare(const ast::VariableAst&)
 	{
-		throw std::invalid_argument("Variables cannot be declared in a PackageSymbolTable.");
+		throw std::invalid_argument("Variables cannot be declared in a PackageContext.");
 	}
 
-	ParameterEntry& PackageSymbolTable::declare(const ast::ParameterAst&)
+	ParameterEntry& PackageContext::declare(const ast::ParameterAst&)
 	{
-		throw std::invalid_argument("Parameters cannot be declared in a PackageSymbolTable.");
+		throw std::invalid_argument("Parameters cannot be declared in a PackageContext.");
 
 	}
 
-	Resolvable* PackageSymbolTable::findInitialSymbol(const ast::IdentifierAst& identifier)
+	Resolvable* PackageContext::findInitialSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
-		auto *package = (SymbolTable*)this;
+		auto *package = (Context*)this;
 
 		do
 		{
@@ -68,7 +68,7 @@ namespace parka::validation
 		return nullptr;
 	}
 
-	Resolvable* PackageSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
+	Resolvable* PackageContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 
@@ -78,7 +78,7 @@ namespace parka::validation
 		return nullptr;
 	}
 
-	ir::LValueIr* PackageSymbolTable::resolveSymbol(const ast::QualifiedIdentifierAst& qualifiedIdentifier)
+	ir::LValueIr* PackageContext::resolveSymbol(const ast::QualifiedIdentifierAst& qualifiedIdentifier)
 	{
 		if (qualifiedIdentifier.isAbsolute())
 			return _global.resolveSymbol(qualifiedIdentifier);
@@ -94,7 +94,7 @@ namespace parka::validation
 			// TODO: Figure out how to not use dynamic cast in this
 
 			const auto& identifier = qualifiedIdentifier[i];
-			auto *table = entry->symbolTable();
+			auto *table = entry->context();
 
 			if (table == nullptr)
 			{
@@ -111,17 +111,17 @@ namespace parka::validation
 		return nullptr;
 	}
 
-	ir::BinaryOperatorIr* PackageSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
+	ir::BinaryOperatorIr* PackageContext::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
 		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
-	ir::AssignmentOperatorIr* PackageSymbolTable::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
+	ir::AssignmentOperatorIr* PackageContext::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
 	{
 		return _global.resolveAssignmentOperator(left, right, assignmentType);
 	}
 
-	Result<ir::ConversionIr*> PackageSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
+	Result<ir::ConversionIr*> PackageContext::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);
 	}

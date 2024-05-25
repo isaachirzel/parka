@@ -1,28 +1,28 @@
-#ifndef PARKA_VALIDATION_PACKAGE_SYMBOL_TABLE_HPP
-#define PARKA_VALIDATION_PACKAGE_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_PACKAGE_CONTEXT_HPP
+#define PARKA_VALIDATION_PACKAGE_CONTEXT_HPP
 
 #include "parka/ast/PackageAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/validation/GlobalSymbolTable.hpp"
+#include "parka/validation/GlobalContext.hpp"
 #include "parka/validation/Resolvable.hpp"
-#include "parka/validation/SymbolTable.hpp"
+#include "parka/validation/Context.hpp"
 
 namespace parka::validation
 {
-	class PackageSymbolTable: public SymbolTable
+	class PackageContext: public Context
 	{
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
-		GlobalSymbolTable& _global;
-		SymbolTable& _parent;
+		GlobalContext& _global;
+		Context& _parent;
 
 	public:
 
-		PackageSymbolTable(const ast::PackageAst& ast, SymbolTable& parent);
-		PackageSymbolTable(PackageSymbolTable&&) = default;
-		PackageSymbolTable(const PackageSymbolTable&) = delete;
+		PackageContext(const ast::PackageAst& ast, Context& parent);
+		PackageContext(PackageContext&&) = default;
+		PackageContext(const PackageContext&) = delete;
 
 		FunctionEntry& declare(const ast::FunctionAst& ast);
 		VariableEntry& declare(const ast::VariableAst& ast);
@@ -35,8 +35,8 @@ namespace parka::validation
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& from, const ir::TypeIr& to);
 
 		const String& scope() const { return _scope; }
-		SymbolTable* parent() { return &_parent; }
-		GlobalSymbolTable& globalSymbolTable() { return _global; }
+		Context* parent() { return &_parent; }
+		GlobalContext& globalContext() { return _global; }
 	};
 }
 

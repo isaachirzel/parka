@@ -1,11 +1,11 @@
-#ifndef PARKA_VALIDATION_FUNCTION_SYMBOL_TABLE_HPP
-#define PARKA_VALIDATION_FUNCTION_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_FUNCTION_CONTEXT_HPP
+#define PARKA_VALIDATION_FUNCTION_CONTEXT_HPP
 
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/ParameterAst.hpp"
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/validation/LocalSymbolTable.hpp"
+#include "parka/validation/LocalContext.hpp"
 #include "parka/validation/Resolvable.hpp"
 #include "parka/validation/VariableEntry.hpp"
 #include "parka/validation/ParameterEntry.hpp"
@@ -14,12 +14,12 @@
 namespace parka::validation
 {
 	struct Resolvable;
-	class GlobalSymbolTable;
+	class GlobalContext;
 
-	class FunctionSymbolTable: public LocalSymbolTable
+	class FunctionContext: public LocalContext
 	{
-		GlobalSymbolTable& _global;
-		SymbolTable& _parent;
+		GlobalContext& _global;
+		Context& _parent;
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
 		Array<VariableEntry> _variables;
@@ -29,9 +29,9 @@ namespace parka::validation
 
 	public:
 
-		FunctionSymbolTable(SymbolTable &parent);
-		FunctionSymbolTable(FunctionSymbolTable&&) = default;
-		FunctionSymbolTable(const FunctionSymbolTable&) = delete;
+		FunctionContext(Context &parent);
+		FunctionContext(FunctionContext&&) = default;
+		FunctionContext(const FunctionContext&) = delete;
 
 		VariableEntry& addVariable(VariableEntry&& entry);
 		ParameterEntry& addParameter(ParameterEntry&& entry);
@@ -50,9 +50,9 @@ namespace parka::validation
 		void setIsExplicitReturnType(bool value) { _isExplicitReturnType = value; }
 		const auto& isExplicitReturnType() const { return _isExplicitReturnType; }
 		const String& scope() const { return _scope; }
-		SymbolTable* parent() { return &_parent; }
-		GlobalSymbolTable& globalSymbolTable() { return _global; }
-		FunctionSymbolTable& functionSymbolTable() { return *this; }
+		Context* parent() { return &_parent; }
+		GlobalContext& globalContext() { return _global; }
+		FunctionContext& functionContext() { return *this; }
 		bool isInLoop() const { return false; }
 	};
 }

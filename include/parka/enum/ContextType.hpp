@@ -6,7 +6,7 @@
 
 namespace parka
 {
-	enum class SymbolTableType: u8
+	enum class ContextType: u8
 	{
 		Global,
 		Package,
@@ -15,7 +15,7 @@ namespace parka
 		Block
 	};
 
-	std::ostream& operator<<(std::ostream& out, const SymbolTableType& type);
+	std::ostream& operator<<(std::ostream& out, const ContextType& type);
 }
 
 #endif

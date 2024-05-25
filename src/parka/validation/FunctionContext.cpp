@@ -1,11 +1,11 @@
-#include "parka/validation/FunctionSymbolTable.hpp"
+#include "parka/validation/FunctionContext.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ast/VariableAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/validation/GlobalSymbolTable.hpp"
+#include "parka/validation/GlobalContext.hpp"
 #include "parka/validation/ParameterEntry.hpp"
 #include "parka/validation/Resolvable.hpp"
 #include "parka/validation/VariableEntry.hpp"
@@ -13,9 +13,9 @@
 
 namespace parka::validation
 {
-	FunctionSymbolTable::FunctionSymbolTable(SymbolTable& parent):
-		LocalSymbolTable(SymbolTableType::Function),
-		_global(parent.globalSymbolTable()),
+	FunctionContext::FunctionContext(Context& parent):
+		LocalContext(ContextType::Function),
+		_global(parent.globalContext()),
 		_parent(parent),
 		_scope(),
 		_symbols(),
@@ -25,22 +25,22 @@ namespace parka::validation
 		_isExplicitReturnType(false)
 	{}
 
-	VariableEntry& FunctionSymbolTable::addVariable(VariableEntry&& entry)
+	VariableEntry& FunctionContext::addVariable(VariableEntry&& entry)
 	{
 		return _variables.push(std::move(entry));
 	}
 
-	ParameterEntry& FunctionSymbolTable::addParameter(ParameterEntry&& entry)
+	ParameterEntry& FunctionContext::addParameter(ParameterEntry&& entry)
 	{
 		return _parameters.push(std::move(entry));
 	}
 
-	FunctionEntry& FunctionSymbolTable::declare(const ast::FunctionAst&)
+	FunctionEntry& FunctionContext::declare(const ast::FunctionAst&)
 	{
-		throw std::invalid_argument("Functions cannot be declared in a FunctionSymbolTable.");
+		throw std::invalid_argument("Functions cannot be declared in a FunctionContext.");
 	}
 
-	ParameterEntry& FunctionSymbolTable::declare(const ast::ParameterAst& ast)
+	ParameterEntry& FunctionContext::declare(const ast::ParameterAst& ast)
 	{
 		auto* ir = validation::validateParameter(ast, *this);
 		auto& ref = addParameter(ParameterEntry(ast, ir));
@@ -57,7 +57,7 @@ namespace parka::validation
 		return ref;
 	}
 
-	VariableEntry& FunctionSymbolTable::declare(const ast::VariableAst& ast)
+	VariableEntry& FunctionContext::declare(const ast::VariableAst& ast)
 	{
 		auto* ir = validation::validateVariable(ast, *this);
 		auto& ref = addVariable(VariableEntry(ast, ir));
@@ -74,7 +74,7 @@ namespace parka::validation
 		return ref;
 	}
 
-	Resolvable* FunctionSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
+	Resolvable* FunctionContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto** symbol = _symbols.find(name);
@@ -85,7 +85,7 @@ namespace parka::validation
 		return *symbol;
 	}
 
-	ir::LValueIr* FunctionSymbolTable::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
+	ir::LValueIr* FunctionContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		if (identifier.isAbsolute())
 			return _global.resolveSymbol(identifier);
@@ -101,17 +101,17 @@ namespace parka::validation
 		return _parent.resolveSymbol(identifier);
 	}
 
-	ir::BinaryOperatorIr* FunctionSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
+	ir::BinaryOperatorIr* FunctionContext::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
 		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
 	}
 
-	ir::AssignmentOperatorIr* FunctionSymbolTable::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
+	ir::AssignmentOperatorIr* FunctionContext::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
 	{
 		return _global.resolveAssignmentOperator(left, right, assignmentType);
 	}
 
-	Result<ir::ConversionIr*> FunctionSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
+	Result<ir::ConversionIr*> FunctionContext::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		return _global.resolveConversion(to, from);
 	}

@@ -1,11 +1,11 @@
-#ifndef PARKA_VALIDATION_SYMBOL_TABLE_HPP
-#define PARKA_VALIDATION_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_CONTEXT_HPP
+#define PARKA_VALIDATION_CONTEXT_HPP
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/ParameterAst.hpp"
 #include "parka/ast/VariableAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
-#include "parka/enum/SymbolTableType.hpp"
+#include "parka/enum/ContextType.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
@@ -15,20 +15,20 @@
 
 namespace parka::validation
 {
-	class GlobalSymbolTable;
+	class GlobalContext;
 	struct Resolvable;
 	class FunctionEntry;
 	class VariableEntry;
 	class ParameterEntry;
 
-	struct SymbolTable
+	struct Context
 	{
-		const SymbolTableType symbolTableType;
+		const ContextType symbolTableType;
 
-		SymbolTable(SymbolTableType symbolTableType):
+		Context(ContextType symbolTableType):
 			symbolTableType(symbolTableType)
 		{}
-		virtual ~SymbolTable() {}
+		virtual ~Context() {}
 
 		virtual FunctionEntry& declare (const ast::FunctionAst& ast) = 0;
 		virtual VariableEntry& declare (const ast::VariableAst& ast) = 0;
@@ -39,8 +39,8 @@ namespace parka::validation
 		virtual ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) = 0;
 		virtual Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from) = 0;
 		virtual const String& scope() const = 0;
-		virtual SymbolTable* parent() = 0;
-		virtual GlobalSymbolTable& globalSymbolTable() = 0;
+		virtual Context* parent() = 0;
+		virtual GlobalContext& globalContext() = 0;
 
 		String createSymbol(const String& name) const
 		{

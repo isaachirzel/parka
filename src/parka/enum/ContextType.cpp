@@ -1,20 +1,20 @@
-#include "parka/enum/SymbolTableType.hpp"
+#include "parka/enum/ContextType.hpp"
 
 namespace parka
 {
-	std::ostream& operator<<(std::ostream& out, const SymbolTableType& type)
+	std::ostream& operator<<(std::ostream& out, const ContextType& type)
 	{
 		switch (type)
 		{
-			case SymbolTableType::Package:
+			case ContextType::Package:
 				out << "package";
 				break;
 
-			case SymbolTableType::Function:
+			case ContextType::Function:
 				out << "function";
 				break;
 
-			case SymbolTableType::Block:
+			case ContextType::Block:
 				out << "block";
 				break;
 

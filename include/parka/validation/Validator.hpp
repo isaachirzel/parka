@@ -50,36 +50,36 @@
 #include "parka/ir/IntegerLiteralIr.hpp"
 #include "parka/ir/StringLiteralIr.hpp"
 #include "parka/ir/YieldStatementIr.hpp"
-#include "parka/validation/FunctionSymbolTable.hpp"
-#include "parka/validation/LocalSymbolTable.hpp"
+#include "parka/validation/FunctionContext.hpp"
+#include "parka/validation/LocalContext.hpp"
 #include "parka/util/Result.hpp"
 
 namespace parka::validation
 {
 	Result<ir::Ir> validateAst(const ast::Ast& ast);
-	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, FunctionSymbolTable& symbolTable);
-	Result<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, FunctionSymbolTable& symbolTable);
-	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, FunctionSymbolTable& symbolTable);
-	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionSymbolTable& symbolTable);
-	ir::VariableIr* validateVariable(const ast::VariableAst& ast, LocalSymbolTable& symbolTable);
-	Result<ir::TypeIr> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, SymbolTable& symbolTable);
-	ir::StatementIr* validateStatement(const ast::StatementAst& statement, LocalSymbolTable& symbolTable);
-	ir::DeclarationStatementIr* validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::ExpressionStatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::AssignmentStatementIr* validateAssignmentStatement(const ast::AssignmentStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::BreakStatementIr* validateBreakStatement(const ast::BreakStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::IfStatementIr* validateIfStatement(const ast::IfStatementAst& ast, LocalSymbolTable& symbolTable);
-	ir::ExpressionIr* validateExpression(const ast::ExpressionAst& expression, LocalSymbolTable& symbolTable);
-	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalSymbolTable& symbolTable);
-	ir::CallExpressionIr* validateCallExpression(const ast::CallExpressionAst& ast, LocalSymbolTable& symbolTable);
-	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalSymbolTable& symbolTable);
-	ir::IdentifierExpressionIr* validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable);
-	ir::ExpressionIr* validateCastExpression(const ast::CastExpressionAst& ast, LocalSymbolTable& symbolTable);
+	ir::FunctionIr* validateFunction(const ast::FunctionAst& ast, FunctionContext& context);
+	Result<ir::PrototypeIr> validatePrototype(const ast::PrototypeAst& prototype, FunctionContext& context);
+	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, FunctionContext& context);
+	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionContext& context);
+	ir::VariableIr* validateVariable(const ast::VariableAst& ast, LocalContext& context);
+	Result<ir::TypeIr> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, Context& context);
+	ir::StatementIr* validateStatement(const ast::StatementAst& statement, LocalContext& context);
+	ir::DeclarationStatementIr* validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalContext& context);
+	ir::ExpressionStatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalContext& context);
+	ir::AssignmentStatementIr* validateAssignmentStatement(const ast::AssignmentStatementAst& ast, LocalContext& context);
+	ir::ReturnStatementIr* validateReturnStatement(const ast::ReturnStatementAst& ast, LocalContext& context);
+	ir::BreakStatementIr* validateBreakStatement(const ast::BreakStatementAst& ast, LocalContext& context);
+	ir::ContinueStatementIr* validateContinueStatement(const ast::ContinueStatementAst& ast, LocalContext& context);
+	ir::YieldStatementIr* validateYieldStatement(const ast::YieldStatementAst& ast, LocalContext& context);
+	ir::ForStatementIr* validateForStatement(const ast::ForStatementAst& ast, LocalContext& context);
+	ir::BlockStatementIr* validateBlockStatement(const ast::BlockStatementAst& ast, LocalContext& context);
+	ir::IfStatementIr* validateIfStatement(const ast::IfStatementAst& ast, LocalContext& context);
+	ir::ExpressionIr* validateExpression(const ast::ExpressionAst& expression, LocalContext& context);
+	ir::BinaryExpressionIr* validateBinaryExpression(const ast::BinaryExpressionAst& ast, LocalContext& context);
+	ir::CallExpressionIr* validateCallExpression(const ast::CallExpressionAst& ast, LocalContext& context);
+	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalContext& context);
+	ir::IdentifierExpressionIr* validateIdentifierExpression(const ast::IdentifierExpressionAst& ast, LocalContext& context);
+	ir::ExpressionIr* validateCastExpression(const ast::CastExpressionAst& ast, LocalContext& context);
 	ir::IntegerLiteralIr* validateIntegerLiteral(const ast::IntegerLiteralAst& ast);
 	ir::FloatLiteralIr* validateFloatLiteral(const ast::FloatLiteralAst& ast);
 	ir::StringLiteralIr* validateStringLiteral(const ast::StringLiteralAst& ast);

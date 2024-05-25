@@ -1,4 +1,4 @@
-#include "parka/validation/GlobalSymbolTable.hpp"
+#include "parka/validation/GlobalContext.hpp"
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
@@ -11,8 +11,8 @@
 
 namespace parka::validation
 {
-	GlobalSymbolTable::GlobalSymbolTable(const ast::PackageAst& globalPackage):
-		SymbolTable(SymbolTableType::Global),
+	GlobalContext::GlobalContext(const ast::PackageAst& globalPackage):
+		Context(ContextType::Global),
 		_scope(""),
 		_symbols(),
 		_binaryOperators(ir::BinaryOperatorIr::getIntrinsicBinaryOperators()),
@@ -36,12 +36,12 @@ namespace parka::validation
 		}
 	}
 
-	FunctionEntry& GlobalSymbolTable::addFunction(FunctionEntry&& entry)
+	FunctionEntry& GlobalContext::addFunction(FunctionEntry&& entry)
 	{
 		return _functions.push(std::move(entry));
 	}
 
-	FunctionEntry& GlobalSymbolTable::declare(const ast::FunctionAst& ast)
+	FunctionEntry& GlobalContext::declare(const ast::FunctionAst& ast)
 	{
 		auto& entry = addFunction(FunctionEntry(ast, *this));
 		const auto& key = ast.prototype().identifier().text();
@@ -57,17 +57,17 @@ namespace parka::validation
 		return entry;
 	}
 
-	VariableEntry& GlobalSymbolTable::declare(const ast::VariableAst&)
+	VariableEntry& GlobalContext::declare(const ast::VariableAst&)
 	{
-		throw std::invalid_argument("Variables cannot be declared in a GlobalSymbolTable.");
+		throw std::invalid_argument("Variables cannot be declared in a GlobalContext.");
 	}
 
-	ParameterEntry& GlobalSymbolTable::declare(const ast::ParameterAst&)
+	ParameterEntry& GlobalContext::declare(const ast::ParameterAst&)
 	{
-		throw std::invalid_argument("Parameters cannot be declared in a GlobalSymbolTable.");
+		throw std::invalid_argument("Parameters cannot be declared in a GlobalContext.");
 	}
 
-	Resolvable* GlobalSymbolTable::findSymbol(const ast::IdentifierAst& identifier)
+	Resolvable* GlobalContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		auto& text = identifier.text();
 		auto** result = _symbols.find(text);
@@ -78,7 +78,7 @@ namespace parka::validation
 		return {};
 	}
 
-	ir::LValueIr* GlobalSymbolTable::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
+	ir::LValueIr* GlobalContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		auto* entry = findSymbol(identifier[0]);
 
@@ -91,7 +91,7 @@ namespace parka::validation
 				return {};
 
 			auto& part = identifier[i];
-			auto* table = entry->symbolTable();
+			auto* table = entry->context();
 
 			if (!table)
 			{
@@ -108,7 +108,7 @@ namespace parka::validation
 		return {};
 	}
 
-	ir::BinaryOperatorIr* GlobalSymbolTable::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
+	ir::BinaryOperatorIr* GlobalContext::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
 	{
 		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
 
@@ -120,7 +120,7 @@ namespace parka::validation
 		return *op;
 	}
 
-	ir::AssignmentOperatorIr* GlobalSymbolTable::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
+	ir::AssignmentOperatorIr* GlobalContext::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
 	{
 		auto key = AssignmentOperatorKey(left, right, assignmentType);
 		auto* op = _assignmentOperators.find(key);
@@ -131,7 +131,7 @@ namespace parka::validation
 		return *op;
 	}
 
-	Result<ir::ConversionIr*> GlobalSymbolTable::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
+	Result<ir::ConversionIr*> GlobalContext::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
 	{
 		if (from == to)
 			return nullptr;

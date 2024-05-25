@@ -5,7 +5,7 @@
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/validation/Resolvable.hpp"
-#include "parka/validation/SymbolTable.hpp"
+#include "parka/validation/Context.hpp"
 
 namespace parka::ir
 {
@@ -43,7 +43,7 @@ namespace parka::ir
 		PrimitiveIr(PrimitiveIr&&) = default;
 		PrimitiveIr(const PrimitiveIr&) = delete;
 
-		validation::SymbolTable* symbolTable() { return nullptr; }
+		validation::Context* context() { return nullptr; }
 		PrimitiveIr *resolve() { return this; }
 		const TypeIr& type() const { return TypeIr::typeNameType; }
 		const String& symbol() const { return _name; }

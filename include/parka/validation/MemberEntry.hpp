@@ -19,7 +19,7 @@ namespace parka::validation
 		MemberEntry(MemberEntry&&) = default;
 		MemberEntry(const MemberEntry&) = delete;
 
-		SymbolTable* symbolTable() { return nullptr; }
+		Context* context() { return nullptr; }
 		const auto& ast() const { return _ast; }
 	};
 }

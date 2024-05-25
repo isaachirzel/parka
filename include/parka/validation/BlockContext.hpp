@@ -1,28 +1,28 @@
-#ifndef PARKA_VALIDATION_BLOCK_SYMBOL_TABLE_HPP
-#define PARKA_VALIDATION_BLOCK_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_BLOCK_CONTEXT_HPP
+#define PARKA_VALIDATION_BLOCK_CONTEXT_HPP
 
-#include "parka/validation/FunctionSymbolTable.hpp"
-#include "parka/validation/LocalSymbolTable.hpp"
+#include "parka/validation/FunctionContext.hpp"
+#include "parka/validation/LocalContext.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::validation
 {
-	class BlockSymbolTable: public LocalSymbolTable
+	class BlockContext: public LocalContext
 	{
-		GlobalSymbolTable& _global;
-		FunctionSymbolTable& _function;
-		SymbolTable& _parent;
+		GlobalContext& _global;
+		FunctionContext& _function;
+		Context& _parent;
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
 		bool _isInLoop;
 
-		BlockSymbolTable(FunctionSymbolTable& function, SymbolTable& parent);
+		BlockContext(FunctionContext& function, Context& parent);
 
 	public:
 
-		BlockSymbolTable(LocalSymbolTable& parent);
-		BlockSymbolTable(BlockSymbolTable&&) = default;
-		BlockSymbolTable(const BlockSymbolTable&) = delete;
+		BlockContext(LocalContext& parent);
+		BlockContext(BlockContext&&) = default;
+		BlockContext(const BlockContext&) = delete;
 
 		FunctionEntry& declare(const ast::FunctionAst& ast);
 		VariableEntry& declare(const ast::VariableAst& ast);
@@ -33,12 +33,12 @@ namespace parka::validation
 		ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType);
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		const String& scope() const { return _scope; }
-		SymbolTable* parent() { return &_parent; }
+		Context* parent() { return &_parent; }
 		const ir::TypeIr& returnType() const { return _function.returnType(); }
 		void setInLoop() { _isInLoop = true; }
 		bool isInLoop() const { return _isInLoop; }
-		FunctionSymbolTable& functionSymbolTable() { return _function; }
-		GlobalSymbolTable& globalSymbolTable() { return _global; }
+		FunctionContext& functionContext() { return _function; }
+		GlobalContext& globalContext() { return _global; }
 	};
 }
 

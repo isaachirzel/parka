@@ -19,7 +19,7 @@ namespace parka::validation
 
 		ir::ParameterIr *resolve();
 
-		SymbolTable* symbolTable() { return nullptr; }
+		Context* context() { return nullptr; }
 		const auto& ast() const { return _ast; }
 		const String& name() const { return _ast.identifier().text(); }
 		const ast::IdentifierAst& identifier() const { return _ast.identifier(); }

@@ -30,12 +30,12 @@
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/validation/BlockSymbolTable.hpp"
+#include "parka/validation/BlockContext.hpp"
 #include "parka/validation/FunctionEntry.hpp"
-#include "parka/validation/FunctionSymbolTable.hpp"
-#include "parka/validation/GlobalSymbolTable.hpp"
-#include "parka/validation/LocalSymbolTable.hpp"
-#include "parka/validation/SymbolTable.hpp"
+#include "parka/validation/FunctionContext.hpp"
+#include "parka/validation/GlobalContext.hpp"
+#include "parka/validation/LocalContext.hpp"
+#include "parka/validation/Context.hpp"
 #include "parka/validation/VariableEntry.hpp"
 #include "parka/util/Array.hpp"
 
@@ -64,11 +64,11 @@ namespace parka::validation
 	// 	return success;
 	// }
 
-	// static bool validatePackage(Array<FunctionIr*>& functions, PackageSymbolTable& symbolTable)
+	// static bool validatePackage(Array<FunctionIr*>& functions, PackageContext& context)
 	// {
 	// 	bool success = true;
 
-	// 	if (!validateFunctions(functions, symbolTable.functions()))
+	// 	if (!validateFunctions(functions, context.functions()))
 	// 		success = false;
 
 	// 	// TODO: Structs and packages
@@ -103,10 +103,10 @@ namespace parka::validation
 		return success;
 	}
 
-	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, SymbolTable& symbolTable)
+	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, Context& context)
 	{
 		const auto& expressionType = expression.type();
-		auto conversion = symbolTable.resolveConversion(toType, expressionType);
+		auto conversion = context.resolveConversion(toType, expressionType);
 
 		if (!conversion)
 			return {};
@@ -134,11 +134,11 @@ namespace parka::validation
 	Result<Ir> validateAst(const Ast& ast)
 	{
 		auto& package = ast.globalPackage();
-		auto symbolTable = GlobalSymbolTable(package);
+		auto context = GlobalContext(package);
 		auto functions = Array<FunctionIr*>();
 		auto *entryPoint = (FunctionIr*)nullptr;
 
-		for (auto& entry : symbolTable.functions())
+		for (auto& entry : context.functions())
 		{
 			auto *ir = entry.resolve();
 
@@ -147,7 +147,7 @@ namespace parka::validation
 
 			if (entry.ast().hasBody())
 			{
-				auto body = validateFunctionBody(entry.ast().body(), *entry.symbolTable());
+				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
 
 				if (body)
 					ir->setBody(*body);
@@ -168,27 +168,27 @@ namespace parka::validation
 		return Ir(ast.name(), std::move(functions), entryPoint);
 	}
 
-	FunctionIr *validateFunction(const FunctionAst& ast, FunctionSymbolTable& symbolTable)
+	FunctionIr *validateFunction(const FunctionAst& ast, FunctionContext& context)
 	{
-		auto prototype = validatePrototype(ast.prototype(), symbolTable);
+		auto prototype = validatePrototype(ast.prototype(), context);
 
 		if (!prototype)
 			return {};
 
 		const auto& name = ast.prototype().identifier().text();
-		auto symbol = symbolTable.createSymbol(name);
+		auto symbol = context.createSymbol(name);
 
 		return new FunctionIr(std::move(symbol), *prototype, {});
 	}
 
-	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionSymbolTable& symbolTable)
+	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionContext& context)
 	{
 		const auto parameterCount = prototype.parameters().length();
 		auto parameters = Array<ParameterIr*>(parameterCount);
 
 		for (auto* parameterAst : prototype.parameters())
 		{
-			auto& entry = symbolTable.declare(*parameterAst);
+			auto& entry = context.declare(*parameterAst);
 			auto* parameter = entry.resolve();
 
 			if (!parameter)
@@ -201,16 +201,16 @@ namespace parka::validation
 
 		if (prototype.returnType())
 		{
-			auto returnTypeAnnotation = validateTypeAnnotation(*prototype.returnType(), symbolTable);
+			auto returnTypeAnnotation = validateTypeAnnotation(*prototype.returnType(), context);
 
 			if (!returnTypeAnnotation)
 				return {};
 
 			returnType = *returnTypeAnnotation;
-			symbolTable.setReturnType(returnType);
+			context.setReturnType(returnType);
 		}
 
-		symbolTable.setIsExplicitReturnType(!!prototype.returnType());
+		context.setIsExplicitReturnType(!!prototype.returnType());
 
 		if (parameters.length() != prototype.parameters().length())
 			return {};
@@ -218,9 +218,9 @@ namespace parka::validation
 		return PrototypeIr(std::move(parameters), std::move(returnType));
 	}
 
-	ParameterIr *validateParameter(const ParameterAst& ast, FunctionSymbolTable& symbolTable)
+	ParameterIr *validateParameter(const ParameterAst& ast, FunctionContext& context)
 	{
-		auto type = validateTypeAnnotation(ast.annotation(), symbolTable);
+		auto type = validateTypeAnnotation(ast.annotation(), context);
 
 		if (!type)
 			return {};
@@ -228,28 +228,28 @@ namespace parka::validation
 		return new ParameterIr(*type);
 	}
 
-	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionSymbolTable& symbolTable)
+	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionContext& context)
 	{
 		if (ast.isExpression())
 		{
-			auto* expression = validateExpression(ast.expression(), symbolTable);
+			auto* expression = validateExpression(ast.expression(), context);
 
 			if (!expression)
 				return {};
 
-			const auto& returnType = symbolTable.returnType();
-			auto* castedValue = validateCast(returnType, *expression, symbolTable);
+			const auto& returnType = context.returnType();
+			auto* castedValue = validateCast(returnType, *expression, context);
 			
 			if (!castedValue)
 			{
-				log::error(ast.expression().snippet(), "Unable to return `$` in function expecting $.", expression->type(), symbolTable.returnType());
+				log::error(ast.expression().snippet(), "Unable to return `$` in function expecting $.", expression->type(), context.returnType());
 				return {};
 			}
 
 			return FunctionBodyIr(*castedValue);
 		}
 
-		auto blockStatement = validateBlockStatement(ast.blockStatement(), symbolTable);
+		auto blockStatement = validateBlockStatement(ast.blockStatement(), context);
 		
 		if (!blockStatement)
 			return {};
@@ -257,14 +257,14 @@ namespace parka::validation
 		return FunctionBodyIr(*blockStatement);
 	}
 
-	VariableIr *validateVariable(const VariableAst& ast, LocalSymbolTable& symbolTable)
+	VariableIr *validateVariable(const VariableAst& ast, LocalContext& context)
 	{
 		auto identifier = ast.identifier().text();
 
 		if (!ast.annotation())
 			return new VariableIr(std::move(identifier), TypeIr(TypeIr::voidType));
 
-		auto annotationType = validateTypeAnnotation(*ast.annotation(), symbolTable);
+		auto annotationType = validateTypeAnnotation(*ast.annotation(), context);
 
 		if (!annotationType)
 			return {};
@@ -272,9 +272,9 @@ namespace parka::validation
 		return new VariableIr(std::move(identifier), *annotationType);
 	}
 
-	Result<TypeIr> validateTypeAnnotation(const TypeAnnotationAst& ast, SymbolTable& symbolTable)
+	Result<TypeIr> validateTypeAnnotation(const TypeAnnotationAst& ast, Context& context)
 	{
-		auto *resolution = symbolTable.resolveSymbol(ast.identifier());
+		auto *resolution = context.resolveSymbol(ast.identifier());
 
 		if (!resolution)
 		{
@@ -295,43 +295,43 @@ namespace parka::validation
 		return TypeIr(*typeBase);
 	}
 
-	StatementIr *validateStatement(const StatementAst& ast, LocalSymbolTable& symbolTable)
+	StatementIr *validateStatement(const StatementAst& ast, LocalContext& context)
 	{
 		switch (ast.statementType)
 		{
 			case StatementType::Declaration:
-				return validateDeclarationStatement(static_cast<const DeclarationStatementAst&>(ast), symbolTable);
+				return validateDeclarationStatement(static_cast<const DeclarationStatementAst&>(ast), context);
 
 			case StatementType::Expression:
-				return validateExpressionStatement(static_cast<const ExpressionStatementAst&>(ast), symbolTable);
+				return validateExpressionStatement(static_cast<const ExpressionStatementAst&>(ast), context);
 
 			case StatementType::Return:
-				return validateReturnStatement(static_cast<const ReturnStatementAst&>(ast), symbolTable);
+				return validateReturnStatement(static_cast<const ReturnStatementAst&>(ast), context);
 
 			case StatementType::Break:
-				return validateBreakStatement(static_cast<const BreakStatementAst&>(ast), symbolTable);
+				return validateBreakStatement(static_cast<const BreakStatementAst&>(ast), context);
 
 			case StatementType::Continue:
-				return validateContinueStatement(static_cast<const ContinueStatementAst&>(ast), symbolTable);
+				return validateContinueStatement(static_cast<const ContinueStatementAst&>(ast), context);
 
 			case StatementType::Yield:
-				return validateYieldStatement(static_cast<const YieldStatementAst&>(ast), symbolTable);
+				return validateYieldStatement(static_cast<const YieldStatementAst&>(ast), context);
 
 			case StatementType::For:
-				return validateForStatement(static_cast<const ForStatementAst&>(ast), symbolTable);
+				return validateForStatement(static_cast<const ForStatementAst&>(ast), context);
 
 			case StatementType::Block:
 			{
-				auto blockSymbolTable = BlockSymbolTable(symbolTable);
+				auto blockContext = BlockContext(context);
 
-				return validateBlockStatement(static_cast<const BlockStatementAst&>(ast), blockSymbolTable);
+				return validateBlockStatement(static_cast<const BlockStatementAst&>(ast), blockContext);
 			}
 
 			case StatementType::Assignment:
-				return validateAssignmentStatement(static_cast<const AssignmentStatementAst&>(ast), symbolTable);
+				return validateAssignmentStatement(static_cast<const AssignmentStatementAst&>(ast), context);
 
 			case StatementType::If:
-				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), symbolTable);
+				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), context);
 
 			default:
 				break;
@@ -340,12 +340,12 @@ namespace parka::validation
 		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
 	}
 
-	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalSymbolTable& symbolTable)
+	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalContext& context)
 	{
-		// FIXME: Update all expr an stmt validation to FunctionSymbolTable
-		auto& entry = symbolTable.declare(ast.variable());
+		// FIXME: Update all expr an stmt validation to FunctionContext
+		auto& entry = context.declare(ast.variable());
 		auto* variable = entry.resolve();
-		auto* value = validateExpression(ast.value(), symbolTable);
+		auto* value = validateExpression(ast.value(), context);
 
 		if (!variable || !value)
 			return {};
@@ -362,7 +362,7 @@ namespace parka::validation
 			variable->setType(*variableType);
 		}
 
-		auto* castedValue = validateCast(variable->type(), *value, symbolTable);
+		auto* castedValue = validateCast(variable->type(), *value, context);
 		
 		if (!castedValue)
 			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
@@ -370,9 +370,9 @@ namespace parka::validation
 		return new DeclarationStatementIr(*variable, *castedValue);
 	}
 
-	ExpressionStatementIr* validateExpressionStatement(const ExpressionStatementAst& ast, LocalSymbolTable& symbolTable)
+	ExpressionStatementIr* validateExpressionStatement(const ExpressionStatementAst& ast, LocalContext& context)
 	{
-		auto* expression = validateExpression(ast.expression(), symbolTable);
+		auto* expression = validateExpression(ast.expression(), context);
 
 		if (!expression)
 			return {};
@@ -380,10 +380,10 @@ namespace parka::validation
 		return new ExpressionStatementIr(*expression);
 	}
 
-	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, LocalSymbolTable& symbolTable)
+	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, LocalContext& context)
 	{
-		auto* lhs = validateExpression(ast.identifier(), symbolTable);
-		auto* value = validateExpression(ast.value(), symbolTable);
+		auto* lhs = validateExpression(ast.identifier(), context);
+		auto* value = validateExpression(ast.value(), context);
 
 		if (!lhs || !value)
 			return {};
@@ -395,7 +395,7 @@ namespace parka::validation
 		}
 
 		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		auto* op = symbolTable.resolveAssignmentOperator(lhs->type(), value->type(), ast.assignmentType());
+		auto* op = context.resolveAssignmentOperator(lhs->type(), value->type(), ast.assignmentType());
 
 		if (!op)
 		{
@@ -406,37 +406,37 @@ namespace parka::validation
 		return new AssignmentStatementIr(identifier, *value, *op);
 	}
 
-	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, LocalSymbolTable& symbolTable)
+	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, LocalContext& context)
 	{
 		if (!ast.hasValue())
 		{
-			if (symbolTable.returnType() == TypeIr::voidType)
+			if (context.returnType() == TypeIr::voidType)
 				return new ReturnStatementIr();
 
-			log::error(ast.snippet(), "Expected $ return value but none was given.", symbolTable.returnType());
+			log::error(ast.snippet(), "Expected $ return value but none was given.", context.returnType());
 			return {};
 		}
 
-		auto* value = validateExpression(ast.value(), symbolTable);
+		auto* value = validateExpression(ast.value(), context);
 
 		if (!value)
 			return {};
 
-		auto* castedValue = validateCast(symbolTable.returnType(), *value, symbolTable);
+		auto* castedValue = validateCast(context.returnType(), *value, context);
 
 		if (!castedValue)
 		{
 			// TODO: Highlight function return type
-			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), symbolTable.returnType());
+			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), context.returnType());
 			return {};
 		}
 		
 		return new ReturnStatementIr(*castedValue);
 	}
 
-	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, LocalSymbolTable& symbolTable)
+	BreakStatementIr *validateBreakStatement(const BreakStatementAst& ast, LocalContext& context)
 	{
-		if (!symbolTable.isInLoop())
+		if (!context.isInLoop())
 		{
 			log::error(ast.snippet(), "A break statement may only be put inside of a loop.");
 			return {};
@@ -445,9 +445,9 @@ namespace parka::validation
 		return new BreakStatementIr();
 	}
 
-	ContinueStatementIr *validateContinueStatement(const ContinueStatementAst& ast, LocalSymbolTable& symbolTable)
+	ContinueStatementIr *validateContinueStatement(const ContinueStatementAst& ast, LocalContext& context)
 	{
-		if (!symbolTable.isInLoop())
+		if (!context.isInLoop())
 		{
 			log::error(ast.snippet(), "A continue statement may only be put inside of a loop.");
 			return {};
@@ -456,31 +456,31 @@ namespace parka::validation
 		return new ContinueStatementIr();
 	}
 
-	YieldStatementIr *validateYieldStatement(const YieldStatementAst&, LocalSymbolTable&)
+	YieldStatementIr *validateYieldStatement(const YieldStatementAst&, LocalContext&)
 	{
 		// Must be in an block/if statement
 		log::notImplemented(here());
 	}
 
-	ForStatementIr *validateForStatement(const ForStatementAst& ast, LocalSymbolTable& symbolTable)
+	ForStatementIr *validateForStatement(const ForStatementAst& ast, LocalContext& context)
 	{
-		auto* declaration = validateDeclarationStatement(ast.declaration(), symbolTable);
+		auto* declaration = validateDeclarationStatement(ast.declaration(), context);
 
 		if (!declaration)
 			return {};
 
-		auto* condition = validateExpression(ast.condition(), symbolTable);
-		auto* action = validateStatement(ast.action(), symbolTable);
-		auto blockSymbolTable = BlockSymbolTable(symbolTable);
+		auto* condition = validateExpression(ast.condition(), context);
+		auto* action = validateStatement(ast.action(), context);
+		auto blockContext = BlockContext(context);
 
-		blockSymbolTable.setInLoop();
+		blockContext.setInLoop();
 
-		auto* body = validateBlockStatement(ast.body(), blockSymbolTable);
+		auto* body = validateBlockStatement(ast.body(), blockContext);
 
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateCast(TypeIr::boolType, *condition, symbolTable);
+		auto* castedValue = validateCast(TypeIr::boolType, *condition, context);
 
 		if (!castedValue)
 		{
@@ -491,14 +491,14 @@ namespace parka::validation
 		return new ForStatementIr(*declaration, *castedValue, *action, *body);
 	}
 
-	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalSymbolTable& symbolTable)
+	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalContext& context)
 	{
 		auto& statementAsts = ast.statements();
 		auto statementIrs = Array<StatementIr*>(statementAsts.length());
 
 		for (const auto *statement : statementAsts)
 		{
-			auto *ir = validateStatement(*statement, symbolTable);
+			auto *ir = validateStatement(*statement, context);
 
 			if (!ir)
 				continue;
@@ -512,18 +512,18 @@ namespace parka::validation
 		return new BlockStatementIr(std::move(statementIrs));
 	}
 	
-	IfStatementIr* validateIfStatement(const IfStatementAst& ast, LocalSymbolTable& symbolTable)
+	IfStatementIr* validateIfStatement(const IfStatementAst& ast, LocalContext& context)
 	{
-		auto* condition = validateExpression(ast.condition(), symbolTable);
-		auto* thenCase = validateStatement(ast.thenCase(), symbolTable);
+		auto* condition = validateExpression(ast.condition(), context);
+		auto* thenCase = validateStatement(ast.thenCase(), context);
 		auto* elseCase = ast.hasElseCase()
-			? validateStatement(ast.elseCase(), symbolTable)
+			? validateStatement(ast.elseCase(), context)
 			: nullptr;
 
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateCast(TypeIr::boolType, *condition, symbolTable);
+		auto* castedValue = validateCast(TypeIr::boolType, *condition, context);
 
 		if (!castedValue)
 		{
@@ -534,21 +534,21 @@ namespace parka::validation
 		return new IfStatementIr(*castedValue, *thenCase, elseCase);
 	}
 
-	ExpressionIr* validateExpression(const ExpressionAst& ast, LocalSymbolTable& symbolTable)
+	ExpressionIr* validateExpression(const ExpressionAst& ast, LocalContext& context)
 	{
 		switch (ast.expressionType)
 		{
 			case ExpressionType::Binary:
-				return validateBinaryExpression(static_cast<const BinaryExpressionAst&>(ast), symbolTable);
+				return validateBinaryExpression(static_cast<const BinaryExpressionAst&>(ast), context);
 
 			case ExpressionType::Call:
-				return validateCallExpression(static_cast<const CallExpressionAst&>(ast), symbolTable);
+				return validateCallExpression(static_cast<const CallExpressionAst&>(ast), context);
 
 			case ExpressionType::Conditional:
-				return validateConditionalExpression(static_cast<const ConditionalExpressionAst&>(ast), symbolTable);
+				return validateConditionalExpression(static_cast<const ConditionalExpressionAst&>(ast), context);
 
 			case ExpressionType::Identifier:
-				return validateIdentifierExpression(static_cast<const IdentifierExpressionAst&>(ast), symbolTable);
+				return validateIdentifierExpression(static_cast<const IdentifierExpressionAst&>(ast), context);
 
 			case ExpressionType::Subscript:
 				break;
@@ -560,7 +560,7 @@ namespace parka::validation
 				break;
 
 			case ExpressionType::Cast:
-				return validateCastExpression(static_cast<const CastExpressionAst&>(ast), symbolTable);
+				return validateCastExpression(static_cast<const CastExpressionAst&>(ast), context);
 
 			case ExpressionType::BoolLiteral:
 				return validateBoolLiteral(static_cast<const BoolLiteralAst&>(ast));
@@ -584,17 +584,17 @@ namespace parka::validation
 		log::fatal("Unable to validate Expression with TypeIr: $", ast.expressionType);
 	}
 
-	BinaryExpressionIr* validateBinaryExpression(const BinaryExpressionAst& ast, LocalSymbolTable& symbolTable)
+	BinaryExpressionIr* validateBinaryExpression(const BinaryExpressionAst& ast, LocalContext& context)
 	{
-		auto *lhs = validateExpression(ast.lhs(), symbolTable);
-		auto *rhs = validateExpression(ast.rhs(), symbolTable);
+		auto *lhs = validateExpression(ast.lhs(), context);
+		auto *rhs = validateExpression(ast.rhs(), context);
 
 		if (!lhs || !rhs)
 			return {};
 
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
-		auto *op = symbolTable.resolveBinaryOperator(ast.binaryExpressionType(), lhsType, rhsType);
+		auto *op = context.resolveBinaryOperator(ast.binaryExpressionType(), lhsType, rhsType);
 
 		if (!op)
 		{
@@ -607,9 +607,9 @@ namespace parka::validation
 		return result;
 	}
 
-	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, LocalSymbolTable& symbolTable)
+	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, LocalContext& context)
 	{
-		auto* subject = validateExpression(ast.subject(), symbolTable);
+		auto* subject = validateExpression(ast.subject(), context);
 
 		if (!subject)
 			return {};
@@ -646,12 +646,12 @@ namespace parka::validation
 		{
 			auto& valueAst = *ast.arguments()[i];
 			auto& parameter = *prototype.parameters()[i];
-			auto* value = validateExpression(valueAst, symbolTable);
+			auto* value = validateExpression(valueAst, context);
 
 			if (!value)
 				continue;
 
-			auto* castedValue = validateCast(parameter.type(), *value, symbolTable);
+			auto* castedValue = validateCast(parameter.type(), *value, context);
 
 			if (!castedValue)
 			{
@@ -668,16 +668,16 @@ namespace parka::validation
 		return new CallExpressionIr(function, std::move(arguments));
 	}
 
-	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalSymbolTable& symbolTable)
+	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalContext& context)
 	{
-		auto* condition = validateExpression(ast.condition(), symbolTable);
-		auto* thenCase = validateExpression(ast.thenCase(), symbolTable);
-		auto* elseCase = validateExpression(ast.elseCase(), symbolTable);
+		auto* condition = validateExpression(ast.condition(), context);
+		auto* thenCase = validateExpression(ast.thenCase(), context);
+		auto* elseCase = validateExpression(ast.elseCase(), context);
 
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateCast(TypeIr::boolType, *condition, symbolTable);
+		auto* castedCondition = validateCast(TypeIr::boolType, *condition, context);
 
 		if (!castedCondition)
 		{
@@ -685,12 +685,12 @@ namespace parka::validation
 			return {};
 		}
 
-		auto* castedElseCase = validateCast(thenCase->type(), *elseCase, symbolTable);
+		auto* castedElseCase = validateCast(thenCase->type(), *elseCase, context);
 
 		if (castedElseCase)
 			return new ConditionalExpressionIr(*castedCondition, *thenCase, *castedElseCase);
 
-		auto *castedThenCase = validateCast(elseCase->type(), *thenCase, symbolTable);
+		auto *castedThenCase = validateCast(elseCase->type(), *thenCase, context);
 
 		if (castedThenCase)
 			return new ConditionalExpressionIr(*castedCondition, *castedThenCase, *elseCase);
@@ -700,9 +700,9 @@ namespace parka::validation
 		return {};
 	}
 
-	IdentifierExpressionIr* validateIdentifierExpression(const IdentifierExpressionAst& ast, LocalSymbolTable& symbolTable)
+	IdentifierExpressionIr* validateIdentifierExpression(const IdentifierExpressionAst& ast, LocalContext& context)
 	{
-		auto *result = symbolTable.resolveSymbol(ast.identifier());
+		auto *result = context.resolveSymbol(ast.identifier());
 
 		if (!result)
 		{
@@ -713,15 +713,15 @@ namespace parka::validation
 		return new IdentifierExpressionIr(*result);
 	}
 
-	ExpressionIr* validateCastExpression(const CastExpressionAst& ast, LocalSymbolTable& symbolTable)
+	ExpressionIr* validateCastExpression(const CastExpressionAst& ast, LocalContext& context)
 	{
-		auto* expression = validateExpression(ast.expression(), symbolTable);
-		auto type = validateTypeAnnotation(ast.typeAnnotation(), symbolTable);
+		auto* expression = validateExpression(ast.expression(), context);
+		auto type = validateTypeAnnotation(ast.typeAnnotation(), context);
 
 		if (!expression || !type)
 			return {};
 
-		auto* castedValue = validateCast(*type, *expression, symbolTable);
+		auto* castedValue = validateCast(*type, *expression, context);
 
 		if (!castedValue)
 		{

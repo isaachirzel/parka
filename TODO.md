@@ -8,7 +8,6 @@
 - Prefix operators
 - Subscript operators
 - mut values and stopping modification of const values
-- Rename symboltable to context
 - Better separation of modules
 
 ## Longer Term

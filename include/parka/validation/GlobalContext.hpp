@@ -1,5 +1,5 @@
-#ifndef PARKA_VALIDATION_GLOBAL_SYMBOL_TABLE_HPP
-#define PARKA_VALIDATION_GLOBAL_SYMBOL_TABLE_HPP
+#ifndef PARKA_VALIDATION_GLOBAL_CONTEXT_HPP
+#define PARKA_VALIDATION_GLOBAL_CONTEXT_HPP
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
@@ -9,13 +9,13 @@
 #include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/validation/ConversionKey.hpp"
-#include "parka/validation/SymbolTable.hpp"
+#include "parka/validation/Context.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::validation
 {
-	class GlobalSymbolTable: public SymbolTable
+	class GlobalContext: public Context
 	{
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
@@ -26,9 +26,9 @@ namespace parka::validation
 
 	public:
 
-		GlobalSymbolTable(const ast::PackageAst& globalPackage);
-		GlobalSymbolTable(GlobalSymbolTable&&) = default;
-		GlobalSymbolTable(const GlobalSymbolTable&) = delete;
+		GlobalContext(const ast::PackageAst& globalPackage);
+		GlobalContext(GlobalContext&&) = default;
+		GlobalContext(const GlobalContext&) = delete;
 
 		FunctionEntry& addFunction(FunctionEntry&& entry);
 
@@ -41,8 +41,8 @@ namespace parka::validation
 		ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& to, const ir::TypeIr& from, AssignmentType assignmentType);
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		const String& scope() const { return _scope; }
-		SymbolTable* parent() { return nullptr; }
-		GlobalSymbolTable& globalSymbolTable() { return *this; }
+		Context* parent() { return nullptr; }
+		GlobalContext& globalContext() { return *this; }
 
 		auto& functions() { return _functions; }
 	};

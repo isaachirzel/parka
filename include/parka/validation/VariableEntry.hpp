@@ -20,7 +20,7 @@ namespace parka::validation
 
 		ir::VariableIr *resolve();
 
-		SymbolTable* symbolTable() { return nullptr; }
+		Context* context() { return nullptr; }
 		const auto& ast() const { return _ast; }
 		const ast::IdentifierAst& identifier() const { return _ast.identifier(); }
 		const String& name() const { return _ast.identifier().text(); }
