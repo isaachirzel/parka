@@ -18,10 +18,10 @@ namespace parka::ast
 	public:
 
 		PrototypeAst(const Snippet& snippet, IdentifierAst&& identifier, Array<ParameterAst*>&& parameters, Result<TypeAnnotationAst>&& returnType):
-		_snippet(snippet),
-		_identifier(std::move(identifier)),
-		_parameters(std::move(parameters)),
-		_returnType(std::move(returnType))
+			_snippet(snippet),
+			_identifier(std::move(identifier)),
+			_parameters(std::move(parameters)),
+			_returnType(std::move(returnType))
 		{}
 		PrototypeAst(PrototypeAst&&) = default;
 		PrototypeAst(const PrototypeAst&) = delete;
@@ -30,8 +30,6 @@ namespace parka::ast
 		const auto& identifier() const { return _identifier; }
 		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }
-
-		friend std::ostream& operator<<(std::ostream& out, const PrototypeAst& syntax);
 	};
 }
 

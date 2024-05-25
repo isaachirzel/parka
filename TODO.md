@@ -1,7 +1,6 @@
 # To Do
 
 ## Short Term
-- Conditional expressions
 - Call operators
 - intrinsic print function
 - Add "Potential Solution" and "Extra Information" logs
@@ -11,7 +10,6 @@
 - mut values and stopping modification of const values
 - Rename symboltable to context
 - Better separation of modules
-- Remove KeywordAst
 
 ## Longer Term
 - Unique, immutable TypeIr that are dynamically allocated so that type copies never need to take place. This allows also for operator keys and conversion keys

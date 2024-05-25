@@ -6,7 +6,6 @@
 #include "parka/ast/BoolLiteralAst.hpp"
 #include "parka/ast/BreakStatementAst.hpp"
 #include "parka/ast/CallExpressionAst.hpp"
-#include "parka/ast/CastExpressionAst.hpp"
 #include "parka/ast/CharLiteralAst.hpp"
 #include "parka/ast/ContinueStatementAst.hpp"
 #include "parka/ast/DeclarationStatementAst.hpp"
@@ -38,7 +37,7 @@ namespace parka::parser
 	ast::Ast parse(const Project& project);
 	bool parseSemicolon(Token& token, const char *message = "");
 	bool parseStatementSemicolon(Token& token);
-	Result<ast::KeywordAst> parseKeyword(Token& token);
+	Result<Snippet> parseKeyword(Token& token);
 	Result<ast::IdentifierAst> parseIdentifier(Token& token);
 	Result<ast::QualifiedIdentifierAst> parseQualifiedIdentifier(Token& token);
 	Result<ast::TypeAnnotationAst> parseTypeAnnotation(Token& token);

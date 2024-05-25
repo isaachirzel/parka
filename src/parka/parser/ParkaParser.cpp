@@ -65,7 +65,7 @@ namespace parka::parser
 		return parseSemicolon(token, "Statements must be ended with a ';'.");
 	}
 
-	Result<KeywordAst> parseKeyword(Token& token, KeywordType expected)
+	Result<Snippet> parseKeyword(Token& token, KeywordType expected)
 	{
 		auto type = toKeywordType(token.text());
 
@@ -75,11 +75,11 @@ namespace parka::parser
 			return {};
 		}
 
-		auto keyword = KeywordAst(token, type);
+		auto snippet = Snippet(token);
 
 		token.increment();
 
-		return keyword;
+		return snippet;
 	}
 
 	Result<IdentifierAst> parseIdentifier(Token& token)
@@ -937,22 +937,22 @@ namespace parka::parser
 		if (!keyword)
 			return {};
 
-		if (token.isSemicolon())
-		{
-			token.increment();
+		auto* value = (ExpressionAst*)nullptr;
 
-			return new ReturnStatementAst(*keyword);
+		if (!token.isSemicolon())
+		{
+			value = parseExpression(token);
+
+			if (!value)
+				return {};
 		}
 
-		auto* value = parseExpression(token);
-
-		if (!value)
-			return {};
+		auto snippet = *keyword + token;
 
 		if (!parseStatementSemicolon(token))
 			return {};
 
-		return new ReturnStatementAst(*keyword, *value);
+		return new ReturnStatementAst(snippet, value);
 	}
 
 	ast::BreakStatementAst* parseBreakStatement(Token& token)
@@ -1076,7 +1076,7 @@ namespace parka::parser
 		if (!body)
 			return {};
 
-		auto snippet = forKeyword->snippet() + body->snippet();
+		auto snippet = *forKeyword + body->snippet();
 		
 		return new ForStatementAst(snippet, *declaration, *condition, *action, *body);
 	}
@@ -1197,7 +1197,7 @@ namespace parka::parser
 		auto endSnippet = *elseCase
 			? (*elseCase)->snippet()
 			: thenCase->snippet();
-		auto snippet = ifKeyword->snippet() + endSnippet;
+		auto snippet = *ifKeyword + endSnippet;
 
 		return new IfStatementAst(snippet, *condition, *thenCase, *elseCase);
 	}
@@ -1372,7 +1372,7 @@ namespace parka::parser
 			end = annotation->snippet();
 		}
 
-		auto snippet = keyword->snippet() +  end;
+		auto snippet = *keyword +  end;
 		auto *syntax = new VariableAst(snippet, *identifier, false, std::move(annotation));
 
 		return syntax;
@@ -1475,7 +1475,7 @@ namespace parka::parser
 			end = returnType->snippet();
 		}
 
-		auto snippet = keyword->snippet() + end;
+		auto snippet = *keyword + end;
 		auto prototype = PrototypeAst(snippet, *identifier, std::move(parameters), std::move(returnType));
 
 		return prototype;
@@ -1622,7 +1622,7 @@ namespace parka::parser
 			}
 		}
 
-		auto snippet = keyword->snippet() + Snippet(token);
+		auto snippet = *keyword + Snippet(token);
 
 		token.increment();
 

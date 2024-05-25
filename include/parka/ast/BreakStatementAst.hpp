@@ -1,26 +1,25 @@
 #ifndef PARKA_AST_BREAK_STATEMENT_AST_HPP
 #define PARKA_AST_BREAK_STATEMENT_AST_HPP
 
-#include "parka/ast/KeywordAst.hpp"
 #include "parka/ast/StatementAst.hpp"
+#include "parka/file/Snippet.hpp"
 
 namespace parka::ast
 {
 	class BreakStatementAst: public StatementAst
 	{
-		KeywordAst _keyword;
+		Snippet _snippet;
 
 	public:
 
-		BreakStatementAst(KeywordAst&& keyword):
+		BreakStatementAst(const Snippet& snippet):
 			StatementAst(StatementType::Break),
-			_keyword(std::move(keyword))
+			_snippet(snippet)
 		{}
 		BreakStatementAst(BreakStatementAst&&) = default;
 		BreakStatementAst(const BreakStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _keyword.snippet(); }
-		const auto& keyword() const { return _keyword; }
+		const Snippet& snippet() const { return _snippet; }
 	};
 }
 
