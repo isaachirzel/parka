@@ -15,7 +15,6 @@
 - Unique, immutable TypeIr that are dynamically allocated so that type copies never need to take place. This allows also for operator keys and conversion keys
 - While loops
 - Regular loops
-- Do something with range ast
 - Structs
 - Member access expressions '.'
 - Indirection expression '->'

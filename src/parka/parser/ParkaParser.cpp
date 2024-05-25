@@ -1319,26 +1319,6 @@ namespace parka::parser
 		return annotation;
 	}
 
-	Result<ast::RangeAst> parseRange(Token& token)
-	{
-		auto start = parseExpression(token);
-
-		if (!start)
-			return {};
-
-		if (token.type() != TokenType::Range)
-			return RangeAst(*start); 
-
-		token.increment();
-
-		auto end = parseExpression(token);
-
-		if (!end)
-			return {};
-
-		return RangeAst(*start, *end);
-	}
-
 	VariableAst *parseVariable(Token& token)
 	{
 		// TODO: VariableAst mutability

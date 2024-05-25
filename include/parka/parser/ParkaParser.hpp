@@ -21,7 +21,6 @@
 #include "parka/ast/MemberAccessExpressionAst.hpp"
 #include "parka/ast/PrototypeAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
-#include "parka/ast/RangeAst.hpp"
 #include "parka/ast/ReturnStatementAst.hpp"
 #include "parka/ast/StatementAst.hpp"
 #include "parka/ast/StringLiteralAst.hpp"
@@ -41,7 +40,6 @@ namespace parka::parser
 	Result<ast::IdentifierAst> parseIdentifier(Token& token);
 	Result<ast::QualifiedIdentifierAst> parseQualifiedIdentifier(Token& token);
 	Result<ast::TypeAnnotationAst> parseTypeAnnotation(Token& token);
-	Result<ast::RangeAst> parseRange(Token& token);
 	ast::VariableAst *parseVariable(Token& token);
 	bool parseMutability(Token& token);
 	ast::FunctionAst *parseFunction(Token& token);
