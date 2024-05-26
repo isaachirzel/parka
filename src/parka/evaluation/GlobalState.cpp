@@ -10,9 +10,9 @@
 namespace parka::evaluation
 {
 	GlobalState::GlobalState():
-		_intrinsicBinaryOperators(getIntrinsicBinaryOperators()),
-		_intrinsicAssignmentOperators(getIntrinsicAssignmentOperators()),
-		_intrinsicConversions(getIntrinsicConversions())
+		_intrinsicBinaryOperators(),
+		_intrinsicAssignmentOperators(),
+		_intrinsicConversions()
 	{}
 
 	Value& GlobalState::add(ir::LValueIr *, const ir::TypeIr&)
@@ -28,34 +28,37 @@ namespace parka::evaluation
 
 	IntrinsicBinaryOperator GlobalState::getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const
 	{
-		auto key = validation::BinaryOperatorKey(left, right, binaryExpressionType);
-		auto* op = _intrinsicBinaryOperators.find(key);
+		log::notImplemented(here());
+		// auto key = validation::BinaryOperatorKey(left, right, binaryExpressionType);
+		// auto* op = _intrinsicBinaryOperators.find(key);
 
-		if (!op)
-			log::fatal("Unable to find intrinsic operator `$ $ $`.", left, binaryExpressionType, right);
+		// if (!op)
+		// 	log::fatal("Unable to find intrinsic operator `$ $ $`.", left, binaryExpressionType, right);
 
-		return *op;
+		// return *op;
 	}
 
 	IntrinsicAssignmentOperator GlobalState::getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const
 	{
-		auto key = validation::AssignmentOperatorKey(left, right, assignmentType);
-		auto* op = _intrinsicAssignmentOperators.find(key);
+		log::notImplemented(here());
+		// auto key = validation::AssignmentOperatorKey(left, right, assignmentType);
+		// auto* op = _intrinsicAssignmentOperators.find(key);
 
-		if (!op)
-			log::fatal("Unable to find intrinsic operator `$ $ $`.", left, assignmentType, right);
+		// if (!op)
+		// 	log::fatal("Unable to find intrinsic operator `$ $ $`.", left, assignmentType, right);
 
-		return *op;
+		// return *op;
 	}
 
 	IntrinsicConversion GlobalState::getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const
 	{
-		auto key = validation::ConversionKey(to, from);
-		auto* conversion = _intrinsicConversions.find(key);
+		log::notImplemented(here());
+		// auto key = validation::ConversionKey(to, from);
+		// auto* conversion = _intrinsicConversions.find(key);
 
-		if (!conversion)
-			log::fatal("Unable to find intrinsic conversion from `$` to `$`.", to, from);
+		// if (!conversion)
+		// 	log::fatal("Unable to find intrinsic conversion from `$` to `$`.", to, from);
 
-		return *conversion;
+		// return *conversion;
 	}
 }

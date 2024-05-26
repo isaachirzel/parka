@@ -3,7 +3,7 @@
 
 namespace parka::validation
 {
-	TypeKey::TypeKey(const ir::TypeBaseIr& typeBase):
+	TypeKey::TypeKey(const ir::TypeIr& typeBase):
 		_typeBase(&typeBase)
 	{}
 

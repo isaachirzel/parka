@@ -1,11 +1,12 @@
 #include "parka/validation/ConversionKey.hpp"
+#include "parka/ir/VoidPrimitiveIr.hpp"
 #include "parka/util/Hash.hpp"
 
 namespace parka::validation
 {
 	ConversionKey::ConversionKey():
-		_to(&ir::TypeIr::voidType),
-		_from(&ir::TypeIr::voidType)
+		_to(&ir::VoidPrimitiveIr::voidPrimitive),
+		_from(&ir::VoidPrimitiveIr::voidPrimitive)
 	{}
 
 	ConversionKey::ConversionKey(const ir::TypeIr& to, const ir::TypeIr& from):

@@ -2,11 +2,12 @@
 #define PARKA_IR_STRING_PRIMITIVE_IR_HPP
 
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/TypeBaseIr.hpp"
+#include "parka/ir/TypeIr.hpp"
+#include "parka/ir/TypeNameIr.hpp"
 
 namespace parka::ir
 {
-	class StringPrimitiveIr: public TypeBaseIr, public LValueIr
+	class StringPrimitiveIr: public TypeIr, public LValueIr
 	{
 		String _name;
 
@@ -22,7 +23,9 @@ namespace parka::ir
 
 	public:
 
-		const TypeIr& type() const { return TypeIr::typeNameType; }
+		std::ostream& printType(std::ostream& out) const;
+
+		const TypeIr& type() const { return TypeNameIr::typeNameType; }
 		const String& symbol() const { return _name; }
 	};
 }

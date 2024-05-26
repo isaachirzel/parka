@@ -10,20 +10,16 @@ namespace parka
 				out << "package";
 				break;
 
-			case ResolvableType::Struct:
-				out << "struct";
-				break;
-
 			case ResolvableType::Primitive:
 				out << "primitive";
 				break;
 
-			case ResolvableType::Function:
-				out << "function";
+			case ResolvableType::Struct:
+				out << "struct";
 				break;
 
-			case ResolvableType::IntrinsicFunction:
-				out << "intrinsic function";
+			case ResolvableType::Function:
+				out << "function";
 				break;
 
 			case ResolvableType::Variable:

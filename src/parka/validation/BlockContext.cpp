@@ -70,20 +70,4 @@ namespace parka::validation
 
 		return _parent.resolveSymbol(identifier);
 	}
-
-	ir::BinaryOperatorIr* BlockContext::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
-	{
-		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
-	}
-
-	ir::AssignmentOperatorIr* BlockContext::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
-	{
-		return _global.resolveAssignmentOperator(left, right, assignmentType);
-	}
-
-	Result<ir::ConversionIr*> BlockContext::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
-	{
-		return _global.resolveConversion(to, from);
-	}
-
 }

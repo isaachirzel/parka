@@ -8,4 +8,11 @@ namespace parka::ir
 		LValueIr(ResolvableType::Primitive),
 		_name(name)
 	{}
+
+	std::ostream& StringPrimitiveIr::printType(std::ostream& out) const
+	{
+		out << _name;
+
+		return out;
+	}
 }

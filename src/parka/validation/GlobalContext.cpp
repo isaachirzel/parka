@@ -20,9 +20,6 @@ namespace parka::validation
 		Context(ContextType::Global),
 		_scope(""),
 		_symbols(0),
-		_binaryOperators(ir::BinaryOperatorIr::getIntrinsicBinaryOperators()),
-		_conversions(ir::ConversionIr::getIntrinsicConversions()),
-		_assignmentOperators(ir::AssignmentOperatorIr::getIntrinsicAssignmentOperators()),
 		_functions(1'000'000),
 		_intrinsics(1'000)
 	{
@@ -127,43 +124,5 @@ namespace parka::validation
 			return entry->resolve();
 		
 		return {};
-	}
-
-	ir::BinaryOperatorIr* GlobalContext::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
-	{
-		auto key = BinaryOperatorKey(left, right, binaryExpressionType);
-
-		auto* op = _binaryOperators.find(key);
-
-		if (!op)
-			return {};
-
-		return *op;
-	}
-
-	ir::AssignmentOperatorIr* GlobalContext::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
-	{
-		auto key = AssignmentOperatorKey(left, right, assignmentType);
-		auto* op = _assignmentOperators.find(key);
-
-		if (!op)
-			return {};
-
-		return *op;
-	}
-
-	Result<ir::ConversionIr*> GlobalContext::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
-	{
-		if (from == to)
-			return nullptr;
-
-		auto key = ConversionKey(to, from);
-
-		auto** conversion = _conversions.find(key);
-
-		if (!conversion)
-			return {};
-
-		return *conversion;
 	}
 }

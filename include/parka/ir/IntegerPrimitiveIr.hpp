@@ -2,11 +2,12 @@
 #define PARKA_IR_INTEGER_PRIMITIVE_IR_HPP
 
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/TypeBaseIr.hpp"
+#include "parka/ir/TypeIr.hpp"
+#include "parka/ir/TypeNameIr.hpp"
 
 namespace parka::ir
 {
-	class IntegerPrimitiveIr: public TypeBaseIr, public LValueIr
+	class IntegerPrimitiveIr: public TypeIr, public LValueIr
 	{
 		String _name;
 		bool _isSigned;
@@ -14,6 +15,7 @@ namespace parka::ir
 
 	public:
 
+		static IntegerPrimitiveIr integerPrimitive;
 		static IntegerPrimitiveIr u8Primitive;
 		static IntegerPrimitiveIr u16Primitive;
 		static IntegerPrimitiveIr u32Primitive;
@@ -31,7 +33,9 @@ namespace parka::ir
 
 	public:
 
-		const TypeIr& type() const { return TypeIr::typeNameType; }
+		std::ostream& printType(std::ostream& out) const;
+
+		const TypeIr& type() const { return TypeNameIr::typeNameType; }
 		const String& symbol() const { return _name; }
 		const auto& isSigned() const { return _isSigned; }
 		const auto& size() const { return _size; }

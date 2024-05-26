@@ -2,17 +2,19 @@
 #define PARKA_IR_FLOAT_PRIMITIVE_IR_HPP
 
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/TypeBaseIr.hpp"
+#include "parka/ir/TypeIr.hpp"
+#include "parka/ir/TypeNameIr.hpp"
 
 namespace parka::ir
 {
-	class FloatPrimitiveIr: public TypeBaseIr, public LValueIr
+	class FloatPrimitiveIr: public TypeIr, public LValueIr
 	{
 		String _name;
 		u8 _size;
 
 	public:
 
+		static FloatPrimitiveIr floatPrimitive;
 		static FloatPrimitiveIr f32Primitive;
 		static FloatPrimitiveIr f64Primitive;
 
@@ -24,7 +26,9 @@ namespace parka::ir
 
 	public:
 
-		const TypeIr& type() const { return TypeIr::typeNameType; }
+		std::ostream& printType(std::ostream& out) const;
+
+		const TypeIr& type() const { return TypeNameIr::typeNameType; }
 		const String& symbol() const { return _name; }
 		const auto& size() const { return _size; }
 	};

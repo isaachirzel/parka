@@ -1,17 +1,17 @@
 #ifndef PARKA_VALIDATION_TYPE_KEY_HPP
 #define PARKA_VALIDATION_TYPE_KEY_HPP
 
-#include "parka/ir/TypeBaseIr.hpp"
+#include "parka/ir/TypeIr.hpp"
 
 namespace parka::validation
 {
 	class TypeKey
 	{
-		const ir::TypeBaseIr* _typeBase;
+		const ir::TypeIr* _typeBase;
 
 	public:
 
-		TypeKey(const ir::TypeBaseIr& typeBase);
+		TypeKey(const ir::TypeIr& typeBase);
 		TypeKey(TypeKey&&) = default;
 		TypeKey(const TypeKey&) = default;
 

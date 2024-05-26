@@ -4,12 +4,8 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
 #include "parka/enum/AssignmentType.hpp"
-#include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/validation/AssignmentOperatorKey.hpp"
-#include "parka/validation/BinaryOperatorKey.hpp"
-#include "parka/validation/ConversionKey.hpp"
 #include "parka/validation/Context.hpp"
 #include "parka/util/BigArray.hpp"
 #include "parka/util/FlatMap.hpp"
@@ -21,9 +17,6 @@ namespace parka::validation
 	{
 		String _scope;
 		FlatMap<String, Resolvable*> _symbols;
-		FlatMap<BinaryOperatorKey, ir::BinaryOperatorIr*> _binaryOperators;
-		FlatMap<ConversionKey, ir::ConversionIr*> _conversions;
-		FlatMap<AssignmentOperatorKey, ir::AssignmentOperatorIr*> _assignmentOperators;
 		BigArray<FunctionEntry> _functions;
 		BigArray<IntrinsicEntry> _intrinsics;
 
@@ -44,9 +37,6 @@ namespace parka::validation
 		ParameterEntry& declare(const ast::ParameterAst& ast);
 		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
 		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
-		ir::BinaryOperatorIr* resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right);
-		ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& to, const ir::TypeIr& from, AssignmentType assignmentType);
-		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		const String& scope() const { return _scope; }
 		Context* parent() { return nullptr; }
 		GlobalContext& globalContext() { return *this; }

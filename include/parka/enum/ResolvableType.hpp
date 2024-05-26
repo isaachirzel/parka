@@ -11,7 +11,6 @@ namespace parka
 		Primitive,
 		Struct,
 		Function,
-		IntrinsicFunction,
 		Variable,
 		Parameter,
 		Member

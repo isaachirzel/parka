@@ -1,17 +1,17 @@
-#ifndef PARKA_IR_TYPENAME_HPP
-#define PARKA_IR_TYPENAME_HPP
+#ifndef PARKA_IR_TYPE_IR_HPP
+#define PARKA_IR_TYPE_IR_HPP
 
 #include "parka/util/String.hpp"
 
 namespace parka::ir
 {
-	struct TypeBaseIr
+	struct TypeIr
 	{
-		virtual ~TypeBaseIr() {}
+		virtual ~TypeIr() {}
 		
 		virtual const String& symbol() const = 0;
 
-		friend std::ostream& operator<<(std::ostream& out, const TypeBaseIr& typeBase);
+		friend std::ostream& operator<<(std::ostream& out, const TypeIr& typeBase);
 	};
 }
 

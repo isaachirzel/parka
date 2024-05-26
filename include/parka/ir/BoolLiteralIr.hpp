@@ -1,6 +1,7 @@
 #ifndef PARKA_IR_BOOL_LITERAL_HPP
 #define PARKA_IR_BOOL_LITERAL_HPP
 
+#include "parka/ir/BoolPrimitiveIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 
 namespace parka::ir
@@ -18,7 +19,7 @@ namespace parka::ir
 		BoolLiteralIr(BoolLiteralIr&&) = default;
 		BoolLiteralIr(const BoolLiteralIr&) = delete;
 
-		const TypeIr& type() const { return TypeIr::boolType; }
+		const TypeIr& type() const { return BoolPrimitiveIr::boolPrimitive; }
 		const auto& value() const { return _value; }
 	};
 }

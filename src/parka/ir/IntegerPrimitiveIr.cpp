@@ -3,6 +3,7 @@
 
 namespace parka::ir
 {
+	IntegerPrimitiveIr IntegerPrimitiveIr::integerPrimitive("integer", true, 8);
 	IntegerPrimitiveIr IntegerPrimitiveIr::u8Primitive("u8", false, 1);
 	IntegerPrimitiveIr IntegerPrimitiveIr::u16Primitive("u16", false, 2);
 	IntegerPrimitiveIr IntegerPrimitiveIr::u32Primitive("u32", false, 4);
@@ -18,4 +19,11 @@ namespace parka::ir
 		_isSigned(isSigned),
 		_size(size)
 	{}
+
+	std::ostream& IntegerPrimitiveIr::printType(std::ostream& out) const
+	{
+		out << _name;
+
+		return out;
+	}
 }

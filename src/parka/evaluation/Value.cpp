@@ -36,7 +36,7 @@ namespace parka::evaluation
 
 	void Value::setValue(const Value& other)
 	{
-		assert(_type == other._type);
+		assert(&_type == &other._type);
 
 		setValue(other._value);
 	}

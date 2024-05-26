@@ -2,8 +2,8 @@
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ast/VariableAst.hpp"
-#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/LValueIr.hpp"
+#include "parka/ir/VoidPrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/validation/ParameterEntry.hpp"
@@ -21,7 +21,7 @@ namespace parka::validation
 		_symbols(),
 		_variables(),
 		_parameters(),
-		_returnType(&ir::TypeIr::voidType),
+		_returnType(&ir::VoidPrimitiveIr::voidPrimitive),
 		_isExplicitReturnType(false)
 	{}
 
@@ -99,20 +99,5 @@ namespace parka::validation
 			return symbol->resolve();
 
 		return _parent.resolveSymbol(identifier);
-	}
-
-	ir::BinaryOperatorIr* FunctionContext::resolveBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& left, const ir::TypeIr& right)
-	{
-		return _global.resolveBinaryOperator(binaryExpressionType, left, right);
-	}
-
-	ir::AssignmentOperatorIr* FunctionContext::resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType)
-	{
-		return _global.resolveAssignmentOperator(left, right, assignmentType);
-	}
-
-	Result<ir::ConversionIr*> FunctionContext::resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from)
-	{
-		return _global.resolveConversion(to, from);
 	}
 }
