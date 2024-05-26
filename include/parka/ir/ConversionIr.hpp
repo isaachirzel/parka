@@ -9,8 +9,8 @@ namespace parka::ir
 {
 	class ConversionIr
 	{
-		TypeIr _to;
-		TypeIr _from;
+		const TypeIr& _to;
+		const TypeIr& _from;
 
 	public:
 

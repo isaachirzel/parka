@@ -4,6 +4,7 @@
 #include "parka/ir/TypeBaseIr.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
+#include "parka/util/Set.hpp"
 
 
 namespace parka::ir
@@ -12,33 +13,39 @@ namespace parka::ir
 	{
 		const TypeBaseIr* _typeBase;
 
+	private:
+
+		static Set<TypeIr> _typeIrs;
+
 	public:
 
-		static const TypeIr packageType;
-		static const TypeIr functionType;
-		static const TypeIr typeNameType;
-		static const TypeIr voidType;
-		static const TypeIr integerType;
-		static const TypeIr floatType;
-		static const TypeIr u8Type;
-		static const TypeIr u16Type;
-		static const TypeIr u32Type;
-		static const TypeIr u64Type;
-		static const TypeIr i8Type;
-		static const TypeIr i16Type;
-		static const TypeIr i32Type;
-		static const TypeIr i64Type;
-		static const TypeIr f32Type;
-		static const TypeIr f64Type;
-		static const TypeIr boolType;
-		static const TypeIr charType;
-		static const TypeIr stringType;
+		static const TypeIr& packageType;
+		static const TypeIr& functionType;
+		static const TypeIr& typeNameType;
+		static const TypeIr& voidType;
+		static const TypeIr& integerType;
+		static const TypeIr& floatType;
+		static const TypeIr& u8Type;
+		static const TypeIr& u16Type;
+		static const TypeIr& u32Type;
+		static const TypeIr& u64Type;
+		static const TypeIr& i8Type;
+		static const TypeIr& i16Type;
+		static const TypeIr& i32Type;
+		static const TypeIr& i64Type;
+		static const TypeIr& f32Type;
+		static const TypeIr& f64Type;
+		static const TypeIr& boolType;
+		static const TypeIr& charType;
+		static const TypeIr& stringType;
 	
-	public:
+	private:
 
 		TypeIr(const TypeBaseIr& base);
 		TypeIr(TypeIr&&) = default;
 		TypeIr(const TypeIr&) = default;
+
+	public:
 
 		template <typename T>
 		static constexpr const ir::TypeIr& of()
@@ -93,17 +100,14 @@ namespace parka::ir
 
 		const auto& typeBase() const { return _typeBase; }
 
-		TypeIr& operator=(TypeIr&&);
-		TypeIr& operator=(const TypeIr&);
-
 		bool operator==(const TypeIr& other) const;
 		bool operator!=(const TypeIr& other) const;
 
 		friend std::ostream& operator<<(std::ostream& out, const TypeIr& type);
 
 		friend struct std::hash<TypeIr>;
+		friend class Set<TypeIr>;
 	};
-
 }
 
 template <>

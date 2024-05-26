@@ -9,22 +9,22 @@ namespace parka::ir
 	class VariableIr: public LValueIr
 	{
 		String _symbol;
-		TypeIr _type;
+		const TypeIr* _type;
 	
 	public:
 
-		VariableIr(String&& symbol, TypeIr&& type):
+		VariableIr(String&& symbol, const TypeIr& type):
 			LValueIr(ResolvableType::Variable),
 			_symbol(std::move(symbol)),
-			_type(std::move(type))
+			_type(&type)
 		{}
 		VariableIr(VariableIr&&) = default;
 		VariableIr(const VariableIr&) = delete;
 
-		void setType(const TypeIr& type) { _type = type; }
+		void setType(const TypeIr& type) { _type = &type; }
 
 		const String& symbol() const { return _symbol; }
-		const TypeIr& type() const { return _type; }
+		const TypeIr& type() const { return *_type; }
 	};
 }
 

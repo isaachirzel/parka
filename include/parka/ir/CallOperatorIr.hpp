@@ -7,13 +7,13 @@ namespace parka::ir
 {
 	class CallOperatorIr
 	{
-		TypeIr _returnType;
-		Array<TypeIr> _parameterTypes;
+		const TypeIr& _returnType;
+		Array<TypeIr*> _parameterTypes;
 
 	public:
 
-		CallOperatorIr(TypeIr&& returnType, Array<TypeIr>&& parameterTypes):
-			_returnType(std::move(returnType)),
+		CallOperatorIr(const TypeIr& returnType, Array<TypeIr*>&& parameterTypes):
+			_returnType(returnType),
 			_parameterTypes(std::move(parameterTypes))
 		{}
 		CallOperatorIr(CallOperatorIr&&) = default;

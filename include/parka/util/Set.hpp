@@ -1,7 +1,6 @@
 #ifndef PARKA_UTIL_SET_HPP
 #define PARKA_UTIL_SET_HPP
 
-#include "parka/util/Array.hpp"
 #include "parka/util/BigArray.hpp"
 #include "parka/util/Pool.hpp"
 #include "parka/util/TableUtil.hpp"

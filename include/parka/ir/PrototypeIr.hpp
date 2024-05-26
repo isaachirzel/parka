@@ -1,5 +1,5 @@
-#ifndef PARKA_IR_PROTOTYPE_HPP
-#define PARKA_IR_PROTOTYPE_HPP
+#ifndef PARKA_IR_PROTOTYPE_IR_HPP
+#define PARKA_IR_PROTOTYPE_IR_HPP
 
 #include "parka/ir/ParameterIr.hpp"
 #include "parka/util/Array.hpp"
@@ -9,21 +9,21 @@ namespace parka::ir
 	class PrototypeIr
 	{
 		Array<ParameterIr*> _parameters;
-		TypeIr _returnType;
+		const TypeIr* _returnType;
 
 	public:
 
-		PrototypeIr(Array<ParameterIr*>&& parameters, TypeIr&& returnType):
+		PrototypeIr(Array<ParameterIr*>&& parameters, const TypeIr& returnType):
 			_parameters(std::move(parameters)),
-			_returnType(std::move(returnType))
+			_returnType(&returnType)
 		{}
 		PrototypeIr(PrototypeIr&&) = default;
 		PrototypeIr(const PrototypeIr&) = delete;
 
-		void setReturnType(TypeIr&& type) { _returnType = std::move(type); }
+		void setReturnType(const TypeIr& type) { _returnType = &type; }
 
 		const auto& parameters() const { return _parameters; }
-		const auto& returnType() const { return _returnType; }
+		const auto& returnType() const { return *_returnType; }
 	};
 }
 

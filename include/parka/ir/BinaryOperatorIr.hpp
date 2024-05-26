@@ -10,9 +10,9 @@ namespace parka::ir
 {
 	class BinaryOperatorIr
 	{
-		TypeIr _leftType;
-		TypeIr _rightType;
-		TypeIr _returnType;
+		const TypeIr& _leftType;
+		const TypeIr& _rightType;
+		const TypeIr& _returnType;
 		BinaryExpressionType _binaryExpressionType;
 		
 	public:
@@ -21,7 +21,7 @@ namespace parka::ir
 
 	public:
 
-		BinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& lhs, const TypeIr& rhs, const TypeIr& returnType);
+		BinaryOperatorIr(BinaryExpressionType binaryExpressionType, const TypeIr& leftType, const TypeIr& rightType, const TypeIr& returnType);
 		BinaryOperatorIr(BinaryOperatorIr&&) = default;
 		BinaryOperatorIr(const BinaryOperatorIr&) = default;
 

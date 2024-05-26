@@ -8,8 +8,8 @@ namespace parka::validation
 {
 	class BinaryOperatorKey
 	{
-		ir::TypeIr _left;
-		ir::TypeIr _right;
+		const ir::TypeIr* _left;
+		const ir::TypeIr* _right;
 		BinaryExpressionType _binaryExpressionType;
 
 	public:

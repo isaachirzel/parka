@@ -2,6 +2,5 @@
 
 namespace parka::ir
 {
-	
-	IntrinsicFunctionIr IntrinsicFunctionIr::printFunction("print", PrototypeIr({}, TypeIr(TypeIr::voidType)));
+	IntrinsicFunctionIr IntrinsicFunctionIr::printFunction("print", PrototypeIr({}, TypeIr::voidType));
 }

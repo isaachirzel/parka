@@ -9,8 +9,8 @@ namespace parka::ir
 {
 	class AssignmentOperatorIr
 	{
-		ir::TypeIr _left;
-		ir::TypeIr _right;
+		const ir::TypeIr& _left;
+		const ir::TypeIr& _right;
 		AssignmentType _assignmentType;
 
 	public:

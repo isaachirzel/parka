@@ -1,15 +1,16 @@
 #include "parka/validation/ConversionKey.hpp"
+#include "parka/util/Hash.hpp"
 
 namespace parka::validation
 {
 	ConversionKey::ConversionKey():
-		_to(ir::TypeIr::voidType),
-		_from(ir::TypeIr::voidType)
+		_to(&ir::TypeIr::voidType),
+		_from(&ir::TypeIr::voidType)
 	{}
 
 	ConversionKey::ConversionKey(const ir::TypeIr& to, const ir::TypeIr& from):
-		_to(to),
-		_from(from)
+		_to(&to),
+		_from(&from)
 	{}
 
 	bool ConversionKey::operator==(const ConversionKey& other) const
@@ -20,7 +21,5 @@ namespace parka::validation
 
 std::size_t std::hash<parka::validation::ConversionKey>::operator()(const parka::validation::ConversionKey& key) const
 {
-	auto typeHasher = std::hash<parka::ir::TypeIr>();
-
-	return typeHasher(key._to) ^ typeHasher(key._from);
+	return parka::hashNumber((size_t)key._to ^ (size_t)key._from);
 }

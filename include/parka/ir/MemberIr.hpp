@@ -1,21 +1,19 @@
-#ifndef PARKA_IR_MEMBER_HPP
-#define PARKA_IR_MEMBER_HPP
+#ifndef PARKA_IR_MEMBER_IR_HPP
+#define PARKA_IR_MEMBER_IR_HPP
 
-#include "parka/ir/AssignableIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/ValueIr.hpp"
 
 namespace parka::ir
 {
 	class MemberIr: public LValueIr
 	{
-		TypeIr _type;
+		const TypeIr& _type;
 
 	public:
 
-		MemberIr(TypeIr&& TypeIr):
+		MemberIr(TypeIr& TypeIr):
 			LValueIr(ResolvableType::Member),
-			_type(std::move(TypeIr))
+			_type(TypeIr)
 		{}
 		MemberIr(MemberIr&&) = default;
 		MemberIr(const MemberIr&) = delete;

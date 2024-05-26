@@ -7,8 +7,8 @@ namespace parka::validation
 {
 	class ConversionKey
 	{
-		ir::TypeIr _to;
-		ir::TypeIr _from;
+		const ir::TypeIr* _to;
+		const ir::TypeIr* _from;
 
 	public:
 
@@ -20,7 +20,6 @@ namespace parka::validation
 		ConversionKey& operator=(const ConversionKey&) = default;
 
 		bool operator==(const ConversionKey& other) const;
-
 
 		friend struct std::hash<ConversionKey>;
 	};

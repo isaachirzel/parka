@@ -9,7 +9,7 @@ namespace parka::evaluation
 {
 	class Value
 	{
-		ir::TypeIr _type;
+		const ir::TypeIr& _type;
 		u64 _value;
 		const ir::LValueIr* _nodePtr;
 

@@ -62,7 +62,7 @@ namespace parka::validation
 	ir::ParameterIr* validateParameter(const ast::ParameterAst& ast, FunctionContext& context);
 	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionContext& context);
 	ir::VariableIr* validateVariable(const ast::VariableAst& ast, LocalContext& context);
-	Result<ir::TypeIr> validateTypeAnnotation(const ast::TypeAnnotationAst& ast, Context& context);
+	const ir::TypeIr* validateTypeAnnotation(const ast::TypeAnnotationAst& ast, Context& context);
 	ir::StatementIr* validateStatement(const ast::StatementAst& statement, LocalContext& context);
 	ir::DeclarationStatementIr* validateDeclarationStatement(const ast::DeclarationStatementAst& ast, LocalContext& context);
 	ir::ExpressionStatementIr* validateExpressionStatement(const ast::ExpressionStatementAst& ast, LocalContext& context);

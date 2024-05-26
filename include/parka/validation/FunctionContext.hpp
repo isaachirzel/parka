@@ -24,7 +24,7 @@ namespace parka::validation
 		FlatMap<String, Resolvable*> _symbols;
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
-		ir::TypeIr _returnType;
+		const ir::TypeIr* _returnType;
 		bool _isExplicitReturnType;
 
 	public:
@@ -45,8 +45,8 @@ namespace parka::validation
 		ir::AssignmentOperatorIr* resolveAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType);
 		Result<ir::ConversionIr*> resolveConversion(const ir::TypeIr& to, const ir::TypeIr& from);
 		
-		void setReturnType(const ir::TypeIr& type) { _returnType = type; }
-		const ir::TypeIr& returnType() const { return _returnType; }
+		void setReturnType(const ir::TypeIr& type) { _returnType = &type; }
+		const ir::TypeIr& returnType() const { return *_returnType; }
 		void setIsExplicitReturnType(bool value) { _isExplicitReturnType = value; }
 		const auto& isExplicitReturnType() const { return _isExplicitReturnType; }
 		const String& scope() const { return _scope; }

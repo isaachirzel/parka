@@ -5,14 +5,14 @@
 namespace parka::validation
 {
 	BinaryOperatorKey::BinaryOperatorKey():
-		_left(ir::TypeIr::voidType),
-		_right(ir::TypeIr::voidType),
+		_left(&ir::TypeIr::voidType),
+		_right(&ir::TypeIr::voidType),
 		_binaryExpressionType(BinaryExpressionType::Add)
 	{}
 
 	BinaryOperatorKey::BinaryOperatorKey(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType):
-		_left(left),
-		_right(right),
+		_left(&left),
+		_right(&right),
 		_binaryExpressionType(binaryExpressionType)
 	{}
 
@@ -24,8 +24,5 @@ namespace parka::validation
 
 std::size_t std::hash<parka::validation::BinaryOperatorKey>::operator()(const parka::validation::BinaryOperatorKey& key) const
 {
-	// TODO: Idk lol figure out how to hash the enum
-	auto typeHasher = std::hash<parka::ir::TypeIr>();
-
-	return typeHasher(key._left) ^ typeHasher(key._right) ^ parka::hashNumber((size_t)key._binaryExpressionType);
+	return parka::hashNumber((size_t)key._left) ^ parka::hashNumber((size_t)key._right) ^ parka::hashNumber((size_t)key._binaryExpressionType);
 }

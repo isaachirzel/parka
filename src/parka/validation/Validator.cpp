@@ -117,18 +117,18 @@ namespace parka::validation
 		return new CastExpressionIr(expression, **conversion);
 	}
 
-	static Result<TypeIr> validateDefaultType(const TypeIr& type)
+	static const TypeIr* validateDefaultType(const TypeIr& type)
 	{
 		// TODO: Optimize?
 		if (type == TypeIr::integerType)
-			return TypeIr::i32Type;
+			return &TypeIr::i32Type;
 
 		if (type == TypeIr::floatType)
-			return TypeIr::f64Type;
+			return &TypeIr::f64Type;
 
 		// TODO: struct type that can fail
 
-		return type;
+		return &type;
 	}
 
 	Result<Ir> validateAst(const Ast& ast)
@@ -197,7 +197,7 @@ namespace parka::validation
 			parameters.push(parameter);
 		}
 
-		auto returnType = TypeIr::voidType;
+		const auto* returnType = &TypeIr::voidType;
 
 		if (prototype.returnType())
 		{
@@ -206,8 +206,9 @@ namespace parka::validation
 			if (!returnTypeAnnotation)
 				return {};
 
-			returnType = *returnTypeAnnotation;
-			context.setReturnType(returnType);
+			returnType = returnTypeAnnotation;
+
+			context.setReturnType(*returnType);
 		}
 
 		context.setIsExplicitReturnType(!!prototype.returnType());
@@ -215,7 +216,7 @@ namespace parka::validation
 		if (parameters.length() != prototype.parameters().length())
 			return {};
 
-		return PrototypeIr(std::move(parameters), std::move(returnType));
+		return PrototypeIr(std::move(parameters), *returnType);
 	}
 
 	ParameterIr *validateParameter(const ParameterAst& ast, FunctionContext& context)
@@ -262,7 +263,7 @@ namespace parka::validation
 		auto identifier = ast.identifier().text();
 
 		if (!ast.annotation())
-			return new VariableIr(std::move(identifier), TypeIr(TypeIr::voidType));
+			return new VariableIr(std::move(identifier), TypeIr::voidType);
 
 		auto annotationType = validateTypeAnnotation(*ast.annotation(), context);
 
@@ -272,7 +273,7 @@ namespace parka::validation
 		return new VariableIr(std::move(identifier), *annotationType);
 	}
 
-	Result<TypeIr> validateTypeAnnotation(const TypeAnnotationAst& ast, Context& context)
+	const TypeIr* validateTypeAnnotation(const TypeAnnotationAst& ast, Context& context)
 	{
 		auto *resolution = context.resolveSymbol(ast.identifier());
 
@@ -292,7 +293,8 @@ namespace parka::validation
 			return {};
 		}
 
-		return TypeIr(*typeBase);
+		log::notImplemented(here());
+		// return typeBase;
 	}
 
 	StatementIr *validateStatement(const StatementAst& ast, LocalContext& context)
