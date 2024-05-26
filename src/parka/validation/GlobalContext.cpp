@@ -1,13 +1,17 @@
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
+#include "parka/ir/BoolPrimitiveIr.hpp"
+#include "parka/ir/CharPrimitiveIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
-#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/FloatPrimitiveIr.hpp"
+#include "parka/ir/IntegerPrimitiveIr.hpp"
+#include "parka/ir/StringPrimitiveIr.hpp"
+#include "parka/ir/VoidPrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/validation/FunctionEntry.hpp"
-#include "parka/validation/IntrinsicFunction.hpp"
 #include <stdexcept>
 
 namespace parka::validation
@@ -19,17 +23,23 @@ namespace parka::validation
 		_binaryOperators(ir::BinaryOperatorIr::getIntrinsicBinaryOperators()),
 		_conversions(ir::ConversionIr::getIntrinsicConversions()),
 		_assignmentOperators(ir::AssignmentOperatorIr::getIntrinsicAssignmentOperators()),
-		_functions(),
-		_intrinsicFunctions()
+		_functions(1'000'000),
+		_intrinsics(1'000)
 	{
-		addIntrinsicFunctions(_intrinsicFunctions, _symbols);
-
-		for (usize i = 0; i < ir::PrimitiveIr::entryCount; ++i)
-		{
-			auto* primitive = ir::PrimitiveIr::entries[i];
-
-			_symbols.insert(primitive->name(), primitive);
-		}
+		addIntrinsic(ir::VoidPrimitiveIr::voidPrimitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::u8Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::u16Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::u32Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::u64Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::i8Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::i16Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::i32Primitive);
+		addIntrinsic(ir::IntegerPrimitiveIr::i64Primitive);
+		addIntrinsic(ir::FloatPrimitiveIr::f32Primitive);
+		addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
+		addIntrinsic(ir::CharPrimitiveIr::charPrimitive);
+		addIntrinsic(ir::BoolPrimitiveIr::boolPrimitive);
+		addIntrinsic(ir::StringPrimitiveIr::stringPrimitive);
 
 		for (auto& mod : globalPackage.modules())
 		{
@@ -38,6 +48,13 @@ namespace parka::validation
 				declare(*function);
 			}
 		}
+	}
+
+	void GlobalContext::addIntrinsic(ir::LValueIr& intrinsic)
+	{
+		auto& entry = _intrinsics.push(IntrinsicEntry(intrinsic));
+		
+		_symbols.insert(intrinsic.symbol(), &entry);
 	}
 
 	FunctionEntry& GlobalContext::addFunction(FunctionEntry&& entry)

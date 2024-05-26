@@ -42,5 +42,6 @@ function main(): i32
 {
 	//print();
 
+	//return fibonacci(15);
 	return 0;
 }

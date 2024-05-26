@@ -619,56 +619,58 @@ namespace parka::validation
 
 		// TODO: Implement call expression operators
 
-		if (subject->expressionType != ExpressionType::Identifier)
-		{
-			log::error(ast.subject().snippet(), "Unable to call expression as function.");
-			return {};
-		}
+		log::notImplemented(here());
 
-		auto& reference = static_cast<IdentifierExpressionIr&>(*subject);
-		auto& lvalue = reference.value();
+		// if (subject->expressionType != ExpressionType::Identifier)
+		// {
+		// 	log::error(ast.subject().snippet(), "Unable to call expression as function.");
+		// 	return {};
+		// }
 
-		if (lvalue.resolvableType != ResolvableType::Function)
-		{
-			log::error(ast.subject().snippet(), "Unable to call $ as function.", lvalue.resolvableType);
-			return {};
-		}
+		// auto& reference = static_cast<IdentifierExpressionIr&>(*subject);
+		// auto& lvalue = reference.value();
 
-		auto& function = static_cast<const FunctionIr&>(lvalue);
-		auto& prototype = function.prototype();
+		// if (lvalue.resolvableType != ResolvableType::Function)
+		// {
+		// 	log::error(ast.subject().snippet(), "Unable to call $ as function.", lvalue.resolvableType);
+		// 	return {};
+		// }
 
-		if (prototype.parameters().length() != ast.arguments().length())
-		{
-			log::error(ast.snippet(), "This function takes $ argument(s) but $ were given.", prototype.parameters().length(), ast.arguments().length());
-			return {};
-		}
+		// auto& function = static_cast<const FunctionIr&>(lvalue);
+		// auto& prototype = function.prototype();
 
-		auto arguments = Array<ArgumentIr>(ast.arguments().length());
+		// if (prototype.parameters().length() != ast.arguments().length())
+		// {
+		// 	log::error(ast.snippet(), "This function takes $ argument(s) but $ were given.", prototype.parameters().length(), ast.arguments().length());
+		// 	return {};
+		// }
 
-		for (usize i = 0; i < ast.arguments().length(); ++i)
-		{
-			auto& valueAst = *ast.arguments()[i];
-			auto& parameter = *prototype.parameters()[i];
-			auto* value = validateExpression(valueAst, context);
+		// auto arguments = Array<ArgumentIr>(ast.arguments().length());
 
-			if (!value)
-				continue;
+		// for (usize i = 0; i < ast.arguments().length(); ++i)
+		// {
+		// 	auto& valueAst = *ast.arguments()[i];
+		// 	auto& parameter = *prototype.parameters()[i];
+		// 	auto* value = validateExpression(valueAst, context);
 
-			auto* castedValue = validateCast(parameter.type(), *value, context);
+		// 	if (!value)
+		// 		continue;
 
-			if (!castedValue)
-			{
-				log::error(valueAst.snippet(), "Parameter $ calls for $ but $ was passed in.", parameter.symbol(), parameter.type(), value->type());
-				continue;
-			}
+		// 	auto* castedValue = validateCast(parameter.type(), *value, context);
 
-			arguments.push(ArgumentIr(*castedValue));
-		}
+		// 	if (!castedValue)
+		// 	{
+		// 		log::error(valueAst.snippet(), "Parameter $ calls for $ but $ was passed in.", parameter.symbol(), parameter.type(), value->type());
+		// 		continue;
+		// 	}
+
+		// 	arguments.push(ArgumentIr(*castedValue));
+		// }
 		
-		if (arguments.length() != ast.arguments().length())
-			return {};
+		// if (arguments.length() != ast.arguments().length())
+		// 	return {};
 
-		return new CallExpressionIr(function, std::move(arguments));
+		// return new CallExpressionIr(function, std::move(arguments));
 	}
 
 	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalContext& context)

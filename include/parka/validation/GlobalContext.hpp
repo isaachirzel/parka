@@ -4,15 +4,16 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
 #include "parka/enum/AssignmentType.hpp"
+#include "parka/enum/ResolvableType.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/validation/ConversionKey.hpp"
 #include "parka/validation/Context.hpp"
-#include "parka/util/Array.hpp"
+#include "parka/util/BigArray.hpp"
 #include "parka/util/FlatMap.hpp"
-#include "parka/validation/IntrinsicFunctionEntry.hpp"
+#include "parka/validation/IntrinsicEntry.hpp"
 
 namespace parka::validation
 {
@@ -23,8 +24,12 @@ namespace parka::validation
 		FlatMap<BinaryOperatorKey, ir::BinaryOperatorIr*> _binaryOperators;
 		FlatMap<ConversionKey, ir::ConversionIr*> _conversions;
 		FlatMap<AssignmentOperatorKey, ir::AssignmentOperatorIr*> _assignmentOperators;
-		Array<FunctionEntry> _functions;
-		Array<IntrinsicFunctionEntry> _intrinsicFunctions;
+		BigArray<FunctionEntry> _functions;
+		BigArray<IntrinsicEntry> _intrinsics;
+
+	private:
+
+		void addIntrinsic(ir::LValueIr& intrinsic);
 
 	public:
 

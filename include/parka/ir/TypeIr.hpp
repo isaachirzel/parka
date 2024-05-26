@@ -7,11 +7,14 @@
 #include "parka/util/Set.hpp"
 
 
+// ConstPtrTypeBase?
+// MutPtrTypeBase?
+
 namespace parka::ir
 {
 	class TypeIr
 	{
-		const TypeBaseIr* _typeBase;
+		const TypeBaseIr& _typeBase;
 
 	private:
 
