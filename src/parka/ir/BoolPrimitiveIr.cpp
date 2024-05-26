@@ -13,6 +13,7 @@ namespace parka::ir
 	BinaryOperatorIr booleanAndBinaryOperator(BinaryExpressionType::BooleanAnd, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive);
 
 	BoolPrimitiveIr::BoolPrimitiveIr(const char *name):
+		TypeIr(TypeCategory::Bool),
 		LValueIr(ResolvableType::Primitive),
 		_name(name)
 	{}

@@ -5,6 +5,7 @@ namespace parka::ir
 	VoidPrimitiveIr VoidPrimitiveIr::voidPrimitive("void");
 
 	VoidPrimitiveIr::VoidPrimitiveIr(const char *name):
+		TypeIr(TypeCategory::Void),
 		LValueIr(ResolvableType::Primitive),
 		_name(name)
 	{}

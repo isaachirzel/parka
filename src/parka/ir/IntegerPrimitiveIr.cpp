@@ -8,6 +8,10 @@ namespace parka::ir
 
 	ConversionIr i32Conversion(I32PrimitiveIr::instance, IntegerPrimitiveIr::instance);
 
+	IntegerPrimitiveIr::IntegerPrimitiveIr():
+		TypeIr(TypeCategory::Integer)
+	{}
+
 	ConversionIr* IntegerPrimitiveIr::getConversion(const TypeIr& toType) const
 	{
 		if (&toType == &I32PrimitiveIr::instance)

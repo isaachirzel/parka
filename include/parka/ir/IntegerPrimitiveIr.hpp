@@ -13,7 +13,7 @@ namespace parka::ir
 
 	private:
 	
-		IntegerPrimitiveIr() = default;
+		IntegerPrimitiveIr();
 		IntegerPrimitiveIr(IntegerPrimitiveIr&&) = default;
 		IntegerPrimitiveIr(const IntegerPrimitiveIr&) = delete;
 

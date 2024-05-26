@@ -5,6 +5,7 @@ namespace parka::ir
 	CharPrimitiveIr CharPrimitiveIr::charPrimitive("char");
 
 	CharPrimitiveIr::CharPrimitiveIr(const char *name):
+		TypeIr(TypeCategory::Char),
 		LValueIr(ResolvableType::Primitive),
 		_name(name)
 	{}

@@ -5,6 +5,7 @@ namespace parka::ir
 	TypeNameIr TypeNameIr::instance;
 
 	TypeNameIr::TypeNameIr():
+		TypeIr(TypeCategory::TypeName),
 		_symbol("type name")
 	{}
 

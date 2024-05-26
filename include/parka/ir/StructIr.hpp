@@ -12,6 +12,7 @@ namespace parka::ir
 	public:
 
 		StructIr(String&& symbol):
+			TypeIr(TypeCategory::Struct),
 			LValueIr(ResolvableType::Struct),
 			_symbol(std::move(symbol))
 		{}

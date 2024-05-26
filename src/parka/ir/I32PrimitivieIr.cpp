@@ -5,6 +5,7 @@ namespace parka::ir
 	I32PrimitiveIr I32PrimitiveIr::instance;
 
 	I32PrimitiveIr::I32PrimitiveIr():
+		TypeIr(TypeCategory::I32),
 		LValueIr(ResolvableType::Primitive),
 		_symbol("i32")
 	{}

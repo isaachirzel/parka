@@ -2,6 +2,7 @@
 #define PARKA_IR_TYPE_IR_HPP
 
 #include "parka/enum/BinaryExpressionType.hpp"
+#include "parka/enum/TypeCategory.hpp"
 
 namespace parka::ir
 {
@@ -10,6 +11,11 @@ namespace parka::ir
 
 	struct TypeIr
 	{
+		const TypeCategory typeCategory;
+
+		TypeIr(TypeCategory typeCategory):
+			typeCategory(typeCategory)
+		{}
 		virtual~TypeIr() {}
 
 		virtual ConversionIr* getConversion(const TypeIr&) const { return nullptr; }

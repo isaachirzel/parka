@@ -23,6 +23,7 @@ namespace parka::ir
 
 		FunctionIr(String&& symbol, PrototypeIr&& prototype):
 			LValueIr(ResolvableType::Function),
+			TypeIr(TypeCategory::Function),
 			_symbol(std::move(symbol)),
 			_prototype(std::move(prototype)),
 			_body(),
@@ -30,6 +31,7 @@ namespace parka::ir
 		{}
 		FunctionIr(String&& symbol, PrototypeIr&& prototype, Optional<FunctionBodyIr>&& body):
 			LValueIr(ResolvableType::Function),
+			TypeIr(TypeCategory::Function),
 			_symbol(std::move(symbol)),
 			_prototype(std::move(prototype)),
 			_body(std::move(body)),
