@@ -36,7 +36,6 @@ namespace parka::evaluation
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
 	{
-
 		usize previousReturnValueIndex = state.getReturnValueIndex();
 		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
 		usize index = state.getScopeIndex();

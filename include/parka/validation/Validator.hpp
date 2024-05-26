@@ -1,5 +1,5 @@
-#ifndef PARKA_VALIDATOR_VALIDATOR_HPP
-#define PARKA_VALIDATOR_VALIDATOR_HPP
+#ifndef PARKA_VALIDATION_VALIDATOR_HPP
+#define PARKA_VALIDATION_VALIDATOR_HPP
 
 #include "parka/ast/AssignmentStatementAst.hpp"
 #include "parka/ast/Ast.hpp"

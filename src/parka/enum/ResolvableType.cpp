@@ -22,6 +22,10 @@ namespace parka
 				out << "function";
 				break;
 
+			case ResolvableType::IntrinsicFunction:
+				out << "intrinsic function";
+				break;
+
 			case ResolvableType::Variable:
 				out << "variable";
 				break;

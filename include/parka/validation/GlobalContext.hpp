@@ -12,6 +12,7 @@
 #include "parka/validation/Context.hpp"
 #include "parka/util/Array.hpp"
 #include "parka/util/FlatMap.hpp"
+#include "parka/validation/IntrinsicFunctionEntry.hpp"
 
 namespace parka::validation
 {
@@ -23,6 +24,7 @@ namespace parka::validation
 		FlatMap<ConversionKey, ir::ConversionIr*> _conversions;
 		FlatMap<AssignmentOperatorKey, ir::AssignmentOperatorIr*> _assignmentOperators;
 		Array<FunctionEntry> _functions;
+		Array<IntrinsicFunctionEntry> _intrinsicFunctions;
 
 	public:
 

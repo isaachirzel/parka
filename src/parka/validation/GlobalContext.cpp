@@ -7,6 +7,7 @@
 #include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/validation/FunctionEntry.hpp"
+#include "parka/validation/IntrinsicFunction.hpp"
 #include <stdexcept>
 
 namespace parka::validation
@@ -14,12 +15,15 @@ namespace parka::validation
 	GlobalContext::GlobalContext(const ast::PackageAst& globalPackage):
 		Context(ContextType::Global),
 		_scope(""),
-		_symbols(),
+		_symbols(0),
 		_binaryOperators(ir::BinaryOperatorIr::getIntrinsicBinaryOperators()),
 		_conversions(ir::ConversionIr::getIntrinsicConversions()),
 		_assignmentOperators(ir::AssignmentOperatorIr::getIntrinsicAssignmentOperators()),
-		_functions()
+		_functions(),
+		_intrinsicFunctions()
 	{
+		addIntrinsicFunctions(_intrinsicFunctions, _symbols);
+
 		for (usize i = 0; i < ir::PrimitiveIr::entryCount; ++i)
 		{
 			auto* primitive = ir::PrimitiveIr::entries[i];

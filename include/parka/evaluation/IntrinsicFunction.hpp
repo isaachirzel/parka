@@ -7,8 +7,9 @@
 namespace parka::evaluation
 {
 	typedef Value& (*IntrinsicFunction)(const Array<Value*>& values);
-
+	
 	
 }
 
 #endif
+1
