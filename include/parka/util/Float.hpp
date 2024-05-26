@@ -40,6 +40,7 @@ namespace parka
 
 		explicit operator f32() const { return _value; }
 		explicit operator f64() const { return _value; }
+		operator bool() const { return _value != 0.0; }
 
 		friend std::ostream& operator<<(std::ostream& out, const Float& number);
 	};

@@ -62,6 +62,7 @@ namespace parka
 		explicit operator u16() const;
 		explicit operator u32() const;
 		explicit operator u64() const;
+		operator bool() const;
 
 		friend std::ostream& operator<<(std::ostream& out, const Integer integer);
 	};
