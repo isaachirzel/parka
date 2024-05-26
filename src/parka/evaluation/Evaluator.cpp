@@ -699,11 +699,78 @@ namespace parka::evaluation
 		op(left, right);
 	}
 
-	Value& evaluateConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	template <typename To, typename From>
+	Value& evaluateIntrinsicConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
 	{
-		auto conversion = state.getConversion(ir.to(), ir.from());
-		auto& value = conversion(to, from);
+		auto result = (To)from.getValue<From>();
+		auto& value = state.pushValue(ir.to());
+
+		value.setValue<To>(result);
 
 		return value;
+	}
+
+	template <typename To>
+	Value& evaluateIntrinsicIntegerConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	{
+		if (ir.from().typeCategory != TypeCategory::Integer)
+			log::fatal("Unable to evaluate conversion `($)$`.", ir.to(), ir.from());
+
+		return evaluateIntrinsicConversion<To, Integer>(ir, to, from, state);
+	}
+
+	template <typename To>
+	Value& evaluateIntrinsicFloatConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	{
+		if (ir.from().typeCategory != TypeCategory::Float)
+			log::fatal("Unable to evaluate conversion `($)$`.", ir.to(), ir.from());
+
+		return evaluateIntrinsicConversion<To, Float>(ir, to, from, state);
+	}
+
+	Value& evaluateIntrinsicConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	{
+		switch (ir.to().typeCategory)
+		{
+			case TypeCategory::I8:
+				return evaluateIntrinsicIntegerConversion<i8>(ir, to, from, state);
+				
+			case TypeCategory::I16:
+				return evaluateIntrinsicIntegerConversion<i16>(ir, to, from, state);
+
+			case TypeCategory::I32:
+				return evaluateIntrinsicIntegerConversion<i32>(ir, to, from, state);
+
+			case TypeCategory::I64:
+				return evaluateIntrinsicIntegerConversion<i64>(ir, to, from, state);
+
+			case TypeCategory::U8:
+				return evaluateIntrinsicIntegerConversion<u8>(ir, to, from, state);
+
+			case TypeCategory::U16:
+				return evaluateIntrinsicIntegerConversion<u16>(ir, to, from, state);
+
+			case TypeCategory::U32:
+				return evaluateIntrinsicIntegerConversion<u32>(ir, to, from, state);
+
+			case TypeCategory::U64:
+				return evaluateIntrinsicIntegerConversion<u64>(ir, to, from, state);
+
+			case TypeCategory::F32:
+				return evaluateIntrinsicIntegerConversion<f32>(ir, to, from, state);
+
+			case TypeCategory::F64:
+				return evaluateIntrinsicIntegerConversion<f64>(ir, to, from, state);
+
+			default:
+				break;
+		}
+		
+		log::fatal("Unable to evaluate conversion `($)$`.", ir.to(), ir.from());
+	}
+
+	Value& evaluateConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	{
+		return evaluateIntrinsicConversion(ir, to, from, state);
 	}
 }
