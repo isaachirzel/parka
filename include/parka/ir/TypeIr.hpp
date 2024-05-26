@@ -2,17 +2,9 @@
 #define PARKA_IR_TYPE_HPP
 
 #include "parka/ir/TypeBaseIr.hpp"
-#include "parka/validation/TypeKey.hpp"
-#include "parka/util/FlatMap.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
 
-// { is const, is reference
-
-// {}
-/*
-
-*/
 
 namespace parka::ir
 {
@@ -104,8 +96,9 @@ namespace parka::ir
 		TypeIr& operator=(TypeIr&&);
 		TypeIr& operator=(const TypeIr&);
 
-		friend bool operator==(const TypeIr& left, const TypeIr& right);
-		friend bool operator!=(const TypeIr& left, const TypeIr& right);
+		bool operator==(const TypeIr& other) const;
+		bool operator!=(const TypeIr& other) const;
+
 		friend std::ostream& operator<<(std::ostream& out, const TypeIr& type);
 
 		friend struct std::hash<TypeIr>;

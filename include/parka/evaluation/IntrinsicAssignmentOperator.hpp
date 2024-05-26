@@ -1,6 +1,7 @@
 #ifndef PARKA_EVALUATION_INTRINSIC_ASSIGNMENT_OPERATOR_HPP
 #define PARKA_EVALUATION_INTRINSIC_ASSIGNMENT_OPERATOR_HPP
 
+#include "parka/util/FlatMap.hpp"
 #include "parka/validation/AssignmentOperatorKey.hpp"
 
 namespace parka::evaluation

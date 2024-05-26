@@ -47,14 +47,14 @@ namespace parka::ir
 		return *this;
 	}
 
-	bool operator==(const TypeIr& left, const TypeIr& right)
+	bool TypeIr::operator==(const TypeIr& other) const
 	{
-		return left._typeBase == right._typeBase;
+		return _typeBase == other._typeBase;
 	}
 
-	bool operator!=(const TypeIr& left, const TypeIr& right)
+	bool TypeIr::operator!=(const TypeIr& right) const
 	{
-		return !(left == right);
+		return !(*this == right);
 	}
 	
 	std::ostream& operator<<(std::ostream& out, const TypeIr& type)
