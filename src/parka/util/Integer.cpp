@@ -182,11 +182,6 @@ namespace parka
 		return (u64)_value;
 	}
 
-	Integer::operator bool() const
-	{
-		return _value != 0;
-	}
-
 	std::ostream& operator<<(std::ostream& out, const Integer integer)
 	{
 		out << integer._value;

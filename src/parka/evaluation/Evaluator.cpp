@@ -1,5 +1,6 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/enum/AssignmentType.hpp"
+#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/enum/TypeCategory.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
@@ -19,6 +20,7 @@
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
 #include <stdexcept>
+#include <type_traits>
 
 using namespace parka::ir;
 
@@ -374,7 +376,7 @@ namespace parka::evaluation
 	}
 
 	template <typename Left, typename Right, typename Return>
-	Return executeBinaryOperation(BinaryExpressionType binaryExpressionType, Left l, Right r)
+	Return executeIntegerBinaryOperation(BinaryExpressionType binaryExpressionType, Left l, Right r)
 	{
 		switch (binaryExpressionType)
 		{
@@ -426,20 +428,112 @@ namespace parka::evaluation
 			case BinaryExpressionType::NotEquals:
 				return Return(l != (Left)r);
 
-			case BinaryExpressionType::BooleanOr:
-				return Return((bool)l || (bool)r);
-
-			case BinaryExpressionType::BooleanAnd:
-				return Return((bool)l && (bool)r);
+			default:
+				break;
 		}
 
 		log::fatal("Binary operator `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
 	}
 
 	template <typename Left, typename Right, typename Return>
+	Return executeFloatBinaryOperation(BinaryExpressionType binaryExpressionType, Left l, Right r)
+	{
+		switch (binaryExpressionType)
+		{
+			case BinaryExpressionType::Add:
+				return Return(l + (Left)r);
+
+			case BinaryExpressionType::Subtract:
+				return Return(l - (Left)r);
+
+			case BinaryExpressionType::Multiply:
+				return Return(l * (Left)r);
+
+			case BinaryExpressionType::Divide:
+				return Return(l / (Left)r);
+
+			case BinaryExpressionType::LessThan:
+				if constexpr (std::is_same_v<Return, bool>)
+					return Return(l < Left(r));
+				break;
+
+			case BinaryExpressionType::GreaterThan:
+				if constexpr (std::is_same_v<Return, bool>)
+					return Return(l > Left(r));
+				break;
+
+			case BinaryExpressionType::LessThanOrEqualTo:
+				if constexpr (std::is_same_v<Return, bool>)
+					return Return(l <= Left(r));
+
+			case BinaryExpressionType::GreaterThanOrEqualTo:
+				if constexpr (std::is_same_v<Return, bool>)
+					return Return(l >= Left(r));
+				break;
+
+			case BinaryExpressionType::Equals:
+				if constexpr (std::is_same_v<Return, bool>)
+					return Return(l == Left(r));
+				break;
+
+			case BinaryExpressionType::NotEquals:
+				if constexpr (std::is_same_v<Return, bool>)
+					return Return(l != Left(r));
+				break;
+
+			default:
+				break;
+		}
+
+		log::fatal("Binary operator `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+	}
+
+	template <typename Left, typename Right, typename Return>
+	Return executeCharBinaryOperation(BinaryExpressionType binaryExpressionType, Left l, Right r)
+	{
+		switch (binaryExpressionType)
+		{
+			case BinaryExpressionType::Equals:
+				return Return(l == (Left)r);
+
+			case BinaryExpressionType::NotEquals:
+				return Return(l != (Left)r);
+
+			default:
+				break;
+		}
+
+		log::fatal("Binary operator `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+	}
+
+	template <typename Left, typename Right, typename Return>
+	Return executeBoolBinaryOperation(BinaryExpressionType binaryExpressionType, Left l, Right r)
+	{
+		switch (binaryExpressionType)
+		{
+			case BinaryExpressionType::Equals:
+				return Return(l == (Left)r);
+
+			case BinaryExpressionType::NotEquals:
+				return Return(l != (Left)r);
+
+			case BinaryExpressionType::BooleanOr:
+				return Return(l || r);
+
+			case BinaryExpressionType::BooleanAnd:
+				return Return(l && r);
+
+			default:
+				break;
+		}
+
+		log::fatal("Binary operator `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+	}
+
+	template <typename Left, typename Right, typename Return, Return (*operation) (BinaryExpressionType, Left, Right)>
 	Value& evaluateIntrinsicBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		auto returnValue = executeBinaryOperation<Left, Right, Return>(ir.binaryExpressionType(), left.getValue<Left>(), right.getValue<Right>());
+		auto returnValue = operation(ir.binaryExpressionType(), left.getValue<Left>(), right.getValue<Right>());
 		auto& value = state.pushValue(ir.returnType());
 
 		value.setValue<Return>(returnValue);
@@ -450,7 +544,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right, typename Return>
 	Value& evaluateIntrinsicIntegerBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		return evaluateIntrinsicBinaryOperator<Left, Right, Return>(ir, left, right, state);
+		return evaluateIntrinsicBinaryOperator<Left, Right, Return, executeIntegerBinaryOperation>(ir, left, right, state);
 	}
 
 	template <typename Left, typename Right>
@@ -534,7 +628,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right, typename Return>
 	Value& evaluateIntrinsicFloatBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		return evaluateBinaryOperator(ir, left, right, state);
+		return evaluateIntrinsicBinaryOperator<Left, Right, Return, executeFloatBinaryOperation>(ir, left, right, state);
 	}
 
 	template <typename Left, typename Right>
@@ -579,6 +673,11 @@ namespace parka::evaluation
 		log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 	}
 
+	template <typename Left, typename Right, typename Return>
+	Value& evaluateIntrinsicBoolBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
+	{
+		return evaluateIntrinsicBinaryOperator<Left, Right, Return, executeBoolBinaryOperation>(ir, left, right, state);
+	}
 
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicBoolBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
@@ -586,7 +685,7 @@ namespace parka::evaluation
 		if (ir.returnType().typeCategory != TypeCategory::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
-		return evaluateIntrinsicBinaryOperator<Left, Right, bool>(ir, left, right, state);
+		return evaluateIntrinsicBoolBinaryOperator<Left, Right, bool>(ir, left, right, state);
 	}
 
 	template <typename Left>
@@ -598,13 +697,19 @@ namespace parka::evaluation
 		return evaluateIntrinsicBoolBinaryOperator<Left, bool>(ir, left, right, state);
 	}
 
+	template <typename Left, typename Right, typename Return>
+	Value& evaluateIntrinsicCharBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
+	{
+		return evaluateIntrinsicBinaryOperator<Left, Right, Return, executeCharBinaryOperation>(ir, left, right, state);
+	}
+
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicCharBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
 		if (ir.returnType().typeCategory != TypeCategory::Char)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
-		return evaluateIntrinsicBinaryOperator<Left, Right, char>(ir, left, right, state);
+		return evaluateIntrinsicCharBinaryOperator<Left, Right, char>(ir, left, right, state);
 	}
 
 	template <typename Left>
@@ -613,16 +718,13 @@ namespace parka::evaluation
 		if (ir.rightType().typeCategory != TypeCategory::Char)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
-		return evaluateIntrinsicCharBinaryOperator<Left, bool>(ir, left, right, state);
+		return evaluateIntrinsicCharBinaryOperator<Left, char>(ir, left, right, state);
 	}
 
 	Value& evaluateIntrinsicBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
 		switch (ir.leftType().typeCategory)
 		{
-			// case TypeCategory::Void:
-			// 	break;
-
 			case TypeCategory::Integer:
 				return evaluateIntrinsicIntegerBinaryOperator<Integer>(ir, left, right, state);
 
@@ -665,21 +767,6 @@ namespace parka::evaluation
 			case TypeCategory::Char:
 				return evaluateIntrinsicCharBinaryOperator<char>(ir, left, right, state);
 
-			// case TypeCategory::String:
-			// 	return evaluateIntrinsicWithLeft<>(ir, left, right, state);
-
-			// case TypeCategory::Function:
-			// 	return evaluateIntrinsicWithLeft<>(ir, left, right, state);
-
-			// case TypeCategory::Package:
-			// 	break;
-
-			// case TypeCategory::TypeName:
-			// 	break;
-
-			// case TypeCategory::Struct:
-			// 	return evaluateIntrinsicWithLeft<>(ir, left, right, state);
-
 			default:
 				break;
 		}
@@ -700,77 +787,76 @@ namespace parka::evaluation
 	}
 
 	template <typename To, typename From>
-	Value& evaluateIntrinsicConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	Value& evaluateIntrinsicConversion(Value& to, Value& from)
 	{
 		auto result = (To)from.getValue<From>();
-		auto& value = state.pushValue(ir.to());
 
-		value.setValue<To>(result);
+		to.setValue<To>(result);
 
-		return value;
+		return to;
 	}
 
 	template <typename To>
-	Value& evaluateIntrinsicIntegerConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	Value& evaluateIntrinsicIntegerConversion(Value& to, Value& from)
 	{
-		if (ir.from().typeCategory != TypeCategory::Integer)
-			log::fatal("Unable to evaluate conversion `($)$`.", ir.to(), ir.from());
+		if (from.type().typeCategory != TypeCategory::Integer)
+			log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
 
-		return evaluateIntrinsicConversion<To, Integer>(ir, to, from, state);
+		return evaluateIntrinsicConversion<To, Integer>(to, from);
 	}
 
 	template <typename To>
-	Value& evaluateIntrinsicFloatConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	Value& evaluateIntrinsicFloatConversion(Value& to, Value& from)
 	{
-		if (ir.from().typeCategory != TypeCategory::Float)
-			log::fatal("Unable to evaluate conversion `($)$`.", ir.to(), ir.from());
+		if (from.type().typeCategory != TypeCategory::Float)
+			log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
 
-		return evaluateIntrinsicConversion<To, Float>(ir, to, from, state);
+		return evaluateIntrinsicConversion<To, Float>(to, from);
 	}
 
-	Value& evaluateIntrinsicConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	Value& evaluateIntrinsicConversion(Value& to, Value& from)
 	{
-		switch (ir.to().typeCategory)
+		switch (to.type().typeCategory)
 		{
 			case TypeCategory::I8:
-				return evaluateIntrinsicIntegerConversion<i8>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<i8>(to, from);
 				
 			case TypeCategory::I16:
-				return evaluateIntrinsicIntegerConversion<i16>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<i16>(to, from);
 
 			case TypeCategory::I32:
-				return evaluateIntrinsicIntegerConversion<i32>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<i32>(to, from);
 
 			case TypeCategory::I64:
-				return evaluateIntrinsicIntegerConversion<i64>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<i64>(to, from);
 
 			case TypeCategory::U8:
-				return evaluateIntrinsicIntegerConversion<u8>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<u8>(to, from);
 
 			case TypeCategory::U16:
-				return evaluateIntrinsicIntegerConversion<u16>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<u16>(to, from);
 
 			case TypeCategory::U32:
-				return evaluateIntrinsicIntegerConversion<u32>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<u32>(to, from);
 
 			case TypeCategory::U64:
-				return evaluateIntrinsicIntegerConversion<u64>(ir, to, from, state);
+				return evaluateIntrinsicIntegerConversion<u64>(to, from);
 
 			case TypeCategory::F32:
-				return evaluateIntrinsicIntegerConversion<f32>(ir, to, from, state);
+				return evaluateIntrinsicFloatConversion<f32>(to, from);
 
 			case TypeCategory::F64:
-				return evaluateIntrinsicIntegerConversion<f64>(ir, to, from, state);
+				return evaluateIntrinsicFloatConversion<f64>(to, from);
 
 			default:
 				break;
 		}
 		
-		log::fatal("Unable to evaluate conversion `($)$`.", ir.to(), ir.from());
+		log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
 	}
 
-	Value& evaluateConversion(const ir::ConversionIr& ir, Value& to, Value& from, LocalState& state)
+	Value& evaluateConversion(const ir::ConversionIr&, Value& to, Value& from, LocalState&)
 	{
-		return evaluateIntrinsicConversion(ir, to, from, state);
+		return evaluateIntrinsicConversion(to, from);
 	}
 }

@@ -41,7 +41,7 @@ function notImplemented();
 */
 function main(): i32
 {
-	if true == true
+	if true == false
 		return 1;
 	
 	return 0;
