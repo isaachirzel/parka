@@ -293,8 +293,9 @@ namespace parka::validation
 			return {};
 		}
 
-		log::notImplemented(here());
-		// return typeBase;
+		auto& type = TypeIr::of(*typeBase);
+	
+		return &type;
 	}
 
 	StatementIr *validateStatement(const StatementAst& ast, LocalContext& context)

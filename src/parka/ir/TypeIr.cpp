@@ -2,6 +2,7 @@
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/DummyTypeBaseIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
+#include "parka/log/Log.hpp"
 #include "parka/util/Hash.hpp"
 #include "parka/util/Print.hpp"
 
@@ -33,19 +34,9 @@ namespace parka::ir
 		_typeBase(&typeBase)
 	{}
 
-	TypeIr& TypeIr::operator=(TypeIr&& other)
+	const TypeIr& TypeIr::of(const TypeBaseIr& typeBase)
 	{
-		_typeBase = other._typeBase;
-
-		return *this;
-	}
-
-	TypeIr& TypeIr::operator=(const TypeIr& other)
-	{
-
-		_typeBase = other._typeBase;
-
-		return *this;
+		return _typeIrs.insert(TypeIr(typeBase));
 	}
 
 	bool TypeIr::operator==(const TypeIr& other) const

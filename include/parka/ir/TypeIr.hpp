@@ -98,6 +98,10 @@ namespace parka::ir
 			throw std::runtime_error("Invalid type.");
 		}
 
+		static const TypeIr& of(const TypeBaseIr& typeBase);
+
+	public:
+
 		const auto& typeBase() const { return _typeBase; }
 
 		bool operator==(const TypeIr& other) const;

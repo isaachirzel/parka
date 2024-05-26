@@ -40,7 +40,7 @@ function notImplemented();
 
 function main(): i32
 {
-	print();
+	//print();
 
-	return a;
+	return 0;
 }
