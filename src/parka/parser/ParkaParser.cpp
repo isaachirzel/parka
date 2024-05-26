@@ -896,6 +896,14 @@ namespace parka::parser
 
 	ExpressionAst *parseConditionalExpression(Token& token)
 	{
+		auto first = token;
+		auto ifKeywordType = token.getKeywordType();
+
+		if (ifKeywordType != KeywordType::If)
+			return parseBooleanOrExpression(token);
+
+		token.increment();
+
 		auto condition = parseBooleanOrExpression(token);
 
 		auto thenKeywordType = token.getKeywordType();
@@ -905,9 +913,9 @@ namespace parka::parser
 
 		token.increment();
 
-		auto* trueCase = parseConditionalExpression(token);
+		auto* thenCase = parseConditionalExpression(token);
 
-		if (!trueCase)
+		if (!thenCase)
 			return {};
 
 		auto elseKeywordType = token.getKeywordType();
@@ -920,12 +928,13 @@ namespace parka::parser
 
 		token.increment();
 
-		auto falseCase = parseConditionalExpression(token);
+		auto elseCase = parseConditionalExpression(token);
 
-		if (!falseCase)
+		if (!elseCase)
 			return {};
 
-		auto *syntax = new ConditionalExpressionAst(*condition, *trueCase, *falseCase);
+		auto snippet = Snippet(first) + elseCase->snippet();
+		auto *syntax = new ConditionalExpressionAst(snippet, *condition, *thenCase, *elseCase);
 
 		return syntax;
 	}
