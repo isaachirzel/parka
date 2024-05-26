@@ -1,6 +1,8 @@
 #ifndef PARKA_IR_CALL_OPERATOR_IR_HPP
 #define PARKA_IR_CALL_OPERATOR_IR_HPP
 
+#include "parka/ir/TypeIr.hpp"
+#include "parka/util/Array.hpp"
 namespace parka::ir
 {
 	class CallOperatorIr

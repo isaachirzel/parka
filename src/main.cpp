@@ -83,3 +83,10 @@ validation lock:
 	Maybe having the prototype TypeIr as part of the function entry is a good idea?
 	I'm not sure how setting the function ir in the identifier expression afterwards will work?
 */
+
+
+/*
+getOperators(Type);
+
+*/
+

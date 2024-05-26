@@ -5,7 +5,7 @@
 
 namespace parka
 {
-	class Threadpool
+	class ThreadPool
 	{
 		static usize getThreadCount(void);
 	};

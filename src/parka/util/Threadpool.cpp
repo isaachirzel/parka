@@ -1,10 +1,10 @@
-#include "parka/util/Threadpool.hpp"
+#include "parka/util/ThreadPool.hpp"
 
 #include <thread>
 
 namespace parka
 {
-	usize Threadpool::getThreadCount()
+	usize ThreadPool::getThreadCount()
 	{
 		return std::thread::hardware_concurrency();
 	}
