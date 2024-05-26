@@ -5,6 +5,7 @@
 #include "parka/ir/CharPrimitiveIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/FloatPrimitiveIr.hpp"
+#include "parka/ir/I32PrimitiveIr.hpp"
 #include "parka/ir/IntegerPrimitiveIr.hpp"
 #include "parka/ir/StringPrimitiveIr.hpp"
 #include "parka/ir/VoidPrimitiveIr.hpp"
@@ -24,14 +25,14 @@ namespace parka::validation
 		_intrinsics(1'000)
 	{
 		addIntrinsic(ir::VoidPrimitiveIr::voidPrimitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::u8Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::u16Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::u32Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::u64Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::i8Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::i16Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::i32Primitive);
-		addIntrinsic(ir::IntegerPrimitiveIr::i64Primitive);
+		// addIntrinsic(ir::IntegerPrimitiveIr::u8Primitive);
+		// addIntrinsic(ir::IntegerPrimitiveIr::u16Primitive);
+		// addIntrinsic(ir::IntegerPrimitiveIr::u32Primitive);
+		// addIntrinsic(ir::IntegerPrimitiveIr::u64Primitive);
+		// addIntrinsic(ir::IntegerPrimitiveIr::i8Primitive);
+		// addIntrinsic(ir::IntegerPrimitiveIr::i16Primitive);
+		addIntrinsic(ir::I32PrimitiveIr::instance);
+		// addIntrinsic(ir::IntegerPrimitiveIr::i64Primitive);
 		addIntrinsic(ir::FloatPrimitiveIr::f32Primitive);
 		addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
 		addIntrinsic(ir::CharPrimitiveIr::charPrimitive);

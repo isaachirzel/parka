@@ -14,10 +14,6 @@ namespace parka::ir
 
 	public:
 
-		static FlatMap<validation::ConversionKey, ConversionIr*> getIntrinsicConversions();
-
-	public:
-
 		ConversionIr(const TypeIr& to, const TypeIr& from);
 		ConversionIr(ConversionIr&&) = default;
 		ConversionIr(const ConversionIr&) = default;

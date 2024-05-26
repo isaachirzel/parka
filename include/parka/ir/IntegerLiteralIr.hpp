@@ -19,7 +19,7 @@ namespace parka::ir
 
 		const auto& value() const { return _value; }
 		const auto& size() const { return _size; }
-		const TypeIr& type() const { return IntegerPrimitiveIr::integerPrimitive; }
+		const TypeIr& type() const { return IntegerPrimitiveIr::instance; }
 	};
 }
 

@@ -28,7 +28,7 @@ namespace parka::ir
 
 		std::ostream& printType(std::ostream& out) const;
 
-		const TypeIr& type() const { return TypeNameIr::typeNameType; }
+		const TypeIr& type() const { return TypeNameIr::instance; }
 		const String& symbol() const { return _name; }
 		const auto& size() const { return _size; }
 	};

@@ -10,15 +10,15 @@ namespace parka::ir
 	{
 		String _symbol;
 
+	public:
+
+		static TypeNameIr instance;
+
 	private:
 
 		TypeNameIr();
 		TypeNameIr(TypeNameIr&&) = default;
 		TypeNameIr(const TypeNameIr&) = delete;
-
-	public:
-
-		static TypeNameIr typeNameType;
 
 	public:
 

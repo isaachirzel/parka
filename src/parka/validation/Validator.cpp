@@ -28,6 +28,7 @@
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/ir/FunctionIr.hpp"
+#include "parka/ir/I32PrimitiveIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/IntegerPrimitiveIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
@@ -98,9 +99,9 @@ namespace parka::validation
 
 		auto& returnType = ir.prototype().returnType();
 
-		if (&returnType != &IntegerPrimitiveIr::i32Primitive && &returnType != &VoidPrimitiveIr::voidPrimitive)
+		if (&returnType != &I32PrimitiveIr::instance && &returnType != &VoidPrimitiveIr::voidPrimitive)
 		{
-			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", IntegerPrimitiveIr::i32Primitive, VoidPrimitiveIr::voidPrimitive);
+			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", I32PrimitiveIr::instance, VoidPrimitiveIr::voidPrimitive);
 			success = false;
 		}
 
@@ -109,27 +110,27 @@ namespace parka::validation
 
 	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, Context& context)
 	{
-		log::notImplemented(here());
-		// const auto& expressionType = expression.type();
-		// auto conversion = context.resolveConversion(toType, expressionType);
+		const auto& expressionType = expression.type();
 
-		// if (!conversion)
-		// 	return {};
+		if (&toType == &expressionType)
+			return &expression;
 
-		// if (!*conversion)
-		// 	return &expression;
+		auto* conversion = expressionType.getConversion(toType);
 
-		// return new CastExpressionIr(expression, **conversion);
+		if (!conversion)
+			return {};
+
+		return new CastExpressionIr(expression, *conversion);
 	}
 
 	static const TypeIr* validateDefaultType(const TypeIr& type)
 	{
 		// TODO: Optimize?
-		if (&type == &IntegerPrimitiveIr::integerPrimitive)
-			return &IntegerPrimitiveIr::i32Primitive;
+		if (&type == &IntegerPrimitiveIr::instance)
+			return &I32PrimitiveIr::instance;
 
-		if (&type == &FloatPrimitiveIr::floatPrimitive)
-			return &FloatPrimitiveIr::f64Primitive;
+		// if (&type == &FloatPrimitiveIr::floatPrimitive)
+		// 	return &FloatPrimitiveIr::f64Primitive;
 
 		// TODO: struct type that can fail
 
@@ -593,28 +594,26 @@ namespace parka::validation
 
 	BinaryExpressionIr* validateBinaryExpression(const BinaryExpressionAst& ast, LocalContext& context)
 	{
-		log::notImplemented(here());
+		auto *lhs = validateExpression(ast.lhs(), context);
+		auto *rhs = validateExpression(ast.rhs(), context);
 
-		// auto *lhs = validateExpression(ast.lhs(), context);
-		// auto *rhs = validateExpression(ast.rhs(), context);
+		if (!lhs || !rhs)
+			return {};
 
-		// if (!lhs || !rhs)
-		// 	return {};
+		const auto& lhsType = lhs->type();
+		const auto& rhsType = rhs->type();
 
-		// const auto& lhsType = lhs->type();
-		// const auto& rhsType = rhs->type();
+		auto* op = lhsType.getBinaryOperator(ast.binaryExpressionType(), rhsType);
 
-		// auto *op = context.resolveBinaryOperator(ast.binaryExpressionType(), lhsType, rhsType);
+		if (!op)
+		{
+			log::error(ast.snippet(), "No operator `$ $ $` has been defined.", lhsType, ast.binaryExpressionType(), rhsType);
+			return {};
+		}
 
-		// if (!op)
-		// {
-		// 	log::error(ast.snippet(), "No operator `$ $ $` has been defined.", lhsType, ast.binaryExpressionType(), rhsType);
-		// 	return {};
-		// }
+		auto result = new BinaryExpressionIr(*lhs, *rhs, *op);
 
-		// auto result = new BinaryExpressionIr(*lhs, *rhs, *op);
-
-		// return result;
+		return result;
 	}
 
 	CallExpressionIr* validateCallExpression(const CallExpressionAst& ast, LocalContext& context)

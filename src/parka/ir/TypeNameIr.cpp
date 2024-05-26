@@ -2,7 +2,7 @@
 
 namespace parka::ir
 {
-	TypeNameIr TypeNameIr::typeNameType;
+	TypeNameIr TypeNameIr::instance;
 
 	TypeNameIr::TypeNameIr():
 		_symbol("type name")

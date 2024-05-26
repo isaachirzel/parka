@@ -3,8 +3,6 @@
 
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/validation/BinaryOperatorKey.hpp"
-#include "parka/util/FlatMap.hpp"
 
 namespace parka::ir
 {
@@ -14,10 +12,6 @@ namespace parka::ir
 		const TypeIr& _rightType;
 		const TypeIr& _returnType;
 		BinaryExpressionType _binaryExpressionType;
-		
-	public:
-
-		static FlatMap<validation::BinaryOperatorKey, BinaryOperatorIr*> getIntrinsicBinaryOperators();
 
 	public:
 
