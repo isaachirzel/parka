@@ -28,8 +28,8 @@ namespace parka::validation
 		// addIntrinsic(ir::IntegerPrimitiveIr::i64Primitive);
 		// addIntrinsic(ir::FloatPrimitiveIr::f32Primitive);
 		// addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
-		addIntrinsic(ir::CharPrimitiveIr::charPrimitive);
-		addIntrinsic(ir::BoolPrimitiveIr::boolPrimitive);
+		addIntrinsic(ir::CharPrimitiveIr::instance);
+		addIntrinsic(ir::BoolPrimitiveIr::instance);
 		addIntrinsic(ir::StringPrimitiveIr::stringPrimitive);
 
 		for (auto& mod : globalPackage.modules())

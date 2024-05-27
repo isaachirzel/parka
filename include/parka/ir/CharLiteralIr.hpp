@@ -20,7 +20,7 @@ namespace parka::ir
 		CharLiteralIr(const CharLiteralIr&) = delete;
 
 
-		const TypeIr& type() const { return CharPrimitiveIr::charPrimitive; }
+		const TypeIr& type() const { return CharPrimitiveIr::instance; }
 		const auto& value() const { return _value; }
 	};
 }

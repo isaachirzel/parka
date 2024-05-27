@@ -5,17 +5,17 @@
 
 namespace parka::ir
 {
-	BoolPrimitiveIr BoolPrimitiveIr::boolPrimitive("bool");
+	BoolPrimitiveIr BoolPrimitiveIr::instance;
 
-	BinaryOperatorIr equalsBinaryOperator(BinaryExpressionType::Equals, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive);
-	BinaryOperatorIr notEqualsBinaryOperator(BinaryExpressionType::NotEquals, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive);
-	BinaryOperatorIr booleanOrBinaryOperator(BinaryExpressionType::BooleanOr, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive);
-	BinaryOperatorIr booleanAndBinaryOperator(BinaryExpressionType::BooleanAnd, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive, BoolPrimitiveIr::boolPrimitive);
+	BinaryOperatorIr equalsBinaryOperator(BinaryExpressionType::Equals, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance);
+	BinaryOperatorIr notEqualsBinaryOperator(BinaryExpressionType::NotEquals, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance);
+	BinaryOperatorIr booleanOrBinaryOperator(BinaryExpressionType::BooleanOr, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance);
+	BinaryOperatorIr booleanAndBinaryOperator(BinaryExpressionType::BooleanAnd, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance, BoolPrimitiveIr::instance);
 
-	BoolPrimitiveIr::BoolPrimitiveIr(const char *name):
+	BoolPrimitiveIr::BoolPrimitiveIr():
 		TypeIr(TypeCategory::Bool),
 		LValueIr(ResolvableType::Primitive),
-		_name(name)
+		_symbol("bool")
 	{}
 
 	ConversionIr* BoolPrimitiveIr::getConversion(const TypeIr&) const
@@ -25,7 +25,7 @@ namespace parka::ir
 
 	BinaryOperatorIr* BoolPrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& rhs) const
 	{
-		if (&rhs != &boolPrimitive)
+		if (&rhs != &instance)
 			return nullptr;
 
 		switch (binaryExpressionType)
@@ -51,7 +51,7 @@ namespace parka::ir
 
 	std::ostream& BoolPrimitiveIr::printType(std::ostream& out) const
 	{
-		out << _name;
+		out << _symbol;
 
 		return out;
 	}

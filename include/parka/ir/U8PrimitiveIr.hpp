@@ -1,0 +1,31 @@
+#ifndef PARKA_IR_U8_PRIMITIVE_IR_HPP
+#define PARKA_IR_U8_PRIMITIVE_IR_HPP
+
+#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/TypeNameIr.hpp"
+
+namespace parka::ir
+{
+	class U8PrimitiveIr: public TypeIr, public LValueIr
+	{
+		String _symbol;
+
+	public:
+
+		static U8PrimitiveIr instance;
+
+	private:
+
+		U8PrimitiveIr();
+		U8PrimitiveIr(U8PrimitiveIr&&) = delete;
+		U8PrimitiveIr(const U8PrimitiveIr&) = delete;
+
+	public:
+
+		std::ostream& printType(std::ostream& out) const;
+		const String& symbol() const { return _symbol; }
+		const TypeIr& type() const { return TypeNameIr::instance; }
+	};
+}
+
+#endif

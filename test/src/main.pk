@@ -48,8 +48,8 @@ function main(): i32
 		else factorial(5);
 	*/
 	
-	var a: i32 = 7;
-	var b = a * 5;
+	var a: i32 = 5;
+	var b = a * 5 * 5;
 
-	return a;
+	return b;
 }

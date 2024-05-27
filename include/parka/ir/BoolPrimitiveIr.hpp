@@ -10,15 +10,15 @@ namespace parka::ir
 {
 	class BoolPrimitiveIr: public TypeIr, public LValueIr
 	{
-		String _name;
+		String _symbol;
 
 	public:
 
-		static BoolPrimitiveIr boolPrimitive;
+		static BoolPrimitiveIr instance;
 
 	private:
 
-		BoolPrimitiveIr(const char *name);
+		BoolPrimitiveIr();
 		BoolPrimitiveIr(BoolPrimitiveIr&&) = default;
 		BoolPrimitiveIr(const BoolPrimitiveIr&) = delete;
 
@@ -29,7 +29,7 @@ namespace parka::ir
 		std::ostream& printType(std::ostream& out) const;
 
 		const TypeIr& type() const { return TypeNameIr::instance; }
-		const String& symbol() const { return _name; }
+		const String& symbol() const { return _symbol; }
 	};
 }
 

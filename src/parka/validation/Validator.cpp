@@ -488,11 +488,11 @@ namespace parka::validation
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::boolPrimitive, *condition, context);
+		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
 
 		if (!castedValue)
 		{
-			log::error(ast.condition().snippet(), "Expression could not be converted from `$` to `$`.", condition->type(), BoolPrimitiveIr::boolPrimitive);
+			log::error(ast.condition().snippet(), "Expression could not be converted from `$` to `$`.", condition->type(), BoolPrimitiveIr::instance);
 			return {};
 		}
 
@@ -531,7 +531,7 @@ namespace parka::validation
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::boolPrimitive, *condition, context);
+		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
 
 		if (!castedValue)
 		{
@@ -688,11 +688,11 @@ namespace parka::validation
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateCast(BoolPrimitiveIr::boolPrimitive, *condition, context);
+		auto* castedCondition = validateCast(BoolPrimitiveIr::instance, *condition, context);
 
 		if (!castedCondition)
 		{
-			log::error(ast.condition().snippet(), "Condition is not of type `$`.", BoolPrimitiveIr::boolPrimitive);
+			log::error(ast.condition().snippet(), "Condition is not of type `$`.", BoolPrimitiveIr::instance);
 			return {};
 		}
 

@@ -9,15 +9,15 @@ namespace parka::ir
 {
 	class CharPrimitiveIr: public TypeIr, public LValueIr
 	{
-		String _name;
+		String _symbol;
 
 	public:
 
-		static CharPrimitiveIr charPrimitive;
+		static CharPrimitiveIr instance;
 
 	private:
 
-		CharPrimitiveIr(const char *name);
+		CharPrimitiveIr();
 		CharPrimitiveIr(CharPrimitiveIr&&) = default;
 		CharPrimitiveIr(const CharPrimitiveIr&) = delete;
 
@@ -26,7 +26,7 @@ namespace parka::ir
 		std::ostream& printType(std::ostream& out) const;
 
 		const TypeIr& type() const { return TypeNameIr::instance; }
-		const String& symbol() const { return _name; }
+		const String& symbol() const { return _symbol; }
 	};
 }
 

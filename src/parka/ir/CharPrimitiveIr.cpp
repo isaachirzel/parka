@@ -2,17 +2,17 @@
 
 namespace parka::ir
 {
-	CharPrimitiveIr CharPrimitiveIr::charPrimitive("char");
+	CharPrimitiveIr CharPrimitiveIr::instance;
 
-	CharPrimitiveIr::CharPrimitiveIr(const char *name):
+	CharPrimitiveIr::CharPrimitiveIr():
 		TypeIr(TypeCategory::Char),
 		LValueIr(ResolvableType::Primitive),
-		_name(name)
+		_symbol("char")
 	{}
 
 	std::ostream& CharPrimitiveIr::printType(std::ostream& out) const
 	{
-		out << _name;
+		out << _symbol;
 
 		return out;
 	}
