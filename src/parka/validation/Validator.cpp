@@ -24,6 +24,7 @@
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
+#include "parka/ir/F64PrimitiveIr.hpp"
 #include "parka/ir/FloatPrimitiveIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/FunctionBodyIr.hpp"
@@ -112,7 +113,7 @@ namespace parka::validation
 	{
 		const auto& expressionType = expression.type();
 
-		if (&toType == &expressionType)
+		if (toType == expressionType)
 			return &expression;
 
 		auto* conversion = expressionType.getConversion(toType);
@@ -125,14 +126,13 @@ namespace parka::validation
 
 	static const TypeIr* validateDefaultType(const TypeIr& type)
 	{
-		// TODO: Optimize?
-		if (&type == &IntegerPrimitiveIr::instance)
+		if (type == IntegerPrimitiveIr::instance)
 			return &I32PrimitiveIr::instance;
 
-		// if (&type == &FloatPrimitiveIr::floatPrimitive)
-		// 	return &FloatPrimitiveIr::f64Primitive;
+		if (&type == &FloatPrimitiveIr::instance)
+			return &F64PrimitiveIr::instance;
 
-		// TODO: struct type that can fail
+		// TODO: struct literal that fails
 
 		return &type;
 	}

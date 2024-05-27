@@ -10,6 +10,14 @@ namespace parka::ir
 		_symbol("i32")
 	{}
 	
+	BinaryOperatorIr* I32PrimitiveIr::getBinaryOperator(BinaryExpressionType, const TypeIr& other) const
+	{
+		// if (*this == other)
+
+
+		return nullptr;
+	}
+
 	std::ostream& I32PrimitiveIr::printType(std::ostream& out) const
 	{
 		out << _symbol;

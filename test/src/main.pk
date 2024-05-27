@@ -1,4 +1,5 @@
 
+/*
 function double(number: i32): i32
 {
 	return number * 2;
@@ -38,12 +39,17 @@ function fibonacci(a: i32): i32
 }
 
 function notImplemented();
-
+*/
 function main(): i32
 {
+	/*
 	var a = if true == false
 		then fibonacci(15)
 		else factorial(5);
+	*/
 	
+	var a: i32 = 7;
+	var b = a * 5;
+
 	return a;
 }

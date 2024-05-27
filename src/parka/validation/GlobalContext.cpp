@@ -1,17 +1,10 @@
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/ast/FunctionAst.hpp"
-#include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/BoolPrimitiveIr.hpp"
 #include "parka/ir/CharPrimitiveIr.hpp"
-#include "parka/ir/ConversionIr.hpp"
-#include "parka/ir/FloatPrimitiveIr.hpp"
 #include "parka/ir/I32PrimitiveIr.hpp"
-#include "parka/ir/IntegerPrimitiveIr.hpp"
 #include "parka/ir/StringPrimitiveIr.hpp"
-#include "parka/ir/VoidPrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/validation/AssignmentOperatorKey.hpp"
-#include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/validation/FunctionEntry.hpp"
 #include <stdexcept>
 
@@ -24,7 +17,7 @@ namespace parka::validation
 		_functions(1'000'000),
 		_intrinsics(1'000)
 	{
-		addIntrinsic(ir::VoidPrimitiveIr::voidPrimitive);
+		// addIntrinsic(ir::VoidPrimitiveIr::voidPrimitive);
 		// addIntrinsic(ir::IntegerPrimitiveIr::u8Primitive);
 		// addIntrinsic(ir::IntegerPrimitiveIr::u16Primitive);
 		// addIntrinsic(ir::IntegerPrimitiveIr::u32Primitive);
@@ -33,8 +26,8 @@ namespace parka::validation
 		// addIntrinsic(ir::IntegerPrimitiveIr::i16Primitive);
 		addIntrinsic(ir::I32PrimitiveIr::instance);
 		// addIntrinsic(ir::IntegerPrimitiveIr::i64Primitive);
-		addIntrinsic(ir::FloatPrimitiveIr::f32Primitive);
-		addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
+		// addIntrinsic(ir::FloatPrimitiveIr::f32Primitive);
+		// addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
 		addIntrinsic(ir::CharPrimitiveIr::charPrimitive);
 		addIntrinsic(ir::BoolPrimitiveIr::boolPrimitive);
 		addIntrinsic(ir::StringPrimitiveIr::stringPrimitive);

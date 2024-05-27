@@ -3,9 +3,6 @@
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
-#include "parka/enum/AssignmentType.hpp"
-#include "parka/ir/AssignmentOperatorIr.hpp"
-#include "parka/ir/TypeIr.hpp"
 #include "parka/validation/Context.hpp"
 #include "parka/util/BigArray.hpp"
 #include "parka/util/FlatMap.hpp"

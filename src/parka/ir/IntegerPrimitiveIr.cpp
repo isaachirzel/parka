@@ -14,7 +14,7 @@ namespace parka::ir
 
 	ConversionIr* IntegerPrimitiveIr::getConversion(const TypeIr& toType) const
 	{
-		if (&toType == &I32PrimitiveIr::instance)
+		if (toType == I32PrimitiveIr::instance)
 			return &i32Conversion;
 
 		return nullptr;
