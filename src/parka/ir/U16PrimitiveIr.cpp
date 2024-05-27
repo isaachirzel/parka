@@ -14,7 +14,7 @@ namespace parka::ir
 		_symbol("u16")
 	{}
 
-		BinaryOperatorIr* U16PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
+	BinaryOperatorIr* U16PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
 	{
 		switch (binaryExpressionType)
 		{

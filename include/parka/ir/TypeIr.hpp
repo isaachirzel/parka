@@ -26,6 +26,7 @@ namespace parka::ir
 		virtual std::ostream& printType(std::ostream&) const = 0;
 
 		bool operator==(const TypeIr& other) const { return this == &other; }
+		bool operator!=(const TypeIr& other) const { return this != &other; }
 
 		friend std::ostream& operator<<(std::ostream& out, const TypeIr& type)
 		{

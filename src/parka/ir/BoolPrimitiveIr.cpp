@@ -1,7 +1,10 @@
 #include "parka/ir/BoolPrimitiveIr.hpp"
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/util/AssignmentOperatorUtil.hpp"
+#include "parka/util/BinaryOperatorUtil.hpp"
 
 namespace parka::ir
 {
@@ -18,11 +21,6 @@ namespace parka::ir
 		_symbol("bool")
 	{}
 
-	ConversionIr* BoolPrimitiveIr::getConversion(const TypeIr&) const
-	{
-		log::notImplemented(here());
-	}
-
 	BinaryOperatorIr* BoolPrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& rhs) const
 	{
 		if (&rhs != &instance)
@@ -31,20 +29,28 @@ namespace parka::ir
 		switch (binaryExpressionType)
 		{
 			case BinaryExpressionType::Equals:
-				return &equalsBinaryOperator;
+				return &binop<BinaryExpressionType::Equals, bool>();
 
 			case BinaryExpressionType::NotEquals:
-				return &notEqualsBinaryOperator;
+				return &binop<BinaryExpressionType::NotEquals, bool>();
 
 			case BinaryExpressionType::BooleanOr:
-				return &booleanOrBinaryOperator;
+				return &binop<BinaryExpressionType::BooleanOr, bool>();
 
 			case BinaryExpressionType::BooleanAnd:
-				return &booleanAndBinaryOperator;
+				return &binop<BinaryExpressionType::BooleanAnd, bool>();
 
 			default:
 				break;
 		}
+
+		return nullptr;
+	}
+
+	AssignmentOperatorIr* BoolPrimitiveIr::getAssignmentOperator(AssignmentType assignmentType, const TypeIr& other) const
+	{
+		if (other == *this && assignmentType == AssignmentType::Assign)
+			return &assgn<AssignmentType::Assign, bool>();
 
 		return nullptr;
 	}

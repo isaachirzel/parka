@@ -14,7 +14,7 @@ namespace parka::ir
 		_symbol("u32")
 	{}
 
-		BinaryOperatorIr* U32PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
+	BinaryOperatorIr* U32PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
 	{
 		switch (binaryExpressionType)
 		{
