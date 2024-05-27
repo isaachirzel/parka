@@ -21,10 +21,10 @@ namespace parka::ir
 
 	public:
 
-		FunctionIr(String&& symbol, PrototypeIr&& prototype):
+		FunctionIr(const char* symbol, PrototypeIr&& prototype):
 			LValueIr(ResolvableType::Function),
 			TypeIr(TypeCategory::Function),
-			_symbol(std::move(symbol)),
+			_symbol(symbol),
 			_prototype(std::move(prototype)),
 			_body(),
 			_isIntrinsic(true)
@@ -46,6 +46,9 @@ namespace parka::ir
 		}
 
 		std::ostream& printType(std::ostream& out) const;
+
+		bool operator==(const TypeIr& other) const;
+		bool operator!=(const TypeIr& other) const;
 
 		const String& symbol() const { return _symbol; }
 		const TypeIr& type() const { return *this; }

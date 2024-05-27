@@ -1,7 +1,6 @@
 # To Do
 
 ## Short Term
-- TypeName: public TypeIr for primtiives
 - Call operators
 - intrinsic print function
 - Add "Potential Solution" and "Extra Information" logs

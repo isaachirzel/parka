@@ -4,12 +4,14 @@
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/TypeCategory.hpp"
+#include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
 	class ConversionIr;
 	class BinaryOperatorIr;
 	class AssignmentOperatorIr;
+	class CallOperatorIr;
 
 	struct TypeIr
 	{
@@ -23,10 +25,11 @@ namespace parka::ir
 		virtual ConversionIr* getConversion(const TypeIr&) const { return nullptr; }
 		virtual BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const TypeIr&) const { return nullptr; }
 		virtual AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const TypeIr&) const { return nullptr; }
+		virtual CallOperatorIr* getCallOperator(const Array<TypeIr*>&) const { return nullptr; }
 		virtual std::ostream& printType(std::ostream&) const = 0;
 
-		bool operator==(const TypeIr& other) const { return this == &other; }
-		bool operator!=(const TypeIr& other) const { return this != &other; }
+		virtual bool operator==(const TypeIr& other) const { return this == &other; }
+		virtual bool operator!=(const TypeIr& other) const { return this != &other; }
 
 		friend std::ostream& operator<<(std::ostream& out, const TypeIr& type)
 		{

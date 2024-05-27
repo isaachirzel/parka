@@ -1,4 +1,5 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/ir/FunctionIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/parser/ParkaParser.hpp"
 #include "parka/util/Timer.hpp"
@@ -14,6 +15,9 @@ using namespace parka;
 
 int main(int argc, const char *argv[])
 {
+	if (ir::FunctionIr::printFunction == ir::FunctionIr::printFunction)
+		return 69;
+
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
 
@@ -84,9 +88,8 @@ validation lock:
 	I'm not sure how setting the function ir in the identifier expression afterwards will work?
 */
 
-
 /*
-getOperators(Type);
-
+	unique types for functions are needed add they need to be able to be passed in as arguments
+	i need to create a new class such as Signature that will be the type
+	the signature will need to be able to be given a
 */
-
