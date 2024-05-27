@@ -389,29 +389,30 @@ namespace parka::validation
 
 	AssignmentStatementIr *validateAssignmentStatement(const AssignmentStatementAst& ast, LocalContext& context)
 	{
-		log::notImplemented(here());
-		// auto* lhs = validateExpression(ast.identifier(), context);
-		// auto* value = validateExpression(ast.value(), context);
+		auto* lhs = validateExpression(ast.identifier(), context);
+		auto* value = validateExpression(ast.value(), context);
 
-		// if (!lhs || !value)
-		// 	return {};
+		if (!lhs || !value)
+			return {};
 		
-		// if (lhs->expressionType != ExpressionType::Identifier)
-		// {
-		// 	log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
-		// 	return {};
-		// }
+		if (lhs->expressionType != ExpressionType::Identifier)
+		{
+			log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
+			return {};
+		}
 
-		// auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
-		// auto* op = context.resolveAssignmentOperator(lhs->type(), value->type(), ast.assignmentType());
+		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
+		auto& leftType = identifier.type();
+		auto& valueType = value->type();
+		auto* op = leftType.getAssignmentOperator(ast.assignmentType(), valueType);
 
-		// if (!op)
-		// {
-		// 	log::error(ast.snippet(), "No assignment operator `$ $ $` has been defined.", lhs->type(), ast.assignmentType(), value->type());
-		// 	return {};
-		// }
+		if (!op)
+		{
+			log::error(ast.snippet(), "No assignment operator `$ $ $` has been defined.", lhs->type(), ast.assignmentType(), value->type());
+			return {};
+		}
 
-		// return new AssignmentStatementIr(identifier, *value, *op);
+		return new AssignmentStatementIr(identifier, *value, *op);
 	}
 
 	ReturnStatementIr *validateReturnStatement(const ReturnStatementAst& ast, LocalContext& context)
