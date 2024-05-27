@@ -40,6 +40,7 @@ function fibonacci(a: i32): i32
 
 function notImplemented();
 */
+
 function main(): i32
 {
 	/*
@@ -49,7 +50,9 @@ function main(): i32
 	*/
 	
 	var a: i32 = 5;
-	var b = a * 5 * 5;
+
+	a = a + 1;
+	a += 1;
 
 	return b;
 }
