@@ -1,8 +1,10 @@
+#include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/I32PrimitiveIr.hpp"
 #include "parka/ir/IntegerPrimitiveIr.hpp"
 #include "parka/ir/LValueIr.hpp"
+#include "parka/util/AssignmentOperatorUtil.hpp"
 #include "parka/util/BinaryOperatorUtil.hpp"
 #include "parka/util/Integer.hpp"
 
@@ -154,6 +156,102 @@ namespace parka::ir
 				break;
 		}
 
+		return nullptr;
+	}
+
+	AssignmentOperatorIr* I32PrimitiveIr::getAssignmentOperator(AssignmentType assignmentType, const TypeIr& other) const
+	{
+		switch (assignmentType)
+		{
+			case AssignmentType::Assign:
+				if (other == *this)
+					return &assgn<AssignmentType::Assign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::Assign, i32, Integer>();
+				break;
+
+			case AssignmentType::AddAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::AddAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::AddAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::SubtractAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::SubtractAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::SubtractAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::MultiplyAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::MultiplyAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::MultiplyAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::DivideAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::DivideAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::DivideAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::ModulusAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::ModulusAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::ModulusAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::LeftShiftAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::LeftShiftAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::LeftShiftAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::RightShiftAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::RightShiftAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::RightShiftAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::BitwiseOrAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::BitwiseOrAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::BitwiseOrAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::BitwiseXorAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::BitwiseXorAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::BitwiseXorAssign, i32, Integer>();
+				break;
+
+			case AssignmentType::BitwiseAndAssign:
+				if (other == *this)
+					return &assgn<AssignmentType::BitwiseAndAssign, i32>();
+
+				if (other == IntegerPrimitiveIr::instance)
+					return &assgn<AssignmentType::BitwiseAndAssign, i32, Integer>();
+				break;
+		}
+		
 		return nullptr;
 	}
 
