@@ -5,6 +5,7 @@ namespace parka
 {
 	enum class TypeCategory
 	{
+		Invalid,
 		Void,
 		Integer,
 		I8,
@@ -22,8 +23,6 @@ namespace parka
 		Char,
 		String,
 		Function,
-		Package,
-		TypeName,
 		Struct
 	};
 }

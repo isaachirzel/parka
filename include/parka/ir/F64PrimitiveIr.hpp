@@ -2,7 +2,7 @@
 #define PARKA_IR_F64_PRIMITIVE_IR_HPP
 
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/TypeNameIr.hpp"
+#include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
@@ -24,7 +24,7 @@ namespace parka::ir
 
 		std::ostream& printType(std::ostream& out) const;
 		const String& symbol() const { return _symbol; }
-		const TypeIr& type() const { return TypeNameIr::instance; }
+		const TypeIr& type() const { return InvalidTypeIr::typeNameType; }
 	};
 }
 

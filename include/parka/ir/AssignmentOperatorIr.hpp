@@ -2,8 +2,7 @@
 #define PARKA_IR_ASSIGNMENT_OPERATOR_IR_HPP
 
 #include "parka/enum/AssignmentType.hpp"
-#include "parka/validation/AssignmentOperatorKey.hpp"
-#include "parka/util/FlatMap.hpp"
+#include "parka/ir/TypeIr.hpp"
 
 namespace parka::ir
 {
@@ -12,10 +11,6 @@ namespace parka::ir
 		const ir::TypeIr& _left;
 		const ir::TypeIr& _right;
 		AssignmentType _assignmentType;
-
-	public:
-
-		static FlatMap<validation::AssignmentOperatorKey, AssignmentOperatorIr*> getIntrinsicAssignmentOperators();
 
 	public:
 

@@ -1,19 +1,15 @@
 #ifndef PARKA_IR_FUNCTION_IR_HPP
 #define PARKA_IR_FUNCTION_IR_HPP
 
-#include "parka/ir/FunctionBodyIr.hpp"
+#include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/LValueIr.hpp"
-#include "parka/ir/PrototypeIr.hpp"
-#include "parka/util/Optional.hpp"
 
 namespace parka::ir
 {
 	class FunctionIr: public LValueIr, public TypeIr
 	{
 		String _symbol;
-		PrototypeIr _prototype;
-		Optional<FunctionBodyIr> _body;
-		bool _isIntrinsic;
+		CallOperatorIr _callOperator;
 
 	public:
 
@@ -21,30 +17,21 @@ namespace parka::ir
 
 	public:
 
-		FunctionIr(const char* symbol, PrototypeIr&& prototype):
-			LValueIr(ResolvableType::Function),
-			TypeIr(TypeCategory::Function),
-			_symbol(symbol),
-			_prototype(std::move(prototype)),
-			_body(),
-			_isIntrinsic(true)
-		{}
-		FunctionIr(String&& symbol, PrototypeIr&& prototype, Optional<FunctionBodyIr>&& body):
+		FunctionIr(String symbol, CallOperatorIr&& callOperator):
 			LValueIr(ResolvableType::Function),
 			TypeIr(TypeCategory::Function),
 			_symbol(std::move(symbol)),
-			_prototype(std::move(prototype)),
-			_body(std::move(body)),
-			_isIntrinsic(false)
+			_callOperator(std::move(callOperator))
 		{}
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;
 
-		void setBody(FunctionBodyIr&& body)
+		void setCallOperator(CallOperatorIr&& callOperator)
 		{
-			_body = std::move(body);
+			_callOperator = std::move(callOperator);
 		}
 
+		CallOperatorIr* getCallOperator(const Array<ExpressionIr*>&) const;
 		std::ostream& printType(std::ostream& out) const;
 
 		bool operator==(const TypeIr& other) const;
@@ -53,9 +40,8 @@ namespace parka::ir
 		const String& symbol() const { return _symbol; }
 		const TypeIr& type() const { return *this; }
 		const auto& prototype() const { return _prototype; }
-		bool hasBody() const { return !!_body; }
-		const auto& body() const { assert(_body); return *_body; }
-		const auto& isIntrinsic() const { return _isIntrinsic; }
+		bool hasCallOperator() const { return _callOperator; }
+		const auto& callOperator() const { assert(_callOperator); return *_callOperator; }
 	};
 }
 

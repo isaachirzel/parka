@@ -3,7 +3,7 @@
 
 namespace parka::ir
 {
-	StringPrimitiveIr StringPrimitiveIr::stringPrimitive("string");
+	StringPrimitiveIr StringPrimitiveIr::instance("string");
 
 	StringPrimitiveIr::StringPrimitiveIr(const char *name):
 		TypeIr(TypeCategory::String),

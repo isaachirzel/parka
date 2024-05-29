@@ -3,7 +3,7 @@
 
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/ir/TypeNameIr.hpp"
+#include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
@@ -13,7 +13,7 @@ namespace parka::ir
 
 	public:
 
-		static StringPrimitiveIr stringPrimitive;
+		static StringPrimitiveIr instance;
 
 	private:
 
@@ -25,7 +25,7 @@ namespace parka::ir
 
 		std::ostream& printType(std::ostream& out) const;
 
-		const TypeIr& type() const { return TypeNameIr::instance; }
+		const TypeIr& type() const { return InvalidTypeIr::typeNameType; }
 		const String& symbol() const { return _name; }
 	};
 }

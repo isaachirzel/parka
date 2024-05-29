@@ -2,7 +2,7 @@
 
 namespace parka::ir
 {
-	VoidPrimitiveIr VoidPrimitiveIr::voidPrimitive("void");
+	VoidPrimitiveIr VoidPrimitiveIr::instance("void");
 
 	VoidPrimitiveIr::VoidPrimitiveIr(const char *name):
 		TypeIr(TypeCategory::Void),

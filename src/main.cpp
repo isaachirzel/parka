@@ -9,15 +9,24 @@ using namespace parka;
 
 // wordcount: git ls-files | xargs wc -l
 
+struct A
+{
+	int operator()(const int a)
+	{
+		return a;
+	}
+
+	const char* operator()(const char* a)
+	{
+		return a;
+	}
+};
 
 // TODO: Unit testing
 // TODO: Convert log fatals to exceptions and add catch that will print out a single log fatal
 
 int main(int argc, const char *argv[])
 {
-	if (ir::FunctionIr::printFunction == ir::FunctionIr::printFunction)
-		return 69;
-
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
 

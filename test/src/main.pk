@@ -48,16 +48,5 @@ function main(): i32
 		else factorial(5);
 	*/
 	
-	var a: i32 = 5;
-
-	a = a + 1;
-	a += 1;
-
-	var b = if a < 1
-		then true
-		else false;
-
-	if b return 12;
-
-	return a * 4;
+	return fibonacci(15);
 }

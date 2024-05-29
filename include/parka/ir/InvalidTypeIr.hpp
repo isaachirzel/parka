@@ -6,19 +6,20 @@
 
 namespace parka::ir
 {
-	class TypeNameIr: public TypeIr
+	class InvalidTypeIr: public TypeIr
 	{
 		String _symbol;
 
 	public:
 
-		static TypeNameIr instance;
+		static InvalidTypeIr typeNameType;
+		static InvalidTypeIr packageType;
 
 	private:
 
-		TypeNameIr();
-		TypeNameIr(TypeNameIr&&) = default;
-		TypeNameIr(const TypeNameIr&) = delete;
+		InvalidTypeIr(const char* name);
+		InvalidTypeIr(InvalidTypeIr&&) = default;
+		InvalidTypeIr(const InvalidTypeIr&) = delete;
 
 	public:
 

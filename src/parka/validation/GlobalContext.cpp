@@ -30,7 +30,7 @@ namespace parka::validation
 		// addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
 		addIntrinsic(ir::CharPrimitiveIr::instance);
 		addIntrinsic(ir::BoolPrimitiveIr::instance);
-		addIntrinsic(ir::StringPrimitiveIr::stringPrimitive);
+		addIntrinsic(ir::StringPrimitiveIr::instance);
 
 		for (auto& mod : globalPackage.modules())
 		{

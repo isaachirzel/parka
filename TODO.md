@@ -2,11 +2,13 @@
 
 ## Short Term
 - Call operators
+- integer and float conversions/ conv<T>
 - intrinsic print function
 - Add "Potential Solution" and "Extra Information" logs
 - Multi line highlights (test with conditional expression)
 - Prefix operators
 - Subscript operators
+- Member access expressions
 - mut values and stopping modification of const values
 - Better separation of modules
 
@@ -15,7 +17,6 @@
 - While loops
 - Regular loops
 - Structs
-- Member access expressions '.'
 - Indirection expression '->'
 - Constructors
 - Destructors

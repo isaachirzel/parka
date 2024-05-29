@@ -5,8 +5,8 @@
 namespace parka::validation
 {
 	ConversionKey::ConversionKey():
-		_to(&ir::VoidPrimitiveIr::voidPrimitive),
-		_from(&ir::VoidPrimitiveIr::voidPrimitive)
+		_to(&ir::VoidPrimitiveIr::instance),
+		_from(&ir::VoidPrimitiveIr::instance)
 	{}
 
 	ConversionKey::ConversionKey(const ir::TypeIr& to, const ir::TypeIr& from):

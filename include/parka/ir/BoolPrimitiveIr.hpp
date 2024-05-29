@@ -4,7 +4,7 @@
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/LValueIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/ir/TypeNameIr.hpp"
+#include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
@@ -28,7 +28,7 @@ namespace parka::ir
 		AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const TypeIr&) const;
 
 		std::ostream& printType(std::ostream& out) const;
-		const TypeIr& type() const { return TypeNameIr::instance; }
+		const TypeIr& type() const { return InvalidTypeIr::typeNameType; }
 		const String& symbol() const { return _symbol; }
 	};
 }

@@ -292,7 +292,7 @@ namespace parka::evaluation
 
 	Value& evaluateCallExpression(const ir::CallExpressionIr& ir, LocalState& state)
 	{
-		return evaluateFunction(ir.subject(), ir.arguments(), state);
+		log::notImplemented(here());
 	}
 
 	Value& evaluateConditionalExpression(const ir::ConditionalExpressionIr& ir, LocalState& state)

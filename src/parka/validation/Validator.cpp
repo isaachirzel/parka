@@ -99,16 +99,16 @@ namespace parka::validation
 
 		auto& returnType = ir.prototype().returnType();
 
-		if (&returnType != &I32PrimitiveIr::instance && &returnType != &VoidPrimitiveIr::voidPrimitive)
+		if (&returnType != &I32PrimitiveIr::instance && &returnType != &VoidPrimitiveIr::instance)
 		{
-			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", I32PrimitiveIr::instance, VoidPrimitiveIr::voidPrimitive);
+			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", I32PrimitiveIr::instance, VoidPrimitiveIr::instance);
 			success = false;
 		}
 
 		return success;
 	}
 
-	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, Context& context)
+	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression)
 	{
 		const auto& expressionType = expression.type();
 
@@ -153,9 +153,9 @@ namespace parka::validation
 			if (entry.ast().hasBody())
 			{
 				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
-
+				auto op = CallOperatorIr(ir->prototype().returnType(), 
 				if (body)
-					ir->setBody(*body);
+					ir->setCallOperator(*body);
 			}
 
 			if (!entryPoint && ir->symbol() == "main")
@@ -183,7 +183,7 @@ namespace parka::validation
 		const auto& name = ast.prototype().identifier().text();
 		auto symbol = context.createSymbol(name);
 
-		return new FunctionIr(std::move(symbol), *prototype, {});
+		return new FunctionIr(std::move(symbol), *prototype);
 	}
 
 	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionContext& context)
@@ -244,7 +244,7 @@ namespace parka::validation
 				return {};
 
 			const auto& returnType = context.returnType();
-			auto* castedValue = validateCast(returnType, *expression, context);
+			auto* castedValue = validateCast(returnType, *expression);
 			
 			if (!castedValue)
 			{
@@ -280,25 +280,29 @@ namespace parka::validation
 
 	const TypeIr* validateTypeAnnotation(const TypeAnnotationAst& ast, Context& context)
 	{
-		auto *resolution = context.resolveSymbol(ast.identifier());
+		auto *lValue = context.resolveSymbol(ast.identifier());
 
-		if (!resolution)
+		if (!lValue)
 		{
 			log::error(ast.identifier().snippet(), "The type `$` could not be found in this scope.", ast.identifier());
 			return {};
 		}
 
-		auto* type = dynamic_cast<TypeIr*>(resolution);
-		
-		if (!type)
+
+		switch (lValue.resolvableType)
 		{
-			// TODO: Figure out what the referred thing was for better clarity
-			// TODO: Maybe show "other thing defined here"
-			log::error(ast.snippet(), "Expected a type, but `$` was found.", ast.identifier());
-			return {};
+			case ResolvableType::Primitive:
+			case ResolvableType::Struct:
+				break;
+
+			default:
+				// TODO: Figure out what the referred thing was for better clarity
+				// TODO: Maybe show "other thing defined here"
+				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", lValue.resolvableType, ast.identifier());
+				return {};
 		}
 
-		return type;
+		return static_cast<TypeIr*>(lValue);
 	}
 
 	StatementIr *validateStatement(const StatementAst& ast, LocalContext& context)
@@ -368,7 +372,7 @@ namespace parka::validation
 			variable->setType(*variableType);
 		}
 
-		auto* castedValue = validateCast(variable->type(), *value, context);
+		auto* castedValue = validateCast(variable->type(), *value);
 		
 		if (!castedValue)
 			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
@@ -430,7 +434,7 @@ namespace parka::validation
 		if (!value)
 			return {};
 
-		auto* castedValue = validateCast(context.returnType(), *value, context);
+		auto* castedValue = validateCast(context.returnType(), *value);
 
 		if (!castedValue)
 		{
@@ -488,7 +492,7 @@ namespace parka::validation
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
+		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition);
 
 		if (!castedValue)
 		{
@@ -531,7 +535,7 @@ namespace parka::validation
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
+		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition);
 
 		if (!castedValue)
 		{
@@ -623,60 +627,35 @@ namespace parka::validation
 		if (!subject)
 			return {};
 
-		// TODO: Implement call expression operators
+		auto arguments = Array<ExpressionIr*>(ast.arguments().length());
 
-		log::notImplemented(here());
+		for (usize i = 0; i < ast.arguments().length(); ++i)
+		{
+			auto& argumentAst = *ast.arguments()[i];
+			auto* argumentIr = validateExpression(argumentAst, context);
 
-		// if (subject->expressionType != ExpressionType::Identifier)
-		// {
-		// 	log::error(ast.subject().snippet(), "Unable to call expression as function.");
-		// 	return {};
-		// }
+			if (!argumentIr)
+				continue;
 
-		// auto& reference = static_cast<IdentifierExpressionIr&>(*subject);
-		// auto& lvalue = reference.value();
-
-		// if (lvalue.resolvableType != ResolvableType::Function)
-		// {
-		// 	log::error(ast.subject().snippet(), "Unable to call $ as function.", lvalue.resolvableType);
-		// 	return {};
-		// }
-
-		// auto& function = static_cast<const FunctionIr&>(lvalue);
-		// auto& prototype = function.prototype();
-
-		// if (prototype.parameters().length() != ast.arguments().length())
-		// {
-		// 	log::error(ast.snippet(), "This function takes $ argument(s) but $ were given.", prototype.parameters().length(), ast.arguments().length());
-		// 	return {};
-		// }
-
-		// auto arguments = Array<ArgumentIr>(ast.arguments().length());
-
-		// for (usize i = 0; i < ast.arguments().length(); ++i)
-		// {
-		// 	auto& valueAst = *ast.arguments()[i];
-		// 	auto& parameter = *prototype.parameters()[i];
-		// 	auto* value = validateExpression(valueAst, context);
-
-		// 	if (!value)
-		// 		continue;
-
-		// 	auto* castedValue = validateCast(parameter.type(), *value, context);
-
-		// 	if (!castedValue)
-		// 	{
-		// 		log::error(valueAst.snippet(), "Parameter $ calls for $ but $ was passed in.", parameter.symbol(), parameter.type(), value->type());
-		// 		continue;
-		// 	}
-
-		// 	arguments.push(ArgumentIr(*castedValue));
-		// }
+			arguments.push(argumentIr);
+		}
 		
-		// if (arguments.length() != ast.arguments().length())
-		// 	return {};
+		if (arguments.length() != ast.arguments().length())
+			return {};
 
-		// return new CallExpressionIr(function, std::move(arguments));
+		auto& type = subject->type();
+		auto* op = type.getCallOperator(arguments);
+
+		if (!op)
+		{
+			// TODO: show the signature
+			// TODO: Specialize error for functions
+			// TODO: Explain was is wrong with arguments
+			log::error(ast.snippet(), "No call operator with this signature exists on type `$`.", type);
+			return {};
+		}
+
+		return new CallExpressionIr(*subject, std::move(arguments), *op);
 	}
 
 	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalContext& context)
@@ -688,7 +667,7 @@ namespace parka::validation
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateCast(BoolPrimitiveIr::instance, *condition, context);
+		auto* castedCondition = validateCast(BoolPrimitiveIr::instance, *condition);
 
 		if (!castedCondition)
 		{
@@ -696,12 +675,12 @@ namespace parka::validation
 			return {};
 		}
 
-		auto* castedElseCase = validateCast(thenCase->type(), *elseCase, context);
+		auto* castedElseCase = validateCast(thenCase->type(), *elseCase);
 
 		if (castedElseCase)
 			return new ConditionalExpressionIr(*castedCondition, *thenCase, *castedElseCase);
 
-		auto *castedThenCase = validateCast(elseCase->type(), *thenCase, context);
+		auto *castedThenCase = validateCast(elseCase->type(), *thenCase);
 
 		if (castedThenCase)
 			return new ConditionalExpressionIr(*castedCondition, *castedThenCase, *elseCase);
@@ -732,7 +711,7 @@ namespace parka::validation
 		if (!expression || !type)
 			return {};
 
-		auto* castedValue = validateCast(*type, *expression, context);
+		auto* castedValue = validateCast(*type, *expression);
 
 		if (!castedValue)
 		{

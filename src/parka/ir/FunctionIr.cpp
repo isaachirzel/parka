@@ -1,10 +1,48 @@
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/VoidPrimitiveIr.hpp"
-#include "parka/log/Log.hpp"
 
 namespace parka::ir
 {
-	FunctionIr FunctionIr::printFunction("print", PrototypeIr({}, VoidPrimitiveIr::voidPrimitive));
+	FunctionIr FunctionIr::printFunction("print", PrototypeIr({}, VoidPrimitiveIr::instance));
+
+	CallOperatorIr* FunctionIr::getCallOperator(const Array<ExpressionIr*>& arguments) const
+	{
+		auto argumentCount = arguments.length();
+
+		if (argumentCount != _prototype.parameters().length())
+			return nullptr;
+
+		for (usize i = 0; i < argumentCount; ++i)
+		{
+			auto& argument = *arguments[i];
+			auto& parameter = *_prototype.parameters()[i];
+			auto* conversion = argument.type().getConversion(parameter.type());
+
+			if (!conversion)
+				return nullptr;
+		}
+
+		return nullptr;
+	}
+
+	std::ostream& FunctionIr::printType(std::ostream& out) const
+	{
+		out << "function (";
+		bool isFirst = true;
+
+		for (const auto* parameter : _prototype.parameters())
+		{
+			if (!isFirst)
+				out << ", ";
+
+			out << parameter->type();
+			isFirst = false;
+		}
+
+		out << "): " << _prototype.returnType();
+
+		return out;
+	}
 
 	bool FunctionIr::operator==(const TypeIr& other) const
 	{
@@ -34,12 +72,5 @@ namespace parka::ir
 	bool FunctionIr::operator!=(const TypeIr& other) const
 	{
 		return !(*this == other);
-	}
-
-	std::ostream& FunctionIr::printType(std::ostream& out) const
-	{
-		
-
-		return out;
 	}
 }

@@ -21,7 +21,7 @@ namespace parka::validation
 		_symbols(),
 		_variables(),
 		_parameters(),
-		_returnType(&ir::VoidPrimitiveIr::voidPrimitive),
+		_returnType(&ir::VoidPrimitiveIr::instance),
 		_isExplicitReturnType(false)
 	{}
 

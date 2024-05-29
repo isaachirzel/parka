@@ -18,8 +18,6 @@ namespace parka::ir
 		{}
 		StructIr(StructIr&&) = default;
 		StructIr(const StructIr&) = delete;
-
-		static StructIr *validate();
 		
 		const String& symbol() const { return _symbol; }
 	};

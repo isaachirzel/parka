@@ -2,7 +2,7 @@
 #define PARKA_IR_FLOAT_PRIMITIVE_IR_HPP
 
 #include "parka/ir/TypeIr.hpp"
-#include "parka/ir/TypeNameIr.hpp"
+#include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
@@ -22,7 +22,7 @@ namespace parka::ir
 
 		std::ostream& printType(std::ostream& out) const;
 
-		const TypeIr& type() const { return TypeNameIr::instance; }
+		const TypeIr& type() const { return InvalidTypeIr::typeNameType; }
 	};
 }
 

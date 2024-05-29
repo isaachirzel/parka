@@ -6,8 +6,8 @@
 namespace parka::validation
 {
 	AssignmentOperatorKey::AssignmentOperatorKey():
-		_left(&ir::VoidPrimitiveIr::voidPrimitive),
-		_right(&ir::VoidPrimitiveIr::voidPrimitive),
+		_left(&ir::VoidPrimitiveIr::instance),
+		_right(&ir::VoidPrimitiveIr::instance),
 		_assignmentType(AssignmentType::Assign)
 	{}
 
