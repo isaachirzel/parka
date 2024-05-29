@@ -3,10 +3,10 @@
 namespace parka::ir
 {
 	InvalidTypeIr InvalidTypeIr::typeNameType("type name");
-	InvalidTypeIr InvalidTypeIr::typeNameType("package");
+	InvalidTypeIr InvalidTypeIr::packageType("package");
 
 	InvalidTypeIr::InvalidTypeIr(const char* name):
-		TypeIr(TypeCategory::TypeName),
+		TypeIr(TypeCategory::Invalid),
 		_symbol(name)
 	{}
 

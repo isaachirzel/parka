@@ -153,9 +153,10 @@ namespace parka::validation
 			if (entry.ast().hasBody())
 			{
 				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
-				auto op = CallOperatorIr(ir->prototype().returnType(), 
-				if (body)
-					ir->setCallOperator(*body);
+
+				log::notImplemented(here());
+				// if (body)
+				// 	ir->setCallOperator(*body);
 			}
 
 			if (!entryPoint && ir->symbol() == "main")
@@ -202,7 +203,7 @@ namespace parka::validation
 			parameters.push(parameter);
 		}
 
-		const auto* returnType = (TypeIr*)&VoidPrimitiveIr::voidPrimitive;
+		const auto* returnType = (TypeIr*)&VoidPrimitiveIr::instance;
 
 		if (prototype.returnType())
 		{
@@ -268,7 +269,7 @@ namespace parka::validation
 		auto identifier = ast.identifier().text();
 
 		if (!ast.annotation())
-			return new VariableIr(std::move(identifier), VoidPrimitiveIr::voidPrimitive);
+			return new VariableIr(std::move(identifier), VoidPrimitiveIr::instance);
 
 		auto annotationType = validateTypeAnnotation(*ast.annotation(), context);
 
@@ -289,20 +290,21 @@ namespace parka::validation
 		}
 
 
-		switch (lValue.resolvableType)
+		switch (lValue->resolvableType)
 		{
 			case ResolvableType::Primitive:
 			case ResolvableType::Struct:
 				break;
 
 			default:
+				// FIXME: Idk undo this
 				// TODO: Figure out what the referred thing was for better clarity
 				// TODO: Maybe show "other thing defined here"
-				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", lValue.resolvableType, ast.identifier());
+				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", lValue->resolvableType, ast.identifier());
 				return {};
 		}
 
-		return static_cast<TypeIr*>(lValue);
+		return dynamic_cast<TypeIr*>(lValue);
 	}
 
 	StatementIr *validateStatement(const StatementAst& ast, LocalContext& context)
@@ -422,7 +424,7 @@ namespace parka::validation
 	{
 		if (!ast.hasValue())
 		{
-			if (&context.returnType() == &VoidPrimitiveIr::voidPrimitive)
+			if (&context.returnType() == &VoidPrimitiveIr::instance)
 				return new ReturnStatementIr();
 
 			log::error(ast.snippet(), "Expected $ return value but none was given.", context.returnType());

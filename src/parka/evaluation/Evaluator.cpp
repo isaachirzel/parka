@@ -36,26 +36,29 @@ namespace parka::evaluation
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
 	{
-		usize previousReturnValueIndex = state.getReturnValueIndex();
-		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
-		usize index = state.getScopeIndex();
+		log::notImplemented(here());
 
-		evaluatePrototype(ir.prototype(), arguments, state);
+		// usize previousReturnValueIndex = state.getReturnValueIndex();
+		// auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
+		// usize index = state.getScopeIndex();
 
-		if (!ir.hasBody())
-		{
-			log::fatal("$() is not implemented.", ir.symbol());
-		}
+		// evaluatePrototype(ir.prototype(), arguments, state);
+
+
+		// if (!ir.hasBody())
+		// {
+		// 	log::fatal("$() is not implemented.", ir.symbol());
+		// }
 		
-		evaluateFunctionBody(ir.body(), state);
+		// evaluateFunctionBody(ir.body(), state);
 
-		// TODO: This shouldn't do this for exceptions
+		// // TODO: This shouldn't do this for exceptions
 
-		state.setReturning(JumpType::None);
-		state.clearScopeValues(index);
-		state.setReturnValueIndex(previousReturnValueIndex);
+		// state.setReturning(JumpType::None);
+		// state.clearScopeValues(index);
+		// state.setReturnValueIndex(previousReturnValueIndex);
 
-		return returnValue;
+		// return returnValue;
 	}
 
 	void evaluatePrototype(const PrototypeIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
