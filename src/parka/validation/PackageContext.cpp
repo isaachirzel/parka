@@ -46,7 +46,7 @@ namespace parka::validation
 
 	}
 
-	Resolvable* PackageContext::findInitialSymbol(const ast::IdentifierAst& identifier)
+	ContextEntry* PackageContext::findInitialSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto *package = (Context*)this;
@@ -68,7 +68,7 @@ namespace parka::validation
 		return nullptr;
 	}
 
-	Resolvable* PackageContext::findSymbol(const ast::IdentifierAst& identifier)
+	ContextEntry* PackageContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		auto result = _symbols.find(identifier.text());
 

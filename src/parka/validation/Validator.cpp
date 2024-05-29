@@ -130,14 +130,15 @@ namespace parka::validation
 		return success;
 	}
 
-	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression)
+	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, Context& context)
 	{
 		const auto& expressionType = expression.type();
 
 		if (toType == expressionType)
 			return &expression;
 
-		auto* conversion = expressionType.getConversion(toType);
+		auto& typeContext = context.globalContext().getTypeContext(expressionType);
+		auto* conversion = typeContext.getConversion(toType);
 
 		if (!conversion)
 			return {};
@@ -176,8 +177,8 @@ namespace parka::validation
 			{
 				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
 
-				if (body)
-					ir->prototype().setCallOperator(CallOperatorIr(*body));
+				// if (body)
+				// 	ir->prototype().setCallOperator(CallOperatorIr(*body));
 
 				log::notImplemented(here());
 				// if (body)
@@ -270,7 +271,7 @@ namespace parka::validation
 				return {};
 
 			const auto& returnType = context.returnType();
-			auto* castedValue = validateCast(returnType, *expression);
+			auto* castedValue = validateCast(returnType, *expression, context);
 			
 			if (!castedValue)
 			{
@@ -399,7 +400,7 @@ namespace parka::validation
 			variable->setType(*variableType);
 		}
 
-		auto* castedValue = validateCast(variable->type(), *value);
+		auto* castedValue = validateCast(variable->type(), *value, context);
 		
 		if (!castedValue)
 			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
@@ -434,7 +435,8 @@ namespace parka::validation
 		auto& identifier = static_cast<IdentifierExpressionIr&>(*lhs);
 		auto& leftType = identifier.type();
 		auto& valueType = value->type();
-		auto* op = leftType.getAssignmentOperator(ast.assignmentType(), valueType);
+		auto& typeContext = context.globalContext().getTypeContext(leftType);
+		auto* op = typeContext.getAssignmentOperator(ast.assignmentType(), valueType);
 
 		if (!op)
 		{
@@ -461,7 +463,7 @@ namespace parka::validation
 		if (!value)
 			return {};
 
-		auto* castedValue = validateCast(context.returnType(), *value);
+		auto* castedValue = validateCast(context.returnType(), *value, context);
 
 		if (!castedValue)
 		{
@@ -519,7 +521,7 @@ namespace parka::validation
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition);
+		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
 
 		if (!castedValue)
 		{
@@ -562,7 +564,7 @@ namespace parka::validation
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition);
+		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
 
 		if (!castedValue)
 		{
@@ -634,7 +636,8 @@ namespace parka::validation
 		const auto& lhsType = lhs->type();
 		const auto& rhsType = rhs->type();
 
-		auto* op = lhsType.getBinaryOperator(ast.binaryExpressionType(), rhsType);
+		auto& typeContext = context.globalContext().getTypeContext(lhsType);
+		auto* op = typeContext.getBinaryOperator(ast.binaryExpressionType(), rhsType);
 
 		if (!op)
 		{
@@ -671,7 +674,8 @@ namespace parka::validation
 			return {};
 
 		auto& type = subject->type();
-		auto* op = type.getCallOperator(arguments);
+		auto& typeContext = context.globalContext().getTypeContext(type);
+		auto* op = typeContext.getCallOperator(arguments);
 
 		if (!op)
 		{
@@ -694,7 +698,7 @@ namespace parka::validation
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateCast(BoolPrimitiveIr::instance, *condition);
+		auto* castedCondition = validateCast(BoolPrimitiveIr::instance, *condition, context);
 
 		if (!castedCondition)
 		{
@@ -702,12 +706,12 @@ namespace parka::validation
 			return {};
 		}
 
-		auto* castedElseCase = validateCast(thenCase->type(), *elseCase);
+		auto* castedElseCase = validateCast(thenCase->type(), *elseCase, context);
 
 		if (castedElseCase)
 			return new ConditionalExpressionIr(*castedCondition, *thenCase, *castedElseCase);
 
-		auto *castedThenCase = validateCast(elseCase->type(), *thenCase);
+		auto *castedThenCase = validateCast(elseCase->type(), *thenCase, context);
 
 		if (castedThenCase)
 			return new ConditionalExpressionIr(*castedCondition, *castedThenCase, *elseCase);
@@ -738,7 +742,7 @@ namespace parka::validation
 		if (!expression || !type)
 			return {};
 
-		auto* castedValue = validateCast(*type, *expression);
+		auto* castedValue = validateCast(*type, *expression, context);
 
 		if (!castedValue)
 		{

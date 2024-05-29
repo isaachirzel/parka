@@ -12,18 +12,12 @@ namespace parka::ir
 	{
 		Array<ParameterIr*> _parameters;
 		const TypeIr* _returnType;
-		Optional<CallOperatorIr> _callOperator;
 
 	public:
 
 		PrototypeIr(Array<ParameterIr*>&& parameters, const TypeIr& returnType);
 		PrototypeIr(PrototypeIr&&) = default;
 		PrototypeIr(const PrototypeIr&) = delete;
-
-		void setCallOperator(CallOperatorIr&& op)
-		{
-			_callOperator = std::move(op);
-		}
 
 		virtual const CallOperatorIr* getCallOperator(const Array<ExpressionIr*>&) const;
 		std::ostream& printType(std::ostream& out) const;

@@ -2,11 +2,11 @@
 #define PARKA_VALIDATION_PARAMETER_ENTRY_HPP
 
 #include "parka/ast/ParameterAst.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 
 namespace parka::validation
 {
-	class ParameterEntry: public Resolvable
+	class ParameterEntry: public ContextEntry
 	{
 		const ast::ParameterAst& _ast;
 		ir::ParameterIr *_ir;

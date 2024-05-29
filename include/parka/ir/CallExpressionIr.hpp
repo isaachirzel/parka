@@ -31,7 +31,7 @@ namespace parka::ir
 		const auto& subject() const { return _subject; }
 		const auto& arguments() const { return _arguments; }
 		const auto& op() const { return _op; }
-		const PrototypeIr& type() const { return _op.prototype(); }
+		const TypeIr& type() const { return _op.prototype().returnType(); }
 	};
 }
 

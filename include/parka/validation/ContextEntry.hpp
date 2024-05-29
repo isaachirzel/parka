@@ -8,16 +8,16 @@
 
 namespace parka::validation
 {
-	struct Resolvable
+	struct ContextEntry
 	{
 		const ResolvableType resolvableType;
 
 	public:
 
-		Resolvable(ResolvableType resolvableType):
+		ContextEntry(ResolvableType resolvableType):
 			resolvableType(resolvableType)
 		{}
-		virtual ~Resolvable() {}
+		virtual ~ContextEntry() {}
 
 		virtual Context* context() = 0;
 		virtual const String& name() const = 0;
@@ -25,7 +25,7 @@ namespace parka::validation
 
 		// TODO: be able to get snippet for errors
 
-		friend std::ostream& operator<<(std::ostream& out, const Resolvable& resolvabe);
+		friend std::ostream& operator<<(std::ostream& out, const ContextEntry& resolvabe);
 	};
 }
 

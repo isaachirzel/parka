@@ -4,12 +4,12 @@
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/validation/FunctionContext.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 #include "parka/validation/Context.hpp"
 
 namespace parka::validation
 {
-	class FunctionEntry: public Resolvable
+	class FunctionEntry: public ContextEntry
 	{
 		const ast::FunctionAst& _ast;
 		FunctionContext _symbolTable;

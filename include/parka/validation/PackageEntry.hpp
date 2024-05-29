@@ -4,11 +4,11 @@
 #include "parka/ast/PackageAst.hpp"
 #include "parka/ir/PackageIr.hpp"
 #include "parka/validation/PackageContext.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 
 namespace parka::validation
 {
-	class PackageEntry: public Resolvable
+	class PackageEntry: public ContextEntry
 	{
 		const ast::PackageAst& _ast;
 		PackageContext _symbolTable;
@@ -18,7 +18,7 @@ namespace parka::validation
 	public:
 
 		PackageEntry(const ast::PackageAst& ast, Context& parent):
-			Resolvable(ResolvableType::Package),
+			ContextEntry(ResolvableType::Package),
 			_ast(ast),
 			_symbolTable(ast, parent),
 			_ir(nullptr),

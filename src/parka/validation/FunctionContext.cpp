@@ -7,7 +7,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/validation/ParameterEntry.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 #include "parka/validation/VariableEntry.hpp"
 #include "parka/validation/Validator.hpp"
 
@@ -74,7 +74,7 @@ namespace parka::validation
 		return ref;
 	}
 
-	Resolvable* FunctionContext::findSymbol(const ast::IdentifierAst& identifier)
+	ContextEntry* FunctionContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto** symbol = _symbols.find(name);

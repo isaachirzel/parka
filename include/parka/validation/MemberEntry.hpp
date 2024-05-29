@@ -2,18 +2,18 @@
 #define PARKA_VALIDATION_MEMBER_ENTRY_HPP
 
 #include "parka/ast/MemberAst.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 
 namespace parka::validation
 {
-	class MemberEntry: public Resolvable
+	class MemberEntry: public ContextEntry
 	{
 		const ast::MemberAst& _ast;
 
 	public:
 	
 		MemberEntry(const ast::MemberAst& ast):
-		Resolvable(ResolvableType::Member),
+		ContextEntry(ResolvableType::Member),
 		_ast(ast)
 		{}
 		MemberEntry(MemberEntry&&) = default;

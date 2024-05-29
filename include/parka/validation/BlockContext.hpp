@@ -13,7 +13,7 @@ namespace parka::validation
 		FunctionContext& _function;
 		Context& _parent;
 		String _scope;
-		FlatMap<String, Resolvable*> _symbols;
+		FlatMap<String, ContextEntry*> _symbols;
 		bool _isInLoop;
 
 		BlockContext(FunctionContext& function, Context& parent);
@@ -27,7 +27,7 @@ namespace parka::validation
 		FunctionEntry& declare(const ast::FunctionAst& ast);
 		VariableEntry& declare(const ast::VariableAst& ast);
 		ParameterEntry& declare(const ast::ParameterAst& ast);
-		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
+		ContextEntry* findSymbol(const ast::IdentifierAst& identifier);
 		ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		const String& scope() const { return _scope; }
 		Context* parent() { return &_parent; }

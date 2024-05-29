@@ -2,17 +2,17 @@
 #define PARKA_VALIDATION_INTRINSIC_ENTRY_HPP
 
 #include "parka/ir/EntityIr.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 namespace parka::validation
 {
-	class IntrinsicEntry: public Resolvable
+	class IntrinsicEntry: public ContextEntry
 	{
 		ir::EntityIr& _ir;
 
 	public:
 
 		IntrinsicEntry(ir::EntityIr& ir):
-			Resolvable(ir.resolvableType),
+			ContextEntry(ir.resolvableType),
 			_ir(ir)
 		{}
 		IntrinsicEntry(IntrinsicEntry&&) = default;

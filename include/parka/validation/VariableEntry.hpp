@@ -3,11 +3,11 @@
 
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ir/VariableIr.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 
 namespace parka::validation
 {
-	class VariableEntry: public Resolvable
+	class VariableEntry: public ContextEntry
 	{
 		const ast::VariableAst& _ast;
 		ir::VariableIr *_ir;

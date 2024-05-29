@@ -3,7 +3,7 @@
 namespace parka::validation
 {
 	ParameterEntry::ParameterEntry(const ast::ParameterAst& ast, ir::ParameterIr *ir):
-		Resolvable(ResolvableType::Parameter),
+		ContextEntry(ResolvableType::Parameter),
 		_ast(ast),
 		_ir(ir)
 	{}

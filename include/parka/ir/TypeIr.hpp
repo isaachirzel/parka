@@ -23,10 +23,6 @@ namespace parka::ir
 		{}
 		virtual ~TypeIr() {}
 
-		virtual ConversionIr* getConversion(const TypeIr&) const { return nullptr; }
-		virtual BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const TypeIr&) const { return nullptr; }
-		virtual AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const TypeIr&) const { return nullptr; }
-		virtual const CallOperatorIr* getCallOperator(const Array<ExpressionIr*>&) const { return nullptr; }
 		virtual std::ostream& printType(std::ostream&) const = 0;
 
 		virtual bool operator==(const TypeIr& other) const { return this == &other; }

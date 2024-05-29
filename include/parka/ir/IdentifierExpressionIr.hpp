@@ -20,7 +20,7 @@ namespace parka::ir
 		IdentifierExpressionIr(const IdentifierExpressionIr&) = delete;
 
 		const auto& entity() const { return _entity; }
-		const TypeIr& type() const { return _value.type(); }
+		const TypeIr& type() const { return _entity.type(); }
 	};
 }
 

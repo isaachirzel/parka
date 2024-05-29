@@ -79,7 +79,7 @@ namespace parka::validation
 		throw std::invalid_argument("Parameters cannot be declared in a GlobalContext.");
 	}
 
-	Resolvable* GlobalContext::findSymbol(const ast::IdentifierAst& identifier)
+	ContextEntry* GlobalContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		auto& text = identifier.text();
 		auto** result = _symbols.find(text);

@@ -44,7 +44,7 @@ namespace parka::validation
 		return ref;
 	}
 
-	Resolvable* BlockContext::findSymbol(const ast::IdentifierAst& identifier)
+	ContextEntry* BlockContext::findSymbol(const ast::IdentifierAst& identifier)
 	{
 		const auto& name = identifier.text();
 		auto** symbol = _symbols.find(name);

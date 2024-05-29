@@ -12,7 +12,7 @@
 namespace parka::validation
 {
 	class GlobalContext;
-	struct Resolvable;
+	struct ContextEntry;
 	class FunctionEntry;
 	class VariableEntry;
 	class ParameterEntry;
@@ -29,7 +29,7 @@ namespace parka::validation
 		virtual FunctionEntry& declare (const ast::FunctionAst& ast) = 0;
 		virtual VariableEntry& declare (const ast::VariableAst& ast) = 0;
 		virtual ParameterEntry& declare (const ast::ParameterAst& ast) = 0;
-		virtual Resolvable* findSymbol(const ast::IdentifierAst& identifier) = 0;
+		virtual ContextEntry* findSymbol(const ast::IdentifierAst& identifier) = 0;
 		virtual ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier) = 0;
 		virtual const String& scope() const = 0;
 		virtual Context* parent() = 0;

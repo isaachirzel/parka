@@ -6,14 +6,14 @@
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/validation/LocalContext.hpp"
-#include "parka/validation/Resolvable.hpp"
+#include "parka/validation/ContextEntry.hpp"
 #include "parka/validation/VariableEntry.hpp"
 #include "parka/validation/ParameterEntry.hpp"
 #include "parka/util/FlatMap.hpp"
 
 namespace parka::validation
 {
-	struct Resolvable;
+	struct ContextEntry;
 	class GlobalContext;
 
 	class FunctionContext: public LocalContext
@@ -21,7 +21,7 @@ namespace parka::validation
 		GlobalContext& _global;
 		Context& _parent;
 		String _scope;
-		FlatMap<String, Resolvable*> _symbols;
+		FlatMap<String, ContextEntry*> _symbols;
 		Array<VariableEntry> _variables;
 		Array<ParameterEntry> _parameters;
 		const ir::TypeIr* _returnType;
@@ -39,7 +39,7 @@ namespace parka::validation
 		FunctionEntry& declare(const ast::FunctionAst& ast);
 		VariableEntry& declare(const ast::VariableAst& ast);
 		ParameterEntry& declare(const ast::ParameterAst& ast);
-		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
+		ContextEntry* findSymbol(const ast::IdentifierAst& identifier);
 		ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		
 		void setReturnType(const ir::TypeIr& type) { _returnType = &type; }

@@ -75,5 +75,15 @@ int main(int argc, const char *argv[])
 	conversions can replace the validateDefault value in that type() will return default value
 		but conversion will allow for more nuance, like integer-> i64 or u8 etc
 	
-	
+
+*/
+
+/*
+	operators are gotten per type
+	prototype is the type of a function
+
+	function has a list of types?
+	these types then have references into the type table to get the operators
+	calloperators are the function implementations essentially
+	conversions should not be on types? or maybe they should?
 */
