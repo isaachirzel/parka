@@ -2,7 +2,7 @@
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ast/VariableAst.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/VoidPrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/GlobalContext.hpp"
@@ -85,7 +85,7 @@ namespace parka::validation
 		return *symbol;
 	}
 
-	ir::LValueIr* FunctionContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
+	ir::EntityIr* FunctionContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		if (identifier.isAbsolute())
 			return _global.resolveSymbol(identifier);

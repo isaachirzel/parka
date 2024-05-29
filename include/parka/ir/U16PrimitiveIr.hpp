@@ -1,12 +1,12 @@
 #ifndef PARKA_IR_U16_PRIMITIVE_IR_HPP
 #define PARKA_IR_U16_PRIMITIVE_IR_HPP
 
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
-	class U16PrimitiveIr: public TypeIr, public LValueIr
+	class U16PrimitiveIr: public TypeIr, public EntityIr
 	{
 		String _symbol;
 

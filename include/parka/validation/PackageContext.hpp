@@ -2,7 +2,7 @@
 #define PARKA_VALIDATION_PACKAGE_CONTEXT_HPP
 
 #include "parka/ast/PackageAst.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/validation/Resolvable.hpp"
 #include "parka/validation/Context.hpp"
@@ -27,7 +27,7 @@ namespace parka::validation
 		ParameterEntry& declare(const ast::ParameterAst& ast);
 		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
 		Resolvable* findInitialSymbol(const ast::IdentifierAst& identifier);
-		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
+		ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 
 		const String& scope() const { return _scope; }
 		Context* parent() { return &_parent; }

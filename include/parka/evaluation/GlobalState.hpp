@@ -7,7 +7,7 @@
 #include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/Value.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/validation/BinaryOperatorKey.hpp"
 #include "parka/validation/ConversionKey.hpp"
@@ -27,11 +27,7 @@ namespace parka::evaluation
 		GlobalState(GlobalState&&) = default;
 		GlobalState(const GlobalState&) = delete;
 
-		Value& add(ir::LValueIr *key, const ir::TypeIr& type);
-
-		IntrinsicBinaryOperator getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const;
-		IntrinsicAssignmentOperator getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const;
-		IntrinsicConversion getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const;
+		Value& add(ir::EntityIr* key, const ir::TypeIr& type);
 	};
 }
 

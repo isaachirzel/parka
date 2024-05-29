@@ -1,17 +1,17 @@
 #ifndef PARKA_VALIDATION_INTRINSIC_ENTRY_HPP
 #define PARKA_VALIDATION_INTRINSIC_ENTRY_HPP
 
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/validation/Resolvable.hpp"
 namespace parka::validation
 {
 	class IntrinsicEntry: public Resolvable
 	{
-		ir::LValueIr& _ir;
+		ir::EntityIr& _ir;
 
 	public:
 
-		IntrinsicEntry(ir::LValueIr& ir):
+		IntrinsicEntry(ir::EntityIr& ir):
 			Resolvable(ir.resolvableType),
 			_ir(ir)
 		{}
@@ -20,7 +20,7 @@ namespace parka::validation
 
 		Context* context() { return nullptr; }
 		const String& name() const { return _ir.symbol(); }
-		ir::LValueIr* resolve() { return &_ir; }
+		ir::EntityIr* resolve() { return &_ir; }
 	};
 }
 

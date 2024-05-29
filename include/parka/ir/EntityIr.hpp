@@ -7,15 +7,15 @@
 
 namespace parka::ir
 {
-	struct LValueIr: public SymboledIr, public TypedIr
+	struct EntityIr: public SymboledIr, public TypedIr
 	{
 		const ResolvableType resolvableType;
 
-		LValueIr(ResolvableType resolvableType):
+		EntityIr(ResolvableType resolvableType):
 			resolvableType(resolvableType)
 		{}
 
-		virtual ~LValueIr() {}
+		virtual ~EntityIr() {}
 	};
 }
 

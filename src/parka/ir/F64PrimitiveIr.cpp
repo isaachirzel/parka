@@ -1,13 +1,13 @@
 #include "parka/ir/F64PrimitiveIr.hpp"
 #include "parka/enum/TypeCategory.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 namespace parka::ir
 {
 	F64PrimitiveIr F64PrimitiveIr::instance;
 	
 	F64PrimitiveIr::F64PrimitiveIr():
 		TypeIr(TypeCategory::F64),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("f64")
 	{}
 

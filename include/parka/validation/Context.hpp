@@ -7,7 +7,7 @@
 #include "parka/enum/ContextType.hpp"
 #include "parka/ast/IdentifierAst.hpp"
 #include "parka/ast/QualifiedIdentifierAst.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 
 namespace parka::validation
 {
@@ -30,7 +30,7 @@ namespace parka::validation
 		virtual VariableEntry& declare (const ast::VariableAst& ast) = 0;
 		virtual ParameterEntry& declare (const ast::ParameterAst& ast) = 0;
 		virtual Resolvable* findSymbol(const ast::IdentifierAst& identifier) = 0;
-		virtual ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier) = 0;
+		virtual ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier) = 0;
 		virtual const String& scope() const = 0;
 		virtual Context* parent() = 0;
 		virtual GlobalContext& globalContext() = 0;

@@ -12,7 +12,7 @@ namespace parka::ir
 	class BinaryOperatorIr;
 	class AssignmentOperatorIr;
 	class CallOperatorIr;
-	class ExpressionIr;
+	struct ExpressionIr;
 
 	struct TypeIr
 	{
@@ -26,7 +26,7 @@ namespace parka::ir
 		virtual ConversionIr* getConversion(const TypeIr&) const { return nullptr; }
 		virtual BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const TypeIr&) const { return nullptr; }
 		virtual AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const TypeIr&) const { return nullptr; }
-		virtual CallOperatorIr* getCallOperator(const Array<ExpressionIr*>&) const { return nullptr; }
+		virtual const CallOperatorIr* getCallOperator(const Array<ExpressionIr*>&) const { return nullptr; }
 		virtual std::ostream& printType(std::ostream&) const = 0;
 
 		virtual bool operator==(const TypeIr& other) const { return this == &other; }

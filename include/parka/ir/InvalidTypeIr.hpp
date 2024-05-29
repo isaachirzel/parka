@@ -14,6 +14,7 @@ namespace parka::ir
 
 		static InvalidTypeIr typeNameType;
 		static InvalidTypeIr packageType;
+		static InvalidTypeIr functionType;
 
 	private:
 

@@ -9,7 +9,7 @@
 
 namespace parka::ir
 {
-	class PackageIr: public LValueIr
+	class PackageIr: public EntityIr
 	{
 		String _symbol;
 		Array<PackageIr*> _packages;
@@ -19,7 +19,7 @@ namespace parka::ir
 	public:
 
 		PackageIr(String&& symbol, Array<PackageIr*> packages, Array<FunctionIr*>&& functions, Array<StructIr*>&& structs):
-			LValueIr(ResolvableType::Package),
+			EntityIr(ResolvableType::Package),
 			_symbol(std::move(symbol)),
 			_packages(std::move(packages)),
 			_functions(std::move(functions)),

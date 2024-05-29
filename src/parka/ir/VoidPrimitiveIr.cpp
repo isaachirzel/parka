@@ -6,7 +6,7 @@ namespace parka::ir
 
 	VoidPrimitiveIr::VoidPrimitiveIr(const char *name):
 		TypeIr(TypeCategory::Void),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_name(name)
 	{}
 

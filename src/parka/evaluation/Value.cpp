@@ -20,7 +20,7 @@ namespace parka::evaluation
 		other._nodePtr = nullptr;
 	}
 
-	void Value::setNode(const ir::LValueIr& node)
+	void Value::setNode(const ir::EntityIr& node)
 	{
 		_nodePtr = &node;
 	}

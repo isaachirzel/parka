@@ -1,18 +1,18 @@
 #ifndef PARKA_IR_MEMBER_IR_HPP
 #define PARKA_IR_MEMBER_IR_HPP
 
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 
 namespace parka::ir
 {
-	class MemberIr: public LValueIr
+	class MemberIr: public EntityIr
 	{
 		const TypeIr& _type;
 
 	public:
 
 		MemberIr(TypeIr& TypeIr):
-			LValueIr(ResolvableType::Member),
+			EntityIr(ResolvableType::Member),
 			_type(TypeIr)
 		{}
 		MemberIr(MemberIr&&) = default;

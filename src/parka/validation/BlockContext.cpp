@@ -55,7 +55,7 @@ namespace parka::validation
 		return *symbol;
 	}
 
-	ir::LValueIr* BlockContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
+	ir::EntityIr* BlockContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		if (identifier.isAbsolute())
 			return _global.resolveSymbol(identifier);

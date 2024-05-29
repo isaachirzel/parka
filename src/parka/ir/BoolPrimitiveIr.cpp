@@ -17,7 +17,7 @@ namespace parka::ir
 
 	BoolPrimitiveIr::BoolPrimitiveIr():
 		TypeIr(TypeCategory::Bool),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("bool")
 	{}
 

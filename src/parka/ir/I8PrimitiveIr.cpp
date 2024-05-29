@@ -9,7 +9,7 @@ namespace parka::ir
 
 	I8PrimitiveIr::I8PrimitiveIr():
 		TypeIr(TypeCategory::I8),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("i8")
 	{}
 

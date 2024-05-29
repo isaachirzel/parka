@@ -1,6 +1,6 @@
 #include "parka/validation/PackageContext.hpp"
 #include "parka/ir/ConversionIr.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/log/Indent.hpp"
 #include "parka/log/Log.hpp"
@@ -78,7 +78,7 @@ namespace parka::validation
 		return nullptr;
 	}
 
-	ir::LValueIr* PackageContext::resolveSymbol(const ast::QualifiedIdentifierAst& qualifiedIdentifier)
+	ir::EntityIr* PackageContext::resolveSymbol(const ast::QualifiedIdentifierAst& qualifiedIdentifier)
 	{
 		if (qualifiedIdentifier.isAbsolute())
 			return _global.resolveSymbol(qualifiedIdentifier);

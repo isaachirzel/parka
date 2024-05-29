@@ -9,19 +9,6 @@ using namespace parka;
 
 // wordcount: git ls-files | xargs wc -l
 
-struct A
-{
-	int operator()(const int a)
-	{
-		return a;
-	}
-
-	const char* operator()(const char* a)
-	{
-		return a;
-	}
-};
-
 // TODO: Unit testing
 // TODO: Convert log fatals to exceptions and add catch that will print out a single log fatal
 
@@ -65,27 +52,7 @@ int main(int argc, const char *argv[])
 	log::debug("Evaluation completed in $s.", evaluateTime);
 }
 
-/*
-validation lock:
 
-	auto readLock = shared_lock(mutex);
-
-	if (validated)
-		return context;
-
-	readLock.unlock();
-
-	auto writeLock = unique_lock(mutex, std::defer_lock_t);
-
-	if (writeLock.try_lock())
-	{
-		context = syntax.validate(context);
-		validated = true;
-
-		return context;
-	}
-
-*/
 
 /*
 	RESOLVABLE PROTOTYPES TYPES
@@ -101,4 +68,12 @@ validation lock:
 	unique types for functions are needed add they need to be able to be passed in as arguments
 	i need to create a new class such as Signature that will be the type
 	the signature will need to be able to be given a
+*/
+
+/*
+	getConversion will be moved to ExpressionContext
+	conversions can replace the validateDefault value in that type() will return default value
+		but conversion will allow for more nuance, like integer-> i64 or u8 etc
+	
+	
 */

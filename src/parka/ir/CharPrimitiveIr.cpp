@@ -9,7 +9,7 @@ namespace parka::ir
 
 	CharPrimitiveIr::CharPrimitiveIr():
 		TypeIr(TypeCategory::Char),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("char")
 	{}
 

@@ -10,7 +10,7 @@ namespace parka::ir
 
 	U64PrimitiveIr::U64PrimitiveIr():
 		TypeIr(TypeCategory::U64),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("u64")
 	{}
 

@@ -40,7 +40,7 @@ namespace parka::validation
 		VariableEntry& declare(const ast::VariableAst& ast);
 		ParameterEntry& declare(const ast::ParameterAst& ast);
 		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
-		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
+		ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		
 		void setReturnType(const ir::TypeIr& type) { _returnType = &type; }
 		const ir::TypeIr& returnType() const { return *_returnType; }

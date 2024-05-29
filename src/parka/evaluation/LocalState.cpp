@@ -1,5 +1,5 @@
 #include "parka/evaluation/LocalState.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/log/Log.hpp"
 
 namespace parka::evaluation
@@ -52,22 +52,7 @@ namespace parka::evaluation
 		_jumpType = returningType;
 	}
 
-	IntrinsicBinaryOperator LocalState::getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const
-	{
-		return _globalState.getBinaryOperator(left, right, binaryExpressionType);
-	}
-
-	IntrinsicAssignmentOperator LocalState::getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const
-	{
-		return _globalState.getAssignmentOperator(left, right, assignmentType);
-	}
-	
-	IntrinsicConversion LocalState::getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const
-	{
-		return _globalState.getConversion(to, from);
-	}
-
-	Value& LocalState::findValue(const ir::LValueIr& node)
+	Value& LocalState::findValue(const ir::EntityIr& node)
 	{
 		for (usize i = _values.length(); i-- > 0;)
 		{

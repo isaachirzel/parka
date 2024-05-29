@@ -19,7 +19,7 @@ namespace parka::validation
 
 	private:
 
-		void addIntrinsic(ir::LValueIr& intrinsic);
+		void addIntrinsic(ir::EntityIr& intrinsic);
 
 	public:
 
@@ -33,7 +33,7 @@ namespace parka::validation
 		VariableEntry& declare(const ast::VariableAst& ast);
 		ParameterEntry& declare(const ast::ParameterAst& ast);
 		Resolvable* findSymbol(const ast::IdentifierAst& identifier);
-		ir::LValueIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
+		ir::EntityIr* resolveSymbol(const ast::QualifiedIdentifierAst& identifier);
 		const String& scope() const { return _scope; }
 		Context* parent() { return nullptr; }
 		GlobalContext& globalContext() { return *this; }

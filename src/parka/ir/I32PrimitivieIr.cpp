@@ -3,7 +3,7 @@
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/I32PrimitiveIr.hpp"
 #include "parka/ir/IntegerPrimitiveIr.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/util/AssignmentOperatorUtil.hpp"
 #include "parka/util/BinaryOperatorUtil.hpp"
 #include "parka/util/Integer.hpp"
@@ -14,7 +14,7 @@ namespace parka::ir
 
 	I32PrimitiveIr::I32PrimitiveIr():
 		TypeIr(TypeCategory::I32),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("i32")
 	{}
 	

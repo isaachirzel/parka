@@ -214,7 +214,7 @@ namespace parka::evaluation
 
 	void evaluateAssignmentStatement(const AssignmentStatementIr& ir, LocalState& state)
 	{
-		auto& lhs = state.findValue(ir.identifier().value());
+		auto& lhs = state.findValue(ir.identifier().entity());
 		auto& rhs = evaluateExpression(ir.value(), state);
 
 		evaluateAssignmentOperator(ir.op(), lhs, rhs, state);
@@ -312,7 +312,7 @@ namespace parka::evaluation
 	{
 		// TODO: This makes no sense for function calls
 
-		auto& value = state.findValue(ir.value());
+		auto& value = state.findValue(ir.entity());
 
 		return value;
 	}

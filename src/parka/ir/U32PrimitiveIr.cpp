@@ -10,7 +10,7 @@ namespace parka::ir
 
 	U32PrimitiveIr::U32PrimitiveIr():
 		TypeIr(TypeCategory::U32),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("u32")
 	{}
 

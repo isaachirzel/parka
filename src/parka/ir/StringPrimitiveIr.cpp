@@ -7,7 +7,7 @@ namespace parka::ir
 
 	StringPrimitiveIr::StringPrimitiveIr(const char *name):
 		TypeIr(TypeCategory::String),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_name(name)
 	{}
 

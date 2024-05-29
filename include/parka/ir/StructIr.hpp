@@ -1,11 +1,11 @@
 #ifndef PARKA_IR_STRUCT_HPP
 #define PARKA_IR_STRUCT_HPP
 
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 
 namespace parka::ir
 {
-	class StructIr: public TypeIr, public LValueIr
+	class StructIr: public TypeIr, public EntityIr
 	{
 		String _symbol;
 
@@ -13,7 +13,7 @@ namespace parka::ir
 
 		StructIr(String&& symbol):
 			TypeIr(TypeCategory::Struct),
-			LValueIr(ResolvableType::Struct),
+			EntityIr(ResolvableType::Struct),
 			_symbol(std::move(symbol))
 		{}
 		StructIr(StructIr&&) = default;

@@ -1,13 +1,13 @@
 #ifndef PARKA_IR_STRING_PRIMITIVE_IR_HPP
 #define PARKA_IR_STRING_PRIMITIVE_IR_HPP
 
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
-	class StringPrimitiveIr: public TypeIr, public LValueIr
+	class StringPrimitiveIr: public TypeIr, public EntityIr
 	{
 		String _name;
 

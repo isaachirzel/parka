@@ -41,7 +41,7 @@ namespace parka::validation
 		}
 	}
 
-	void GlobalContext::addIntrinsic(ir::LValueIr& intrinsic)
+	void GlobalContext::addIntrinsic(ir::EntityIr& intrinsic)
 	{
 		auto& entry = _intrinsics.push(IntrinsicEntry(intrinsic));
 		
@@ -90,7 +90,7 @@ namespace parka::validation
 		return {};
 	}
 
-	ir::LValueIr* GlobalContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
+	ir::EntityIr* GlobalContext::resolveSymbol(const ast::QualifiedIdentifierAst& identifier)
 	{
 		auto* entry = findSymbol(identifier[0]);
 

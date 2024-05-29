@@ -9,7 +9,7 @@ namespace parka::ir
 
 	I64PrimitiveIr::I64PrimitiveIr():
 		TypeIr(TypeCategory::I64),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("i64")
 	{}
 

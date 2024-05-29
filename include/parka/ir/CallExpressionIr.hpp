@@ -4,7 +4,7 @@
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/PrototypeIr.hpp"
 #include "parka/util/Array.hpp"
 
 namespace parka::ir
@@ -13,13 +13,13 @@ namespace parka::ir
 	{
 		ExpressionIr& _subject;
 		Array<ExpressionIr*> _arguments;
-		CallOperatorIr& _op;
+		const CallOperatorIr& _op;
 
 		// TODO: Make operator binary operator, i need more flexibility in the operator system
 
 	public:
 
-		CallExpressionIr(ExpressionIr& subject, Array<ExpressionIr*>&& arguments, CallOperatorIr& op):
+		CallExpressionIr(ExpressionIr& subject, Array<ExpressionIr*>&& arguments, const CallOperatorIr& op):
 			ExpressionIr(ExpressionType::Call),
 			_subject(subject),
 			_arguments(std::move(arguments)),
@@ -31,7 +31,7 @@ namespace parka::ir
 		const auto& subject() const { return _subject; }
 		const auto& arguments() const { return _arguments; }
 		const auto& op() const { return _op; }
-		const TypeIr& type() const { return _op.returnType(); }
+		const PrototypeIr& type() const { return _op.prototype(); }
 	};
 }
 

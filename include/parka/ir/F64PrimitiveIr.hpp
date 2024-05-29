@@ -1,12 +1,12 @@
 #ifndef PARKA_IR_F64_PRIMITIVE_IR_HPP
 #define PARKA_IR_F64_PRIMITIVE_IR_HPP
 
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
-	class F64PrimitiveIr: public TypeIr, public LValueIr
+	class F64PrimitiveIr: public TypeIr, public EntityIr
 	{
 		String _symbol;
 

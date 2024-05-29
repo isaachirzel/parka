@@ -2,7 +2,6 @@
 #define PARKA_IR_FUNCTION_BODY_IR_HPP
 
 #include "parka/ir/BlockStatementIr.hpp"
-#include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 
 namespace parka::ir

@@ -9,7 +9,7 @@ namespace parka::ir
 
 	I16PrimitiveIr::I16PrimitiveIr():
 		TypeIr(TypeCategory::I16),
-		LValueIr(ResolvableType::Primitive),
+		EntityIr(ResolvableType::Primitive),
 		_symbol("i16")
 	{}
 

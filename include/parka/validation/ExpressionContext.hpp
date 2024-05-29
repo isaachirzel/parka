@@ -16,6 +16,12 @@ namespace parka::validation
 		*/
 	};
 
+	// CallableIr
+
+
+	// type `$` does not provide a call operator.
+	// Called object type int is not a function or a function pointer.
+
 	class TypeContext
 	{
 		/*

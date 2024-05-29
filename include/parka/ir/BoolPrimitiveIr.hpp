@@ -2,13 +2,13 @@
 #define PARKA_IR_BOOL_PRIMITIVE_IR_HPP
 
 #include "parka/ir/BinaryOperatorIr.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/InvalidTypeIr.hpp"
 
 namespace parka::ir
 {
-	class BoolPrimitiveIr: public TypeIr, public LValueIr
+	class BoolPrimitiveIr: public TypeIr, public EntityIr
 	{
 		String _symbol;
 

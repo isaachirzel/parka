@@ -1,12 +1,10 @@
 #ifndef PARKA_EVALUATION_STATE_HPP
 #define PARKA_EVALUATION_STATE_HPP
 
-#include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/evaluation/GlobalState.hpp"
-#include "parka/evaluation/IntrinsicConversion.hpp"
 #include "parka/evaluation/Value.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/util/BigArray.hpp"
 #include "parka/util/Common.hpp"
@@ -37,11 +35,7 @@ namespace parka::evaluation
 
 		void setReturning(JumpType returningType);
 
-		IntrinsicBinaryOperator getBinaryOperator(const ir::TypeIr& left, const ir::TypeIr& right, BinaryExpressionType binaryExpressionType) const;
-		IntrinsicAssignmentOperator getAssignmentOperator(const ir::TypeIr& left, const ir::TypeIr& right, AssignmentType assignmentType) const;
-		IntrinsicConversion getConversion(const ir::TypeIr& to, const ir::TypeIr& from) const;
-
-		Value& findValue(const ir::LValueIr& node);
+		Value& findValue(const ir::EntityIr& node);
 		Value& returnValue();
 		void startBreak() { _jumpType = JumpType::Break; }
 		void cancelBreak() { if (_jumpType == JumpType::Break) _jumpType = JumpType::None; }

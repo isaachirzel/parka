@@ -49,6 +49,28 @@ namespace parka::validation
 	using namespace parka::ir;
 	using namespace parka::ast;
 
+	/*
+	validation lock:
+
+		auto readLock = shared_lock(mutex);
+
+		if (validated)
+			return context;
+
+		readLock.unlock();
+
+		auto writeLock = unique_lock(mutex, std::defer_lock_t);
+
+		if (writeLock.try_lock())
+		{
+			context = syntax.validate(context);
+			validated = true;
+
+			return context;
+		}
+
+	*/
+
 	// static bool validateFunctions(Array<FunctionIr*>& functions, Array<FunctionEntry>& entries)
 	// {
 	// 	bool success = true;
@@ -153,6 +175,9 @@ namespace parka::validation
 			if (entry.ast().hasBody())
 			{
 				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
+
+				if (body)
+					ir->prototype().setCallOperator(CallOperatorIr(*body));
 
 				log::notImplemented(here());
 				// if (body)

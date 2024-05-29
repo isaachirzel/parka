@@ -2,12 +2,12 @@
 #define PARKA_IR_PARAMETER_HPP
 
 #include "parka/enum/ResolvableType.hpp"
-#include "parka/ir/LValueIr.hpp"
+#include "parka/ir/EntityIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 
 namespace parka::ir
 {
-	class ParameterIr: public LValueIr
+	class ParameterIr: public EntityIr
 	{
 		String _symbol;
 		const TypeIr& _type;
@@ -15,7 +15,7 @@ namespace parka::ir
 	public:
 
 		ParameterIr(const TypeIr& type):
-			LValueIr(ResolvableType::Parameter),
+			EntityIr(ResolvableType::Parameter),
 			_type(type)
 		{}
 		ParameterIr(ParameterIr&&) = default;
