@@ -126,7 +126,7 @@ namespace parka::validation
 
 		if (!context)
 		{
-			auto ins = _types.insert(&type, TypeContext());
+			auto ins = _types.insert(&type, TypeContext(*this));
 
 			context = &*ins;
 		}

@@ -1,9 +1,9 @@
+/*
 
 function double(number: i32): i32
 {
 	return number * 2;
 }
-/*
 function factorial(count: i32): i32
 {
 	var one: i32 = 1;
@@ -14,7 +14,6 @@ function factorial(count: i32): i32
 
 	return count * factorial(count - 1);
 }
-*/
 
 function fibonacci(a: i32): i32
 {
@@ -42,11 +41,19 @@ function notImplemented();
 
 function main(): i32
 {
-	/*
 	var a = if true == false
 		then fibonacci(15)
 		else factorial(5);
-	*/
 	
 	return fibonacci(15);
+}
+*/
+
+function f(a: i32)
+{
+}
+
+function main()
+{
+	f(1);
 }

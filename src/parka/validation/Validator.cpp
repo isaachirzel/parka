@@ -18,6 +18,7 @@
 #include "parka/ir/BoolPrimitiveIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
+#include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/CastExpressionIr.hpp"
 #include "parka/ir/ConditionalExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
@@ -138,7 +139,7 @@ namespace parka::validation
 			return &expression;
 
 		auto& typeContext = context.globalContext().getTypeContext(expressionType);
-		auto* conversion = typeContext.getConversion(toType);
+		auto* conversion = typeContext.getConversionTo(toType);
 
 		if (!conversion)
 			return {};
@@ -175,14 +176,15 @@ namespace parka::validation
 
 			if (entry.ast().hasBody())
 			{
+				auto& typeContext = context.getTypeContext(ir->prototype());
 				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
 
-				// if (body)
-				// 	ir->prototype().setCallOperator(CallOperatorIr(*body));
+				if (body)
+				{
+					auto callOperator = CallOperatorIr(ir->prototype(), *body);
 
-				log::notImplemented(here());
-				// if (body)
-				// 	ir->setCallOperator(*body);
+					typeContext.addCallOperator(std::move(callOperator));
+				}
 			}
 
 			if (!entryPoint && ir->symbol() == "main")
@@ -679,7 +681,7 @@ namespace parka::validation
 
 		if (!op)
 		{
-			// TODO: show the signature
+			// TODO: show the given signature
 			// TODO: Specialize error for functions
 			// TODO: Explain was is wrong with arguments
 			log::error(ast.snippet(), "No call operator with this signature exists on type `$`.", type);

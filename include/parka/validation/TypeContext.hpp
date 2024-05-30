@@ -10,17 +10,27 @@
 
 namespace parka::validation
 {
+	class GlobalContext;
+
 	class TypeContext
 	{
+		GlobalContext& _globalContext;
+		Array<ir::CallOperatorIr> _callOperators;
+
 	public:
 
-		TypeContext() = default;
+		TypeContext(GlobalContext& globalContext):
+			_globalContext(globalContext),
+			_callOperators()
+		{}
 		TypeContext(TypeContext&&) = default;
 		TypeContext(const TypeContext&) = delete;
 
-		ir::ConversionIr* getConversion(const ir::TypeIr&) const;
+		ir::ConversionIr* getConversionTo(const ir::TypeIr&) const;
 		ir::BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const;
 		ir::AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const ir::TypeIr&) const;
+
+		void addCallOperator(ir::CallOperatorIr&& callOperator);
 		const ir::CallOperatorIr* getCallOperator(const Array<ir::ExpressionIr*>&) const;
 	};
 }

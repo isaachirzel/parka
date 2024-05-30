@@ -11,7 +11,7 @@ namespace parka::ir
 	class PrototypeIr: public TypeIr
 	{
 		Array<ParameterIr*> _parameters;
-		const TypeIr* _returnType;
+		const TypeIr& _returnType;
 
 	public:
 
@@ -22,7 +22,7 @@ namespace parka::ir
 		std::ostream& printType(std::ostream& out) const;
 
 		const auto& parameters() const { return _parameters; }
-		const auto& returnType() const { return *_returnType; }
+		const auto& returnType() const { return _returnType; }
 
 		bool operator==(const TypeIr& other) const;
 		bool operator!=(const TypeIr& other) const;

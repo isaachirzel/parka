@@ -5,25 +5,12 @@ namespace parka::ir
 	PrototypeIr::PrototypeIr(Array<ParameterIr*>&& parameters, const TypeIr& returnType):
 		TypeIr(TypeCategory::Function),
 		_parameters(std::move(parameters)),
-		_returnType(&returnType)
+		_returnType(returnType)
 	{}
 
 	// const CallOperatorIr* PrototypeIr::getCallOperator(const Array<ExpressionIr*>& arguments) const
 	// {
-	// 	if (arguments.length() != _parameters.length())
-	// 		return nullptr;
 
-	// 	for (usize i = 0; i < _parameters.length(); ++i)
-	// 	{
-	// 		auto& parameter = *_parameters[i];
-	// 		auto& argument = *arguments[i];
-	// 		auto* conversion = argument.type().getConversion(parameter.type());
-
-	// 		if (!conversion)
-	// 			return nullptr;
-	// 	}
-
-	// 	return &_callOperator;
 	// }
 
 	std::ostream& PrototypeIr::printType(std::ostream& out) const

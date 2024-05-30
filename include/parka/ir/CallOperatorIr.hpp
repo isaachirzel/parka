@@ -1,8 +1,8 @@
 #ifndef PARKA_IR_CALL_OPERATOR_IR_HPP
 #define PARKA_IR_CALL_OPERATOR_IR_HPP
 
+#include "parka/ir/PrototypeIr.hpp"
 #include "parka/ir/FunctionBodyIr.hpp"
-#include "parka/ir/TypeIr.hpp"
 #include "parka/util/Optional.hpp"
 
 namespace parka::ir
