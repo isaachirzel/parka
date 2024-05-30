@@ -119,4 +119,18 @@ namespace parka::validation
 		
 		return {};
 	}
+
+	TypeContext& GlobalContext::getTypeContext(const ir::TypeIr& type)
+	{
+		auto* context = _types.find(&type);
+
+		if (!context)
+		{
+			auto ins = _types.insert(&type, TypeContext());
+
+			context = &*ins;
+		}
+
+		return *context;
+	}
 }

@@ -19,7 +19,6 @@ namespace parka::ir
 
 	public:
 
-		ConversionIr* getConversion(const TypeIr& toType) const;
 		std::ostream& printType(std::ostream& out) const;
 	};
 }

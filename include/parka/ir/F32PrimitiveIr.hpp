@@ -22,8 +22,6 @@ namespace parka::ir
 
 	public:
 
-		BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const TypeIr&) const;
-
 		std::ostream& printType(std::ostream& out) const;
 		const String& symbol() const { return _symbol; }
 		const TypeIr& type() const { return InvalidTypeIr::typeNameType; }

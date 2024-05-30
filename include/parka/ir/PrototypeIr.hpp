@@ -19,7 +19,6 @@ namespace parka::ir
 		PrototypeIr(PrototypeIr&&) = default;
 		PrototypeIr(const PrototypeIr&) = delete;
 
-		virtual const CallOperatorIr* getCallOperator(const Array<ExpressionIr*>&) const;
 		std::ostream& printType(std::ostream& out) const;
 
 		const auto& parameters() const { return _parameters; }

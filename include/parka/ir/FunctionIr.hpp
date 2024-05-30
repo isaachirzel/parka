@@ -1,7 +1,6 @@
 #ifndef PARKA_IR_FUNCTION_IR_HPP
 #define PARKA_IR_FUNCTION_IR_HPP
 
-#include "parka/ir/InvalidTypeIr.hpp"
 #include "parka/ir/EntityIr.hpp"
 #include "parka/ir/PrototypeIr.hpp"
 

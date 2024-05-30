@@ -4,8 +4,10 @@
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/CallOperatorIr.hpp"
+#include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/TypeIr.hpp"
+
 namespace parka::validation
 {
 	class TypeContext

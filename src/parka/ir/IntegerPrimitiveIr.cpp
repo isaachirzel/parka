@@ -12,13 +12,13 @@ namespace parka::ir
 		TypeIr(TypeCategory::Integer)
 	{}
 
-	ConversionIr* IntegerPrimitiveIr::getConversion(const TypeIr& toType) const
-	{
-		if (toType == I32PrimitiveIr::instance)
-			return &i32Conversion;
+	// ConversionIr* IntegerPrimitiveIr::getConversion(const TypeIr& toType) const
+	// {
+	// 	if (toType == I32PrimitiveIr::instance)
+	// 		return &i32Conversion;
 
-		return nullptr;
-	}
+	// 	return nullptr;
+	// }
 
 	std::ostream& IntegerPrimitiveIr::printType(std::ostream& out) const
 	{

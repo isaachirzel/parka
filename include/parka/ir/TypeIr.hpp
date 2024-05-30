@@ -1,19 +1,10 @@
 #ifndef PARKA_IR_TYPE_IR_HPP
 #define PARKA_IR_TYPE_IR_HPP
 
-#include "parka/enum/AssignmentType.hpp"
-#include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/TypeCategory.hpp"
-#include "parka/util/Array.hpp"
 
 namespace parka::ir
 {
-	class ConversionIr;
-	class BinaryOperatorIr;
-	class AssignmentOperatorIr;
-	class CallOperatorIr;
-	struct ExpressionIr;
-
 	struct TypeIr
 	{
 		const TypeCategory typeCategory;
