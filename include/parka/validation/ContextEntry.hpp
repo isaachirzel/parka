@@ -10,12 +10,12 @@ namespace parka::validation
 {
 	struct ContextEntry
 	{
-		const EntityType resolvableType;
+		const EntityType entityType;
 
 	public:
 
-		ContextEntry(EntityType resolvableType):
-			resolvableType(resolvableType)
+		ContextEntry(EntityType entityType):
+			entityType(entityType)
 		{}
 		virtual ~ContextEntry() {}
 

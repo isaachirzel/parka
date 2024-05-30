@@ -9,10 +9,10 @@ namespace parka::ir
 {
 	struct EntityIr: public SymboledIr, public TypedIr
 	{
-		const EntityType resolvableType;
+		const EntityType entityType;
 
-		EntityIr(EntityType resolvableType):
-			resolvableType(resolvableType)
+		EntityIr(EntityType entityType):
+			entityType(entityType)
 		{}
 
 		virtual ~EntityIr() {}

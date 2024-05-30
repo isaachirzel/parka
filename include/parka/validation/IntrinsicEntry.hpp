@@ -12,7 +12,7 @@ namespace parka::validation
 	public:
 
 		IntrinsicEntry(ir::EntityIr& ir):
-			ContextEntry(ir.resolvableType),
+			ContextEntry(ir.entityType),
 			_ir(ir)
 		{}
 		IntrinsicEntry(IntrinsicEntry&&) = default;

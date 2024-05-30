@@ -318,7 +318,7 @@ namespace parka::validation
 		}
 
 
-		switch (lValue->resolvableType)
+		switch (lValue->entityType)
 		{
 			case EntityType::Primitive:
 			case EntityType::Struct:
@@ -328,7 +328,7 @@ namespace parka::validation
 				// FIXME: Idk undo this
 				// TODO: Figure out what the referred thing was for better clarity
 				// TODO: Maybe show "other thing defined here"
-				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", lValue->resolvableType, ast.identifier());
+				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", lValue->entityType, ast.identifier());
 				return {};
 		}
 

@@ -29,7 +29,7 @@ namespace parka::validation
 		{
 			auto* previous = *insertion;
 
-			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in the package $.", previous->resolvableType, previous->name(), _scope);
+			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in the package $.", previous->entityType, previous->name(), _scope);
 		}
 
 		return entry;

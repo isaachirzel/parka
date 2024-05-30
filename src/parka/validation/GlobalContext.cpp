@@ -63,7 +63,7 @@ namespace parka::validation
 		{
 			auto* previous = *insertion;
 
-			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in global scope.", previous->resolvableType, previous->name());
+			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in global scope.", previous->entityType, previous->name());
 		}
 
 		return entry;
