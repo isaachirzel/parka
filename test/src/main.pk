@@ -49,11 +49,11 @@ function main(): i32
 }
 */
 
-function f(a: i32)
+function f()
 {
 }
 
 function main()
 {
-	f(1);
+	f();
 }

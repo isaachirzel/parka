@@ -1,5 +1,8 @@
 #include "parka/evaluation/AssignmentOperatorEvaluator.hpp"
 #include "parka/enum/AssignmentType.hpp"
+#include "parka/enum/PrimitiveType.hpp"
+#include "parka/enum/TypeCategory.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
@@ -84,33 +87,35 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicIntegerAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		switch (ir.right().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::Integer:
+			case PrimitiveType::Integer:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, Integer>(ir, left, right);
 
-			case TypeCategory::I8:
+			case PrimitiveType::I8:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, i8>(ir, left, right);
 
-			case TypeCategory::I16:
+			case PrimitiveType::I16:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, i16>(ir, left, right);
 
-			case TypeCategory::I32:
+			case PrimitiveType::I32:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, i32>(ir, left, right);
 
-			case TypeCategory::I64:
+			case PrimitiveType::I64:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, i64>(ir, left, right);
 
-			case TypeCategory::U8:
+			case PrimitiveType::U8:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, u8>(ir, left, right);
 
-			case TypeCategory::U16:
+			case PrimitiveType::U16:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, u16>(ir, left, right);
 
-			case TypeCategory::U32:
+			case PrimitiveType::U32:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, u32>(ir, left, right);
 
-			case TypeCategory::U64:
+			case PrimitiveType::U64:
 				return evaluateIntrinsicIntegerAssignmentOperator<Left, u64>(ir, left, right);
 
 			default:
@@ -163,15 +168,17 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicFloatAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		switch (ir.right().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::Float:
+			case PrimitiveType::Float:
 				return evaluateIntrinsicFloatAssignmentOperator<Left, Float>(ir, left, right);
 
-			case TypeCategory::F32:
+			case PrimitiveType::F32:
 				return evaluateIntrinsicFloatAssignmentOperator<Left, f32>(ir, left, right);
 
-			case TypeCategory::F64:
+			case PrimitiveType::F64:
 				return evaluateIntrinsicFloatAssignmentOperator<Left, f64>(ir, left, right);
 
 			default:
@@ -202,7 +209,9 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicBoolAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		if (right.type().typeCategory == TypeCategory::Bool)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+
+		if (primitive.primitiveType() == PrimitiveType::Bool)
 			return evaluateIntrinsicBoolAssignmentOperator<Left, bool>(ir, left, right);
 
 		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
@@ -229,7 +238,9 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicCharAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		if (right.type().typeCategory == TypeCategory::Char)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+
+		if (primitive.primitiveType() == PrimitiveType::Char)
 			return evaluateIntrinsicCharAssignmentOperator<Left, char>(ir, left, right);
 
 		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
@@ -237,42 +248,44 @@ namespace parka::evaluation
 
 	void evaluateIntrinsicAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		switch (ir.left().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.left());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::I8:
+			case PrimitiveType::I8:
 				return evaluateIntrinsicIntegerAssignmentOperator<i8>(ir, left, right);
 
-			case TypeCategory::I16:
+			case PrimitiveType::I16:
 				return evaluateIntrinsicIntegerAssignmentOperator<i16>(ir, left, right);
 
-			case TypeCategory::I32:
+			case PrimitiveType::I32:
 				return evaluateIntrinsicIntegerAssignmentOperator<i32>(ir, left, right);
 
-			case TypeCategory::I64:
+			case PrimitiveType::I64:
 				return evaluateIntrinsicIntegerAssignmentOperator<i64>(ir, left, right);
 
-			case TypeCategory::U8:
+			case PrimitiveType::U8:
 				return evaluateIntrinsicIntegerAssignmentOperator<u8>(ir, left, right);
 
-			case TypeCategory::U16:
+			case PrimitiveType::U16:
 				return evaluateIntrinsicIntegerAssignmentOperator<u16>(ir, left, right);
 
-			case TypeCategory::U32:
+			case PrimitiveType::U32:
 				return evaluateIntrinsicIntegerAssignmentOperator<u32>(ir, left, right);
 
-			case TypeCategory::U64:
+			case PrimitiveType::U64:
 				return evaluateIntrinsicIntegerAssignmentOperator<u64>(ir, left, right);
 
-			case TypeCategory::F32:
+			case PrimitiveType::F32:
 				return evaluateIntrinsicFloatAssignmentOperator<f32>(ir, left, right);
 
-			case TypeCategory::F64:
+			case PrimitiveType::F64:
 				return evaluateIntrinsicFloatAssignmentOperator<f64>(ir, left, right);
 
-			case TypeCategory::Bool:
+			case PrimitiveType::Bool:
 				return evaluateIntrinsicBoolAssignmentOperator<bool>(ir, left, right);
 
-			case TypeCategory::Char:
+			case PrimitiveType::Char:
 				return evaluateIntrinsicCharAssignmentOperator<char>(ir, left, right);
 
 			default:

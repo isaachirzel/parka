@@ -6,22 +6,7 @@ namespace parka
 	enum class TypeCategory
 	{
 		Invalid,
-		Void,
-		Integer,
-		I8,
-		I16,
-		I32,
-		I64,
-		U8,
-		U16,
-		U32,
-		U64,
-		Float,
-		F32,
-		F64,
-		Bool,
-		Char,
-		String,
+		Primitive,
 		Function,
 		Struct
 	};

@@ -3,7 +3,7 @@
 namespace parka::validation
 {
 	VariableEntry::VariableEntry(const ast::VariableAst& ast, ir::VariableIr *ir):
-		ContextEntry(ResolvableType::Variable),
+		ContextEntry(EntityType::Variable),
 		_ast(ast),
 		_ir(ir)
 	{}

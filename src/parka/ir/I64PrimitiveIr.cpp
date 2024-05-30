@@ -1,19 +1,12 @@
-#include "parka/ir/I64PrimitiveIr.hpp"
-#include "parka/ir/IntegerPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/util/AssignmentOperatorUtil.hpp"
 #include "parka/util/BinaryOperatorUtil.hpp"
 
 namespace parka::ir
 {
-	I64PrimitiveIr I64PrimitiveIr::instance;
 
-	I64PrimitiveIr::I64PrimitiveIr():
-		TypeIr(TypeCategory::I64),
-		EntityIr(ResolvableType::Primitive),
-		_symbol("i64")
-	{}
-
-	// BinaryOperatorIr* I64PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
+	// BinaryOperatorIr* PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
 	// {
 	// 	switch (binaryExpressionType)
 	// 	{
@@ -21,7 +14,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::Add, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::Add, i64, Integer>();
 	// 			break;
 
@@ -29,7 +22,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::Subtract, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::Subtract, i64, Integer>();
 	// 			break;
 
@@ -37,7 +30,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::Multiply, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::Multiply, i64, Integer>();
 	// 			break;
 
@@ -45,7 +38,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::Divide, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::Divide, i64, Integer>();
 	// 			break;
 
@@ -53,7 +46,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::Modulus, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::Modulus, i64, Integer>();
 	// 			break;
 
@@ -61,7 +54,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::BitwiseOr, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::BitwiseOr, i64, Integer>();
 	// 			break;
 
@@ -69,7 +62,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::BitwiseXor, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::BitwiseXor, i64, Integer>();
 	// 			break;
 
@@ -77,7 +70,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::BitwiseAnd, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::BitwiseAnd, i64, Integer>();
 	// 			break;
 
@@ -85,7 +78,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::LeftShift, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::LeftShift, i64, Integer>();
 	// 			break;
 
@@ -93,7 +86,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::RightShift, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::RightShift, i64, Integer>();
 	// 			break;
 
@@ -101,7 +94,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::LessThan, i64, i64, bool>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::LessThan, i64, Integer, bool>();
 	// 			break;
 
@@ -109,7 +102,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::GreaterThan, i64, i64, bool>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::GreaterThan, i64, Integer, bool>();
 	// 			break;
 
@@ -117,7 +110,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::LessThanOrEqualTo, i64, i64, bool>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::LessThanOrEqualTo, i64, Integer, bool>();
 	// 			break;
 
@@ -125,7 +118,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::GreaterThanOrEqualTo, i64, i64, bool>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::GreaterThanOrEqualTo, i64, Integer, bool>();
 	// 			break;
 
@@ -134,7 +127,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::Equals, i64, i64, bool>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::Equals, i64, Integer, bool>();
 	// 			break;
 
@@ -142,7 +135,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &binop<BinaryExpressionType::NotEquals, i64, i64, bool>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &binop<BinaryExpressionType::NotEquals, i64, Integer, bool>();
 	// 			break;
 
@@ -154,7 +147,7 @@ namespace parka::ir
 	// 	return nullptr;
 	// }
 
-	// AssignmentOperatorIr* I64PrimitiveIr::getAssignmentOperator(AssignmentType assignmentType, const TypeIr& other) const
+	// AssignmentOperatorIr* PrimitiveIr::getAssignmentOperator(AssignmentType assignmentType, const TypeIr& other) const
 	// {
 	// 	switch (assignmentType)
 	// 	{
@@ -162,7 +155,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::Assign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::Assign, i64, Integer>();
 	// 			break;
 
@@ -170,7 +163,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::AddAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::AddAssign, i64, Integer>();
 	// 			break;
 
@@ -178,7 +171,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::SubtractAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::SubtractAssign, i64, Integer>();
 	// 			break;
 
@@ -186,7 +179,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::MultiplyAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::MultiplyAssign, i64, Integer>();
 	// 			break;
 
@@ -194,7 +187,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::DivideAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::DivideAssign, i64, Integer>();
 	// 			break;
 
@@ -202,7 +195,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::ModulusAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::ModulusAssign, i64, Integer>();
 	// 			break;
 
@@ -210,7 +203,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::LeftShiftAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::LeftShiftAssign, i64, Integer>();
 	// 			break;
 
@@ -218,7 +211,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::RightShiftAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::RightShiftAssign, i64, Integer>();
 	// 			break;
 
@@ -226,7 +219,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::BitwiseOrAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::BitwiseOrAssign, i64, Integer>();
 	// 			break;
 
@@ -234,7 +227,7 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::BitwiseXorAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::BitwiseXorAssign, i64, Integer>();
 	// 			break;
 
@@ -242,17 +235,11 @@ namespace parka::ir
 	// 			if (other == *this)
 	// 				return &assgn<AssignmentType::BitwiseAndAssign, i64>();
 
-	// 			if (other == IntegerPrimitiveIr::instance)
+	// 			if (other == PrimitiveIr::integerPrimitive)
 	// 				return &assgn<AssignmentType::BitwiseAndAssign, i64, Integer>();
 	// 			break;
 	// 	}
 		
 	// 	return nullptr;
 	// }
-
-	std::ostream& I64PrimitiveIr::printType(std::ostream& out) const
-	{
-		out << _symbol;
-		return out;
-	}
 }

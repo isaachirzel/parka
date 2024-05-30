@@ -87,3 +87,17 @@ int main(int argc, const char *argv[])
 	calloperators are the function implementations essentially
 	conversions should not be on types? or maybe they should?
 */
+
+/*
+	in c++, functions are by default handled as overloads, they have candidates even
+	if there is only one function implementation for the symbol. This gives functions a flexible type
+
+	Function pointers have a definite type and the error is more "this argument is invalid because of this."
+
+	Conversions to function pointers eventually need to be handled ? This should be resolved similarly to fucntion calls
+
+	Structs with call operators are handled like functions with flexible types
+
+	I honeslty thing that I should handle functions as overloads only if there are more than 1 overload
+*/
+

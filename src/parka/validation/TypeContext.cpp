@@ -49,7 +49,7 @@ namespace parka::validation
 
 	const ir::CallOperatorIr* TypeContext::getCallOperator(const Array<ir::ExpressionIr*>& arguments) const
 	{
-
+		// TODO: Show all candidates
 		for (const auto& op : _callOperators)
 		{
 			if (isCompatible(arguments, op, _globalContext))

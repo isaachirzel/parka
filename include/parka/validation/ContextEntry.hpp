@@ -1,7 +1,7 @@
 #ifndef PARKA_VALIDATION_RESOLVABLE_HPP
 #define PARKA_VALIDATION_RESOLVABLE_HPP
 
-#include "parka/enum/ResolvableType.hpp"
+#include "parka/enum/EntityType.hpp"
 #include "parka/validation/Context.hpp"
 #include "parka/util/String.hpp"
 #include "parka/ir/EntityIr.hpp"
@@ -10,11 +10,11 @@ namespace parka::validation
 {
 	struct ContextEntry
 	{
-		const ResolvableType resolvableType;
+		const EntityType resolvableType;
 
 	public:
 
-		ContextEntry(ResolvableType resolvableType):
+		ContextEntry(EntityType resolvableType):
 			resolvableType(resolvableType)
 		{}
 		virtual ~ContextEntry() {}

@@ -5,8 +5,8 @@
 // namespace parka::validation
 // {
 // 	BinaryOperatorKey::BinaryOperatorKey():
-// 		_left(&ir::VoidPrimitiveIr::voidPrimitive),
-// 		_right(&ir::VoidPrimitiveIr::voidPrimitive),
+// 		_left(&ir::PrimitiveIr::voidPrimitive),
+// 		_right(&ir::PrimitiveIr::voidPrimitive),
 // 		_binaryExpressionType(BinaryExpressionType::Add)
 // 	{}
 

@@ -1,16 +1,9 @@
-#include "parka/ir/CharPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 
 namespace parka::ir
 {
-	CharPrimitiveIr CharPrimitiveIr::instance;
-
-	CharPrimitiveIr::CharPrimitiveIr():
-		TypeIr(TypeCategory::Char),
-		EntityIr(ResolvableType::Primitive),
-		_symbol("char")
-	{}
-
-	// BinaryOperatorIr* CharPrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
+	
+	// BinaryOperatorIr* PrimitiveIr::getBinaryOperator(BinaryExpressionType binaryExpressionType, const TypeIr& other) const
 	// {
 	// 	if (other != *this)
 	// 		return nullptr;
@@ -30,18 +23,11 @@ namespace parka::ir
 	// 	return nullptr;
 	// }
 
-	// AssignmentOperatorIr* CharPrimitiveIr::getAssignmentOperator(AssignmentType assignmentType, const TypeIr& other) const
+	// AssignmentOperatorIr* PrimitiveIr::getAssignmentOperator(AssignmentType assignmentType, const TypeIr& other) const
 	// {
 	// 	if (other == *this && assignmentType == AssignmentType::Assign)
 	// 		return &assgn<AssignmentType::Assign, char>();
 		
 	// 	return nullptr;
 	// }
-
-	std::ostream& CharPrimitiveIr::printType(std::ostream& out) const
-	{
-		out << _symbol;
-
-		return out;
-	}
 }

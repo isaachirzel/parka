@@ -18,7 +18,7 @@ namespace parka::ir
 	public:
 
 		FunctionIr(String symbol, PrototypeIr&& prototype):
-			EntityIr(ResolvableType::Function),
+			EntityIr(EntityType::Function),
 			_symbol(std::move(symbol)),
 			_prototype(std::move(prototype))
 		{}

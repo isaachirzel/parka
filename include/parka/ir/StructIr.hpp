@@ -13,7 +13,7 @@ namespace parka::ir
 
 		StructIr(String&& symbol):
 			TypeIr(TypeCategory::Struct),
-			EntityIr(ResolvableType::Struct),
+			EntityIr(EntityType::Struct),
 			_symbol(std::move(symbol))
 		{}
 		StructIr(StructIr&&) = default;

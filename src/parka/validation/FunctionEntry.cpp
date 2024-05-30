@@ -4,7 +4,7 @@
 namespace parka::validation
 {
 	FunctionEntry::FunctionEntry(const ast::FunctionAst& ast, Context& context):
-		ContextEntry(ResolvableType::Function),
+		ContextEntry(EntityType::Function),
 		_ast(ast),
 		_symbolTable(context),
 		_ir(nullptr),

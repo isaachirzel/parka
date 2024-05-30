@@ -1,36 +1,36 @@
-#include "parka/enum/ResolvableType.hpp"
+#include "parka/enum/EntityType.hpp"
 
 namespace parka
 {
-	std::ostream& operator<<(std::ostream& out, const ResolvableType& type)
+	std::ostream& operator<<(std::ostream& out, const EntityType& type)
 	{
 		switch (type)
 		{
-			case ResolvableType::Package:
+			case EntityType::Package:
 				out << "package";
 				break;
 
-			case ResolvableType::Primitive:
+			case EntityType::Primitive:
 				out << "primitive";
 				break;
 
-			case ResolvableType::Struct:
+			case EntityType::Struct:
 				out << "struct";
 				break;
 
-			case ResolvableType::Function:
+			case EntityType::Function:
 				out << "function";
 				break;
 
-			case ResolvableType::Variable:
+			case EntityType::Variable:
 				out << "variable";
 				break;
 
-			case ResolvableType::Parameter:
+			case EntityType::Parameter:
 				out << "parameter";
 				break;
 
-			case ResolvableType::Member:
+			case EntityType::Member:
 				out << "member";
 				break;
 		}

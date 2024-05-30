@@ -15,7 +15,7 @@
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
-#include "parka/ir/BoolPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
 #include "parka/ir/CallOperatorIr.hpp"
@@ -24,17 +24,17 @@
 #include "parka/ir/DeclarationStatementIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/ExpressionStatementIr.hpp"
-#include "parka/ir/F64PrimitiveIr.hpp"
-#include "parka/ir/FloatPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/ForStatementIr.hpp"
 #include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/ir/FunctionIr.hpp"
-#include "parka/ir/I32PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"
-#include "parka/ir/IntegerPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/ir/VoidPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/BlockContext.hpp"
 #include "parka/validation/FunctionEntry.hpp"
@@ -122,9 +122,9 @@ namespace parka::validation
 
 		auto& returnType = ir.prototype().returnType();
 
-		if (&returnType != &I32PrimitiveIr::instance && &returnType != &VoidPrimitiveIr::instance)
+		if (&returnType != &PrimitiveIr::i32Primitive && &returnType != &PrimitiveIr::voidPrimitive)
 		{
-			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", I32PrimitiveIr::instance, VoidPrimitiveIr::instance);
+			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", PrimitiveIr::i32Primitive, PrimitiveIr::voidPrimitive);
 			success = false;
 		}
 
@@ -149,11 +149,11 @@ namespace parka::validation
 
 	static const TypeIr* validateDefaultType(const TypeIr& type)
 	{
-		if (type == IntegerPrimitiveIr::instance)
-			return &I32PrimitiveIr::instance;
+		if (type == PrimitiveIr::integerPrimitive)
+			return &PrimitiveIr::i32Primitive;
 
-		if (&type == &FloatPrimitiveIr::instance)
-			return &F64PrimitiveIr::instance;
+		if (&type == &PrimitiveIr::floatPrimitive)
+			return &PrimitiveIr::f64Primitive;
 
 		// TODO: struct literal that fails
 
@@ -231,7 +231,7 @@ namespace parka::validation
 			parameters.push(parameter);
 		}
 
-		const auto* returnType = (TypeIr*)&VoidPrimitiveIr::instance;
+		const auto* returnType = (TypeIr*)&PrimitiveIr::voidPrimitive;
 
 		if (prototype.returnType())
 		{
@@ -297,7 +297,7 @@ namespace parka::validation
 		auto identifier = ast.identifier().text();
 
 		if (!ast.annotation())
-			return new VariableIr(std::move(identifier), VoidPrimitiveIr::instance);
+			return new VariableIr(std::move(identifier), PrimitiveIr::voidPrimitive);
 
 		auto annotationType = validateTypeAnnotation(*ast.annotation(), context);
 
@@ -320,8 +320,8 @@ namespace parka::validation
 
 		switch (lValue->resolvableType)
 		{
-			case ResolvableType::Primitive:
-			case ResolvableType::Struct:
+			case EntityType::Primitive:
+			case EntityType::Struct:
 				break;
 
 			default:
@@ -453,7 +453,7 @@ namespace parka::validation
 	{
 		if (!ast.hasValue())
 		{
-			if (&context.returnType() == &VoidPrimitiveIr::instance)
+			if (&context.returnType() == &PrimitiveIr::voidPrimitive)
 				return new ReturnStatementIr();
 
 			log::error(ast.snippet(), "Expected $ return value but none was given.", context.returnType());
@@ -523,11 +523,11 @@ namespace parka::validation
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
+		auto* castedValue = validateCast(PrimitiveIr::boolPrimitive, *condition, context);
 
 		if (!castedValue)
 		{
-			log::error(ast.condition().snippet(), "Expression could not be converted from `$` to `$`.", condition->type(), BoolPrimitiveIr::instance);
+			log::error(ast.condition().snippet(), "Expression could not be converted from `$` to `$`.", condition->type(), PrimitiveIr::boolPrimitive);
 			return {};
 		}
 
@@ -566,7 +566,7 @@ namespace parka::validation
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateCast(BoolPrimitiveIr::instance, *condition, context);
+		auto* castedValue = validateCast(PrimitiveIr::boolPrimitive, *condition, context);
 
 		if (!castedValue)
 		{
@@ -684,7 +684,7 @@ namespace parka::validation
 			// TODO: show the given signature
 			// TODO: Specialize error for functions
 			// TODO: Explain was is wrong with arguments
-			log::error(ast.snippet(), "No call operator with this signature exists on type `$`.", type);
+			log::error(ast.snippet(), "No call operator with this signature exists on `$` $.", type);
 			return {};
 		}
 
@@ -700,11 +700,11 @@ namespace parka::validation
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateCast(BoolPrimitiveIr::instance, *condition, context);
+		auto* castedCondition = validateCast(PrimitiveIr::boolPrimitive, *condition, context);
 
 		if (!castedCondition)
 		{
-			log::error(ast.condition().snippet(), "Condition is not of type `$`.", BoolPrimitiveIr::instance);
+			log::error(ast.condition().snippet(), "Condition is not of type `$`.", PrimitiveIr::boolPrimitive);
 			return {};
 		}
 

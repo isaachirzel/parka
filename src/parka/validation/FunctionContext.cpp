@@ -3,7 +3,7 @@
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ir/EntityIr.hpp"
-#include "parka/ir/VoidPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/validation/ParameterEntry.hpp"
@@ -21,7 +21,7 @@ namespace parka::validation
 		_symbols(),
 		_variables(),
 		_parameters(),
-		_returnType(&ir::VoidPrimitiveIr::instance),
+		_returnType(&ir::PrimitiveIr::voidPrimitive),
 		_isExplicitReturnType(false)
 	{}
 

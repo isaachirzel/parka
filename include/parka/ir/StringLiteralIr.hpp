@@ -2,7 +2,7 @@
 #define PARKA_IR_STRING_LITERAL_HPP
 
 #include "parka/ir/ExpressionIr.hpp"
-#include "parka/ir/StringPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 
 namespace parka::ir
 {
@@ -19,7 +19,7 @@ namespace parka::ir
 		StringLiteralIr(StringLiteralIr&&) = default;
 		StringLiteralIr(const StringLiteralIr&) = delete;
 
-		const TypeIr& type() const { return StringPrimitiveIr::instance; }
+		const TypeIr& type() const { return PrimitiveIr::stringPrimitive; }
 		const auto& value() const { return _value; }
 	};
 }

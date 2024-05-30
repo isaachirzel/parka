@@ -12,7 +12,7 @@ namespace parka::ir
 	public:
 
 		MemberIr(TypeIr& TypeIr):
-			EntityIr(ResolvableType::Member),
+			EntityIr(EntityType::Member),
 			_type(TypeIr)
 		{}
 		MemberIr(MemberIr&&) = default;

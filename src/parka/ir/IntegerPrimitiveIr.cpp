@@ -1,29 +1,10 @@
-#include "parka/ir/IntegerPrimitiveIr.hpp"
-#include "parka/ir/ConversionIr.hpp"
-#include "parka/ir/I32PrimitiveIr.hpp"
-
 namespace parka::ir
 {
-	IntegerPrimitiveIr IntegerPrimitiveIr::instance;
-
-	ConversionIr i32Conversion(I32PrimitiveIr::instance, IntegerPrimitiveIr::instance);
-
-	IntegerPrimitiveIr::IntegerPrimitiveIr():
-		TypeIr(TypeCategory::Integer)
-	{}
-
-	// ConversionIr* IntegerPrimitiveIr::getConversion(const TypeIr& toType) const
+	// ConversionIr* PrimitiveIr::getConversion(const TypeIr& toType) const
 	// {
-	// 	if (toType == I32PrimitiveIr::instance)
+	// 	if (toType == PrimitiveIr::i32Primitive)
 	// 		return &i32Conversion;
 
 	// 	return nullptr;
 	// }
-
-	std::ostream& IntegerPrimitiveIr::printType(std::ostream& out) const
-	{
-		out << "integer";
-
-		return out;
-	}
 }

@@ -1,7 +1,7 @@
 #ifndef PARKA_IR_PARAMETER_HPP
 #define PARKA_IR_PARAMETER_HPP
 
-#include "parka/enum/ResolvableType.hpp"
+#include "parka/enum/EntityType.hpp"
 #include "parka/ir/EntityIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 
@@ -15,7 +15,7 @@ namespace parka::ir
 	public:
 
 		ParameterIr(const TypeIr& type):
-			EntityIr(ResolvableType::Parameter),
+			EntityIr(EntityType::Parameter),
 			_type(type)
 		{}
 		ParameterIr(ParameterIr&&) = default;

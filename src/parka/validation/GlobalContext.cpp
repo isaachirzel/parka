@@ -1,9 +1,9 @@
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/ast/FunctionAst.hpp"
-#include "parka/ir/BoolPrimitiveIr.hpp"
-#include "parka/ir/CharPrimitiveIr.hpp"
-#include "parka/ir/I32PrimitiveIr.hpp"
-#include "parka/ir/StringPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/validation/FunctionEntry.hpp"
 #include <stdexcept>
@@ -17,20 +17,20 @@ namespace parka::validation
 		_functions(1'000'000),
 		_intrinsics(1'000)
 	{
-		// addIntrinsic(ir::VoidPrimitiveIr::voidPrimitive);
-		// addIntrinsic(ir::IntegerPrimitiveIr::u8Primitive);
-		// addIntrinsic(ir::IntegerPrimitiveIr::u16Primitive);
-		// addIntrinsic(ir::IntegerPrimitiveIr::u32Primitive);
-		// addIntrinsic(ir::IntegerPrimitiveIr::u64Primitive);
-		// addIntrinsic(ir::IntegerPrimitiveIr::i8Primitive);
-		// addIntrinsic(ir::IntegerPrimitiveIr::i16Primitive);
-		addIntrinsic(ir::I32PrimitiveIr::instance);
-		// addIntrinsic(ir::IntegerPrimitiveIr::i64Primitive);
-		// addIntrinsic(ir::FloatPrimitiveIr::f32Primitive);
-		// addIntrinsic(ir::FloatPrimitiveIr::f64Primitive);
-		addIntrinsic(ir::CharPrimitiveIr::instance);
-		addIntrinsic(ir::BoolPrimitiveIr::instance);
-		addIntrinsic(ir::StringPrimitiveIr::instance);
+		// addIntrinsic(ir::PrimitiveIr::voidPrimitive);
+		// addIntrinsic(ir::PrimitiveIr::u8Primitive);
+		// addIntrinsic(ir::PrimitiveIr::u16Primitive);
+		// addIntrinsic(ir::PrimitiveIr::u32Primitive);
+		// addIntrinsic(ir::PrimitiveIr::u64Primitive);
+		// addIntrinsic(ir::PrimitiveIr::i8Primitive);
+		// addIntrinsic(ir::PrimitiveIr::i16Primitive);
+		addIntrinsic(ir::PrimitiveIr::i32Primitive);
+		// addIntrinsic(ir::PrimitiveIr::i64Primitive);
+		// addIntrinsic(ir::PrimitiveIr::f32Primitive);
+		// addIntrinsic(ir::PrimitiveIr::f64Primitive);
+		addIntrinsic(ir::PrimitiveIr::charPrimitive);
+		addIntrinsic(ir::PrimitiveIr::boolPrimitive);
+		addIntrinsic(ir::PrimitiveIr::stringPrimitive);
 
 		for (auto& mod : globalPackage.modules())
 		{

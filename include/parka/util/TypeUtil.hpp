@@ -1,21 +1,8 @@
 #ifndef PARKA_UTIL_TYPE_UTIL_HPP
 #define PARKA_UTIL_TYPE_UTIL_HPP
 
-#include "parka/ir/BoolPrimitiveIr.hpp"
-#include "parka/ir/CharPrimitiveIr.hpp"
-#include "parka/ir/F32PrimitiveIr.hpp"
-#include "parka/ir/F64PrimitiveIr.hpp"
-#include "parka/ir/FloatPrimitiveIr.hpp"
-#include "parka/ir/I16PrimitiveIr.hpp"
-#include "parka/ir/I32PrimitiveIr.hpp"
-#include "parka/ir/I64PrimitiveIr.hpp"
-#include "parka/ir/I8PrimitiveIr.hpp"
-#include "parka/ir/IntegerPrimitiveIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/ir/U16PrimitiveIr.hpp"
-#include "parka/ir/U32PrimitiveIr.hpp"
-#include "parka/ir/U64PrimitiveIr.hpp"
-#include "parka/ir/U8PrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
 
@@ -25,46 +12,46 @@ namespace parka
 	constexpr const ir::TypeIr& type()
 	{
 		if constexpr (std::is_same_v<T, Integer>)
-			return ir::IntegerPrimitiveIr::instance;
+			return ir::PrimitiveIr::integerPrimitive;
 
 		if constexpr (std::is_same_v<T, Float>)
-			return ir::FloatPrimitiveIr::instance;
+			return ir::PrimitiveIr::floatPrimitive;
 
 		if constexpr (std::is_same_v<T, u8>)
-			return ir::U8PrimitiveIr::instance;
+			return ir::PrimitiveIr::u8Primitive;
 
 		if constexpr (std::is_same_v<T, u16>)
-			return ir::U16PrimitiveIr::instance;
+			return ir::PrimitiveIr::u16Primitive;
 
 		if constexpr (std::is_same_v<T, u32>)
-			return ir::U32PrimitiveIr::instance;
+			return ir::PrimitiveIr::u32Primitive;
 
 		if constexpr (std::is_same_v<T, u64>)
-			return ir::U64PrimitiveIr::instance;
+			return ir::PrimitiveIr::u64Primitive;
 
 		if constexpr (std::is_same_v<T, i8>)
-			return ir::I8PrimitiveIr::instance;
+			return ir::PrimitiveIr::i8Primitive;
 
 		if constexpr (std::is_same_v<T, i16>)
-			return ir::I16PrimitiveIr::instance;
+			return ir::PrimitiveIr::i16Primitive;
 
 		if constexpr (std::is_same_v<T, i32>)
-			return ir::I32PrimitiveIr::instance;
+			return ir::PrimitiveIr::i32Primitive;
 
 		if constexpr (std::is_same_v<T, i64>)
-			return ir::I64PrimitiveIr::instance;
+			return ir::PrimitiveIr::i64Primitive;
 
 		if constexpr (std::is_same_v<T, f32>)
-			return ir::F32PrimitiveIr::instance;
+			return ir::PrimitiveIr::f32Primitive;
 
 		if constexpr (std::is_same_v<T, f64>)
-			return ir::F64PrimitiveIr::instance;
+			return ir::PrimitiveIr::f64Primitive;
 
 		if constexpr (std::is_same_v<T, bool>)
-			return ir::BoolPrimitiveIr::instance;
+			return ir::PrimitiveIr::boolPrimitive;
 
 		if constexpr (std::is_same_v<T, char>)
-			return ir::CharPrimitiveIr::instance;
+			return ir::PrimitiveIr::charPrimitive;
 	}
 }
 

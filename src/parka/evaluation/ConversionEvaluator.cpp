@@ -1,4 +1,5 @@
 #include "parka/evaluation/ConversionEvaluator.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
@@ -18,7 +19,9 @@ namespace parka::evaluation
 	template <typename To>
 	Value& evaluateIntrinsicIntegerConversion(Value& to, Value& from)
 	{
-		if (from.type().typeCategory != TypeCategory::Integer)
+		const auto& f = dynamic_cast<const ir::PrimitiveIr&>(from.type());
+
+		if (f.primitiveType() != PrimitiveType::Integer)
 			log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
 
 		return evaluateIntrinsicConversion<To, Integer>(to, from);
@@ -27,7 +30,9 @@ namespace parka::evaluation
 	template <typename To>
 	Value& evaluateIntrinsicFloatConversion(Value& to, Value& from)
 	{
-		if (from.type().typeCategory != TypeCategory::Float)
+		const auto& f = dynamic_cast<const ir::PrimitiveIr&>(from.type());
+
+		if (f.primitiveType() != PrimitiveType::Float)
 			log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
 
 		return evaluateIntrinsicConversion<To, Float>(to, from);
@@ -35,36 +40,38 @@ namespace parka::evaluation
 
 	Value& evaluateIntrinsicConversion(Value& to, Value& from)
 	{
-		switch (to.type().typeCategory)
+		const auto& t = dynamic_cast<const ir::PrimitiveIr&>(to.type());
+
+		switch (t.primitiveType())
 		{
-			case TypeCategory::I8:
+			case PrimitiveType::I8:
 				return evaluateIntrinsicIntegerConversion<i8>(to, from);
 				
-			case TypeCategory::I16:
+			case PrimitiveType::I16:
 				return evaluateIntrinsicIntegerConversion<i16>(to, from);
 
-			case TypeCategory::I32:
+			case PrimitiveType::I32:
 				return evaluateIntrinsicIntegerConversion<i32>(to, from);
 
-			case TypeCategory::I64:
+			case PrimitiveType::I64:
 				return evaluateIntrinsicIntegerConversion<i64>(to, from);
 
-			case TypeCategory::U8:
+			case PrimitiveType::U8:
 				return evaluateIntrinsicIntegerConversion<u8>(to, from);
 
-			case TypeCategory::U16:
+			case PrimitiveType::U16:
 				return evaluateIntrinsicIntegerConversion<u16>(to, from);
 
-			case TypeCategory::U32:
+			case PrimitiveType::U32:
 				return evaluateIntrinsicIntegerConversion<u32>(to, from);
 
-			case TypeCategory::U64:
+			case PrimitiveType::U64:
 				return evaluateIntrinsicIntegerConversion<u64>(to, from);
 
-			case TypeCategory::F32:
+			case PrimitiveType::F32:
 				return evaluateIntrinsicFloatConversion<f32>(to, from);
 
-			case TypeCategory::F64:
+			case PrimitiveType::F64:
 				return evaluateIntrinsicFloatConversion<f64>(to, from);
 
 			default:

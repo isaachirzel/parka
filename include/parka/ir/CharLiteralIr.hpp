@@ -1,7 +1,7 @@
 #ifndef PARKA_IR_CHAR_LITERAL_HPP
 #define PARKA_IR_CHAR_LITERAL_HPP
 
-#include "parka/ir/CharPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 
 namespace parka::ir
@@ -20,7 +20,7 @@ namespace parka::ir
 		CharLiteralIr(const CharLiteralIr&) = delete;
 
 
-		const TypeIr& type() const { return CharPrimitiveIr::instance; }
+		const TypeIr& type() const { return PrimitiveIr::charPrimitive; }
 		const auto& value() const { return _value; }
 	};
 }

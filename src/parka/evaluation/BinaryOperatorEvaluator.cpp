@@ -1,5 +1,7 @@
 #include "parka/evaluation/BinaryOperatorEvaluator.hpp"
+#include "parka/enum/PrimitiveType.hpp"
 #include "parka/enum/TypeCategory.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
@@ -106,36 +108,38 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicIntegerBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		switch (ir.returnType().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::Integer:
+			case PrimitiveType::Integer:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, Integer>(ir, left, right, state);
 
-			case TypeCategory::I8:
+			case PrimitiveType::I8:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, i8>(ir, left, right, state);
 
-			case TypeCategory::I16:
+			case PrimitiveType::I16:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, i16>(ir, left, right, state);
 
-			case TypeCategory::I32:
+			case PrimitiveType::I32:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, i32>(ir, left, right, state);
 
-			case TypeCategory::I64:
+			case PrimitiveType::I64:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, i64>(ir, left, right, state);
 
-			case TypeCategory::U8:
+			case PrimitiveType::U8:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, u8>(ir, left, right, state);
 
-			case TypeCategory::U16:
+			case PrimitiveType::U16:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, u16>(ir, left, right, state);
 
-			case TypeCategory::U32:
+			case PrimitiveType::U32:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, u32>(ir, left, right, state);
 
-			case TypeCategory::U64:
+			case PrimitiveType::U64:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Right, u64>(ir, left, right, state);
 
-			case parka::TypeCategory::Bool:
+			case PrimitiveType::Bool:
 				return evaluateIntrinsicComparsionBinaryOperator<Left, Right>(ir, left, right, state);
 
 			default:
@@ -148,33 +152,35 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicIntegerBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		switch (ir.rightType().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::Integer:
+			case PrimitiveType::Integer:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, Integer>(ir, left, right, state);
 
-			case TypeCategory::I8:
+			case PrimitiveType::I8:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, i8>(ir, left, right, state);
 
-			case TypeCategory::I16:
+			case PrimitiveType::I16:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, i16>(ir, left, right, state);
 
-			case TypeCategory::I32:
+			case PrimitiveType::I32:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, i32>(ir, left, right, state);
 
-			case TypeCategory::I64:
+			case PrimitiveType::I64:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, i64>(ir, left, right, state);
 
-			case TypeCategory::U8:
+			case PrimitiveType::U8:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, u8>(ir, left, right, state);
 
-			case TypeCategory::U16:
+			case PrimitiveType::U16:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, u16>(ir, left, right, state);
 
-			case TypeCategory::U32:
+			case PrimitiveType::U32:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, u32>(ir, left, right, state);
 
-			case TypeCategory::U64:
+			case PrimitiveType::U64:
 				return evaluateIntrinsicIntegerBinaryOperator<Left, u64>(ir, left, right, state);
 
 			default:
@@ -217,18 +223,20 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicFloatBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		switch (ir.returnType().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::Float:
+			case PrimitiveType::Float:
 				return evaluateIntrinsicFloatBinaryOperator<Left, Right, Float>(ir, left, right, state);
 
-			case TypeCategory::F32:
+			case PrimitiveType::F32:
 				return evaluateIntrinsicFloatBinaryOperator<Left, Right, f32>(ir, left, right, state);
 
-			case TypeCategory::F64:
+			case PrimitiveType::F64:
 				return evaluateIntrinsicFloatBinaryOperator<Left, Right, f64>(ir, left, right, state);
 
-			case parka::TypeCategory::Bool:
+			case PrimitiveType::Bool:
 				return evaluateIntrinsicComparsionBinaryOperator<Left, Right>(ir, left, right, state);
 
 			default:
@@ -241,15 +249,17 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicFloatBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		switch (ir.rightType().typeCategory)
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		switch (primitive.primitiveType())
 		{
-			case TypeCategory::Float:
+			case PrimitiveType::Float:
 				return evaluateIntrinsicFloatBinaryOperator<Left, Float>(ir, left, right, state);
 
-			case TypeCategory::F32:
+			case PrimitiveType::F32:
 				return evaluateIntrinsicFloatBinaryOperator<Left, f32>(ir, left, right, state);
 
-			case TypeCategory::F64:
+			case PrimitiveType::F64:
 				return evaluateIntrinsicFloatBinaryOperator<Left, f64>(ir, left, right, state);
 
 			default:
@@ -291,7 +301,9 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicBoolBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		if (ir.returnType().typeCategory != TypeCategory::Bool)
+		const PrimitiveIr& ret = dynamic_cast<const PrimitiveIr&>(ir.returnType());
+
+		if (ret.primitiveType() != PrimitiveType::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
 		return evaluateIntrinsicBoolBinaryOperator<Left, Right, bool>(ir, left, right, state);
@@ -300,7 +312,9 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicBoolBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		if (ir.rightType().typeCategory != TypeCategory::Bool)
+		const PrimitiveIr& r = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		if (r.primitiveType() != PrimitiveType::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
 		return evaluateIntrinsicBoolBinaryOperator<Left, bool>(ir, left, right, state);
@@ -326,7 +340,9 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicCharBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		if (ir.returnType().typeCategory != TypeCategory::Bool)
+		const PrimitiveIr& ret = dynamic_cast<const PrimitiveIr&>(ir.returnType());
+
+		if (ret.primitiveType() != PrimitiveType::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
 		return evaluateIntrinsicBinaryOperator<Left, Right, bool, _charOperation>(ir, left, right, state);
@@ -335,7 +351,9 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicCharBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		if (ir.rightType().typeCategory != TypeCategory::Char)
+		const PrimitiveIr& r = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		if (r.primitiveType() != PrimitiveType::Char)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
 
 		return evaluateIntrinsicCharBinaryOperator<Left, char>(ir, left, right, state);
@@ -343,48 +361,50 @@ namespace parka::evaluation
 
 	Value& evaluateIntrinsicBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		switch (ir.leftType().typeCategory)
+		const PrimitiveIr& l = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+
+		switch (l.primitiveType())
 		{
-			case TypeCategory::Integer:
+			case PrimitiveType::Integer:
 				return evaluateIntrinsicIntegerBinaryOperator<Integer>(ir, left, right, state);
 
-			case TypeCategory::I8:
+			case PrimitiveType::I8:
 				return evaluateIntrinsicIntegerBinaryOperator<i8>(ir, left, right, state);
 
-			case TypeCategory::I16:
+			case PrimitiveType::I16:
 				return evaluateIntrinsicIntegerBinaryOperator<i16>(ir, left, right, state);
 
-			case TypeCategory::I32:
+			case PrimitiveType::I32:
 				return evaluateIntrinsicIntegerBinaryOperator<i32>(ir, left, right, state);
 
-			case TypeCategory::I64:
+			case PrimitiveType::I64:
 				return evaluateIntrinsicIntegerBinaryOperator<i64>(ir, left, right, state);
 
-			case TypeCategory::U8:
+			case PrimitiveType::U8:
 				return evaluateIntrinsicIntegerBinaryOperator<u8>(ir, left, right, state);
 
-			case TypeCategory::U16:
+			case PrimitiveType::U16:
 				return evaluateIntrinsicIntegerBinaryOperator<u16>(ir, left, right, state);
 
-			case TypeCategory::U32:
+			case PrimitiveType::U32:
 				return evaluateIntrinsicIntegerBinaryOperator<u32>(ir, left, right, state);
 
-			case TypeCategory::U64:
+			case PrimitiveType::U64:
 				return evaluateIntrinsicIntegerBinaryOperator<u64>(ir, left, right, state);
 
-			case TypeCategory::Float:
+			case PrimitiveType::Float:
 				return evaluateIntrinsicFloatBinaryOperator<Float>(ir, left, right, state);
 
-			case TypeCategory::F32:
+			case PrimitiveType::F32:
 				return evaluateIntrinsicFloatBinaryOperator<f32>(ir, left, right, state);
 
-			case TypeCategory::F64:
+			case PrimitiveType::F64:
 				return evaluateIntrinsicFloatBinaryOperator<f64>(ir, left, right, state);
 
-			case TypeCategory::Bool:
+			case PrimitiveType::Bool:
 				return evaluateIntrinsicBoolBinaryOperator<bool>(ir, left, right, state);
 
-			case TypeCategory::Char:
+			case PrimitiveType::Char:
 				return evaluateIntrinsicCharBinaryOperator<char>(ir, left, right, state);
 
 			default:

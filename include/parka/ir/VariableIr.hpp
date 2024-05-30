@@ -14,7 +14,7 @@ namespace parka::ir
 	public:
 
 		VariableIr(String&& symbol, const TypeIr& type):
-			EntityIr(ResolvableType::Variable),
+			EntityIr(EntityType::Variable),
 			_symbol(std::move(symbol)),
 			_type(&type)
 		{}

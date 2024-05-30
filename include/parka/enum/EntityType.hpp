@@ -1,5 +1,5 @@
-#ifndef PARKA_ENUM_ENTITY_TYPE_HPP
-#define PARKA_ENUM_ENTITY_TYPE_HPP
+#ifndef PARKA_ENUM_RESOLVABLE_TYPE_HPP
+#define PARKA_ENUM_RESOLVABLE_TYPE_HPP
 
 #include "parka/util/Common.hpp"
 
@@ -7,7 +7,10 @@ namespace parka
 {
 	enum class EntityType: u8
 	{
-		// Function,
+		Package,
+		Primitive,
+		Struct,
+		Function,
 		Variable,
 		Parameter,
 		Member

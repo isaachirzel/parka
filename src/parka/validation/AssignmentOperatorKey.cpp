@@ -1,13 +1,13 @@
 #include "parka/validation/AssignmentOperatorKey.hpp"
 #include "parka/enum/AssignmentType.hpp"
-#include "parka/ir/VoidPrimitiveIr.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/util/Hash.hpp"
 
 namespace parka::validation
 {
 	AssignmentOperatorKey::AssignmentOperatorKey():
-		_left(&ir::VoidPrimitiveIr::instance),
-		_right(&ir::VoidPrimitiveIr::instance),
+		_left(&ir::PrimitiveIr::voidPrimitive),
+		_right(&ir::PrimitiveIr::voidPrimitive),
 		_assignmentType(AssignmentType::Assign)
 	{}
 

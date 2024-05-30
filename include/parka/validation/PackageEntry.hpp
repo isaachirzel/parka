@@ -18,7 +18,7 @@ namespace parka::validation
 	public:
 
 		PackageEntry(const ast::PackageAst& ast, Context& parent):
-			ContextEntry(ResolvableType::Package),
+			ContextEntry(EntityType::Package),
 			_ast(ast),
 			_symbolTable(ast, parent),
 			_ir(nullptr),

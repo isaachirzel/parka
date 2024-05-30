@@ -13,7 +13,7 @@ namespace parka::validation
 	public:
 	
 		MemberEntry(const ast::MemberAst& ast):
-		ContextEntry(ResolvableType::Member),
+		ContextEntry(EntityType::Member),
 		_ast(ast)
 		{}
 		MemberEntry(MemberEntry&&) = default;
