@@ -12,6 +12,10 @@ using namespace parka;
 // TODO: Unit testing
 // TODO: Convert log fatals to exceptions and add catch that will print out a single log fatal
 
+// int main()
+// {
+// }
+
 int main(int argc, const char *argv[])
 {
 	if (argc != 2)

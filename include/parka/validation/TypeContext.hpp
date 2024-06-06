@@ -5,8 +5,8 @@
 #include "parka/ir/BinaryOperatorIr.hpp"
 #include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
-#include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/TypeIr.hpp"
+#include "parka/util/Optional.hpp"
 
 namespace parka::validation
 {
@@ -15,7 +15,7 @@ namespace parka::validation
 	class TypeContext
 	{
 		GlobalContext& _globalContext;
-		Array<ir::CallOperatorIr> _callOperators;
+		Optional<ir::CallOperatorIr> _callOperators;
 
 	public:
 
@@ -29,9 +29,6 @@ namespace parka::validation
 		ir::ConversionIr* getConversionTo(const ir::TypeIr&) const;
 		ir::BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const;
 		ir::AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const ir::TypeIr&) const;
-
-		void addCallOperator(ir::CallOperatorIr&& callOperator);
-		const ir::CallOperatorIr* getCallOperator(const Array<ir::ExpressionIr*>&) const;
 	};
 }
 

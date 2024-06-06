@@ -1,7 +1,6 @@
 #ifndef PARKA_IR_PROTOTYPE_IR_HPP
 #define PARKA_IR_PROTOTYPE_IR_HPP
 
-#include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/ParameterIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/util/Array.hpp"
@@ -24,8 +23,8 @@ namespace parka::ir
 		const auto& parameters() const { return _parameters; }
 		const auto& returnType() const { return _returnType; }
 
-		bool operator==(const TypeIr& other) const;
-		bool operator!=(const TypeIr& other) const;
+		bool operator==(const PrototypeIr& other) const;
+		bool operator!=(const PrototypeIr& other) const;
 	};
 }
 

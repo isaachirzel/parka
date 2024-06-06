@@ -1,9 +1,8 @@
-/*
-
 function double(number: i32): i32
 {
 	return number * 2;
 }
+
 function factorial(count: i32): i32
 {
 	var one: i32 = 1;
@@ -46,14 +45,4 @@ function main(): i32
 		else factorial(5);
 	
 	return fibonacci(15);
-}
-*/
-
-function f()
-{
-}
-
-function main()
-{
-	f();
 }

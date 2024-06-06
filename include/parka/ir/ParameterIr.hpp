@@ -23,6 +23,8 @@ namespace parka::ir
 
 		const String& symbol() const { return _symbol; }
 		const TypeIr& type() const { return _type; }
+
+		friend std::ostream& operator<<(std::ostream& out, const ParameterIr& parameter);
 	};
 }
 

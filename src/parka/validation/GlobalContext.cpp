@@ -4,8 +4,11 @@
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrototypeIr.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/util/Optional.hpp"
 #include "parka/validation/FunctionEntry.hpp"
+#include "parka/validation/Validator.hpp"
 #include <stdexcept>
 
 namespace parka::validation
@@ -18,16 +21,16 @@ namespace parka::validation
 		_intrinsics(1'000)
 	{
 		// addIntrinsic(ir::PrimitiveIr::voidPrimitive);
-		// addIntrinsic(ir::PrimitiveIr::u8Primitive);
-		// addIntrinsic(ir::PrimitiveIr::u16Primitive);
-		// addIntrinsic(ir::PrimitiveIr::u32Primitive);
-		// addIntrinsic(ir::PrimitiveIr::u64Primitive);
-		// addIntrinsic(ir::PrimitiveIr::i8Primitive);
-		// addIntrinsic(ir::PrimitiveIr::i16Primitive);
+		addIntrinsic(ir::PrimitiveIr::u8Primitive);
+		addIntrinsic(ir::PrimitiveIr::u16Primitive);
+		addIntrinsic(ir::PrimitiveIr::u32Primitive);
+		addIntrinsic(ir::PrimitiveIr::u64Primitive);
+		addIntrinsic(ir::PrimitiveIr::i8Primitive);
+		addIntrinsic(ir::PrimitiveIr::i16Primitive);
 		addIntrinsic(ir::PrimitiveIr::i32Primitive);
-		// addIntrinsic(ir::PrimitiveIr::i64Primitive);
-		// addIntrinsic(ir::PrimitiveIr::f32Primitive);
-		// addIntrinsic(ir::PrimitiveIr::f64Primitive);
+		addIntrinsic(ir::PrimitiveIr::i64Primitive);
+		addIntrinsic(ir::PrimitiveIr::f32Primitive);
+		addIntrinsic(ir::PrimitiveIr::f64Primitive);
 		addIntrinsic(ir::PrimitiveIr::charPrimitive);
 		addIntrinsic(ir::PrimitiveIr::boolPrimitive);
 		addIntrinsic(ir::PrimitiveIr::stringPrimitive);
@@ -54,16 +57,17 @@ namespace parka::validation
 	}
 
 	FunctionEntry& GlobalContext::declare(const ast::FunctionAst& ast)
-	{
+	{	
+		auto functionContext = FunctionContext(*this);
 		auto& entry = addFunction(FunctionEntry(ast, *this));
 		const auto& key = ast.prototype().identifier().text();
 		auto insertion = _symbols.insert(key, &entry);
 
 		if (!insertion)
 		{
-			auto* previous = *insertion;
+			auto& previous = **insertion;
 
-			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in global scope.", previous->entityType, previous->name());
+			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in global scope.", previous.entityType, previous.name());
 		}
 
 		return entry;

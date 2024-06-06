@@ -12,7 +12,7 @@ namespace parka::validation
 	class FunctionEntry: public ContextEntry
 	{
 		const ast::FunctionAst& _ast;
-		FunctionContext _symbolTable;
+		FunctionContext _context;
 		ir::FunctionIr *_ir;
 		bool _isValidated;
 
@@ -23,8 +23,8 @@ namespace parka::validation
 		FunctionEntry(const FunctionEntry&) = delete;
 
 		ir::FunctionIr* resolve();
+		FunctionContext* context() { return &_context; }
 
-		FunctionContext* context() { return &_symbolTable; }
 		const auto& ast() const { return _ast; }
 		const ast::IdentifierAst& identifier() const { return _ast.prototype().identifier(); }
 		const String& name() const { return _ast.prototype().identifier().text(); }

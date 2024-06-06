@@ -1,4 +1,5 @@
 #include "parka/evaluation/Evaluator.hpp"
+#include "parka/enum/FunctionBodyType.hpp"
 #include "parka/enum/JumpType.hpp"
 #include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
@@ -34,40 +35,35 @@ namespace parka::evaluation
 		log::debug("Result of $(): $", entryPoint->symbol(), result);
 	}
 
-	Value& evaluateFunction(const FunctionIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
+	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)
 	{
-		log::notImplemented(here());
+		usize previousReturnValueIndex = state.getReturnValueIndex();
+		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
+		usize index = state.getScopeIndex();
 
-		// usize previousReturnValueIndex = state.getReturnValueIndex();
-		// auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
-		// usize index = state.getScopeIndex();
+		evaluatePrototype(ir.prototype(), arguments, state);		
 
-		// evaluatePrototype(ir.prototype(), arguments, state);
+		if (ir.body().functionBodyType() == FunctionBodyType::NotImplemented)
+			log::fatal("$ is not implemented.", ir);
 
+		evaluateFunctionBody(ir.body(), state);
 
-		// if (!ir.hasBody())
-		// {
-		// 	log::fatal("$() is not implemented.", ir.symbol());
-		// }
-		
-		// evaluateFunctionBody(ir.body(), state);
+		// TODO: This shouldn't do this for exceptions
 
-		// // TODO: This shouldn't do this for exceptions
+		state.setReturning(JumpType::None);
+		state.clearScopeValues(index);
+		state.setReturnValueIndex(previousReturnValueIndex);
 
-		// state.setReturning(JumpType::None);
-		// state.clearScopeValues(index);
-		// state.setReturnValueIndex(previousReturnValueIndex);
-
-		// return returnValue;
+		return returnValue;
 	}
 
-	void evaluatePrototype(const PrototypeIr& ir, const Array<ArgumentIr>& arguments, LocalState& state)
+	void evaluatePrototype(const PrototypeIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)
 	{
 		for (usize i = 0; i < arguments.length(); ++i)
 		{
 			auto& parameter = *ir.parameters()[i];
-			auto& argument = arguments[i];
-			auto& argumentValue = evaluateExpression(argument.value(), state);
+			auto& argument = *arguments[i];
+			auto& argumentValue = evaluateExpression(argument, state);
 
 			argumentValue.setNode(parameter);
 		}
@@ -75,16 +71,29 @@ namespace parka::evaluation
 
 	void evaluateFunctionBody(const ir::FunctionBodyIr& ir, LocalState& state)
 	{
-		if (ir.isExpression())
+		switch (ir.functionBodyType())
 		{
-			auto& expressionValue = evaluateExpression(ir.expression(), state);
+			case FunctionBodyType::Expression:
+			{
+				auto& expressionValue = evaluateExpression(ir.expression(), state);
 
-			state.returnValue().setValue(expressionValue);
+				state.returnValue().setValue(expressionValue);
 
-			return;
+				break;
+			}
+
+			case FunctionBodyType::Block:
+				evaluateBlockStatement(ir.blockStatement(), state);
+				break;
+
+			case FunctionBodyType::Intrinsic:
+				//evaluateIntrinsicFunctionBody(ir, state);
+				log::fatal("Intrinsic function evaluation is not implemented yet.");
+				break;
+
+			case FunctionBodyType::NotImplemented:
+				break;
 		}
-
-		evaluateBlockStatement(ir.blockStatement(), state);
 	}
 
 	void evaluateStatement(const StatementIr& ir, LocalState& state)
@@ -295,7 +304,7 @@ namespace parka::evaluation
 
 	Value& evaluateCallExpression(const ir::CallExpressionIr& ir, LocalState& state)
 	{
-		log::notImplemented(here());
+		return evaluateFunction(ir.subject(), ir.arguments(), state);
 	}
 
 	Value& evaluateConditionalExpression(const ir::ConditionalExpressionIr& ir, LocalState& state)

@@ -8,11 +8,6 @@ namespace parka::ir
 		_returnType(returnType)
 	{}
 
-	// const CallOperatorIr* PrototypeIr::getCallOperator(const Array<ExpressionIr*>& arguments) const
-	// {
-
-	// }
-
 	std::ostream& PrototypeIr::printType(std::ostream& out) const
 	{
 		out << "(";
@@ -29,14 +24,12 @@ namespace parka::ir
 		return out;
 	}
 
-	bool PrototypeIr::operator==(const TypeIr& other) const
+	bool PrototypeIr::operator==(const PrototypeIr& other) const
 	{
 		if (other.typeCategory != TypeCategory::Function)
 			return false;
 
-		auto& otherPrototype = static_cast<const PrototypeIr&>(other);
-
-		if (_parameters.length() != otherPrototype.parameters().length())
+		if (_parameters.length() != other.parameters().length())
 			return false;
 
 		usize parameterCount = _parameters.length();
@@ -44,7 +37,7 @@ namespace parka::ir
 		for (usize i = 0; i < parameterCount; ++i)
 		{
 			auto& a = *_parameters[i];
-			auto& b = *otherPrototype.parameters()[i];
+			auto& b = *other.parameters()[i];
 
 			if (a.type() != b.type())
 				return false;
@@ -53,7 +46,7 @@ namespace parka::ir
 		return true;
 	}
 
-	bool PrototypeIr::operator!=(const TypeIr& other) const
+	bool PrototypeIr::operator!=(const PrototypeIr& other) const
 	{
 		return !(*this == other);
 	}

@@ -10,8 +10,10 @@
 #include "parka/ast/FunctionBodyAst.hpp"
 #include "parka/ast/IfStatementAst.hpp"
 #include "parka/ast/TypeAnnotationAst.hpp"
+#include "parka/enum/EntityType.hpp"
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/enum/StatementType.hpp"
+#include "parka/enum/TypeCategory.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
@@ -33,6 +35,7 @@
 #include "parka/ir/IdentifierExpressionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/ReturnStatementIr.hpp"
+#include "parka/ir/StructIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
@@ -108,7 +111,6 @@ namespace parka::validation
 	static bool validateEntryPoint(const ir::FunctionIr& ir, const ast::FunctionAst& ast)
 	{
 		bool success = true;
-
 		if (ir.prototype().parameters().length() > 0)
 		{
 			const auto& parameters = ast.prototype().parameters();
@@ -173,18 +175,13 @@ namespace parka::validation
 
 			if (!ir)
 				continue;
-
+ 
 			if (entry.ast().hasBody())
 			{
-				auto& typeContext = context.getTypeContext(ir->prototype());
 				auto body = validateFunctionBody(entry.ast().body(), *entry.context());
 
 				if (body)
-				{
-					auto callOperator = CallOperatorIr(ir->prototype(), *body);
-
-					typeContext.addCallOperator(std::move(callOperator));
-				}
+					ir->body() = *body;
 			}
 
 			if (!entryPoint && ir->symbol() == "main")
@@ -204,6 +201,7 @@ namespace parka::validation
 
 	FunctionIr *validateFunction(const FunctionAst& ast, FunctionContext& context)
 	{
+		// validate function sets up the symbol and prototype, the body is handled later
 		auto prototype = validatePrototype(ast.prototype(), context);
 
 		if (!prototype)
@@ -212,7 +210,7 @@ namespace parka::validation
 		const auto& name = ast.prototype().identifier().text();
 		auto symbol = context.createSymbol(name);
 
-		return new FunctionIr(std::move(symbol), *prototype);
+		return new FunctionIr(std::move(symbol), *prototype, FunctionBodyIr::notImplemented());
 	}
 
 	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionContext& context)
@@ -309,30 +307,34 @@ namespace parka::validation
 
 	const TypeIr* validateTypeAnnotation(const TypeAnnotationAst& ast, Context& context)
 	{
-		auto *lValue = context.resolveSymbol(ast.identifier());
+		auto *entity = context.resolveSymbol(ast.identifier());
 
-		if (!lValue)
+		if (!entity)
 		{
 			log::error(ast.identifier().snippet(), "The type `$` could not be found in this scope.", ast.identifier());
 			return {};
 		}
 
-
-		switch (lValue->entityType)
+		switch (entity->entityType)
 		{
 			case EntityType::Primitive:
+				return static_cast<PrimitiveIr*>(entity);
+
 			case EntityType::Struct:
+				return static_cast<StructIr*>(entity);
+
+			case EntityType::Function:
+				log::error("Function `$` cannot be used as a type name.", entity->symbol());
 				break;
 
 			default:
-				// FIXME: Idk undo this
-				// TODO: Figure out what the referred thing was for better clarity
-				// TODO: Maybe show "other thing defined here"
-				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", lValue->entityType, ast.identifier());
-				return {};
+				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", entity->entityType, ast.identifier());
+				break;
 		}
 
-		return dynamic_cast<TypeIr*>(lValue);
+		// TODO: Figure out what the referred thing was for better clarity
+		// TODO: Maybe show "other thing defined here"
+		return {};
 	}
 
 	StatementIr *validateStatement(const StatementAst& ast, LocalContext& context)
@@ -659,9 +661,26 @@ namespace parka::validation
 		if (!subject)
 			return {};
 
-		auto arguments = Array<ExpressionIr*>(ast.arguments().length());
+		if (subject->expressionType != ExpressionType::Identifier)
+		{
+			log::error(ast.subject().snippet(), "Expected function name, got `$`.", subject->type());
+			return {};
+		}
 
-		for (usize i = 0; i < ast.arguments().length(); ++i)
+		auto& identifierExpression = static_cast<IdentifierExpressionIr&>(*subject);
+		auto& entity = identifierExpression.entity();
+
+		if (entity.entityType != EntityType::Function)
+		{
+			log::error(ast.snippet(), "A $ cannot be called like a function.", entity.entityType, subject->type());
+			return {};
+		}
+
+		auto& function = static_cast<const ir::FunctionIr&>(entity);
+		auto arguments = Array<ExpressionIr*>(ast.arguments().length());
+		auto argumentCount = ast.arguments().length();
+
+		for (usize i = 0; i < argumentCount; ++i)
 		{
 			auto& argumentAst = *ast.arguments()[i];
 			auto* argumentIr = validateExpression(argumentAst, context);
@@ -675,20 +694,47 @@ namespace parka::validation
 		if (arguments.length() != ast.arguments().length())
 			return {};
 
-		auto& type = subject->type();
-		auto& typeContext = context.globalContext().getTypeContext(type);
-		auto* op = typeContext.getCallOperator(arguments);
+		auto success = true;
+		auto parameterCount = function.prototype().parameters().length();
 
-		if (!op)
+		if (argumentCount > parameterCount)
 		{
-			// TODO: show the given signature
-			// TODO: Specialize error for functions
-			// TODO: Explain was is wrong with arguments
-			log::error(ast.snippet(), "No call operator with this signature exists on `$` $.", type);
-			return {};
+			// TODO: Highlight the ones that are too many
+			log::error(ast.snippet(), "Too many arguments passed into function `$`.", function.symbol());
+			success = false;
 		}
 
-		return new CallExpressionIr(*subject, std::move(arguments), *op);
+		if (parameterCount > argumentCount)
+		{
+			// TODO: Show which parameters don't have a value passed in for them.
+			log::error(ast.snippet(), "Not enough argumnets passed into function `$`.", function.symbol());
+			success = false;
+		}
+
+		auto iterCount = argumentCount > parameterCount
+			? parameterCount
+			: argumentCount;
+
+		for (usize i = 0; i < iterCount; ++i)
+		{
+			auto& argument = *arguments[i];
+			auto& parameter = *function.prototype().parameters()[i];
+			auto* castedArgument = validateCast(parameter.type(), argument, context);
+
+			if (!castedArgument)
+			{
+				log::error(ast.arguments()[i]->snippet(), "Unable to convert argument from `$` to `$`.", argument.type(), parameter.type());
+				success = false;
+				continue;
+			}
+
+			arguments[i] = castedArgument;
+		}
+
+		if (!success)
+			return {};
+
+		return new CallExpressionIr(function, std::move(arguments));
 	}
 
 	ir::ConditionalExpressionIr* validateConditionalExpression(const ast::ConditionalExpressionAst& ast, LocalContext& context)

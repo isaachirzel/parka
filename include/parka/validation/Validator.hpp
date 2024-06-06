@@ -32,6 +32,7 @@
 #include "parka/ir/BoolLiteralIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
+#include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/CharLiteralIr.hpp"
 #include "parka/ir/ConditionalExpressionIr.hpp"
 #include "parka/ir/ContinueStatementIr.hpp"
