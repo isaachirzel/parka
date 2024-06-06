@@ -9,19 +9,16 @@
 #include "parka/util/Optional.hpp"
 
 namespace parka::validation
-{
+{ 
 	class GlobalContext;
 
 	class TypeContext
 	{
-		GlobalContext& _globalContext;
-		Optional<ir::CallOperatorIr> _callOperators;
 
 	public:
 
 		TypeContext(GlobalContext& globalContext):
-			_globalContext(globalContext),
-			_callOperators()
+			_globalContext(globalContext)
 		{}
 		TypeContext(TypeContext&&) = default;
 		TypeContext(const TypeContext&) = delete;
