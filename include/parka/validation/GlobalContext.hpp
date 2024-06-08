@@ -3,6 +3,7 @@
 
 #include "parka/ast/FunctionAst.hpp"
 #include "parka/ast/PackageAst.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/validation/Context.hpp"
 #include "parka/util/BigArray.hpp"
@@ -16,13 +17,14 @@ namespace parka::validation
 	{
 		String _scope;
 		FlatMap<String, ContextEntry*> _symbols;
-		FlatMap<const ir::TypeIr*, TypeContext> _types;
+		FlatMap<const ir::TypeIr*, TypeContext*> _types;
 		BigArray<FunctionEntry> _functions;
 		BigArray<IntrinsicEntry> _intrinsics;
 
 	private:
 
 		void addIntrinsic(ir::EntityIr& intrinsic);
+		void addPrimitive(ir::PrimitiveIr& primitive, TypeContext*);
 
 	public:
 

@@ -1,15 +1,9 @@
 #include "parka/validation/GlobalContext.hpp"
-#include "parka/ast/FunctionAst.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
-#include "parka/ir/PrimitiveIr.hpp"
-#include "parka/ir/PrimitiveIr.hpp"
-#include "parka/ir/PrimitiveIr.hpp"
-#include "parka/ir/PrototypeIr.hpp"
-#include "parka/log/Log.hpp"
-#include "parka/util/Optional.hpp"
+#include "parka/validation/FunctionContext.hpp"
 #include "parka/validation/FunctionEntry.hpp"
-#include "parka/validation/Validator.hpp"
-#include <stdexcept>
+#include "parka/validation/I32TypeContext.hpp"
+#include "parka/log/Log.hpp"
 
 namespace parka::validation
 {
@@ -20,20 +14,19 @@ namespace parka::validation
 		_functions(1'000'000),
 		_intrinsics(1'000)
 	{
-		// addIntrinsic(ir::PrimitiveIr::voidPrimitive);
-		addIntrinsic(ir::PrimitiveIr::u8Primitive);
-		addIntrinsic(ir::PrimitiveIr::u16Primitive);
-		addIntrinsic(ir::PrimitiveIr::u32Primitive);
-		addIntrinsic(ir::PrimitiveIr::u64Primitive);
-		addIntrinsic(ir::PrimitiveIr::i8Primitive);
-		addIntrinsic(ir::PrimitiveIr::i16Primitive);
-		addIntrinsic(ir::PrimitiveIr::i32Primitive);
-		addIntrinsic(ir::PrimitiveIr::i64Primitive);
-		addIntrinsic(ir::PrimitiveIr::f32Primitive);
-		addIntrinsic(ir::PrimitiveIr::f64Primitive);
-		addIntrinsic(ir::PrimitiveIr::charPrimitive);
-		addIntrinsic(ir::PrimitiveIr::boolPrimitive);
-		addIntrinsic(ir::PrimitiveIr::stringPrimitive);
+		addPrimitive(ir::PrimitiveIr::u8Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::u16Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::u32Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::u64Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::i8Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::i16Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::i32Primitive, &I32TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::i64Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::f32Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::f64Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::charPrimitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::boolPrimitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::stringPrimitive, nullptr);
 
 		for (auto& mod : globalPackage.modules())
 		{
@@ -42,6 +35,14 @@ namespace parka::validation
 				declare(*function);
 			}
 		}
+	}
+
+	void GlobalContext::addPrimitive(ir::PrimitiveIr& primitive, TypeContext* typeContext)
+	{
+		addIntrinsic(primitive);
+		
+		if (typeContext)
+			_types.insert(&primitive, typeContext);
 	}
 
 	void GlobalContext::addIntrinsic(ir::EntityIr& intrinsic)
@@ -126,15 +127,11 @@ namespace parka::validation
 
 	TypeContext& GlobalContext::getTypeContext(const ir::TypeIr& type)
 	{
-		auto* context = _types.find(&type);
+		auto* iter = _types.find(&type);
 
-		if (!context)
-		{
-			auto ins = _types.insert(&type, TypeContext(*this));
+		if (!iter)
+			log::fatal("Unable to get context for type `$`.", type);
 
-			context = &*ins;
-		}
-
-		return *context;
+		return **iter;
 	}
 }

@@ -3,29 +3,18 @@
 
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
-#include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/ConversionIr.hpp"
 #include "parka/ir/TypeIr.hpp"
-#include "parka/util/Optional.hpp"
 
 namespace parka::validation
 { 
-	class GlobalContext;
-
-	class TypeContext
+	struct TypeContext
 	{
+		~TypeContext() {}
 
-	public:
-
-		TypeContext(GlobalContext& globalContext):
-			_globalContext(globalContext)
-		{}
-		TypeContext(TypeContext&&) = default;
-		TypeContext(const TypeContext&) = delete;
-
-		ir::ConversionIr* getConversionTo(const ir::TypeIr&) const;
-		ir::BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const;
-		ir::AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const ir::TypeIr&) const;
+		virtual ir::ConversionIr* getConversionTo(const ir::TypeIr&) const { return nullptr; }
+		virtual ir::BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const { return nullptr; }
+		virtual ir::AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const ir::TypeIr&) const { return nullptr; }
 	};
 }
 

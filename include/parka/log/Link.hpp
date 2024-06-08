@@ -1,9 +1,9 @@
 #ifndef PARKA_LOG_LINK_HPP
 #define PARKA_LOG_LINK_HPP
 
-
 #include "parka/util/String.hpp"
 #include <ostream>
+
 namespace parka
 {
 	class Link
