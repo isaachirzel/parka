@@ -87,7 +87,7 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicIntegerAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.right());
 
 		switch (primitive.primitiveType())
 		{
@@ -168,7 +168,7 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicFloatAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.right());
 
 		switch (primitive.primitiveType())
 		{
@@ -209,7 +209,7 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicBoolAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.right());
 
 		if (primitive.primitiveType() == PrimitiveType::Bool)
 			return evaluateIntrinsicBoolAssignmentOperator<Left, bool>(ir, left, right);
@@ -238,7 +238,7 @@ namespace parka::evaluation
 	template <typename Left>
 	void evaluateIntrinsicCharAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.right());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.right());
 
 		if (primitive.primitiveType() == PrimitiveType::Char)
 			return evaluateIntrinsicCharAssignmentOperator<Left, char>(ir, left, right);
@@ -248,7 +248,7 @@ namespace parka::evaluation
 
 	void evaluateIntrinsicAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.left());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.left());
 
 		switch (primitive.primitiveType())
 		{

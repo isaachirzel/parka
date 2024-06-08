@@ -108,7 +108,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicIntegerBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.returnType());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.returnType());
 
 		switch (primitive.primitiveType())
 		{
@@ -152,7 +152,7 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicIntegerBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		switch (primitive.primitiveType())
 		{
@@ -223,7 +223,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicFloatBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.returnType());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.returnType());
 
 		switch (primitive.primitiveType())
 		{
@@ -249,7 +249,7 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicFloatBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& primitive = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		switch (primitive.primitiveType())
 		{
@@ -301,7 +301,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicBoolBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& ret = dynamic_cast<const PrimitiveIr&>(ir.returnType());
+		const PrimitiveIr& ret = static_cast<const PrimitiveIr&>(ir.returnType());
 
 		if (ret.primitiveType() != PrimitiveType::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
@@ -312,7 +312,7 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicBoolBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& r = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& r = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		if (r.primitiveType() != PrimitiveType::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
@@ -340,7 +340,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicCharBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& ret = dynamic_cast<const PrimitiveIr&>(ir.returnType());
+		const PrimitiveIr& ret = static_cast<const PrimitiveIr&>(ir.returnType());
 
 		if (ret.primitiveType() != PrimitiveType::Bool)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
@@ -351,7 +351,7 @@ namespace parka::evaluation
 	template <typename Left>
 	Value& evaluateIntrinsicCharBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& r = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& r = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		if (r.primitiveType() != PrimitiveType::Char)
 			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
@@ -361,7 +361,7 @@ namespace parka::evaluation
 
 	Value& evaluateIntrinsicBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& l = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& l = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		switch (l.primitiveType())
 		{

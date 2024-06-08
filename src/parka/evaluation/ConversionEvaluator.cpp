@@ -19,7 +19,7 @@ namespace parka::evaluation
 	template <typename To>
 	Value& evaluateIntrinsicIntegerConversion(Value& to, Value& from)
 	{
-		const auto& f = dynamic_cast<const ir::PrimitiveIr&>(from.type());
+		const auto& f = static_cast<const ir::PrimitiveIr&>(from.type());
 
 		if (f.primitiveType() != PrimitiveType::Integer)
 			log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
@@ -30,7 +30,7 @@ namespace parka::evaluation
 	template <typename To>
 	Value& evaluateIntrinsicFloatConversion(Value& to, Value& from)
 	{
-		const auto& f = dynamic_cast<const ir::PrimitiveIr&>(from.type());
+		const auto& f = static_cast<const ir::PrimitiveIr&>(from.type());
 
 		if (f.primitiveType() != PrimitiveType::Float)
 			log::fatal("Unable to evaluate conversion `($)$`.", to.type(), from.type());
@@ -40,7 +40,7 @@ namespace parka::evaluation
 
 	Value& evaluateIntrinsicConversion(Value& to, Value& from)
 	{
-		const auto& t = dynamic_cast<const ir::PrimitiveIr&>(to.type());
+		const auto& t = static_cast<const ir::PrimitiveIr&>(to.type());
 
 		switch (t.primitiveType())
 		{
