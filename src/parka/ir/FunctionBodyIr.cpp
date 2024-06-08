@@ -1,10 +1,16 @@
 #include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/enum/FunctionBodyType.hpp"
+#include "parka/enum/IntrinsicFunctionType.hpp"
 
 namespace parka::ir
 {
-	FunctionBodyIr::FunctionBodyIr(FunctionBodyType functionBodyType):
-		_functionBodyType(functionBodyType)
+	FunctionBodyIr::FunctionBodyIr():
+		_functionBodyType(FunctionBodyType::NotImplemented)
+	{}
+
+	FunctionBodyIr::FunctionBodyIr(IntrinsicFunctionType intrinsicFunctionType):
+		_intrinsicFunctionType(intrinsicFunctionType),
+		_functionBodyType(FunctionBodyType::Intrinsic)
 	{}
 
 	FunctionBodyIr::FunctionBodyIr(ExpressionIr& expression):
@@ -16,16 +22,6 @@ namespace parka::ir
 		_blockStatement(&blockStatement),
 		_functionBodyType(FunctionBodyType::Block)
 	{}
-
-	FunctionBodyIr FunctionBodyIr::notImplemented()
-	{
-		return FunctionBodyIr(FunctionBodyType::NotImplemented);
-	}
-
-	FunctionBodyIr FunctionBodyIr::intrinsic()
-	{
-		return FunctionBodyIr(FunctionBodyType::Intrinsic);
-	}
 
 	FunctionBodyIr& FunctionBodyIr::operator=(FunctionBodyIr&& other)
 	{

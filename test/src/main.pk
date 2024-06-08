@@ -5,10 +5,9 @@ function double(number: i32): i32
 
 function factorial(count: i32): i32
 {
-	var one: i32 = 1;
 	var result: i32 = 0;
 
-	if count <= one
+	if count <= 1
 		return 1;
 
 	return count * factorial(count - 1);
@@ -40,6 +39,8 @@ function notImplemented();
 
 function main(): i32
 {
+	print();
+
 	var a = if true == false
 		then fibonacci(15)
 		else factorial(5);

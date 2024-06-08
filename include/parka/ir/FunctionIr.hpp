@@ -17,6 +17,10 @@ namespace parka::ir
 
 	public:
 
+		static FunctionIr printFunction;
+
+	public:
+
 		FunctionIr(String symbol, PrototypeIr&& prototype, FunctionBodyIr&& body);
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;

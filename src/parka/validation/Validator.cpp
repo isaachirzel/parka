@@ -210,7 +210,7 @@ namespace parka::validation
 		const auto& name = ast.prototype().identifier().text();
 		auto symbol = context.createSymbol(name);
 
-		return new FunctionIr(std::move(symbol), *prototype, FunctionBodyIr::notImplemented());
+		return new FunctionIr(std::move(symbol), *prototype, {});
 	}
 
 	Result<PrototypeIr> validatePrototype(const PrototypeAst& prototype, FunctionContext& context)

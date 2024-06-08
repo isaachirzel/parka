@@ -1,7 +1,12 @@
 #include "parka/ir/FunctionIr.hpp"
+#include "parka/enum/IntrinsicFunctionType.hpp"
+#include "parka/ir/PrimitiveIr.hpp"
+#include "parka/ir/PrototypeIr.hpp"
 
 namespace parka::ir
 {
+	FunctionIr FunctionIr::printFunction("print", PrototypeIr({}, PrimitiveIr::voidPrimitive), IntrinsicFunctionType::Print);
+
 	FunctionIr::FunctionIr(String symbol, PrototypeIr&& prototype, FunctionBodyIr&& body):
 		EntityIr(EntityType::Function),
 		_symbol(std::move(symbol)),

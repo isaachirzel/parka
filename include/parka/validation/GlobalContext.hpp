@@ -23,8 +23,8 @@ namespace parka::validation
 
 	private:
 
-		void addIntrinsic(ir::EntityIr& intrinsic);
 		void addPrimitive(ir::PrimitiveIr& primitive, TypeContext*);
+		void addIntrinsic(ir::EntityIr& intrinsic);
 
 	public:
 

@@ -1,4 +1,5 @@
 #include "parka/validation/GlobalContext.hpp"
+#include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/validation/BoolTypeContext.hpp"
 #include "parka/validation/FunctionContext.hpp"
@@ -31,6 +32,8 @@ namespace parka::validation
 		addPrimitive(ir::PrimitiveIr::charPrimitive, nullptr);
 		addPrimitive(ir::PrimitiveIr::boolPrimitive, &BoolTypeContext::instance);
 		addPrimitive(ir::PrimitiveIr::stringPrimitive, nullptr); 
+
+		addIntrinsic(ir::FunctionIr::printFunction);
 
 		for (auto& mod : globalPackage.modules())
 		{
