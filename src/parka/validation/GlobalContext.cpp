@@ -2,11 +2,22 @@
 #include "parka/ir/FunctionIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/validation/BoolTypeContext.hpp"
+#include "parka/validation/CharTypeContext.hpp"
+#include "parka/validation/F32TypeContext.hpp"
+#include "parka/validation/F64TypeContext.hpp"
+#include "parka/validation/FloatTypeContext.hpp"
 #include "parka/validation/FunctionContext.hpp"
 #include "parka/validation/FunctionEntry.hpp"
+#include "parka/validation/I16TypeContext.hpp"
 #include "parka/validation/I32TypeContext.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/validation/I64TypeContext.hpp"
+#include "parka/validation/I8TypeContext.hpp"
 #include "parka/validation/IntegerTypeContext.hpp"
+#include "parka/validation/U16TypeContext.hpp"
+#include "parka/validation/U32TypeContext.hpp"
+#include "parka/validation/U64TypeContext.hpp"
+#include "parka/validation/U8TypeContext.hpp"
 
 namespace parka::validation
 {
@@ -18,20 +29,21 @@ namespace parka::validation
 		_intrinsics(1'000)
 	{
 		_types.insert(&ir::PrimitiveIr::integerPrimitive, &IntegerTypeContext::instance);
+		_types.insert(&ir::PrimitiveIr::floatPrimitive, &FloatTypeContext::instance);
 
-		addPrimitive(ir::PrimitiveIr::u8Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::u16Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::u32Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::u64Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::i8Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::i16Primitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::u8Primitive, &U8TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::u16Primitive, &U16TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::u32Primitive, &U32TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::u64Primitive, &U64TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::i8Primitive, &I8TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::i16Primitive, &I16TypeContext::instance);
 		addPrimitive(ir::PrimitiveIr::i32Primitive, &I32TypeContext::instance);
-		addPrimitive(ir::PrimitiveIr::i64Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::f32Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::f64Primitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::charPrimitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::i64Primitive, &I64TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::f32Primitive, &F32TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::f64Primitive, &F64TypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::charPrimitive, &CharTypeContext::instance);
 		addPrimitive(ir::PrimitiveIr::boolPrimitive, &BoolTypeContext::instance);
-		addPrimitive(ir::PrimitiveIr::stringPrimitive, nullptr); 
+		// addPrimitive(ir::PrimitiveIr::stringPrimitive, &StringTypeContext::instance); 
 
 		addIntrinsic(ir::FunctionIr::printFunction);
 

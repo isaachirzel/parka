@@ -14,4 +14,14 @@ namespace parka::validation
 
 		return nullptr;
 	}
+
+	ir::BinaryOperatorIr* IntegerTypeContext::getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const
+	{
+		return nullptr;
+	}
+	
+	ir::AssignmentOperatorIr* IntegerTypeContext::getAssignmentOperator(AssignmentType, const ir::TypeIr&) const
+	{
+		return nullptr;
+	}
 }
