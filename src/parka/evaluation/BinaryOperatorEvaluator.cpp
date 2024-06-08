@@ -1,10 +1,10 @@
 #include "parka/evaluation/BinaryOperatorEvaluator.hpp"
 #include "parka/enum/PrimitiveType.hpp"
-#include "parka/enum/TypeCategory.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
+#include "parka/ir/Util.hpp"
 
 using namespace parka::ir;
 
@@ -96,7 +96,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Integer operation `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+		log::fatal("Integer operation `($ $ $) -> $` cannot be evaluated.", type<Left>(), binaryExpressionType, type<Right>(), type<Return>());
 	}
 
 	template <typename Left, typename Right, typename Return>
@@ -108,7 +108,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicIntegerBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.returnType());
 
 		switch (primitive.primitiveType())
 		{
@@ -223,7 +223,7 @@ namespace parka::evaluation
 	template <typename Left, typename Right>
 	Value& evaluateIntrinsicFloatBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)
 	{
-		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.rightType());
+		const PrimitiveIr& primitive = dynamic_cast<const PrimitiveIr&>(ir.returnType());
 
 		switch (primitive.primitiveType())
 		{
@@ -411,7 +411,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+		log::fatal("Binary operator `$ $ $` cannot be evaluated $.", left.type(), ir.binaryExpressionType(), right.type());
 	}
 
 	Value& evaluateBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)

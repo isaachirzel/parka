@@ -79,7 +79,8 @@ namespace parka::ir
 	PrimitiveIr::PrimitiveIr(PrimitiveType primitiveType):
 		EntityIr(EntityType::Primitive),
 		TypeIr(TypeCategory::Primitive),
-		_symbol(getPrimitiveTypeSymbol(primitiveType))
+		_symbol(getPrimitiveTypeSymbol(primitiveType)),
+		_primitiveType(primitiveType)
 	{}
 
 	std::ostream& PrimitiveIr::printType(std::ostream& out) const

@@ -1,5 +1,6 @@
 #include "parka/validation/GlobalContext.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
+#include "parka/validation/BoolTypeContext.hpp"
 #include "parka/validation/FunctionContext.hpp"
 #include "parka/validation/FunctionEntry.hpp"
 #include "parka/validation/I32TypeContext.hpp"
@@ -28,8 +29,8 @@ namespace parka::validation
 		addPrimitive(ir::PrimitiveIr::f32Primitive, nullptr);
 		addPrimitive(ir::PrimitiveIr::f64Primitive, nullptr);
 		addPrimitive(ir::PrimitiveIr::charPrimitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::boolPrimitive, nullptr);
-		addPrimitive(ir::PrimitiveIr::stringPrimitive, nullptr);
+		addPrimitive(ir::PrimitiveIr::boolPrimitive, &BoolTypeContext::instance);
+		addPrimitive(ir::PrimitiveIr::stringPrimitive, nullptr); 
 
 		for (auto& mod : globalPackage.modules())
 		{
