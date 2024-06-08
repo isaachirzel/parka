@@ -4,6 +4,7 @@
 #include "parka/validation/FunctionEntry.hpp"
 #include "parka/validation/I32TypeContext.hpp"
 #include "parka/log/Log.hpp"
+#include "parka/validation/IntegerTypeContext.hpp"
 
 namespace parka::validation
 {
@@ -14,6 +15,8 @@ namespace parka::validation
 		_functions(1'000'000),
 		_intrinsics(1'000)
 	{
+		_types.insert(&ir::PrimitiveIr::integerPrimitive, &IntegerTypeContext::instance);
+
 		addPrimitive(ir::PrimitiveIr::u8Primitive, nullptr);
 		addPrimitive(ir::PrimitiveIr::u16Primitive, nullptr);
 		addPrimitive(ir::PrimitiveIr::u32Primitive, nullptr);

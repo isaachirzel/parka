@@ -1,7 +1,6 @@
 #include "parka/validation/I32TypeContext.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
-#include "parka/util/AssignmentOperatorUtil.hpp"
-#include "parka/util/BinaryOperatorUtil.hpp"
+#include "parka/ir/Util.hpp"
 
 namespace parka::validation
 {

@@ -2,12 +2,12 @@
 #define PARKA_IR_L_VALUE_HPP
 
 #include "parka/enum/EntityType.hpp"
-#include "parka/ir/SymboledIr.hpp"
-#include "parka/ir/TypedIr.hpp"
+#include "parka/ir/TypeIr.hpp"
+#include "parka/util/String.hpp"
 
 namespace parka::ir
 {
-	struct EntityIr: public SymboledIr, public TypedIr
+	struct EntityIr
 	{
 		const EntityType entityType;
 
@@ -16,6 +16,9 @@ namespace parka::ir
 		{}
 
 		virtual ~EntityIr() {}
+
+		virtual const TypeIr& type() const = 0;
+		virtual const String& symbol() const = 0;
 	};
 }
 
