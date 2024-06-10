@@ -1,85 +1,16 @@
 #include "parka/parser/Token.hpp"
 #include "parka/enum/KeywordType.hpp"
+#include "parka/file/Snippet.hpp"
 #include "parka/log/Log.hpp"
 
 #include <cstring>
 
 namespace parka
 {
-	Token::Token(const File& file, usize index, usize length, TokenType type):
-	_snippet(file, index, length),
-	_type(type)
+	Token::Token(const Snippet& snippet, TokenType type):
+		_snippet(snippet),
+		_type(type)
 	{}
-
-	Token& Token::operator=(Token&& other)
-	{
-		_snippet = std::move(other._snippet);
-		_type = other._type;
-
-		return *this;
-	}
-
-	Token& Token::operator=(const Token& other)
-	{
-		_snippet = other._snippet;
-		_type = other._type;
-
-		return *this;
-	}
-
-	static usize getEndOfLinePos(const File& file, usize pos)
-	{
-		for (usize i = pos; i < file.length(); ++i)
-		{
-			if (file[i] == '\n')
-				return i + 1;
-		}
-
-		return file.length();
-	}
-
-	static usize getEndOfBlockCommentPos(const File& file, usize pos)
-	{
-		for (usize i = pos; i < file.length(); ++i)
-		{
-			if (file[i] == '*' && file[i + 1] == '/')
-				return i + 2;
-		}
-
-		return file.length();
-	}
-
-	static usize getNextPos(const File& file, usize pos)
-	{
-		for (usize i = pos; i < file.length(); ++i)
-		{
-			auto c = file[i];
-
-			if (c <= ' ')
-				continue;
-
-			if (c == '/')
-			{
-				switch (file[i + 1])
-				{
-					case '/': // Line comment
-						i = getEndOfLinePos(file, i + 2) - 1;
-						continue;
-
-					case '*': // Block comment
-						i = getEndOfBlockCommentPos(file, i + 2) - 1;
-						continue;
-
-					default:
-						break;
-				}
-			}
-
-			return i;
-		}
-
-		return file.length();
-	}
 
 	inline bool isIdentifierChar(char c)
 	{
@@ -106,98 +37,105 @@ namespace parka
 		}
 	}
 
-	Token getQuoteToken(const File& file, const usize startPos)
+	Token getQuoteToken(const Position& startPos)
 	{
-		auto terminal = file[startPos];
+		auto terminal = *startPos;
 		auto type = getQuoteType(terminal);
 		usize length = 1;
 		auto isEscaped = false;
 
-		for (usize i = startPos + length; file[i] != terminal || isEscaped; ++i)
+		while (true)
 		{
-			char c = file[i];
+			char c = startPos[length];
+
+			if (c == terminal || isEscaped)
+				break;
 
 			if (!c)
 			{
-				auto token = Token(file, startPos, length, TokenType::EndOfFile);
+				auto token = Token(Snippet(startPos, length), TokenType::EndOfFile);
 
-				log::error(token, "$ is unterminated.", type);
+				log::error(token, "String token is unterminated.");
+				// TODO: Add solution
 				
 				return token;
 			}
 
 			if (c == '\\')
-			{
 				isEscaped = !isEscaped;
-				continue;
-			}
 			
 			length += 1;
 		}
 		
 		length += 1;
 
-		auto token = Token(file, startPos, length, type);
+		auto token = Token(Snippet(startPos, length), type);
 
 		return token;
 	}
 
-	Token getIdentifierToken(const File& file, const usize startPos)
+	Token getIdentifierToken(const Position& startPos)
 	{
-		usize i = startPos + 1;
+		usize length = 1;
 
 		while (true)
 		{
-			char c = file[i];
+			char c = startPos[length];
 
 			if (!isIdentifierChar(c) && !isDigitChar(c))
 				break;
 
-			i += 1;
+			length += 1;
 		}
 
-		auto length = i - startPos;
-
-		return Token(file, startPos, length, TokenType::Identifier);
+		return Token(Snippet(startPos, length), TokenType::Identifier);
 	}
 
-	Token getDigitToken(const File& file, const usize startPos)
+	Token getDigitToken(const Position& position)
 	{
 		auto isFloat = false;
-		usize length = 0;
+		auto length = (u32)0;
 
-		for (usize i = startPos; ; ++i)
+		while(true)
 		{
-			char c = file[i];
+			auto c = position[length];
 
-			if (isDigitChar(c))
-				continue;
-
-			if (c != '.' || isFloat)
+			if (!isDigitChar(c))
 			{
-				length = i - startPos;
-				break;
+				if (c != '.')
+					break;
+
+				if (isFloat)
+					break;
+
+				auto next = position[length + 1];
+
+				if (!isDigitChar(next))
+					break;
+
+				isFloat = true;
+				length += 1;
 			}
-				
-			isFloat = true;
+
+			length += 1;
 		}
 
 		auto type = isFloat
 			? TokenType::FloatLiteral
 			: TokenType::IntegerLiteral;
-		auto token = Token(file, startPos, length, type);
+		auto token = Token(Snippet(position, length), type);
 
 		return token;
 	}
 
-	Token getNextToken(const File& file, usize startPos)
+	Token getNextToken(const Position& startPos)
 	{
-		char c = file[startPos];
+		char c = *startPos;
 
 		switch (c)
 		{
 			case '\0':
-				return Token(file, startPos, 0, TokenType::EndOfFile);
+				return Token(Snippet(startPos, 0), TokenType::EndOfFile);
 
 			case '_':
 			case 'a': case 'A':
@@ -226,7 +164,7 @@ namespace parka
 			case 'x': case 'X':
 			case 'y': case 'Y':
 			case 'z': case 'Z':
-				return getIdentifierToken(file, startPos);
+				return getIdentifierToken(startPos);
 
 			case '0':
 			case '1':
@@ -238,185 +176,185 @@ namespace parka
 			case '7':
 			case '8':
 			case '9':
-				return getDigitToken(file, startPos);
+				return getDigitToken(startPos);
 			
 			// Separators
 			case '(':
-				return Token(file, startPos, 1, TokenType::LeftParenthesis);
+				return Token(Snippet(startPos, 1), TokenType::LeftParenthesis);
 
 			case ')':
-				return Token(file, startPos, 1, TokenType::RightParenthesis);
+				return Token(Snippet(startPos, 1), TokenType::RightParenthesis);
 
 			case '[':
-				return Token(file, startPos, 1, TokenType::LeftBracket);
+				return Token(Snippet(startPos, 1), TokenType::LeftBracket);
 
 			case ']':
-				return Token(file, startPos, 1, TokenType::RightBracket);
+				return Token(Snippet(startPos, 1), TokenType::RightBracket);
 
 			case '{':
-				return Token(file, startPos, 1, TokenType::LeftBrace);
+				return Token(Snippet(startPos, 1), TokenType::LeftBrace);
 
 			case '}':
-				return Token(file, startPos, 1, TokenType::RightBrace);
+				return Token(Snippet(startPos, 1), TokenType::RightBrace);
 
 			case ',':
-				return Token(file, startPos, 1, TokenType::Comma);
+				return Token(Snippet(startPos, 1), TokenType::Comma);
 
 			case ';':
-				return Token(file, startPos, 1, TokenType::Semicolon);
+				return Token(Snippet(startPos, 1), TokenType::Semicolon);
 
 			case ':':
-				return file[startPos + 1] == ':'
-					? Token(file, startPos, 2, TokenType::Scope)
-					: Token { file, startPos, 1, TokenType::Colon };
+				return startPos[1] == ':'
+					? Token(Snippet(startPos, 2), TokenType::Scope)
+					: Token(Snippet(startPos, 1), TokenType::Colon);
 
 			case '.':
 			{
-				char c1 = file[startPos + 1];
+				char c1 = startPos[1];
 
 				if (isDigitChar(c1))
 				{
-					return getDigitToken(file, startPos);
+					return getDigitToken(startPos);
 				}
 				else if (c1 == '.')
 				{
-					return file[startPos + 2] == '.'
-						? Token(file, startPos, 3, TokenType::Elipsis)
-						: Token(file, startPos, 2, TokenType::Range);
+					return startPos[2] == '.'
+						? Token(Snippet(startPos, 3), TokenType::Elipsis)
+						: Token(Snippet(startPos, 2), TokenType::Range);
 				}
 				
-				return Token(file, startPos, 1, TokenType::Dot);
+				return Token(Snippet(startPos, 1), TokenType::Dot);
 			}
 
 			// Operators
 			case '<':
-				if (file[startPos + 1] == '<')
+				if (startPos[1] == '<')
 				{
-					return file[startPos + 2] == '='
-						? Token(file, startPos, 3, TokenType::LeftBitShiftAssign)
-						: Token(file, startPos, 2, TokenType::LeftBitShift);
+					return startPos[2] == '='
+						? Token(Snippet(startPos, 3), TokenType::LeftBitShiftAssign)
+						: Token(Snippet(startPos, 2), TokenType::LeftBitShift);
 				}
-				else if (file[startPos + 1] == '=')
+				else if (startPos[1] == '=')
 				{
-					return Token(file, startPos, 2, TokenType::LessThanOrEqualTo);
+					return Token(Snippet(startPos, 2), TokenType::LessThanOrEqualTo);
 				}
 
-				return Token(file, startPos, 1, TokenType::LessThan);
+				return Token(Snippet(startPos, 1), TokenType::LessThan);
 
 			case '>':
-				if (file[startPos + 1] == '>')
+				if (startPos[1] == '>')
 				{
-					return file[startPos + 2] == '='
-						? Token(file, startPos, 3, TokenType::RightBitShiftAssign)
-						: Token(file, startPos, 2, TokenType::RightBitShift);
+					return startPos[2] == '='
+						? Token(Snippet(startPos, 3), TokenType::RightBitShiftAssign)
+						: Token(Snippet(startPos, 2), TokenType::RightBitShift);
 				}
-				else if (file[startPos + 1] == '=')
+				else if (startPos[1] == '=')
 				{
-					return Token(file, startPos, 2, TokenType::GreaterThanOrEqualTo);
+					return Token(Snippet(startPos, 2), TokenType::GreaterThanOrEqualTo);
 				}
 
-				return Token(file, startPos, 1, TokenType::GreaterThan);
+				return Token(Snippet(startPos, 1), TokenType::GreaterThan);
 
 			case '$':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::ModulusAssign)
-					: Token(file, startPos, 1, TokenType::Modulus);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::ModulusAssign)
+					: Token(Snippet(startPos, 1), TokenType::Modulus);
 
 			case '^':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::BitwiseXorAssign)
-					: Token(file, startPos, 1, TokenType::BitwiseXor);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::BitwiseXorAssign)
+					: Token(Snippet(startPos, 1), TokenType::BitwiseXor);
 				
 			case '&':
-				if (file[startPos + 1] == '&')
+				if (startPos[1] == '&')
 				{
-					return file[startPos + 2] == '='
-						? Token(file, startPos, 3, TokenType::BooleanAndAssign)
-						: Token(file, startPos, 2, TokenType::BooleanAnd);
+					return startPos[2] == '='
+						? Token(Snippet(startPos, 3), TokenType::BooleanAndAssign)
+						: Token(Snippet(startPos, 2), TokenType::BooleanAnd);
 				}
-				else if (file[startPos + 1] == '=')
+				else if (startPos[1] == '=')
 				{
-					return Token(file, startPos, 2, TokenType::BitwiseAndAssign);
+					return Token(Snippet(startPos, 2), TokenType::BitwiseAndAssign);
 				}
 
-				return Token(file, startPos, 1, TokenType::Ampersand);
+				return Token(Snippet(startPos, 1), TokenType::Ampersand);
 
 			case '*':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::MultiplyAssign)
-					: Token(file, startPos, 1, TokenType::Asterisk);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::MultiplyAssign)
+					: Token(Snippet(startPos, 1), TokenType::Asterisk);
 
 			case '-':
-				if (file[startPos + 1] == '=')
+				if (startPos[1] == '=')
 				{
-					return Token(file, startPos, 2, TokenType::SubtractAssign);
+					return Token(Snippet(startPos, 2), TokenType::SubtractAssign);
 				}
-				else if (file[startPos + 1] == '>')
+				else if (startPos[1] == '>')
 				{
-					return Token(file, startPos, 2, TokenType::SingleArrow);
+					return Token(Snippet(startPos, 2), TokenType::SingleArrow);
 				}
 
-				return Token(file, startPos, 1, TokenType::Minus);
+				return Token(Snippet(startPos, 1), TokenType::Minus);
 
 			case '=':
-				if (file[startPos + 1] == '=')
+				if (startPos[1] == '=')
 				{
-					return Token(file, startPos, 2, TokenType::Equals);
+					return Token(Snippet(startPos, 2), TokenType::Equals);
 				}
-				else if (file[startPos + 1] == '>')
+				else if (startPos[1] == '>')
 				{
-					return Token(file, startPos, 2, TokenType::DoubleArrow);
+					return Token(Snippet(startPos, 2), TokenType::DoubleArrow);
 				}
 
-				return Token(file, startPos, 1, TokenType::Assign);
+				return Token(Snippet(startPos, 1), TokenType::Assign);
 
 			case '|':
-				if (file[startPos + 1] == '|')
+				if (startPos[1] == '|')
 				{
-					return file[startPos + 2] == '='
-						? Token(file, startPos, 3, TokenType::BooleanOrAssign)
-						: Token(file, startPos, 2, TokenType::BooleanOr);
+					return startPos[2] == '='
+						? Token(Snippet(startPos, 3), TokenType::BooleanOrAssign)
+						: Token(Snippet(startPos, 2), TokenType::BooleanOr);
 				}
-				else if (file[startPos + 1] == '=')
+				else if (startPos[1] == '=')
 				{
-					return Token(file, startPos, 2, TokenType::BitwiseOrAssign);
+					return Token(Snippet(startPos, 2), TokenType::BitwiseOrAssign);
 				}
 				
-				return Token(file, startPos, 1, TokenType::Pipe);
+				return Token(Snippet(startPos, 1), TokenType::Pipe);
 
 			case '+':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::AddAssign)
-					: Token(file, startPos, 1, TokenType::Plus);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::AddAssign)
+					: Token(Snippet(startPos, 1), TokenType::Plus);
 
 			case '?':
-				return Token(file, startPos, 1, TokenType::Question);
+				return Token(Snippet(startPos, 1), TokenType::Question);
 
 			case '!':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::NotEquals)
-					: Token(file, startPos, 1, TokenType::BooleanNot);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::NotEquals)
+					: Token(Snippet(startPos, 1), TokenType::BooleanNot);
 
 			case '/':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::DivideAssign)
-					: Token(file, startPos, 1, TokenType::Slash);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::DivideAssign)
+					: Token(Snippet(startPos, 1), TokenType::Slash);
 
 			case '%':
-				return file[startPos + 1] == '='
-					? Token(file, startPos, 2, TokenType::ModulusAssign)
-					: Token(file, startPos, 1, TokenType::Modulus);
+				return startPos[1] == '='
+					? Token(Snippet(startPos, 2), TokenType::ModulusAssign)
+					: Token(Snippet(startPos, 1), TokenType::Modulus);
 
 			case '\'':
 			case '\"':
-				return getQuoteToken(file, startPos);
+				return getQuoteToken(startPos);
 
 			default:
 				break;
 		}
 
 		// TODO: Rethink handling of strange characters
-		auto token = Token(file, startPos, 1, TokenType::EndOfFile);
+		auto token = Token(Snippet(startPos, 1), TokenType::EndOfFile);
 
 		log::error(token, "An invalid character was found in the source file.");
 
@@ -425,15 +363,20 @@ namespace parka
 
 	void Token::increment()
 	{
-		usize nextTokenPos = getNextPos(_snippet.file(), _snippet.index() + _snippet.length());
+		auto position = _snippet.position() + _snippet.length();
 
-		*this = getNextToken(_snippet.file(), nextTokenPos);
+		position.seekNext();
+
+		*this = getNextToken(position);
 	}
 
 	Token Token::initial(const File& file)
 	{
-		auto pos = getNextPos(file, 0);
-		auto token = getNextToken(file, pos);
+		auto position = Position(file);
+
+		position.seekNext();
+
+		auto token = getNextToken(position);
 
 		return token;
 	}

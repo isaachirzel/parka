@@ -1,8 +1,6 @@
 #include "parka/util/Project.hpp"
 #include "parka/file/Directory.hpp"
-#include "parka/util/Result.hpp"
 #include "parka/util/Path.hpp"
-#include "parka/util/Print.hpp"
 
 namespace parka
 {
@@ -16,6 +14,19 @@ namespace parka
         return project;
     }
 
+    usize getSourceLineCount(const File& file)
+    {
+        usize count = 1;
+
+        for (usize i = 0; i < file.length(); ++i)
+        {
+            if (file[i] == '\n')
+                count += 1;
+        }
+
+        return count;
+    }
+
     usize getDirectoryLinesOfCodeCount(const Directory& directory)
     {
         usize count = 0;
@@ -23,7 +34,7 @@ namespace parka
         for (const auto& file : directory.files())
         {
             if (file.type() == FileType::Source)
-                count += file.lineCount();
+                count += getSourceLineCount(file);
         }
 
         for (const auto& subdirectory :directory.subdirectories())

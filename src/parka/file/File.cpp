@@ -5,35 +5,43 @@
 
 #include <cstring>
 
+// TODO: Cross platform
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 namespace parka
 {
-	String readFileText(const String& filepath)
+	File::File(String&& path, String&& text):
+		_path(std::move(path)),
+		_text(std::move(text)),
+		_type(getType(_path))
+	{}
+
+	static String readFileText(const String& filePath)
 	{
-		FILE *file = fopen(filepath.c_str(), "r");
-		
-		if (!file)
-			log::fatal("Failed to open file '$'.", filepath.c_str());
+		auto fd = open(filePath.c_str(), O_RDONLY);
 
-		if (fseek(file, 0, SEEK_END))
-			log::fatal("Failed to seek end of file '$'.", filepath.c_str());
+		if (fd == -1)
+			log::fatal("Failed to open file `$`.", filePath);
 
-		long size = ftell(file);
+		struct stat sb;
 
-		if (size == -1)
-			log::fatal("File '$' is invalid size.", filepath.c_str());
+		if (fstat(fd, &sb) == -1)
+			log::fatal("Failed to get information for file `$`.", filePath);
 
-		if (fseek(file, 0, SEEK_SET))
-			log::fatal("Failed to seek beginning of file '$'.", filepath.c_str());
+		auto length = sb.st_size;
+		auto* ptr = mmap(nullptr, length, PROT_READ, MAP_SHARED, fd, 0);
 
-		auto text = String();
+		if (ptr == (void*)-1)
+			log::fatal("Failed to read data for file `$`.", filePath);
 
-		text.resize(size);
 
-		usize bytesRead = fread(&text[0], sizeof(char), size, file);
+		auto text = String((char*)ptr, length);
 
-		text.resize(bytesRead);
-
-		fclose(file);
+		munmap(ptr, length);
+		close(fd);
 
 		return text;
 	}
@@ -59,28 +67,6 @@ namespace parka
 		}
 
 		return true;
-	}
-
-	Array<usize> File::getLineLengths(const String& text)
-	{
-		auto lengths = Array<usize>(text.length() / 80);
-		usize length = 0;
-
-		for (auto c : text)
-		{
-			if (c == '\n')
-			{
-				lengths.push(length + 1);
-				length = 0;
-				continue;
-			}
-
-			length += 1;
-		}
-
-		lengths.push(length);
-
-		return lengths;
 	}
 
 	FileType File::getType(const String& filepath)
@@ -126,7 +112,7 @@ namespace parka
 	File File::read(const String& path, usize pathOffset)
 	{
 		auto text = readFileText(path);
-		auto lineLengths = getLineLengths(text);
+		auto lineLengths = getLineIndices(text);
 		auto file = File(path.substr(pathOffset), std::move(text));
 
 		return file;
@@ -137,41 +123,6 @@ namespace parka
 		auto file = File(String(name), String(text));
 
 		return file;
-	}
-
-	usize File::getLine(usize pos) const
-	{
-		assert(pos < _text.length());
-
-		usize line = 1;
-
-		for (auto length : _lineLengths)
-		{
-			if (pos < length)
-				break;
-
-			line += 1;
-			pos -= length;
-		}
-
-		return line;
-	}
-
-	usize File::getCol(usize startPos) const
-	{
-		assert(startPos < _text.length());
-
-		usize pos = startPos;
-
-		while (true)
-		{
-			if (pos == 0 || _text[pos - 1] == '\n')
-				break;
-
-			pos -= 1;
-		}
-
-		return startPos - pos;
 	}
 
 	String File::substr(const usize index, const usize length) const

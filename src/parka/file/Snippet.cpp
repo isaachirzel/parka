@@ -1,47 +1,46 @@
 #include "parka/file/Snippet.hpp"
-#include "parka/log/Log.hpp"
-#include "parka/util/SourceLocation.hpp"
-
-#include <sstream>
+#include <algorithm>
 
 namespace parka
 {
-	Snippet::Snippet(const File& file, usize index, usize length):
-	_file(file),
-	_index(index),
-	_length(length)
+	Snippet::Snippet(const Position& position, u32 length):
+		_position(position),
+		_length(length)
 	{}
 
 	Snippet& Snippet::operator=(const Snippet& other)
 	{
-		new(this) auto(other);
+		_position = other._position;
+		_length = other._length;
+
 		return *this;
 	}
 
 	Snippet Snippet::operator+(const Snippet& other) const
 	{
-		assert(&_file == &other._file);
+		assert(&_position.file() == &other._position.file());
 
-		const auto thisEnd = _index + _length;
-		const auto otherEnd = other._index + other._length;
-		const auto end = thisEnd >= otherEnd
-			? thisEnd
-			: otherEnd;
-		const auto index = _index >= other._index
-			? other._index
-			: _index;
-		auto snippet = Snippet(_file, index, end - index);
+		const auto& firstSnippet = _position <= other._position
+			? *this
+			: other;
+		const auto position = firstSnippet._position;
+		const auto thisEnd = _position.index() + _length;
+		const auto otherEnd = other._position.index() + other._length;
+		const auto end = std::max(thisEnd, otherEnd);
+		const auto length = end - position.index();
+		const auto snippet = Snippet(position, length);
 
 		return snippet;
 	}
 	
 	bool Snippet::operator==(const Snippet& other) const
 	{
-		const auto isSame = &_file == &other._file
-			&& _index == other._index
-			&& _length == other._length;
+		return _position == other._position && _length == other._length;
+	}
 
-		return isSame;
+	bool Snippet::operator!=(const Snippet& other) const
+	{
+		return !(*this == other);
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Snippet& snippet)

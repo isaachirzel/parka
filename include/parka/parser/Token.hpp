@@ -1,7 +1,6 @@
 #ifndef PARKA_TOKEN_HPP
 #define PARKA_TOKEN_HPP
 
-// local includes
 #include "parka/enum/KeywordType.hpp"
 #include "parka/enum/TokenType.hpp"
 #include "parka/file/File.hpp"
@@ -18,11 +17,11 @@ namespace parka
 
 	public:
 
-		Token(const File& file, usize index, usize length, TokenType type);
+		Token(const Snippet& snippet, TokenType type);
 		Token(Token&&) = default;
 		Token(const Token&) = default;
-		Token& operator=(Token&& other);
-		Token& operator=(const Token& other);
+		Token& operator=(Token&& other) = default;
+		Token& operator=(const Token& other) = default;
 
 		static Token initial(const File& file);
 

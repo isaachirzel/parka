@@ -1,11 +1,8 @@
 
 #include "parka/log/Log.hpp"
-#include "parka/util/Common.hpp"
-#include "parka/util/Print.hpp"
 #include "parka/util/Arena.hpp"
+#include "parka/util/Common.hpp"
 
-#include <exception>
-#include <new>
 #include <stdexcept>
 #include <unistd.h>
 
@@ -16,7 +13,7 @@ namespace parka
 {
 	static usize getPageSize()
 	{
-		// TODO: Make getPageSize() platform
+		// TODO: Make getPageSize() platform independent
 		static usize pageSize;
 
 		if (pageSize == 0)

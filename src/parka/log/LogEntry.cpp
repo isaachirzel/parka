@@ -15,10 +15,10 @@ namespace parka
 
 		if (entry._snippet)
 		{
-			const auto& snippet = *entry._snippet;
+			const auto& position = entry._snippet->position();
 
 			out << Color::Yellow;
-			out << snippet.file().path() << ":" << snippet.line() << ":" << snippet.col();
+			out << position.file().path() << ":" << position.line() << ":" << position.column();
 			out << Color::Reset;
 			out << "\n";
 		}

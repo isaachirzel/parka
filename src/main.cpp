@@ -1,5 +1,4 @@
 #include "parka/evaluation/Evaluator.hpp"
-#include "parka/ir/FunctionIr.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/parser/ParkaParser.hpp"
 #include "parka/util/Timer.hpp"

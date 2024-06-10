@@ -40,7 +40,7 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, const Line& line)
 	{
-		auto margin = Margin(line._snippet.line());
+		auto margin = Margin(line._snippet.position().line());
 
 		out << margin;
 		out << Color::Default << line._preText << Color::Reset;
