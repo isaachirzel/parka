@@ -112,7 +112,6 @@ namespace parka
 	File File::read(const String& path, usize pathOffset)
 	{
 		auto text = readFileText(path);
-		auto lineLengths = getLineIndices(text);
 		auto file = File(path.substr(pathOffset), std::move(text));
 
 		return file;

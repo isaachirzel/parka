@@ -2,6 +2,7 @@
 #define PARKA_AST_BLOCK_STATEMENT_AST_HPP
 
 #include "parka/ast/StatementAst.hpp"
+#include "parka/util/Array.hpp"
 
 namespace parka::ast
 {
