@@ -5,13 +5,17 @@
 
 namespace parka::evaluation
 {
+	static void println(const char *text)
+	{
+		std::cout << text << std::endl;
+	}
+
 	void evaluateIntrinsicFunction(IntrinsicFunctionType intrinsicFunctionType, LocalState&)
 	{
 		switch (intrinsicFunctionType)
 		{
-			case IntrinsicFunctionType::Print:
-				std::cout << "PRINT" << std::endl;
-				return;
+			case IntrinsicFunctionType::Println:
+				return println("asdf");
 				
 			default:
 				break;

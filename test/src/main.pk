@@ -39,7 +39,7 @@ function notImplemented();
 
 function main(): i32
 {
-	print();
+	println();
 
 	var a = if true == false
 		then fibonacci(15)

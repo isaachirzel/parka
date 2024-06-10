@@ -4,6 +4,7 @@
 #include "parka/ir/EntityIr.hpp"
 #include "parka/ir/FunctionBodyIr.hpp"
 #include "parka/ir/InvalidTypeIr.hpp"
+#include "parka/ir/ParameterIr.hpp"
 #include "parka/ir/PrototypeIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 
@@ -17,13 +18,16 @@ namespace parka::ir
 
 	public:
 
-		static FunctionIr printFunction;
+		static FunctionIr printlnFunction;
 
+		static FunctionIr intrinsic(IntrinsicFunctionType intrinsicFunctionType, Array<ParameterIr> parameters, const TypeIr& returnType);
+		
 	public:
 
 		FunctionIr(String symbol, PrototypeIr&& prototype, FunctionBodyIr&& body);
 		FunctionIr(FunctionIr&&) = default;
 		FunctionIr(const FunctionIr&) = delete;
+
 
 		const String& symbol() const { return _symbol; }
 		const auto& prototype() const { return _prototype; }
