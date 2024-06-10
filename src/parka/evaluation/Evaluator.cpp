@@ -1,7 +1,6 @@
 #include "parka/evaluation/Evaluator.hpp"
 #include "parka/enum/FunctionBodyType.hpp"
 #include "parka/enum/JumpType.hpp"
-#include "parka/evaluation/IntrinsicBinaryOperator.hpp"
 #include "parka/evaluation/IntrinsicFunctionEvaluator.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BoolLiteralIr.hpp"
