@@ -7,7 +7,6 @@
 
 #include <ostream>
 
-// TODO: Rename to Snippet and add one to each expression type
 // TODO: Optimize the text call?
 
 namespace parka
@@ -22,9 +21,6 @@ namespace parka
 		Snippet(const Position& position, u32 length);
 		Snippet(Snippet&&) = default;
 		Snippet(const Snippet&) = default;
-
-		String text() const { return _position.file().substr(_position.index(), _length); }
-		String substr(const usize index, const usize length) const { return _position.file().substr(_position.index() + index, length); }
 
 		const char *ptr() const { return &_position.file()[_position.index()]; }
 		const char *begin() const { return &_position.file()[_position.index()]; }

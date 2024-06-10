@@ -67,15 +67,14 @@ namespace parka::parser
 
 	Result<Snippet> parseKeyword(Token& token, KeywordType expected)
 	{
-		auto type = toKeywordType(token.text());
+		auto snippet = token.snippet();
+		auto type = token.getKeywordType();
 
 		if (type != expected)
 		{
 			log::error(token, "Expected keyword `$`, found $.", expected, token);
 			return {};
 		}
-
-		auto snippet = Snippet(token);
 
 		token.increment();
 
@@ -167,7 +166,7 @@ namespace parka::parser
 
 	Result<bool> parseBool(Token& token)
 	{
-		auto type = toKeywordType(token.text());
+		auto type = token.getKeywordType();
 
 		switch (type)
 		{
@@ -313,8 +312,7 @@ namespace parka::parser
 		{
 			case TokenType::Identifier:
 			{
-				auto text = token.text();
-				auto keywordType = toKeywordType(text);
+				auto keywordType = token.getKeywordType();
 
 				if (keywordType == KeywordType::True)
 				{
@@ -1216,9 +1214,9 @@ namespace parka::parser
 		if (!token.isIdentifier())
 			return nullptr;
 
-		auto type = toKeywordType(token.text());
+		auto keywordType = token.getKeywordType();
 
-		if (type != KeywordType::Else)
+		if (keywordType != KeywordType::Else)
 			return nullptr;
 		
 		token.increment();
@@ -1236,7 +1234,7 @@ namespace parka::parser
 		if (token.type() == TokenType::LeftBrace)
 			return parseBlockStatement(token);
 
-		auto keywordType = toKeywordType(token.text());
+		auto keywordType = token.getKeywordType();
 
 		switch (keywordType)
 		{
@@ -1274,7 +1272,7 @@ namespace parka::parser
 		if (!token.isIdentifier())
 			return false;
 
-		auto keywordType = toKeywordType(token.text());
+		auto keywordType = token.getKeywordType();
 
 		if (keywordType != KeywordType::Mut)
 			return false;
@@ -1512,7 +1510,7 @@ namespace parka::parser
 
 	bool parsePublicity(Token& token)
 	{
-		auto keywordType = toKeywordType(token.text());
+		auto keywordType = token.getKeywordType();
 
 		if (keywordType == KeywordType::Public)
 		{
@@ -1631,7 +1629,7 @@ namespace parka::parser
 		while (token.type() != TokenType::EndOfFile)
 		{
 			auto keywordType = token.isIdentifier()
-				? toKeywordType(token.text())
+				? token.getKeywordType()
 				: KeywordType::None;
 
 			switch (keywordType)

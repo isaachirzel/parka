@@ -13,8 +13,8 @@ namespace parka::ir
 	public:
 
 		StringLiteralIr(String&& value):
-		ExpressionIr(ExpressionType::StringLiteral),
-		_value(std::move(value))
+			ExpressionIr(ExpressionType::StringLiteral),
+			_value(std::move(value))
 		{}
 		StringLiteralIr(StringLiteralIr&&) = default;
 		StringLiteralIr(const StringLiteralIr&) = delete;

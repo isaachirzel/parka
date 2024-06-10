@@ -27,7 +27,6 @@ namespace parka
 
 		void increment();
 
-		String text() const;
 		String category() const;
 		const auto& snippet() const { return _snippet; }
 		const auto& type() const { return _type; }

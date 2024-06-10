@@ -381,11 +381,6 @@ namespace parka
 		return token;
 	}
 
-	String Token::text() const
-	{
-		return _snippet.text();
-	}
-
 	String Token::category() const
 	{
 		switch (_type)

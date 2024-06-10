@@ -15,7 +15,7 @@ namespace parka::ast
 
 		IdentifierAst(const Snippet& snippet):
 			_snippet(snippet),
-			_text(snippet.text())
+			_text(snippet.ptr(), snippet.length())
 		{}
 		IdentifierAst(IdentifierAst&&) = default;
 		IdentifierAst(const IdentifierAst&) = delete;

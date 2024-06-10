@@ -882,7 +882,7 @@ namespace parka::validation
 	{
 		// TODO: Handle escapes
 		const auto& snippet = ast.snippet();
-		auto text = snippet.substr(1, snippet.length() - 2);
+		auto text = String(snippet.ptr(), snippet.length());
 		auto *context = new StringLiteralIr(std::move(text));
 
 		return context;
