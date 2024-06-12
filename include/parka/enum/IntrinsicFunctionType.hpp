@@ -7,7 +7,8 @@ namespace parka
 {
 	enum class IntrinsicFunctionType
 	{
-		Println
+		Println,
+		PrintInt
 	};
 
 	String symbolFromIntrinsicFunctionType(IntrinsicFunctionType intrinsicFunctionType);

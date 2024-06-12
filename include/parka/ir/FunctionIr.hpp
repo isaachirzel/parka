@@ -19,6 +19,7 @@ namespace parka::ir
 	public:
 
 		static FunctionIr printlnFunction;
+		static FunctionIr printIntFunction;
 
 		static FunctionIr intrinsic(IntrinsicFunctionType intrinsicFunctionType, Array<ParameterIr*> parameters, const TypeIr& returnType);
 		

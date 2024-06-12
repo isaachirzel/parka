@@ -7,6 +7,7 @@
 namespace parka::ir
 {
 	FunctionIr FunctionIr::printlnFunction = intrinsic(IntrinsicFunctionType::Println, { new ParameterIr("text", ir::PrimitiveIr::stringPrimitive) }, PrimitiveIr::voidPrimitive);
+	FunctionIr FunctionIr::printIntFunction = intrinsic(IntrinsicFunctionType::PrintInt, { new ParameterIr("value", ir::PrimitiveIr::i64Primitive) }, PrimitiveIr::voidPrimitive);
 
 	FunctionIr::FunctionIr(String symbol, PrototypeIr&& prototype, FunctionBodyIr&& body):
 		EntityIr(EntityType::Function),

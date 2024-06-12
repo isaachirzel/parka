@@ -46,6 +46,7 @@ namespace parka::validation
 		// addPrimitive(ir::PrimitiveIr::stringPrimitive, &StringTypeContext::instance); 
 
 		addIntrinsic(ir::FunctionIr::printlnFunction);
+		addIntrinsic(ir::FunctionIr::printIntFunction);
 
 		for (auto& mod : globalPackage.modules())
 		{

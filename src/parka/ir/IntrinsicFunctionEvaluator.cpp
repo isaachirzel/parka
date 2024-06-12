@@ -5,10 +5,14 @@
 
 namespace parka::evaluation
 {
+	static void printInt(i64 value)
+	{
+		std::cout << value << std::endl;
+	}
+
 	static void println(const char* text)
 	{
-		std::cout << "stdout: " << text << std::endl;
-		// std::cout << (b ? "true" : "false") << ", " << i << std::endl;
+		std::cout << text << std::endl;
 	}
 
 	template <typename T>
@@ -38,6 +42,9 @@ namespace parka::evaluation
 		{
 			case IntrinsicFunctionType::Println:
 				return call(println, state);
+
+			case IntrinsicFunctionType::PrintInt:
+				return call(printInt, state);
 
 			default:
 				break;

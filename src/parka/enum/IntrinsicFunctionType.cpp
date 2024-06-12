@@ -8,6 +8,9 @@ namespace parka
 		{
 			case IntrinsicFunctionType::Println:
 				return "println";
+
+			case IntrinsicFunctionType::PrintInt:
+				return "printInt";
 				
 			default:
 				break;
