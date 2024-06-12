@@ -122,7 +122,6 @@ namespace parka::validation
 					return &binop<BinaryExpressionType::GreaterThanOrEqualTo, i32, Integer, bool>();
 				break;
 
-
 			case BinaryExpressionType::Equals:
 				if (other == ir::PrimitiveIr::i32Primitive)
 					return &binop<BinaryExpressionType::Equals, i32, i32, bool>();

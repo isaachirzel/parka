@@ -1,10 +1,7 @@
 # To Do
 
 ## Short Term
-- intrinsic conversions/ conv<T>
-- intrinsic binary operators
-- intrinsic assginment operators
-- intrinsic print function
+- casts for typecontext
 - Add "Potential Solution" and "Extra Information" logs
 - Multi line highlights (test with conditional expression)
 - Prefix operators

@@ -21,7 +21,7 @@ using namespace parka::ir;
 
 namespace parka::evaluation
 {
-	void evaluate(const Ir& ir)
+	i32 evaluate(const Ir& ir)
 	{
 		auto globalState = GlobalState();
 		auto state = LocalState(globalState);
@@ -31,8 +31,9 @@ namespace parka::evaluation
 			log::fatal("Unable to evaluate `$` as there is no entry point. Please implement a function named `main` in the global scope.", ir.name());
 
 		auto& result = evaluateFunction(*entryPoint, {}, state);
+		auto exitCode = result.getValue<i32>();
 
-		log::debug("Result of $(): $", entryPoint->symbol(), result);
+		return exitCode;
 	}
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)

@@ -15,7 +15,7 @@ using namespace parka;
 // {
 // }
 
-int main(int argc, const char *argv[])
+i32 main(int argc, const char *argv[])
 {
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
@@ -49,10 +49,12 @@ int main(int argc, const char *argv[])
 	
 	log::success("Compiled `$` in $ seconds at $k lines/s.", project.name(), compileTime, compileSpeed);
 
-	evaluation::evaluate(*ir);
+	auto exitCode = evaluation::evaluate(*ir);
 
 	auto evaluateTime = timer.split();
 	log::debug("Evaluation completed in $s.", evaluateTime);
+
+	return exitCode;
 }
 
 

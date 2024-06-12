@@ -27,7 +27,7 @@
 
 namespace parka::evaluation
 {
-	void evaluate(const ir::Ir& ir);
+	i32 evaluate(const ir::Ir& ir);
 	Value& evaluateFunction(const ir::FunctionIr& ir, const Array<ir::ExpressionIr*>& arguments, LocalState& state);
 	void evaluatePrototype(const ir::PrototypeIr& ir, const Array<ir::ExpressionIr*>& arguments, LocalState& state);
 	void evaluateFunctionBody(const ir::FunctionBodyIr& ir, LocalState& state);
