@@ -64,7 +64,7 @@ namespace parka
 	}
 
 	template <typename From, typename To>
-	ir::CastIr& conv()
+	ir::CastIr& cast()
 	{
 		static ir::CastIr op(type<To>(), type<From>());
 

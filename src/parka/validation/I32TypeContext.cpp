@@ -6,6 +6,46 @@ namespace parka::validation
 {
 	I32TypeContext I32TypeContext::instance;
 
+	ir::CastIr* I32TypeContext::getExplicitCastTo(const ir::TypeIr& toType) const
+	{
+		if (toType.typeCategory != TypeCategory::Primitive)
+			return nullptr;
+
+		const auto& primitive = static_cast<const ir::PrimitiveIr&>(toType);
+
+		switch (primitive.primitiveType())
+		{
+			case PrimitiveType::U8:
+				return &cast<i32, u8>();
+
+			case PrimitiveType::U16:
+				return &cast<i32, u16>();
+
+			case PrimitiveType::U32:
+				return &cast<i32, u32>();
+
+			case PrimitiveType::U64:
+				return &cast<i32, u64>();
+
+			case PrimitiveType::I8:
+				return &cast<i32, i8>();
+
+			case PrimitiveType::I16:
+				return &cast<i32, i16>();
+
+			case PrimitiveType::I32:
+				return &cast<i32, i32>();
+
+			case PrimitiveType::I64:
+				return &cast<i32, i64>();
+
+			default:
+				break;
+		}
+
+		return nullptr;
+	}
+
 	ir::BinaryOperatorIr* I32TypeContext::getBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& other) const
 	{
 		switch (binaryExpressionType)

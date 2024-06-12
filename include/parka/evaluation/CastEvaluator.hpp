@@ -4,5 +4,5 @@
 
 namespace parka::evaluation
 {
-	Value& evaluateCast(const ir::CastIr& ir, Value& to, Value& from, LocalState& state);
+	Value& evaluateCast(const ir::CastIr& ir, Value& from, Value& to, LocalState& state);
 }

@@ -20,28 +20,28 @@ namespace parka::validation
 		switch (primitive.primitiveType())
 		{
 			case PrimitiveType::I8:
-				return &conv<Integer, i8>();
+				return &cast<Integer, i8>();
 
 			case PrimitiveType::I16:
-				return &conv<Integer, i16>();
+				return &cast<Integer, i16>();
 
 			case PrimitiveType::I32:
-				return &conv<Integer, i32>();
+				return &cast<Integer, i32>();
 
 			case PrimitiveType::I64:
-				return &conv<Integer, i64>();
+				return &cast<Integer, i64>();
 
 			case PrimitiveType::U8:
-				return &conv<Integer, u8>();
+				return &cast<Integer, u8>();
 
 			case PrimitiveType::U16:
-				return &conv<Integer, u16>();
+				return &cast<Integer, u16>();
 
 			case PrimitiveType::U32:
-				return &conv<Integer, u32>();
+				return &cast<Integer, u32>();
 
 			case PrimitiveType::U64:
-				return &conv<Integer, u64>();
+				return &cast<Integer, u64>();
 
 			default:
 				break;

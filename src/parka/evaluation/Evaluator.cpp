@@ -328,7 +328,7 @@ namespace parka::evaluation
 		auto& expressionValue = evaluateExpression(ir.expression(), state);
 		auto& castedValue = state.pushValue(ir.type());
 
-		evaluateCast(ir.cast(), castedValue, expressionValue, state);
+		evaluateCast(ir.cast(), expressionValue, castedValue, state);
 
 		return castedValue;
 	}

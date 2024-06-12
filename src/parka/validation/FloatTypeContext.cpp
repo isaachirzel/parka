@@ -17,10 +17,10 @@ namespace parka::validation
 		switch (primitive.primitiveType())
 		{
 			case PrimitiveType::F32:
-				return &conv<Float, u32>();
+				return &cast<Float, u32>();
 
 			case PrimitiveType::F64:
-				return &conv<Float, u64>();
+				return &cast<Float, u64>();
 
 			default:
 				break;

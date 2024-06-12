@@ -19,6 +19,7 @@ namespace parka::validation
 
 	public:
 
+		ir::CastIr* getExplicitCastTo(const ir::TypeIr& toType) const;
 		ir::BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const;
 		ir::AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const ir::TypeIr&) const;
 	};
