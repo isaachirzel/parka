@@ -131,7 +131,7 @@ namespace parka::validation
 		return success;
 	}
 
-	static ExpressionIr* validateCast(const TypeIr& toType, ExpressionIr& expression, Context& context)
+	static ExpressionIr* validateImplicitCast(const TypeIr& toType, ExpressionIr& expression, Context& context)
 	{
 		const auto& expressionType = expression.type();
 
@@ -139,12 +139,12 @@ namespace parka::validation
 			return &expression;
 
 		auto& typeContext = context.globalContext().getTypeContext(expressionType);
-		auto* conversion = typeContext.getConversionTo(toType);
+		auto* cast = typeContext.getImplicitCastTo(toType);
 
-		if (!conversion)
+		if (!cast)
 			return {};
 
-		return new CastExpressionIr(expression, *conversion);
+		return new CastExpressionIr(expression, *cast);
 	}
 
 	static const TypeIr* validateDefaultType(const TypeIr& type)
@@ -269,7 +269,7 @@ namespace parka::validation
 				return {};
 
 			const auto& returnType = context.returnType();
-			auto* castedValue = validateCast(returnType, *expression, context);
+			auto* castedValue = validateImplicitCast(returnType, *expression, context);
 			
 			if (!castedValue)
 			{
@@ -402,10 +402,10 @@ namespace parka::validation
 			variable->setType(*variableType);
 		}
 
-		auto* castedValue = validateCast(variable->type(), *value, context);
+		auto* castedValue = validateImplicitCast(variable->type(), *value, context);
 		
 		if (!castedValue)
-			log::fatal(ast.snippet(), "Unable to find conversion conversion from `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
+			log::fatal(ast.snippet(), "Unable to cast `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
 
 		return new DeclarationStatementIr(*variable, *castedValue);
 	}
@@ -465,7 +465,7 @@ namespace parka::validation
 		if (!value)
 			return {};
 
-		auto* castedValue = validateCast(context.returnType(), *value, context);
+		auto* castedValue = validateImplicitCast(context.returnType(), *value, context);
 
 		if (!castedValue)
 		{
@@ -523,7 +523,7 @@ namespace parka::validation
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateCast(PrimitiveIr::boolPrimitive, *condition, context);
+		auto* castedValue = validateImplicitCast(PrimitiveIr::boolPrimitive, *condition, context);
 
 		if (!castedValue)
 		{
@@ -566,7 +566,7 @@ namespace parka::validation
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateCast(PrimitiveIr::boolPrimitive, *condition, context);
+		auto* castedValue = validateImplicitCast(PrimitiveIr::boolPrimitive, *condition, context);
 
 		if (!castedValue)
 		{
@@ -717,7 +717,7 @@ namespace parka::validation
 		{
 			auto& argument = *arguments[i];
 			auto& parameter = *function.prototype().parameters()[i];
-			auto* castedArgument = validateCast(parameter.type(), argument, context);
+			auto* castedArgument = validateImplicitCast(parameter.type(), argument, context);
 
 			if (!castedArgument)
 			{
@@ -744,7 +744,7 @@ namespace parka::validation
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateCast(PrimitiveIr::boolPrimitive, *condition, context);
+		auto* castedCondition = validateImplicitCast(PrimitiveIr::boolPrimitive, *condition, context);
 
 		if (!castedCondition)
 		{
@@ -752,12 +752,12 @@ namespace parka::validation
 			return {};
 		}
 
-		auto* castedElseCase = validateCast(thenCase->type(), *elseCase, context);
+		auto* castedElseCase = validateImplicitCast(thenCase->type(), *elseCase, context);
 
 		if (castedElseCase)
 			return new ConditionalExpressionIr(*castedCondition, *thenCase, *castedElseCase);
 
-		auto *castedThenCase = validateCast(elseCase->type(), *thenCase, context);
+		auto *castedThenCase = validateImplicitCast(elseCase->type(), *thenCase, context);
 
 		if (castedThenCase)
 			return new ConditionalExpressionIr(*castedCondition, *castedThenCase, *elseCase);
@@ -783,20 +783,26 @@ namespace parka::validation
 	ExpressionIr* validateCastExpression(const CastExpressionAst& ast, LocalContext& context)
 	{
 		auto* expression = validateExpression(ast.expression(), context);
-		auto type = validateTypeAnnotation(ast.typeAnnotation(), context);
+		auto* toType = validateTypeAnnotation(ast.typeAnnotation(), context);
 
-		if (!expression || !type)
+		if (!expression || !toType)
 			return {};
 
-		auto* castedValue = validateCast(*type, *expression, context);
+		const auto& expressionType = expression->type();
 
-		if (!castedValue)
+		if (*toType == expressionType)
+			return expression;
+
+		auto& typeContext = context.globalContext().getTypeContext(expressionType);
+		auto* cast = typeContext.getExplicitCastTo(*toType);
+
+		if (!cast)
 		{
-			log::error(ast.snippet(), "Expression with value `$` cannot be casted to `$`.", expression->type(), *type);
+			log::error(ast.snippet(), "Expression with value `$` cannot be explicitly casted to `$`.", expression->type(), *toType);
 			return {};
 		}
 
-		return castedValue;
+		return new CastExpressionIr(*expression, *cast);
 	}
 
 	static Result<u64> getIntegerValue(const Snippet& snippet)

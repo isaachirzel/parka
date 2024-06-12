@@ -1,20 +1,19 @@
 # To Do
 
 ## Short Term
-- casts for typecontext
+- Explicit casts for typecontext
 - Add "Potential Solution" and "Extra Information" logs
-- Multi line highlights (test with conditional expression)
+- Multi line snippets & highlights
 - Prefix operators
 - Subscript operators
-- Member access expressions
 - mut values and stopping modification of const values
-- Better separation of modules
 
 ## Longer Term
-- Unique, immutable TypeIr that are dynamically allocated so that type copies never need to take place. This allows also for operator keys and conversion keys
+- Custom allocation for new
 - While loops
 - Regular loops
 - Structs
+- Member access expressions
 - Indirection expression '->'
 - Constructors
 - Destructors

@@ -13,7 +13,7 @@
 #include "parka/ir/ReturnStatementIr.hpp"
 #include "parka/ir/StringLiteralIr.hpp"
 #include "parka/log/Log.hpp"
-#include "parka/evaluation/ConversionEvaluator.hpp"
+#include "parka/evaluation/CastEvaluator.hpp"
 #include "parka/evaluation/AssignmentOperatorEvaluator.hpp"
 #include "parka/evaluation/BinaryOperatorEvaluator.hpp"
 
@@ -328,7 +328,7 @@ namespace parka::evaluation
 		auto& expressionValue = evaluateExpression(ir.expression(), state);
 		auto& castedValue = state.pushValue(ir.type());
 
-		evaluateConversion(ir.conversion(), castedValue, expressionValue, state);
+		evaluateCast(ir.cast(), castedValue, expressionValue, state);
 
 		return castedValue;
 	}

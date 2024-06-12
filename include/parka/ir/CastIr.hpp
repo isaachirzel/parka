@@ -5,16 +5,16 @@
 
 namespace parka::ir
 {
-	class ConversionIr
+	class CastIr
 	{
 		const TypeIr& _to;
 		const TypeIr& _from;
 
 	public:
 
-		ConversionIr(const TypeIr& to, const TypeIr& from);
-		ConversionIr(ConversionIr&&) = default;
-		ConversionIr(const ConversionIr&) = default;
+		CastIr(const TypeIr& to, const TypeIr& from);
+		CastIr(CastIr&&) = default;
+		CastIr(const CastIr&) = default;
 
 		const TypeIr& to() const { return _to; }
 		const TypeIr& from() const { return _from; }

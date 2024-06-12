@@ -7,7 +7,7 @@ namespace parka::validation
 {
 	FloatTypeContext FloatTypeContext::instance;
 
-	ir::ConversionIr* FloatTypeContext::getConversionTo(const ir::TypeIr& toType) const
+	ir::CastIr* FloatTypeContext::getImplicitCastTo(const ir::TypeIr& toType) const
 	{
 		if (toType.typeCategory != TypeCategory::Primitive)
 			return nullptr;
@@ -27,6 +27,11 @@ namespace parka::validation
 		}
 
 		return nullptr;
+	}
+
+	ir::CastIr* FloatTypeContext::getExplicitCastTo(const ir::TypeIr& toType) const
+	{
+		return getImplicitCastTo(toType);
 	}
 
 	ir::BinaryOperatorIr* FloatTypeContext::getBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& other) const

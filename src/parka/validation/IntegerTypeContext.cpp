@@ -10,7 +10,7 @@ namespace parka::validation
 {
 	IntegerTypeContext IntegerTypeContext::instance;
 
-	ir::ConversionIr* IntegerTypeContext::getConversionTo(const ir::TypeIr& toType) const
+	ir::CastIr* IntegerTypeContext::getImplicitCastTo(const ir::TypeIr& toType) const
 	{
 		if (toType.typeCategory != TypeCategory::Primitive)
 			return nullptr;
@@ -48,6 +48,11 @@ namespace parka::validation
 		}
 
 		return nullptr;
+	}
+
+	ir::CastIr* IntegerTypeContext::getExplicitCastTo(const ir::TypeIr& toType) const
+	{
+		return getImplicitCastTo(toType);
 	}
 
 	ir::BinaryOperatorIr* IntegerTypeContext::getBinaryOperator(BinaryExpressionType binaryExpressionType, const ir::TypeIr& other) const

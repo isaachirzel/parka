@@ -1,7 +1,7 @@
 #ifndef PARKA_IR_DECLARATION_STATEMENT_HPP
 #define PARKA_IR_DECLARATION_STATEMENT_HPP
 
-#include "parka/ir/ConversionIr.hpp"
+#include "parka/ir/CastIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/StatementIr.hpp"
 #include "parka/ir/VariableIr.hpp"

@@ -1,7 +1,7 @@
 #ifndef PARKA_IR_CAST_EXPRESSION_IR_HPP
 #define PARKA_IR_CAST_EXPRESSION_IR_HPP
 
-#include "parka/ir/ConversionIr.hpp"
+#include "parka/ir/CastIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 
 namespace parka::ir
@@ -9,21 +9,21 @@ namespace parka::ir
 	class CastExpressionIr: public ExpressionIr
 	{
 		ExpressionIr& _expression;
-		ConversionIr& _conversion;
+		CastIr& _cast;
 
 	public:
 
-		CastExpressionIr(ExpressionIr& expression, ConversionIr& conversion):
+		CastExpressionIr(ExpressionIr& expression, CastIr& cast):
 			ExpressionIr(ExpressionType::Cast),
 			_expression(expression),
-			_conversion(conversion)
+			_cast(cast)
 		{}
 		CastExpressionIr(CastExpressionIr&&) = default;
 		CastExpressionIr(const CastExpressionIr&) = delete;
 
-		const TypeIr& type() const { return _conversion.to(); }
+		const TypeIr& type() const { return _cast.to(); }
 		const auto& expression() const { return _expression; }
-		const auto& conversion() const { return _conversion; }
+		const auto& cast() const { return _cast; }
 	};
 }
 

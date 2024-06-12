@@ -1,7 +1,7 @@
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
-#include "parka/ir/ConversionIr.hpp"
+#include "parka/ir/CastIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/util/Float.hpp"
@@ -64,9 +64,9 @@ namespace parka
 	}
 
 	template <typename From, typename To>
-	ir::ConversionIr& conv()
+	ir::CastIr& conv()
 	{
-		static ir::ConversionIr op(type<To>(), type<From>());
+		static ir::CastIr op(type<To>(), type<From>());
 
 		return op;
 	}

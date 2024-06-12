@@ -3,7 +3,7 @@
 
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/BinaryOperatorIr.hpp"
-#include "parka/ir/ConversionIr.hpp"
+#include "parka/ir/CastIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 
 namespace parka::validation
@@ -12,7 +12,8 @@ namespace parka::validation
 	{
 		~TypeContext() {}
 
-		virtual ir::ConversionIr* getConversionTo(const ir::TypeIr&) const { return nullptr; }
+		virtual ir::CastIr* getImplicitCastTo(const ir::TypeIr&) const { return nullptr; }
+		virtual ir::CastIr* getExplicitCastTo(const ir::TypeIr&) const { return nullptr; }
 		virtual ir::BinaryOperatorIr* getBinaryOperator(BinaryExpressionType, const ir::TypeIr&) const { return nullptr; }
 		virtual ir::AssignmentOperatorIr* getAssignmentOperator(AssignmentType, const ir::TypeIr&) const { return nullptr; }
 	};
