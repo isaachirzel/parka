@@ -157,7 +157,9 @@ namespace parka::parser
 			return {};
 		}
 
-		auto *syntax = new StringLiteralAst(token);
+		auto& snippet = token.snippet();
+		auto text = String(snippet.ptr() + 1, snippet.length() - 2);
+		auto *syntax = new StringLiteralAst(token, std::move(text));
 
 		token.increment();
 

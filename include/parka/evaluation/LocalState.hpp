@@ -30,6 +30,8 @@ namespace parka::evaluation
 		usize getReturnValueIndex();
 		void setReturnValueIndex(usize index);
 
+		Value& getParameter(usize index);
+
 		usize getScopeIndex();
 		void clearScopeValues(usize index);
 

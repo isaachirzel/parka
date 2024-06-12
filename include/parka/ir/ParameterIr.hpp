@@ -14,8 +14,9 @@ namespace parka::ir
 
 	public:
 
-		ParameterIr(const TypeIr& type):
+		ParameterIr(String symbol, const TypeIr& type):
 			EntityIr(EntityType::Parameter),
+			_symbol(std::move(symbol)),
 			_type(type)
 		{}
 		ParameterIr(ParameterIr&&) = default;

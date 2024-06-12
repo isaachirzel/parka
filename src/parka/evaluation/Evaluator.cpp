@@ -37,15 +37,14 @@ namespace parka::evaluation
 
 	Value& evaluateFunction(const FunctionIr& ir, const Array<ExpressionIr*>& arguments, LocalState& state)
 	{
+		if (ir.body().functionBodyType() == FunctionBodyType::NotImplemented)
+			log::fatal("$() is not implemented.", ir);
+
 		usize previousReturnValueIndex = state.getReturnValueIndex();
 		auto& returnValue = state.pushReturnValue(ir.prototype().returnType());
 		usize index = state.getScopeIndex();
 
-		evaluatePrototype(ir.prototype(), arguments, state);		
-
-		if (ir.body().functionBodyType() == FunctionBodyType::NotImplemented)
-			log::fatal("$ is not implemented.", ir);
-
+		evaluatePrototype(ir.prototype(), arguments, state);
 		evaluateFunctionBody(ir.body(), state);
 
 		// TODO: This shouldn't do this for exceptions
@@ -141,8 +140,6 @@ namespace parka::evaluation
 		auto& variableValue = evaluateExpression(ir.value(), state);
 
 		variableValue.setNode(ir.variable());
-
-		log::debug("Declaring variable: $", variableValue);
 	}
 
 	void evaluateExpressionStatement(const ir::ExpressionStatementIr& ir, LocalState& state)

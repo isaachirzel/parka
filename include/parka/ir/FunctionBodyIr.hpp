@@ -36,8 +36,8 @@ namespace parka::ir
 
 		const auto& expression() const { assert(_functionBodyType == FunctionBodyType::Expression); return *_expression; }
 		const auto& blockStatement() const { assert(_functionBodyType == FunctionBodyType::Block); return *_blockStatement; }
+		const auto& intrinsicFunctionType() const { assert(_functionBodyType == FunctionBodyType::Intrinsic); return _intrinsicFunctionType; }
 		const auto& functionBodyType() const { return _functionBodyType; }
-		const auto& intrinsicFunctionType() const { return _intrinsicFunctionType; }
 	};
 }
 

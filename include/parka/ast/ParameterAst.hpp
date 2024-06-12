@@ -26,8 +26,6 @@ namespace parka::ast
 		ParameterAst(ParameterAst&&) = default;
 		ParameterAst(const ParameterAst&) = delete;
 
-		String getSymbol() const;
-
 		const auto& identifier() const { return _identifier; }		
 		const auto& snippet() const { return _snippet; }
 		const auto& annotation() const { return _annotation; }

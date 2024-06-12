@@ -37,6 +37,15 @@ namespace parka::evaluation
 		_returnValueIndex = index;
 	}
 
+	Value& LocalState::getParameter(usize index)
+	{
+		auto parameterBaseIndex = _returnValueIndex + 1;
+		auto parameterIndex = parameterBaseIndex + index;
+		auto& value = _values[parameterIndex];
+
+		return value;
+	}
+
 	usize LocalState::getScopeIndex()
 	{
 		return _values.length();

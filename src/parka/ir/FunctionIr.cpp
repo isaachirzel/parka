@@ -6,7 +6,7 @@
 
 namespace parka::ir
 {
-	FunctionIr FunctionIr::printlnFunction = intrinsic(IntrinsicFunctionType::Println, {}, PrimitiveIr::voidPrimitive);
+	FunctionIr FunctionIr::printlnFunction = intrinsic(IntrinsicFunctionType::Println, { new ParameterIr("text", ir::PrimitiveIr::stringPrimitive) }, PrimitiveIr::voidPrimitive);
 
 	FunctionIr::FunctionIr(String symbol, PrototypeIr&& prototype, FunctionBodyIr&& body):
 		EntityIr(EntityType::Function),
@@ -15,15 +15,11 @@ namespace parka::ir
 		_body(std::move(body))
 	{}
 
-	FunctionIr FunctionIr::intrinsic(IntrinsicFunctionType intrinsicFunctionType, Array<ParameterIr> parameters, const TypeIr& returnType)
+	FunctionIr FunctionIr::intrinsic(IntrinsicFunctionType intrinsicFunctionType, Array<ParameterIr*> parameters, const TypeIr& returnType)
 	{
 		auto symbol = symbolFromIntrinsicFunctionType(intrinsicFunctionType);
-		auto parameterPtrs = Array<ParameterIr*>(parameters.length());
 
-		for (usize i = 0; i < parameters.length(); ++i)
-			parameterPtrs.push(new ParameterIr(std::move(parameters[i])));
-
-		return FunctionIr(std::move(symbol), PrototypeIr(std::move(parameterPtrs), returnType), FunctionBodyIr(intrinsicFunctionType));
+		return FunctionIr(std::move(symbol), PrototypeIr(std::move(parameters), returnType), FunctionBodyIr(intrinsicFunctionType));
 	}
 
 	std::ostream& operator<<(std::ostream& out, const FunctionIr& function)

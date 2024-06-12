@@ -13,14 +13,12 @@
 #include "parka/enum/EntityType.hpp"
 #include "parka/enum/ExpressionType.hpp"
 #include "parka/enum/StatementType.hpp"
-#include "parka/enum/TypeCategory.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
 #include "parka/ir/BlockStatementIr.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
 #include "parka/ir/BreakStatementIr.hpp"
 #include "parka/ir/CallExpressionIr.hpp"
-#include "parka/ir/CallOperatorIr.hpp"
 #include "parka/ir/CastExpressionIr.hpp"
 #include "parka/ir/ConditionalExpressionIr.hpp"
 #include "parka/ir/DeclarationStatementIr.hpp"
@@ -258,7 +256,7 @@ namespace parka::validation
 		if (!type)
 			return {};
 
-		return new ParameterIr(*type);
+		return new ParameterIr(String(ast.snippet().ptr(), ast.snippet().length()), *type);
 	}
 
 	Result<ir::FunctionBodyIr> validateFunctionBody(const ast::FunctionBodyAst& ast, FunctionContext& context)
@@ -707,7 +705,7 @@ namespace parka::validation
 		if (parameterCount > argumentCount)
 		{
 			// TODO: Show which parameters don't have a value passed in for them.
-			log::error(ast.snippet(), "Not enough argumnets passed into function `$`.", function.symbol());
+			log::error(ast.snippet(), "Not enough arguments passed into function `$`.", function.symbol());
 			success = false;
 		}
 
@@ -881,9 +879,7 @@ namespace parka::validation
 	StringLiteralIr* validateStringLiteral(const StringLiteralAst& ast)
 	{
 		// TODO: Handle escapes
-		const auto& snippet = ast.snippet();
-		auto text = String(snippet.ptr(), snippet.length());
-		auto *context = new StringLiteralIr(std::move(text));
+		auto *context = new StringLiteralIr(String(ast.text()));
 
 		return context;
 	}
