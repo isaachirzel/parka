@@ -3,6 +3,13 @@
 
 namespace parka::ast
 {
+	ParameterAst::ParameterAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
+		_snippet(snippet),
+		_identifier(std::move(identifier)),
+		_annotation(std::move(annotation)),
+		_isMutable(isMutable)
+	{}
+
 	std::ostream& operator<<(std::ostream& out, const ParameterAst& syntax)
 	{
 		if (syntax._isMutable)

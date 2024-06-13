@@ -3,7 +3,6 @@
 
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/ast/IdentifierAst.hpp"
-#include "parka/ir/ParameterIr.hpp"
 
 namespace parka::ast
 {
@@ -12,17 +11,11 @@ namespace parka::ast
 		Snippet _snippet;
 		IdentifierAst _identifier;
 		TypeAnnotationAst _annotation;
-		ir::ParameterIr *_context;
 		bool _isMutable;
 
 	public:
 
-		ParameterAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
-		_snippet(snippet),
-		_identifier(std::move(identifier)),
-		_annotation(std::move(annotation)),
-		_isMutable(isMutable)
-		{}
+		ParameterAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable);
 		ParameterAst(ParameterAst&&) = default;
 		ParameterAst(const ParameterAst&) = delete;
 

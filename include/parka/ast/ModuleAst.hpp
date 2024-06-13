@@ -16,9 +16,9 @@ namespace parka::ast
 	public:
 
 		ModuleAst(String&& filepath, Array<FunctionAst*>&& functions, Array<StructAst*>&& structs):
-		_filepath(std::move(filepath)),
-		_functions(std::move(functions)),
-		_structs(std::move(structs))
+			_filepath(std::move(filepath)),
+			_functions(std::move(functions)),
+			_structs(std::move(structs))
 		{}
 		ModuleAst(ModuleAst&&) = default;
 		ModuleAst(const ModuleAst&) = delete;
