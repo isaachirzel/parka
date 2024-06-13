@@ -1,22 +1,16 @@
 # Parka Programming Language
-> NOTICE: This project is prealpha-level and under active development. It is not currently in a
-useable state.
 
 # Brief
 
-Parka aims to an easy to use, fast, and safe language with native C inter-op. In the future,
-support for embedding in other applications, running as a script, compilation to C, and compilation
-to machine code is planned.
+Parka aims to be an easy to use, fast, and safe language with native C inter-op and the ability to be run as a scripting language. A primary backend has not been chosen, but interpretation is on its way to full implementation.
 
 # Purpose
 
-This project has primary been made as a learning tool for myself to better understand
-compiler design, programming language principles, and software development in C.
+This project has primary been made as a learning tool for myself to better understand compiler design, programming language principles, and software development.
 
-# Ast
+# Syntax
 
-The syntax is a mix between several langauges such as GO, Rust, and C with the intention of making
-the code easy to read for this familiar with C like languages, but allow for a more modern syntax.
+The syntax is a mix between several langauges such as GO, Rust, and C++. This is with the intention of making the code easy to read for this familiar with C-like languages but also to allow for easier to write and read code.
 
 The syntax of a hello world program is as follows:
 
@@ -34,15 +28,9 @@ function getGreeting(): string => "Hello, world!";
 
 ```
 
-# To-Do in the Short Run
-
-- Implementing operators for expression validation
-- Move parsing/validation to Visitors or some other better abstraction pattern
-- Make everything work
-
 # License
 
-Copyright 2023 Isaac Hirzel
+Copyright 2024 Isaac Hirzel
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -1,7 +1,6 @@
 # To Do
 
 ## Short Term
-- Explicit casts for typecontext
 - Add "Potential Solution" and "Extra Information" logs
 - Multi line snippets & highlights
 - Prefix operators
