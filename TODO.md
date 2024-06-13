@@ -7,10 +7,11 @@
 - Arrays
 - Subscript operators
 - mutable values and inhibiting modification of immutable values
-
-## Medium Term
 - While loops
 - Plain loops
+
+## Medium Term
+- Format printing
 - Structs
 - Member access expressions
 - Move on assign and invalid symbols

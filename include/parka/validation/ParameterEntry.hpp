@@ -2,6 +2,7 @@
 #define PARKA_VALIDATION_PARAMETER_ENTRY_HPP
 
 #include "parka/ast/ParameterAst.hpp"
+#include "parka/ir/ParameterIr.hpp"
 #include "parka/validation/ContextEntry.hpp"
 
 namespace parka::validation
