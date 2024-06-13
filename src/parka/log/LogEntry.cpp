@@ -17,13 +17,13 @@ namespace parka
 		{
 			const auto& position = entry._snippet->position();
 
-			out << Color::Yellow;
+			out << Color::darkYellow;
 			out << position.file().path() << ":" << position.line() << ":" << position.column();
-			out << Color::Reset;
+			out << Color::reset;
 			out << "\n";
 		}
 
-		out << prompt << Color::Default << ": " << entry._message << Color::Reset << '\n';
+		out << prompt << Color::none << ": " << entry._message << Color::reset << '\n';
 
 		if (entry._snippet)
 		{
@@ -35,7 +35,7 @@ namespace parka
 			out << underline;
 		}
 
-		out << Color::Reset << '\n';
+		out << Color::reset << '\n';
 
 		return out;
 	}

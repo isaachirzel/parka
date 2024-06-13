@@ -43,9 +43,9 @@ namespace parka
 		auto margin = Margin(line._snippet.position().line());
 
 		out << margin;
-		out << Color::Default << line._preText << Color::Reset;
+		out << Color::none << line._preText << Color::reset;
 		out << line._snippet;
-		out << Color::Default << line._postText << Color::Reset;
+		out << Color::none << line._postText << Color::reset;
 		out << '\n';
 
 		return out;

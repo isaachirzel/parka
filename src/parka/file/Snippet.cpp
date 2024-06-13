@@ -8,6 +8,12 @@ namespace parka
 		_length(length)
 	{}
 
+	Snippet Snippet::sub(usize offset, usize length) const
+	{
+		assert(offset + length <= _position.index());
+		return Snippet(_position + offset, length);
+	}
+
 	Snippet& Snippet::operator=(const Snippet& other)
 	{
 		_position = other._position;

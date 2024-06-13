@@ -64,7 +64,9 @@ namespace parka
 		IntegerLiteral,
 		FloatLiteral,
 		CharacterLiteral,
-		StringLiteral
+		UnterminatedCharacterLiteral,
+		StringLiteral,
+		UnterminatedStringLiteral
 	};
 }
 

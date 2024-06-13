@@ -30,6 +30,8 @@ namespace parka
 		const auto& position() const { return _position; }
 		const auto& length() const { return _length; }
 		
+		Snippet sub(usize offset, usize length) const;
+
 		Snippet& operator=(const Snippet& other);
 		Snippet operator+(const Snippet& other) const;
 		bool operator==(const Snippet& other) const;

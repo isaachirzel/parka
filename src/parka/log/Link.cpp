@@ -5,7 +5,7 @@ namespace parka
 {
 	std::ostream& operator<<(std::ostream& out, const Link& link)
 	{
-		out << Color::Blue << "\033]8;;" << link._url << "\033\\" << link._text << "\033]8;;\033\\" << Color::Reset;
+		out << Color::darkBlue << "\033]8;;" << link._url << "\033\\" << link._text << "\033]8;;\033\\" << Color::reset;
 
 		return out;
 	}

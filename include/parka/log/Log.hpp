@@ -46,6 +46,18 @@ namespace parka::log
 	}
 
 	template <typename ...Arg>
+	void success(const char *format, Arg const&...args)
+	{
+		return addEntry(LogEntry(LogEntryType::Success, parka::format(format, args...)));
+	}
+
+	template <typename ...Arg>
+	void warning(const Snippet& snippet, const char *format, Arg const&... args)
+	{
+		return addEntry(LogEntry(LogEntryType::Warning, parka::format(format, args...), snippet));
+	}
+
+	template <typename ...Arg>
 	void error(const char *format, Arg const&... args)
 	{
 		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...)));
@@ -58,9 +70,9 @@ namespace parka::log
 	}
 
 	template <typename ...Arg>
-	void success(const char *format, Arg const&...args)
+	void solution(const Snippet& snippet, const char *format, Arg const&... args)
 	{
-		return addEntry(LogEntry(LogEntryType::Success, parka::format(format, args...)));
+		return addEntry(LogEntry(LogEntryType::Solution, parka::format(format, args...), snippet));
 	}
 
 	template <typename ...Arg>

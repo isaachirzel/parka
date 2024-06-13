@@ -247,10 +247,10 @@ namespace parka::parser
 		auto encounteredError = false;
 		auto seekingNext = false;
 
-		while (token.type() != TokenType::RightBrace)
+		while (token.type() != TokenType::RightBrace && token.type() != TokenType::EndOfFile)
 		{
 			if (seekingNext)
-			{
+			{				
 				if (!token.isSemicolon())
 				{
 					token.increment();
@@ -273,12 +273,12 @@ namespace parka::parser
 			statements.push(statement);
 		}
 
+		if (seekingNext || encounteredError)
+			return {};
+
 		auto last = Token(token);
 
 		token.increment();
-
-		if (encounteredError)
-			return {};
 
 		auto *syntax = new BlockStatementAst(first + last, std::move(statements));
 
@@ -360,6 +360,7 @@ namespace parka::parser
 		}
 
 		logParseError(token, "primary expression");
+
 		return {};
 	}
 
@@ -374,15 +375,15 @@ namespace parka::parser
 				
 			switch (token.type())
 			{
-				case TokenType::LeftBracket: // Index
+				case TokenType::LeftBracket:
 					postfix = parseSubscriptExpression(token, *postfix);
 					continue;
 
-				case TokenType::LeftParenthesis: // FunctionAst call
+				case TokenType::LeftParenthesis:
 					postfix = parseCallExpression(token, *postfix);
 					continue;
 
-				case TokenType::Dot: // MemberAst
+				case TokenType::Dot:
 					postfix = parseMemberAccessExpression(token, *postfix);
 					continue;
 				
@@ -406,17 +407,17 @@ namespace parka::parser
 
 		token.increment();
 
-		// TODO: Add initial capacity
-		auto arguments = Array<ExpressionAst*>();
+		auto arguments = Array<ExpressionAst*>(4);
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
 			while (true)
 			{
+				// TODO: Continue to next argument by checking for ','
 				auto *argument = parseExpression(token);
 
 				if (!argument)
-					return {}; // TODO: Continue to next argument by checking for ','
+					return {};
 
 				arguments.push(argument);
 
@@ -429,7 +430,6 @@ namespace parka::parser
 			if (token.type() != TokenType::RightParenthesis)
 			{
 				logParseError(token, "')' after argument list");
-
 				return {};
 			}
 		}
@@ -1233,6 +1233,8 @@ namespace parka::parser
 
 	StatementAst *parseStatement(Token& token)
 	{
+		log::debug(token, "parse statement");
+
 		if (token.type() == TokenType::LeftBrace)
 			return parseBlockStatement(token);
 
@@ -1240,7 +1242,6 @@ namespace parka::parser
 
 		switch (keywordType)
 		{
-
 			case KeywordType::Var:
 				return parseDeclarationStatement(token);
 
@@ -1482,7 +1483,6 @@ namespace parka::parser
 
 			if (!body)
 				return {};
-
 			
 			auto snippet = first + token;
 

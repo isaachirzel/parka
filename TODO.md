@@ -3,12 +3,15 @@
 ## Short Term
 - Add "Potential Solution" and "Extra Information" logs
 - Multi line snippets & highlights
+- Update to snippet system to allow for carrot
 - Prefix operators
 - Arrays
 - Subscript operators
 - mutable values and inhibiting modification of immutable values
 - While loops
 - Plain loops
+- Seek next in parsing argument lists
+- Seek next in parsing parameter lists
 
 ## Medium Term
 - Format printing

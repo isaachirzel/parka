@@ -19,12 +19,13 @@ namespace parka
 
 	public:
 
-		static const Prompt Debug;
-		static const Prompt Note;
-		static const Prompt Success;
-		static const Prompt Warning;
-		static const Prompt Error;
-		static const Prompt Fatal;
+		static const Prompt debug;
+		static const Prompt note;
+		static const Prompt success;
+		static const Prompt warning;
+		static const Prompt error;
+		static const Prompt solution;
+		static const Prompt fatal;
 
 	public:
 

@@ -40,6 +40,9 @@ namespace parka::log
 				log::errorCount += 1;
 				break;
 
+			case LogEntryType::Solution:
+				break;
+
 			case LogEntryType::Fatal:
 				log::fatalCount += 1;
 				break;

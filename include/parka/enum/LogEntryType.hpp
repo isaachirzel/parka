@@ -12,10 +12,9 @@ namespace parka
 		Success,
 		Warning,
 		Error,
+		Solution,
 		Fatal
 	};
-
-	// TODO: Create print function
 }
 
 #endif

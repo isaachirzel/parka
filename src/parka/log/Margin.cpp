@@ -22,7 +22,7 @@ namespace parka
 
 	std::ostream& operator<<(std::ostream& out, const Margin& margin)
 	{
-		out << Color::Blue;
+		out << Color::darkBlue;
 		
 		if (margin._lineNumber > 0)
 		{
@@ -34,7 +34,7 @@ namespace parka
 		}
 
 		out << " | ";
-		out << Color::Reset;
+		out << Color::reset;
 
 		return out;
 	}

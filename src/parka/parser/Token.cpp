@@ -22,6 +22,21 @@ namespace parka
 		return (c >= '0' && c <= '9');
 	}
 
+	TokenType getUnterminatedQuoteType(char terminal)
+	{
+		switch (terminal)
+		{
+			case '\'':
+				return TokenType::UnterminatedCharacterLiteral;
+
+			case '\"':
+				return TokenType::UnterminatedStringLiteral;
+
+			default:
+				log::fatal("Invalid quote type: $", terminal);
+		}
+	}
+
 	TokenType getQuoteType(char terminal)
 	{
 		switch (terminal)
@@ -53,10 +68,14 @@ namespace parka
 
 			if (!c)
 			{
-				auto token = Token(Snippet(startPos, length), TokenType::EndOfFile);
+				auto unterminatedType = getUnterminatedQuoteType(terminal);
+				auto token = Token(Snippet(startPos, length), unterminatedType);
 
 				log::error(token, "String token is unterminated.");
-				// TODO: Add solution
+				
+				auto solutionSnippet = token.snippet().sub(token.snippet().length() - 1, 1);
+
+				log::solution(solutionSnippet, "Terminate the string with a `\"` after this character.");
 				
 				return token;
 			}
@@ -701,9 +720,12 @@ namespace parka
 				out << "string";
 				break;
 				
+			case TokenType::UnterminatedStringLiteral:
+				out << "unterminated string";
+				break;
 
 			default:
-				out << '(' << (int)type << ") Invalid";
+				out << "(" << (int)type << ") Invalid";
 		}
 
 		return out;
