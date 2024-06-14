@@ -1,98 +1,48 @@
-#ifndef PARKA_ERROR_ERROR_LOG_HPP
-#define PARKA_ERROR_ERROR_LOG_HPP
+#ifndef PARKA_LOG_LOG_HPP
+#define PARKA_LOG_LOG_HPP
 
-#include "parka/enum/LogEntryType.hpp"
-#include "parka/file/Snippet.hpp"
-#include "parka/log/LogEntry.hpp"
+#include "parka/enum/EntityType.hpp"
+#include "parka/enum/Severity.hpp"
+#include "parka/log/Prompt.hpp"
+#include "parka/parser/Token.hpp"
 #include "parka/util/Print.hpp"
-#include "parka/util/SourceLocation.hpp"
-
-/*
-	Colors
-	Indent
-	Line number for margins
-*/
+#include <iostream>
 
 namespace parka::log
 {
-	extern void addEntry(LogEntry&& entry);
-
-	template <typename ...Arg>
-	void debug(const char *fmt, Arg const&... args)
-	{
-		#ifndef NDEBUG
-		return addEntry(LogEntry(LogEntryType::Debug, parka::format(fmt, args...)));
-		#endif
-	}
-
-	template <typename ...Arg>
-	void debug(const Snippet& token, const char *fmt, Arg const&... args)
-	{
-		#ifndef NDEBUG
-		return addEntry(LogEntry(LogEntryType::Debug, format(fmt, args...), token));
-		#endif
-	}
-
-	template <typename ...Arg>
-	void note(const char *fmt, Arg const&... args)
-	{
-		return addEntry(LogEntry(LogEntryType::Note, parka::format(fmt, args...)));
-	}
-
-	template <typename ...Arg>
-	void note(const Snippet& token, const char *fmt, Arg const&... args)
-	{
-		return addEntry(LogEntry(LogEntryType::Note, format(fmt, args...), token));
-	}
-
-	template <typename ...Arg>
-	void success(const char *format, Arg const&...args)
-	{
-		return addEntry(LogEntry(LogEntryType::Success, parka::format(format, args...)));
-	}
-
-	template <typename ...Arg>
-	void warning(const Snippet& snippet, const char *format, Arg const&... args)
-	{
-		return addEntry(LogEntry(LogEntryType::Warning, parka::format(format, args...), snippet));
-	}
-
-	template <typename ...Arg>
-	void error(const char *format, Arg const&... args)
-	{
-		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...)));
-	}
-
-	template <typename ...Arg>
-	void error(const Snippet& snippet, const char *format, Arg const&... args)
-	{
-		return addEntry(LogEntry(LogEntryType::Error, parka::format(format, args...), snippet));
-	}
-
-	template <typename ...Arg>
-	void solution(const Snippet& snippet, const char *format, Arg const&... args)
-	{
-		return addEntry(LogEntry(LogEntryType::Solution, parka::format(format, args...), snippet));
-	}
+	[[ noreturn ]]
+	void fileOpenError(const char* filePath);
+	[[ noreturn ]]
+	void fileStatError(const char* filePath);
+	[[ noreturn ]]
+	void fileReadError(const char* filePath);
+	[[ noreturn ]]
+	void directoryOpenError(const char *directoryPath);
+	void invalidTokenError(const Token& token);
+	void unterminatedQuoteTokenError(const Token& token);
+	void parseError(const Token& token, const char *expected, const char* message = "");
+	void parseKeywordError(const Token& token, KeywordType expected, KeywordType found);
+	void shadowedParameterError(const Snippet& snippet, const String& name);
+	void shadowedLocalEntityError(const Snippet& snippet, const String& symbol, EntityType previousType);
+	void shadowedPackageEntityError(const Snippet& snippet, const String& symbol, EntityType previousType);
+	void shadowedGlobalEntityError(const Snippet& snippet, const String& symbol, EntityType previousType);
+	void undefinedPackageEntityError(const Snippet& snippet, const String& symbol, const String& package);
 
 	template <typename ...Arg>
 	[[ noreturn ]]
 	void fatal(const char *format, Arg const&...args)
 	{
-		addEntry(LogEntry(LogEntryType::Fatal, parka::format(format, args...)));
-		exit(1);
+		auto& out = std::cout;
+		out << Prompt::from(Severity::Fatal) << ": ";
+
+		_output(out, format, args...);
+
+		out << std::endl;
+		
+		abort();
 	}
 
-	template <typename ...Arg>
-	[[ noreturn ]]
-	void fatal(const Snippet& snippet, const char *format, Arg const&...args)
-	{
-		addEntry(LogEntry(LogEntryType::Fatal, parka::format(format, args...), snippet));
-		exit(1);
-	}
-
-	[[ noreturn ]]
-	void notImplemented(SourceLocation&& location);
+	#define notImplemented() parka::log::fatal("$:$: Function $() is not implemented.", __FILE__, __LINE__, __func__)
 
 	usize getDebugCount();
 	usize getNoteCount();

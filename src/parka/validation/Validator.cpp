@@ -73,39 +73,6 @@ namespace parka::validation
 
 	*/
 
-	// static bool validateFunctions(Array<FunctionIr*>& functions, Array<FunctionEntry>& entries)
-	// {
-	// 	bool success = true;
-
-	// 	for (auto& entry : entries)
-	// 	{
-	// 		auto *ir = entry.resolve();
-
-	// 		if (!ir)
-	// 		{
-	// 			success = false;
-	// 			continue;
-	// 		}
-
-	// 		functions.push(ir);
-	// 	}
-
-	// 	return success;
-	// }
-
-	// static bool validatePackage(Array<FunctionIr*>& functions, PackageContext& context)
-	// {
-	// 	bool success = true;
-
-	// 	if (!validateFunctions(functions, context.functions()))
-	// 		success = false;
-
-	// 	// TODO: Structs and packages
-	// 	// TODO: Implement this
-
-	// 	return success;
-	// }
-
 	static bool validateEntryPoint(const ir::FunctionIr& ir, const ast::FunctionAst& ast)
 	{
 		bool success = true;
@@ -322,7 +289,7 @@ namespace parka::validation
 				return static_cast<StructIr*>(entity);
 
 			case EntityType::Function:
-				log::error("Function `$` cannot be used as a type name.", entity->symbol());
+				log::error(ast.snippet(), "Function `$` cannot be used as a type name.", entity->symbol());
 				break;
 
 			default:
@@ -372,12 +339,7 @@ namespace parka::validation
 
 			case StatementType::If:
 				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), context);
-
-			default:
-				break;
 		}
-
-		log::fatal("Unable to validate Statement with TypeIr: $", ast.statementType);
 	}
 
 	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalContext& context)
@@ -404,8 +366,7 @@ namespace parka::validation
 
 		auto* castedValue = validateImplicitCast(variable->type(), *value, context);
 		
-		if (!castedValue)
-			log::fatal(ast.snippet(), "Unable to cast `$` to `$`. This indicates a bug in validation code.", value->type(), variable->type());
+		assert(castedValue != nullptr);
 
 		return new DeclarationStatementIr(*variable, *castedValue);
 	}
@@ -502,7 +463,7 @@ namespace parka::validation
 	YieldStatementIr *validateYieldStatement(const YieldStatementAst&, LocalContext&)
 	{
 		// Must be in an block/if statement
-		log::notImplemented(here());
+		notImplemented();
 	}
 
 	ForStatementIr *validateForStatement(const ForStatementAst& ast, LocalContext& context)
@@ -619,12 +580,9 @@ namespace parka::validation
 
 			case ExpressionType::StringLiteral:
 				return validateStringLiteral(static_cast<const StringLiteralAst&>(ast));
-
-			default:
-				break;
 		}
 
-		log::fatal("Unable to validate Expression with TypeIr: $", ast.expressionType);
+		log::fatal("Unable to validate expression with type: $.", ast.expressionType);
 	}
 
 	BinaryExpressionIr* validateBinaryExpression(const BinaryExpressionAst& ast, LocalContext& context)

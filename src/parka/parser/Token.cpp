@@ -71,11 +71,12 @@ namespace parka
 				auto unterminatedType = getUnterminatedQuoteType(terminal);
 				auto token = Token(Snippet(startPos, length), unterminatedType);
 
-				log::error(token, "String token is unterminated.");
+				log::unterminatedQuoteTokenError(token);
 				
-				auto solutionSnippet = token.snippet().sub(token.snippet().length() - 1, 1);
+				// TODO: Solution
+				// auto solutionSnippet = token.snippet().sub(token.snippet().length() - 1, 1);
 
-				log::solution(solutionSnippet, "Terminate the string with a `\"` after this character.");
+				// log::solution(solutionSnippet, "Terminate the string with a `\"` after this character.");
 				
 				return token;
 			}
@@ -375,7 +376,7 @@ namespace parka
 		// TODO: Rethink handling of strange characters
 		auto token = Token(Snippet(startPos, 1), TokenType::EndOfFile);
 
-		log::error(token, "An invalid character was found in the source file.");
+		log::invalidTokenError(token);
 
 		return token;
 	}
@@ -391,7 +392,7 @@ namespace parka
 
 	Token Token::initial(const File& file)
 	{
-		auto position = Position(file);
+		auto position = Position(file, 0, 1, 1);
 
 		position.seekNext();
 

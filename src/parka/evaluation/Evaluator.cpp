@@ -128,12 +128,7 @@ namespace parka::evaluation
 
 			case StatementType::If:
 				return evaluateIfStatement(static_cast<const IfStatementIr&>(ir), state);
-
-			default:
-				break;
 		}
-
-		log::fatal("Unable to evaluate statement of type: $", (int)ir.statementType);
 	}
 
 	void evaluateDeclarationStatement(const DeclarationStatementIr& ir, LocalState& state)
@@ -172,7 +167,7 @@ namespace parka::evaluation
 
 	void evaluateYieldStatement(const ir::YieldStatementIr&, LocalState&)
 	{
-		log::notImplemented(here());
+		notImplemented();
 	}
 
 	void evaluateForStatement(const ir::ForStatementIr& ir, LocalState& state)
@@ -282,12 +277,9 @@ namespace parka::evaluation
 
 			case ExpressionType::StringLiteral:
 				return evaluateStringLiteral(static_cast<const StringLiteralIr&>(ir), state);
-				
-			default:
-				break;
 		}
 
-		log::fatal("Unable to evaluate Expression with TypeIr: $", ir.expressionType);
+		abort();
 	}
 
 	Value& evaluateBinaryExpression(const BinaryExpressionIr& ir, LocalState& state)

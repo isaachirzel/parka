@@ -1,4 +1,5 @@
 #include "parka/file/Position.hpp"
+#include "parka/log/Color.hpp"
 #include <algorithm>
 
 namespace parka
@@ -6,11 +7,11 @@ namespace parka
 	Position::Position(const File& file):
 		_file(&file),
 		_index(0),
-		_line(1),
-		_column(1)
+		_line(0),
+		_column(0)
 	{}
 
-	Position::Position(const File& file, u32 index, u32 line, u32 column):
+	Position::Position(const File& file, u32 index, u16 line, u16 column):
 		_file(&file),
 		_index(index),
 		_line(line),
@@ -151,5 +152,20 @@ namespace parka
 	bool Position::operator>=(const Position& other) const
 	{
 		return _index >= other._index;
+	}
+
+	std::ostream& operator<<(std::ostream& out, const Position& position)
+	{
+		out << Color::darkYellow;
+		out << position._file->path();
+
+		if (position._line > 0)
+			out << ":" << position._line;
+
+		if (position._column > 0)
+			out << ":" << position._column;
+
+		out << Color::reset;
+		return out;
 	}
 }

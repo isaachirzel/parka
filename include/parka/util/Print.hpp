@@ -1,7 +1,6 @@
 #ifndef PARKA_UTIL_PRINT_HPP
 #define PARKA_UTIL_PRINT_HPP
 
-#include "parka/util/String.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -51,18 +50,14 @@ namespace parka
 	void print(const char * const fmt, Arg const&... args)
 	{
 		_output(std::cout, fmt, args...);
-
-		std::cout << std::endl;
 	}
 
 	template <typename... Arg>
-	String format(const char * fmt, Arg const&... args)
+	void println(const char * const fmt, Arg const&... args)
 	{
-		std::ostringstream out;
+		_output(std::cout, fmt, args...);
 
-		_output(out, fmt, args...);
-
-		return out.str();
+		std::cout << std::endl;
 	}
 }
 

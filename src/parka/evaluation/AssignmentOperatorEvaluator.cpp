@@ -6,6 +6,7 @@
 #include "parka/log/Log.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
+#include <exception>
 
 using namespace parka::ir;
 
@@ -75,7 +76,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", l, assignmentType, r);
+		abort();
 	}
 	
 	template <typename Left, typename Right>
@@ -122,7 +123,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -156,7 +157,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", l, assignmentType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -185,7 +186,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -197,7 +198,7 @@ namespace parka::evaluation
 			return;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", l, assignmentType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -214,7 +215,7 @@ namespace parka::evaluation
 		if (primitive.primitiveType() == PrimitiveType::Bool)
 			return evaluateIntrinsicBoolAssignmentOperator<Left, bool>(ir, left, right);
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -226,7 +227,7 @@ namespace parka::evaluation
 			return;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", l, assignmentType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -243,7 +244,7 @@ namespace parka::evaluation
 		if (primitive.primitiveType() == PrimitiveType::Char)
 			return evaluateIntrinsicCharAssignmentOperator<Left, char>(ir, left, right);
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
+		abort();
 	}
 
 	void evaluateIntrinsicAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, const Value& right)
@@ -292,7 +293,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Assignment operator `$ $ $` cannot be evaluated.", left.type(), ir.assignmentType(), right.type());
+		abort();
 	}
 
 	void evaluateAssignmentOperator(const AssignmentOperatorIr& ir, Value& left, Value& right, LocalState&)

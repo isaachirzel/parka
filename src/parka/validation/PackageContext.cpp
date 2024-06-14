@@ -16,7 +16,7 @@ namespace parka::validation
 		_global(parent.globalContext()),
 		_parent(parent)
 	{
-		log::notImplemented(here());
+		notImplemented();
 	}
 
 	FunctionEntry& PackageContext::declare(const ast::FunctionAst& ast)
@@ -27,9 +27,8 @@ namespace parka::validation
 
 		if (!insertion)
 		{
-			auto* previous = *insertion;
-
-			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in the package $.", previous->entityType, previous->name(), _scope);
+			auto& previous = **insertion;
+			log::shadowedPackageEntityError(ast.prototype().identifier().snippet(), previous.name(), previous.entityType);
 		}
 
 		return entry;
@@ -98,8 +97,8 @@ namespace parka::validation
 
 			if (table == nullptr)
 			{
-				log::error(identifier.snippet(), "Unable to resolve `$` in package `$`.", identifier, entry->name());
-				return nullptr;
+				log::undefinedPackageEntityError(identifier.snippet(), identifier.text(), entry->name());
+				return {};
 			}
 
 			entry = table->findSymbol(identifier);
@@ -108,6 +107,6 @@ namespace parka::validation
 		if (entry != nullptr)
 			return entry->resolve();
 
-		return nullptr;
+		return {};
 	}
 }

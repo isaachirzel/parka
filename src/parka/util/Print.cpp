@@ -38,7 +38,7 @@ namespace parka
 			if (*iter == '$' && iter > fmt && iter[-1] != '\\')
 			{
 				out << "Not enough arguments to print." << std::endl;
-				exit(1);
+				abort();
 			}
 		}
 

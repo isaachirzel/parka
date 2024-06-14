@@ -1,7 +1,7 @@
 #ifndef PARKA_UTIL_PROMPT_HPP
 #define PARKA_UTIL_PROMPT_HPP
 
-#include "parka/enum/LogEntryType.hpp"
+#include "parka/enum/Severity.hpp"
 #include "parka/log/Color.hpp"
 #include <ostream>
 
@@ -32,7 +32,7 @@ namespace parka
 		Prompt(Prompt&&) = default;
 		Prompt(const Prompt&) = default;
 
-		static Prompt from(LogEntryType type);
+		static Prompt from(Severity type);
 		
 		const auto *text() const { return _text; }
 		const auto& color() const { return _color; }

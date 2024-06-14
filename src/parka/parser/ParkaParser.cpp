@@ -27,14 +27,6 @@ using namespace parka::ast;
 
 namespace parka::parser
 {
-	static void logParseError(const Token& token, const char *expected, const char *message = "")
-	{
-		assert(expected != nullptr);
-		assert(message != nullptr);
-
-		log::error(token, "Expected $, found $. $", expected, token.type(), message);
-	}
-
 	Ast parse(const Project& project)
 	{
 		// TODO: Parse external projects
@@ -51,7 +43,7 @@ namespace parka::parser
 	{
 		if (!token.isSemicolon())
 		{
-			logParseError(token, "';'", message);
+			log::parseError(token, "';'", message);
 			return false;
 		}
 
@@ -72,7 +64,7 @@ namespace parka::parser
 
 		if (type != expected)
 		{
-			log::error(token, "Expected keyword `$`, found $.", expected, token);
+			log::parseKeywordError(token, expected, type);
 			return {};
 		}
 
@@ -138,7 +130,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::CharacterLiteral)
 		{
-			logParseError(token, "character");
+			log::parseError(token, "character");
 			return {};
 		}
 
@@ -153,7 +145,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::StringLiteral)
 		{
-			logParseError(token, "string");
+			log::parseError(token, "string");
 			return {};
 		}
 
@@ -182,7 +174,7 @@ namespace parka::parser
 				break;
 		}
 
-		logParseError(token, "`true` or `false`");
+		log::parseError(token, "`true` or `false`");
 		
 		return {};
 	}
@@ -191,7 +183,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::FloatLiteral)
 		{
-			logParseError(token, "float");
+			log::parseError(token, "float");
 			return nullptr;
 		}
 
@@ -206,7 +198,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::IntegerLiteral)
 		{
-			logParseError(token, "integer");
+			log::parseError(token, "integer");
 			return {};
 		}
 
@@ -223,7 +215,7 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "identifier");
+			log::parseError(token, "identifier");
 			return {};
 		}
 
@@ -234,7 +226,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::LeftBrace)
 		{
-			logParseError(token, "'{' before block");
+			log::parseError(token, "'{' before block");
 
 			return {};
 		}
@@ -301,7 +293,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::RightParenthesis)
 		{
-			logParseError(token, "expected ')' after primary sub-expression");
+			log::parseError(token, "expected ')' after primary sub-expression");
 			return {};
 		}
 
@@ -359,7 +351,7 @@ namespace parka::parser
 				break;
 		}
 
-		logParseError(token, "primary expression");
+		log::parseError(token, "primary expression");
 
 		return {};
 	}
@@ -401,7 +393,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			logParseError(token, "'(' before argument list");
+			log::parseError(token, "'(' before argument list");
 			return {};
 		}
 
@@ -429,7 +421,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				logParseError(token, "')' after argument list");
+				log::parseError(token, "')' after argument list");
 				return {};
 			}
 		}
@@ -447,7 +439,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::LeftBracket)
 		{
-			logParseError(token, "'['");
+			log::parseError(token, "'['");
 			return {};
 		}
 
@@ -461,7 +453,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::RightBracket)
 		{
-			logParseError(token, "']' after subscript");
+			log::parseError(token, "']' after subscript");
 			return {};
 		}
 
@@ -477,7 +469,7 @@ namespace parka::parser
 	{
 		if (token.type() != TokenType::Dot)
 		{
-			logParseError(token, "'.'");
+			log::parseError(token, "'.'");
 			return {};
 		}
 
@@ -485,7 +477,7 @@ namespace parka::parser
 		
 		if (!token.isIdentifier())
 		{
-			logParseError(token, "member, method, or property name");
+			log::parseError(token, "member, method, or property name");
 			return {};
 		}
 		
@@ -922,7 +914,7 @@ namespace parka::parser
 
 		if (elseKeywordType != KeywordType::Else)
 		{
-			log::error(token, "else case for conditional expression");
+			log::parseError(token, "else case for conditional expression");
 			return {};
 		}
 
@@ -1034,7 +1026,7 @@ namespace parka::parser
 
 		if (token.type() != TokenType::Assign)
 		{
-			logParseError(token, "expected '=' after declaration");
+			log::parseError(token, "expected '=' after declaration");
 			return nullptr;
 		}
 
@@ -1141,7 +1133,7 @@ namespace parka::parser
 				break;
 			
 			default:
-				logParseError(token, "assignment");
+				log::parseError(token, "assignment");
 				return {};
 		}
 
@@ -1233,8 +1225,6 @@ namespace parka::parser
 
 	StatementAst *parseStatement(Token& token)
 	{
-		log::debug(token, "parse statement");
-
 		if (token.type() == TokenType::LeftBrace)
 			return parseBlockStatement(token);
 
@@ -1291,13 +1281,13 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "parameter name");
+			log::parseError(token, "parameter name");
 			return {};
 		}
 
 		if (token.type() != TokenType::Colon)
 		{
-			logParseError(token, "':'", "Parameters require a type annotation.");
+			log::parseError(token, "':'", "Parameters require a type annotation.");
 			return {};
 		}
 
@@ -1320,7 +1310,7 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "type name");
+			log::parseError(token, "type name");
 			return {};
 		}
 
@@ -1341,7 +1331,7 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "variable name");
+			log::parseError(token, "variable name");
 			return {};
 		}
 
@@ -1406,13 +1396,13 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "function name");
+			log::parseError(token, "function name");
 			return {};
 		}
 
 		if (token.type() != TokenType::LeftParenthesis)
 		{
-			logParseError(token, "parameter list");
+			log::parseError(token, "parameter list");
 			return {};
 		}
 
@@ -1442,7 +1432,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightParenthesis)
 			{
-				logParseError(token, "end of parameter list ')'");
+				log::parseError(token, "end of parameter list ')'");
 				return {};
 			}
 		}
@@ -1505,7 +1495,7 @@ namespace parka::parser
 		}
 	
 		
-		logParseError(token, "function body", "Functions require a body.");
+		log::parseError(token, "function body", "Functions require a body.");
 
 		return {};
 	}
@@ -1535,13 +1525,13 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "member name");
+			log::parseError(token, "member name");
 			return {};
 		}
 
 		if (token.type() != TokenType::Colon)
 		{
-			logParseError(token, "':''", "TypeIr annotations are required for member declarations.");
+			log::parseError(token, "':''", "TypeIr annotations are required for member declarations.");
 			return {};
 		}
 		
@@ -1569,14 +1559,14 @@ namespace parka::parser
 
 		if (!identifier)
 		{
-			logParseError(token, "struct name");
+			log::parseError(token, "struct name");
 			return {};
 		}
 
 		if (token.type() != TokenType::LeftBrace)
 		{
 			// TODO: 
-			logParseError(token, "'{' before member list", "Bodyless structs are not allowed.");
+			log::parseError(token, "'{' before member list", "Bodyless structs are not allowed.");
 			return {};
 		}
 
@@ -1606,7 +1596,7 @@ namespace parka::parser
 
 			if (token.type() != TokenType::RightBrace)
 			{
-				logParseError(token, "'}' after struct body");
+				log::parseError(token, "'}' after struct body");
 				return {};
 			}
 		}
@@ -1671,7 +1661,7 @@ namespace parka::parser
 						continue;
 					}
 
-					logParseError(token, "type or function definition");					
+					log::parseError(token, "type or function definition");					
 					break;
 			}
 

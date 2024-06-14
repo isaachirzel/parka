@@ -1,7 +1,6 @@
 # To Do
 
 ## Short Term
-- Add "Potential Solution" and "Extra Information" logs
 - Multi line snippets & highlights
 - Update to snippet system to allow for carrot
 - Prefix operators
@@ -54,6 +53,8 @@
 
 ## Future Ideas
 - Built in unit testing
+- JSON parsing
+- C parsing
 - Templates
 - C Interoperation
 - C Generation

@@ -88,7 +88,7 @@ namespace parka::validation
 		{
 			auto& previous = **insertion;
 
-			log::error(ast.prototype().identifier(), "A $ with the name `$` has already been declared in global scope.", previous.entityType, previous.name());
+			log::shadowedGlobalEntityError(ast.prototype().identifier(), previous.name(), previous.entityType);
 		}
 
 		return entry;
@@ -132,7 +132,7 @@ namespace parka::validation
 
 			if (!table)
 			{
-				log::error(identifier.snippet(),"No definition for `$` couble be found in package `$`.", part, entry->name());
+				log::undefinedPackageEntityError(identifier.snippet(), part.text(), entry->name());
 				return {};
 			}
 
@@ -149,8 +149,7 @@ namespace parka::validation
 	{
 		auto* iter = _types.find(&type);
 
-		if (!iter)
-			log::fatal("Unable to get context for type `$`.", type);
+		assert(iter != nullptr);
 
 		return **iter;
 	}

@@ -5,14 +5,13 @@
 
 namespace parka
 {
-	enum class LogEntryType: u8
+	enum class Severity: u8
 	{
 		Debug,
 		Note,
 		Success,
 		Warning,
 		Error,
-		Solution,
 		Fatal
 	};
 }

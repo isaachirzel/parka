@@ -52,7 +52,7 @@ namespace parka::table
 			if (capacity >= minimumCapacity)
 				return capacity;
 		}
-
+		
 		usize maxCapacity = primeNumbers[primeNumberCount - 1];
 
 		log::fatal("Unable to create table with capacity $. The maximum capacity is $.", minimumCapacity, maxCapacity);

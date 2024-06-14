@@ -24,19 +24,18 @@ namespace parka
 		auto fd = open(filePath.c_str(), O_RDONLY);
 
 		if (fd == -1)
-			log::fatal("Failed to open file `$`.", filePath);
+			log::fileOpenError(filePath.c_str());
 
 		struct stat sb;
 
 		if (fstat(fd, &sb) == -1)
-			log::fatal("Failed to get information for file `$`.", filePath);
+			log::fileStatError(filePath.c_str());
 
 		auto length = sb.st_size;
 		auto* ptr = mmap(nullptr, length, PROT_READ, MAP_SHARED, fd, 0);
 
 		if (ptr == (void*)-1)
-			log::fatal("Failed to read data for file `$`.", filePath);
-
+			log::fileReadError(filePath.c_str());
 
 		auto text = String((char*)ptr, length);
 
@@ -52,7 +51,7 @@ namespace parka
 
 		if (!file)
 		{
-			log::error("Failed to open file '$' for writing.", filepath);
+			log::fatal("Failed to open file '$' for writing.", filepath);
 			return false;
 		}
 
@@ -62,7 +61,7 @@ namespace parka
 
 		if (bytesWritten != content.length())
 		{
-			log::error("Failed to write content to file '$'.", filepath);
+			log::fatal("Failed to write content to file '$'.", filepath);
 			return false;
 		}
 

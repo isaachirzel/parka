@@ -35,10 +35,8 @@ namespace parka::validation
 
 		if (!insertion)
 		{
-			auto* previous = *insertion;
-			log::error(ast.identifier(), "Declaration of variable `$` shadows a $ with the same name.", previous->name(), previous->entityType);
-
-			// TODO: Previously declared here error
+			auto& previous = **insertion;
+			log::shadowedLocalEntityError(ast.identifier(), previous.name(), previous.entityType);
 		}
 
 		return ref;

@@ -10,13 +10,13 @@ namespace parka
 	{
 		const File* _file;
 		u32 _index;
-		u32 _line;
-		u32 _column;
+		u16 _line;
+		u16 _column;
 
 	public:
 
 		Position(const File& file);
-		Position(const File& file, u32 index, u32 line, u32 column);
+		Position(const File& file, u32 index, u16 line, u16 column);
 		Position(Position&&) = default;
 		Position(const Position&) = default;
 		Position& operator=(Position&&) = default;
@@ -40,6 +40,8 @@ namespace parka
 		const auto& index() const { return _index; }
 		const auto& line() const { return _line; }
 		const auto& column() const { return _column; }
+
+		friend std::ostream& operator<<(std::ostream& out, const Position& position);
 	};
 }
 

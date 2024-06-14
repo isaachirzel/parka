@@ -1,7 +1,6 @@
 #include "parka/evaluation/BinaryOperatorEvaluator.hpp"
 #include "parka/enum/PrimitiveType.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
-#include "parka/log/Log.hpp"
 #include "parka/util/Float.hpp"
 #include "parka/util/Integer.hpp"
 #include "parka/ir/Util.hpp"
@@ -48,7 +47,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Comparison operation `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -96,7 +95,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Integer operation `($ $ $) -> $` cannot be evaluated.", type<Left>(), binaryExpressionType, type<Right>(), type<Return>());
+		abort();
 	}
 
 	template <typename Left, typename Right, typename Return>
@@ -146,7 +145,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Integer binary operator `$ $ $` with return type `$` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type(), ir.returnType());
+		abort();
 	}
 
 	template <typename Left>
@@ -187,7 +186,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+		abort();
 	}
 
 	template <typename Left, typename Right, typename Return>
@@ -211,7 +210,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right, typename Return>
@@ -243,7 +242,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+		abort();
 	}
 
 	template <typename Left>
@@ -266,7 +265,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+		abort();
 	}
 
 	bool _boolOperation(BinaryExpressionType binaryExpressionType, bool l, bool r)
@@ -289,7 +288,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Bool operation `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right, typename Return>
@@ -304,7 +303,7 @@ namespace parka::evaluation
 		const PrimitiveIr& ret = static_cast<const PrimitiveIr&>(ir.returnType());
 
 		if (ret.primitiveType() != PrimitiveType::Bool)
-			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+			abort();
 
 		return evaluateIntrinsicBoolBinaryOperator<Left, Right, bool>(ir, left, right, state);
 	}
@@ -315,7 +314,7 @@ namespace parka::evaluation
 		const PrimitiveIr& r = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		if (r.primitiveType() != PrimitiveType::Bool)
-			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+			abort();
 
 		return evaluateIntrinsicBoolBinaryOperator<Left, bool>(ir, left, right, state);
 	}
@@ -334,7 +333,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated.", l, binaryExpressionType, r);
+		abort();
 	}
 
 	template <typename Left, typename Right>
@@ -343,7 +342,7 @@ namespace parka::evaluation
 		const PrimitiveIr& ret = static_cast<const PrimitiveIr&>(ir.returnType());
 
 		if (ret.primitiveType() != PrimitiveType::Bool)
-			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+			abort();
 
 		return evaluateIntrinsicBinaryOperator<Left, Right, bool, _charOperation>(ir, left, right, state);
 	}
@@ -354,7 +353,7 @@ namespace parka::evaluation
 		const PrimitiveIr& r = static_cast<const PrimitiveIr&>(ir.rightType());
 
 		if (r.primitiveType() != PrimitiveType::Char)
-			log::fatal("Binary operator `$ $ $` cannot be evaluated.", left.type(), ir.binaryExpressionType(), right.type());
+			abort();
 
 		return evaluateIntrinsicCharBinaryOperator<Left, char>(ir, left, right, state);
 	}
@@ -411,7 +410,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Binary operator `$ $ $` cannot be evaluated $.", left.type(), ir.binaryExpressionType(), right.type());
+		abort();
 	}
 
 	Value& evaluateBinaryOperator(const BinaryOperatorIr& ir, Value& left, Value& right, LocalState& state)

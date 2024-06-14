@@ -7,6 +7,6 @@ namespace parka::evaluation
 
 	Value& GlobalState::add(ir::EntityIr*, const ir::TypeIr&)
 	{
-		log::notImplemented(here());
+		notImplemented();
 	}
 }
