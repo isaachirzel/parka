@@ -1,7 +1,5 @@
 
-#include "parka/log/Log.hpp"
-#include "parka/util/Table.hpp"
-
+#include "parka/util/Common.hpp"
 #include <cstdlib>
 #include <cstring>
 
@@ -53,8 +51,6 @@ namespace parka::table
 				return capacity;
 		}
 		
-		usize maxCapacity = primeNumbers[primeNumberCount - 1];
-
-		log::fatal("Unable to create table with capacity $. The maximum capacity is $.", minimumCapacity, maxCapacity);
+		abort();
 	}
 }

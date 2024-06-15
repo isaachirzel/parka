@@ -1,5 +1,3 @@
-
-#include "parka/log/Log.hpp"
 #include "parka/util/Arena.hpp"
 #include "parka/util/Common.hpp"
 
@@ -80,7 +78,7 @@ namespace parka
 			const auto code = mprotect(startOfRegion, bytesToCommit, PROT_READ | PROT_WRITE);
 
 			if (code == -1)
-				log::fatal("Failed to commit $ bytes in Arena.", bytesToCommit);
+				abort();
 		}
 
 		auto * const ptr = _data + _length;

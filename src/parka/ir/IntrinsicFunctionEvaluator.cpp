@@ -50,6 +50,6 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Unable to evaluate intrinsic function $.", (int)intrinsicFunctionType);
+		abort();
 	}
 }

@@ -23,6 +23,8 @@ namespace parka::log
 	[[ noreturn ]]
 	void fileReadError(const char* filePath);
 	[[ noreturn ]]
+	void fileWriteError(const char* filePath);
+	[[ noreturn ]]
 	void directoryOpenError(const char* directoryPath);
 	void invalidTokenError(const Token& token);
 	void unterminatedQuoteTokenError(const Token& token);
@@ -63,7 +65,7 @@ namespace parka::log
 
 		_output(out, format, args...);
 
-		out << std::endl;
+		out << "\n\n";
 	}
 
 	template <typename ...Arg>
@@ -71,11 +73,7 @@ namespace parka::log
 	void fatal(const char *format, Arg const&...args)
 	{
 		message(Severity::Fatal, format, args...);
-		#ifndef NDEBUG
-		abort();
-		#else
 		exit(1);
-		#endif
 	}
 
 	template <typename ...Arg>
@@ -90,7 +88,7 @@ namespace parka::log
 		message(Severity::Success, format, args...);
 	}
 
-	#define notImplemented() parka::log::fatal("$:$: Function $() is not implemented.", __FILE__, __LINE__, __func__)
+	#define notImplemented() parka::log::message(Severity::Fatal, "$:$: Function $() is not implemented.", __FILE__, __LINE__, __func__); abort()
 
 	usize getDebugCount();
 	usize getNoteCount();

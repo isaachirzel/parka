@@ -71,7 +71,7 @@ namespace parka::evaluation
 				return value;
 		}
 
-		log::fatal("Unable to get value for node: $", node.symbol());
+		abort();
 	}
 
 	Value& LocalState::returnValue()

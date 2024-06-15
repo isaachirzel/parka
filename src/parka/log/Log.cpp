@@ -35,7 +35,7 @@ namespace parka::log
 				break;
 
 			case Severity::Success:
-				log::successCount  += 1;
+				log::successCount += 1;
 				break;
 
 			case Severity::Warning:
@@ -66,18 +66,18 @@ namespace parka::log
 		auto prompt = Prompt::from(severity);
 
 		if (position)
-			out << position << "\n";
+			out << *position << "\n";
 
 		out << prompt;
 
 		if (errorCode != ErrorCode::None)
-			out << " " << errorCode;
+			out << " [" << errorCode << "]";
 
 		out << ": ";
 
 		_output(out, format, args...);
 
-		out << "\n";
+		out << "\n\n";
 
 		addCount(severity);
 	}
@@ -116,6 +116,19 @@ namespace parka::log
 			ErrorCode::FileSystemError,
 			nullptr,
 			"Failed to read data for file `$`.",
+			filePath
+		);
+		abort();
+	}
+
+	[[ noreturn ]]
+	void fileWriteError(const char* filePath)
+	{
+		logMessage(
+			Severity::Fatal,
+			ErrorCode::FileSystemError,
+			nullptr,
+			"Failed to write data to file `$`.",
 			filePath
 		);
 		abort();
@@ -488,10 +501,5 @@ namespace parka::log
 			&snippet.position(),
 			"Then and else case types are incompatible with each other."
 		);
-	}
-
-	void undefinedIdentifierError(const ast::QualifiedIdentifierAst& identifier)
-	{
-
 	}
 }

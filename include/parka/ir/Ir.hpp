@@ -23,7 +23,8 @@ namespace parka::ir
 
 		const auto& name() const { return _name; }
 		const auto& functions() const { return _functions; }
-		const auto* entryPoint() const { return _entryPoint; }
+		bool hasEntryPoint() const { return !!_entryPoint; }
+		const auto& entryPoint() const { assert(!!_entryPoint); return *_entryPoint; }
 	};
 }
 

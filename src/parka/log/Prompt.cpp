@@ -33,12 +33,9 @@ namespace parka
 
 			case Severity::Fatal:
 				return Prompt::fatal;
-
-			default:
-				break;
 		}
 
-		log::fatal("Unable to get Prompt for Severity: $", static_cast<i32>(type));
+		abort();
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Prompt& prompt)

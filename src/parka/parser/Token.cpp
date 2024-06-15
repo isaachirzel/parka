@@ -33,8 +33,10 @@ namespace parka
 				return TokenType::UnterminatedStringLiteral;
 
 			default:
-				log::fatal("Invalid quote type: $", terminal);
+				break;
 		}
+
+		abort();
 	}
 
 	TokenType getQuoteType(char terminal)
@@ -48,8 +50,10 @@ namespace parka
 				return TokenType::StringLiteral;
 
 			default:
-				log::fatal("Invalid quote type: $", terminal);
+				break;
 		}
+
+		abort();	
 	}
 
 	Token getQuoteToken(const Position& startPos)
@@ -476,7 +480,7 @@ namespace parka
 				return "string literal";
 
 			default:
-				log::fatal("Invalid TokenType: $", _type);
+				return "(invalid category)";
 		}
 	}
 

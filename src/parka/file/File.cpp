@@ -45,25 +45,19 @@ namespace parka
 		return text;
 	}
 
-	bool writeFileText(const char *filepath, const String& content)
+	bool writeFileText(const char *filePath, const String& content)
 	{
-		FILE *file = fopen(filepath, "w");
+		FILE *file = fopen(filePath, "w");
 
 		if (!file)
-		{
-			log::fatal("Failed to open file '$' for writing.", filepath);
-			return false;
-		}
+			log::fileOpenError(filePath);
 
 		usize bytesWritten = fwrite(content.c_str(), sizeof(char), content.length(), file);
 
 		fclose(file);
 
 		if (bytesWritten != content.length())
-		{
-			log::fatal("Failed to write content to file '$'.", filepath);
-			return false;
-		}
+			log::fileWriteError(filePath);
 
 		return true;
 	}

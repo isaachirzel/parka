@@ -12,7 +12,6 @@
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/EntityType.hpp"
 #include "parka/enum/ExpressionType.hpp"
-#include "parka/enum/PrimitiveType.hpp"
 #include "parka/enum/StatementType.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
@@ -551,12 +550,15 @@ namespace parka::validation
 				return validateIdentifierExpression(static_cast<const IdentifierExpressionAst&>(ast), context);
 
 			case ExpressionType::Subscript:
+				notImplemented();
 				break;
 
 			case ExpressionType::MemberAccess:
+				notImplemented();
 				break;
 
 			case ExpressionType::Prefix:
+				notImplemented();
 				break;
 
 			case ExpressionType::Cast:
@@ -578,7 +580,7 @@ namespace parka::validation
 				return validateStringLiteral(static_cast<const StringLiteralAst&>(ast));
 		}
 
-		log::fatal("Unable to validate expression with type: $.", ast.expressionType);
+		abort();		
 	}
 
 	BinaryExpressionIr* validateBinaryExpression(const BinaryExpressionAst& ast, LocalContext& context)

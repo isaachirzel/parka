@@ -46,12 +46,12 @@ namespace parka::evaluation
 
 			case PrimitiveType::I64:
 				return evaluateIntrinsicCast<From, i64>(from, to);
-
+			
 			default:
 				break;
 		}
 
-		log::fatal("Unable to evaluate cast `$ as $`.", from.type(), to.type());
+		abort();
 	}
 
 	template <typename From>
@@ -71,7 +71,7 @@ namespace parka::evaluation
 				break;
 		}
 
-		log::fatal("Unable to evaluate cast `$ as $`.", from.type(), to.type());
+		abort();
 	}
 
 	Value& evaluateIntrinsicCast(Value& from, Value& to)
@@ -120,7 +120,7 @@ namespace parka::evaluation
 				break;
 		}
 		
-		log::fatal("Unable to evaluate cast `$ as $`.", from.type(), to.type());
+		abort();
 	}
 
 	Value& evaluateCast(const ir::CastIr&, Value& from, Value& to, LocalState&)

@@ -25,12 +25,7 @@ namespace parka::evaluation
 	{
 		auto globalState = GlobalState();
 		auto state = LocalState(globalState);
-		auto *entryPoint = ir.entryPoint();
-
-		if (!entryPoint)
-			log::fatal("Unable to evaluate `$` as there is no entry point. Please implement a function named `main` in the global scope.", ir.name());
-
-		auto& result = evaluateFunction(*entryPoint, {}, state);
+		auto& result = evaluateFunction(ir.entryPoint(), {}, state);
 		auto exitCode = result.getValue<i32>();
 
 		return exitCode;

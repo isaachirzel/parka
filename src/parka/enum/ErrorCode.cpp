@@ -1,4 +1,5 @@
 #include "parka/enum/ErrorCode.hpp"
+#include "parka/log/Color.hpp"
 #include "parka/util/Common.hpp"
 
 namespace parka
@@ -11,15 +12,16 @@ namespace parka
 		auto temp = value;
 		u8 zeroCount = 0;
 
-		while (temp < 1000)
+		while (temp < 100)
 		{
 			temp *= 10;
 			zeroCount += 1;
 		}
-
+		out << Color::darkRed;
 		out << "PK";
 		out.write(zeroes, zeroCount);
 		out << value;
+		out << Color::reset;
 
 		return out;
 	}
