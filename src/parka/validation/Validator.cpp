@@ -12,6 +12,7 @@
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/enum/EntityType.hpp"
 #include "parka/enum/ExpressionType.hpp"
+#include "parka/enum/PrimitiveType.hpp"
 #include "parka/enum/StatementType.hpp"
 #include "parka/ir/AssignmentStatementIr.hpp"
 #include "parka/ir/BinaryExpressionIr.hpp"
@@ -83,7 +84,7 @@ namespace parka::validation
 			auto& last = *parameters.back();
 			auto snippet = first.snippet() + last.snippet();
 
-			log::error(snippet, "Entry point `main` may not have any parameters.");
+			log::entryPointNoParametersAllowedError(snippet);
 			success = false;
 		}
 
@@ -91,7 +92,7 @@ namespace parka::validation
 
 		if (&returnType != &PrimitiveIr::i32Primitive && &returnType != &PrimitiveIr::voidPrimitive)
 		{
-			log::error(ast.prototype().returnType()->snippet(), "Entry point `main` must return either $ or $.", PrimitiveIr::i32Primitive, PrimitiveIr::voidPrimitive);
+			log::entryPointReturnTypeError(ast.prototype().returnType()->snippet(), returnType);
 			success = false;
 		}
 
@@ -240,7 +241,7 @@ namespace parka::validation
 			
 			if (!castedValue)
 			{
-				log::error(ast.expression().snippet(), "Unable to return `$` in function expecting $.", expression->type(), context.returnType());
+				log::invalidReturnValueError(ast.expression().snippet(), expression->type(), context.returnType());
 				return {};
 			}
 
@@ -276,7 +277,7 @@ namespace parka::validation
 
 		if (!entity)
 		{
-			log::error(ast.identifier().snippet(), "The type `$` could not be found in this scope.", ast.identifier());
+			log::undefinedEntityError(ast.identifier());
 			return {};
 		}
 
@@ -288,17 +289,11 @@ namespace parka::validation
 			case EntityType::Struct:
 				return static_cast<StructIr*>(entity);
 
-			case EntityType::Function:
-				log::error(ast.snippet(), "Function `$` cannot be used as a type name.", entity->symbol());
-				break;
-
 			default:
-				log::error(ast.snippet(), "Expected a type, but $ `$` was found.", entity->entityType, ast.identifier());
+				log::typeAnnotationError(ast.snippet(), *entity);
 				break;
 		}
 
-		// TODO: Figure out what the referred thing was for better clarity
-		// TODO: Maybe show "other thing defined here"
 		return {};
 	}
 
@@ -340,6 +335,8 @@ namespace parka::validation
 			case StatementType::If:
 				return validateIfStatement(static_cast<const ast::IfStatementAst&>(ast), context);
 		}
+
+		abort();
 	}
 
 	DeclarationStatementIr *validateDeclarationStatement(const DeclarationStatementAst& ast, LocalContext& context)
@@ -366,7 +363,11 @@ namespace parka::validation
 
 		auto* castedValue = validateImplicitCast(variable->type(), *value, context);
 		
-		assert(castedValue != nullptr);
+		if (!castedValue)
+		{
+			log::initializationTypeError(ast.value().snippet(), *variable, value->type());
+			return {};
+		}
 
 		return new DeclarationStatementIr(*variable, *castedValue);
 	}
@@ -391,7 +392,7 @@ namespace parka::validation
 		
 		if (lhs->expressionType != ExpressionType::Identifier)
 		{
-			log::error(ast.identifier().snippet(), "Expected LValue. This expression is not a modifiable value.");
+			log::lValueError(ast.identifier().snippet());
 			return {};
 		}
 
@@ -403,7 +404,7 @@ namespace parka::validation
 
 		if (!op)
 		{
-			log::error(ast.snippet(), "No assignment operator `$ $ $` has been defined.", lhs->type(), ast.assignmentType(), value->type());
+			log::undefinedAssignmentOperatorError(ast.snippet(), lhs->type(), ast.assignmentType(), value->type());
 			return {};
 		}
 
@@ -417,7 +418,7 @@ namespace parka::validation
 			if (&context.returnType() == &PrimitiveIr::voidPrimitive)
 				return new ReturnStatementIr();
 
-			log::error(ast.snippet(), "Expected $ return value but none was given.", context.returnType());
+			log::missingReturnValueError(ast.snippet(), context.returnType());			
 			return {};
 		}
 
@@ -430,8 +431,7 @@ namespace parka::validation
 
 		if (!castedValue)
 		{
-			// TODO: Highlight function return type
-			log::error(ast.value().snippet(), "Unable to return $ in function expecting $.", value->type(), context.returnType());
+			log::invalidReturnValueError(ast.value().snippet(), value->type(), context.returnType());
 			return {};
 		}
 		
@@ -442,7 +442,7 @@ namespace parka::validation
 	{
 		if (!context.isInLoop())
 		{
-			log::error(ast.snippet(), "A break statement may only be put inside of a loop.");
+			log::invalidBreakError(ast.snippet());
 			return {};
 		}
 
@@ -453,7 +453,7 @@ namespace parka::validation
 	{
 		if (!context.isInLoop())
 		{
-			log::error(ast.snippet(), "A continue statement may only be put inside of a loop.");
+			log::invalidContinueError(ast.snippet());
 			return {};
 		}
 
@@ -484,15 +484,13 @@ namespace parka::validation
 		if (!condition  || !action || !body)
 			return {};
 
-		auto* castedValue = validateImplicitCast(PrimitiveIr::boolPrimitive, *condition, context);
-
-		if (!castedValue)
+		if (condition->type() != ir::PrimitiveIr::boolPrimitive)
 		{
-			log::error(ast.condition().snippet(), "Expression could not be converted from `$` to `$`.", condition->type(), PrimitiveIr::boolPrimitive);
+			log::typeMismatchError(ast.condition().snippet(), condition->type(), PrimitiveIr::boolPrimitive);
 			return {};
 		}
 
-		return new ForStatementIr(*declaration, *castedValue, *action, *body);
+		return new ForStatementIr(*declaration, *condition, *action, *body);
 	}
 
 	BlockStatementIr *validateBlockStatement(const BlockStatementAst& ast, LocalContext& context)
@@ -527,15 +525,13 @@ namespace parka::validation
 		if (!condition || !thenCase || (ast.hasElseCase() && !elseCase))
 			return {};
 
-		auto* castedValue = validateImplicitCast(PrimitiveIr::boolPrimitive, *condition, context);
-
-		if (!castedValue)
+		if (condition->type() != PrimitiveIr::boolPrimitive)
 		{
-			log::error(ast.condition().snippet(), "Unable to use expression of type $ as if condition.", condition->type());
+			log::typeMismatchError(ast.condition().snippet(), condition->type(), PrimitiveIr::boolPrimitive);
 			return {};
 		}
 
-		return new IfStatementIr(*castedValue, *thenCase, elseCase);
+		return new IfStatementIr(*condition, *thenCase, elseCase);
 	}
 
 	ExpressionIr* validateExpression(const ExpressionAst& ast, LocalContext& context)
@@ -601,7 +597,7 @@ namespace parka::validation
 
 		if (!op)
 		{
-			log::error(ast.snippet(), "No operator `$ $ $` has been defined.", lhsType, ast.binaryExpressionType(), rhsType);
+			log::undefinedBinaryOperatorError(ast.snippet(), lhsType, ast.binaryExpressionType(), rhsType);
 			return {};
 		}
 
@@ -617,22 +613,17 @@ namespace parka::validation
 		if (!subject)
 			return {};
 
-		if (subject->expressionType != ExpressionType::Identifier)
+		auto* entity = subject->expressionType == ExpressionType::Identifier
+			? &static_cast<IdentifierExpressionIr&>(*subject).entity()
+			: nullptr;
+
+		if (!entity || entity->entityType != EntityType::Function)
 		{
-			log::error(ast.subject().snippet(), "Expected function name, got `$`.", subject->type());
+			log::invalidFunctionCallError(ast.subject().snippet(), subject->type());
 			return {};
 		}
 
-		auto& identifierExpression = static_cast<IdentifierExpressionIr&>(*subject);
-		auto& entity = identifierExpression.entity();
-
-		if (entity.entityType != EntityType::Function)
-		{
-			log::error(ast.snippet(), "A $ cannot be called like a function.", entity.entityType, subject->type());
-			return {};
-		}
-
-		auto& function = static_cast<const ir::FunctionIr&>(entity);
+		auto& function = static_cast<const ir::FunctionIr&>(*entity);
 		auto arguments = Array<ExpressionIr*>(ast.arguments().length());
 		auto argumentCount = ast.arguments().length();
 
@@ -655,15 +646,13 @@ namespace parka::validation
 
 		if (argumentCount > parameterCount)
 		{
-			// TODO: Highlight the ones that are too many
-			log::error(ast.snippet(), "Too many arguments passed into function `$`.", function.symbol());
+			log::tooManyArgumentsError(ast.snippet());
 			success = false;
 		}
 
 		if (parameterCount > argumentCount)
 		{
-			// TODO: Show which parameters don't have a value passed in for them.
-			log::error(ast.snippet(), "Not enough arguments passed into function `$`.", function.symbol());
+			log::tooFewArgumentsError(ast.snippet());
 			success = false;
 		}
 
@@ -679,7 +668,7 @@ namespace parka::validation
 
 			if (!castedArgument)
 			{
-				log::error(ast.arguments()[i]->snippet(), "Unable to convert argument from `$` to `$`.", argument.type(), parameter.type());
+				log::typeMismatchError(ast.arguments()[i]->snippet(), argument.type(), parameter.type());
 				success = false;
 				continue;
 			}
@@ -702,26 +691,23 @@ namespace parka::validation
 		if (!condition || !thenCase || !elseCase)
 			return {};
 
-		auto* castedCondition = validateImplicitCast(PrimitiveIr::boolPrimitive, *condition, context);
-
-		if (!castedCondition)
+		if (condition->type() != PrimitiveIr::boolPrimitive)
 		{
-			log::error(ast.condition().snippet(), "Condition is not of type `$`.", PrimitiveIr::boolPrimitive);
+			log::typeMismatchError(ast.condition().snippet(), condition->type(), PrimitiveIr::boolPrimitive);
 			return {};
 		}
 
 		auto* castedElseCase = validateImplicitCast(thenCase->type(), *elseCase, context);
 
 		if (castedElseCase)
-			return new ConditionalExpressionIr(*castedCondition, *thenCase, *castedElseCase);
+			return new ConditionalExpressionIr(*condition, *thenCase, *castedElseCase);
 
 		auto *castedThenCase = validateImplicitCast(elseCase->type(), *thenCase, context);
 
 		if (castedThenCase)
-			return new ConditionalExpressionIr(*castedCondition, *castedThenCase, *elseCase);
+			return new ConditionalExpressionIr(*condition, *castedThenCase, *elseCase);
 
-		log::error(ast.snippet(), "Then case and else case are of incompatible types.");
-
+		log::incompatibleConditionalTypes(ast.snippet());
 		return {};
 	}
 
@@ -731,7 +717,7 @@ namespace parka::validation
 
 		if (!result)
 		{
-			log::error(ast.snippet(), "No definition for `$` could be found in this scope.", ast.identifier());
+			log::undefinedEntityError(ast.identifier());
 			return {};
 		}
 
@@ -756,7 +742,7 @@ namespace parka::validation
 
 		if (!cast)
 		{
-			log::error(ast.snippet(), "Expression with value `$` cannot be explicitly casted to `$`.", expression->type(), *toType);
+			log::invalidExplicitCastError(ast.snippet(), expression->type(), *toType);
 			return {};
 		}
 
@@ -779,7 +765,7 @@ namespace parka::validation
 
 			if (isOverflown)
 			{
-				log::error(snippet, "Integer literal is too large to fit in a 64 bit value.");
+				log::invalidIntegerLiteralError(snippet);
 				return {};
 			} 
 		}
@@ -856,11 +842,11 @@ namespace parka::validation
 
 		if (snippet.length() != 3)
 		{
-			log::error(snippet, "Char literals must contain exactly 1 characters.");
+			log::invalidCharLiteralError(snippet);
 			return {};
 		}
 
-		auto value = ast.snippet()[1];
+		auto value = snippet[1];
 
 		return new CharLiteralIr(value);
 	}

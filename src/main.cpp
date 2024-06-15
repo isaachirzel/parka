@@ -24,17 +24,17 @@ i32 main(int argc, const char *argv[])
 	auto project = Project::read(argv[1]);
 	auto readTime = timer.split();
 
-	log::debugMessage("Project loaded in $ seconds.", readTime);
+	log::debug("Project loaded in $ seconds.", readTime);
 
 	auto ast = parser::parse(project);
 	auto parseTime = timer.split();
 
-	log::debugMessage("Parsing completed in $s.", parseTime);
+	log::debug("Parsing completed in $s.", parseTime);
 
 	auto ir = validation::validateAst(ast);
 	auto validateTime = timer.split();
 
-	log::debugMessage("Validation completed in $s.", validateTime);
+	log::debug("Validation completed in $s.", validateTime);
 
 	auto errorCount = log::getErrorCount();
 	auto compileTime = timer.stop();
@@ -42,18 +42,14 @@ i32 main(int argc, const char *argv[])
 	auto compileSpeed = (usize)(linesOfCodeCount / compileTime / 1000.0);
 
 	if (errorCount > 0)
-	{
 		log::fatal("Failed to compile `$`: encountered $ error(s).", project.name(), errorCount);
-		return 1;
-	}
 	
 	log::success("Compiled `$` in $ seconds at $k lines/s.", project.name(), compileTime, compileSpeed);
-	log::success("Compiled `", project.name(), "` in ", compileTime, " seconds at ", compileSpeed, "k lines/s.");
 
 	auto exitCode = evaluation::evaluate(*ir);
 
 	auto evaluateTime = timer.split();
-	log::debugMessage("Evaluation completed in $s.", evaluateTime);
+	log::debug("Evaluation completed in $s.", evaluateTime);
 
 	return exitCode;
 }

@@ -8,19 +8,24 @@ namespace parka
 	enum class ErrorCode: u16
 	{
 		None,
-		FileOpenFailed,
-		FileStatFailed,
-		FileReadFailed,
-		DirectoryOpenFailed,
+		FileSystemError,
 		InvalidToken,
-		UnterminatedQuoteToken,
-		ParseFailed,
-		ParseKeywordFailed,
-		ShadowedParameter,
-		ShadowedLocalEntity,
-		ShadowedPackageEntity,
-		ShadowedGlobalEntity,
-		UndefinedPackageEntity
+		ParseError,
+		InvalidCharLiteral,
+		InvalidIntegerLiteral,
+		TypeMismatch,
+		InvalidCast,
+		InvalidReturnValue,
+		ShadowedEntity,
+		UndefinedEntity,
+		UndefinedOperator,
+		InvalidEntryPoint,
+		InvalidTypeAnnotation,
+		InvalidBreak,
+		InvalidContinue,
+		InvalidFunctionCall,
+		IncorrectArgumentCount,
+		IncompatibleConditionalTypes
 	};
 
 	std::ostream& operator<<(std::ostream& out, ErrorCode code);
