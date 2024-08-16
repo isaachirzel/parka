@@ -8,12 +8,12 @@ namespace parka::ast
 {
 	class ReturnStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst *_value;
 
 	public:
 
-		ReturnStatementAst(const Snippet& snippet, ExpressionAst* value):
+		ReturnStatementAst(const fs::FileSnippet& snippet, ExpressionAst* value):
 			StatementAst(StatementType::Return),
 			_snippet(snippet),
 			_value(value)
@@ -21,7 +21,7 @@ namespace parka::ast
 		ReturnStatementAst(ReturnStatementAst&&) = default;
 		ReturnStatementAst(const ReturnStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		bool hasValue() const { return !!_value; }
 		const auto& value() const { return *_value; }
 	};

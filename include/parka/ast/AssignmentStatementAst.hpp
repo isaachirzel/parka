@@ -10,14 +10,14 @@ namespace parka::ast
 {
 	class AssignmentStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _identifier;
 		ExpressionAst& _value;
 		AssignmentType _assignmentType;
 
 	public:
 
-		AssignmentStatementAst(const Snippet& snippet, ExpressionAst& identifier, ExpressionAst& value, AssignmentType assignmentType):
+		AssignmentStatementAst(const fs::FileSnippet& snippet, ExpressionAst& identifier, ExpressionAst& value, AssignmentType assignmentType):
 			StatementAst(StatementType::Assignment),
 			_snippet(snippet),
 			_identifier(identifier),
@@ -27,7 +27,7 @@ namespace parka::ast
 		AssignmentStatementAst(AssignmentStatementAst&&) = default;
 		AssignmentStatementAst(const AssignmentStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }
 		const auto& value() const { return _value; }
 		const auto& assignmentType() const { return _assignmentType; }

@@ -8,7 +8,7 @@ namespace parka::ast
 {
 	class ForStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		DeclarationStatementAst& _declaration;
 		ExpressionAst& _condition;
 		StatementAst& _action;
@@ -16,7 +16,7 @@ namespace parka::ast
 
 	public:
 
-		ForStatementAst(const Snippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, StatementAst& action, BlockStatementAst& body):
+		ForStatementAst(const fs::FileSnippet& snippet, DeclarationStatementAst& declaration, ExpressionAst& condition, StatementAst& action, BlockStatementAst& body):
 			StatementAst(StatementType::For),
 			_snippet(snippet),
 			_declaration(declaration),
@@ -27,7 +27,7 @@ namespace parka::ast
 		ForStatementAst(ForStatementAst&&) = default;
 		ForStatementAst(const ForStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& declaration() const { return _declaration; }
 		const auto& condition() const { return _condition; }
 		const auto& action() const { return _action; }

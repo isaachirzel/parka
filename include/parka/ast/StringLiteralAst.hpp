@@ -7,12 +7,12 @@ namespace parka::ast
 {
 	class StringLiteralAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		String _text;
 
 	public:
 
-		StringLiteralAst(const Snippet& snippet, String&& text):
+		StringLiteralAst(const fs::FileSnippet& snippet, String&& text):
 			ExpressionAst(ExpressionType::StringLiteral),
 			_snippet(snippet),
 			_text(std::move(text))
@@ -20,7 +20,7 @@ namespace parka::ast
 		StringLiteralAst(StringLiteralAst&&) = default;
 		StringLiteralAst(const StringLiteralAst&) = delete;
 		
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& text() const { return _text; }
 	};
 }

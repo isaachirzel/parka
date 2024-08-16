@@ -17,11 +17,11 @@ namespace parka
 			temp *= 10;
 			zeroCount += 1;
 		}
-		out << Color::darkRed;
+		out << log::Color::darkRed;
 		out << "PK";
 		out.write(zeroes, zeroCount);
 		out << value;
-		out << Color::reset;
+		out << log::Color::reset;
 
 		return out;
 	}

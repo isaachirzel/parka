@@ -8,14 +8,14 @@ namespace parka::ast
 {
 	class ParameterAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		IdentifierAst _identifier;
 		TypeAnnotationAst _annotation;
 		bool _isMutable;
 
 	public:
 
-		ParameterAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable);
+		ParameterAst(const fs::FileSnippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable);
 		ParameterAst(ParameterAst&&) = default;
 		ParameterAst(const ParameterAst&) = delete;
 

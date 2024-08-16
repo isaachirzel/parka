@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-namespace parka
+namespace parka::log
 {
 	class Color
 	{

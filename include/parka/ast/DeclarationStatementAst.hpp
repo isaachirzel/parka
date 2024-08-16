@@ -9,13 +9,13 @@ namespace parka::ast
 {
 	class DeclarationStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		VariableAst& _variable;
 		ExpressionAst& _value;
 
 	public:
 
-		DeclarationStatementAst(const Snippet& snippet, VariableAst& variable, ExpressionAst& value):
+		DeclarationStatementAst(const fs::FileSnippet& snippet, VariableAst& variable, ExpressionAst& value):
 		StatementAst(StatementType::Declaration),
 		_snippet(snippet),
 		_variable(variable),
@@ -24,7 +24,7 @@ namespace parka::ast
 		DeclarationStatementAst(DeclarationStatementAst&&) = default;
 		DeclarationStatementAst(const DeclarationStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& variable() const { return _variable; }
 		const auto& value() const { return _value; }
 	};

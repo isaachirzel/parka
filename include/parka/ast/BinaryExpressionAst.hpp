@@ -3,13 +3,13 @@
 
 #include "parka/ast/ExpressionAst.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 
 namespace parka::ast
 {
 	class BinaryExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _lhs;
 		ExpressionAst& _rhs;
 		BinaryExpressionType _binaryExpressionType;
@@ -24,7 +24,7 @@ namespace parka::ast
 		_binaryExpressionType(binaryExpressionType)
 		{}
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& lhs() const { return _lhs; }
 		const auto& rhs() const { return _rhs; }
 		const auto& binaryExpressionType() const { return _binaryExpressionType; }

@@ -3,7 +3,7 @@
 #include "parka/log/Color.hpp"
 #include "parka/log/Log.hpp"
 
-namespace parka
+namespace parka::log
 {
 	const Prompt Prompt::debug("debug", Color::darkBlue);
 	const Prompt Prompt::note("note", Color::darkCyan);

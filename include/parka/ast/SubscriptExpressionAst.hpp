@@ -10,13 +10,13 @@ namespace parka::ast
 {
 	class SubscriptExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _primary;
 		ExpressionAst& _index;
 
 	public:
 
-		SubscriptExpressionAst(const Snippet& snippet, ExpressionAst& primary, ExpressionAst& index):
+		SubscriptExpressionAst(const fs::FileSnippet& snippet, ExpressionAst& primary, ExpressionAst& index):
 		ExpressionAst(ExpressionType::Subscript),
 		_snippet(snippet),
 		_primary(primary),
@@ -25,7 +25,7 @@ namespace parka::ast
 		SubscriptExpressionAst(SubscriptExpressionAst&&) = default;
 		SubscriptExpressionAst(const SubscriptExpressionAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _primary; }
 		const auto& index() const { return _index; }
 	};

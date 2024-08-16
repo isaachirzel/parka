@@ -8,12 +8,12 @@ namespace parka::ast
 {
 	class YieldStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _value;
 
 	public:
 
-		YieldStatementAst(const Snippet& snippet, ExpressionAst& value):
+		YieldStatementAst(const fs::FileSnippet& snippet, ExpressionAst& value):
 			StatementAst(StatementType::Return),
 			_snippet(snippet),
 			_value(value)
@@ -21,7 +21,7 @@ namespace parka::ast
 		YieldStatementAst(YieldStatementAst&&) = default;
 		YieldStatementAst(const YieldStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& value() const { return _value; }
 	};
 }

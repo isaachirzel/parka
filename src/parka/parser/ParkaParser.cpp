@@ -57,7 +57,7 @@ namespace parka::parser
 		return parseSemicolon(token, "Statements must be ended with a ';'.");
 	}
 
-	Result<Snippet> parseKeyword(Token& token, KeywordType expected)
+	Result<fs::FileSnippet> parseKeyword(Token& token, KeywordType expected)
 	{
 		auto snippet = token.snippet();
 		auto type = token.getKeywordType();
@@ -97,7 +97,7 @@ namespace parka::parser
 
 	Result<QualifiedIdentifierAst> parseQualifiedIdentifier(Token& token)
 	{
-		auto start = Snippet(token);
+		auto start = fs::FileSnippet(token);
 		auto isAbsolute = parseAbsolute(token);
 		auto parts = Array<IdentifierAst>(8);
 		
@@ -457,7 +457,7 @@ namespace parka::parser
 			return {};
 		}
 
-		auto snippet = primary.snippet() + Snippet(token);
+		auto snippet = primary.snippet() + fs::FileSnippet(token);
 		auto *syntax = new SubscriptExpressionAst(snippet, primary, *index);
 
 		token.increment();
@@ -519,7 +519,7 @@ namespace parka::parser
 
 	ExpressionAst *parsePrefixExpression(Token& token)
 	{
-		auto start = Snippet(token);
+		auto start = fs::FileSnippet(token);
 		auto type = parsePrefixType(token);
 
 		if (!type)
@@ -925,7 +925,7 @@ namespace parka::parser
 		if (!elseCase)
 			return {};
 
-		auto snippet = Snippet(first) + elseCase->snippet();
+		auto snippet = fs::FileSnippet(first) + elseCase->snippet();
 		auto *syntax = new ConditionalExpressionAst(snippet, *condition, *thenCase, *elseCase);
 
 		return syntax;
@@ -1007,7 +1007,7 @@ namespace parka::parser
 		if (!expression)
 			return {};
 
-		auto snippet = expression->snippet() + Snippet(token);
+		auto snippet = expression->snippet() + fs::FileSnippet(token);
 
 		if (requireSemicolon && !parseStatementSemicolon(token))
 			return {};
@@ -1037,7 +1037,7 @@ namespace parka::parser
 		if (!value)
 			return nullptr;
 
-		auto snippet = variable->snippet() + Snippet(token);
+		auto snippet = variable->snippet() + fs::FileSnippet(token);
 		
 		if (requireSemicolon && !parseStatementSemicolon(token))
 			return {};
@@ -1275,7 +1275,7 @@ namespace parka::parser
 
 	ParameterAst *parseParameter(Token& token)
 	{
-		auto first = Snippet(token);
+		auto first = fs::FileSnippet(token);
 		auto isMutable = parseMutability(token);
 		auto identifier = parseIdentifier(token);
 
@@ -1437,7 +1437,7 @@ namespace parka::parser
 			}
 		}
 
-		auto end = Snippet(token);
+		auto end = fs::FileSnippet(token);
 		
 		token.increment();
 
@@ -1518,7 +1518,7 @@ namespace parka::parser
 
 	MemberAst *parseMember(Token& token)
 	{
-		auto first = Snippet(token);
+		auto first = fs::FileSnippet(token);
 		bool isPublic = parsePublicity(token);
 
 		auto identifier = parseIdentifier(token);
@@ -1601,7 +1601,7 @@ namespace parka::parser
 			}
 		}
 
-		auto snippet = *keyword + Snippet(token);
+		auto snippet = *keyword + fs::FileSnippet(token);
 
 		token.increment();
 
@@ -1610,7 +1610,7 @@ namespace parka::parser
 		return syntax;
 	}
 
-	ModuleAst parseModule(const File& file)
+	ModuleAst parseModule(const fs::File& file)
 	{
 		auto initial = Token::initial(file);
 		auto token = initial;
@@ -1671,7 +1671,7 @@ namespace parka::parser
 		return ModuleAst(String(file.path()), std::move(functions), std::move(structs));
 	}
 
-	PackageAst *parsePackage(const Directory& directory, const String& name)
+	PackageAst *parsePackage(const fs::Directory& directory, const String& name)
 	{
 		// TODO: Add multithreading
 		auto modules = Array<ModuleAst>(directory.files().length());
@@ -1685,7 +1685,7 @@ namespace parka::parser
 		}
 
 		for (const auto& subdirectory : directory.subdirectories())
-			packages.push(parsePackage(subdirectory, subdirectory.name()));
+			packages.push(parsePackage(subdirectory, subdirectory.getName()));
 
 		auto *syntax = new PackageAst(String(name), std::move(modules), std::move(packages));
 

@@ -2,9 +2,9 @@
 #include "parka/log/Color.hpp"
 #include "parka/log/Margin.hpp"
 
-namespace parka
+namespace parka::log
 {
-	StringView Line::getPreText(const Snippet& snippet)
+	StringView Line::getPreText(const fs::FileSnippet& snippet)
 	{
 		// const auto& position = snippet.position();
 		const char *base = snippet.file().text().c_str();
@@ -22,7 +22,7 @@ namespace parka
 		return StringView(iter, end - iter);
 	}
 
-	StringView Line::getPostText(const Snippet& snippet)
+	StringView Line::getPostText(const fs::FileSnippet& snippet)
 	{
 		const char *start = snippet.ptr() + snippet.length();
 		const char *iter = start;

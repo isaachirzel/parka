@@ -3,7 +3,7 @@
 
 #include "parka/util/Common.hpp"
 
-namespace parka
+namespace parka::log
 {
 	class Indent
 	{

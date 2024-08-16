@@ -1,7 +1,7 @@
 #include "parka/log/Indent.hpp"
 #include <ios>
 
-namespace parka
+namespace parka::log
 {
 	const int Indent::xIndex = std::ios_base::xalloc();
 

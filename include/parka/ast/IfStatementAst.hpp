@@ -8,14 +8,14 @@ namespace parka::ast
 {
 	class IfStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _condition;
 		StatementAst& _thenCase;
 		StatementAst* _elseCase;
 
 	public:
 
-		IfStatementAst(const Snippet& snippet, ExpressionAst& condition, StatementAst& thenCase, StatementAst* elseCase):
+		IfStatementAst(const fs::FileSnippet& snippet, ExpressionAst& condition, StatementAst& thenCase, StatementAst* elseCase):
 			StatementAst(StatementType::If),
 			_snippet(snippet),
 			_condition(condition),
@@ -25,7 +25,7 @@ namespace parka::ast
 		IfStatementAst(IfStatementAst&&) = default;
 		IfStatementAst(const IfStatementAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& condition() const { return _condition; }
 		const auto& thenCase() const { return _thenCase; }
 		bool hasElseCase() const { return !!_elseCase; }

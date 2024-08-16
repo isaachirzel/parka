@@ -9,7 +9,7 @@ namespace parka::ast
 {
 	class MemberAccessExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _expression;
 		IdentifierAst _identifier;
 
@@ -24,7 +24,7 @@ namespace parka::ast
 		MemberAccessExpressionAst(MemberAccessExpressionAst&&) = default;
 		MemberAccessExpressionAst(const MemberAccessExpressionAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 
 		const auto& expression() const { return _expression; }
 		const auto& identifier() const { return _identifier; }

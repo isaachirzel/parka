@@ -751,7 +751,7 @@ namespace parka::validation
 		return new CastExpressionIr(*expression, *cast);
 	}
 
-	static Result<u64> getIntegerValue(const Snippet& snippet)
+	static Result<u64> getIntegerValue(const fs::FileSnippet& snippet)
 	{
 		u64 value = 0;
 		const auto length = snippet.length();
@@ -785,7 +785,7 @@ namespace parka::validation
 		return new IntegerLiteralIr(*value);
 	}
 
-	static f64 parseDecimal(const Snippet& snippet)
+	static f64 parseDecimal(const fs::FileSnippet& snippet)
 	{
 		// TODO: See if it's too big to store?
 		// TODO: Parse parts as large integers and create Decimal class to store result

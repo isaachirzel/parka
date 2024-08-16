@@ -219,9 +219,4 @@ namespace parka::validation
 
 		return nullptr;
 	}
-
-	ir::AssignmentOperatorIr* FloatTypeContext::getAssignmentOperator(AssignmentType assignmentType, const ir::TypeIr& other) const
-	{
-		return nullptr;
-	}
 }

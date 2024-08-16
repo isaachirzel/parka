@@ -1,24 +1,24 @@
-#include "parka/file/Position.hpp"
+#include "parka/fs/FilePosition.hpp"
 #include "parka/log/Color.hpp"
 #include <algorithm>
 
-namespace parka
+namespace parka::fs
 {
-	Position::Position(const File& file):
+	FilePosition::FilePosition(const File& file):
 		_file(&file),
 		_index(0),
 		_line(0),
 		_column(0)
 	{}
 
-	Position::Position(const File& file, u32 index, u16 line, u16 column):
+	FilePosition::FilePosition(const File& file, u32 index, u16 line, u16 column):
 		_file(&file),
 		_index(index),
 		_line(line),
 		_column(column)
 	{}
 
-	void Position::seekEndOfLine()
+	void FilePosition::seekEndOfLine()
 	{
 		const auto& file = *_file;
 		auto shouldBreak = false;
@@ -39,7 +39,7 @@ namespace parka
 		}
 	}
 
-	void Position::seekEndOfBlockComment()
+	void FilePosition::seekEndOfBlockComment()
 	{
 		const auto& file = *_file;
 		auto shouldBreak = false;
@@ -66,7 +66,7 @@ namespace parka
 		}
 	}
 
-	void Position::seekNext()
+	void FilePosition::seekNext()
 	{
 		const auto& file = *_file;
 
@@ -107,57 +107,57 @@ namespace parka
 		}
 	}
 
-	char Position::operator*() const
+	char FilePosition::operator*() const
 	{
 		return (*_file)[_index];
 	}
 
-	char Position::operator[](usize index) const
+	char FilePosition::operator[](usize index) const
 	{
 		return (*_file)[_index + index];
 	}
 
-	Position Position::operator+(u32 offset) const
+	FilePosition FilePosition::operator+(u32 offset) const
 	{
 		auto index = std::min(_index + offset, (u32)_file->length());
 
-		return Position(*_file, index, _line, _column + (index - _index));
+		return FilePosition(*_file, index, _line, _column + (index - _index));
 	}
 
-	bool Position::operator==(const Position& other) const
+	bool FilePosition::operator==(const FilePosition& other) const
 	{
 		return _file == other._file && _index == other._index;
 	}
 
-	bool Position::operator!=(const Position& other) const
+	bool FilePosition::operator!=(const FilePosition& other) const
 	{
 		return !(*this == other);
 	}
 
-	bool Position::operator<(const Position& other) const
+	bool FilePosition::operator<(const FilePosition& other) const
 	{
 		return _index < other._index;
 	}
 
-	bool Position::operator<=(const Position& other) const
+	bool FilePosition::operator<=(const FilePosition& other) const
 	{
 		return _index <= other._index;
 	}
 
-	bool Position::operator>(const Position& other) const
+	bool FilePosition::operator>(const FilePosition& other) const
 	{
 		return _index > other._index;
 	}
 
-	bool Position::operator>=(const Position& other) const
+	bool FilePosition::operator>=(const FilePosition& other) const
 	{
 		return _index >= other._index;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const Position& position)
+	std::ostream& operator<<(std::ostream& out, const FilePosition& position)
 	{
 		out << Color::darkYellow;
-		out << position._file->path();
+		out << position._file->path(); // TODO: Make this project relative
 
 		if (position._line > 0)
 			out << ":" << position._line;

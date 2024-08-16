@@ -6,16 +6,9 @@
 
 using namespace parka;
 
-// wordcount: git ls-files | xargs wc -l
+// line of code count: git ls-files | xargs wc -l
 
-// TODO: Unit testing
-// TODO: Convert log fatals to exceptions and add catch that will print out a single log fatal
-
-// int main()
-// {
-// }
-
-i32 main(int argc, const char *argv[])
+int main(int argc, const char *argv[])
 {
 	if (argc != 2)
 		log::fatal("Please supply only a path to the project root directory.");
@@ -53,8 +46,6 @@ i32 main(int argc, const char *argv[])
 
 	return exitCode;
 }
-
-
 
 /*
 	RESOLVABLE PROTOTYPES TYPES

@@ -5,7 +5,7 @@
 
 #include <ostream>
 
-namespace parka
+namespace parka::log
 {
 	class Margin
 	{

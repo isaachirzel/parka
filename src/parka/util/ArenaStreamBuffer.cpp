@@ -1,4 +1,4 @@
-#include "parka/log/ArenaStreamBuffer.hpp"
+#include "parka/util/ArenaStreamBuffer.hpp"
 #include "parka/util/Common.hpp"
 #include <cstring>
 #include <stdexcept>

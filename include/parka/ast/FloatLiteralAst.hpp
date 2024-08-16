@@ -9,18 +9,18 @@ namespace parka::ast
 {
 	class FloatLiteralAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 
 	public:
 
-		FloatLiteralAst(const Snippet& snippet):
+		FloatLiteralAst(const fs::FileSnippet& snippet):
 		ExpressionAst(ExpressionType::FloatLiteral),
 		_snippet(snippet)
 		{}
 		FloatLiteralAst(FloatLiteralAst&&) = default;
 		FloatLiteralAst(const FloatLiteralAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 	};
 }
 

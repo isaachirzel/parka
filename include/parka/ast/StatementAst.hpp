@@ -2,7 +2,7 @@
 #define PARKA_AST_STATEMENT_AST_HPP
 
 #include "parka/enum/StatementType.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 
 namespace parka::ast
 {
@@ -17,7 +17,7 @@ namespace parka::ast
 		{}
 		virtual ~StatementAst() {}
 
-		virtual const Snippet& snippet() const = 0;
+		virtual const fs::FileSnippet& snippet() const = 0;
 	};
 }
 

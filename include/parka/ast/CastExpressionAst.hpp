@@ -8,13 +8,13 @@ namespace parka::ast
 {
 	class CastExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _expression;
 		TypeAnnotationAst _typeAnnotation;
 
 	public:
 
-		CastExpressionAst(const Snippet& snippet, ExpressionAst& expression, TypeAnnotationAst&& typeAnnotation):
+		CastExpressionAst(const fs::FileSnippet& snippet, ExpressionAst& expression, TypeAnnotationAst&& typeAnnotation):
 			ExpressionAst(ExpressionType::Cast),
 			_snippet(snippet),
 			_expression(expression),
@@ -23,7 +23,7 @@ namespace parka::ast
 		CastExpressionAst(CastExpressionAst&&) = default;
 		CastExpressionAst(const CastExpressionAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _expression; }
 		const auto& typeAnnotation() const { return _typeAnnotation; }
 	};

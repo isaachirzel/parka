@@ -8,13 +8,13 @@ namespace parka::ast
 {
 	class PrefixExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _expression;
 		PrefixType _type;
 
 	public:
 
-		PrefixExpressionAst(const Snippet& snippet, PrefixType type, ExpressionAst& expression):
+		PrefixExpressionAst(const fs::FileSnippet& snippet, PrefixType type, ExpressionAst& expression):
 		ExpressionAst(ExpressionType::Prefix),
 		_snippet(snippet),
 		_expression(expression),
@@ -23,7 +23,7 @@ namespace parka::ast
 		PrefixExpressionAst(PrefixExpressionAst&&) = default;
 		PrefixExpressionAst(const PrefixExpressionAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& expression() const { return _expression; }
 		const auto& type() const { return _type; }
 	};

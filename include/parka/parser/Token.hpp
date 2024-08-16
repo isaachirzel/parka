@@ -3,8 +3,8 @@
 
 #include "parka/enum/KeywordType.hpp"
 #include "parka/enum/TokenType.hpp"
-#include "parka/file/File.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/File.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
@@ -12,18 +12,18 @@ namespace parka
 {
 	class Token
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		TokenType _type;
 
 	public:
 
-		Token(const Snippet& snippet, TokenType type);
+		Token(const fs::FileSnippet& snippet, TokenType type);
 		Token(Token&&) = default;
 		Token(const Token&) = default;
 		Token& operator=(Token&& other) = default;
 		Token& operator=(const Token& other) = default;
 
-		static Token initial(const File& file);
+		static Token initial(const fs::File& file);
 
 		void increment();
 
@@ -34,8 +34,8 @@ namespace parka
 		bool isIdentifier() const { return _type == TokenType::Identifier; }
 		KeywordType getKeywordType() const;
 
-		operator const Snippet&() const { return _snippet; }
-		Snippet operator+(const Token& other) const { return _snippet + other._snippet; }
+		operator const fs::FileSnippet&() const { return _snippet; }
+		fs::FileSnippet operator+(const Token& other) const { return _snippet + other._snippet; }
 		const auto& operator[](usize index) const { return _snippet[index]; }
 		friend std::ostream& operator<<(std::ostream& out, const Token& token);
 		

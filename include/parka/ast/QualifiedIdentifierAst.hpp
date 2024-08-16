@@ -8,13 +8,13 @@ namespace parka::ast
 {
 	class QualifiedIdentifierAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		Array<IdentifierAst> _parts;
 		bool _isAbsolute;
 
 	public:
 
-		QualifiedIdentifierAst(const Snippet& snippet, Array<IdentifierAst>&& parts, bool isAbsolute):
+		QualifiedIdentifierAst(const fs::FileSnippet& snippet, Array<IdentifierAst>&& parts, bool isAbsolute):
 			_snippet(snippet),
 			_parts(std::move(parts)),
 			_isAbsolute(isAbsolute)

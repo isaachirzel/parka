@@ -1,25 +1,25 @@
 #ifndef PARK_LOG_LINE_HPP
 #define PARK_LOG_LINE_HPP
 
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/util/StringView.hpp"
 
 #include <ostream>
 
-namespace parka
+namespace parka::log
 {
 	class Line
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		StringView _preText;
 		StringView _postText;
 
-		static StringView getPreText(const Snippet& snippet);
-		static StringView getPostText(const Snippet& snippet);
+		static StringView getPreText(const fs::FileSnippet& snippet);
+		static StringView getPostText(const fs::FileSnippet& snippet);
 
 	public:
 
-		Line(const Snippet& snippet):
+		Line(const fs::FileSnippet& snippet):
 		_snippet(snippet),
 		_preText(getPreText(snippet)),
 		_postText(getPostText(snippet))

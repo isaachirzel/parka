@@ -42,6 +42,7 @@ foreach(TARGET ${TARGETS})
 	target_include_directories(${TARGET} PRIVATE ${INCLUDE_DIRS})
 	target_precompile_headers(${TARGET} PRIVATE
 		"<stdexcept>"
+		"<exception>"
 		"<utility>"
 		"<ostream>"
 		"<cassert>"
@@ -50,7 +51,9 @@ foreach(TARGET ${TARGETS})
 		"<cstddef>"
 		"<chrono>"
 		"<filesystem>"
-		"<exception>"
 		"<new>"
+		"<memory>"
+		"<string>"
+		"<vector>"
 	)
 endforeach()

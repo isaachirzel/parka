@@ -9,16 +9,16 @@ namespace parka::ast
 {
 	class IfExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 
 	public:
 
-		IfExpressionAst(const Snippet& snippet):
+		IfExpressionAst(const fs::FileSnippet& snippet):
 		ExpressionAst(ExpressionType::If),
 		_snippet(snippet)
 		{}
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 	};
 }
 

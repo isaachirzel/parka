@@ -9,13 +9,13 @@ namespace parka::ast
 {
 	class FunctionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		PrototypeAst _prototype;
 		Optional<FunctionBodyAst> _body;
 
 	public:
 	
-		FunctionAst(const Snippet& snippet, PrototypeAst&& prototype, Optional<FunctionBodyAst>&& body):
+		FunctionAst(const fs::FileSnippet& snippet, PrototypeAst&& prototype, Optional<FunctionBodyAst>&& body):
 			_snippet(snippet),
 			_prototype(std::move(prototype)),
 			_body(std::move(body))
@@ -23,7 +23,7 @@ namespace parka::ast
 		FunctionAst(FunctionAst&&) = default;
 		FunctionAst(const FunctionAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& prototype() const { return _prototype; }
 		bool hasBody() const { return !!_body; }
 		const auto& body() const { assert(_body); return *_body; }

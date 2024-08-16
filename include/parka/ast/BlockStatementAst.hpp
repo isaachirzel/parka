@@ -8,12 +8,12 @@ namespace parka::ast
 {
 	class BlockStatementAst: public StatementAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		Array<StatementAst*> _statements;
 
 	public:
 
-		BlockStatementAst(const Snippet& snippet, Array<StatementAst*>&& statements):
+		BlockStatementAst(const fs::FileSnippet& snippet, Array<StatementAst*>&& statements):
 			StatementAst(StatementType::Block),
 			_snippet(snippet),
 			_statements(std::move(statements))
@@ -21,7 +21,7 @@ namespace parka::ast
 		BlockStatementAst(BlockStatementAst&&) = default;
 		BlockStatementAst(const BlockStatementAst&) = delete;
 
-		const Snippet &snippet() const { return _snippet; }
+		const fs::FileSnippet &snippet() const { return _snippet; }
 		const auto& statements() const { return _statements; }
 	};
 }

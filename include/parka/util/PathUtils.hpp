@@ -12,7 +12,6 @@ namespace parka::path
 	String getRelativePath(const String& base, const String& path);
 	String toAbsolute(const String& path);
 	String pathDuplicate(const String& path);
-	String getFilename(const String& path);
 	usize getParentFolderPathOffset(const String& path);
 }
 

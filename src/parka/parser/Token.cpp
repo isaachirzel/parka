@@ -1,13 +1,13 @@
 #include "parka/parser/Token.hpp"
 #include "parka/enum/KeywordType.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/log/Log.hpp"
 
 #include <cstring>
 
 namespace parka
 {
-	Token::Token(const Snippet& snippet, TokenType type):
+	Token::Token(const fs::FileSnippet& snippet, TokenType type):
 		_snippet(snippet),
 		_type(type)
 	{}
@@ -56,7 +56,7 @@ namespace parka
 		abort();	
 	}
 
-	Token getQuoteToken(const Position& startPos)
+	Token getQuoteToken(const fs::FilePosition& startPos)
 	{
 		auto terminal = *startPos;
 		auto type = getQuoteType(terminal);
@@ -73,7 +73,7 @@ namespace parka
 			if (!c)
 			{
 				auto unterminatedType = getUnterminatedQuoteType(terminal);
-				auto token = Token(Snippet(startPos, length), unterminatedType);
+				auto token = Token(fs::FileSnippet(startPos, length), unterminatedType);
 
 				log::unterminatedQuoteTokenError(token);
 				
@@ -93,12 +93,12 @@ namespace parka
 		
 		length += 1;
 
-		auto token = Token(Snippet(startPos, length), type);
+		auto token = Token(fs::FileSnippet(startPos, length), type);
 
 		return token;
 	}
 
-	Token getIdentifierToken(const Position& startPos)
+	Token getIdentifierToken(const fs::FilePosition& startPos)
 	{
 		usize length = 1;
 
@@ -112,10 +112,10 @@ namespace parka
 			length += 1;
 		}
 
-		return Token(Snippet(startPos, length), TokenType::Identifier);
+		return Token(fs::FileSnippet(startPos, length), TokenType::Identifier);
 	}
 
-	Token getDigitToken(const Position& position)
+	Token getDigitToken(const fs::FilePosition& position)
 	{
 		auto isFloat = false;
 		auto length = (u32)0;
@@ -147,19 +147,19 @@ namespace parka
 		auto type = isFloat
 			? TokenType::FloatLiteral
 			: TokenType::IntegerLiteral;
-		auto token = Token(Snippet(position, length), type);
+		auto token = Token(fs::FileSnippet(position, length), type);
 
 		return token;
 	}
 
-	Token getNextToken(const Position& startPos)
+	Token getNextToken(const fs::FilePosition& startPos)
 	{
 		char c = *startPos;
 
 		switch (c)
 		{
 			case '\0':
-				return Token(Snippet(startPos, 0), TokenType::EndOfFile);
+				return Token(fs::FileSnippet(startPos, 0), TokenType::EndOfFile);
 
 			case '_':
 			case 'a': case 'A':
@@ -204,33 +204,33 @@ namespace parka
 			
 			// Separators
 			case '(':
-				return Token(Snippet(startPos, 1), TokenType::LeftParenthesis);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::LeftParenthesis);
 
 			case ')':
-				return Token(Snippet(startPos, 1), TokenType::RightParenthesis);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::RightParenthesis);
 
 			case '[':
-				return Token(Snippet(startPos, 1), TokenType::LeftBracket);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::LeftBracket);
 
 			case ']':
-				return Token(Snippet(startPos, 1), TokenType::RightBracket);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::RightBracket);
 
 			case '{':
-				return Token(Snippet(startPos, 1), TokenType::LeftBrace);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::LeftBrace);
 
 			case '}':
-				return Token(Snippet(startPos, 1), TokenType::RightBrace);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::RightBrace);
 
 			case ',':
-				return Token(Snippet(startPos, 1), TokenType::Comma);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Comma);
 
 			case ';':
-				return Token(Snippet(startPos, 1), TokenType::Semicolon);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Semicolon);
 
 			case ':':
 				return startPos[1] == ':'
-					? Token(Snippet(startPos, 2), TokenType::Scope)
-					: Token(Snippet(startPos, 1), TokenType::Colon);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::Scope)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::Colon);
 
 			case '.':
 			{
@@ -243,11 +243,11 @@ namespace parka
 				else if (c1 == '.')
 				{
 					return startPos[2] == '.'
-						? Token(Snippet(startPos, 3), TokenType::Elipsis)
-						: Token(Snippet(startPos, 2), TokenType::Range);
+						? Token(fs::FileSnippet(startPos, 3), TokenType::Elipsis)
+						: Token(fs::FileSnippet(startPos, 2), TokenType::Range);
 				}
 				
-				return Token(Snippet(startPos, 1), TokenType::Dot);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Dot);
 			}
 
 			// Operators
@@ -255,119 +255,119 @@ namespace parka
 				if (startPos[1] == '<')
 				{
 					return startPos[2] == '='
-						? Token(Snippet(startPos, 3), TokenType::LeftBitShiftAssign)
-						: Token(Snippet(startPos, 2), TokenType::LeftBitShift);
+						? Token(fs::FileSnippet(startPos, 3), TokenType::LeftBitShiftAssign)
+						: Token(fs::FileSnippet(startPos, 2), TokenType::LeftBitShift);
 				}
 				else if (startPos[1] == '=')
 				{
-					return Token(Snippet(startPos, 2), TokenType::LessThanOrEqualTo);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::LessThanOrEqualTo);
 				}
 
-				return Token(Snippet(startPos, 1), TokenType::LessThan);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::LessThan);
 
 			case '>':
 				if (startPos[1] == '>')
 				{
 					return startPos[2] == '='
-						? Token(Snippet(startPos, 3), TokenType::RightBitShiftAssign)
-						: Token(Snippet(startPos, 2), TokenType::RightBitShift);
+						? Token(fs::FileSnippet(startPos, 3), TokenType::RightBitShiftAssign)
+						: Token(fs::FileSnippet(startPos, 2), TokenType::RightBitShift);
 				}
 				else if (startPos[1] == '=')
 				{
-					return Token(Snippet(startPos, 2), TokenType::GreaterThanOrEqualTo);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::GreaterThanOrEqualTo);
 				}
 
-				return Token(Snippet(startPos, 1), TokenType::GreaterThan);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::GreaterThan);
 
 			case '$':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::ModulusAssign)
-					: Token(Snippet(startPos, 1), TokenType::Modulus);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::ModulusAssign)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::Modulus);
 
 			case '^':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::BitwiseXorAssign)
-					: Token(Snippet(startPos, 1), TokenType::BitwiseXor);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::BitwiseXorAssign)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::BitwiseXor);
 				
 			case '&':
 				if (startPos[1] == '&')
 				{
 					return startPos[2] == '='
-						? Token(Snippet(startPos, 3), TokenType::BooleanAndAssign)
-						: Token(Snippet(startPos, 2), TokenType::BooleanAnd);
+						? Token(fs::FileSnippet(startPos, 3), TokenType::BooleanAndAssign)
+						: Token(fs::FileSnippet(startPos, 2), TokenType::BooleanAnd);
 				}
 				else if (startPos[1] == '=')
 				{
-					return Token(Snippet(startPos, 2), TokenType::BitwiseAndAssign);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::BitwiseAndAssign);
 				}
 
-				return Token(Snippet(startPos, 1), TokenType::Ampersand);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Ampersand);
 
 			case '*':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::MultiplyAssign)
-					: Token(Snippet(startPos, 1), TokenType::Asterisk);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::MultiplyAssign)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::Asterisk);
 
 			case '-':
 				if (startPos[1] == '=')
 				{
-					return Token(Snippet(startPos, 2), TokenType::SubtractAssign);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::SubtractAssign);
 				}
 				else if (startPos[1] == '>')
 				{
-					return Token(Snippet(startPos, 2), TokenType::SingleArrow);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::SingleArrow);
 				}
 
-				return Token(Snippet(startPos, 1), TokenType::Minus);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Minus);
 
 			case '=':
 				if (startPos[1] == '=')
 				{
-					return Token(Snippet(startPos, 2), TokenType::Equals);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::Equals);
 				}
 				else if (startPos[1] == '>')
 				{
-					return Token(Snippet(startPos, 2), TokenType::DoubleArrow);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::DoubleArrow);
 				}
 
-				return Token(Snippet(startPos, 1), TokenType::Assign);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Assign);
 
 			case '|':
 				if (startPos[1] == '|')
 				{
 					return startPos[2] == '='
-						? Token(Snippet(startPos, 3), TokenType::BooleanOrAssign)
-						: Token(Snippet(startPos, 2), TokenType::BooleanOr);
+						? Token(fs::FileSnippet(startPos, 3), TokenType::BooleanOrAssign)
+						: Token(fs::FileSnippet(startPos, 2), TokenType::BooleanOr);
 				}
 				else if (startPos[1] == '=')
 				{
-					return Token(Snippet(startPos, 2), TokenType::BitwiseOrAssign);
+					return Token(fs::FileSnippet(startPos, 2), TokenType::BitwiseOrAssign);
 				}
 				
-				return Token(Snippet(startPos, 1), TokenType::Pipe);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Pipe);
 
 			case '+':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::AddAssign)
-					: Token(Snippet(startPos, 1), TokenType::Plus);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::AddAssign)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::Plus);
 
 			case '?':
-				return Token(Snippet(startPos, 1), TokenType::Question);
+				return Token(fs::FileSnippet(startPos, 1), TokenType::Question);
 
 			case '!':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::NotEquals)
-					: Token(Snippet(startPos, 1), TokenType::BooleanNot);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::NotEquals)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::BooleanNot);
 
 			case '/':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::DivideAssign)
-					: Token(Snippet(startPos, 1), TokenType::Slash);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::DivideAssign)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::Slash);
 
 			case '%':
 				return startPos[1] == '='
-					? Token(Snippet(startPos, 2), TokenType::ModulusAssign)
-					: Token(Snippet(startPos, 1), TokenType::Modulus);
+					? Token(fs::FileSnippet(startPos, 2), TokenType::ModulusAssign)
+					: Token(fs::FileSnippet(startPos, 1), TokenType::Modulus);
 
 			case '\'':
 			case '\"':
@@ -378,7 +378,7 @@ namespace parka
 		}
 
 		// TODO: Rethink handling of strange characters
-		auto token = Token(Snippet(startPos, 1), TokenType::EndOfFile);
+		auto token = Token(fs::FileSnippet(startPos, 1), TokenType::EndOfFile);
 
 		log::invalidTokenError(token);
 
@@ -394,9 +394,9 @@ namespace parka
 		*this = getNextToken(position);
 	}
 
-	Token Token::initial(const File& file)
+	Token Token::initial(const fs::File& file)
 	{
-		auto position = Position(file, 0, 1, 1);
+		auto position = fs::FilePosition(file, 0, 1, 1);
 
 		position.seekNext();
 

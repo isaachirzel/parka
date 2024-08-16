@@ -2,7 +2,7 @@
 #include "parka/log/Color.hpp"
 #include <iterator>
 
-namespace parka
+namespace parka::log
 {
 	const int Margin::xIndex = std::ios_base::xalloc();
 

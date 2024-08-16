@@ -7,7 +7,7 @@
 #include "parka/util/String.hpp"
 #include <ostream>
 
-namespace parka
+namespace parka::log
 {
 	class LogEntry
 	{

@@ -2,13 +2,13 @@
 
 namespace parka::ast
 {
-	FunctionBodyAst::FunctionBodyAst(const Snippet& snippet, ExpressionAst& expression):
+	FunctionBodyAst::FunctionBodyAst(const fs::FileSnippet& snippet, ExpressionAst& expression):
 		_snippet(snippet),
 		_expression(&expression),
 		_isExpression(true)
 	{}
 
-	FunctionBodyAst::FunctionBodyAst(const Snippet& snippet, BlockStatementAst& blockStatement):
+	FunctionBodyAst::FunctionBodyAst(const fs::FileSnippet& snippet, BlockStatementAst& blockStatement):
 		_snippet(snippet),
 		_blockStatement(&blockStatement),
 		_isExpression(false)

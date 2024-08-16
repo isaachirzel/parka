@@ -1,12 +1,12 @@
 #ifndef PARKA_LOG_HIGHLIGHT_HPP
 #define PARKA_LOG_HIGHLIGHT_HPP
 
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/log/Line.hpp"
 
 #include <ostream>
 
-namespace parka
+namespace parka::log
 {
 	class Underline
 	{

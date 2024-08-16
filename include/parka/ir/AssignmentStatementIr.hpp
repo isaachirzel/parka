@@ -1,7 +1,6 @@
 #ifndef PARKA_IR_ASSIGNMENT_STATEMENT_IR_HPP
 #define PARKA_IR_ASSIGNMENT_STATEMENT_IR_HPP
 
-#include "parka/enum/AssignmentType.hpp"
 #include "parka/ir/AssignmentOperatorIr.hpp"
 #include "parka/ir/ExpressionIr.hpp"
 #include "parka/ir/IdentifierExpressionIr.hpp"

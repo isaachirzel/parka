@@ -5,7 +5,7 @@
 #include "parka/enum/AssignmentType.hpp"
 #include "parka/enum/BinaryExpressionType.hpp"
 #include "parka/enum/EntityType.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/ir/EntityIr.hpp"
 #include "parka/ir/TypeIr.hpp"
 #include "parka/log/Prompt.hpp"
@@ -30,32 +30,32 @@ namespace parka::log
 	void unterminatedQuoteTokenError(const Token& token);
 	void parseError(const Token& token, const char *expected, const char* message = "");
 	void parseKeywordError(const Token& token, KeywordType expected, KeywordType found);
-	void invalidCharLiteralError(const Snippet& snippet);
-	void invalidIntegerLiteralError(const Snippet& snippet);
-	void typeMismatchError(const Snippet& snippet, const ir::TypeIr& givenType, const ir::TypeIr& expectedType);
-	void invalidImplicitCastError(const Snippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType);
-	void invalidExplicitCastError(const Snippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType);
-	void shadowedParameterError(const Snippet& snippet, const String& name);
-	void shadowedLocalEntityError(const Snippet& snippet, const String& symbol, EntityType previousType);
-	void shadowedPackageEntityError(const Snippet& snippet, const String& symbol, EntityType previousType);
-	void shadowedGlobalEntityError(const Snippet& snippet, const String& symbol, EntityType previousType);
+	void invalidCharLiteralError(const fs::FileSnippet& snippet);
+	void invalidIntegerLiteralError(const fs::FileSnippet& snippet);
+	void typeMismatchError(const fs::FileSnippet& snippet, const ir::TypeIr& givenType, const ir::TypeIr& expectedType);
+	void invalidImplicitCastError(const fs::FileSnippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType);
+	void invalidExplicitCastError(const fs::FileSnippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType);
+	void shadowedParameterError(const fs::FileSnippet& snippet, const String& name);
+	void shadowedLocalEntityError(const fs::FileSnippet& snippet, const String& symbol, EntityType previousType);
+	void shadowedPackageEntityError(const fs::FileSnippet& snippet, const String& symbol, EntityType previousType);
+	void shadowedGlobalEntityError(const fs::FileSnippet& snippet, const String& symbol, EntityType previousType);
 	void undefinedEntityError(const ast::QualifiedIdentifierAst& identifier);
-	void undefinedPackageEntityError(const Snippet& snippet, const String& symbol, const String& package);
-	void undefinedBinaryOperatorError(const Snippet& snippet, const ir::TypeIr& leftType, BinaryExpressionType binaryExpressionType, const ir::TypeIr& rightType);
-	void undefinedAssignmentOperatorError(const Snippet& snippet, const ir::TypeIr& leftType, AssignmentType assignmentType, const ir::TypeIr& rightType);
-	void entryPointNoParametersAllowedError(const Snippet& snippet);
-	void entryPointReturnTypeError(const Snippet& snippet, const ir::TypeIr& type);
-	void invalidReturnValueError(const Snippet& snippet, const ir::TypeIr& type, const ir::TypeIr& expectedType);
-	void missingReturnValueError(const Snippet& snippet, const ir::TypeIr& expectedType);
-	void typeAnnotationError(const Snippet& snippet, const ir::EntityIr& entity);
-	void lValueError(const Snippet& snippet);
-	void initializationTypeError(const Snippet& snippet, const ir::EntityIr& entity, const ir::TypeIr& valueType);
-	void invalidBreakError(const Snippet& snippet);
-	void invalidContinueError(const Snippet& snippet);
-	void invalidFunctionCallError(const Snippet& snippet, const ir::TypeIr& calledType);
-	void tooManyArgumentsError(const Snippet& snippet);
-	void tooFewArgumentsError(const Snippet& snippet);
-	void incompatibleConditionalTypes(const Snippet& snippet);
+	void undefinedPackageEntityError(const fs::FileSnippet& snippet, const String& symbol, const String& package);
+	void undefinedBinaryOperatorError(const fs::FileSnippet& snippet, const ir::TypeIr& leftType, BinaryExpressionType binaryExpressionType, const ir::TypeIr& rightType);
+	void undefinedAssignmentOperatorError(const fs::FileSnippet& snippet, const ir::TypeIr& leftType, AssignmentType assignmentType, const ir::TypeIr& rightType);
+	void entryPointNoParametersAllowedError(const fs::FileSnippet& snippet);
+	void entryPointReturnTypeError(const fs::FileSnippet& snippet, const ir::TypeIr& type);
+	void invalidReturnValueError(const fs::FileSnippet& snippet, const ir::TypeIr& type, const ir::TypeIr& expectedType);
+	void missingReturnValueError(const fs::FileSnippet& snippet, const ir::TypeIr& expectedType);
+	void typeAnnotationError(const fs::FileSnippet& snippet, const ir::EntityIr& entity);
+	void lValueError(const fs::FileSnippet& snippet);
+	void initializationTypeError(const fs::FileSnippet& snippet, const ir::EntityIr& entity, const ir::TypeIr& valueType);
+	void invalidBreakError(const fs::FileSnippet& snippet);
+	void invalidContinueError(const fs::FileSnippet& snippet);
+	void invalidFunctionCallError(const fs::FileSnippet& snippet, const ir::TypeIr& calledType);
+	void tooManyArgumentsError(const fs::FileSnippet& snippet);
+	void tooFewArgumentsError(const fs::FileSnippet& snippet);
+	void incompatibleConditionalTypes(const fs::FileSnippet& snippet);
 
 	template <typename ...Arg>
 	void message(Severity severity, const char *format, Arg const&...args)

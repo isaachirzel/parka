@@ -3,13 +3,13 @@
 
 #include "parka/ast/BlockStatementAst.hpp"
 #include "parka/ast/ExpressionAst.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 
 namespace parka::ast
 {
 	class FunctionBodyAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		union
 		{
 			ExpressionAst* _expression;
@@ -19,13 +19,13 @@ namespace parka::ast
 
 	public:
 
-		FunctionBodyAst(const Snippet& snippet, ExpressionAst& expression);
-		FunctionBodyAst(const Snippet& snippet, BlockStatementAst& blockStatement);
+		FunctionBodyAst(const fs::FileSnippet& snippet, ExpressionAst& expression);
+		FunctionBodyAst(const fs::FileSnippet& snippet, BlockStatementAst& blockStatement);
 		FunctionBodyAst(FunctionBodyAst&& other);
 		FunctionBodyAst(const FunctionBodyAst&) = delete;
 		~FunctionBodyAst() = default;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& isExpression() const { return _isExpression; }
 		const auto& expression() const { assert(_isExpression); return *_expression; }
 		const auto& blockStatement() const { assert(_blockStatement); return *_blockStatement; }

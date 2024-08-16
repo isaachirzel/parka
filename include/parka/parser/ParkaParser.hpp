@@ -28,7 +28,7 @@
 #include "parka/ast/TypeAnnotationAst.hpp"
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ast/YieldStatementAst.hpp"
-#include "parka/file/Directory.hpp"
+#include "parka/fs/Directory.hpp"
 #include "parka/util/Project.hpp"
 
 namespace parka::parser
@@ -36,7 +36,7 @@ namespace parka::parser
 	ast::Ast parse(const Project& project);
 	bool parseSemicolon(Token& token, const char *message = "");
 	bool parseStatementSemicolon(Token& token);
-	Result<Snippet> parseKeyword(Token& token);
+	Result<fs::FileSnippet> parseKeyword(Token& token);
 	Result<ast::IdentifierAst> parseIdentifier(Token& token);
 	Result<ast::QualifiedIdentifierAst> parseQualifiedIdentifier(Token& token);
 	Result<ast::TypeAnnotationAst> parseTypeAnnotation(Token& token);
@@ -87,8 +87,8 @@ namespace parka::parser
 	ast::StatementAst* parseAssignmentStatement(Token& token, bool requireSemicolon = true);
 	ast::IfStatementAst* parseIfStatement(Token& token);
 	Result<ast::StatementAst*> parseElseCase(Token& token);
-	ast::ModuleAst parseModule(const File& file);
-	ast::PackageAst *parsePackage(const Directory& directory, const String& name);
+	ast::ModuleAst parseModule(const fs::File& file);
+	ast::PackageAst *parsePackage(const fs::Directory& directory, const String& name);
 }
 
 #endif

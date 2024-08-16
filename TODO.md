@@ -1,6 +1,7 @@
 # To Do
 
 ## Short Term
+- Make it so that logs take in more concrete types rather than snippets?
 - Multi line snippets & highlights
 - Update to snippet system to allow for carrot
 - Prefix operators
@@ -9,10 +10,15 @@
 - mutable values and inhibiting modification of immutable values
 - While loops
 - Plain loops
+- Binary type for bitwise operations
 - Seek next in parsing argument lists
 - Seek next in parsing parameter lists
+- Unit testing for parser
+- Unit testing for validator
+- Unit testing for evaluator
 
 ## Medium Term
+- Project config reading
 - Format printing
 - Structs
 - Member access expressions
@@ -24,7 +30,6 @@
 - references
 - pointers
 - Struct properties
-- Unit testing or compiler
 - Documentation for compiler
 - Methods for primitives
 - Custom allocation for new
@@ -33,6 +38,7 @@
 - Error handling
 
 ## Long Term
+- Project compilation cache
 - Enums
 - Macros
 - Tuples

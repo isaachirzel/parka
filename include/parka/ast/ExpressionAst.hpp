@@ -2,7 +2,7 @@
 #define PARKA_AST_EXPRESSION_HPP
 
 #include "parka/enum/ExpressionType.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 
 namespace parka::ast
 {
@@ -17,7 +17,7 @@ namespace parka::ast
 		{}
 		virtual ~ExpressionAst() {}
 		
-		virtual const Snippet& snippet() const = 0;
+		virtual const fs::FileSnippet& snippet() const = 0;
 	};
 }
 

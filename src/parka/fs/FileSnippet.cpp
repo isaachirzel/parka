@@ -1,20 +1,20 @@
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include <algorithm>
 
-namespace parka
+namespace parka::fs
 {
-	Snippet::Snippet(const Position& position, u32 length):
+	FileSnippet::FileSnippet(const FilePosition& position, u32 length):
 		_position(position),
 		_length(length)
 	{}
 
-	Snippet Snippet::sub(usize offset, usize length) const
+	FileSnippet FileSnippet::sub(usize offset, usize length) const
 	{
 		assert(offset + length <= _position.index());
-		return Snippet(_position + offset, length);
+		return FileSnippet(_position + offset, length);
 	}
 
-	Snippet& Snippet::operator=(const Snippet& other)
+	FileSnippet& FileSnippet::operator=(const FileSnippet& other)
 	{
 		_position = other._position;
 		_length = other._length;
@@ -22,7 +22,7 @@ namespace parka
 		return *this;
 	}
 
-	Snippet Snippet::operator+(const Snippet& other) const
+	FileSnippet FileSnippet::operator+(const FileSnippet& other) const
 	{
 		assert(&_position.file() == &other._position.file());
 
@@ -34,22 +34,29 @@ namespace parka
 		const auto otherEnd = other._position.index() + other._length;
 		const auto end = std::max(thisEnd, otherEnd);
 		const auto length = end - position.index();
-		const auto snippet = Snippet(position, length);
+		const auto snippet = FileSnippet(position, length);
 
 		return snippet;
 	}
+
+	FileSnippet& FileSnippet::operator+=(const FileSnippet& other)
+	{
+		*this = *this + other;
+
+		return *this;
+	}
 	
-	bool Snippet::operator==(const Snippet& other) const
+	bool FileSnippet::operator==(const FileSnippet& other) const
 	{
 		return _position == other._position && _length == other._length;
 	}
 
-	bool Snippet::operator!=(const Snippet& other) const
+	bool FileSnippet::operator!=(const FileSnippet& other) const
 	{
 		return !(*this == other);
 	}
 
-	std::ostream& operator<<(std::ostream& out, const Snippet& snippet)
+	std::ostream& operator<<(std::ostream& out, const FileSnippet& snippet)
 	{
 		const auto *start = snippet.begin();
 		

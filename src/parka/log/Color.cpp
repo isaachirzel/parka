@@ -16,7 +16,7 @@
 #define BRIGHT(a) COLOR(9, a)
 #define DARK(a) COLOR(3, a)
 
-namespace parka
+namespace parka::log
 {
 	const Color Color::darkBlack = DARK(BLACK);
 	const Color Color::brightBlack = BRIGHT(BLACK);

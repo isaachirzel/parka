@@ -2,7 +2,7 @@
 #include "parka/log/Margin.hpp"
 #include <iterator>
 
-namespace parka
+namespace parka::log
 {
 	std::ostream& operator<<(std::ostream& out, const Underline& underline)
 	{

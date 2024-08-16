@@ -7,19 +7,19 @@ namespace parka::ast
 {
 	class TypeAnnotationAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		QualifiedIdentifierAst _identifier;
 
 	public:
 
-		TypeAnnotationAst(const Snippet& snippet, QualifiedIdentifierAst&& identifier):
+		TypeAnnotationAst(const fs::FileSnippet& snippet, QualifiedIdentifierAst&& identifier):
 		_snippet(snippet),
 		_identifier(std::move(identifier))
 		{}
 		TypeAnnotationAst(TypeAnnotationAst&&) = default;
 		TypeAnnotationAst(const TypeAnnotationAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& identifier() const { return _identifier; }
 	};
 }

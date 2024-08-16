@@ -9,14 +9,14 @@ namespace parka::ast
 {
 	class VariableAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		IdentifierAst _identifier;
 		Optional<TypeAnnotationAst> _annotation;
 		bool _isMutable;
 
 	public:
 
-		VariableAst(const Snippet& snippet, IdentifierAst&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
+		VariableAst(const fs::FileSnippet& snippet, IdentifierAst&& identifier, bool isMutable, Optional<TypeAnnotationAst> annotation):
 			_snippet(snippet),
 			_identifier(std::move(identifier)),
 			_annotation(std::move(annotation)),

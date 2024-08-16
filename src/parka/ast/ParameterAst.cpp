@@ -3,7 +3,7 @@
 
 namespace parka::ast
 {
-	ParameterAst::ParameterAst(const Snippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
+	ParameterAst::ParameterAst(const fs::FileSnippet& snippet, IdentifierAst&& identifier, TypeAnnotationAst&& annotation, bool isMutable):
 		_snippet(snippet),
 		_identifier(std::move(identifier)),
 		_annotation(std::move(annotation)),

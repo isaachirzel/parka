@@ -8,12 +8,12 @@ namespace parka::ast
 {
 	class BoolLiteralAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		bool _value;
 
 	public:
 
-		BoolLiteralAst(const Snippet& snippet, bool value):
+		BoolLiteralAst(const fs::FileSnippet& snippet, bool value):
 		ExpressionAst(ExpressionType::BoolLiteral),
 		_snippet(snippet),
 		_value(value)
@@ -21,7 +21,7 @@ namespace parka::ast
 		BoolLiteralAst(BoolLiteralAst&&) = default;
 		BoolLiteralAst(const BoolLiteralAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& value() const { return _value; }
 	};
 }

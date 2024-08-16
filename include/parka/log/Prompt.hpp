@@ -5,7 +5,7 @@
 #include "parka/log/Color.hpp"
 #include <ostream>
 
-namespace parka
+namespace parka::log
 {
 	class Prompt
 	{

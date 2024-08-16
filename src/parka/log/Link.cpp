@@ -1,7 +1,7 @@
 #include "parka/log/Link.hpp"
 #include "parka/log/Color.hpp"
 
-namespace parka
+namespace parka::log
 {
 	std::ostream& operator<<(std::ostream& out, const Link& link)
 	{

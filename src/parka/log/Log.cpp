@@ -2,12 +2,16 @@
 #include "parka/ast/QualifiedIdentifierAst.hpp"
 #include "parka/enum/ErrorCode.hpp"
 #include "parka/enum/Severity.hpp"
-#include "parka/file/Position.hpp"
-#include "parka/file/Snippet.hpp"
+#include "parka/fs/FilePosition.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/ir/PrimitiveIr.hpp"
+#include "parka/log/Annotation.hpp"
+#include "parka/log/Line.hpp"
 #include "parka/log/Prompt.hpp"
 #include "parka/util/Common.hpp"
 #include "parka/util/Print.hpp"
+#include <algorithm>
+#include <array>
 #include <iostream>
 
 namespace parka::log
@@ -60,7 +64,7 @@ namespace parka::log
 	usize getFatalCount() { return fatalCount; }
 
 	template <typename ...Arg>
-	void logMessage(Severity severity, ErrorCode errorCode, const Position* position, const char* format, Arg const&... args)
+	void logMessage(Severity severity, ErrorCode errorCode, const fs::FilePosition* position, const char* format, Arg const&... args)
 	{
 		auto& out = std::cout;
 		auto prompt = Prompt::from(severity);
@@ -80,6 +84,41 @@ namespace parka::log
 		out << "\n\n";
 
 		addCount(severity);
+	}
+
+	template <size_t N, typename = std::enable_if_t<(N > 0), void>>
+	void annotate(std::array<Annotation, N> annotations)
+	{
+		// TODO: Make sure no overlapping annotations, none with same position and none longer than last
+		// TODO: Make sure annotations is not empty
+
+		auto snippet = annotations.front().snippet();
+
+		if constexpr (N > 1)
+		{
+			// These need to be sorted in reverse?
+
+			std::sort(annotations.begin(), annotations.end(), [](const auto& a, const auto& b)
+			{
+				return b.snippet().position().index() - a.snippet().position().index();
+			});
+
+			snippet += annotations.back().snippet();
+		}
+
+		std::cout << snippet << '\n';
+
+		// print main snippet, try to figure out highlights in the snippet?
+		// print underlines
+		// print guide lines
+		// print notes
+		// shit, annotations need notes
+	}
+
+	template <typename ...Args>
+	void annotate(Args const&... args)
+	{
+		annotate(std::array<Annotation, sizeof...(args)> { args... });
 	}
 
 	[[ noreturn ]]
@@ -192,7 +231,7 @@ namespace parka::log
 		);
 	}
 
-	void invalidCharLiteralError(const Snippet &snippet)
+	void invalidCharLiteralError(const fs::FileSnippet &snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -202,7 +241,7 @@ namespace parka::log
 		);
 	}
 
-	void invalidIntegerLiteralError(const Snippet& snippet)
+	void invalidIntegerLiteralError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -212,7 +251,7 @@ namespace parka::log
 		);
 	}
 
-	void typeMismatchError(const Snippet& snippet, const ir::TypeIr& givenType, const ir::TypeIr& expectedType)
+	void typeMismatchError(const fs::FileSnippet& snippet, const ir::TypeIr& givenType, const ir::TypeIr& expectedType)
 	{
 		logMessage(
 			Severity::Error,
@@ -224,7 +263,7 @@ namespace parka::log
 		);
 	}
 
-	void invalidImplicitCastError(const Snippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType)
+	void invalidImplicitCastError(const fs::FileSnippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType)
 	{
 		logMessage(
 			Severity::Error,
@@ -236,7 +275,7 @@ namespace parka::log
 		);
 	}
 
-	void invalidExplicitCastError(const Snippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType)
+	void invalidExplicitCastError(const fs::FileSnippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType)
 	{
 		logMessage(
 			Severity::Error,
@@ -246,9 +285,12 @@ namespace parka::log
 			fromType,
 			toType
 		);
+		annotate(
+			Annotation(snippet, AnnotationType::Line)
+		);
 	}
 
-	void shadowedParameterError(const Snippet& snippet, const String& name)
+	void shadowedParameterError(const fs::FileSnippet& snippet, const String& name)
 	{
 		logMessage(
 			Severity::Error,
@@ -260,7 +302,7 @@ namespace parka::log
 		// TODO: Previously declared here error
 	}
 
-	void shadowedLocalEntityError(const Snippet& snippet, const String& symbol, EntityType previousType)
+	void shadowedLocalEntityError(const fs::FileSnippet& snippet, const String& symbol, EntityType previousType)
 	{
 		logMessage(
 			Severity::Error,
@@ -273,7 +315,7 @@ namespace parka::log
 		// TODO: Previously declared here error
 	}
 
-	void shadowedPackageEntityError(const Snippet& snippet, const String& symbol, EntityType previousType)
+	void shadowedPackageEntityError(const fs::FileSnippet& snippet, const String& symbol, EntityType previousType)
 	{
 		logMessage(
 			Severity::Error,
@@ -286,7 +328,7 @@ namespace parka::log
 		// TODO: Previously declared here error
 	}
 
-	void shadowedGlobalEntityError(const Snippet& snippet, const String& symbol, EntityType previousType)
+	void shadowedGlobalEntityError(const fs::FileSnippet& snippet, const String& symbol, EntityType previousType)
 	{
 		logMessage(
 			Severity::Error,
@@ -310,7 +352,7 @@ namespace parka::log
 		);
 	}
 
-	void undefinedPackageEntityError(const Snippet& snippet, const String& symbol, const String& package)
+	void undefinedPackageEntityError(const fs::FileSnippet& snippet, const String& symbol, const String& package)
 	{
 		logMessage(
 			Severity::Error,
@@ -322,7 +364,7 @@ namespace parka::log
 		);
 	}
 	
-	void undefinedBinaryOperatorError(const Snippet& snippet, const ir::TypeIr& leftType, BinaryExpressionType binaryExpressionType, const ir::TypeIr& rightType)
+	void undefinedBinaryOperatorError(const fs::FileSnippet& snippet, const ir::TypeIr& leftType, BinaryExpressionType binaryExpressionType, const ir::TypeIr& rightType)
 	{
 		logMessage(
 			Severity::Error,
@@ -335,7 +377,7 @@ namespace parka::log
 		);
 	}
 
-	void undefinedAssignmentOperatorError(const Snippet& snippet, const ir::TypeIr& leftType, AssignmentType assignmentType, const ir::TypeIr& rightType)
+	void undefinedAssignmentOperatorError(const fs::FileSnippet& snippet, const ir::TypeIr& leftType, AssignmentType assignmentType, const ir::TypeIr& rightType)
 	{
 		logMessage(
 			Severity::Error,
@@ -348,7 +390,7 @@ namespace parka::log
 		);
 	}
 
-	void entryPointNoParametersAllowedError(const Snippet& snippet)
+	void entryPointNoParametersAllowedError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -358,7 +400,7 @@ namespace parka::log
 		);
 	}
 
-	void entryPointReturnTypeError(const Snippet& snippet, const ir::TypeIr& type)
+	void entryPointReturnTypeError(const fs::FileSnippet& snippet, const ir::TypeIr& type)
 	{
 		logMessage(
 			Severity::Error,
@@ -372,7 +414,7 @@ namespace parka::log
 	}
 
 
-	void invalidReturnValueError(const Snippet& snippet, const ir::TypeIr& type, const ir::TypeIr& expectedType)
+	void invalidReturnValueError(const fs::FileSnippet& snippet, const ir::TypeIr& type, const ir::TypeIr& expectedType)
 	{
 		logMessage(
 			Severity::Error,
@@ -385,7 +427,7 @@ namespace parka::log
 		// TODO: Highlight function return type
 	}
 
-	void missingReturnValueError(const Snippet& snippet, const ir::TypeIr& expectedType)
+	void missingReturnValueError(const fs::FileSnippet& snippet, const ir::TypeIr& expectedType)
 	{
 		logMessage(
 			Severity::Error,
@@ -397,7 +439,7 @@ namespace parka::log
 		// TODO: Highlight function return type
 	}
 
-	void typeAnnotationError(const Snippet& snippet, const ir::EntityIr& entity)
+	void typeAnnotationError(const fs::FileSnippet& snippet, const ir::EntityIr& entity)
 	{
 		logMessage(
 			Severity::Error,
@@ -412,7 +454,7 @@ namespace parka::log
 		// TODO: Maybe show "other thing defined here"
 	}
 
-	void lValueError(const Snippet& snippet)
+	void lValueError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -422,7 +464,7 @@ namespace parka::log
 		);
 	}
 
-	void initializationTypeError(const Snippet& snippet, const ir::EntityIr& entity, const ir::TypeIr& valueType)
+	void initializationTypeError(const fs::FileSnippet& snippet, const ir::EntityIr& entity, const ir::TypeIr& valueType)
 	{
 		logMessage(
 			Severity::Error,
@@ -436,7 +478,7 @@ namespace parka::log
 		// TODO: Show entity expected type
 	}
 
-	void invalidBreakError(const Snippet& snippet)
+	void invalidBreakError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -446,7 +488,7 @@ namespace parka::log
 		);
 	}
 
-	void invalidContinueError(const Snippet& snippet)
+	void invalidContinueError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -456,7 +498,7 @@ namespace parka::log
 		);
 	}
 
-	void invalidFunctionCallError(const Snippet& snippet, const ir::TypeIr& calledType)
+	void invalidFunctionCallError(const fs::FileSnippet& snippet, const ir::TypeIr& calledType)
 	{
 		logMessage(
 			Severity::Error,
@@ -467,7 +509,7 @@ namespace parka::log
 		);
 	}
 
-	void tooManyArgumentsError(const Snippet& snippet)
+	void tooManyArgumentsError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -480,7 +522,7 @@ namespace parka::log
 		// TODO: Highlight which arguments were too many
 	}
 
-	void tooFewArgumentsError(const Snippet& snippet)
+	void tooFewArgumentsError(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,
@@ -493,7 +535,7 @@ namespace parka::log
 		// TODO: Highlight which parameters weren't satisfied
 	}
 
-	void incompatibleConditionalTypes(const Snippet& snippet)
+	void incompatibleConditionalTypes(const fs::FileSnippet& snippet)
 	{
 		logMessage(
 			Severity::Error,

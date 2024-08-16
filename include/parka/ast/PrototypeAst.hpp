@@ -10,14 +10,14 @@ namespace parka::ast
 {
 	class PrototypeAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		IdentifierAst _identifier;
 		Array<ParameterAst*> _parameters;
 		Result<TypeAnnotationAst> _returnType;
 
 	public:
 
-		PrototypeAst(const Snippet& snippet, IdentifierAst&& identifier, Array<ParameterAst*>&& parameters, Result<TypeAnnotationAst>&& returnType):
+		PrototypeAst(const fs::FileSnippet& snippet, IdentifierAst&& identifier, Array<ParameterAst*>&& parameters, Result<TypeAnnotationAst>&& returnType):
 			_snippet(snippet),
 			_identifier(std::move(identifier)),
 			_parameters(std::move(parameters)),

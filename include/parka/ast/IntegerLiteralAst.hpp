@@ -8,18 +8,18 @@ namespace parka::ast
 {
 	class IntegerLiteralAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 
 	public:
 
-		IntegerLiteralAst(const Snippet& snippet):
+		IntegerLiteralAst(const fs::FileSnippet& snippet):
 		ExpressionAst(ExpressionType::IntegerLiteral),
 		_snippet(snippet)
 		{}
 		IntegerLiteralAst(IntegerLiteralAst&&) = default;
 		IntegerLiteralAst(const IntegerLiteralAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 	};
 }
 

@@ -9,13 +9,13 @@ namespace parka::ast
 {
 	class StructAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		IdentifierAst _identifier;
 		Array<MemberAst*> _members;
 
 	public:
 
-		StructAst(const Snippet& snippet, IdentifierAst&& identifier, Array<MemberAst*>&& members):
+		StructAst(const fs::FileSnippet& snippet, IdentifierAst&& identifier, Array<MemberAst*>&& members):
 			_snippet(snippet),
 			_identifier(std::move(identifier)),
 			_members(std::move(members))

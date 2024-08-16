@@ -8,13 +8,13 @@ namespace parka::ast
 {
 	class CallExpressionAst: public ExpressionAst
 	{
-		Snippet _snippet;
+		fs::FileSnippet _snippet;
 		ExpressionAst& _subject;
 		Array<ExpressionAst*> _arguments;
 
 	public:
 
-		CallExpressionAst(const Snippet& snippet, ExpressionAst& subject, Array<ExpressionAst*>&& arguments):
+		CallExpressionAst(const fs::FileSnippet& snippet, ExpressionAst& subject, Array<ExpressionAst*>&& arguments):
 		ExpressionAst(ExpressionType::Call),
 			_snippet(snippet),
 			_subject(subject),
@@ -23,7 +23,7 @@ namespace parka::ast
 		CallExpressionAst(CallExpressionAst&&) = default;
 		CallExpressionAst(const CallExpressionAst&) = delete;
 
-		const Snippet& snippet() const { return _snippet; }
+		const fs::FileSnippet& snippet() const { return _snippet; }
 		const auto& subject() const { return _subject; }
 		const auto& arguments() const { return _arguments; }
 	};
