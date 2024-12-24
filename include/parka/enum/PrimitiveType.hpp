@@ -3,6 +3,8 @@
 
 #include "parka/util/Common.hpp"
 
+#include <ostream>
+
 namespace parka
 {
 	enum class PrimitiveType: u8

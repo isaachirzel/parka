@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <cstdlib>
 #include <type_traits>
+#include <cassert>
 
 namespace parka
 {

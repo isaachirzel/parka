@@ -3,6 +3,8 @@
 
 #include "parka/util/Arena.hpp"
 
+#include <cassert>
+
 namespace parka
 {
 	template <typename T>
