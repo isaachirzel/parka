@@ -29,11 +29,11 @@
 #include "parka/ast/VariableAst.hpp"
 #include "parka/ast/YieldStatementAst.hpp"
 #include "parka/fs/Directory.hpp"
-#include "parka/util/Project.hpp"
+#include "parka/fs/Project.hpp"
 
 namespace parka::parser
 {
-	ast::Ast parse(const Project& project);
+	ast::Ast parse(const fs::Project& project);
 	bool parseSemicolon(Token& token, const char *message = "");
 	bool parseStatementSemicolon(Token& token);
 	Result<fs::FileSnippet> parseKeyword(Token& token);

@@ -156,7 +156,7 @@ namespace parka::fs
 
 	std::ostream& operator<<(std::ostream& out, const FilePosition& position)
 	{
-		out << Color::darkYellow;
+		out << log::Color::darkYellow;
 		out << position._file->path(); // TODO: Make this project relative
 
 		if (position._line > 0)
@@ -165,7 +165,7 @@ namespace parka::fs
 		if (position._column > 0)
 			out << ":" << position._column;
 
-		out << Color::reset;
+		out << log::Color::reset;
 		return out;
 	}
 }

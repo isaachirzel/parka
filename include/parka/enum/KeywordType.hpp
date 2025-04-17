@@ -4,6 +4,8 @@
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
 
+#include <ostream>
+
 namespace parka
 {
 	enum class KeywordType: u8

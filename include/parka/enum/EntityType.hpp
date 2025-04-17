@@ -3,6 +3,8 @@
 
 #include "parka/util/Common.hpp"
 
+#include <ostream>
+
 namespace parka
 {
 	enum class EntityType: u8
@@ -16,6 +18,7 @@ namespace parka
 		Member
 	};
 
+	const char *getEntityTypeText(EntityType entityType);
 	std::ostream& operator<<(std::ostream& out, const EntityType& type);
 }
 

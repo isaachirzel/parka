@@ -1,4 +1,5 @@
 #include "parka/fs/Path.hpp"
+#include "parka/util/PathUtils.hpp"
 #include <cstring>
 
 #ifdef _WIN32
@@ -50,12 +51,27 @@ namespace parka::fs
 		Path(text.c_str())
 	{}
 
+	Path::Path(const std::filesystem::path& path):
+		Path(path.c_str())
+	{}
+
 	bool Path::hasExtension(const char *ext) const
 	{
-		const auto* currentExt = extension();
-		const auto hasExt = !std::strcmp(currentExt, ext);
+		const auto currentExt = extension();
+		const auto hasExt = !currentExt.empty();
 
 		return hasExt;
+	}
+
+	StringView Path::extension() const
+	{
+		// TODO: Code review this
+		return &_text[_extensionOffset];
+	}
+
+	String Path::getFilename() const
+	{
+		return path::getFilename(_text);
 	}
 
 	Path Path::operator/(const char *other) const

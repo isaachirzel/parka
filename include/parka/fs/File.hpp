@@ -22,7 +22,7 @@ namespace parka::fs
 
 		File(String&& text, const Path& path, u8 projectOffset, FileType fileType);
 
-		static FileType getFileType(const String& filepath);
+		static FileType getFileType(const Path& filepath);
 
 	public:
 

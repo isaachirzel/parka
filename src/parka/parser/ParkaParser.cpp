@@ -22,12 +22,13 @@
 #include "parka/enum/KeywordType.hpp"
 #include "parka/log/Log.hpp"
 #include "parka/util/Result.hpp"
+#include "parka/util/String.hpp"
 
 using namespace parka::ast;
 
 namespace parka::parser
 {
-	Ast parse(const Project& project)
+	Ast parse(const fs::Project& project)
 	{
 		// TODO: Parse external projects
 		auto *package = parsePackage(project.srcDirectory(), "");
@@ -1668,7 +1669,7 @@ namespace parka::parser
 			seekingNext = true;
 		}
 
-		return ModuleAst(String(file.path()), std::move(functions), std::move(structs));
+		return ModuleAst(String(file.path().text()), std::move(functions), std::move(structs));
 	}
 
 	PackageAst *parsePackage(const fs::Directory& directory, const String& name)

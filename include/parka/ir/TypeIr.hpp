@@ -3,6 +3,8 @@
 
 #include "parka/enum/TypeCategory.hpp"
 
+#include <ostream>
+
 namespace parka::ir
 {
 	struct TypeIr

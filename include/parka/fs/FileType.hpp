@@ -7,8 +7,8 @@ namespace parka::fs
 {
 	enum class FileType: u8
 	{
-		Regular,
-		Source,
+		Other,
+		ParkaSource,
 		Json
 	};
 }

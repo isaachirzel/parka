@@ -14,7 +14,7 @@ int main(int argc, const char *argv[])
 		log::fatal("Please supply only a path to the project root directory.");
 
 	auto timer = Timer();
-	auto project = Project::read(argv[1]);
+	auto project = fs::Project::read(argv[1]);
 	auto readTime = timer.split();
 
 	log::debug("Project loaded in $ seconds.", readTime);

@@ -64,31 +64,15 @@ namespace parka::fs
 	FileType File::getFileType(const Path& filePath)
 	{
 		// TODO: Optimize and safety
-		assert(!filePath.empty() && "Empty filepath");
+		auto extension = filePath.extension();
 
-		const char *lastPoint = nullptr;
-		const char *end = &filepath[0];
+		if (extension == "pk")
+			return FileType::ParkaSource;
 
-		while (*end)
-		{
-			if (*end == '.')
-				lastPoint = end;
-
-			end += 1;
-		}
-
-		if (lastPoint == nullptr || end - lastPoint == 1)
-			return FileType::Regular;
-		
-		const char *extension = lastPoint + 1;
-
-		if (!strcmp(extension, "pk"))
-			return FileType::Source;
-
-		if (!strcmp(extension, "json"))
+		if (extension == "json")
 			return FileType::Json;
 
-		return FileType::Regular;
+		return FileType::Other;
 	}
 
 	File File::read(const Path& path, u16 projectOffset)
@@ -102,7 +86,7 @@ namespace parka::fs
 
 	File File::createTestMainSrcFile(const Path& directoryPath, u16 projectOffset, String&& src)
 	{
-		auto file = File(std::move(src), directoryPath / "main.pk", projectOffset, FileType::Source);
+		auto file = File(std::move(src), directoryPath / "main.pk", projectOffset, FileType::ParkaSource);
 
 		return file;
 	}

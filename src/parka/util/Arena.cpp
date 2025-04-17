@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <unistd.h>
+#include <cassert>
 
 // TODO: Cross platform includes
 #include <sys/mman.h>

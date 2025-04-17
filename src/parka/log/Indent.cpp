@@ -1,4 +1,6 @@
 #include "parka/log/Indent.hpp"
+#include "parka/util/Common.hpp"
+
 #include <ios>
 
 namespace parka::log

@@ -1,7 +1,7 @@
 #ifndef PARKA_LOG_INDENT_HPP
 #define PARKA_LOG_INDENT_HPP
 
-#include "parka/util/Common.hpp"
+#include <ostream>
 
 namespace parka::log
 {

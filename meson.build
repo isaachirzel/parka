@@ -1,4 +1,6 @@
-project('parka', 'cpp')
+project('parka', 'cpp', default_options: [
+	'warning_level=everything'
+])
 
 common_sources = [
 	'src/parka/ast/FunctionBodyAst.cpp',
@@ -8,6 +10,7 @@ common_sources = [
 	'src/parka/enum/AssignmentType.cpp',
 	'src/parka/enum/BinaryExpressionType.cpp',
 	'src/parka/enum/ContextType.cpp',
+	'src/parka/enum/EntityType.cpp',
 	'src/parka/enum/ErrorCode.cpp',
 	'src/parka/enum/ExpressionType.cpp',
 	'src/parka/enum/IntrinsicFunctionType.cpp',
@@ -52,7 +55,6 @@ common_sources = [
 	'src/parka/parser/ParkaParser.cpp',
 	'src/parka/parser/Token.cpp',
 	'src/parka/util/Arena.cpp',
-	'src/parka/util/ArenaStreamBuffer.cpp',
 	'src/parka/util/Float.cpp',
 	'src/parka/util/Hash.cpp',
 	'src/parka/util/Integer.cpp',
@@ -96,7 +98,7 @@ test_sources = [
 fs = import('fs')
 include_dirs = include_directories('include')
 
-executable('parka', common_sources, include_directories: include_dirs)
+executable('parka', [ common_sources, 'src/main.cpp' ] , include_directories: include_dirs)
 
 foreach source: test_sources
 	source_file_name = fs.name(source).replace('.test.cpp', '')

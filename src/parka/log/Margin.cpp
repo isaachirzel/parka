@@ -1,6 +1,8 @@
 #include "parka/log/Margin.hpp"
 #include "parka/log/Color.hpp"
+
 #include <iterator>
+#include <iomanip>
 
 namespace parka::log
 {

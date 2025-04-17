@@ -16,7 +16,7 @@ namespace parka::fs
 
 	Directory Directory::readSubdirectory(const Path& path, u16 projectOffset)
 	{
-		auto iterator = std::filesystem::directory_iterator(path);
+		auto iterator = std::filesystem::directory_iterator(path.text());
 		auto files = Array<File>();
 		auto subdirectories = Array<Directory>();
 
@@ -46,7 +46,7 @@ namespace parka::fs
 
 	static u16 getNameOffset(const String& absolutePath)
 	{
-		// TODO: Fix safety where we're assuming the string doesn't end with a '/'
+		// FIXME: Fix safety where we're assuming the string doesn't end with a '/'
 		for (auto i = (u16)absolutePath.size(); i-- > 0;)
 		{
 			if (absolutePath[i] == '/')
@@ -54,6 +54,11 @@ namespace parka::fs
 		}
 
 		return 0;
+	}
+
+	String Directory::getName() const
+	{
+		return _path.getFilename();
 	}
 
 	Directory Directory::read(const Path& absolutePath, u16 projectOffset)

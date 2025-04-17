@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <type_traits>
 #include <cassert>
+#include <utility>
+#include <new>
 
 namespace parka
 {

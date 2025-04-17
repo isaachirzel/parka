@@ -21,7 +21,6 @@ namespace parka::fs
     public:
 
         static Project read(const Path& path);
-        static Project createTestProject(String&& projectName, String&& mainSrc);
 
         const auto& name() const { return _name; }
         const auto& srcDirectory() const { return _srcDirectory; }

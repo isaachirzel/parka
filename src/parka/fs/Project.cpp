@@ -1,5 +1,7 @@
 #include "parka/fs/Project.hpp"
 #include "parka/fs/Directory.hpp"
+#include "parka/util/PathUtils.hpp"
+#include "parka/fs/Path.hpp"
 
 namespace parka::fs
 {
@@ -8,11 +10,11 @@ namespace parka::fs
         _srcDirectory(std::move(srcDirectory))
     {}
 
-    Project Project::read(const Path& path)
+    Project Project::read(const fs::Path& path)
     {
         auto srcPath = path / "src";
-        auto directory = Directory::read(srcPath, path.size() + 1);
-        auto name = path::getFilename(path);
+        auto directory = Directory::read(srcPath, 0);
+        auto name = path.getFilename();
         auto project = Project(std::move(name), std::move(directory));
 
         return project;
@@ -27,16 +29,6 @@ namespace parka::fs
 
 		return absolutePath;
 	}
-
-    Project Project::createTestProject(String&& name, String&& mainSrc)
-    {
-        auto absolutePath = createTestAbsolutePath(name);
-        auto relativePathOffset = absolutePath.length() - 3;
-        auto srcDirectory = Directory::createTestSrcDirectory(std::move(absolutePath), relativePathOffset, std::move(mainSrc));
-        auto project = Project(std::move(name), std::move(srcDirectory));
-
-        return project;
-    }
 
     usize getSourceLineCount(const File& file)
     {
@@ -57,7 +49,7 @@ namespace parka::fs
 
         for (const auto& file : directory.files())
         {
-            if (file.type() == FileType::Source)
+            if (file.type() == FileType::ParkaSource)
                 count += getSourceLineCount(file);
         }
 

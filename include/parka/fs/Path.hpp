@@ -3,6 +3,9 @@
 
 #include "parka/util/Common.hpp"
 #include "parka/util/String.hpp"
+#include "parka/util/StringView.hpp"
+
+#include <filesystem>
 
 namespace parka::fs
 {
@@ -18,16 +21,18 @@ namespace parka::fs
 		Path();
 		Path(const char* text);
 		Path(const String& text);
+		Path(const std::filesystem::path& path);
 		Path(Path&&) = default;
 		Path(const Path&) = default;
 		Path& operator=(Path&&) = default;
 		Path& operator=(const Path&) = default;
 
 		bool hasExtension(const char *extension) const;
+		String getFilename() const;
 
 		const auto& text() const { return _text; }
 		bool empty() const { return _text.empty(); }
-		const auto* extension() const { return &_text[_extensionOffset]; }
+		StringView extension() const;
 
 		Path operator/(const char *other) const;
 		Path& operator/=(const char *other);
