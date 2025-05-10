@@ -28,10 +28,10 @@ namespace parka::fs
 		const auto& position() const { return _position; }
 		const auto& length() const { return _length; }
 		
-		FileSnippet sub(usize offset, usize length) const;
+		FilePosition startPosition() const;
+		FilePosition endPosition() const;
 
 		FileSnippet operator+(const FileSnippet& other) const;
-
 		FileSnippet& operator+=(const FileSnippet& other);
 
 		bool operator==(const FileSnippet& other) const;

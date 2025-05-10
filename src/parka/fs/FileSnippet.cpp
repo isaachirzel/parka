@@ -1,4 +1,5 @@
 #include "parka/fs/FileSnippet.hpp"
+#include "parka/fs/FilePosition.hpp"
 #include <algorithm>
 
 namespace parka::fs
@@ -8,10 +9,18 @@ namespace parka::fs
 		_length(length)
 	{}
 
-	FileSnippet FileSnippet::sub(usize offset, usize length) const
+	FilePosition FileSnippet::startPosition() const
 	{
-		assert(offset + length <= _position.index());
-		return FileSnippet(_position + offset, length);
+		return _position;
+	}
+
+	FilePosition FileSnippet::endPosition() const
+	{
+		auto endPosition = _position;
+		
+		endPosition.seek(_length);
+		
+		return endPosition;
 	}
 
 	FileSnippet& FileSnippet::operator=(const FileSnippet& other)

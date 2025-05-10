@@ -2,7 +2,8 @@
 #define PARK_LOG_LINE_HPP
 
 #include "parka/fs/FileSnippet.hpp"
-#include "parka/util/StringView.hpp"
+#include "parka/log/LineSegment.hpp"
+#include "parka/util/Array.hpp"
 
 #include <ostream>
 
@@ -10,24 +11,17 @@ namespace parka::log
 {
 	class Line
 	{
-		fs::FileSnippet _snippet;
-		StringView _preText;
-		StringView _postText;
+		// TODO: This could be optimized
 
-		static StringView getPreText(const fs::FileSnippet& snippet);
-		static StringView getPostText(const fs::FileSnippet& snippet);
+		Array<LineSegment> _segments;
 
 	public:
 
-		Line(const fs::FileSnippet& snippet):
-		_snippet(snippet),
-		_preText(getPreText(snippet)),
-		_postText(getPostText(snippet))
-		{}
+		Line(Array<LineSegment>&& segments);
+		Line(Line&&) = default;
+		Line(const Line&) = delete;
 
-		const auto& snippet() const { return _snippet; }
-		const auto& preText() const { return _preText; }
-		const auto& postText() const { return _preText; }
+		static Array<Line> getLines(const fs::FileSnippet& snippet);
 
 		friend std::ostream& operator<<(std::ostream& out, const Line& underline);
 	};

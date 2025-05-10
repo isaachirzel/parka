@@ -15,9 +15,7 @@ namespace parka::log
 
 	public:
 
-		Margin(usize lineNumber = 0):
-		_lineNumber(lineNumber)
-		{}
+		Margin(usize lineNumber = 0);
 
 		friend std::ostream& operator<<(std::ostream& out, const Margin& margin);
 	};

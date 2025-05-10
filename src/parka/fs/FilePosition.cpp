@@ -1,6 +1,7 @@
 #include "parka/fs/FilePosition.hpp"
 #include "parka/log/Color.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 namespace parka::fs
 {
@@ -17,6 +18,17 @@ namespace parka::fs
 		_line(line),
 		_column(column)
 	{}
+
+	void FilePosition::seekBeginningOfLine()
+	{
+		const auto& file = *_file;
+
+		while (_index > 0 && file[_index - 1] != '\n')
+		{
+			_index -= 1;
+			_column -= 1;
+		}
+	}
 
 	void FilePosition::seekEndOfLine()
 	{
@@ -107,6 +119,10 @@ namespace parka::fs
 		}
 	}
 
+	void FilePosition::seek(i32 offset)
+	{
+	}
+
 	char FilePosition::operator*() const
 	{
 		return (*_file)[_index];
@@ -115,13 +131,6 @@ namespace parka::fs
 	char FilePosition::operator[](usize index) const
 	{
 		return (*_file)[_index + index];
-	}
-
-	FilePosition FilePosition::operator+(u32 offset) const
-	{
-		auto index = std::min(_index + offset, (u32)_file->length());
-
-		return FilePosition(*_file, index, _line, _column + (index - _index));
 	}
 
 	bool FilePosition::operator==(const FilePosition& other) const
@@ -152,6 +161,11 @@ namespace parka::fs
 	bool FilePosition::operator>=(const FilePosition& other) const
 	{
 		return _index >= other._index;
+	}
+
+	isize FilePosition::operator-(const FilePosition& other) const
+	{
+		return (isize)_index - (isize)other._index;
 	}
 
 	std::ostream& operator<<(std::ostream& out, const FilePosition& position)

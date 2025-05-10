@@ -47,6 +47,7 @@ common_sources = [
 	'src/parka/log/Color.cpp',
 	'src/parka/log/Indent.cpp',
 	'src/parka/log/Line.cpp',
+	'src/parka/log/LineSegment.cpp',
 	'src/parka/log/Link.cpp',
 	'src/parka/log/Log.cpp',
 	'src/parka/log/Margin.cpp',
@@ -98,7 +99,7 @@ test_sources = [
 fs = import('fs')
 include_dirs = include_directories('include')
 
-executable('parka', [ common_sources, 'src/main.cpp' ] , include_directories: include_dirs)
+executable('parka', [ common_sources, 'src/parka.cpp' ] , include_directories: include_dirs)
 
 foreach source: test_sources
 	source_file_name = fs.name(source).replace('.test.cpp', '')

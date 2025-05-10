@@ -1,14 +1,13 @@
 # To Do
 
 ## Short Term
-- Make it so that logs take in more concrete types rather than snippets?
-- Multi line snippets & highlights
+- Multi line annotations & highlights
 - Update to snippet system to allow for carrot
 - Prefix operators
 - Arrays
 - Subscript operators
 - mutable values and inhibiting modification of immutable values
-- While loops
+- While loopsd
 - Plain loops
 - Binary type for bitwise operations
 - Seek next in parsing argument lists

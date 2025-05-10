@@ -22,19 +22,21 @@ namespace parka::fs
 		FilePosition& operator=(FilePosition&&) = default;
 		FilePosition& operator=(const FilePosition&) = default;
 
+		void seekBeginningOfLine();
 		void seekEndOfLine();
 		void seekEndOfBlockComment();
 		void seekNext();
-
+		void seek(i32 offset);
+		
 		char operator*() const;
 		char operator[](usize index) const;
-		FilePosition operator+(u32 offset) const;
 		bool operator==(const FilePosition& other) const;
 		bool operator!=(const FilePosition& other) const;
 		bool operator<(const FilePosition& other) const;
 		bool operator<=(const FilePosition& other) const;
 		bool operator>(const FilePosition& other) const;
 		bool operator>=(const FilePosition& other) const;
+		isize operator-(const FilePosition& other) const;
 
 		const auto& file() const { return *_file; }
 		const auto& index() const { return _index; }

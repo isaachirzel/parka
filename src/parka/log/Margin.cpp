@@ -8,6 +8,10 @@ namespace parka::log
 {
 	const int Margin::xIndex = std::ios_base::xalloc();
 
+	Margin::Margin(usize lineNumber):
+		_lineNumber(lineNumber)
+	{}
+
 	usize getNumberWidth(usize number)
 	{
 		// TODO: get line count to make sure it doesn't overflow

@@ -1,51 +1,44 @@
 #include "parka/log/Line.hpp"
-#include "parka/log/Color.hpp"
+#include "parka/fs/FileSnippet.hpp"
 #include "parka/log/Margin.hpp"
 
 namespace parka::log
 {
-	StringView Line::getPreText(const fs::FileSnippet& snippet)
+	Line::Line(Array<LineSegment>&& segments):
+		_segments(std::move(segments))
+	{}
+
+	Array<Line> Line::getLines(const fs::FileSnippet& snippet)
 	{
-		// const auto& position = snippet.position();
-		const char *base = snippet.file().text().c_str();
-		const char *end = snippet.ptr();
-		const char *iter = end;
+		// TODO: Implement this	
 
-		while (iter > base)
+		auto preSegment = LineSegment::getPreceedingSegment(snippet);
+
+
+		for (usize i = 0; i < snippet.length(); ++i)
 		{
-			if (iter[-1] == '\n')
-				break;
 
-			iter -= 1;
 		}
 
-		return StringView(iter, end - iter);
-	}
-
-	StringView Line::getPostText(const fs::FileSnippet& snippet)
-	{
-		const char *start = snippet.ptr() + snippet.length();
-		const char *iter = start;
-
-		while (iter[0])
-		{
-			if (iter[0] == '\n')
-				break;
-
-			iter += 1;
-		}
-
-		return StringView(start, iter - start);
+		return {};
 	}
 
 	std::ostream& operator<<(std::ostream& out, const Line& line)
 	{
-		auto margin = Margin(line._snippet.position().line());
+		if (line._segments.length() == 0)
+			return out;
+
+		const auto& first = line._segments[0];
+		const auto lineNumber = first.snippet().position().line();
+		const auto margin = Margin(lineNumber);
 
 		out << margin;
-		out << Color::none << line._preText << Color::reset;
-		out << line._snippet;
-		out << Color::none << line._postText << Color::reset;
+
+		for (const auto& segment : line._segments)
+		{
+			out << segment;
+		}
+
 		out << '\n';
 
 		return out;

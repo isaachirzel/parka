@@ -273,6 +273,7 @@ namespace parka::log
 			fromType,
 			toType
 		);
+		// TODO: Add annotation
 	}
 
 	void invalidExplicitCastError(const fs::FileSnippet& snippet, const ir::TypeIr& fromType, const ir::TypeIr& toType)

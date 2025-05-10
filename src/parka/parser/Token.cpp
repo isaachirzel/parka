@@ -1,5 +1,6 @@
 #include "parka/parser/Token.hpp"
 #include "parka/enum/KeywordType.hpp"
+#include "parka/fs/FilePosition.hpp"
 #include "parka/fs/FileSnippet.hpp"
 #include "parka/log/Log.hpp"
 
@@ -387,7 +388,8 @@ namespace parka
 
 	void Token::increment()
 	{
-		auto position = _snippet.position() + _snippet.length();
+		auto start = _snippet.position();
+		auto position = fs::FilePosition(start.file(), start.index() + _snippet.length(), start.line(), start.column() + _snippet.length());
 
 		position.seekNext();
 
