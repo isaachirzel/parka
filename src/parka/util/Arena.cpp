@@ -2,21 +2,50 @@
 #include "parka/util/Common.hpp"
 
 #include <stdexcept>
-#include <unistd.h>
 #include <cassert>
+#include <string>
+#include <winnt.h>
+
+#ifndef _WIN32
+#include <unistd.h>
+#include <sys/mman.h>
+#else
+#include <windows.h>
+//#include <memoryapi.h>
+#endif
+
+#ifdef _WIN32
+#define ALLOCATION_FAILED (nullptr)
+#define PROTECTION_FAILED (0)
+#else
+#define ALLOCATION_FAILED (MAP_FAILED)
+#define PROTECTION_FAILED (-1)
+#endif
 
 // TODO: Cross platform includes
-#include <sys/mman.h>
 
 namespace parka
 {
 	static usize getPageSize()
 	{
-		// TODO: Make getPageSize() platform independent
 		static usize pageSize;
 
 		if (pageSize == 0)
+		{
+			#ifndef _WIN32
+
 			pageSize = sysconf(_SC_PAGESIZE);
+			
+			#else
+
+			SYSTEM_INFO systemInfo;
+
+			GetSystemInfo(&systemInfo);
+
+			pageSize = systemInfo.dwPageSize;
+
+			#endif
+		}
 
 		return pageSize;
 	}
@@ -34,20 +63,35 @@ namespace parka
 
 	static byte *allocateArena(const usize maxCapacity)
 	{
-		// TODO: make allocateArena() cross platform
-		auto * const data = (byte*)mmap(nullptr, maxCapacity, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		byte* data;
 
-		if (data == MAP_FAILED)
+		#ifndef _WIN32
+
+		data = (byte*)mmap(nullptr, maxCapacity, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+		#else
+
+		data = (byte*)VirtualAlloc(NULL, maxCapacity, MEM_RESERVE, PAGE_NOACCESS);		
+
+		#endif
+		
+		if (data == ALLOCATION_FAILED)
 			throw std::runtime_error("Failed to allocate Arena with max capacity of " + std::to_string(maxCapacity) + " bytes.");
 
 		return data;
 	}
 
-	// TODO: Implement reallocateArena
-
 	static void deallocateArena(byte *data, const usize length)
 	{
+		#ifdef _WIN32
+
+		VirtualFree(data, length, MEM_RELEASE);
+
+		#else
+
 		munmap(data, length);
+
+		#endif
 	}
 
 	Arena::Arena(usize maxCapacity):
@@ -76,9 +120,20 @@ namespace parka
 		{
 			const usize bytesToCommit = getPageAlignedLength(newLength - _capacity);
 			auto *startOfRegion = _data + _capacity;
-			const auto code = mprotect(startOfRegion, bytesToCommit, PROT_READ | PROT_WRITE);
 
-			if (code == -1)
+			#ifdef _WIN32
+
+			DWORD oldProtect;
+
+			auto result = VirtualProtect(startOfRegion, bytesToCommit, PAGE_READWRITE, &oldProtect);
+			
+			#else
+			
+			auto result = mprotect(startOfRegion, bytesToCommit, PROT_READ | PROT_WRITE);
+			
+			#endif
+
+			if (result == PROTECTION_FAILED)
 				abort();
 		}
 

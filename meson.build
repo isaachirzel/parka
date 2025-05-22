@@ -1,5 +1,6 @@
 project('parka', 'cpp', default_options: [
-	'warning_level=everything'
+	'warning_level=everything',
+	'cpp_std=c++17'
 ])
 
 common_sources = [
