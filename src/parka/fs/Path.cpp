@@ -52,7 +52,7 @@ namespace parka::fs
 	{}
 
 	Path::Path(const std::filesystem::path& path):
-		Path(path.c_str())
+		Path(path.string())
 	{}
 
 	bool Path::hasExtension(const char *ext) const

@@ -4,14 +4,14 @@
 #include <stdexcept>
 #include <cassert>
 #include <string>
-#include <winnt.h>
 
-#ifndef _WIN32
+#ifdef _WIN32
+#include <windows.h>
+#include <winnt.h>
+//#include <memoryapi.h>
+#else
 #include <unistd.h>
 #include <sys/mman.h>
-#else
-#include <windows.h>
-//#include <memoryapi.h>
 #endif
 
 #ifdef _WIN32
@@ -127,6 +127,8 @@ namespace parka
 
 			auto result = VirtualProtect(startOfRegion, bytesToCommit, PAGE_READWRITE, &oldProtect);
 			
+			// Could use getlasterror
+
 			#else
 			
 			auto result = mprotect(startOfRegion, bytesToCommit, PROT_READ | PROT_WRITE);
@@ -159,7 +161,7 @@ namespace parka
 		assert(ptr >= _data);
 		assert(ptr < _data + _length);
 
-		const auto offset = ptr - _data;
+		const auto offset = (usize)(ptr - _data);
 
 		return offset;
 	}

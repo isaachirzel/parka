@@ -14,7 +14,6 @@ namespace parka::log
 
 		auto preSegment = LineSegment::getPreceedingSegment(snippet);
 
-
 		for (usize i = 0; i < snippet.length(); ++i)
 		{
 

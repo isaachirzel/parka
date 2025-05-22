@@ -1,6 +1,0 @@
-InlayHints:
-	Enabled: No
-
-CompileFlags:
-	Add: [ -std=c++17 ]
-	Remove: [ -fanalyzer ]

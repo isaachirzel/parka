@@ -10,7 +10,7 @@ namespace parka::log
 		_isFocused(isFocused)
 	{}
 
-	Optional<LineSegment> getPreceedingSegment(const fs::FileSnippet& snippet)
+	Optional<LineSegment> LineSegment::getPreceedingSegment(const fs::FileSnippet& snippet)
 	{
 		auto position = snippet.position();
 
@@ -27,7 +27,7 @@ namespace parka::log
 		return preSegment;
 	}
 
-	Optional<LineSegment> getFollowingSegment(const fs::FileSnippet& snippet)
+	static Optional<LineSegment> getFollowingSegment(const fs::FileSnippet& snippet)
 	{
 		auto position = snippet.position();
 
@@ -46,7 +46,7 @@ namespace parka::log
 		return postSegment;
 	}                   
 
-	Array<LineSegment> getLineSegments(const fs::FileSnippet& fileSnippet)
+	Array<LineSegment> LineSegment::getLineSegments(const fs::FileSnippet& fileSnippet)
 	{
 		// TODO: Optimize this with stack
 		// Assume that fileSnippet is contained within one line

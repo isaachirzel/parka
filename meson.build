@@ -53,7 +53,6 @@ common_sources = [
 	'src/parka/log/Log.cpp',
 	'src/parka/log/Margin.cpp',
 	'src/parka/log/Prompt.cpp',
-	'src/parka/log/Underline.cpp',
 	'src/parka/parser/ParkaParser.cpp',
 	'src/parka/parser/Token.cpp',
 	'src/parka/util/Arena.cpp',
