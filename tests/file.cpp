@@ -7,6 +7,6 @@ int main()
 {
 	// auto f = File::read("test.txt");
 
-	std::cout << f.text() << std::endl;
+	// std::cout << f.text() << std::endl;
 
 }
